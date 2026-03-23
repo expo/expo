@@ -2912,6 +2912,12 @@ importers:
       prettier:
         specifier: ^3.4.2
         version: 3.5.3
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-native:
+        specifier: 0.85.0-rc.5
+        version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
 
   packages/eslint-config-universe:
     dependencies:
@@ -2961,6 +2967,9 @@ importers:
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
 
   packages/eslint-plugin-expo:
     dependencies:
