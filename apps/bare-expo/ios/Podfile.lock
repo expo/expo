@@ -273,6 +273,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu/UITests (55.0.9):
+    - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -299,6 +300,7 @@ PODS:
     - Yoga
   - Expo/Tests (55.0.2):
     - ExpoModulesCore
+    - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3803,10 +3805,10 @@ SPEC CHECKSUMS:
   EXConstants: ed3e09607493bb717a7932f0e6786846169692a2
   EXJSONUtils: 475f1af3d20fbd99268694df81d096817092aa89
   EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: c56d8767adbfa930c299ad052091e0e0e13d0a68
+  Expo: 5b891535ab874124ee26c5216419748c2fcc55e3
   expo-dev-client: 929c5e873b07c54035ab42aa165f095f74478d6c
   expo-dev-launcher: 52dad5ea74c968013ebb2707370e28a0cf9d8b7f
-  expo-dev-menu: 0758a54a6cd1605d3dd917717e447e1a10c3e84f
+  expo-dev-menu: 3ab7b064b3d3db84334481bdb24325e0b67889c3
   expo-dev-menu-interface: 58beb5e831034c20466d8c26ba679b0aa385abd2
   ExpoAgeRange: 87dd980cb26e47b1108e24c39bcfb88a9ab1030e
   ExpoAppIntegrity: 7e3ae77f96e3a3f742fe318d7aac24b66a7bead0
@@ -3881,7 +3883,7 @@ SPEC CHECKSUMS:
   EXUpdates: a0f980531cbcf45906b2489febd4e11a5895f332
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
   FBLazyVector: 0a4f3183cfecc7c9f3db440332ab522298a14a2e
-  hermes-engine: 407f52f1dca2c25263c5f76e80cc38a39e0f6ec0
+  hermes-engine: 725fd85144e1348879039099a6be950c471a4f2c
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3899,7 +3901,7 @@ SPEC CHECKSUMS:
   React: 16d31b8b032e8f8bc687b80f89493c5909e17152
   React-callinvoker: 5ebf1032973c67f358820d649bc97ee1380b1e27
   React-Core: 93acbf2b58b8fa7e91cdc17842893a3ac58ec2f3
-  React-Core-prebuilt: 766b4375bcf44c25ec2dd2149fb3334f83fff557
+  React-Core-prebuilt: 3511b71cfccfc66be7ea6243cfc572df80602865
   React-CoreModules: edc6940bbae2a0a4084281104f8bdd3bac28ea02
   React-cxxreact: 2b313bf858930139f39cc3cb38af0df057137556
   React-debug: 321c2c55a233e31cb4d88e7ff86880bbb73d8cfd
@@ -3969,7 +3971,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 9021ba029d8a68bd2236fa2f3a763c4b08c1db61
   ReactCodegen: 1bb7fd17c4d95c54f4e51a522ca094332fb57b96
   ReactCommon: f9e37991d8ed29fe1c9c9510f9ae87570fe35474
-  ReactNativeDependencies: 5df5167d0bf7f88f0a41aefdee1c119934dcd756
+  ReactNativeDependencies: 31f96d915ff27c8f98342cbf24c44eba232f6557
   RNCAsyncStorage: 2ad919e88b8bc2cd80e8697ce66d04d006743283
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
   RNCPicker: d74667bdfc08ed389a2a277d95b8faf2349290a9
