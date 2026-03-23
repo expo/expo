@@ -45,6 +45,7 @@
     "react-native": "0.85.0-rc.5"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react-native": "*"
   }
 }
