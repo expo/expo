@@ -1,5 +1,4 @@
-import type { ManifestActivity } from '@expo/config-plugins/build/android/Manifest';
-import type { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
   ConfigPlugin,
@@ -34,7 +33,7 @@ function addActivityToManifest(config: ExpoConfig) {
     const theme = application?.activity?.[0]?.$['android:theme'];
     application?.activity?.[0]['intent-filter']?.splice(0, 1);
 
-    const launcherActivity: ManifestActivity = {
+    const launcherActivity: AndroidConfig.Manifest.ManifestActivity = {
       $: {
         'android:name': '.BrowserLauncherActivity',
         'android:theme': theme,
