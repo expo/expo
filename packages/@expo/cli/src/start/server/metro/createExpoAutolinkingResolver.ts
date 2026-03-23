@@ -17,6 +17,9 @@ const KNOWN_STICKY_DEPENDENCIES = [
   // NOTE: react-native won't be in autolinking output, since it's special
   // We include it here manually, since we know it should be an unduplicated direct dependency
   'react-native',
+  // NOTE: We may redirect dependencies from react-native to react-native-web. This fails if
+  // a sub-dependency cannot access react-native-web, so we define it here
+  'react-native-web',
   // Peer dependencies from expo
   'react-native-webview',
   '@expo/dom-webview',
