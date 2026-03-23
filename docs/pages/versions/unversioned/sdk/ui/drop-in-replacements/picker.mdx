@@ -1,0 +1,99 @@
+---
+title: Picker
+description: A picker compatible with @react-native-picker/picker.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A `Picker` component with an API compatible with `@react-native-picker/picker`. It uses Jetpack Compose on Android and SwiftUI on iOS, providing a native Material 3 segmented button row on Android and a wheel picker on iOS.
+
+Under the hood this component wraps the platform-specific `@expo/ui` primitives:
+
+- **Android**: [Jetpack Compose SegmentedButton](../jetpack-compose/segmentedbutton)
+- **iOS**: [SwiftUI Picker](../swift-ui/picker)
+
+If you need lower-level control (custom modifiers, styles, or layouts), use those primitives directly.
+
+## Installation
+
+<APIInstallSection />
+
+## Migrating from `@react-native-picker/picker`
+
+- Update the import from `import { Picker } from '@react-native-picker/picker'` to `import { Picker } from '@expo/ui/picker'`.
+- `itemStyle`, `numberOfLines`, and `selectionColor` props are not supported.
+- `mode`, `prompt`, `dropdownIconColor`, `dropdownIconRippleColor`, `onBlur`, and `onFocus` props are Android-only in the community module and are not supported.
+- `Picker.Item` supports `label`, `value`, `color` (iOS), `fontFamily` (iOS), and `enabled` (Android) props. `style` item prop is not supported.
+
+## Basic usage
+
+```tsx PickerExample.tsx
+import { useState } from 'react';
+import { Picker } from '@expo/ui/picker';
+
+export default function PickerExample() {
+  const [value, setValue] = useState<string>('java');
+
+  return (
+    <Picker selectedValue={value} onValueChange={itemValue => setValue(itemValue)}>
+      <Picker.Item label="Java" value="java" />
+      <Picker.Item label="JavaScript" value="js" />
+      <Picker.Item label="Objective C" value="objc" />
+      <Picker.Item label="Swift" value="swift" />
+    </Picker>
+  );
+}
+```
+
+## Disabled picker
+
+```tsx DisabledPickerExample.tsx
+import { useState } from 'react';
+import { Picker } from '@expo/ui/picker';
+
+export default function DisabledPickerExample() {
+  const [value, setValue] = useState<string>('java');
+
+  return (
+    <Picker selectedValue={value} onValueChange={itemValue => setValue(itemValue)} enabled={false}>
+      <Picker.Item label="Java" value="java" />
+      <Picker.Item label="JavaScript" value="js" />
+    </Picker>
+  );
+}
+```
+
+## Styled picker
+
+```tsx StyledPickerExample.tsx
+import { useState } from 'react';
+import { Picker } from '@expo/ui/picker';
+
+export default function StyledPickerExample() {
+  const [value, setValue] = useState<string>('java');
+
+  return (
+    <Picker
+      selectedValue={value}
+      onValueChange={itemValue => setValue(itemValue)}
+      style={{ backgroundColor: '#e0e7ff', borderRadius: 12 }}>
+      <Picker.Item label="Java" value="java" />
+      <Picker.Item label="JavaScript" value="js" />
+      <Picker.Item label="Objective C" value="objc" />
+      <Picker.Item label="Swift" value="swift" />
+    </Picker>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Picker } from '@expo/ui/picker';
+```
+
+<APISection packageName="expo-ui/picker" apiName="Picker" />
