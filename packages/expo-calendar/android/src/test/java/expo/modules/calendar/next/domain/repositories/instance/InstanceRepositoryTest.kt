@@ -174,6 +174,46 @@ class InstanceRepositoryTest {
     Assert.assertEquals(false, entity.guestsCanSeeGuests)
   }
 
+  @Test
+  fun `given cursor with missing guest boolean flags, when findAll, then maps them to false`() = runTest {
+    // Given
+    val cursor = cursorWithRows(
+      mapOf(
+        CalendarContract.Instances._ID to 2L,
+        CalendarContract.Instances.EVENT_ID to 20L,
+        CalendarContract.Instances.BEGIN to 1_000_000L,
+        CalendarContract.Instances.END to 2_000_000L,
+        CalendarContract.Instances.ALL_DAY to 1,
+        CalendarContract.Instances.TITLE to null,
+        CalendarContract.Instances.DESCRIPTION to null,
+        CalendarContract.Instances.CALENDAR_ID to null,
+        CalendarContract.Instances.ACCESS_LEVEL to null,
+        CalendarContract.Instances.AVAILABILITY to null,
+        CalendarContract.Instances.STATUS to null,
+        CalendarContract.Instances.EVENT_LOCATION to null,
+        CalendarContract.Instances.EVENT_TIMEZONE to null,
+        CalendarContract.Instances.EVENT_END_TIMEZONE to null,
+        CalendarContract.Instances.ORGANIZER to null,
+        CalendarContract.Instances.ORIGINAL_ID to null,
+        CalendarContract.Instances.RRULE to null,
+        CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS to null,
+        CalendarContract.Instances.GUESTS_CAN_MODIFY to null,
+        CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS to null
+      )
+    )
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
+
+    // When
+    val result = repository.findAll(0L, 1000L, emptyList())
+
+    // Then
+    val entity = result.first()
+    Assert.assertEquals(true, entity.allDay)
+    Assert.assertEquals(false, entity.guestsCanInviteOthers)
+    Assert.assertEquals(false, entity.guestsCanModify)
+    Assert.assertEquals(false, entity.guestsCanSeeGuests)
+  }
+
   // endregion
 
   // region findAll — selection / selectionArgs
