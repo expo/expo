@@ -12,9 +12,9 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import clearIcon from '../assets/clear-icon.png';
-import closeIcon from '../assets/close-icon.png';
-import searchIcon from '../assets/search-icon.png';
+import clearIcon from '../../../../assets/react-navigation/elements/clear-icon.png';
+import closeIcon from '../../../../assets/react-navigation/elements/close-icon.png';
+import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
 import { PlatformPressable } from '../PlatformPressable';
 import { Text } from '../Text';
 import type { HeaderSearchBarOptions, HeaderSearchBarRef } from '../types';

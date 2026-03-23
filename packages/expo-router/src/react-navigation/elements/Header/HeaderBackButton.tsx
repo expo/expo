@@ -10,8 +10,8 @@ import {
   View,
 } from 'react-native';
 
-import backIcon from '../assets/back-icon.png';
-import backIconMask from '../assets/back-icon-mask.png';
+import backIcon from '../../../../assets/react-navigation/elements/back-icon.png';
+import backIconMask from '../../../../assets/react-navigation/elements/back-icon-mask.png';
 import { MaskedView } from '../MaskedView';
 import type { HeaderBackButtonProps } from '../types';
 import { HeaderButton } from './HeaderButton';

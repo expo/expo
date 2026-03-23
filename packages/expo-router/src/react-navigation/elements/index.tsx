@@ -1,8 +1,8 @@
-import backIcon from './assets/back-icon.png';
-import backIconMask from './assets/back-icon-mask.png';
-import clearIcon from './assets/clear-icon.png';
-import closeIcon from './assets/close-icon.png';
-import searchIcon from './assets/search-icon.png';
+import backIcon from '../../../assets/react-navigation/elements/back-icon.png';
+import backIconMask from '../../../assets/react-navigation/elements/back-icon-mask.png';
+import clearIcon from '../../../assets/react-navigation/elements/clear-icon.png';
+import closeIcon from '../../../assets/react-navigation/elements/close-icon.png';
+import searchIcon from '../../../assets/react-navigation/elements/search-icon.png';
 
 export { Background } from './Background';
 export { Badge } from './Badge';

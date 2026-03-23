@@ -7,7 +7,7 @@ import {
 import { Image, type ImageSourcePropType, StyleSheet } from 'react-native';
 
 import type { DrawerNavigationProp } from '../types';
-import toggleDrawerIcon from './assets/toggle-drawer-icon.png';
+import toggleDrawerIcon from '../../../../../assets/react-navigation/drawer/toggle-drawer-icon.png';
 
 type Props = {
   accessibilityLabel?: string;
