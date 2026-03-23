@@ -101,6 +101,8 @@ export function PreventRemoveProvider({ children }: Props) {
         setParentPrevented(parentId, route.key, false);
       };
     }
+
+    return undefined;
   }, [parentId, isPrevented, route?.key, setParentPrevented]);
 
   const value = React.useMemo(

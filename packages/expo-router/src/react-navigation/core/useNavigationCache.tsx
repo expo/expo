@@ -13,7 +13,7 @@ import type { NavigationEventEmitter } from './useEventEmitter';
 
 type Options<
   State extends NavigationState,
-  ScreenOptions extends {},
+  ScreenOptions extends object,
   EventMap extends Record<string, any>,
 > = {
   state: State;
@@ -29,13 +29,13 @@ type Options<
 
 type NavigationItem<
   State extends NavigationState,
-  ScreenOptions extends {},
+  ScreenOptions extends object,
   EventMap extends Record<string, any>,
 > = NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions, EventMap>;
 
 type NavigationCache<
   State extends NavigationState,
-  ScreenOptions extends {},
+  ScreenOptions extends object,
   EventMap extends Record<string, any>,
 > = Record<string, NavigationItem<State, ScreenOptions, EventMap>>;
 
@@ -46,7 +46,7 @@ type NavigationCache<
  */
 export function useNavigationCache<
   State extends NavigationState,
-  ScreenOptions extends {},
+  ScreenOptions extends object,
   EventMap extends Record<string, any>,
   ActionHelpers extends Record<string, () => void>,
 >({

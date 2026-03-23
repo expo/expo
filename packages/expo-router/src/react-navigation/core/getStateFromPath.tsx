@@ -9,6 +9,7 @@ import { isArrayEqual } from './isArrayEqual';
 import type { PathConfig, PathConfigMap } from './types';
 import { validatePathConfig } from './validatePathConfig';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type Options<ParamList extends {}> = {
   path?: string;
   initialRouteName?: string;
@@ -67,6 +68,7 @@ type ConfigResources = {
  * @param path Path string to parse and convert, e.g. /foo/bar?count=42.
  * @param options Extra options to fine-tune how to parse the path.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function getStateFromPath<ParamList extends {}>(
   path: string,
   options?: Options<ParamList>
@@ -156,8 +158,10 @@ export function getStateFromPath<ParamList extends {}>(
 /**
  * Reference to the last used config resources. This is used to avoid recomputing the config resources when the options are the same.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 const cachedConfigResources = new WeakMap<Options<{}>, ConfigResources>();
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 function getConfigResources<ParamList extends {}>(options: Options<ParamList> | undefined) {
   if (!options) return prepareConfigResources();
 
@@ -172,6 +176,7 @@ function getConfigResources<ParamList extends {}>(options: Options<ParamList> | 
   return resources;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 function prepareConfigResources(options?: Options<{}>) {
   if (options) {
     validatePathConfig(options);
@@ -191,7 +196,7 @@ function prepareConfigResources(options?: Options<{}>) {
   };
 }
 
-function getInitialRoutes(options?: Options<{}>) {
+function getInitialRoutes(options?: Options<object>) {
   const initialRoutes: InitialRouteConfig[] = [];
 
   if (options?.initialRouteName) {

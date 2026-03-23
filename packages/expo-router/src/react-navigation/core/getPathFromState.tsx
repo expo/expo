@@ -5,7 +5,7 @@ import { getPatternParts, type PatternPart } from './getPatternParts';
 import type { PathConfig, PathConfigMap } from './types';
 import { validatePathConfig } from './validatePathConfig';
 
-type Options<ParamList extends {}> = {
+type Options<ParamList extends object> = {
   path?: string;
   initialRouteName?: string;
   screens: PathConfigMap<ParamList>;
@@ -34,9 +34,9 @@ const getActiveRoute = (state: State): { name: string; params?: object } => {
   return route;
 };
 
-const cachedNormalizedConfigs = new WeakMap<PathConfigMap<{}>, Record<string, ConfigItem>>();
+const cachedNormalizedConfigs = new WeakMap<PathConfigMap<object>, Record<string, ConfigItem>>();
 
-const getNormalizedConfigs = (options?: Options<{}>) => {
+const getNormalizedConfigs = (options?: Options<object>) => {
   if (!options?.screens) return {};
 
   const cached = cachedNormalizedConfigs.get(options?.screens);
@@ -79,7 +79,7 @@ const getNormalizedConfigs = (options?: Options<{}>) => {
  * @param options Extra options to fine-tune how to serialize the path.
  * @returns Path representing the state, e.g. /foo/bar?count=42.
  */
-export function getPathFromState<ParamList extends {}>(
+export function getPathFromState<ParamList extends object>(
   state: State,
   options?: Options<ParamList>
 ): string {

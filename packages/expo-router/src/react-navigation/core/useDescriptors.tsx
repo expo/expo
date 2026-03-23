@@ -29,6 +29,7 @@ import { useRouteCache } from './useRouteCache';
 
 export type ScreenConfigWithParent<
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 > = {
@@ -38,6 +39,7 @@ export type ScreenConfigWithParent<
   props: RouteConfig<ParamListBase, string, State, ScreenOptions, EventMap, unknown>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type ScreenLayout<ScreenOptions extends {}> = (props: {
   route: RouteProp<ParamListBase, string>;
   options: ScreenOptions;
@@ -46,6 +48,7 @@ type ScreenLayout<ScreenOptions extends {}> = (props: {
   children: React.ReactElement;
 }) => React.ReactElement;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type ScreenOptionsOrCallback<ScreenOptions extends {}> =
   | ScreenOptions
   | ((props: {
@@ -56,6 +59,7 @@ type ScreenOptionsOrCallback<ScreenOptions extends {}> =
 
 type Options<
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 > = {
@@ -85,6 +89,7 @@ type Options<
 export function useDescriptors<
   State extends NavigationState,
   ActionHelpers extends Record<string, () => void>,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 >({

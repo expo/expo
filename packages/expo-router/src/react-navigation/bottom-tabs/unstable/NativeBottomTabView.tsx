@@ -1,11 +1,7 @@
-import type {
-  NativeBottomTabDescriptorMap,
-  NativeBottomTabNavigationConfig,
-  NativeBottomTabNavigationHelpers,
-} from './types';
+import type { NativeBottomTabDescriptorMap, NativeBottomTabNavigationHelpers } from './types';
 import { type ParamListBase, type TabNavigationState } from '../../native';
 
-type Props = NativeBottomTabNavigationConfig & {
+type Props = {
   state: TabNavigationState<ParamListBase>;
   navigation: NativeBottomTabNavigationHelpers;
   descriptors: NativeBottomTabDescriptorMap;

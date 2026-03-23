@@ -8,7 +8,6 @@ import { NativeScreen } from './NativeScreen/NativeScreen';
 import type {
   NativeBottomTabDescriptorMap,
   NativeBottomTabIcon,
-  NativeBottomTabNavigationConfig,
   NativeBottomTabNavigationHelpers,
   NativeBottomTabNavigationOptions,
   NativeBottomTabNavigationProp,
@@ -23,7 +22,7 @@ import {
   useTheme,
 } from '../../native';
 
-type Props = NativeBottomTabNavigationConfig & {
+type Props = {
   state: TabNavigationState<ParamListBase>;
   navigation: NativeBottomTabNavigationHelpers;
   descriptors: NativeBottomTabDescriptorMap;

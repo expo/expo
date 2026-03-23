@@ -51,7 +51,7 @@ export type Theme = NativeTheme;
 
 export type LocaleDirection = 'ltr' | 'rtl';
 
-export type LinkingOptions<ParamList extends {}> = {
+export type LinkingOptions<ParamList extends object> = {
   /**
    * Whether deep link handling should be enabled.
    * Defaults to true.

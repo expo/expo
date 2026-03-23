@@ -26,6 +26,7 @@ type FlatType<T> = { [K in keyof T]: T[K] } & {};
  * keyof T doesn't work for union types. We can use distributive conditional types instead.
  * https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type KeysOf<T> = T extends {} ? keyof T : never;
 
 /**
@@ -60,22 +61,26 @@ type ParamListForGroups<
   Groups extends
     | Readonly<{
         [key: string]: {
+          // eslint-disable-next-line @typescript-eslint/no-empty-object-type
           screens: StaticConfigScreens<ParamListBase, NavigationState, {}, EventMapBase, any>;
         };
       }>
     | undefined,
 > = Groups extends {
   [key: string]: {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     screens: StaticConfigScreens<ParamListBase, NavigationState, {}, EventMapBase, any>;
   };
 }
   ? ParamListForScreens<UnionToIntersection<Groups[keyof Groups]['screens']>>
-  : {};
+  : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    {};
 
 type StaticRouteConfig<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   Navigation,
@@ -85,6 +90,7 @@ type StaticRouteConfig<
 export type StaticConfigScreens<
   ParamList extends ParamListBase,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   NavigationList extends NavigationListBase<ParamList>,
@@ -139,6 +145,7 @@ export type StaticConfigScreens<
 export type StaticConfigGroup<
   ParamList extends ParamListBase,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   NavigationList extends NavigationListBase<ParamList>,
@@ -171,6 +178,7 @@ type StaticConfigInternal<
   ParamList extends ParamListBase,
   NavigatorID extends string | undefined,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   NavigationList extends NavigationListBase<ParamList>,
@@ -182,6 +190,7 @@ type StaticConfigInternal<
       ParamListBase,
       string | undefined,
       NavigationState,
+      // eslint-disable-next-line @typescript-eslint/no-empty-object-type
       {},
       EventMapBase,
       NavigationList[keyof ParamList]
@@ -288,6 +297,7 @@ const getItemsFromScreens = (
 ) => {
   return Object.entries(screens).map(([name, item]) => {
     let component: React.ComponentType<any> | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     let props: {} = {};
     let useIf: (() => boolean) | undefined;
 
@@ -350,6 +360,7 @@ const getItemsFromScreens = (
 export function createComponentForStaticNavigation(
   tree: StaticNavigation<any, any, any>,
   displayName: string
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 ): React.ComponentType<{}> {
   const { Navigator, Group, Screen, config } = tree;
   const { screens, groups, ...rest } = config;
@@ -412,6 +423,7 @@ type TreeForPathConfig = {
     screens?: StaticConfigScreens<
       ParamListBase,
       NavigationState,
+      // eslint-disable-next-line @typescript-eslint/no-empty-object-type
       {},
       EventMapBase,
       Record<string, unknown>
@@ -421,6 +433,7 @@ type TreeForPathConfig = {
         screens: StaticConfigScreens<
           ParamListBase,
           NavigationState,
+          // eslint-disable-next-line @typescript-eslint/no-empty-object-type
           {},
           EventMapBase,
           Record<string, unknown>
@@ -470,6 +483,7 @@ export function createPathConfigForStaticNavigation(
       screens: StaticConfigScreens<
         ParamListBase,
         NavigationState,
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         {},
         EventMapBase,
         Record<string, unknown>

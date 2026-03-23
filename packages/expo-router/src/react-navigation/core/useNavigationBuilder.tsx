@@ -95,7 +95,7 @@ const isValidKey = (key: unknown): key is string | undefined =>
  */
 const getRouteConfigsFromChildren = <
   State extends NavigationState,
-  ScreenOptions extends {},
+  ScreenOptions extends object,
   EventMap extends EventMapBase,
 >(
   children: React.ReactNode,
@@ -294,7 +294,7 @@ export function useNavigationBuilder<
   State extends NavigationState,
   RouterOptions extends DefaultRouterOptions,
   ActionHelpers extends Record<string, (...args: any) => void>,
-  ScreenOptions extends {},
+  ScreenOptions extends object,
   EventMap extends Record<string, any>,
 >(
   createRouter: RouterFactory<State, NavigationAction, RouterOptions>,

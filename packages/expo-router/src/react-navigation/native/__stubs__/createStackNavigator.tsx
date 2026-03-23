@@ -1,6 +1,7 @@
 import {
   createNavigatorFactory,
   type DefaultNavigatorOptions,
+  type EventMapBase,
   type NavigationListBase,
   type ParamListBase,
   type StackNavigationState,
@@ -14,8 +15,8 @@ const StackNavigator = (
     ParamListBase,
     string | undefined,
     StackNavigationState<ParamListBase>,
-    {},
-    {},
+    object,
+    EventMapBase,
     unknown
   >
 ) => {
@@ -30,7 +31,9 @@ export function createStackNavigator<ParamList extends ParamListBase>(): TypedNa
   ParamList: ParamList;
   NavigatorID: string | undefined;
   State: StackNavigationState<ParamList>;
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions: {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   EventMap: {};
   NavigationList: NavigationListBase<ParamList>;
   Navigator: typeof StackNavigator;

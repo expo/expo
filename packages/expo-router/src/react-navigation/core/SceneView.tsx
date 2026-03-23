@@ -12,7 +12,7 @@ import { isArrayEqual } from './isArrayEqual';
 import type { NavigationProp, RouteConfigComponent } from './types';
 import { useOptionsGetters } from './useOptionsGetters';
 
-type Props<State extends NavigationState, ScreenOptions extends {}> = {
+type Props<State extends NavigationState, ScreenOptions extends object> = {
   screen: RouteConfigComponent<ParamListBase, string> & { name: string };
   navigation: NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions>;
   route: Route<string>;
@@ -27,7 +27,7 @@ type Props<State extends NavigationState, ScreenOptions extends {}> = {
  * Component which takes care of rendering the screen for a route.
  * It provides all required contexts and applies optimizations when applicable.
  */
-export function SceneView<State extends NavigationState, ScreenOptions extends {}>({
+export function SceneView<State extends NavigationState, ScreenOptions extends object>({
   screen,
   route,
   navigation,

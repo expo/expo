@@ -363,8 +363,6 @@ export type NativeBottomTabDescriptor = Descriptor<
 
 export type NativeBottomTabDescriptorMap = Record<string, NativeBottomTabDescriptor>;
 
-export type NativeBottomTabNavigationConfig = {};
-
 export type NativeBottomTabBarProps = {
   state: TabNavigationState<ParamListBase>;
   descriptors: NativeBottomTabDescriptorMap;
@@ -380,8 +378,7 @@ export type NativeBottomTabNavigatorProps = DefaultNavigatorOptions<
   NativeBottomTabNavigationEventMap,
   NativeBottomTabNavigationProp<ParamListBase>
 > &
-  TabRouterOptions &
-  NativeBottomTabNavigationConfig;
+  TabRouterOptions;
 
 export type NativeBottomTabNavigationHelpers = NavigationHelpers<
   ParamListBase,

@@ -14,20 +14,22 @@ import type {
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace ReactNavigation {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface RootParamList {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    type RootParamList = {};
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface Theme {}
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type Keyof<T extends {}> = Extract<keyof T, string>;
 
 export type DefaultNavigatorOptions<
   ParamList extends ParamListBase,
   NavigatorID extends string | undefined,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   Navigation,
@@ -163,7 +165,8 @@ export type EventArg<
        */
       preventDefault(): void;
     }
-  : {}) &
+  : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    {}) &
   (undefined extends Data ? { readonly data?: Readonly<Data> } : { readonly data: Readonly<Data> });
 
 export type EventListenerCallback<
@@ -208,6 +211,7 @@ export type EventEmitter<EventMap extends EventMapBase> = {
     options: {
       type: EventName;
       target?: string;
+      // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     } & (EventMap[EventName]['canPreventDefault'] extends true ? { canPreventDefault: true } : {}) &
       (undefined extends EventMap[EventName]['data']
         ? { data?: EventMap[EventName]['data'] }
@@ -388,6 +392,7 @@ type NavigationHelpersCommon<
 } & PrivateValueStore<[ParamList, unknown, unknown]>;
 
 type NavigationHelpersRoute<
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ParamList extends {},
   RouteName extends keyof ParamList = Keyof<ParamList>,
 > = {
@@ -413,6 +418,7 @@ type NavigationHelpersRoute<
 
 export type NavigationHelpers<
   ParamList extends ParamListBase,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   EventMap extends EventMapBase = {},
 > = NavigationHelpersCommon<ParamList> &
   EventEmitter<EventMap> &
@@ -456,11 +462,14 @@ export type NavigationContainerProps = {
 };
 
 export type NavigationProp<
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ParamList extends {},
   RouteName extends keyof ParamList = Keyof<ParamList>,
   NavigatorID extends string | undefined = string | undefined,
   State extends NavigationState = NavigationState<ParamList>,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {} = {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   EventMap extends EventMapBase = {},
 > = Omit<NavigationHelpersCommon<ParamList, State>, 'getParent'> & {
   /**
@@ -516,11 +525,13 @@ export type CompositeNavigationProp<
     /**
      * Screen options should refer to the options specified in the first type
      */
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     A extends NavigationProp<any, any, any, any, infer O> ? O : {},
     /**
      * Event consumer config should refer to the config specified in the first type
      * This allows typechecking `addListener`/`removeListener`
      */
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     A extends NavigationProp<any, any, any, any, any, infer E> ? E : {}
   >;
 
@@ -540,6 +551,7 @@ export type CompositeScreenProps<
 export type ScreenLayoutArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   Navigation,
 > = {
@@ -551,6 +563,7 @@ export type ScreenLayoutArgs<
 };
 
 export type Descriptor<
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   Navigation extends NavigationProp<any, any, any, any, any, any>,
   Route extends RouteProp<any, any>,
@@ -591,6 +604,7 @@ type ScreenComponentType<ParamList extends ParamListBase, RouteName extends keyo
       route: RouteProp<ParamList, RouteName>;
       navigation: any;
     }>
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   | React.ComponentType<{}>;
 
 export type RouteConfigComponent<
@@ -629,6 +643,7 @@ export type RouteConfigProps<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   Navigation,
@@ -693,6 +708,7 @@ export type RouteConfig<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   Navigation,
@@ -701,6 +717,7 @@ export type RouteConfig<
 
 export type RouteGroupConfig<
   ParamList extends ParamListBase,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   Navigation,
 > = {
@@ -729,6 +746,7 @@ export type RouteGroupConfig<
     | ((
         props: ScreenLayoutArgs<ParamList, keyof ParamList, ScreenOptions, Navigation>
       ) => React.ReactElement)
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     | {
         // FIXME: TypeScript doesn't seem to infer `navigation` correctly without this
       };
@@ -788,6 +806,7 @@ export type NavigationContainerEventMap = {
 type NotUndefined<T> = T extends undefined ? never : T;
 
 export type ParamListRoute<ParamList extends ParamListBase> = {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   [RouteName in keyof ParamList]: NavigatorScreenParams<{}> extends ParamList[RouteName]
     ? NotUndefined<ParamList[RouteName]> extends NavigatorScreenParams<infer T>
       ? ParamListRoute<T>
@@ -795,10 +814,12 @@ export type ParamListRoute<ParamList extends ParamListBase> = {
     : Route<Extract<RouteName, string>, ParamList[RouteName]>;
 }[keyof ParamList];
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type MaybeParamListRoute<ParamList extends {}> = ParamList extends ParamListBase
   ? ParamListRoute<ParamList>
   : Route<string>;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<ParamList> &
   EventConsumer<NavigationContainerEventMap> & {
     /**
@@ -833,6 +854,7 @@ export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<Par
     getParent(): undefined;
   };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type NavigationContainerRefWithCurrent<ParamList extends {}> =
   NavigationContainerRef<ParamList> & {
     current: NavigationContainerRef<ParamList> | null;
@@ -846,6 +868,7 @@ export type TypeBag<
   ParamList extends ParamListBase,
   NavigatorID extends string | undefined,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   NavigationList extends NavigationListBase<ParamList>,
@@ -861,10 +884,13 @@ export type TypeBag<
 };
 
 export type NavigatorTypeBagBase = {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ParamList: {};
   NavigatorID: string | undefined;
   State: NavigationState;
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions: {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   EventMap: {};
   NavigationList: NavigationListBase<ParamListBase>;
   Navigator: React.ComponentType<any>;
@@ -874,6 +900,7 @@ export type NavigatorTypeBag<
   ParamList extends ParamListBase,
   NavigatorID extends string | undefined,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   NavigationList extends NavigationListBase<ParamList>,
@@ -900,12 +927,14 @@ export type TypedNavigator<
   Bag['NavigationList'],
   Bag['Navigator']
 > &
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   (undefined extends Config ? {} : { config: Config });
 
 type TypedNavigatorInternal<
   ParamList extends ParamListBase,
   NavigatorID extends string | undefined,
   State extends NavigationState,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   NavigationList extends NavigationListBase<ParamList>,
@@ -942,6 +971,7 @@ type TypedNavigatorInternal<
   ) => null;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type NavigatorScreenParams<ParamList extends {}> =
   | {
       screen?: never;
@@ -1000,6 +1030,7 @@ type PathConfigAlias = {
   parse?: Record<string, (value: string) => any>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
   /**
    * An object mapping the param name to a function which converts the param value to a string.
@@ -1027,10 +1058,13 @@ export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
   initialRouteName?: keyof ParamList;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type PathConfigMap<ParamList extends {}> = {
   [RouteName in keyof ParamList]?: NonNullable<ParamList[RouteName]> extends NavigatorScreenParams<
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     infer T extends {}
   >
     ? string | PathConfig<T>
-    : string | Omit<PathConfig<{}>, 'screens' | 'initialRouteName'>;
+    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+      string | Omit<PathConfig<{}>, 'screens' | 'initialRouteName'>;
 };

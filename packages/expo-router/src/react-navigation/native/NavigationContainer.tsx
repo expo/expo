@@ -25,6 +25,7 @@ import { useLinking } from './useLinking';
 import { useThenable } from './useThenable';
 
 declare global {
+  // eslint-disable-next-line no-var
   var REACT_NAVIGATION_DEVTOOLS: WeakMap<
     NavigationContainerRef<any>,
     { readonly linking: LinkingOptions<any> }
@@ -33,7 +34,7 @@ declare global {
 
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 
-type Props<ParamList extends {}> = NavigationContainerProps & {
+type Props<ParamList extends ParamListBase> = NavigationContainerProps & {
   /**
    * Initial state object for the navigation tree.
    *
@@ -192,7 +193,7 @@ function NavigationContainerInner(
  * This should be rendered at the root wrapping the whole app.
  */
 export const NavigationContainer = React.forwardRef(NavigationContainerInner) as <
-  RootParamList extends {} = ReactNavigation.RootParamList,
+  RootParamList extends ParamListBase = ReactNavigation.RootParamList,
 >(
   props: Props<RootParamList> & {
     ref?: React.Ref<NavigationContainerRef<RootParamList>>;

@@ -88,6 +88,7 @@ export type NativeStackNavigationHelpers = NavigationHelpers<
 >;
 
 // We want it to be an empty object because navigator does not have any additional props
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type NativeStackNavigationConfig = {};
 
 export type NativeStackHeaderProps = {
