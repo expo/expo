@@ -1,4 +1,4 @@
-import { Button, Host, List, Section, Text, Toggle } from '@expo/ui/swift-ui';
+import { Button, Host, List, Section, Text, Toggle, useToggleState } from '@expo/ui/swift-ui';
 import { labelsHidden, tint, toggleStyle } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
@@ -46,7 +46,21 @@ export default function ToggleScreen() {
         <Section title="Hidden Label">
           <Toggle label="Hidden Label" modifiers={[labelsHidden()]} />
         </Section>
+        <Section title="Shared State">
+          <SharedStateToggle />
+        </Section>
       </List>
     </Host>
+  );
+}
+
+function SharedStateToggle() {
+  const state = useToggleState(false);
+
+  return (
+    <>
+      <Toggle state={state} label="Shared State Toggle" />
+      <Button label="Toggle from JS" onPress={() => (state.isOn = !state.isOn)} />
+    </>
   );
 }

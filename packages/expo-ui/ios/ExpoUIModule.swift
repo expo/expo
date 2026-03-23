@@ -14,6 +14,23 @@ public final class ExpoUIModule: Module {
       }
     }
 
+    // MARK: - Observable State Classes
+
+    Class(ToggleState.self) {
+      Constructor { (initialValue: Bool) -> ToggleState in
+        let state = ToggleState()
+        state.isOn = initialValue
+        return state
+      }
+
+      Property("isOn") { (state: ToggleState) -> Bool in
+        return state.isOn
+      }
+      .set { (state: ToggleState, value: Bool) in
+        state.isOn = value
+      }
+    }
+
     // MARK: - Module Functions
 
     AsyncFunction("completeRefresh") { (id: String) in
