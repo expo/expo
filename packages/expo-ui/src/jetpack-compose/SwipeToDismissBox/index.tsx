@@ -44,7 +44,7 @@ export type SwipeToDismissBoxProps = {
    */
   modifiers?: ModifierConfig[];
   /**
-   * Children containing the main content and optional BackgroundContent slot.
+   * Children containing the main content and the optional `BackgroundContent` slot.
    */
   children?: React.ReactNode;
 };
@@ -85,7 +85,7 @@ function BackgroundEndToStart(props: { children: React.ReactNode }) {
 
 /**
  * A swipe-to-dismiss container matching Compose's `SwipeToDismissBox`.
- * Wraps any content (e.g., a ListItem) and provides swipe gestures.
+ * Wraps any content (for example, a ListItem) and provides swipe gestures.
  *
  * @see [Jetpack Compose SwipeToDismissBox](https://developer.android.com/develop/ui/compose/touch-input/user-interactions/swipe-to-dismiss)
  */
