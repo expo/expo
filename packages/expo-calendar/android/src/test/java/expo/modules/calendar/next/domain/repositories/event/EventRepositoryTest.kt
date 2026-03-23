@@ -53,6 +53,7 @@ class EventRepositoryTest {
     val cursor = cursorWithRows(
       mapOf(
         CalendarContract.Events._ID to 42L,
+        CalendarContract.Events.ACCESS_LEVEL to CalendarContract.Events.ACCESS_DEFAULT,
         CalendarContract.Events.ALL_DAY to 0,
         CalendarContract.Events.AVAILABILITY to CalendarContract.Events.AVAILABILITY_FREE,
         CalendarContract.Events.CALENDAR_ID to 3L,
