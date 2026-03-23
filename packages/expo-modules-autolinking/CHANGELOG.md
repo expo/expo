@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed build failures caused by the "=" character in pnpm virtual store paths. ([#44109](https://github.com/expo/expo/pull/44109) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 55.0.11 — 2026-03-18
