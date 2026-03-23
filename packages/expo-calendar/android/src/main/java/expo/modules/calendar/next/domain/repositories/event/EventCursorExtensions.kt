@@ -48,6 +48,6 @@ fun Cursor.toEventEntity(): EventEntity {
       ?.takeIf { it.isNotBlank() }
       ?.let { RecurrenceRule.fromRuleString(it) },
     status = getOptionalInt(CalendarContract.Events.STATUS)?.let { Status.fromAndroidValue(it) },
-    title = getOptionalString(CalendarContract.Events.TITLE),
+    title = getOptionalString(CalendarContract.Events.TITLE)
   )
 }

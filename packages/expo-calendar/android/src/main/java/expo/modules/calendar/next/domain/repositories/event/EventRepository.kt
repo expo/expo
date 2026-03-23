@@ -136,7 +136,7 @@ class EventRepository(private val contentResolver: ContentResolver) {
       val recurrence = rrule.optional
       if (recurrence != null && recurrence.frequency.isNotEmpty()) {
         if (recurrence.endDate == null && recurrence.occurrence == null) {
-          val eventStartDate= dtStart.optional
+          val eventStartDate = dtStart.optional
             ?: throw IllegalArgumentException("Start date must be provided when updating recurrence rule without end date or occurrence count")
           val eventEndDate = dtEnd.optional
             ?: throw IllegalArgumentException("End date must be provided when updating recurrence rule without end date or occurrence count")
