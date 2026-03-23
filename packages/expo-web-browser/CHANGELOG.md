@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix `openBrowserAsync` returning success when popup is blocked in in-app browsers. ([#41179](https://github.com/expo/expo/pull/41179) by [@dileepapeiris](https://github.com/dileepapeiris))
+- [iOS] Fix `dismissBrowser` hanging when called with no browser open. ([#40799](https://github.com/expo/expo/pull/40799) by [@alanjhughes](https://github.com/alanjhughes))
 ### 💡 Others
 
 - [Android] Bring back the `experimentalLauncherActivity` config plugin option. ([#44073](https://github.com/expo/expo/pull/44073) by [@lukmccall](https://github.com/lukmccall))
