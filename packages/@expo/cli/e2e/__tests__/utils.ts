@@ -1,7 +1,6 @@
 /* eslint-env jest */
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
 import assert from 'node:assert';
 import fs from 'node:fs';
@@ -52,8 +51,8 @@ export async function createFromFixtureAsync(
     fixtureName,
     config,
     pkg,
-    linkExpoPackages,
-    linkExpoPackagesDev,
+    linkExpoPackages = ['expo'],
+    linkExpoPackagesDev = [],
   }: {
     verbose?: boolean;
     dirName: string;
@@ -119,22 +118,21 @@ export async function createFromFixtureAsync(
       const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
       const resolutions = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
 
-      if (linkExpoPackages) {
-        for (const pkg of linkExpoPackages) {
-          const link = createPackageLink(projectRoot, `packages/${pkg}`);
-          log('Linked into dependencies', pkg);
-          dependencies[pkg] = '*'
-          resolutions[pkg] = link;
-        }
+      if (dependencies['expo']) linkExpoPackages.push('expo');
+      if (dependencies['expo-router']) linkExpoPackages.push('expo-router');
+
+      for (const pkg of linkExpoPackages) {
+        const link = createPackageLink(projectRoot, `packages/${pkg}`);
+        log('Linked into dependencies', pkg);
+        dependencies[pkg] = '*'
+        resolutions[pkg] = link;
       }
 
-      if (linkExpoPackagesDev) {
-        for (const pkg of linkExpoPackagesDev) {
-          const link = createPackageLink(projectRoot, `packages/${pkg}`);
-          log('Linked into devDependencies', pkg);
-          devDependencies[pkg] = '*';
-          resolutions[pkg] = link;
-        }
+      for (const pkg of linkExpoPackagesDev) {
+        const link = createPackageLink(projectRoot, `packages/${pkg}`);
+        log('Linked into devDependencies', pkg);
+        devDependencies[pkg] = '*';
+        resolutions[pkg] = link;
       }
 
       await JsonFile.writeAsync(pkgPath, {
@@ -274,14 +272,23 @@ export function expectChunkPathMatching(name: string) {
  * This returns all paths in POSIX format, sorted alphabetically, and relative to the project root without any prefix.
  */
 export function findProjectFiles(projectRoot: string) {
-  return klawSync(projectRoot, { nodir: true })
-    .map((entry) =>
-      entry.path.includes('node_modules')
-        ? null
-        : toPosixPath(path.relative(projectRoot, entry.path))
-    )
-    .filter(Boolean)
-    .sort() as string[];
+  const baseDir = path.resolve(projectRoot);
+  const results: string[] = [];
+  function list(dir: string = '') {
+    const target = path.resolve(baseDir, dir);
+    const entries = fs.readdirSync(target, { withFileTypes: true });
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+    for (const entry of entries) {
+      const name = dir ? path.join(dir, entry.name) : entry.name;
+      if (entry.isFile()) {
+        results.push(toPosixPath(name));
+      } else if (entry.isDirectory() && entry.name !== 'node_modules') {
+        list(name);
+      }
+    }
+  }
+  list();
+  return results.sort();
 }
 
 export function stripWhitespace(str: string): string {

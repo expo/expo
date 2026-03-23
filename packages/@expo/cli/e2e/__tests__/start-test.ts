@@ -98,14 +98,8 @@ describeSkipWin('server', () => {
 
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
-      // TODO(@hassankhan, @krystofwoldrich, @kitten): remove all linked after publishing
       linkExpoPackages: [
-        '@expo/router-server',
-        '@expo/log-box',
-        '@expo/require-utils',
         'expo',
-        '@expo/local-build-cache-provider',
-        // Without this, the hermes-parser install a version that is incompatible with flow Readonly / ReadonlyArray
         'babel-preset-expo',
       ],
     });
