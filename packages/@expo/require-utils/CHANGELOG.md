@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `resolveFrom` utility that supports custom extensions and not following symlinks ([#44114](https://github.com/expo/expo/pull/44114) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 - Prevent `.js` transform from discovering project Babel config ([#43726](https://github.com/expo/expo/pull/43726) by [@kitten](https://github.com/kitten))
