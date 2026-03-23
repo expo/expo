@@ -118,7 +118,7 @@ extension ConcurrentFunctionDefinition: ViewDefinitionFunctionElement {
   public typealias ViewType = FirstArgType
 }
 
-extension UIView: AnyArgument {
+extension UIView: @MainActor AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicViewType(innerType: Self.self)
   }
