@@ -81,9 +81,8 @@ const defaultExpoMetroAssetExts = [
 ];
 
 const assetNamePattern = `^.+\\.(${defaultExpoMetroAssetExts.join('|')})$`;
-jestPreset.transform[assetNamePattern] = require.resolve(
-  'jest-expo/src/preset/assetFileTransformer.js'
-);
+jestPreset.transform[assetNamePattern] =
+  require.resolve('jest-expo/src/preset/assetFileTransformer.js');
 
 // transformIgnorePatterns
 if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
