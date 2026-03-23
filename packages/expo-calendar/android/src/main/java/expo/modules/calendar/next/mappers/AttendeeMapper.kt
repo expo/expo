@@ -53,10 +53,21 @@ class AttendeeMapper {
     role = if (record.role.isUndefined) {
       ValueOrUndefined.Undefined()
     } else {
-      ValueOrUndefined.Value(record.role.optional?.toDomain())
+      // Clearing attendee enum fields maps to NONE rather than null.
+      ValueOrUndefined.Value(record.role.optional?.toDomain() ?: DomainAttendeeRole.NONE)
     },
-    status = if (record.status.isUndefined) ValueOrUndefined.Undefined() else ValueOrUndefined.Value(record.status.optional?.toDomain()),
-    type = if (record.type.isUndefined) ValueOrUndefined.Undefined() else ValueOrUndefined.Value(record.type.optional?.toDomain())
+    status = if (record.status.isUndefined) {
+      ValueOrUndefined.Undefined()
+    } else {
+      // Clearing attendee enum fields maps to NONE rather than null.
+      ValueOrUndefined.Value(record.status.optional?.toDomain() ?: DomainAttendeeStatus.NONE)
+    },
+    type = if (record.type.isUndefined) {
+      ValueOrUndefined.Undefined()
+    } else {
+      // Clearing attendee enum fields maps to NONE rather than null.
+      ValueOrUndefined.Value(record.type.optional?.toDomain() ?: DomainAttendeeType.NONE)
+    }
   )
 
   fun toRecord(entity: DomainAttendeeEntity) = AttendeeRecord(

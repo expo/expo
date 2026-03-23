@@ -34,9 +34,11 @@ class CalendarMapper {
     calendarColor = record.color,
     calendarDisplayName = record.title,
     calendarTimeZone = record.timeZone,
+    // `isPrimary` should only be enabled explicitly by the caller.
     isPrimary = record.isPrimary ?: false,
     name = record.name,
     ownerAccount = record.ownerAccount,
+    // Missing visibility/sync flags default to enabled so the calendar behaves normally.
     syncEvents = record.isSynced ?: true,
     visible = record.isVisible ?: true
   )
@@ -60,9 +62,11 @@ class CalendarMapper {
     calendarColor = record.color,
     calendarDisplayName = record.title,
     calendarTimeZone = record.timeZone,
-    isPrimary = record.isPrimary ?: true,
+    // `isPrimary` should only be enabled explicitly by the caller.
+    isPrimary = record.isPrimary ?: false,
     name = record.name,
     ownerAccount = record.ownerAccount,
+    // Missing visibility/sync flags default to enabled so the calendar behaves normally.
     syncEvents = record.isSynced ?: true,
     visible = record.isVisible ?: true
   )
