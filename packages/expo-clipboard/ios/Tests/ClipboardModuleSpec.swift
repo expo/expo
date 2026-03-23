@@ -113,6 +113,45 @@ class ClipboardModuleSpec: ExpoSpec {
       }
     }
 
+    describe("setStringContentAsync") {
+      let function = "setStringContentAsync"
+
+      it("copies plain text to clipboard") {
+        let content = [
+          "text/plain": "hello"
+        ]
+        testModuleFunction(function, args: [content]) { (result: Bool?) in
+          expect(result) == true
+          expect(UIPasteboard.general.string) == "hello"
+        }
+      }
+
+      it("copies HTML to clipboard and synthesizes plain text") {
+        let expectedHtml = "<p>hello</p>"
+        let content = [
+          "text/html": expectedHtml
+        ]
+        testModuleFunction(function, args: [content]) { (result: Bool?) in
+          expect(result) == true
+          expect(UIPasteboard.general.html) == expectedHtml
+          expect(UIPasteboard.general.string) == "hello"
+        }
+      }
+
+      it("copies both HTML and plain text to clipboard") {
+        let expectedHtml = "<p>hello</p>"
+        let content = [
+          "text/plain": "hello world",
+          "text/html": expectedHtml
+        ]
+        testModuleFunction(function, args: [content]) { (result: Bool?) in
+          expect(result) == true
+          expect(UIPasteboard.general.html) == expectedHtml
+          expect(UIPasteboard.general.string) == "hello world"
+        }
+      }
+    }
+
     describe("hasStringAsync") {
       let function = "hasStringAsync"
 

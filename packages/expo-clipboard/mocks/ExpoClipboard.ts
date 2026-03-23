@@ -32,6 +32,13 @@ export async function setStringAsync(
   return false;
 }
 
+export async function setStringContentAsync(content: {
+  'text/plain'?: string;
+  'text/html'?: string;
+}): Promise<boolean> {
+  return false;
+}
+
 export async function hasStringAsync(): Promise<boolean> {
   return false;
 }

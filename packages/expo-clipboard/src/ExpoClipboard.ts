@@ -3,6 +3,7 @@ import { NativeModule, requireNativeModule } from 'expo-modules-core';
 import {
   ClipboardImage,
   ClipboardEvent,
+  ClipboardStringContent,
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
@@ -17,6 +18,7 @@ type ExpoClipboardEvents = {
 declare class NativeExpoClipboard extends NativeModule<ExpoClipboardEvents> {
   getStringAsync(options?: GetStringOptions): Promise<string>;
   setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
+  setStringContentAsync(content: ClipboardStringContent): Promise<boolean>;
   hasStringAsync(): Promise<boolean>;
   getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null>;
   setImageAsync(base64Image: string): Promise<void>;

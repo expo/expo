@@ -1,6 +1,7 @@
 import { type EventSubscription, UnavailabilityError, Platform } from 'expo-modules-core';
 
 import type {
+  ClipboardStringContent,
   ClipboardImage,
   ClipboardEvent,
   GetImageOptions,
@@ -32,18 +33,40 @@ export async function getStringAsync(options: GetStringOptions = {}): Promise<st
 /**
  * Sets the content of the user's clipboard.
  *
+ * @param content A mapping of a format to the string content to save to the clipboard for that format.
+ * @returns On web, this returns a promise that fulfills to a boolean value indicating whether or not
+ * the string was saved to the user's clipboard. On iOS and Android, the promise always resolves to `true`.
+ *//**
+ * Sets the content of the user's clipboard.
+ *
  * @param text The string to save to the clipboard.
  * @param options Options for the clipboard content to be set.
  * @returns On web, this returns a promise that fulfills to a boolean value indicating whether or not
  * the string was saved to the user's clipboard. On iOS and Android, the promise always resolves to `true`.
  */
+export async function setStringAsync(content: ClipboardStringContent): Promise<boolean>;
+export async function setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
 export async function setStringAsync(
-  text: string,
+  text: string | ClipboardStringContent,
   options: SetStringOptions = {}
 ): Promise<boolean> {
+  if (typeof text !== 'string') {
+    if (arguments.length > 1) {
+      throw new TypeError(
+        'setStringAsync does not accept legacy options when clipboard content is provided as a MIME map.'
+      );
+    }
+    const content = validateClipboardStringContent(text);
+    if (!ExpoClipboard.setStringContentAsync) {
+      throw new UnavailabilityError('Clipboard', 'setStringAsync');
+    }
+    return ExpoClipboard.setStringContentAsync(content);
+  }
+
   if (!ExpoClipboard.setStringAsync) {
     throw new UnavailabilityError('Clipboard', 'setStringAsync');
   }
+
   return ExpoClipboard.setStringAsync(text, options);
 }
 
@@ -215,3 +238,29 @@ export * from './Clipboard.types';
 export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
 
 export { ClipboardPasteButton };
+
+function validateClipboardStringContent(content: ClipboardStringContent): ClipboardStringContent {
+  if (content == null || typeof content !== 'object' || Array.isArray(content)) {
+    throw new TypeError(
+      'Clipboard string content must be an object containing `text/plain` and/or `text/html` keys.'
+    );
+  }
+
+  const plainText = content['text/plain'];
+  const html = content['text/html'];
+
+  if (plainText == null && html == null) {
+    throw new TypeError(
+      'Clipboard string content must include at least one of `text/plain` or `text/html`.'
+    );
+  }
+
+  if (
+    (plainText != null && typeof plainText !== 'string') ||
+    (html != null && typeof html !== 'string')
+  ) {
+    throw new TypeError('Clipboard string content values must be strings.');
+  }
+
+  return content;
+}

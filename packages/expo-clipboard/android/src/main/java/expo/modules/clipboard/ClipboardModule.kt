@@ -58,6 +58,12 @@ class ClipboardModule : Module() {
       return@AsyncFunction true
     }
 
+    AsyncFunction("setStringContentAsync") { content: Map<String, String> ->
+      val clip = clipDataFromStringContent(content)
+      clipboardManager.setPrimaryClip(clip)
+      return@AsyncFunction true
+    }
+
     AsyncFunction<Boolean>("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
@@ -223,6 +229,21 @@ private fun plainTextFromHtml(htmlContent: String): String {
   val chars = CharArray(styledText.length)
   TextUtils.getChars(styledText, 0, styledText.length, chars, 0)
   return String(chars)
+}
+
+private fun clipDataFromStringContent(content: Map<String, String>): ClipData {
+  val plainText = content["text/plain"]
+  val htmlText = content["text/html"]
+
+  return when {
+    htmlText != null -> {
+      val resolvedPlainText = plainText ?: plainTextFromHtml(htmlText)
+      ClipData.newHtmlText(null, resolvedPlainText, htmlText)
+    }
+
+    plainText != null -> ClipData.newPlainText(null, plainText)
+    else -> throw InvalidStringContentException()
+  }
 }
 
 /**

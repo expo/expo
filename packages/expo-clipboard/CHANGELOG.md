@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Added an overload to `setStringAsync` that supports setting both plain text and HTML content at the same time so that apps can paste the most appropriate content type.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

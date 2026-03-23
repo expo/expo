@@ -83,6 +83,23 @@ export default {
             }
         }
     },
+    async setStringContentAsync(content) {
+        if (!navigator.clipboard) {
+            throw new ClipboardUnavailableException();
+        }
+        try {
+            const clipboardItemInput = createStringClipboardItem(content);
+            await navigator.clipboard.write([clipboardItemInput]);
+            return true;
+        }
+        catch (error) {
+            if ((typeof error === 'object' && error?.name === 'NotAllowedError') ||
+                (await isClipboardPermissionDeniedAsync())) {
+                throw new NoPermissionException();
+            }
+            throw new CopyFailureException(error.message);
+        }
+    },
     async hasStringAsync() {
         return await clipboardHasTypesAsync(['text/plain', 'text/html']);
     },
@@ -162,6 +179,23 @@ function createHtmlClipboardItem(htmlString) {
         'text/html': new Blob([htmlString], { type: 'text/html' }),
         'text/plain': new Blob([htmlToPlainText(htmlString)], { type: 'text/plain' }),
     });
+}
+function createStringClipboardItem(content) {
+    const plainText = content['text/plain'];
+    const html = content['text/html'];
+    const clipboardItemContent = {};
+    if (plainText != null) {
+        clipboardItemContent['text/plain'] = new Blob([plainText], { type: 'text/plain' });
+    }
+    if (html != null) {
+        clipboardItemContent['text/html'] = new Blob([html], { type: 'text/html' });
+        if (plainText == null) {
+            clipboardItemContent['text/plain'] = new Blob([htmlToPlainText(html)], {
+                type: 'text/plain',
+            });
+        }
+    }
+    return new ClipboardItem(clipboardItemContent);
 }
 function legacySetString(text) {
     const textField = document.createElement('textarea');

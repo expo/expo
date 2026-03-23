@@ -77,6 +77,21 @@ export type SetStringOptions = {
   inputFormat?: StringFormat;
 };
 
+type AtLeastOne<T> = {
+  [K in keyof T]-?: Required<Pick<T, K>> & Partial<Omit<T, K>>;
+}[keyof T];
+
+/**
+ * MIME types supported by the multi-format clipboard write API.
+ */
+export type SupportedStringMimeType = 'text/plain' | 'text/html';
+
+/**
+ * String clipboard content keyed by supported MIME type.
+ * At least one supported MIME type must be provided.
+ */
+export type ClipboardStringContent = AtLeastOne<Partial<Record<SupportedStringMimeType, string>>>;
+
 export type AcceptedContentType = 'plain-text' | 'image' | 'url' | 'html';
 
 export type CornerStyleType = 'dynamic' | 'fixed' | 'capsule' | 'large' | 'medium' | 'small';

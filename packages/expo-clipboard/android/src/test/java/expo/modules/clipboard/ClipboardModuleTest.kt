@@ -33,6 +33,9 @@ private interface ClipboardModuleTestInterface {
   fun setStringAsync(content: String, options: SetStringOptions = SetStringOptions()): Boolean
 
   @Throws(CodedException::class)
+  fun setStringContentAsync(content: Map<String, String>): Boolean
+
+  @Throws(CodedException::class)
   fun hasStringAsync(): Boolean
 }
 
@@ -95,6 +98,47 @@ class ClipboardModuleTest {
       clipboardManager.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) == true
     )
     assertEquals("<p>hello</p>", clipboardManager.primaryClip!!.getItemAt(0).htmlText)
+  }
+
+  @Test
+  fun `setStringContentAsync should support plain text`() = withClipboardMock {
+    module.setStringContentAsync(
+      mapOf("text/plain" to "hello")
+    )
+
+    assertTrue(
+      clipboardManager.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) == true
+    )
+    assertEquals("hello", clipboardManager.primaryClip!!.getItemAt(0).text)
+  }
+
+  @Test
+  fun `setStringContentAsync should support HTML only`() = withClipboardMock {
+    module.setStringContentAsync(
+      mapOf("text/html" to "<p>hello</p>")
+    )
+
+    assertTrue(
+      clipboardManager.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) == true
+    )
+    assertEquals("<p>hello</p>", clipboardManager.primaryClip!!.getItemAt(0).htmlText)
+    assertEquals("hello", clipboardManager.primaryClip!!.getItemAt(0).text)
+  }
+
+  @Test
+  fun `setStringContentAsync should preserve both HTML and plain text`() = withClipboardMock {
+    module.setStringContentAsync(
+      mapOf(
+        "text/plain" to "hello world",
+        "text/html" to "<p>hello</p>"
+      )
+    )
+
+    assertTrue(
+      clipboardManager.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) == true
+    )
+    assertEquals("<p>hello</p>", clipboardManager.primaryClip!!.getItemAt(0).htmlText)
+    assertEquals("hello world", clipboardManager.primaryClip!!.getItemAt(0).text)
   }
 
   @Test

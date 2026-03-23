@@ -1,4 +1,5 @@
 import UIKit
+import UniformTypeIdentifiers
 
 class MockUIPasteboard: UIPasteboard {
   var _items: [String: Any] = [:]
@@ -14,7 +15,7 @@ class MockUIPasteboard: UIPasteboard {
 
   override var string: String? {
     get {
-      return _items["string"] as? String
+      return (_items["string"] ?? _items[UTType.utf8PlainText.identifier]) as? String
     }
     set {
       _items = ["string": newValue as Any]
@@ -40,7 +41,7 @@ class MockUIPasteboard: UIPasteboard {
   }
 
   override var hasStrings: Bool {
-    return _items["string"] != nil
+    return _items["string"] != nil || _items[UTType.utf8PlainText.identifier] != nil
   }
 
   override var hasImages: Bool {

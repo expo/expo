@@ -4,6 +4,9 @@
     "slug": "jest-expo-mock-generator",
     "description": "Generates the list of native module mocks for jest-expo",
     "sdkVersion": "UNVERSIONED",
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "ios": {
+      "bundleIdentifier": "com.nick-circleback.jest-expo-mock-generator"
+    }
   }
 }

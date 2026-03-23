@@ -11,6 +11,11 @@ extension UIPasteboard {
         return htmlString
       }
 
+      if let htmlData = self.data(forPasteboardType: UTType.html.identifier),
+         let htmlString = String(data: htmlData, encoding: .utf8) {
+        return htmlString
+      }
+
       if let rtfData = self.data(forPasteboardType: UTType.rtf.identifier as String) {
         let attributedString = try? NSAttributedString(data: rtfData,
                                                        options: [
@@ -44,5 +49,24 @@ extension UIPasteboard {
 
   var hasHTML: Bool {
     contains(pasteboardTypes: [UTType.html.identifier, UTType.rtf.identifier])
+  }
+
+  func setStringContent(plainText: String?, html: String?) {
+    guard let html else {
+      string = plainText
+      return
+    }
+
+    let attributedString = try? NSAttributedString(htmlString: html)
+    var item: [String: Any] = [
+      UTType.html.identifier: Data(html.utf8),
+      UTType.utf8PlainText.identifier: plainText ?? attributedString?.string ?? ""
+    ]
+
+    if let rtfData = attributedString?.rtfData {
+      item[UTType.rtf.identifier] = rtfData
+    }
+
+    setItems([item])
   }
 }

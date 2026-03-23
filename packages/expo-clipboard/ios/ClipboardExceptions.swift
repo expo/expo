@@ -8,6 +8,12 @@ internal final class InvalidImageException: GenericException<String> {
   }
 }
 
+internal final class InvalidStringContentException: Exception {
+  override var reason: String {
+    "Clipboard string content must include `text/plain` or `text/html`."
+  }
+}
+
 internal final class PasteFailureException: Exception {
   override var reason: String {
     "Failed to get item from clipboard"

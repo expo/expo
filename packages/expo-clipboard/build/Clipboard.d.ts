@@ -1,5 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
-import type { ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import type { ClipboardStringContent, ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
 export { EventSubscription as Subscription };
 /**
@@ -21,6 +21,7 @@ export declare function getStringAsync(options?: GetStringOptions): Promise<stri
  * @returns On web, this returns a promise that fulfills to a boolean value indicating whether or not
  * the string was saved to the user's clipboard. On iOS and Android, the promise always resolves to `true`.
  */
+export declare function setStringAsync(content: ClipboardStringContent): Promise<boolean>;
 export declare function setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
 /**
  * Returns whether the clipboard has text content. Returns true for both plain text and rich text (e.g. HTML).

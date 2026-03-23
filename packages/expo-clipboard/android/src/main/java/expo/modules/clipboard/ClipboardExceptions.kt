@@ -21,3 +21,6 @@ internal class InvalidImageException(image: String, cause: Throwable?) :
     }",
     cause
   )
+
+internal class InvalidStringContentException :
+  CodedException("Clipboard string content must include `text/plain` or `text/html`.", null)

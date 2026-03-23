@@ -61,6 +61,21 @@ export function test({ describe, expect, it, afterEach, ...t }) {
         });
         expect(result).toEqual('test');
       });
+
+      it('sets both text and html when provided', async () => {
+        await Clipboard.setStringAsync({
+          'text/html': '<b>test</b>',
+          'text/plain': 'test',
+        });
+        const htmlResult = await Clipboard.getStringAsync({
+          preferredFormat: Clipboard.StringFormat.HTML,
+        });
+        expect(htmlResult).toEqual('<b>test</b>');
+        const textResult = await Clipboard.getStringAsync({
+          preferredFormat: Clipboard.StringFormat.Text,
+        });
+        expect(textResult).toEqual('test');
+      });
     });
 
     if (Platform.OS === 'ios') {

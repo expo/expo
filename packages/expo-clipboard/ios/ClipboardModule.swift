@@ -31,6 +31,18 @@ public class ClipboardModule: Module {
       return true
     }
 
+    AsyncFunction("setStringContentAsync") { (content: [String: String]) -> Bool in
+      let plainText = content["text/plain"]
+      let html = content["text/html"]
+
+      guard plainText != nil || html != nil else {
+        throw InvalidStringContentException()
+      }
+
+      UIPasteboard.general.setStringContent(plainText: plainText, html: html)
+      return true
+    }
+
     AsyncFunction("hasStringAsync") { () -> Bool in
       return UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
     }
