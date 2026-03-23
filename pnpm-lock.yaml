@@ -3403,18 +3403,30 @@ importers:
       '@bacons/xcode':
         specifier: 1.0.0-alpha.29
         version: 1.0.0-alpha.29
+      '@expo/spawn-async':
+        specifier: ^1.7.2
+        version: 1.7.2
       '@types/diff':
         specifier: ^5.2.0
         version: 5.2.3
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
+      '@types/prompts':
+        specifier: ^2.0.6
+        version: 2.4.9
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
+      create-expo:
+        specifier: workspace:*
+        version: link:../create-expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      glob:
+        specifier: ^13.0.6
+        version: 13.0.6
 
   packages/expo-build-properties:
     dependencies:
