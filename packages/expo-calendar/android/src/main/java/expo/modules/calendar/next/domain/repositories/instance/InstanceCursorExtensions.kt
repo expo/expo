@@ -15,12 +15,12 @@ import expo.modules.calendar.next.domain.wrappers.EventId
 
 fun Cursor.toInstanceEntity(): InstanceEntity {
   return InstanceEntity(
-    accessLevel = getOptionalInt(CalendarContract.Instances.ACCESS_LEVEL)?.let {
-      AccessLevel.fromAndroidValue(it)
+    accessLevel = getOptionalInt(CalendarContract.Instances.ACCESS_LEVEL)?.let { value ->
+      AccessLevel.entries.find { it.value == value }
     },
     allDay = getOptionalInt(CalendarContract.Instances.ALL_DAY) == 1,
-    availability = getOptionalInt(CalendarContract.Instances.AVAILABILITY)?.let {
-      Availability.fromAndroidValue(it)
+    availability = getOptionalInt(CalendarContract.Instances.AVAILABILITY)?.let { value ->
+      Availability.entries.find { it.value == value }
     },
     begin = getOptionalLong(CalendarContract.Instances.BEGIN)
       ?: throw IllegalStateException("instance begin must not be null"),
@@ -47,8 +47,9 @@ fun Cursor.toInstanceEntity(): InstanceEntity {
     rrule = getOptionalString(CalendarContract.Instances.RRULE)
       ?.takeIf { it.isNotBlank() }
       ?.let { RecurrenceRule.fromRuleString(it) },
-    status = getOptionalInt(CalendarContract.Instances.STATUS)
-      ?.let { Status.fromAndroidValue(it) },
+    status = getOptionalInt(CalendarContract.Instances.STATUS)?.let { value ->
+      Status.entries.find { it.value == value }
+    },
     title = getOptionalString(CalendarContract.Instances.TITLE),
     id = getOptionalLong(CalendarContract.Instances._ID)
       ?: throw IllegalStateException("instance ID must not be null")
