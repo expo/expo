@@ -1,4 +1,5 @@
 export { inMemoryContext, type MemoryContext } from '../testing-library/context-stubs';
+export { getMockConfig } from '../testing-library/mock-config';
 export {
   default as requireContext,
   type RequireContextPonyFill,

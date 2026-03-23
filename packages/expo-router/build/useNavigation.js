@@ -67,7 +67,7 @@ function useNavigation(parent) {
     }
     // Check for the top-level navigator - we cannot fetch anything higher!
     const currentId = navigation.getId();
-    if (currentId === '' || currentId === `/expo-router/build/views/Navigator`) {
+    if (currentId === '' || currentId === `/expo-router/internal/views/Navigator`) {
         return navigation;
     }
     if (typeof parent === 'object') {
@@ -75,7 +75,7 @@ function useNavigation(parent) {
     }
     if (parent === '/') {
         // This is the root navigator
-        return navigation.getParent(`/expo-router/build/views/Navigator`) ?? navigation.getParent(``);
+        return navigation.getParent(`/expo-router/internal/views/Navigator`) ?? navigation.getParent(``);
     }
     else if (parent?.startsWith('../')) {
         const names = [];

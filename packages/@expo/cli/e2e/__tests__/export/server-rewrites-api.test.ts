@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { RewriteConfig } from 'expo-router/build/getRoutesCore';
+import { type RewriteConfig } from 'expo-router/internal/routing';
 
 import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';

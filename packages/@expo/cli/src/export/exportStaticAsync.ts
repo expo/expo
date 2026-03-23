@@ -7,9 +7,12 @@
 import { ExpoConfig } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
-import { RouteNode } from 'expo-router/build/Route';
-import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
-import { shouldLinkExternally } from 'expo-router/build/utils/url';
+import {
+  type RouteNode,
+  getContextKey,
+  stripGroupSegmentsFromPath,
+} from 'expo-router/internal/routing';
+import { shouldLinkExternally } from 'expo-router/internal/utils';
 import { type RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
