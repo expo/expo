@@ -22,7 +22,7 @@ fun Cursor.toEventEntity(): EventEntity {
     accessLevel = getOptionalInt(CalendarContract.Events.ACCESS_LEVEL)?.let {
       AccessLevel.fromAndroidValue(it)
     },
-    allDay = getOptionalInt(CalendarContract.Events.ALL_DAY) != 0,
+    allDay = getOptionalInt(CalendarContract.Events.ALL_DAY) == 1,
     availability = getOptionalInt(CalendarContract.Events.AVAILABILITY)?.let {
       Availability.fromAndroidValue(it)
     },
@@ -37,9 +37,9 @@ fun Cursor.toEventEntity(): EventEntity {
     eventEndTimezone = getOptionalString(CalendarContract.Events.EVENT_END_TIMEZONE),
     eventLocation = getOptionalString(CalendarContract.Events.EVENT_LOCATION),
     eventTimezone = getOptionalString(CalendarContract.Events.EVENT_TIMEZONE),
-    guestsCanInviteOthers = getOptionalInt(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0,
-    guestsCanModify = getOptionalInt(CalendarContract.Events.GUESTS_CAN_MODIFY) != 0,
-    guestsCanSeeGuests = getOptionalInt(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0,
+    guestsCanInviteOthers = getOptionalInt(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) == 1,
+    guestsCanModify = getOptionalInt(CalendarContract.Events.GUESTS_CAN_MODIFY) == 1,
+    guestsCanSeeGuests = getOptionalInt(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) == 1,
     organizer = getOptionalString(CalendarContract.Events.ORGANIZER),
     originalId = getOptionalString(CalendarContract.Events.ORIGINAL_ID)?.let {
       EventId(it.toLong())

@@ -101,6 +101,44 @@ class EventRepositoryTest {
     Assert.assertEquals("Standup", result?.title)
   }
 
+  @Test
+  fun `given cursor with missing boolean flags, when findById, then maps them to false`() = runTest {
+    // Given
+    val cursor = cursorWithRows(
+      mapOf(
+        CalendarContract.Events._ID to 1L,
+        CalendarContract.Events.ACCESS_LEVEL to null,
+        CalendarContract.Events.ALL_DAY to null,
+        CalendarContract.Events.AVAILABILITY to null,
+        CalendarContract.Events.CALENDAR_ID to null,
+        CalendarContract.Events.DESCRIPTION to null,
+        CalendarContract.Events.DTEND to 2_000_000L,
+        CalendarContract.Events.DTSTART to 1_000_000L,
+        CalendarContract.Events.EVENT_END_TIMEZONE to null,
+        CalendarContract.Events.EVENT_LOCATION to null,
+        CalendarContract.Events.EVENT_TIMEZONE to null,
+        CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS to null,
+        CalendarContract.Events.GUESTS_CAN_MODIFY to null,
+        CalendarContract.Events.GUESTS_CAN_SEE_GUESTS to null,
+        CalendarContract.Events.ORGANIZER to null,
+        CalendarContract.Events.ORIGINAL_ID to null,
+        CalendarContract.Events.RRULE to null,
+        CalendarContract.Events.STATUS to null,
+        CalendarContract.Events.TITLE to null
+      )
+    )
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
+
+    // When
+    val result = repository.findById(EventId(1L))
+
+    // Then
+    Assert.assertEquals(false, result?.allDay)
+    Assert.assertEquals(false, result?.guestsCanInviteOthers)
+    Assert.assertEquals(false, result?.guestsCanModify)
+    Assert.assertEquals(false, result?.guestsCanSeeGuests)
+  }
+
   @Test(expected = PermissionException::class)
   fun `given SecurityException, when findById, then throws PermissionException`() = runTest {
     // Given
