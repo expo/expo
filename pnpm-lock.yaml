@@ -9,6 +9,7 @@ overrides:
   react-dom: 19.2.3
   react-native: 0.85.0-rc.5
   '@types/babel__core': ^7.20.5
+  '@types/babel__code-frame': ^7.27.0
   '@types/babel__generator': ^7.27.0
   '@types/babel__template': ^7.4.4
   '@types/babel__traverse': ^7.20.7
@@ -2180,7 +2181,7 @@ importers:
         specifier: ^0.3.20
         version: 0.3.31
       '@types/babel__code-frame':
-        specifier: ^7.0.1
+        specifier: ^7.27.0
         version: 7.27.0
       '@types/babel__core':
         specifier: ^7.20.5
@@ -2387,6 +2388,15 @@ importers:
         specifier: ^7.24.8
         version: 7.28.6(@babel/core@7.29.0)
     devDependencies:
+      '@babel/cli':
+        specifier: ^7.23.4
+        version: 7.28.6(@babel/core@7.29.0)
+      '@types/babel__code-frame':
+        specifier: ^7.27.0
+        version: 7.27.0
+      '@types/babel__core':
+        specifier: ^7.20.5
+        version: 7.20.5
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
