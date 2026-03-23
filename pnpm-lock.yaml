@@ -58,9 +58,6 @@ importers:
         specifier: ~3.5.3
         version: 3.5.3
     devDependencies:
-      '@react-native/community-cli-plugin':
-        specifier: 0.85.0-rc.5
-        version: 0.85.0-rc.5
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.14

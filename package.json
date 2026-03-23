@@ -48,7 +48,6 @@
     "expotools": "workspace:*",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2",
-    "@react-native/community-cli-plugin": "0.85.0-rc.5"
+    "typescript": "^5.9.2"
   }
 }
