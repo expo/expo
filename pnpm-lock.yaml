@@ -4740,6 +4740,9 @@ importers:
       client-only:
         specifier: ^0.0.1
         version: 0.0.1
+      color:
+        specifier: ^4.2.3
+        version: 4.2.3
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -4788,6 +4791,9 @@ importers:
       react-fast-compare:
         specifier: ^3.2.2
         version: 3.2.2
+      react-is:
+        specifier: ^19.1.0
+        version: 19.2.4
       react-native:
         specifier: 0.85.0-rc.5
         version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
@@ -4809,6 +4815,9 @@ importers:
       use-latest-callback:
         specifier: ^0.2.1
         version: 0.2.6(react@19.2.3)
+      use-sync-external-store:
+        specifier: ^1.5.0
+        version: 1.6.0(react@19.2.3)
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -4834,6 +4843,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@5.9.3)))(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+      '@types/color':
+        specifier: ^4.2.0
+        version: 4.2.1
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
@@ -4849,9 +4861,15 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.2.3(@types/react@19.2.14)
+      '@types/react-is':
+        specifier: ^19.0.0
+        version: 19.2.0
       '@types/react-test-renderer':
         specifier: ^19.1.0
         version: 19.1.0
+      '@types/use-sync-external-store':
+        specifier: ^0.0.6
+        version: 0.0.6
       immer:
         specifier: ^10.1.1
         version: 10.2.0
@@ -8546,6 +8564,15 @@ packages:
   '@types/cacheable-request@6.0.3':
     resolution: {integrity: sha512-IQ3EbTzGxIigb1I3qPZc1rWJnH0BmSKv5QYTalEwweFvyBDLSAe24zP0le/hyi7ecGfZVlIVAg4BZqb8WBwKqw==}
 
+  '@types/color-convert@2.0.4':
+    resolution: {integrity: sha512-Ub1MmDdyZ7mX//g25uBAoH/mWGd9swVbt8BseymnaE18SU4po/PjmCrHxqIIRjBo3hV/vh1KGr0eMxUhp+t+dQ==}
+
+  '@types/color-name@1.1.5':
+    resolution: {integrity: sha512-j2K5UJqGTxeesj6oQuGpMgifpT5k9HprgQd8D1Y0lOFqKHl3PJu5GMeS4Y5EgjS55AE6OQxf8mPED9uaGbf4Cg==}
+
+  '@types/color@4.2.1':
+    resolution: {integrity: sha512-ResWeDLy1vozIMbD6JLRKuNBbIcIlBkjTIxVHHd5Cqtm77T+ahH3BWE/PWv1OhFd1HAwcn8no4ig2uTaRXpYQQ==}
+
   '@types/connect-history-api-fallback@1.5.4':
     resolution: {integrity: sha512-n6Cr2xS1h4uAulPRdlw6Jl6s1oG8KrVilPN2yUITEs+K48EzMJJ3W1xy8K5eWuFvjp3R74AOIGSmp2UfBJ8HFw==}
 
@@ -8791,6 +8818,9 @@ packages:
     peerDependencies:
       '@types/react': ^19.2.0
 
+  '@types/react-is@19.2.0':
+    resolution: {integrity: sha512-NP2xtcjZfORsOa4g2JwdseyEnF+wUCx25fTdG/J/HIY6yKga6+NozRBg2xR2gyh7kKYyd6DXndbq0YbQuTJ7Ew==}
+
   '@types/react-native__assets@1.0.3':
     resolution: {integrity: sha512-uvTH6VjIq5XScq4bQJoyaaxGxZdmw2I3Vy+fBt+fTqr5xKUleLb/y7xHJQa3qHCLJ1xpfLS42F0ftv4XCLFLww==}
 
@@ -8850,6 +8880,9 @@ packages:
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
+
+  '@types/use-sync-external-store@0.0.6':
+    resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
 
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
@@ -18619,6 +18652,16 @@ snapshots:
       '@types/node': 22.19.15
       '@types/responselike': 1.0.3
 
+  '@types/color-convert@2.0.4':
+    dependencies:
+      '@types/color-name': 1.1.5
+
+  '@types/color-name@1.1.5': {}
+
+  '@types/color@4.2.1':
+    dependencies:
+      '@types/color-convert': 2.0.4
+
   '@types/connect-history-api-fallback@1.5.4':
     dependencies:
       '@types/express-serve-static-core': 5.1.1
@@ -18889,6 +18932,10 @@ snapshots:
     dependencies:
       '@types/react': 19.2.14
 
+  '@types/react-is@19.2.0':
+    dependencies:
+      '@types/react': 19.2.14
+
   '@types/react-native__assets@1.0.3': {}
 
   '@types/react-test-renderer@19.1.0':
@@ -18948,6 +18995,8 @@ snapshots:
       source-map: 0.6.1
 
   '@types/unist@3.0.3': {}
+
+  '@types/use-sync-external-store@0.0.6': {}
 
   '@types/uuid@9.0.8': {}
 

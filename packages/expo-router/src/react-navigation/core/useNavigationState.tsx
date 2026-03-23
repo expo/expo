@@ -1,6 +1,7 @@
 import type { NavigationState, ParamListBase } from '@react-navigation/routers';
 import * as React from 'react';
 import useLatestCallback from 'use-latest-callback';
+// TODO(@ubax) - RN Migration: remove this dependency and import from react
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
 
 type Selector<ParamList extends ParamListBase, T> = (

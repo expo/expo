@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { type LayoutChangeEvent, Platform, View } from 'react-native';
 import useLatestCallback from 'use-latest-callback';
+// TODO(@ubax) - RN Migration: remove this dependency and import from react
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
 
 type Frame = {

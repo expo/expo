@@ -12,6 +12,7 @@ import {
 } from '@react-navigation/routers';
 import deepEqual from 'fast-deep-equal';
 import * as React from 'react';
+// TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 import useLatestCallback from 'use-latest-callback';
 
