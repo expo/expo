@@ -146,6 +146,9 @@ PODS:
     - ExpoModulesCore
   - ExpoSystemUI (55.0.9):
     - ExpoModulesCore
+  - ExpoUI (55.0.1):
+    - ExpoModulesCore
+    - React-RCTFabric
   - ExpoWebBrowser (55.0.9):
     - ExpoModulesCore
   - FBLazyVector (0.85.0-rc.5)
@@ -2239,6 +2242,7 @@ DEPENDENCIES:
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
+  - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../../../node_modules/react-native/Libraries/FBLazyVector`)
   - hermes-engine (from `../../../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
@@ -2377,6 +2381,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-symbols/ios"
   ExpoSystemUI:
     :path: "../../../packages/expo-system-ui/ios"
+  ExpoUI:
+    :path: "../../../packages/expo-ui/ios"
   ExpoWebBrowser:
     :path: "../../../packages/expo-web-browser/ios"
   FBLazyVector:
@@ -2538,32 +2544,33 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  EXConstants: 08ed06e9a2f9239fa192a014c14271971465385d
-  EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
-  EXManifests: 2b53302deb6d7275ae26005b8014f5a1aee42a0e
-  Expo: ba1c7bf06378ad4a13d05d9984cd532c0d61c9f5
-  expo-dev-menu: e585dd80839ef714e078b393c40835df909cc7dc
-  expo-dev-menu-interface: bf6f816d29b45bec038080790963c635e8d588c2
-  ExpoAsset: 7701a5ed7df0170d280b29af4b9e5e570cab29b2
-  ExpoBrownfield: 4dcdaf4f9c6927254c902bdc79bd71dbf6607e83
-  ExpoDevice: 8fb20656b96e38f8928cd069210a1aad0c759ac3
-  ExpoDomWebView: f101fb3db4b6eec4163fca51f7507189b7e48661
-  ExpoFileSystem: dc9723a0962262b8e485805d2064e3d4cf90ff47
-  ExpoFont: 1aa465cf9f8ac6b670405becba8b15473581b2dd
-  ExpoGlassEffect: b11cb2bf51bf6d4dc6309c421ca8cec086b4b9db
-  ExpoImage: 91c9af23b21f8fdbfc4428669502e0057ebef178
-  ExpoKeepAwake: 7f3b28c361c37389b18841bb52a58003b39fcb33
-  ExpoLinking: 88ba36a28c83525e564b8229e02d451347accb70
-  ExpoLogBox: 89b634d5a8a64c4a6a7caad8f9985a28463c7002
-  ExpoModulesCore: 417b697d69fb330d6a85bf23e98afa81ede149ee
-  ExpoModulesJSI: 001c28d8d17151d827b6f98e627d8f3aaccf6926
-  ExpoModulesWorklets: cb971b36ebc233e644dabe5518ff5c3b2458cc24
-  ExpoRouter: 3d5b205bc8ba3e62894a76ba026979ba5faaa2ef
-  ExpoSymbols: 284b72565ffe3e1b5674f960e3f6578ebc3220fc
-  ExpoSystemUI: ae936ff8f78ca3d6c13884704beb7705fe26d136
-  ExpoWebBrowser: f13a6e46e44049bbb8ce49ff8aaa4d819c87d1fe
+  EXConstants: 8e49a54c53053523403dde1aad0b0f82268480fb
+  EXJSONUtils: cbe3c0065ef0024f58a960193c09992016c64ad2
+  EXManifests: b367b829711f8601f4ca276619233ff70248b709
+  Expo: c56d8767adbfa930c299ad052091e0e0e13d0a68
+  expo-dev-menu: 0758a54a6cd1605d3dd917717e447e1a10c3e84f
+  expo-dev-menu-interface: 58beb5e831034c20466d8c26ba679b0aa385abd2
+  ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27
+  ExpoBrownfield: b154b7dd081e0315d7e55f3d52984ea151854413
+  ExpoDevice: 063b9147595a6d52978e942097d090f0676bd557
+  ExpoDomWebView: f21393aa4accbb6b8512fbec1ae741c454894bec
+  ExpoFileSystem: ad5826003c4064d55ab867193a8a79d19e85bce3
+  ExpoFont: 387d22422f85258b053db3bdac0883974c304a96
+  ExpoGlassEffect: fdb2dde7922a4aba3eaa4a6da2bf14a099f11329
+  ExpoImage: d9446e7c2d365c063df7c8acd9c88b76a7b48ee4
+  ExpoKeepAwake: 394653ed65c374ea04e5fdbf0ea0cbc1d253b0d0
+  ExpoLinking: 8505f5b8fa023e82b9d3ac7be1f1241f35b415dd
+  ExpoLogBox: 4a892fbcf6e343ffc1a6b714dcdc04a754d7e42f
+  ExpoModulesCore: 6b0e4a152f6e1700218f4422bfe4c5c8123e40ff
+  ExpoModulesJSI: 1707b7703ecc1d0a7b3a741eb387cf5e45c3be61
+  ExpoModulesWorklets: 3afa0c2de3980c986056c6bb07d34790381a3422
+  ExpoRouter: 60f5eeaabdf1f5d07b353ce8047d373b5830e821
+  ExpoSymbols: 15d56a761be6ff078a5a15a5a0560fdf4ac4b769
+  ExpoSystemUI: 3b79adabc1139ff282ed7f9708b275ff9dabdf71
+  ExpoUI: 470515a8095675c5f4efc12ab685d8758e1ee945
+  ExpoWebBrowser: ba6a642cba819cb0a040d9ebaacd14d0ab0d2d79
   FBLazyVector: a2650ac3702400e3bbdad8dcd385c9c5dce22d37
-  hermes-engine: 1f609d6ec042e752862df83a22af0137925ed0fa
+  hermes-engine: 77c04b3ea13f9e3ef0da710c41bb69da853e9911
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -2575,7 +2582,7 @@ SPEC CHECKSUMS:
   React: aa109dc0a057583f3ce0c190295d58d6f820cea4
   React-callinvoker: 1fea1250fa3063099299506b0c902b1b4e26f4a3
   React-Core: 1617d21688707f28dc37e28eaa1116e5f2da863e
-  React-Core-prebuilt: 4e71c50c67992681cf8cee51983f58755b6bcea2
+  React-Core-prebuilt: dd2bd4e665a748133b0a84c4cb2206a2801184d3
   React-CoreModules: 865af194dd2ad104a4425d3697458cc630e94d28
   React-cxxreact: f753ef86236c3ab398398315f3910a1751068e55
   React-debug: a8c18f79ee9a2915719c0dcb69299916df218d62
@@ -2637,7 +2644,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 7ae52692e6cd791153592b52e84ea7de9669b489
   ReactCodegen: dd83ca1c5da65f068fa1a0bb0ad71e189a321973
   ReactCommon: fa05a61d038ccdd03e63e647c828448f97831ecd
-  ReactNativeDependencies: cca23b51bbcc4a737904761d9918cb567f0c6eed
+  ReactNativeDependencies: 0ee4609a5ac0da0032e47fd7122491366f803ea4
   RNGestureHandler: c84901d120acdae2f6f27b5889a7cf144e64e6ec
   RNReanimated: c9db698334aa2aaf02e8120af324d9171464ab5a
   RNScreens: 01b065ded2dfe7987bcce770ff3a196be417ff41
@@ -2648,6 +2655,6 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   Yoga: 7ec2157f3319d0b4701302f44183f19537e47a12
 
-PODFILE CHECKSUM: 1ca978f73a30f65633c68b87b4dcd2037d2b9a00
+PODFILE CHECKSUM: 4b9449a7e14887e739252c506e418473e1f6d71e
 
 COCOAPODS: 1.16.2
