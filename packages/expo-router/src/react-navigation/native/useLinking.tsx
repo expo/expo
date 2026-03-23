@@ -63,7 +63,6 @@ const findMatchingState = <T extends NavigationState>(
 export const series = (cb: () => Promise<void>) => {
   let queue = Promise.resolve();
   const callback = () => {
-    // eslint-disable-next-line promise/no-callback-in-promise
     queue = queue.then(cb);
   };
   return callback;

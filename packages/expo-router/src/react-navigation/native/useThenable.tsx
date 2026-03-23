@@ -6,7 +6,6 @@ export function useThenable<T>(create: () => PromiseLike<T>) {
   let initialState: [boolean, T | undefined] = [false, undefined];
 
   // Check if our thenable is synchronous
-  // eslint-disable-next-line promise/catch-or-return, promise/always-return
   promise.then((result) => {
     initialState = [true, result];
   });

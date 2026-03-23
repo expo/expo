@@ -289,7 +289,6 @@ export function useHeaderConfig({
               if (item.type === 'custom') {
                 return (
                   <ScreenStackHeaderLeftView
-                    // eslint-disable-next-line @eslint-react/no-array-index-key
                     key={index}
                     hidesSharedBackground={item.hidesSharedBackground}>
                     {item.element}
@@ -345,7 +344,6 @@ export function useHeaderConfig({
           if (item.type === 'custom') {
             return (
               <ScreenStackHeaderRightView
-                // eslint-disable-next-line @eslint-react/no-array-index-key
                 key={index}
                 hidesSharedBackground={item.hidesSharedBackground}>
                 {item.element}
