@@ -86,6 +86,7 @@
     "@expo/metro": "~54.2.0",
     "@expo/metro-config": "workspace:*",
     "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
     "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "expo-module-scripts": "workspace:*",
