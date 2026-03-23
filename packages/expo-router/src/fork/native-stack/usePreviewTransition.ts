@@ -1,4 +1,4 @@
-import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import * as React from 'react';
 
 import type { NativeStackDescriptor, NativeStackDescriptorMap } from './descriptors-context';

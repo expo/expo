@@ -4,11 +4,11 @@ import {
   StackNavigationState,
   StackRouterOptions,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from '../../react-navigation/native';
 import {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
+} from '../../react-navigation/native-stack';
 
 import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 

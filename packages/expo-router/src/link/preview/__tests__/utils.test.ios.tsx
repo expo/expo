@@ -1,4 +1,4 @@
-import type { NavigationState } from '@react-navigation/native/lib/typescript/src';
+import type { NavigationState } from '../../../react-navigation/native';
 
 import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';

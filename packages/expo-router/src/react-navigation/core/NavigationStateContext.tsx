@@ -1,4 +1,4 @@
-import type { NavigationState, PartialState } from '@react-navigation/routers';
+import type { NavigationState, PartialState } from '../routers';
 import * as React from 'react';
 
 const MISSING_CONTEXT_ERROR =

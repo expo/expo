@@ -1,7 +1,7 @@
 import {
   type ParamListBase,
   type TabNavigationState,
-} from '@react-navigation/native';
+} from '../../native';
 
 import type {
   NativeBottomTabDescriptorMap,

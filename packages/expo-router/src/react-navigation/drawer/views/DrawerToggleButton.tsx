@@ -1,9 +1,9 @@
-import { HeaderButton } from '@react-navigation/elements';
+import { HeaderButton } from '../../elements';
 import {
   DrawerActions,
   type ParamListBase,
   useNavigation,
-} from '@react-navigation/native';
+} from '../../native';
 import { Image, type ImageSourcePropType, StyleSheet } from 'react-native';
 
 import type { DrawerNavigationProp } from '../types';

@@ -4,7 +4,7 @@ import {
   NavigationContext,
   type NavigationProp,
   type ParamListBase,
-} from '@react-navigation/native';
+} from '../../react-navigation/native';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 

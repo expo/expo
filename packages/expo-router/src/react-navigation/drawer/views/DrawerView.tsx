@@ -4,7 +4,7 @@ import {
   SafeAreaProviderCompat,
   Screen,
   useFrameSize,
-} from '@react-navigation/elements';
+} from '../../elements';
 import {
   DrawerActions,
   type DrawerNavigationState,
@@ -13,7 +13,7 @@ import {
   StackActions,
   useLocale,
   useTheme,
-} from '@react-navigation/native';
+} from '../../native';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';

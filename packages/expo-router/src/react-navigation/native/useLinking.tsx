@@ -7,7 +7,7 @@ import {
   type NavigationState,
   type ParamListBase,
   useNavigationIndependentTree,
-} from '@react-navigation/core';
+} from '../core';
 import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 

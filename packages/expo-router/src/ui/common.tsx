@@ -1,4 +1,4 @@
-import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
+import { LinkingOptions, ParamListBase, PartialRoute, Route } from '../react-navigation/native';
 
 import type { ExpoTabActionType } from './TabRouter';
 import { UrlObject } from '../LocationProvider';

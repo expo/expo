@@ -1,6 +1,6 @@
 'use client';
 
-import type { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
+import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
   useStateForPath,
   type EventConsumer,
@@ -10,8 +10,8 @@ import {
   type ParamListBase,
   type RouteProp,
   type ScreenListeners,
-} from '@react-navigation/native';
-import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
+} from './react-navigation/native';
+import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import React, { useEffect, useMemo } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';

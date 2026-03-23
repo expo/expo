@@ -1,4 +1,4 @@
-import type { NavigationState, ParamListBase } from '@react-navigation/routers';
+import type { NavigationState, ParamListBase } from '../routers';
 import * as React from 'react';
 import useLatestCallback from 'use-latest-callback';
 // TODO(@ubax) - RN Migration: remove this dependency and import from react

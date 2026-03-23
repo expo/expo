@@ -1,4 +1,4 @@
-import { usePreventRemove } from '@react-navigation/core';
+import { usePreventRemove } from '../../react-navigation/core';
 import { screen } from '@testing-library/react-native';
 import React, { isValidElement } from 'react';
 import { Button, View } from 'react-native';

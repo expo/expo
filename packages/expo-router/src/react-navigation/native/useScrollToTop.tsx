@@ -4,7 +4,7 @@ import {
   type NavigationProp,
   type ParamListBase,
   useRoute,
-} from '@react-navigation/core';
+} from '../core';
 import * as React from 'react';
 import type { ScrollView } from 'react-native';
 

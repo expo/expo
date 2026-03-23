@@ -5,7 +5,7 @@ import type {
   DocumentTitleOptions,
   NavigationContainerRef,
   ParamListBase,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 import * as React from 'react';
 
 // import type { DocumentTitleOptions } from './types';

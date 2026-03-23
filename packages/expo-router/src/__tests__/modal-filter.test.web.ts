@@ -5,7 +5,7 @@
  * predicate used inside `ModalStackView`.
  */
 
-import { StackNavigationState } from '@react-navigation/native';
+import { StackNavigationState } from '../react-navigation/native';
 
 import { convertStackStateToNonModalState } from '../modal/web/utils';
 

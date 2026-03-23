@@ -1,13 +1,13 @@
 import {
   getDefaultHeaderHeight,
   SafeAreaProviderCompat,
-} from '@react-navigation/elements';
+} from '../../../elements';
 import type {
   LocaleDirection,
   ParamListBase,
   Route,
   StackNavigationState,
-} from '@react-navigation/native';
+} from '../../../native';
 import * as React from 'react';
 import {
   Animated,

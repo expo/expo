@@ -1,5 +1,5 @@
 'use client';
-import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import { Children, useMemo } from 'react';
 
 import { NativeToolbarButton } from './native';

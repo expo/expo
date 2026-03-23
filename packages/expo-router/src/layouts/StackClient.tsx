@@ -11,11 +11,11 @@ import {
   StackActionType,
   StackNavigationState,
   type RouteProp,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 import {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
+} from '../react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
 import React, { Children, ComponentProps, useMemo } from 'react';
 

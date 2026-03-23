@@ -1,4 +1,4 @@
-import type { HeaderOptions } from '@react-navigation/elements';
+import type { HeaderOptions } from '../elements';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
@@ -11,7 +11,7 @@ import type {
   Route,
   RouteProp,
   Theme,
-} from '@react-navigation/native';
+} from '../native';
 import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { PanGesture } from 'react-native-gesture-handler';
 

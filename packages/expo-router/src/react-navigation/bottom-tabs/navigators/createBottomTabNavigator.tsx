@@ -9,7 +9,7 @@ import {
   type TabRouterOptions,
   type TypedNavigator,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from '../../native';
 
 import type {
   BottomTabNavigationEventMap,

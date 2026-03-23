@@ -3,7 +3,7 @@ import {
   Lazy,
   SafeAreaProviderCompat,
   Screen as ScreenContent,
-} from '@react-navigation/elements';
+} from '../../elements';
 import {
   CommonActions,
   NavigationMetaContext,
@@ -12,7 +12,7 @@ import {
   StackActions,
   type TabNavigationState,
   useTheme,
-} from '@react-navigation/native';
+} from '../../native';
 import Color from 'color';
 import * as React from 'react';
 import { type ColorValue, Platform, PlatformColor } from 'react-native';

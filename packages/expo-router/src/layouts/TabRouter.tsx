@@ -1,5 +1,5 @@
 'use client';
-import { type NavigationAction, type StackActionType } from '@react-navigation/native';
+import { type NavigationAction, type StackActionType } from '../react-navigation/native';
 import type { ComponentProps } from 'react';
 
 import type { BottomTabNavigator } from './TabsClient';

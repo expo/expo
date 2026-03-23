@@ -1,10 +1,10 @@
-import { getHeaderTitle, HeaderTitle } from '@react-navigation/elements';
+import { getHeaderTitle, HeaderTitle } from '../../../elements';
 import {
   type Route,
   type Theme,
   useLocale,
   useTheme,
-} from '@react-navigation/native';
+} from '../../../native';
 import Color from 'color';
 import { Platform, StyleSheet, type TextStyle, View } from 'react-native';
 import {

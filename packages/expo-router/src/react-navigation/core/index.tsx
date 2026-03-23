@@ -44,4 +44,4 @@ export { usePreventRemoveContext } from './usePreventRemoveContext';
 export { useRoute } from './useRoute';
 export { useStateForPath } from './useStateForPath';
 export { validatePathConfig } from './validatePathConfig';
-export * from '@react-navigation/routers';
+export * from '../routers';

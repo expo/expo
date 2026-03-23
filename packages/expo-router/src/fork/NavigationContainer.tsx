@@ -16,7 +16,7 @@ import {
   getPathFromState,
   getStateFromPath,
   validatePathConfig,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 import React from 'react';
 import { I18nManager } from 'react-native';
 import useLatestCallback from 'use-latest-callback';

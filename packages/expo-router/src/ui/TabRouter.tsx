@@ -8,7 +8,7 @@ import {
   TabRouterOptions as RNTabRouterOptions,
   type StackActionType,
   type NavigationAction,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 
 import { TriggerMap } from './common';
 

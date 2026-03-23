@@ -5,8 +5,8 @@ import {
   NavigationHelpersContext,
   type NavigatorScreenParams,
   type ParamListBase,
-} from '@react-navigation/core';
-import type { NavigationState, PartialState } from '@react-navigation/routers';
+} from '../core';
+import type { NavigationState, PartialState } from '../routers';
 import * as React from 'react';
 import { type GestureResponderEvent, Platform } from 'react-native';
 

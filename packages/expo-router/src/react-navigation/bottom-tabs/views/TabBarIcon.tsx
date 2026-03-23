@@ -1,5 +1,5 @@
-import { Badge } from '@react-navigation/elements';
-import type { Route } from '@react-navigation/native';
+import { Badge } from '../../elements';
+import type { Route } from '../../native';
 import React from 'react';
 import {
   type StyleProp,

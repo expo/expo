@@ -3,13 +3,13 @@ import {
   HeaderBackContext,
   HeaderHeightContext,
   HeaderShownContext,
-} from '@react-navigation/elements';
+} from '../../../elements';
 import {
   type Route,
   useLinkBuilder,
   useLocale,
   useTheme,
-} from '@react-navigation/native';
+} from '../../../native';
 import * as React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 

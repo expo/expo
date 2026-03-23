@@ -5,7 +5,7 @@ import type {
   PartialRoute,
   PartialState,
   Route,
-} from '@react-navigation/routers';
+} from '../routers';
 
 import type { NavigatorScreenParams, PathConfig, PathConfigMap } from './types';
 

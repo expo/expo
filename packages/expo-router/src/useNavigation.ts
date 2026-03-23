@@ -4,7 +4,7 @@ import {
   NavigationProp,
   NavigationState,
   useStateForPath,
-} from '@react-navigation/native';
+} from './react-navigation/native';
 
 import { getRootStackRouteNames } from './global-state/utils';
 import { resolveHref } from './link/href';

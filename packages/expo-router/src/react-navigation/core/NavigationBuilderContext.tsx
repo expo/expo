@@ -2,7 +2,7 @@ import type {
   NavigationAction,
   NavigationState,
   ParamListBase,
-} from '@react-navigation/routers';
+} from '../routers';
 import * as React from 'react';
 
 import type { NavigationHelpers } from './types';

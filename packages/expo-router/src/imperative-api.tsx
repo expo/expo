@@ -1,4 +1,4 @@
-import type { NavigationContainerRef, ParamListBase } from '@react-navigation/native';
+import type { NavigationContainerRef, ParamListBase } from './react-navigation/native';
 import { type RefObject, useEffect, useSyncExternalStore } from 'react';
 
 import {

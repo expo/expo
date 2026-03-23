@@ -1,7 +1,7 @@
 import {
   HeaderShownContext,
   SafeAreaProviderCompat,
-} from '@react-navigation/elements';
+} from '../../../elements';
 import {
   CommonActions,
   type LocaleDirection,
@@ -10,7 +10,7 @@ import {
   type RouteProp,
   StackActions,
   type StackNavigationState,
-} from '@react-navigation/native';
+} from '../../../native';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';

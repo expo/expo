@@ -1,7 +1,7 @@
 import type {
   ParamListBase,
   StackNavigationState,
-} from '@react-navigation/native';
+} from '../../native';
 import * as React from 'react';
 
 export function useDismissedRouteError(

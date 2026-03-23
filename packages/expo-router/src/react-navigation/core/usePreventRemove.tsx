@@ -1,4 +1,4 @@
-import type { NavigationAction } from '@react-navigation/routers';
+import type { NavigationAction } from '../routers';
 import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 import useLatestCallback from 'use-latest-callback';

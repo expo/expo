@@ -4,8 +4,8 @@ import {
   createDrawerNavigator,
   DrawerNavigationOptions,
   DrawerNavigationEventMap,
-} from '@react-navigation/drawer';
-import { DrawerNavigationState, ParamListBase } from '@react-navigation/native';
+} from '../react-navigation/drawer';
+import { DrawerNavigationState, ParamListBase } from '../react-navigation/native';
 
 import { withLayoutContext } from './withLayoutContext';
 

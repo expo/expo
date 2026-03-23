@@ -1,5 +1,5 @@
 'use client';
-import type { NativeStackHeaderItemSpacing } from '@react-navigation/native-stack';
+import type { NativeStackHeaderItemSpacing } from '../../../../react-navigation/native-stack';
 
 import { NativeToolbarSpacer } from './native';
 import type { StackToolbarSpacerProps } from './types';

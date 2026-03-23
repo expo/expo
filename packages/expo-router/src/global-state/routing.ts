@@ -5,7 +5,7 @@ import {
   type PartialState,
   type NavigationContainerRef,
   ParamListBase,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { type RefObject } from 'react';

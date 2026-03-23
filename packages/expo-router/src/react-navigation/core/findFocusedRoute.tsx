@@ -1,4 +1,4 @@
-import type { InitialState } from '@react-navigation/routers';
+import type { InitialState } from '../routers';
 
 type Result =
   | {

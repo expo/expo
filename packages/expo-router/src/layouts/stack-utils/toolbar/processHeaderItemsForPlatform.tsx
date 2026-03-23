@@ -1,4 +1,4 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import type { ReactNode } from 'react';
 
 import type { ToolbarPlacement } from './context';

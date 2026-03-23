@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/core';
+import { useTheme } from '../core';
 import * as React from 'react';
 import {
   type GestureResponderEvent,

@@ -3,7 +3,7 @@ import type {
   ParamListBase,
   PartialState,
   Route,
-} from '@react-navigation/routers';
+} from '../routers';
 import * as React from 'react';
 
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';

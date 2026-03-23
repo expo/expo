@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import type { InitialState } from '@react-navigation/routers';
+import type { InitialState } from '../../react-navigation/routers';
 import { produce } from 'immer';
 
 import { findFocusedRoute } from '../findFocusedRoute';

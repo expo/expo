@@ -1,7 +1,7 @@
 import type {
   NavigationContainerRef,
   ParamListBase,
-} from '@react-navigation/core';
+} from '../core';
 import * as React from 'react';
 
 import type { DocumentTitleOptions } from './types';

@@ -6,7 +6,7 @@ import {
   type ParamListBase,
   type PartialState,
   type Route,
-} from '@react-navigation/routers';
+} from '../routers';
 import * as React from 'react';
 import useLatestCallback from 'use-latest-callback';
 

@@ -4,7 +4,7 @@ import {
   type NavigationContainerRef,
   type ParamListBase,
   type StaticNavigation,
-} from '@react-navigation/core';
+} from '../core';
 import * as React from 'react';
 
 import { NavigationContainer } from './NavigationContainer';

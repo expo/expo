@@ -4,7 +4,7 @@ import type {
   getStateFromPath as getStateFromPathDefault,
   PathConfigMap,
   Route,
-} from '@react-navigation/core';
+} from '../core';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

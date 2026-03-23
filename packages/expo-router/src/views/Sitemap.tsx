@@ -1,7 +1,7 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import Constants from 'expo-constants';
 import React from 'react';
 import {

@@ -82,7 +82,6 @@
   "peerDependencies": {
     "@expo/metro-runtime": "workspace:^55.0.6",
     "@expo/log-box": "workspace:55.0.7",
-    "@react-navigation/drawer": "^7.9.4",
     "@testing-library/react-native": ">= 13.2.0",
     "expo": "workspace:*",
     "expo-constants": "workspace:^55.0.7",
@@ -115,16 +114,10 @@
     },
     "react-server-dom-webpack": {
       "optional": true
-    },
-    "@react-navigation/drawer": {
-      "optional": true
     }
   },
   "devDependencies": {
     "@expo/cli": "workspace:*",
-    "@react-navigation/core": "^7.16.1",
-    "@react-navigation/drawer": "^7.9.4",
-    "@react-navigation/routers": "^7.5.3",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.3.0",
@@ -152,9 +145,6 @@
     "@jest/globals": "^29.7.0",
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
-    "@react-navigation/bottom-tabs": "^7.15.5",
-    "@react-navigation/native": "^7.1.33",
-    "@react-navigation/native-stack": "^7.14.5",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",
     "client-only": "^0.0.1",

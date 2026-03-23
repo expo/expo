@@ -1,5 +1,5 @@
-import { PathConfigMap, validatePathConfig } from '@react-navigation/native';
-import type { InitialState, NavigationState, PartialState } from '@react-navigation/routers';
+import { PathConfigMap, validatePathConfig } from '../react-navigation/native';
+import type { InitialState, NavigationState, PartialState } from '../react-navigation/routers';
 import escape from 'escape-string-regexp';
 
 import { findFocusedRoute } from './findFocusedRoute';

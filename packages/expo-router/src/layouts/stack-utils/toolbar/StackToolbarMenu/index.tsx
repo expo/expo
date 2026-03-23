@@ -3,7 +3,7 @@ import type {
   NativeStackHeaderItemMenu,
   NativeStackHeaderItemMenuAction,
   NativeStackHeaderItemMenuSubmenu,
-} from '@react-navigation/native-stack';
+} from '../../../../react-navigation/native-stack';
 import { Children, useMemo, type ReactNode } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { PlatformIconIOS } from 'react-native-screens';

@@ -1,4 +1,4 @@
-import type { NavigationState } from '@react-navigation/routers';
+import type { NavigationState } from '../../routers';
 import * as React from 'react';
 import { Animated } from 'react-native';
 

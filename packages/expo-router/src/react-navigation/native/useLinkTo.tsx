@@ -1,4 +1,4 @@
-import { NavigationContainerRefContext } from '@react-navigation/core';
+import { NavigationContainerRefContext } from '../core';
 import * as React from 'react';
 
 import { useBuildAction } from './useLinkBuilder';

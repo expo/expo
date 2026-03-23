@@ -7,7 +7,7 @@ import type {
   PartialState,
   Route,
   Router,
-} from '@react-navigation/routers';
+} from '../routers';
 import type * as React from 'react';
 
 declare global {

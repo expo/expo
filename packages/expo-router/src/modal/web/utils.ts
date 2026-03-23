@@ -1,5 +1,5 @@
 'use client';
-import { ParamListBase, StackNavigationState } from '@react-navigation/native';
+import { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import React from 'react';
 
 import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';

@@ -1,4 +1,4 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { useMemo } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';

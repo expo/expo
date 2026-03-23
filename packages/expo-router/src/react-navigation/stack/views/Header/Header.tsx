@@ -1,5 +1,5 @@
-import { getHeaderTitle, HeaderShownContext } from '@react-navigation/elements';
-import { StackActions } from '@react-navigation/native';
+import { getHeaderTitle, HeaderShownContext } from '../../../elements';
+import { StackActions } from '../../../native';
 import * as React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

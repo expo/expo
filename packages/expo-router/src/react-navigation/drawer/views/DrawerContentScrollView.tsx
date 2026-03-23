@@ -1,4 +1,4 @@
-import { useLocale } from '@react-navigation/native';
+import { useLocale } from '../../native';
 import * as React from 'react';
 import { ScrollView, type ScrollViewProps, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

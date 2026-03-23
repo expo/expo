@@ -7,7 +7,7 @@ import {
   StackRouter,
   type TypedNavigator,
   useNavigationBuilder,
-} from '@react-navigation/core';
+} from '../../core';
 
 const StackNavigator = (
   props: DefaultNavigatorOptions<

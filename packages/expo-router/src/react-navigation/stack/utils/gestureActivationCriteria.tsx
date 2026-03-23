@@ -1,4 +1,4 @@
-import type { LocaleDirection } from '@react-navigation/native';
+import type { LocaleDirection } from '../../native';
 
 import type { GestureDirection, Layout } from '../types';
 import { getInvertedMultiplier } from './getInvertedMultiplier';

@@ -1,4 +1,4 @@
-import { InitialState } from '@react-navigation/native';
+import { InitialState } from '../react-navigation/native';
 import escape from 'escape-string-regexp';
 import * as queryString from 'query-string';
 

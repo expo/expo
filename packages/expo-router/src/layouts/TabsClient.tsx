@@ -4,8 +4,8 @@ import {
   BottomTabNavigationEventMap,
   BottomTabNavigationOptions,
   createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-import { ParamListBase, TabNavigationState } from '@react-navigation/native';
+} from '../react-navigation/bottom-tabs';
+import { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import React, { ComponentProps } from 'react';
 import { Pressable, Platform } from 'react-native';
 

@@ -1,4 +1,4 @@
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { BottomTabNavigationOptions } from '../react-navigation/bottom-tabs';
 import {
   DefaultNavigatorOptions,
   NavigationAction,
@@ -8,7 +8,7 @@ import {
   TabNavigationState,
   TabRouterOptions,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 import { createContext } from 'react';
 
 import { TriggerMap } from './common';

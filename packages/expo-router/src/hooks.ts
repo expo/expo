@@ -5,7 +5,7 @@ import {
   NavigationState,
   useNavigation,
   useStateForPath,
-} from '@react-navigation/native';
+} from './react-navigation/native';
 import type { LoaderFunction } from 'expo-server';
 import React, { use, useMemo } from 'react';
 

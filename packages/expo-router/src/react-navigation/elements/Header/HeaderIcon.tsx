@@ -1,4 +1,4 @@
-import { useLocale, useTheme } from '@react-navigation/native';
+import { useLocale, useTheme } from '../../native';
 import { Image, type ImageProps, Platform, StyleSheet } from 'react-native';
 
 export function HeaderIcon({ source, style, ...rest }: ImageProps) {

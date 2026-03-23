@@ -3,7 +3,7 @@ import {
   getLabel,
   MissingIcon,
   useFrameSize,
-} from '@react-navigation/elements';
+} from '../../elements';
 import {
   CommonActions,
   NavigationProvider,
@@ -12,7 +12,7 @@ import {
   useLinkBuilder,
   useLocale,
   useTheme,
-} from '@react-navigation/native';
+} from '../../native';
 import React from 'react';
 import {
   Animated,

@@ -1,7 +1,7 @@
 import type {
   NavigationAction,
   NavigationState,
-} from '@react-navigation/routers';
+} from '../routers';
 import * as React from 'react';
 
 import {

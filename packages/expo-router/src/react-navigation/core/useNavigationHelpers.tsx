@@ -4,7 +4,7 @@ import {
   type NavigationState,
   type ParamListBase,
   type Router,
-} from '@react-navigation/routers';
+} from '../routers';
 import * as React from 'react';
 
 import { NavigationContext } from './NavigationContext';

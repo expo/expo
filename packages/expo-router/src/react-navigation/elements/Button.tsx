@@ -2,7 +2,7 @@ import {
   type LinkProps,
   useLinkProps,
   useTheme,
-} from '@react-navigation/native';
+} from '../native';
 import Color from 'color';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';

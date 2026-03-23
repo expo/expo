@@ -1,4 +1,4 @@
-import type { NavigationState, PartialState } from '@react-navigation/native';
+import type { NavigationState, PartialState } from '../react-navigation/native';
 
 import type { FocusedRouteState } from './router-store';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';

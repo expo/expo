@@ -9,7 +9,7 @@ import {
   type Router,
   type RouterConfigOptions,
   type RouterFactory,
-} from '@react-navigation/routers';
+} from '../routers';
 import deepEqual from 'fast-deep-equal';
 import * as React from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase

@@ -6,13 +6,13 @@ import {
   SafeAreaProviderCompat,
   Screen,
   useHeaderHeight,
-} from '@react-navigation/elements';
+} from '../../elements';
 import {
   type ParamListBase,
   type RouteProp,
   type StackNavigationState,
   useLinkBuilder,
-} from '@react-navigation/native';
+} from '../../native';
 import * as React from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
 

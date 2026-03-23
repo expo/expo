@@ -2,7 +2,7 @@
 // https://github.com/react-navigation/react-navigation/blob/main/packages/native/src/createMemoryHistory.tsx
 // Look for 'START OF FORK' comments
 // Currently no forked behaviour.
-import type { NavigationState } from '@react-navigation/core';
+import type { NavigationState } from '../react-navigation/core';
 import { nanoid } from 'nanoid/non-secure';
 
 type HistoryRecord = {

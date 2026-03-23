@@ -10,7 +10,7 @@ import type {
   StackNavigationState,
   StackRouterOptions,
   Theme,
-} from '@react-navigation/native';
+} from '../native';
 import type {
   ColorValue,
   ImageSourcePropType,

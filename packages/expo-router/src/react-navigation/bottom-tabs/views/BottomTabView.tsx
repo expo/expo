@@ -3,13 +3,13 @@ import {
   Header,
   SafeAreaProviderCompat,
   Screen,
-} from '@react-navigation/elements';
+} from '../../elements';
 import {
   type NavigationAction,
   type ParamListBase,
   StackActions,
   type TabNavigationState,
-} from '@react-navigation/native';
+} from '../../native';
 import * as React from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';

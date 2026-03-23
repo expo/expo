@@ -1,4 +1,4 @@
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp } from '../react-navigation/native';
 import React from 'react';
 
 import Stack from '../layouts/Stack';

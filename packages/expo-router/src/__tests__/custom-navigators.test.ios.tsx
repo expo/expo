@@ -1,4 +1,4 @@
-import { TabRouter, TabRouterOptions } from '@react-navigation/native';
+import { TabRouter, TabRouterOptions } from '../react-navigation/native';
 import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';

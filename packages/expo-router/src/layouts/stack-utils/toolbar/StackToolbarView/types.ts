@@ -1,4 +1,4 @@
-import type { NativeStackHeaderItemCustom } from '@react-navigation/native-stack';
+import type { NativeStackHeaderItemCustom } from '../../../../react-navigation/native-stack';
 import type { ReactNode } from 'react';
 
 export interface StackToolbarViewProps {

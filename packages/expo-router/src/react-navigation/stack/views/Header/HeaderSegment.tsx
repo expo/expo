@@ -4,8 +4,8 @@ import {
   HeaderBackButton,
   type HeaderBackButtonProps,
   HeaderTitle,
-} from '@react-navigation/elements';
-import { useLocale } from '@react-navigation/native';
+} from '../../../elements';
+import { useLocale } from '../../../native';
 import * as React from 'react';
 import {
   type LayoutChangeEvent,

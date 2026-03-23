@@ -1,6 +1,6 @@
 'use client';
 
-import { useRoute } from '@react-navigation/native';
+import { useRoute } from '../../react-navigation/native';
 import { use } from 'react';
 
 import type { UsePreventZoomTransitionDismissalOptions } from './usePreventZoomTransitionDismissal.types';

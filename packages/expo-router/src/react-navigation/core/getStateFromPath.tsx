@@ -3,7 +3,7 @@ import type {
   NavigationState,
   ParamListBase,
   PartialState,
-} from '@react-navigation/routers';
+} from '../routers';
 import escape from 'escape-string-regexp';
 import * as queryString from 'query-string';
 

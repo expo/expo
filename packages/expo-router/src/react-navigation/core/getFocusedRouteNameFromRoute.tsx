@@ -1,4 +1,4 @@
-import type { Route } from '@react-navigation/routers';
+import type { Route } from '../routers';
 
 import { CHILD_STATE } from './useRouteCache';
 

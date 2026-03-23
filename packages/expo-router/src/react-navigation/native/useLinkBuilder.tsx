@@ -7,7 +7,7 @@ import {
   NavigationHelpersContext,
   NavigationRouteContext,
   useStateForPath,
-} from '@react-navigation/core';
+} from '../core';
 import * as React from 'react';
 
 import { LinkingContext } from './LinkingContext';

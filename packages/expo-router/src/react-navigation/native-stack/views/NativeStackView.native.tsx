@@ -6,7 +6,7 @@ import {
   HeaderShownContext,
   SafeAreaProviderCompat,
   useFrameSize,
-} from '@react-navigation/elements';
+} from '../../elements';
 import {
   NavigationProvider,
   type ParamListBase,
@@ -15,7 +15,7 @@ import {
   type StackNavigationState,
   usePreventRemoveContext,
   useTheme,
-} from '@react-navigation/native';
+} from '../../native';
 import * as React from 'react';
 import {
   Animated,

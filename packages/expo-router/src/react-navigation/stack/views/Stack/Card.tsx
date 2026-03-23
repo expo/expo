@@ -1,4 +1,4 @@
-import type { LocaleDirection } from '@react-navigation/native';
+import type { LocaleDirection } from '../../../native';
 import Color from 'color';
 import * as React from 'react';
 import {

@@ -1,7 +1,7 @@
 'use client';
-import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
-import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import type { NativeStackNavigationEventMap } from '../../react-navigation/native-stack';
+import { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 import { Children, isValidElement, useMemo, type PropsWithChildren } from 'react';
 
 import { StackHeaderComponent, appendStackHeaderPropsToOptions } from './StackHeaderComponent';

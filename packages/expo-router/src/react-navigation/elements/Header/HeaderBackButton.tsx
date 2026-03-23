@@ -1,4 +1,4 @@
-import { useLocale, useTheme } from '@react-navigation/native';
+import { useLocale, useTheme } from '../../native';
 import * as React from 'react';
 import {
   Animated,

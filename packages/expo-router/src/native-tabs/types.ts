@@ -6,7 +6,7 @@ import type {
   RouteProp,
   ScreenListeners,
   TabNavigationState,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 import type { PropsWithChildren } from 'react';
 import type {
   ColorValue,

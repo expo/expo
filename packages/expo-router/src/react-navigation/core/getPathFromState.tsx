@@ -2,7 +2,7 @@ import type {
   NavigationState,
   PartialState,
   Route,
-} from '@react-navigation/routers';
+} from '../routers';
 import * as queryString from 'query-string';
 
 import { getPatternParts, type PatternPart } from './getPatternParts';

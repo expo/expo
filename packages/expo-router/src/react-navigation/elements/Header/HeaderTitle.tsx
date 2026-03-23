@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '../../native';
 import {
   Animated,
   Platform,

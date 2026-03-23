@@ -1,4 +1,4 @@
-import { validatePathConfig as RNValidatePathConfig, type Route } from '@react-navigation/native';
+import { validatePathConfig as RNValidatePathConfig, type Route } from '../react-navigation/native';
 import * as queryString from 'query-string';
 
 import type { Options, State, StringifyConfig } from './getPathFromState';

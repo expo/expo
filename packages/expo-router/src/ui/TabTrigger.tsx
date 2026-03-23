@@ -1,5 +1,5 @@
 import { Slot } from '@radix-ui/react-slot';
-import { TabNavigationState } from '@react-navigation/native';
+import { TabNavigationState } from '../react-navigation/native';
 import { ReactNode, use, ReactElement, ComponentProps, useCallback } from 'react';
 import { View, StyleSheet, Pressable, PressableProps } from 'react-native';
 

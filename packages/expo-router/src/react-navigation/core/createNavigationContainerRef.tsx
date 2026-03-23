@@ -1,4 +1,4 @@
-import { CommonActions } from '@react-navigation/routers';
+import { CommonActions } from '../routers';
 
 import type {
   NavigationContainerEventMap,

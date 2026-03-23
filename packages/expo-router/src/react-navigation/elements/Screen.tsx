@@ -3,7 +3,7 @@ import {
   NavigationProvider,
   type ParamListBase,
   type RouteProp,
-} from '@react-navigation/native';
+} from '../native';
 import * as React from 'react';
 import {
   Animated,

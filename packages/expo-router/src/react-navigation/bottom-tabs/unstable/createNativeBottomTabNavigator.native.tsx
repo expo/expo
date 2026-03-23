@@ -10,7 +10,7 @@ import {
   type TabRouterOptions,
   type TypedNavigator,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from '../../native';
 import * as React from 'react';
 
 import { NativeBottomTabView } from './NativeBottomTabView.native';

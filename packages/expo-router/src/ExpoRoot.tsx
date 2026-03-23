@@ -5,7 +5,7 @@ import {
   NavigationAction,
   StackRouter,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from './react-navigation/native';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

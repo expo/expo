@@ -1,4 +1,4 @@
-import { CurrentRenderContext } from '@react-navigation/core';
+import { CurrentRenderContext } from '../core';
 import * as React from 'react';
 
 import { ServerContext, type ServerContextType } from './ServerContext';

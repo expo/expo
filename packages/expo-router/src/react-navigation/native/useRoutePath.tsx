@@ -1,4 +1,4 @@
-import { getPathFromState, useStateForPath } from '@react-navigation/core';
+import { getPathFromState, useStateForPath } from '../core';
 import * as React from 'react';
 
 import { LinkingContext } from './LinkingContext';

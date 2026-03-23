@@ -1,4 +1,4 @@
-import { EventMapBase, NavigationState } from '@react-navigation/native';
+import { EventMapBase, NavigationState } from '../react-navigation/native';
 import React, {
   Children,
   forwardRef,

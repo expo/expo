@@ -1,4 +1,4 @@
-import type { ParamListBase, Route } from '@react-navigation/routers';
+import type { ParamListBase, Route } from '../routers';
 import * as React from 'react';
 
 import { NavigationContext } from './NavigationContext';

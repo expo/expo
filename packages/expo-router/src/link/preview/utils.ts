@@ -4,7 +4,7 @@ import {
   type NavigationRoute,
   type NavigationState,
   type TabNavigationState,
-} from '@react-navigation/native';
+} from '../../react-navigation/native';
 
 import { store, type ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';

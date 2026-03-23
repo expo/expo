@@ -1,7 +1,7 @@
 'use client';
 
-import { useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { useRoute } from '../../../react-navigation/native';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { createContext, use, useCallback, useMemo, useReducer } from 'react';
 
 import type { CompositionContextValue, CompositionRegistry } from './types';

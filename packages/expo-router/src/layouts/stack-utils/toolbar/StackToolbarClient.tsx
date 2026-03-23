@@ -1,5 +1,5 @@
 'use client';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { useMemo, type ReactNode } from 'react';
 
 import { StackToolbarButton } from './StackToolbarButton';

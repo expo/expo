@@ -12,7 +12,7 @@ import {
   type TypedNavigator,
   useLocale,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from '../../native';
 import * as React from 'react';
 
 import type {

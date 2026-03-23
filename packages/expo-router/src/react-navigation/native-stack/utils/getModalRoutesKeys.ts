@@ -1,4 +1,4 @@
-import type { Route } from '@react-navigation/native';
+import type { Route } from '../../native';
 
 import type { NativeStackDescriptorMap } from '../types';
 

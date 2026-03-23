@@ -4,7 +4,7 @@ import {
   type DrawerNavigationState,
   type ParamListBase,
   useLinkBuilder,
-} from '@react-navigation/native';
+} from '../../native';
 import * as React from 'react';
 
 import type { DrawerDescriptorMap, DrawerNavigationHelpers } from '../types';

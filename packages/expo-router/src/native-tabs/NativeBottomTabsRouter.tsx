@@ -6,7 +6,7 @@ import {
   TabNavigationState,
   TabRouter,
   type TabRouterOptions,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 
 import {
   appendInternalExpoRouterParams,

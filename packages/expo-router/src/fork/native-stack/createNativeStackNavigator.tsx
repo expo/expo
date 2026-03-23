@@ -11,14 +11,14 @@ import {
   type StaticConfig,
   type TypedNavigator,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from '../../react-navigation/native';
 import {
   type NativeStackNavigationEventMap,
   type NativeStackNavigationOptions,
   type NativeStackNavigationProp,
   NativeStackView,
   type NativeStackNavigatorProps,
-} from '@react-navigation/native-stack';
+} from '../../react-navigation/native-stack';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 

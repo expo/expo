@@ -1,6 +1,6 @@
 'use client';
 
-import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
+import { BottomTabBarHeightContext } from '../react-navigation/bottom-tabs';
 import { use } from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

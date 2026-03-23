@@ -1,5 +1,5 @@
 'use client';
-import { useRoute } from '@react-navigation/native';
+import { useRoute } from '../react-navigation/native';
 import { isValidElement, ReactElement, ReactNode } from 'react';
 
 import { useNavigation } from '../useNavigation';

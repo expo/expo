@@ -9,7 +9,7 @@ import type {
   TabNavigationState,
   TabRouterOptions,
   Theme,
-} from '@react-navigation/native';
+} from '../../native';
 import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 import type {

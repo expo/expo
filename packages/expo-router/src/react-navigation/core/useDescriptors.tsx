@@ -4,7 +4,7 @@ import type {
   ParamListBase,
   PartialState,
   Router,
-} from '@react-navigation/routers';
+} from '../routers';
 import * as React from 'react';
 
 import {

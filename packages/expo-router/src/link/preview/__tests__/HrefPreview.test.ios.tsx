@@ -1,4 +1,4 @@
-import type { NavigationProp } from '@react-navigation/native';
+import type { NavigationProp } from '../../../react-navigation/native';
 import { screen } from '@testing-library/react-native';
 import React, { useEffect, type PropsWithChildren } from 'react';
 import { View, Text } from 'react-native';

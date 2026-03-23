@@ -1,4 +1,4 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import React, { useMemo } from 'react';
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 

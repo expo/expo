@@ -6,7 +6,7 @@ import {
   PartialState,
   useNavigationContainerRef,
   useStateForPath,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 import Constants from 'expo-constants';
 import { ComponentType, Fragment, useEffect, useSyncExternalStore } from 'react';
 import { Platform } from 'react-native';

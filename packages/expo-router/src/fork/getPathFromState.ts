@@ -1,5 +1,5 @@
-import { PathConfig, PathConfigMap } from '@react-navigation/native';
-import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
+import { PathConfig, PathConfigMap } from '../react-navigation/native';
+import type { NavigationState, PartialState, Route } from '../react-navigation/routers';
 import * as queryString from 'query-string';
 
 import * as expo from './getPathFromState-forks';

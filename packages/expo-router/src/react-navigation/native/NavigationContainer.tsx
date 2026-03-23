@@ -9,7 +9,7 @@ import {
   type ParamListBase,
   ThemeProvider,
   validatePathConfig,
-} from '@react-navigation/core';
+} from '../core';
 import * as React from 'react';
 import { I18nManager } from 'react-native';
 import useLatestCallback from 'use-latest-callback';

@@ -1,7 +1,7 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
-import { useRoute } from '@react-navigation/native';
+import { useRoute } from '../react-navigation/native';
 import { createURL } from 'expo-linking';
 import React from 'react';
 import { StyleSheet, Text, View, Platform, Image } from 'react-native';

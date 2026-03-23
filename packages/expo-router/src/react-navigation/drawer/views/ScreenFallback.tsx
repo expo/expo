@@ -1,4 +1,4 @@
-import { ResourceSavingView } from '@react-navigation/elements';
+import { ResourceSavingView } from '../../elements';
 import * as React from 'react';
 import {
   type StyleProp,

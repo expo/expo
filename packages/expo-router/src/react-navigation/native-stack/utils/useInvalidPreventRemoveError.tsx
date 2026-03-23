@@ -1,4 +1,4 @@
-import { usePreventRemoveContext } from '@react-navigation/native';
+import { usePreventRemoveContext } from '../../native';
 import * as React from 'react';
 
 import type { NativeStackDescriptorMap } from '../types';

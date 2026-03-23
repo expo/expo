@@ -3,7 +3,7 @@ import {
   HeaderHeightContext,
   HeaderShownContext,
   useFrameSize,
-} from '@react-navigation/elements';
+} from '../../../elements';
 import * as React from 'react';
 import {
   Animated,

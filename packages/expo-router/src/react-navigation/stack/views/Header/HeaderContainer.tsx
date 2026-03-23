@@ -1,10 +1,10 @@
-import { getHeaderTitle, HeaderBackContext } from '@react-navigation/elements';
+import { getHeaderTitle, HeaderBackContext } from '../../../elements';
 import {
   NavigationProvider,
   type ParamListBase,
   type Route,
   useLinkBuilder,
-} from '@react-navigation/native';
+} from '../../../native';
 import * as React from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 

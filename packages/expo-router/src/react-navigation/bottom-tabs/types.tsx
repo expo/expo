@@ -1,7 +1,7 @@
 import type {
   HeaderOptions,
   PlatformPressable,
-} from '@react-navigation/elements';
+} from '../elements';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
@@ -13,7 +13,7 @@ import type {
   TabNavigationState,
   TabRouterOptions,
   Theme,
-} from '@react-navigation/native';
+} from '../native';
 import type * as React from 'react';
 import type {
   Animated,

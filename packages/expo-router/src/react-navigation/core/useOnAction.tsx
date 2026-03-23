@@ -4,7 +4,7 @@ import type {
   PartialState,
   Router,
   RouterConfigOptions,
-} from '@react-navigation/routers';
+} from '../routers';
 import * as React from 'react';
 
 import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChildContext';

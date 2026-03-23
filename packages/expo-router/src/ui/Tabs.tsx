@@ -6,7 +6,7 @@ import {
   TabNavigationState,
   TabRouterOptions,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 import {
   Children,
   ComponentProps,

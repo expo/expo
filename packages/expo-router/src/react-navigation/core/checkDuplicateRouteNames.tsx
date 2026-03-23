@@ -1,4 +1,4 @@
-import type { NavigationState, PartialState } from '@react-navigation/routers';
+import type { NavigationState, PartialState } from '../routers';
 
 export function checkDuplicateRouteNames(state: NavigationState) {
   const duplicates: string[][] = [];

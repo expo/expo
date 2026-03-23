@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '../react-navigation/native';
 import React, { useDeferredValue, useMemo } from 'react';
 import { View, type ColorValue } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

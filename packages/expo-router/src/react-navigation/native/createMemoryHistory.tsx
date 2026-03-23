@@ -1,4 +1,4 @@
-import type { NavigationState } from '@react-navigation/core';
+import type { NavigationState } from '../core';
 import { nanoid } from 'nanoid/non-secure';
 
 type HistoryRecord = {

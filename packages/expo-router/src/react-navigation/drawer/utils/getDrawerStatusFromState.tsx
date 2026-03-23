@@ -2,7 +2,7 @@ import type {
   DrawerNavigationState,
   DrawerStatus,
   ParamListBase,
-} from '@react-navigation/native';
+} from '../../native';
 
 export function getDrawerStatusFromState(
   state: DrawerNavigationState<ParamListBase>

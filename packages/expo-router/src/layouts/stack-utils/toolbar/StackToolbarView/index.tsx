@@ -1,5 +1,5 @@
 'use client';
-import type { NativeStackHeaderItemCustom } from '@react-navigation/native-stack';
+import type { NativeStackHeaderItemCustom } from '../../../../react-navigation/native-stack';
 
 import { NativeToolbarView } from './native';
 import type { StackToolbarViewProps } from './types';
