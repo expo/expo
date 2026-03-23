@@ -37,12 +37,12 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
+            "compileSdkVersion": {{compileSdkVersion}},
+            "targetSdkVersion": {{targetSdkVersion}},
             "buildToolsVersion": "35.0.0"
           },
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "{{iosDeploymentTarget}}"
           }
         }
       ]
@@ -63,12 +63,12 @@ export default {
         'expo-build-properties',
         {
           android: {
-            compileSdkVersion: 35,
-            targetSdkVersion: 35,
+            compileSdkVersion: {{compileSdkVersion}},
+            targetSdkVersion: {{targetSdkVersion}},
             buildToolsVersion: '35.0.0',
           },
           ios: {
-            deploymentTarget: '15.1',
+            deploymentTarget: '{{iosDeploymentTarget}}',
           },
         },
       ],

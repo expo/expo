@@ -2,7 +2,38 @@ import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import { Children, ReactElement, ReactNode, PropsWithChildren, isValidElement } from 'react';
 
+import sdkVersions from '~/ui/components/SDKTables/sdk-versions.json';
+
 import { toString } from './utilities';
+
+const latestSdk = sdkVersions.sdkVersions[0];
+
+/**
+ * Variables that can be used in fenced code blocks with the `{{variableName}}` syntax.
+ * Values are derived from the latest SDK version data in sdk-versions.json.
+ */
+const sdkMajor = latestSdk.sdk.split('.')[0];
+
+const CODE_BLOCK_VARIABLES: Record<string, string> = {
+  '{{iosDeploymentTarget}}': latestSdk.ios.replace('+', ''),
+  '{{androidVersion}}': latestSdk.android.replace('+', ''),
+  '{{compileSdkVersion}}': latestSdk.compileSdkVersion,
+  '{{targetSdkVersion}}': latestSdk.targetSdkVersion,
+  '{{reactNativeVersion}}': latestSdk['react-native'],
+  '{{xcodeVersion}}': latestSdk.xcode.replace('+', ''),
+  '{{nodeVersion}}': latestSdk.node,
+  '{{reactVersion}}': latestSdk.react,
+  '{{expoSdkVersion}}': latestSdk.sdk,
+  '{{expoSdkMajorVersion}}': sdkMajor,
+};
+
+function replaceCodeBlockVariables(value: string): string {
+  let result = value;
+  for (const [key, val] of Object.entries(CODE_BLOCK_VARIABLES)) {
+    result = result.replaceAll(key, val);
+  }
+  return result;
+}
 
 // Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
 async function initPrismAsync() {
@@ -29,7 +60,7 @@ export const LANGUAGES_REMAP: Record<string, string> = {
 };
 
 export function cleanCopyValue(value: string) {
-  return value
+  return replaceCodeBlockVariables(value)
     .replace(/\/\*\s?@(info[^*]+|end|hide[^*]+).?\*\//g, '')
     .replace(/#\s?@(info[^#]+|end|hide[^#]+).?#/g, '')
     .replace(/<!--\s?@(info[^<>]+|end|hide[^<>]+).?-->/g, '')
@@ -238,7 +269,8 @@ export function getCodeData(value: string, className?: string) {
     throw new Error(`docs currently do not support language: ${lang}`);
   }
 
-  const rawHtml = Prism.highlight(value, grammar, lang);
+  const processedValue = replaceCodeBlockVariables(value);
+  const rawHtml = Prism.highlight(processedValue, grammar, lang);
   if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
     return replaceHashCommentsWithAnnotations(rawHtml);
   } else if (['xml', 'html'].includes(lang)) {

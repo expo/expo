@@ -147,10 +147,10 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
   },
   "dependencies": {
     "cool-package": "*",
-    "expo": "~54.0.0",
-    "expo-status-bar": "~3.0.6",
-    "react": "19.1.0",
-    "react-native": "0.81.1"
+    "expo": "~{{expoSdkVersion}}",
+    "expo-status-bar": "~55.0.0",
+    "react": "{{reactVersion}}",
+    "react-native": "{{reactNativeVersion}}"
   }
 }
 ```
@@ -231,7 +231,7 @@ If the duplicate dependency is not resolvable by you changing your dependencies,
   "version": "0.0.0",
   "workspaces": ["apps/*", "packages/*"],
   "resolutions": {
-    "react": "^19.1.0"
+    "react": "^{{reactVersion}}"
   }
 }
 ```
