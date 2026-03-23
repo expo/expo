@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [Web] Fixed sync worker result length encoding for `SharedArrayBuffer` results in `WorkerChannel`, preventing truncated JSON deserialization errors.
+- [Web] Fixed sync worker result length encoding for `SharedArrayBuffer` results in `WorkerChannel`, preventing truncated JSON deserialization errors. ([#44148](https://github.com/expo/expo/pull/44148) by [@silto](https://github.com/silto))
 
 ### 💡 Others
 
