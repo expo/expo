@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Added an overload to `setStringAsync` that supports setting both plain text and HTML content at the same time so that apps can paste the most appropriate content type.
+- Added an overload to `setStringAsync` that supports setting both plain text and HTML content at the same time so that apps can paste the most appropriate content type. ([#44179](https://github.com/expo/expo/pull/44179) by [@nickpwhite](https://github.com/nickpwhite))
 
 ### 🐛 Bug fixes
 
