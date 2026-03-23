@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Deduplicate assets listed in `metadata.json` ([#44095](https://github.com/expo/expo/pull/44095) by [@quinlanj](https://github.com/quinlanj))
+
 ### 💡 Others
 
 ## 55.0.18 — 2026-03-18
