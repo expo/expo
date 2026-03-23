@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Move the old expo-file-system mock to expo-file-system/legacy. ([#40916](https://github.com/expo/expo/pull/40916) by [@macksal](https://github.com/macksal))
+
 ### 💡 Others
 
 ### ⚠️ Notices
