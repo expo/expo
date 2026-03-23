@@ -64,7 +64,6 @@ afterEvaluate {
       inputs.dir project.fileTree(expoLogBoxDirFile) {
         exclude 'dist/**'
         exclude 'android/**'
-        exclude 'node_modules/**'
       }
       outputs.dir distDirFile
 
