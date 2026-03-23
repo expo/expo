@@ -1,3 +1,4 @@
+import { NavigationState } from '@react-navigation/native';
 import type { LoaderFunction } from 'expo-server';
 import { useRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
@@ -18,15 +19,7 @@ export { useRouteInfo };
  * }
  * ```
  */
-export declare function useRootNavigationState(): Readonly<{
-    key: string;
-    index: number;
-    routeNames: string[];
-    history?: unknown[];
-    routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
-    type: string;
-    stale: false;
-}>;
+export declare function useRootNavigationState(): NavigationState;
 /**
  * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,
  * which returns a React `ref`.
