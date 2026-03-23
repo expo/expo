@@ -2706,6 +2706,9 @@ importers:
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
+      '@types/babel__generator':
+        specifier: ^7.27.0
+        version: 7.27.0
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
