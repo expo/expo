@@ -58,7 +58,7 @@ jobs:
         with:
           bun-version: latest
       - name: 📦 Install dependencies
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: 🧐 Check all packages
         if: github.event_name == 'schedule' ||
           github.event.inputs.checkAll == 'check-all' ||
@@ -99,7 +99,7 @@ jobs:
         with:
           bun-version: latest
       - name: 📦 Install dependencies
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: 🧐 Check all packages
         run: pnpm expotools check-packages --all
       - name: 🔔 Notify on Slack
