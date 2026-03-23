@@ -1,13 +1,9 @@
-import { HeaderButton } from '../../elements';
-import {
-  DrawerActions,
-  type ParamListBase,
-  useNavigation,
-} from '../../native';
 import { Image, type ImageSourcePropType, StyleSheet } from 'react-native';
 
-import type { DrawerNavigationProp } from '../types';
 import toggleDrawerIcon from '../../../../../assets/react-navigation/drawer/toggle-drawer-icon.png';
+import { HeaderButton } from '../../elements';
+import { DrawerActions, type ParamListBase, useNavigation } from '../../native';
+import type { DrawerNavigationProp } from '../types';
 
 type Props = {
   accessibilityLabel?: string;
@@ -29,8 +25,7 @@ export function DrawerToggleButton({
     <HeaderButton
       {...rest}
       accessibilityLabel={accessibilityLabel}
-      onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-    >
+      onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}>
       <Image
         resizeMode="contain"
         source={imageSource}

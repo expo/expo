@@ -66,11 +66,7 @@ const createStore = <T,>(getInitialState: () => T) => {
 export function useSyncState<T>(getInitialState: () => T) {
   const store = React.useRef(createStore(getInitialState)).current;
 
-  const state = React.useSyncExternalStore(
-    store.subscribe,
-    store.getState,
-    store.getState
-  );
+  const state = React.useSyncExternalStore(store.subscribe, store.getState, store.getState);
 
   React.useDebugValue(state);
 

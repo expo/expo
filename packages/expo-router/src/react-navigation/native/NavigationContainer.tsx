@@ -1,3 +1,7 @@
+import * as React from 'react';
+import { I18nManager } from 'react-native';
+import useLatestCallback from 'use-latest-callback';
+
 import {
   BaseNavigationContainer,
   getActionFromState,
@@ -10,19 +14,11 @@ import {
   ThemeProvider,
   validatePathConfig,
 } from '../core';
-import * as React from 'react';
-import { I18nManager } from 'react-native';
-import useLatestCallback from 'use-latest-callback';
-
 import { LinkingContext } from './LinkingContext';
 import { LocaleDirContext } from './LocaleDirContext';
-import { DefaultTheme } from './theming/DefaultTheme';
-import type {
-  DocumentTitleOptions,
-  LinkingOptions,
-  LocaleDirection,
-} from './types';
 import { UnhandledLinkingContext } from './UnhandledLinkingContext';
+import { DefaultTheme } from './theming/DefaultTheme';
+import type { DocumentTitleOptions, LinkingOptions, LocaleDirection } from './types';
 import { useBackButton } from './useBackButton';
 import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
@@ -89,15 +85,12 @@ function NavigationContainerInner(
     validatePathConfig(linking.config);
   }
 
-  const refContainer =
-    React.useRef<NavigationContainerRef<ParamListBase>>(null);
+  const refContainer = React.useRef<NavigationContainerRef<ParamListBase>>(null);
 
   useBackButton(refContainer);
   useDocumentTitle(refContainer, documentTitle);
 
-  const [lastUnhandledLink, setLastUnhandledLink] = React.useState<
-    string | undefined
-  >();
+  const [lastUnhandledLink, setLastUnhandledLink] = React.useState<string | undefined>();
 
   const { getInitialState } = useLinking(
     refContainer,
@@ -153,8 +146,7 @@ function NavigationContainerInner(
             prefixes: linking?.prefixes ?? [],
             getStateFromPath: linking?.getStateFromPath ?? getStateFromPath,
             getPathFromState: linking?.getPathFromState ?? getPathFromState,
-            getActionFromState:
-              linking?.getActionFromState ?? getActionFromState,
+            getActionFromState: linking?.getActionFromState ?? getActionFromState,
           };
         },
       });
@@ -167,8 +159,7 @@ function NavigationContainerInner(
   // @ts-expect-error not sure why this is not working
   React.useImperativeHandle(ref, () => refContainer.current);
 
-  const isLinkingReady =
-    rest.initialState != null || !isLinkingEnabled || isResolved;
+  const isLinkingReady = rest.initialState != null || !isLinkingEnabled || isResolved;
 
   if (!isLinkingReady) {
     return (
@@ -187,9 +178,7 @@ function NavigationContainerInner(
             theme={theme}
             onReady={onReadyForLinkingHandling}
             onStateChange={onStateChangeForLinkingHandling}
-            initialState={
-              rest.initialState == null ? initialState : rest.initialState
-            }
+            initialState={rest.initialState == null ? initialState : rest.initialState}
             ref={refContainer}
           />
         </LinkingContext.Provider>
@@ -202,9 +191,9 @@ function NavigationContainerInner(
  * Container component that manages the navigation state.
  * This should be rendered at the root wrapping the whole app.
  */
-export const NavigationContainer = React.forwardRef(
-  NavigationContainerInner
-) as <RootParamList extends {} = ReactNavigation.RootParamList>(
+export const NavigationContainer = React.forwardRef(NavigationContainerInner) as <
+  RootParamList extends {} = ReactNavigation.RootParamList,
+>(
   props: Props<RootParamList> & {
     ref?: React.Ref<NavigationContainerRef<RootParamList>>;
   }

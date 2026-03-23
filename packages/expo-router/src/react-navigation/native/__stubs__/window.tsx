@@ -29,10 +29,7 @@ const history = {
 
   go(n: number) {
     setTimeout(() => {
-      if (
-        (n > 0 && n < entries.length - index) ||
-        (n < 0 && Math.abs(n) <= index)
-      ) {
+      if ((n > 0 && n < entries.length - index) || (n < 0 && Math.abs(n) <= index)) {
         index += n;
         const entry = entries[index];
         location = new URL(entry.href);

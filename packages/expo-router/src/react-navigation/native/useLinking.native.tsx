@@ -1,3 +1,6 @@
+import * as React from 'react';
+import { Linking, Platform } from 'react-native';
+
 import {
   getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
@@ -5,9 +8,6 @@ import {
   type ParamListBase,
   useNavigationIndependentTree,
 } from '../core';
-import * as React from 'react';
-import { Linking, Platform } from 'react-native';
-
 import { extractPathFromURL } from './extractPathFromURL';
 import type { LinkingOptions } from './types';
 
@@ -120,20 +120,15 @@ export function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const getStateFromURL = React.useCallback(
-    (url: string | null | undefined) => {
-      if (!url || (filterRef.current && !filterRef.current(url))) {
-        return undefined;
-      }
+  const getStateFromURL = React.useCallback((url: string | null | undefined) => {
+    if (!url || (filterRef.current && !filterRef.current(url))) {
+      return undefined;
+    }
 
-      const path = extractPathFromURL(prefixesRef.current, url);
+    const path = extractPathFromURL(prefixesRef.current, url);
 
-      return path !== undefined
-        ? getStateFromPathRef.current(path, configRef.current)
-        : undefined;
-    },
-    []
-  );
+    return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
+  }, []);
 
   const getInitialState = React.useCallback(() => {
     let state: ResultState | undefined;
@@ -196,9 +191,7 @@ export function useLinking(
             // This could happen in case of malformed links, navigation object not being initialized etc.
             console.warn(
               `An error occurred when trying to handle the link '${url}': ${
-                typeof e === 'object' && e != null && 'message' in e
-                  ? e.message
-                  : e
+                typeof e === 'object' && e != null && 'message' in e ? e.message : e
               }`
             );
           }

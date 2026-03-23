@@ -1,5 +1,6 @@
-import type { NavigationState, PartialState } from '../routers';
 import * as React from 'react';
+
+import type { NavigationState, PartialState } from '../routers';
 
 const MISSING_CONTEXT_ERROR =
   "Couldn't find a navigation context. Have you wrapped your app with 'NavigationContainer'? See https://reactnavigation.org/docs/getting-started for setup instructions.";
@@ -10,14 +11,9 @@ export const NavigationStateContext = React.createContext<{
   getKey: () => string | undefined;
   setKey: (key: string) => void;
   getState: () => NavigationState | PartialState<NavigationState> | undefined;
-  setState: (
-    state: NavigationState | PartialState<NavigationState> | undefined
-  ) => void;
+  setState: (state: NavigationState | PartialState<NavigationState> | undefined) => void;
   getIsInitial: () => boolean;
-  addOptionsGetter?: (
-    key: string,
-    getter: () => object | undefined | null
-  ) => void;
+  addOptionsGetter?: (key: string, getter: () => object | undefined | null) => void;
 }>({
   isDefault: true,
 

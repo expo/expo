@@ -1,8 +1,8 @@
-import type { NavigationState, ParamListBase } from '../routers';
 import * as React from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
+import type { NavigationState, ParamListBase } from '../routers';
 import type {
   DefaultNavigatorOptions,
   EventMapBase,
@@ -32,9 +32,7 @@ type KeysOf<T> = T extends {} ? keyof T : never;
  * We get a union type when using keyof, but we want an intersection instead.
  * https://stackoverflow.com/a/50375286/1665026
  */
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-  k: infer I
-) => void
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
   ? I
   : never;
 
@@ -62,25 +60,13 @@ type ParamListForGroups<
   Groups extends
     | Readonly<{
         [key: string]: {
-          screens: StaticConfigScreens<
-            ParamListBase,
-            NavigationState,
-            {},
-            EventMapBase,
-            any
-          >;
+          screens: StaticConfigScreens<ParamListBase, NavigationState, {}, EventMapBase, any>;
         };
       }>
     | undefined,
 > = Groups extends {
   [key: string]: {
-    screens: StaticConfigScreens<
-      ParamListBase,
-      NavigationState,
-      {},
-      EventMapBase,
-      any
-    >;
+    screens: StaticConfigScreens<ParamListBase, NavigationState, {}, EventMapBase, any>;
   };
 }
   ? ParamListForScreens<UnionToIntersection<Groups[keyof Groups]['screens']>>
@@ -93,14 +79,7 @@ type StaticRouteConfig<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   Navigation,
-> = RouteConfigProps<
-  ParamList,
-  RouteName,
-  State,
-  ScreenOptions,
-  EventMap,
-  Navigation
-> &
+> = RouteConfigProps<ParamList, RouteName, State, ScreenOptions, EventMap, Navigation> &
   RouteConfigComponent<ParamList, RouteName>;
 
 export type StaticConfigScreens<
@@ -175,25 +154,18 @@ export type StaticConfigGroup<
   /**
    * Static navigation config or Component to render for the screen.
    */
-  screens: StaticConfigScreens<
-    ParamList,
-    State,
-    ScreenOptions,
-    EventMap,
-    NavigationList
-  >;
+  screens: StaticConfigScreens<ParamList, State, ScreenOptions, EventMap, NavigationList>;
 };
 
-export type StaticConfig<Bag extends NavigatorTypeBagBase> =
-  StaticConfigInternal<
-    Bag['ParamList'],
-    Bag['NavigatorID'],
-    Bag['State'],
-    Bag['ScreenOptions'],
-    Bag['EventMap'],
-    Bag['NavigationList'],
-    Bag['Navigator']
-  >;
+export type StaticConfig<Bag extends NavigatorTypeBagBase> = StaticConfigInternal<
+  Bag['ParamList'],
+  Bag['NavigatorID'],
+  Bag['State'],
+  Bag['ScreenOptions'],
+  Bag['EventMap'],
+  Bag['NavigationList'],
+  Bag['Navigator']
+>;
 
 type StaticConfigInternal<
   ParamList extends ParamListBase,
@@ -230,13 +202,7 @@ type StaticConfigInternal<
         /**
          * Screens to render in the navigator and their configuration.
          */
-        screens: StaticConfigScreens<
-          ParamList,
-          State,
-          ScreenOptions,
-          EventMap,
-          NavigationList
-        >;
+        screens: StaticConfigScreens<ParamList, State, ScreenOptions, EventMap, NavigationList>;
         /**
          * Groups of screens to render in the navigator and their configuration.
          */
@@ -254,13 +220,7 @@ type StaticConfigInternal<
         /**
          * Screens to render in the navigator and their configuration.
          */
-        screens?: StaticConfigScreens<
-          ParamList,
-          State,
-          ScreenOptions,
-          EventMap,
-          NavigationList
-        >;
+        screens?: StaticConfigScreens<ParamList, State, ScreenOptions, EventMap, NavigationList>;
         /**
          * Groups of screens to render in the navigator and their configuration.
          */
@@ -301,8 +261,7 @@ export type StaticParamList<
     };
   },
 > = FlatType<
-  ParamListForScreens<T['config']['screens']> &
-    ParamListForGroups<T['config']['groups']>
+  ParamListForScreens<T['config']['screens']> & ParamListForGroups<T['config']['groups']>
 >;
 
 export type StaticNavigation<NavigatorProps, GroupProps, ScreenProps> = {
@@ -344,10 +303,7 @@ const getItemsFromScreens = (
         component = screen;
       } else if ('config' in screen) {
         isNavigator = true;
-        component = createComponentForStaticNavigation(
-          screen,
-          `${name}Navigator`
-        );
+        component = createComponentForStaticNavigation(screen, `${name}Navigator`);
       }
     } else if (isValidElementType(item)) {
       component = item;
@@ -555,15 +511,10 @@ export function createPathConfigForStaticNavigation(
             let screens;
 
             const skipInitialDetectionInChild =
-              skipInitialDetection ||
-              (screenConfig.path != null && screenConfig.path !== '');
+              skipInitialDetection || (screenConfig.path != null && screenConfig.path !== '');
 
             if ('config' in item) {
-              screens = createPathConfigForTree(
-                item,
-                undefined,
-                skipInitialDetectionInChild
-              );
+              screens = createPathConfigForTree(item, undefined, skipInitialDetectionInChild);
             } else if (
               'screen' in item &&
               'config' in item.screen &&

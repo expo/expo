@@ -14,14 +14,7 @@ export type CardA11yWrapperRef = { setInert: (value: boolean) => void };
 
 export const CardA11yWrapper = React.forwardRef(
   (
-    {
-      focused,
-      active,
-      animated,
-      isNextScreenTransparent,
-      detachCurrentScreen,
-      children,
-    }: Props,
+    { focused, active, animated, isNextScreenTransparent, detachCurrentScreen, children }: Props,
     ref: React.Ref<CardA11yWrapperRef>
   ) => {
     // Manage this in separate component to avoid re-rendering card during gestures
@@ -31,10 +24,7 @@ export const CardA11yWrapper = React.forwardRef(
     React.useImperativeHandle(ref, () => ({ setInert }), []);
 
     const isHidden =
-      !animated &&
-      isNextScreenTransparent === false &&
-      detachCurrentScreen !== false &&
-      !focused;
+      !animated && isNextScreenTransparent === false && detachCurrentScreen !== false && !focused;
 
     return (
       <View
@@ -56,8 +46,7 @@ export const CardA11yWrapper = React.forwardRef(
         ]}
         // Make sure this view is not removed on the new architecture, as it causes focus loss during navigation on Android.
         // This can happen when the view flattening results in different trees - due to `overflow` style changing in a parent.
-        collapsable={false}
-      >
+        collapsable={false}>
         {children}
       </View>
     );

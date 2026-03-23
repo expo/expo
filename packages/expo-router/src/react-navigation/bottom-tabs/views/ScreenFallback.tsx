@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  Animated,
-  type StyleProp,
-  View,
-  type ViewProps,
-  type ViewStyle,
-} from 'react-native';
+import { Animated, type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
 
 type Props = {
   enabled: boolean;
@@ -41,9 +35,7 @@ export const MaybeScreenContainer = ({
 
 export function MaybeScreen({ enabled, active, ...rest }: ViewProps & Props) {
   if (Screens?.screensEnabled?.()) {
-    return (
-      <Screens.Screen enabled={enabled} activityState={active} {...rest} />
-    );
+    return <Screens.Screen enabled={enabled} activityState={active} {...rest} />;
   }
 
   return <View {...rest} />;

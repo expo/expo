@@ -1,9 +1,6 @@
 import type { GestureDirection } from '../types';
 
-export function getInvertedMultiplier(
-  gestureDirection: GestureDirection,
-  isRTL: boolean
-): 1 | -1 {
+export function getInvertedMultiplier(gestureDirection: GestureDirection, isRTL: boolean): 1 | -1 {
   switch (gestureDirection) {
     case 'vertical':
       return 1;

@@ -1,4 +1,3 @@
-import { useTheme } from '../native';
 import * as React from 'react';
 import {
   Animated,
@@ -10,6 +9,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+
+import { useTheme } from '../native';
 
 type HoverEffectProps = {
   color?: string;
@@ -23,9 +24,7 @@ export type Props = Omit<PressableProps, 'style' | 'onPress'> & {
   pressOpacity?: number;
   hoverEffect?: HoverEffectProps;
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
-  onPress?: (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
-  ) => void;
+  onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
   children: React.ReactNode;
 };
 
@@ -84,8 +83,7 @@ function PlatformPressableInternal(
         ('shiftKey' in e && e.shiftKey);
 
       // only handle left clicks
-      const isLeftClick =
-        'button' in e ? e.button == null || e.button === 0 : true;
+      const isLeftClick = 'button' in e ? e.button == null || e.button === 0 : true;
 
       // let browser handle "target=_blank" etc.
       const isSelfTarget =
@@ -147,8 +145,7 @@ function PlatformPressableInternal(
         },
         style,
       ]}
-      {...rest}
-    >
+      {...rest}>
       {!disabled ? <HoverEffect {...hoverEffect} /> : null}
       {children}
     </AnimatedPressable>
@@ -186,11 +183,7 @@ const CSS_TEXT = css`
   }
 `;
 
-const HoverEffect = ({
-  color,
-  hoverOpacity = 0.08,
-  activeOpacity = 0.16,
-}: HoverEffectProps) => {
+const HoverEffect = ({ color, hoverOpacity = 0.08, activeOpacity = 0.16 }: HoverEffectProps) => {
   if (Platform.OS !== 'web' || color == null) {
     return null;
   }

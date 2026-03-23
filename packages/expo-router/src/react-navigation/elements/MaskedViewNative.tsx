@@ -4,8 +4,7 @@
 import * as React from 'react';
 import { UIManager } from 'react-native';
 
-type MaskedViewType =
-  typeof import('@react-native-masked-view/masked-view').default;
+type MaskedViewType = typeof import('@react-native-masked-view/masked-view').default;
 
 type Props = React.ComponentProps<MaskedViewType> & {
   children: React.ReactElement;
@@ -21,8 +20,7 @@ try {
   // Ignore
 }
 
-const isMaskedViewAvailable =
-  UIManager.getViewManagerConfig('RNCMaskedView') != null;
+const isMaskedViewAvailable = UIManager.getViewManagerConfig('RNCMaskedView') != null;
 
 export function MaskedView({ children, ...rest }: Props) {
   if (isMaskedViewAvailable && RNCMaskedView) {

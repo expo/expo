@@ -1,13 +1,8 @@
+import React from 'react';
+import { type StyleProp, StyleSheet, type TextStyle, View, type ViewStyle } from 'react-native';
+
 import { Badge } from '../../elements';
 import type { Route } from '../../native';
-import React from 'react';
-import {
-  type StyleProp,
-  StyleSheet,
-  type TextStyle,
-  View,
-  type ViewStyle,
-} from 'react-native';
 
 type Props = {
   route: Route<string>;
@@ -19,11 +14,7 @@ type Props = {
   inactiveOpacity: number;
   activeTintColor: string;
   inactiveTintColor: string;
-  renderIcon: (props: {
-    focused: boolean;
-    color: string;
-    size: number;
-  }) => React.ReactNode;
+  renderIcon: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
   allowFontScaling?: boolean;
   style: StyleProp<ViewStyle>;
 };
@@ -72,8 +63,7 @@ export function TabBarIcon({
             ? styles.wrapperUikitCompact
             : styles.wrapperUikit,
         style,
-      ]}
-    >
+      ]}>
       <View
         style={[
           styles.icon,
@@ -82,8 +72,7 @@ export function TabBarIcon({
             // Workaround for react-native >= 0.54 layout bug
             minWidth: iconSize,
           },
-        ]}
-      >
+        ]}>
         {renderIcon({
           focused: true,
           size: iconSize,
@@ -101,8 +90,7 @@ export function TabBarIcon({
         visible={badge != null}
         size={iconSize * 0.75}
         allowFontScaling={allowFontScaling}
-        style={[styles.badge, badgeStyle]}
-      >
+        style={[styles.badge, badgeStyle]}>
         {badge}
       </Badge>
     </View>

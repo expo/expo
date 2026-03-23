@@ -1,6 +1,6 @@
-import type { ParamListBase } from '../routers';
 import * as React from 'react';
 
+import type { ParamListBase } from '../routers';
 import {
   type FocusedNavigationCallback,
   type FocusedNavigationListener,
@@ -16,10 +16,7 @@ type Options = {
 /**
  * Hook for passing focus callback to children
  */
-export function useFocusedListenersChildrenAdapter({
-  navigation,
-  focusedListeners,
-}: Options) {
+export function useFocusedListenersChildrenAdapter({ navigation, focusedListeners }: Options) {
   const { addListener } = React.useContext(NavigationBuilderContext);
 
   const listener = React.useCallback(
@@ -41,8 +38,5 @@ export function useFocusedListenersChildrenAdapter({
     [focusedListeners, navigation]
   );
 
-  React.useEffect(
-    () => addListener?.('focus', listener),
-    [addListener, listener]
-  );
+  React.useEffect(() => addListener?.('focus', listener), [addListener, listener]);
 }

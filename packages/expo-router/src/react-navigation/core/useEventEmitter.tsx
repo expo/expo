@@ -2,10 +2,9 @@ import * as React from 'react';
 
 import type { EventArg, EventConsumer, EventEmitter } from './types';
 
-export type NavigationEventEmitter<T extends Record<string, any>> =
-  EventEmitter<T> & {
-    create: (target: string) => EventConsumer<T>;
-  };
+export type NavigationEventEmitter<T extends Record<string, any>> = EventEmitter<T> & {
+  create: (target: string) => EventConsumer<T>;
+};
 
 type Listeners = ((e: any) => void)[];
 
@@ -21,15 +20,11 @@ export function useEventEmitter<T extends Record<string, any>>(
     listenRef.current = listen;
   });
 
-  const listeners = React.useRef<Record<string, Record<string, Listeners>>>(
-    Object.create(null)
-  );
+  const listeners = React.useRef<Record<string, Record<string, Listeners>>>(Object.create(null));
 
   const create = React.useCallback((target: string) => {
     const removeListener = (type: string, callback: (data: any) => void) => {
-      const callbacks = listeners.current[type]
-        ? listeners.current[type][target]
-        : undefined;
+      const callbacks = listeners.current[type] ? listeners.current[type][target] : undefined;
 
       if (!callbacks) {
         return;

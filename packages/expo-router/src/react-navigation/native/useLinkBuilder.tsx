@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   CommonActions,
   findFocusedRoute,
@@ -8,8 +10,6 @@ import {
   NavigationRouteContext,
   useStateForPath,
 } from '../core';
-import * as React from 'react';
-
 import { LinkingContext } from './LinkingContext';
 
 type MinimalState = {
@@ -50,9 +50,7 @@ export function useBuildHref() {
         routes: [{ name, params }],
       };
 
-      const constructState = (
-        state: MinimalState | undefined
-      ): MinimalState => {
+      const constructState = (state: MinimalState | undefined): MinimalState => {
         if (state) {
           const route = state.routes[0];
 
@@ -106,8 +104,7 @@ export const useBuildAction = () => {
   const { options } = React.useContext(LinkingContext);
 
   const getStateFromPathHelper = options?.getStateFromPath ?? getStateFromPath;
-  const getActionFromStateHelper =
-    options?.getActionFromState ?? getActionFromState;
+  const getActionFromStateHelper = options?.getActionFromState ?? getActionFromState;
 
   const buildAction = React.useCallback(
     (href: string) => {

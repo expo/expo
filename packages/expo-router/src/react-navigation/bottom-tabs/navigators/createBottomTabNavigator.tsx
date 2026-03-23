@@ -10,7 +10,6 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
-
 import type {
   BottomTabNavigationEventMap,
   BottomTabNavigationOptions,
@@ -32,34 +31,28 @@ function BottomTabNavigator({
   UNSTABLE_router,
   ...rest
 }: BottomTabNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } =
-    useNavigationBuilder<
-      TabNavigationState<ParamListBase>,
-      TabRouterOptions,
-      TabActionHelpers<ParamListBase>,
-      BottomTabNavigationOptions,
-      BottomTabNavigationEventMap
-    >(TabRouter, {
-      id,
-      initialRouteName,
-      backBehavior,
-      UNSTABLE_routeNamesChangeBehavior,
-      children,
-      layout,
-      screenListeners,
-      screenOptions,
-      screenLayout,
-      UNSTABLE_router,
-    });
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+    TabNavigationState<ParamListBase>,
+    TabRouterOptions,
+    TabActionHelpers<ParamListBase>,
+    BottomTabNavigationOptions,
+    BottomTabNavigationEventMap
+  >(TabRouter, {
+    id,
+    initialRouteName,
+    backBehavior,
+    UNSTABLE_routeNamesChangeBehavior,
+    children,
+    layout,
+    screenListeners,
+    screenOptions,
+    screenLayout,
+    UNSTABLE_router,
+  });
 
   return (
     <NavigationContent>
-      <BottomTabView
-        {...rest}
-        state={state}
-        navigation={navigation}
-        descriptors={descriptors}
-      />
+      <BottomTabView {...rest} state={state} navigation={navigation} descriptors={descriptors} />
     </NavigationContent>
   );
 }
@@ -74,11 +67,7 @@ export function createBottomTabNavigator<
     ScreenOptions: BottomTabNavigationOptions;
     EventMap: BottomTabNavigationEventMap;
     NavigationList: {
-      [RouteName in keyof ParamList]: BottomTabNavigationProp<
-        ParamList,
-        RouteName,
-        NavigatorID
-      >;
+      [RouteName in keyof ParamList]: BottomTabNavigationProp<ParamList, RouteName, NavigatorID>;
     };
     Navigator: typeof BottomTabNavigator;
   },

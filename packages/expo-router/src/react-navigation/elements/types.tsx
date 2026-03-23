@@ -34,12 +34,7 @@ export type HeaderSearchBarOptions = {
   /**
    * The auto-capitalization behavior
    */
-  autoCapitalize?:
-    | 'none'
-    | 'words'
-    | 'sentences'
-    | 'characters'
-    | 'systemDefault';
+  autoCapitalize?: 'none' | 'words' | 'sentences' | 'characters' | 'systemDefault';
   /**
    * Automatically focuses search input on mount
    */
@@ -191,9 +186,7 @@ export type HeaderOptions = {
   /**
    * Style object for the container of the `headerBackground` element.
    */
-  headerBackgroundContainerStyle?: Animated.WithAnimatedValue<
-    StyleProp<ViewStyle>
-  >;
+  headerBackgroundContainerStyle?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
   /**
    * Defaults to `false`. If `true`, the header will not have a background unless you explicitly provide it with `headerBackground`.
    * The header will also float over the screen so that it overlaps the content underneath.

@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   CommonActions,
   type NavigationAction,
@@ -5,8 +7,6 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
-import * as React from 'react';
-
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -72,9 +72,7 @@ export function useNavigationHelpers<
       ...helpers,
       dispatch,
       emit: emitter.emit,
-      isFocused: parentNavigationHelpers
-        ? parentNavigationHelpers.isFocused
-        : () => true,
+      isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
       canGoBack: () => {
         const state = getState();
 

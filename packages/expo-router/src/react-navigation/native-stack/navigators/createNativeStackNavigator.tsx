@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   createNavigatorFactory,
   type EventArg,
@@ -13,8 +15,6 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
-import * as React from 'react';
-
 import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
@@ -35,24 +35,23 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } =
-    useNavigationBuilder<
-      StackNavigationState<ParamListBase>,
-      StackRouterOptions,
-      StackActionHelpers<ParamListBase>,
-      NativeStackNavigationOptions,
-      NativeStackNavigationEventMap
-    >(StackRouter, {
-      id,
-      initialRouteName,
-      UNSTABLE_routeNamesChangeBehavior,
-      children,
-      layout,
-      screenListeners,
-      screenOptions,
-      screenLayout,
-      UNSTABLE_router,
-    });
+  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+    StackNavigationState<ParamListBase>,
+    StackRouterOptions,
+    StackActionHelpers<ParamListBase>,
+    NativeStackNavigationOptions,
+    NativeStackNavigationEventMap
+  >(StackRouter, {
+    id,
+    initialRouteName,
+    UNSTABLE_routeNamesChangeBehavior,
+    children,
+    layout,
+    screenListeners,
+    screenOptions,
+    screenLayout,
+    UNSTABLE_router,
+  });
 
   const meta = React.useContext(NavigationMetaContext);
 
@@ -70,11 +69,7 @@ function NativeStackNavigator({
       // Run the operation in the next frame so we're sure all listeners have been run
       // This is necessary to know if preventDefault() has been called
       requestAnimationFrame(() => {
-        if (
-          state.index > 0 &&
-          isFocused &&
-          !(e as EventArg<'tabPress', true>).defaultPrevented
-        ) {
+        if (state.index > 0 && isFocused && !(e as EventArg<'tabPress', true>).defaultPrevented) {
           // When user taps on already focused tab and we're inside the tab,
           // reset the stack to replicate native behaviour
           navigation.dispatch({
@@ -109,11 +104,7 @@ export function createNativeStackNavigator<
     ScreenOptions: NativeStackNavigationOptions;
     EventMap: NativeStackNavigationEventMap;
     NavigationList: {
-      [RouteName in keyof ParamList]: NativeStackNavigationProp<
-        ParamList,
-        RouteName,
-        NavigatorID
-      >;
+      [RouteName in keyof ParamList]: NativeStackNavigationProp<ParamList, RouteName, NavigatorID>;
     };
     Navigator: typeof NativeStackNavigator;
   },

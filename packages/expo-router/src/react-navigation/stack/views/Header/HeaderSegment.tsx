@@ -1,3 +1,6 @@
+import * as React from 'react';
+import { type LayoutChangeEvent, Platform, StyleSheet, type ViewStyle } from 'react-native';
+
 import {
   getDefaultHeaderHeight,
   Header,
@@ -6,14 +9,6 @@ import {
   HeaderTitle,
 } from '../../../elements';
 import { useLocale } from '../../../native';
-import * as React from 'react';
-import {
-  type LayoutChangeEvent,
-  Platform,
-  StyleSheet,
-  type ViewStyle,
-} from 'react-native';
-
 import type {
   Layout,
   SceneProgress,
@@ -35,23 +30,15 @@ type Props = Omit<StackHeaderOptions, 'headerStatusBarHeight'> & {
 export function HeaderSegment(props: Props) {
   const { direction } = useLocale();
 
-  const [leftLabelLayout, setLeftLabelLayout] = React.useState<
-    Layout | undefined
-  >(undefined);
+  const [leftLabelLayout, setLeftLabelLayout] = React.useState<Layout | undefined>(undefined);
 
-  const [titleLayout, setTitleLayout] = React.useState<Layout | undefined>(
-    undefined
-  );
+  const [titleLayout, setTitleLayout] = React.useState<Layout | undefined>(undefined);
 
   const handleTitleLayout = (e: LayoutChangeEvent) => {
     const { height, width } = e.nativeEvent.layout;
 
     setTitleLayout((titleLayout) => {
-      if (
-        titleLayout &&
-        height === titleLayout.height &&
-        width === titleLayout.width
-      ) {
+      if (titleLayout && height === titleLayout.height && width === titleLayout.width) {
         return titleLayout;
       }
 
@@ -62,11 +49,7 @@ export function HeaderSegment(props: Props) {
   const handleLeftLabelLayout = (e: LayoutChangeEvent) => {
     const { height, width } = e.nativeEvent.layout;
 
-    if (
-      leftLabelLayout &&
-      height === leftLabelLayout.height &&
-      width === leftLabelLayout.width
-    ) {
+    if (leftLabelLayout && height === leftLabelLayout.height && width === leftLabelLayout.width) {
       return;
     }
 
@@ -102,50 +85,31 @@ export function HeaderSegment(props: Props) {
     ...rest
   } = props;
 
-  const defaultHeight = getDefaultHeaderHeight(
-    layout,
-    modal,
-    headerStatusBarHeight
-  );
+  const defaultHeight = getDefaultHeaderHeight(layout, modal, headerStatusBarHeight);
 
-  const { height = defaultHeight } = StyleSheet.flatten(
-    customHeaderStyle || {}
-  ) as ViewStyle;
+  const { height = defaultHeight } = StyleSheet.flatten(customHeaderStyle || {}) as ViewStyle;
 
   const headerHeight = typeof height === 'number' ? height : defaultHeight;
 
-  const {
-    titleStyle,
-    leftButtonStyle,
-    leftLabelStyle,
-    rightButtonStyle,
-    backgroundStyle,
-  } = React.useMemo(
-    () =>
-      styleInterpolator({
-        current: { progress: progress.current },
-        next: progress.next && { progress: progress.next },
-        direction,
-        layouts: {
-          header: {
-            height: headerHeight,
-            width: layout.width,
+  const { titleStyle, leftButtonStyle, leftLabelStyle, rightButtonStyle, backgroundStyle } =
+    React.useMemo(
+      () =>
+        styleInterpolator({
+          current: { progress: progress.current },
+          next: progress.next && { progress: progress.next },
+          direction,
+          layouts: {
+            header: {
+              height: headerHeight,
+              width: layout.width,
+            },
+            screen: layout,
+            title: titleLayout,
+            leftLabel: leftLabelLayout,
           },
-          screen: layout,
-          title: titleLayout,
-          leftLabel: leftLabelLayout,
-        },
-      }),
-    [
-      styleInterpolator,
-      progress,
-      direction,
-      headerHeight,
-      layout,
-      titleLayout,
-      leftLabelLayout,
-    ]
-  );
+        }),
+      [styleInterpolator, progress, direction, headerHeight, layout, titleLayout, leftLabelLayout]
+    );
 
   const headerLeft: StackHeaderOptions['headerLeft'] = left
     ? (props) =>
@@ -191,10 +155,7 @@ export function HeaderSegment(props: Props) {
       headerLeftContainerStyle={[leftButtonStyle, headerLeftContainerStyle]}
       headerRightContainerStyle={[rightButtonStyle, headerRightContainerStyle]}
       headerBackButtonDisplayMode={headerBackButtonDisplayMode}
-      headerBackgroundContainerStyle={[
-        backgroundStyle,
-        headerBackgroundContainerStyle,
-      ]}
+      headerBackgroundContainerStyle={[backgroundStyle, headerBackgroundContainerStyle]}
       headerStyle={customHeaderStyle}
       headerStatusBarHeight={headerStatusBarHeight}
       {...rest}

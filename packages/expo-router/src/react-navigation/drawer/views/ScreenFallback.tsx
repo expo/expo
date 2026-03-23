@@ -1,11 +1,7 @@
-import { ResourceSavingView } from '../../elements';
 import * as React from 'react';
-import {
-  type StyleProp,
-  View,
-  type ViewProps,
-  type ViewStyle,
-} from 'react-native';
+import { type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
+
+import { ResourceSavingView } from '../../elements';
 
 type Props = {
   visible: boolean;

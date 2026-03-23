@@ -1,18 +1,3 @@
-import {
-  getDefaultSidebarWidth,
-  getLabel,
-  MissingIcon,
-  useFrameSize,
-} from '../../elements';
-import {
-  CommonActions,
-  NavigationProvider,
-  type ParamListBase,
-  type TabNavigationState,
-  useLinkBuilder,
-  useLocale,
-  useTheme,
-} from '../../native';
 import React from 'react';
 import {
   Animated,
@@ -25,10 +10,20 @@ import {
 } from 'react-native';
 import { type EdgeInsets } from 'react-native-safe-area-context';
 
+import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
+import {
+  CommonActions,
+  NavigationProvider,
+  type ParamListBase,
+  type TabNavigationState,
+  useLinkBuilder,
+  useLocale,
+  useTheme,
+} from '../../native';
 import type { BottomTabBarProps, BottomTabDescriptorMap } from '../types';
+import { BottomTabItem } from './BottomTabItem';
 import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
 import { useIsKeyboardShown } from '../utils/useIsKeyboardShown';
-import { BottomTabItem } from './BottomTabItem';
 
 type Props = BottomTabBarProps & {
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
@@ -48,13 +43,8 @@ type Options = {
   dimensions: { height: number; width: number };
 };
 
-const shouldUseHorizontalLabels = ({
-  state,
-  descriptors,
-  dimensions,
-}: Options) => {
-  const { tabBarLabelPosition } =
-    descriptors[state.routes[state.index].key].options;
+const shouldUseHorizontalLabels = ({ state, descriptors, dimensions }: Options) => {
+  const { tabBarLabelPosition } = descriptors[state.routes[state.index].key].options;
 
   if (tabBarLabelPosition) {
     switch (tabBarLabelPosition) {
@@ -89,14 +79,9 @@ const shouldUseHorizontalLabels = ({
 };
 
 const isCompact = ({ state, descriptors, dimensions }: Options): boolean => {
-  const { tabBarPosition, tabBarVariant } =
-    descriptors[state.routes[state.index].key].options;
+  const { tabBarPosition, tabBarVariant } = descriptors[state.routes[state.index].key].options;
 
-  if (
-    tabBarPosition === 'left' ||
-    tabBarPosition === 'right' ||
-    tabBarVariant === 'material'
-  ) {
+  if (tabBarPosition === 'left' || tabBarPosition === 'right' || tabBarVariant === 'material') {
     return false;
   }
 
@@ -107,12 +92,7 @@ const isCompact = ({ state, descriptors, dimensions }: Options): boolean => {
     dimensions,
   });
 
-  if (
-    Platform.OS === 'ios' &&
-    !Platform.isPad &&
-    isLandscape &&
-    horizontalLabels
-  ) {
+  if (Platform.OS === 'ios' && !Platform.isPad && isLandscape && horizontalLabels) {
     return true;
   }
 
@@ -133,9 +113,7 @@ export const getTabBarHeight = ({
 
   const flattenedStyle = StyleSheet.flatten(style);
   const customHeight =
-    flattenedStyle && 'height' in flattenedStyle
-      ? flattenedStyle.height
-      : undefined;
+    flattenedStyle && 'height' in flattenedStyle ? flattenedStyle.height : undefined;
 
   if (typeof customHeight === 'number') {
     return customHeight;
@@ -150,13 +128,7 @@ export const getTabBarHeight = ({
   return TABBAR_HEIGHT_UIKIT + inset;
 };
 
-export function BottomTabBar({
-  state,
-  navigation,
-  descriptors,
-  insets,
-  style,
-}: Props) {
+export function BottomTabBar({ state, navigation, descriptors, insets, style }: Props) {
   const { colors } = useTheme();
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();
@@ -180,11 +152,7 @@ export function BottomTabBar({
     tabBarInactiveBackgroundColor,
   } = focusedOptions;
 
-  if (
-    tabBarVariant === 'material' &&
-    tabBarPosition !== 'left' &&
-    tabBarPosition !== 'right'
-  ) {
+  if (tabBarVariant === 'material' && tabBarPosition !== 'left' && tabBarPosition !== 'right') {
     throw new Error(
       "The 'material' variant for tab bar is only supported when 'tabBarPosition' is set to 'left' or 'right'."
     );
@@ -206,9 +174,7 @@ export function BottomTabBar({
 
   const shouldShowTabBar = !(tabBarHideOnKeyboard && isKeyboardShown);
 
-  const visibilityAnimationConfigRef = React.useRef(
-    tabBarVisibilityAnimationConfig
-  );
+  const visibilityAnimationConfigRef = React.useRef(tabBarVisibilityAnimationConfig);
 
   React.useEffect(() => {
     visibilityAnimationConfigRef.current = tabBarVisibilityAnimationConfig;
@@ -216,18 +182,14 @@ export function BottomTabBar({
 
   const [isTabBarHidden, setIsTabBarHidden] = React.useState(!shouldShowTabBar);
 
-  const [visible] = React.useState(
-    () => new Animated.Value(shouldShowTabBar ? 1 : 0)
-  );
+  const [visible] = React.useState(() => new Animated.Value(shouldShowTabBar ? 1 : 0));
 
   React.useEffect(() => {
     const visibilityAnimationConfig = visibilityAnimationConfigRef.current;
 
     if (shouldShowTabBar) {
       const animation =
-        visibilityAnimationConfig?.show?.animation === 'spring'
-          ? Animated.spring
-          : Animated.timing;
+        visibilityAnimationConfig?.show?.animation === 'spring' ? Animated.spring : Animated.timing;
 
       animation(visible, {
         toValue: 1,
@@ -244,9 +206,7 @@ export function BottomTabBar({
       setIsTabBarHidden(true);
 
       const animation =
-        visibilityAnimationConfig?.hide?.animation === 'spring'
-          ? Animated.spring
-          : Animated.timing;
+        visibilityAnimationConfig?.hide?.animation === 'spring' ? Animated.spring : Animated.timing;
 
       animation(visible, {
         toValue: 0,
@@ -297,13 +257,10 @@ export function BottomTabBar({
     })
   );
 
-  const compact = useFrameSize((dimensions) =>
-    isCompact({ state, descriptors, dimensions })
-  );
+  const compact = useFrameSize((dimensions) => isCompact({ state, descriptors, dimensions }));
 
   const sidebar = tabBarPosition === 'left' || tabBarPosition === 'right';
-  const spacing =
-    tabBarVariant === 'material' ? SPACING_MATERIAL : SPACING_UIKIT;
+  const spacing = tabBarVariant === 'material' ? SPACING_MATERIAL : SPACING_UIKIT;
 
   const minSidebarWidth = useFrameSize((size) =>
     sidebar && hasHorizontalLabels ? getDefaultSidebarWidth(size) : 0
@@ -337,20 +294,15 @@ export function BottomTabBar({
               ? { borderBottomWidth: StyleSheet.hairlineWidth }
               : { borderTopWidth: StyleSheet.hairlineWidth },
         {
-          backgroundColor:
-            tabBarBackgroundElement != null ? 'transparent' : colors.card,
+          backgroundColor: tabBarBackgroundElement != null ? 'transparent' : colors.card,
           borderColor: colors.border,
         },
         sidebar
           ? {
-              paddingTop:
-                (hasHorizontalLabels ? spacing : spacing / 2) + insets.top,
-              paddingBottom:
-                (hasHorizontalLabels ? spacing : spacing / 2) + insets.bottom,
-              paddingStart:
-                spacing + (tabBarPosition === 'left' ? insets.left : 0),
-              paddingEnd:
-                spacing + (tabBarPosition === 'right' ? insets.right : 0),
+              paddingTop: (hasHorizontalLabels ? spacing : spacing / 2) + insets.top,
+              paddingBottom: (hasHorizontalLabels ? spacing : spacing / 2) + insets.bottom,
+              paddingStart: spacing + (tabBarPosition === 'left' ? insets.left : 0),
+              paddingEnd: spacing + (tabBarPosition === 'right' ? insets.right : 0),
               minWidth: minSidebarWidth,
             }
           : [
@@ -382,15 +334,11 @@ export function BottomTabBar({
         tabBarStyle,
       ]}
       pointerEvents={isTabBarHidden ? 'none' : 'auto'}
-      onLayout={sidebar ? undefined : handleLayout}
-    >
+      onLayout={sidebar ? undefined : handleLayout}>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {tabBarBackgroundElement}
       </View>
-      <View
-        role="tablist"
-        style={sidebar ? styles.sideContent : styles.bottomContent}
-      >
+      <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
         {routes.map((route, index) => {
           const focused = index === state.index;
           const { options } = descriptors[route.key];
@@ -420,10 +368,7 @@ export function BottomTabBar({
           const label =
             typeof options.tabBarLabel === 'function'
               ? options.tabBarLabel
-              : getLabel(
-                  { label: options.tabBarLabel, title: options.title },
-                  route.name
-                );
+              : getLabel({ label: options.tabBarLabel, title: options.title }, route.name);
 
           const accessibilityLabel =
             options.tabBarAccessibilityLabel !== undefined
@@ -436,8 +381,7 @@ export function BottomTabBar({
             <NavigationProvider
               key={route.key}
               route={route}
-              navigation={descriptors[route.key].navigation}
-            >
+              navigation={descriptors[route.key].navigation}>
               <BottomTabItem
                 href={buildHref(route.name, route.params)}
                 route={route}
@@ -459,9 +403,7 @@ export function BottomTabBar({
                 button={options.tabBarButton}
                 icon={
                   options.tabBarIcon ??
-                  (({ color, size }) => (
-                    <MissingIcon color={color} size={size} />
-                  ))
+                  (({ color, size }) => <MissingIcon color={color} size={size} />)
                 }
                 badge={options.tabBarBadge}
                 badgeStyle={options.tabBarBadgeStyle}

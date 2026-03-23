@@ -136,11 +136,7 @@ export type LinkingOptions<ParamList extends {}> = {
    * }
    * ```
    */
-  getInitialURL?: () =>
-    | string
-    | null
-    | undefined
-    | Promise<string | null | undefined>;
+  getInitialURL?: () => string | null | undefined | Promise<string | null | undefined>;
   /**
    * Custom function to get subscribe to URL updates.
    * Uses `Linking.addEventListener('url', callback)` by default.
@@ -160,9 +156,7 @@ export type LinkingOptions<ParamList extends {}> = {
    * }
    * ```
    */
-  subscribe?: (
-    listener: (url: string) => void
-  ) => undefined | void | (() => void);
+  subscribe?: (listener: (url: string) => void) => undefined | void | (() => void);
   /**
    * Custom function to parse the URL to a valid navigation state (advanced).
    */

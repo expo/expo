@@ -1,4 +1,3 @@
-import type { LocaleDirection } from '../../../native';
 import Color from 'color';
 import * as React from 'react';
 import {
@@ -13,6 +12,7 @@ import {
 import type { EdgeInsets } from 'react-native-safe-area-context';
 import useLatestCallback from 'use-latest-callback';
 
+import type { LocaleDirection } from '../../../native';
 import type {
   GestureDirection,
   Layout,
@@ -52,9 +52,7 @@ type Props = {
   onGestureEnd: () => void;
   children: React.ReactNode;
   overlay:
-    | ((props: {
-        style: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
-      }) => React.ReactNode)
+    | ((props: { style: Animated.WithAnimatedValue<StyleProp<ViewStyle>> }) => React.ReactNode)
     | undefined;
   overlayEnabled: boolean;
   shadowEnabled: boolean | undefined;
@@ -78,9 +76,7 @@ const FALSE = 0;
 
 const useNativeDriver = Platform.OS !== 'web';
 
-const hasOpacityStyle = (
-  style: Animated.WithAnimatedValue<StyleProp<ViewStyle>>
-) => {
+const hasOpacityStyle = (style: Animated.WithAnimatedValue<StyleProp<ViewStyle>>) => {
   if (style) {
     const flattenedStyle = StyleSheet.flatten(style);
 
@@ -114,14 +110,8 @@ const getAnimateToValue = ({
   );
 };
 
-const defaultOverlay = ({
-  style,
-}: {
-  style: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
-}) =>
-  style ? (
-    <Animated.View pointerEvents="none" style={[styles.overlay, style]} />
-  ) : null;
+const defaultOverlay = ({ style }: { style: Animated.WithAnimatedValue<StyleProp<ViewStyle>> }) =>
+  style ? <Animated.View pointerEvents="none" style={[styles.overlay, style]} /> : null;
 
 function Card({
   shadowEnabled = false,
@@ -160,18 +150,13 @@ function Card({
 
   const interactionHandleRef = React.useRef<number | undefined>(undefined);
   const animationHandleRef = React.useRef<number | undefined>(undefined);
-  const pendingGestureCallbackRef =
-    React.useRef<ReturnType<typeof setTimeout>>(undefined);
-  const pendingOnCloseCallbackRef =
-    React.useRef<ReturnType<typeof setTimeout>>(undefined);
+  const pendingGestureCallbackRef = React.useRef<ReturnType<typeof setTimeout>>(undefined);
+  const pendingOnCloseCallbackRef = React.useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const [isClosing] = React.useState(() => new Animated.Value(FALSE));
 
   const [inverted] = React.useState(
-    () =>
-      new Animated.Value(
-        getInvertedMultiplier(gestureDirection, direction === 'rtl')
-      )
+    () => new Animated.Value(getInvertedMultiplier(gestureDirection, direction === 'rtl'))
   );
 
   const [layoutAnim] = React.useState(() => ({
@@ -183,8 +168,7 @@ function Card({
 
   const onStartInteraction = useLatestCallback(() => {
     if (interactionHandleRef.current === undefined) {
-      interactionHandleRef.current =
-        InteractionManager.createInteractionHandle();
+      interactionHandleRef.current = InteractionManager.createInteractionHandle();
     }
   });
 
@@ -196,13 +180,7 @@ function Card({
   });
 
   const animate = useLatestCallback(
-    ({
-      closing: isClosingParam,
-      velocity,
-    }: {
-      closing: boolean;
-      velocity?: number;
-    }) => {
+    ({ closing: isClosingParam, velocity }: { closing: boolean; velocity?: number }) => {
       const toValue = getAnimateToValue({
         closing: isClosingParam,
         layout,
@@ -215,8 +193,7 @@ function Card({
       isClosing.setValue(isClosingParam ? TRUE : FALSE);
 
       const spec = isClosingParam ? transitionSpec.close : transitionSpec.open;
-      const animation =
-        spec.animation === 'spring' ? Animated.spring : Animated.timing;
+      const animation = spec.animation === 'spring' ? Animated.spring : Animated.timing;
 
       clearTimeout(pendingGestureCallbackRef.current);
 
@@ -280,8 +257,7 @@ function Card({
           onEndInteraction();
 
           const velocity =
-            gestureDirection === 'vertical' ||
-            gestureDirection === 'vertical-inverted'
+            gestureDirection === 'vertical' || gestureDirection === 'vertical-inverted'
               ? nativeEvent.velocityY
               : nativeEvent.velocityX;
 
@@ -300,10 +276,7 @@ function Card({
           let translation;
           let velocity;
 
-          if (
-            gestureDirection === 'vertical' ||
-            gestureDirection === 'vertical-inverted'
-          ) {
+          if (gestureDirection === 'vertical' || gestureDirection === 'vertical-inverted') {
             distance = layout.height;
             translation = nativeEvent.translationY;
             velocity = nativeEvent.velocityY;
@@ -347,9 +320,7 @@ function Card({
   React.useLayoutEffect(() => {
     layoutAnim.width.setValue(layout.width);
     layoutAnim.height.setValue(layout.height);
-    inverted.setValue(
-      getInvertedMultiplier(gestureDirection, direction === 'rtl')
-    );
+    inverted.setValue(getInvertedMultiplier(gestureDirection, direction === 'rtl'));
   }, [
     gestureDirection,
     direction,
@@ -424,16 +395,10 @@ function Card({
         // It's still important to trigger the animation so that `onClose` is called
         // If `onClose` is not called, cleanup step won't be performed for gestures
         animate({ closing });
-      } else if (
-        typeof previousOpening === 'boolean' &&
-        opening &&
-        !previousOpening
-      ) {
+      } else if (typeof previousOpening === 'boolean' && opening && !previousOpening) {
         // This can happen when screen somewhere below in the stack comes into focus via rearranging
         // Also reset the animated value to make sure that the animation starts from the beginning
-        gesture.setValue(
-          getDistanceForDirection(layout, gestureDirection, direction === 'rtl')
-        );
+        gesture.setValue(getDistanceForDirection(layout, gestureDirection, direction === 'rtl'));
 
         animate({ closing });
       }
@@ -500,11 +465,10 @@ function Card({
     ]
   );
 
-  const { containerStyle, cardStyle, overlayStyle, shadowStyle } =
-    React.useMemo(
-      () => styleInterpolator(interpolationProps),
-      [styleInterpolator, interpolationProps]
-    );
+  const { containerStyle, cardStyle, overlayStyle, shadowStyle } = React.useMemo(
+    () => styleInterpolator(interpolationProps),
+    [styleInterpolator, interpolationProps]
+  );
 
   const onGestureEvent = React.useMemo(
     () =>
@@ -513,8 +477,7 @@ function Card({
             [
               {
                 nativeEvent:
-                  gestureDirection === 'vertical' ||
-                  gestureDirection === 'vertical-inverted'
+                  gestureDirection === 'vertical' || gestureDirection === 'vertical-inverted'
                     ? { translationY: gesture }
                     : { translationX: gesture },
               },
@@ -528,9 +491,7 @@ function Card({
   const { backgroundColor } = StyleSheet.flatten(contentStyle || {});
 
   const isTransparent =
-    typeof backgroundColor === 'string'
-      ? Color(backgroundColor).alpha() === 0
-      : false;
+    typeof backgroundColor === 'string' ? Color(backgroundColor).alpha() === 0 : false;
 
   return (
     <CardAnimationContext.Provider value={interpolationProps}>
@@ -554,8 +515,7 @@ function Card({
       ) : null}
       <Animated.View
         pointerEvents="box-none"
-        style={[styles.container, containerStyle, customContainerStyle]}
-      >
+        style={[styles.container, containerStyle, customContainerStyle]}>
         <PanGestureHandler
           enabled={layout.width !== 0 && gestureEnabled}
           onGestureEvent={onGestureEvent}
@@ -565,13 +525,11 @@ function Card({
             direction,
             gestureDirection,
             gestureResponseDistance,
-          })}
-        >
+          })}>
           <Animated.View
             pointerEvents="box-none"
             needsOffscreenAlphaCompositing={hasOpacityStyle(cardStyle)}
-            style={[styles.container, cardStyle]}
-          >
+            style={[styles.container, cardStyle]}>
             {shadowEnabled && shadowStyle && !isTransparent ? (
               <Animated.View
                 pointerEvents="none"
@@ -589,11 +547,7 @@ function Card({
                 ]}
               />
             ) : null}
-            <CardContent
-              enabled={pageOverflowEnabled}
-              layout={layout}
-              style={contentStyle}
-            >
+            <CardContent enabled={pageOverflowEnabled} layout={layout} style={contentStyle}>
               {children}
             </CardContent>
           </Animated.View>

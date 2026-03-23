@@ -1,10 +1,6 @@
-import type {
-  NavigationState,
-  PartialState,
-  Route,
-} from '../routers';
 import * as queryString from 'query-string';
 
+import type { NavigationState, PartialState, Route } from '../routers';
 import { getPatternParts, type PatternPart } from './getPatternParts';
 import type { PathConfig, PathConfigMap } from './types';
 import { validatePathConfig } from './validatePathConfig';
@@ -38,10 +34,7 @@ const getActiveRoute = (state: State): { name: string; params?: object } => {
   return route;
 };
 
-const cachedNormalizedConfigs = new WeakMap<
-  PathConfigMap<{}>,
-  Record<string, ConfigItem>
->();
+const cachedNormalizedConfigs = new WeakMap<PathConfigMap<{}>, Record<string, ConfigItem>>();
 
 const getNormalizedConfigs = (options?: Options<{}>) => {
   if (!options?.screens) return {};
@@ -138,9 +131,7 @@ export function getPathFromState<ParamList extends {}>(
             .map(([key, value]): [string, string] | null => {
               if (value === undefined) {
                 if (options) {
-                  const optional = options.parts?.find(
-                    (part) => part.param === key
-                  )?.optional;
+                  const optional = options.parts?.find((part) => part.param === key)?.optional;
 
                   if (optional) {
                     return null;
@@ -185,9 +176,7 @@ export function getPathFromState<ParamList extends {}>(
         hasNext = false;
       } else {
         index =
-          typeof route.state.index === 'number'
-            ? route.state.index
-            : route.state.routes.length - 1;
+          typeof route.state.index === 'number' ? route.state.index : route.state.routes.length - 1;
 
         const nextRoute = route.state.routes[index];
         const nestedConfig = currentOptions[route.name].screens;
@@ -226,9 +215,7 @@ export function getPathFromState<ParamList extends {}>(
             // https://datatracker.ietf.org/doc/html/rfc3986#section-3.3 (see pchar definition)
             return Array.from(String(value))
               .map((char) =>
-                /[^A-Za-z0-9\-._~!$&'()*+,;=:@]/g.test(char)
-                  ? encodeURIComponent(char)
-                  : char
+                /[^A-Za-z0-9\-._~!$&'()*+,;=:@]/g.test(char) ? encodeURIComponent(char) : char
               )
               .join('');
           }
@@ -242,10 +229,7 @@ export function getPathFromState<ParamList extends {}>(
 
     if (!focusedParams && focusedRoute.params) {
       focusedParams = Object.fromEntries(
-        Object.entries(focusedRoute.params).map(([key, value]) => [
-          key,
-          String(value),
-        ])
+        Object.entries(focusedRoute.params).map(([key, value]) => [key, String(value)])
       );
     }
 
@@ -312,17 +296,12 @@ const createConfigItem = (
   // It can have `path` property and `screens` prop which has nested configs
   const parts =
     config.exact !== true
-      ? [
-          ...(parentParts || []),
-          ...(config.path ? getPatternParts(config.path) : []),
-        ]
+      ? [...(parentParts || []), ...(config.path ? getPatternParts(config.path) : [])]
       : config.path
         ? getPatternParts(config.path)
         : undefined;
 
-  const screens = config.screens
-    ? createNormalizedConfigs(config.screens, parts)
-    : undefined;
+  const screens = config.screens ? createNormalizedConfigs(config.screens, parts) : undefined;
 
   return {
     parts,

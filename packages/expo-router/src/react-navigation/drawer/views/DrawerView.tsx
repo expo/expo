@@ -1,10 +1,8 @@
-import {
-  getHeaderTitle,
-  Header,
-  SafeAreaProviderCompat,
-  Screen,
-  useFrameSize,
-} from '../../elements';
+import * as React from 'react';
+import { Platform, StyleSheet } from 'react-native';
+import { Drawer } from 'react-native-drawer-layout';
+import useLatestCallback from 'use-latest-callback';
+
 import {
   DrawerActions,
   type DrawerNavigationState,
@@ -14,11 +12,6 @@ import {
   useLocale,
   useTheme,
 } from '../../native';
-import * as React from 'react';
-import { Platform, StyleSheet } from 'react-native';
-import { Drawer } from 'react-native-drawer-layout';
-import useLatestCallback from 'use-latest-callback';
-
 import type {
   DrawerContentComponentProps,
   DrawerDescriptorMap,
@@ -27,13 +20,20 @@ import type {
   DrawerNavigationHelpers,
   DrawerNavigationProp,
 } from '../types';
-import { addCancelListener } from '../utils/addCancelListener';
-import { DrawerPositionContext } from '../utils/DrawerPositionContext';
-import { DrawerStatusContext } from '../utils/DrawerStatusContext';
-import { getDrawerStatusFromState } from '../utils/getDrawerStatusFromState';
 import { DrawerContent } from './DrawerContent';
 import { DrawerToggleButton } from './DrawerToggleButton';
 import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
+import {
+  getHeaderTitle,
+  Header,
+  SafeAreaProviderCompat,
+  Screen,
+  useFrameSize,
+} from '../../elements';
+import { DrawerPositionContext } from '../utils/DrawerPositionContext';
+import { DrawerStatusContext } from '../utils/DrawerStatusContext';
+import { addCancelListener } from '../utils/addCancelListener';
+import { getDrawerStatusFromState } from '../utils/getDrawerStatusFromState';
 
 type Props = DrawerNavigationConfig & {
   defaultStatus: DrawerStatus;
@@ -71,9 +71,7 @@ function DrawerViewBase({
     keyboardDismissMode,
     overlayColor = 'rgba(0, 0, 0, 0.5)',
     swipeEdgeWidth,
-    swipeEnabled = Platform.OS !== 'web' &&
-      Platform.OS !== 'windows' &&
-      Platform.OS !== 'macos',
+    swipeEnabled = Platform.OS !== 'web' && Platform.OS !== 'windows' && Platform.OS !== 'macos',
     swipeMinDistance,
     overlayAccessibilityLabel,
   } = descriptors[focusedRouteKey].options;
@@ -93,9 +91,7 @@ function DrawerViewBase({
       previousRouteKey !== focusedRouteKey &&
       descriptors[previousRouteKey]?.options.popToTopOnBlur
     ) {
-      const prevRoute = state.routes.find(
-        (route) => route.key === previousRouteKey
-      );
+      const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
       if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
         navigation.dispatch({
@@ -190,22 +186,15 @@ function DrawerViewBase({
     // This way we can make sure that the listener is added as late as possible
     // This will make sure that our handler will run first when back button is pressed
     return addCancelListener(handleHardwareBack);
-  }, [
-    defaultStatus,
-    drawerStatus,
-    drawerType,
-    handleDrawerClose,
-    handleDrawerOpen,
-    navigation,
-  ]);
+  }, [defaultStatus, drawerStatus, drawerType, handleDrawerClose, handleDrawerOpen, navigation]);
 
   const renderDrawerContent = () => {
     return (
       <DrawerPositionContext.Provider value={drawerPosition}>
         {drawerContent({
-          state: state,
-          navigation: navigation,
-          descriptors: descriptors,
+          state,
+          navigation,
+          descriptors,
         })}
       </DrawerPositionContext.Provider>
     );
@@ -213,23 +202,14 @@ function DrawerViewBase({
 
   const renderSceneContent = () => {
     return (
-      <MaybeScreenContainer
-        enabled={detachInactiveScreens}
-        hasTwoStates
-        style={styles.content}
-      >
+      <MaybeScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.content}>
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key];
           const { lazy = true } = descriptor.options;
           const isFocused = state.index === index;
           const isPreloaded = state.preloadedRouteKeys.includes(route.key);
 
-          if (
-            lazy &&
-            !loaded.includes(route.key) &&
-            !isFocused &&
-            !isPreloaded
-          ) {
+          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
             // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
             return null;
           }
@@ -266,8 +246,7 @@ function DrawerViewBase({
               visible={isFocused}
               enabled={detachInactiveScreens}
               freezeOnBlur={freezeOnBlur}
-              shouldFreeze={!isFocused && !isPreloaded}
-            >
+              shouldFreeze={!isFocused && !isPreloaded}>
               <Screen
                 focused={isFocused}
                 route={descriptor.route}
@@ -278,12 +257,10 @@ function DrawerViewBase({
                 header={header({
                   layout: dimensions,
                   route: descriptor.route,
-                  navigation:
-                    descriptor.navigation as DrawerNavigationProp<ParamListBase>,
+                  navigation: descriptor.navigation as DrawerNavigationProp<ParamListBase>,
                   options: descriptor.options,
                 })}
-                style={sceneStyle}
-              >
+                style={sceneStyle}>
                 {descriptor.render()}
               </Screen>
             </MaybeScreen>
@@ -347,8 +324,7 @@ function DrawerViewBase({
           drawerStyle,
         ]}
         overlayStyle={{ backgroundColor: overlayColor }}
-        renderDrawerContent={renderDrawerContent}
-      >
+        renderDrawerContent={renderDrawerContent}>
         {renderSceneContent()}
       </Drawer>
     </DrawerStatusContext.Provider>

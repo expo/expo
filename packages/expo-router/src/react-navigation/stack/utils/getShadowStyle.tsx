@@ -11,17 +11,10 @@ type ShadowConfig = {
   color?: string;
 };
 
-export function getShadowStyle({
-  offset,
-  radius,
-  opacity,
-  color = '#000',
-}: ShadowConfig) {
+export function getShadowStyle({ offset, radius, opacity, color = '#000' }: ShadowConfig) {
   const result = Platform.select({
     web: {
-      boxShadow: `${offset.width}px ${offset.height}px ${radius}px ${Color(
-        color
-      )
+      boxShadow: `${offset.width}px ${offset.height}px ${radius}px ${Color(color)
         .alpha(opacity)
         .toString()}`,
     },

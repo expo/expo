@@ -1,4 +1,3 @@
-import { useTheme } from '../native';
 import Color from 'color';
 import * as React from 'react';
 import {
@@ -9,6 +8,8 @@ import {
   type TextProps,
   type TextStyle,
 } from 'react-native';
+
+import { useTheme } from '../native';
 
 type Props = TextProps & {
   /**
@@ -31,13 +32,7 @@ type Props = TextProps & {
 
 const useNativeDriver = Platform.OS !== 'web';
 
-export function Badge({
-  children,
-  style,
-  visible = true,
-  size = 18,
-  ...rest
-}: Props) {
+export function Badge({ children, style, visible = true, size = 18, ...rest }: Props) {
   const [opacity] = React.useState(() => new Animated.Value(visible ? 1 : 0));
   const [rendered, setRendered] = React.useState(visible);
 
@@ -70,8 +65,7 @@ export function Badge({
   }
 
   // @ts-expect-error: backgroundColor definitely exists
-  const { backgroundColor = colors.notification, ...restStyle } =
-    StyleSheet.flatten(style) || {};
+  const { backgroundColor = colors.notification, ...restStyle } = StyleSheet.flatten(style) || {};
   const textColor = Color(backgroundColor).isLight() ? 'black' : 'white';
 
   const borderRadius = size / 2;
@@ -104,8 +98,7 @@ export function Badge({
         styles.container,
         restStyle,
       ]}
-      {...rest}
-    >
+      {...rest}>
       {children}
     </Animated.Text>
   );

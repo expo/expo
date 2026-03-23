@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   createComponentForStaticNavigation,
   createPathConfigForStaticNavigation,
@@ -5,15 +7,10 @@ import {
   type ParamListBase,
   type StaticNavigation,
 } from '../core';
-import * as React from 'react';
-
 import { NavigationContainer } from './NavigationContainer';
 import type { LinkingOptions } from './types';
 
-type Props = Omit<
-  React.ComponentProps<typeof NavigationContainer>,
-  'linking' | 'children'
-> & {
+type Props = Omit<React.ComponentProps<typeof NavigationContainer>, 'linking' | 'children'> & {
   /**
    * Options for deep linking.
    */
@@ -30,10 +27,7 @@ type Props = Omit<
     /**
      * Additional configuration
      */
-    config?: Omit<
-      NonNullable<LinkingOptions<ParamListBase>['config']>,
-      'screens'
-    >;
+    config?: Omit<NonNullable<LinkingOptions<ParamListBase>['config']>, 'screens'>;
   };
 };
 
@@ -65,11 +59,7 @@ export function createStaticNavigation(tree: StaticNavigation<any, any, any>) {
         initialRouteName: linking?.config?.initialRouteName,
         screens,
       };
-    }, [
-      linking?.enabled,
-      linking?.config?.path,
-      linking?.config?.initialRouteName,
-    ]);
+    }, [linking?.enabled, linking?.config?.path, linking?.config?.initialRouteName]);
 
     const memoizedLinking = React.useMemo(() => {
       if (!linking) {
@@ -77,9 +67,7 @@ export function createStaticNavigation(tree: StaticNavigation<any, any, any>) {
       }
 
       const enabled =
-        typeof linking.enabled === 'boolean'
-          ? linking.enabled
-          : linkingConfig?.screens != null;
+        typeof linking.enabled === 'boolean' ? linking.enabled : linkingConfig?.screens != null;
 
       return {
         ...linking,

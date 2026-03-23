@@ -1,10 +1,6 @@
-import type {
-  NavigationAction,
-  NavigationState,
-  ParamListBase,
-} from '../routers';
 import * as React from 'react';
 
+import type { NavigationAction, NavigationState, ParamListBase } from '../routers';
 import type { NavigationHelpers } from './types';
 
 export type ListenerMap = {
@@ -17,10 +13,7 @@ export type KeyedListenerMap = {
   beforeRemove: ChildBeforeRemoveListener;
 };
 
-export type AddListener = <T extends keyof ListenerMap>(
-  type: T,
-  listener: ListenerMap[T]
-) => void;
+export type AddListener = <T extends keyof ListenerMap>(type: T, listener: ListenerMap[T]) => void;
 
 export type AddKeyedListener = <T extends keyof KeyedListenerMap>(
   type: T,
@@ -33,13 +26,9 @@ export type ChildActionListener = (
   visitedNavigators?: Set<string>
 ) => boolean;
 
-export type FocusedNavigationCallback<T> = (
-  navigation: NavigationHelpers<ParamListBase>
-) => T;
+export type FocusedNavigationCallback<T> = (navigation: NavigationHelpers<ParamListBase>) => T;
 
-export type FocusedNavigationListener = <T>(
-  callback: FocusedNavigationCallback<T>
-) => {
+export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<T>) => {
   handled: boolean;
   result: T;
 };
@@ -52,10 +41,7 @@ export type ChildBeforeRemoveListener = (action: NavigationAction) => boolean;
  * Context which holds the required helpers needed to build nested navigators.
  */
 export const NavigationBuilderContext = React.createContext<{
-  onAction?: (
-    action: NavigationAction,
-    visitedNavigators?: Set<string>
-  ) => boolean;
+  onAction?: (action: NavigationAction, visitedNavigators?: Set<string>) => boolean;
   addListener?: AddListener;
   addKeyedListener?: AddKeyedListener;
   onRouteFocus?: (key: string) => void;

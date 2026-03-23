@@ -6,7 +6,6 @@ import type {
   PartialState,
   Route,
 } from '../routers';
-
 import type { NavigatorScreenParams, PathConfig, PathConfigMap } from './types';
 
 type ConfigItem = {
@@ -37,8 +36,7 @@ export function getActionFromState(
     ? createNormalizedConfigItem(options as PathConfig<object> | string)
     : {};
 
-  const routes =
-    state.index != null ? state.routes.slice(0, state.index + 1) : state.routes;
+  const routes = state.index != null ? state.routes.slice(0, state.index + 1) : state.routes;
 
   if (routes.length === 0) {
     return undefined;
@@ -72,9 +70,7 @@ export function getActionFromState(
         path?: string;
         pop?: boolean;
       }
-    | undefined = route
-    ? { name: route.name, path: route.path, params }
-    : undefined;
+    | undefined = route ? { name: route.name, path: route.path, params } : undefined;
 
   // If the screen contains a navigator, pop other screens to navigate to it
   // This avoid pushing multiple instances of navigators onto a stack
@@ -100,12 +96,9 @@ export function getActionFromState(
     }
 
     const routes =
-      current.index != null
-        ? current.routes.slice(0, current.index + 1)
-        : current.routes;
+      current.index != null ? current.routes.slice(0, current.index + 1) : current.routes;
 
-    const route: Route<string> | PartialRoute<Route<string>> =
-      routes[routes.length - 1];
+    const route: Route<string> | PartialRoute<Route<string>> = routes[routes.length - 1];
 
     // Explicitly set to override existing value when merging params
     Object.assign(params, {
@@ -168,10 +161,7 @@ const createNormalizedConfigItem = (config: PathConfig<object> | string) =>
   typeof config === 'object' && config != null
     ? {
         initialRouteName: config.initialRouteName,
-        screens:
-          config.screens != null
-            ? createNormalizedConfigs(config.screens)
-            : undefined,
+        screens: config.screens != null ? createNormalizedConfigs(config.screens) : undefined,
       }
     : {};
 

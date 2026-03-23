@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   CommonActions,
   DrawerActions,
@@ -5,8 +7,6 @@ import {
   type ParamListBase,
   useLinkBuilder,
 } from '../../native';
-import * as React from 'react';
-
 import type { DrawerDescriptorMap, DrawerNavigationHelpers } from '../types';
 import { DrawerItem } from './DrawerItem';
 
@@ -45,9 +45,7 @@ export function DrawerItemList({ state, navigation, descriptors }: Props) {
 
       if (!event.defaultPrevented) {
         navigation.dispatch({
-          ...(focused
-            ? DrawerActions.closeDrawer()
-            : CommonActions.navigate(route)),
+          ...(focused ? DrawerActions.closeDrawer() : CommonActions.navigate(route)),
           target: state.key,
         });
       }
@@ -67,13 +65,7 @@ export function DrawerItemList({ state, navigation, descriptors }: Props) {
         key={route.key}
         route={route}
         href={buildHref(route.name, route.params)}
-        label={
-          drawerLabel !== undefined
-            ? drawerLabel
-            : title !== undefined
-              ? title
-              : route.name
-        }
+        label={drawerLabel !== undefined ? drawerLabel : title !== undefined ? title : route.name}
         icon={drawerIcon}
         focused={focused}
         activeTintColor={drawerActiveTintColor}

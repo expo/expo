@@ -33,8 +33,7 @@ function HeaderButtonInternal(
       hitSlop={Platform.select({
         ios: undefined,
         default: { top: 16, right: 16, bottom: 16, left: 16 },
-      })}
-    >
+      })}>
       {children}
     </PlatformPressable>
   );

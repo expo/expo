@@ -1,26 +1,16 @@
-import { useTheme } from '../core';
 import * as React from 'react';
-import {
-  type GestureResponderEvent,
-  Platform,
-  Text,
-  type TextProps,
-} from 'react-native';
+import { type GestureResponderEvent, Platform, Text, type TextProps } from 'react-native';
 
+import { useTheme } from '../core';
 import { type LinkProps, useLinkProps } from './useLinkProps';
 
-type Props<ParamList extends ReactNavigation.RootParamList> =
-  LinkProps<ParamList> &
-    Omit<TextProps, 'disabled'> & {
-      target?: string;
-      onPress?: (
-        e:
-          | React.MouseEvent<HTMLAnchorElement, MouseEvent>
-          | GestureResponderEvent
-      ) => void;
-      disabled?: boolean | null;
-      children: React.ReactNode;
-    };
+type Props<ParamList extends ReactNavigation.RootParamList> = LinkProps<ParamList> &
+  Omit<TextProps, 'disabled'> & {
+    target?: string;
+    onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
+    disabled?: boolean | null;
+    children: React.ReactNode;
+  };
 
 /**
  * Component to render link to another screen using a path.
@@ -44,9 +34,7 @@ export function Link<ParamList extends ReactNavigation.RootParamList>({
   // @ts-expect-error: This is already type-checked by the prop types
   const props = useLinkProps<ParamList>({ screen, params, action, href });
 
-  const onPress = (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
-  ) => {
+  const onPress = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
     if ('onPress' in rest) {
       rest.onPress?.(e);
     }

@@ -1,31 +1,20 @@
-import type {
-  NavigationState,
-  ParamListBase,
-  PartialState,
-  Route,
-} from '../routers';
 import * as React from 'react';
 
+import type { NavigationState, ParamListBase, PartialState, Route } from '../routers';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
-import { isArrayEqual } from './isArrayEqual';
 import {
   type FocusedRouteState,
   NavigationFocusedRouteStateContext,
 } from './NavigationFocusedRouteStateContext';
 import { NavigationStateContext } from './NavigationStateContext';
 import { StaticContainer } from './StaticContainer';
+import { isArrayEqual } from './isArrayEqual';
 import type { NavigationProp, RouteConfigComponent } from './types';
 import { useOptionsGetters } from './useOptionsGetters';
 
 type Props<State extends NavigationState, ScreenOptions extends {}> = {
   screen: RouteConfigComponent<ParamListBase, string> & { name: string };
-  navigation: NavigationProp<
-    ParamListBase,
-    string,
-    string | undefined,
-    State,
-    ScreenOptions
-  >;
+  navigation: NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions>;
   route: Route<string>;
   routeState: NavigationState | PartialState<NavigationState> | undefined;
   getState: () => State;
@@ -38,10 +27,7 @@ type Props<State extends NavigationState, ScreenOptions extends {}> = {
  * Component which takes care of rendering the screen for a route.
  * It provides all required contexts and applies optimizations when applicable.
  */
-export function SceneView<
-  State extends NavigationState,
-  ScreenOptions extends {},
->({
+export function SceneView<State extends NavigationState, ScreenOptions extends {}>({
   screen,
   route,
   navigation,
@@ -110,9 +96,7 @@ export function SceneView<
 
   const getIsInitial = React.useCallback(() => isInitialRef.current, []);
 
-  const parentFocusedRouteState = React.useContext(
-    NavigationFocusedRouteStateContext
-  );
+  const parentFocusedRouteState = React.useContext(NavigationFocusedRouteStateContext);
 
   const focusedRouteState = React.useMemo(() => {
     const state: FocusedRouteState = {
@@ -127,9 +111,7 @@ export function SceneView<
     };
 
     // Add our state to the innermost route of the parent state
-    const addState = (
-      parent: FocusedRouteState | undefined
-    ): FocusedRouteState => {
+    const addState = (parent: FocusedRouteState | undefined): FocusedRouteState => {
       const parentRoute = parent?.routes[0];
 
       if (parentRoute) {
@@ -147,13 +129,7 @@ export function SceneView<
     };
 
     return addState(parentFocusedRouteState);
-  }, [
-    parentFocusedRouteState,
-    route.key,
-    route.name,
-    route.params,
-    route.path,
-  ]);
+  }, [parentFocusedRouteState, route.key, route.name, route.params, route.path]);
 
   const context = React.useMemo(
     () => ({
@@ -165,20 +141,10 @@ export function SceneView<
       getIsInitial,
       addOptionsGetter,
     }),
-    [
-      routeState,
-      getCurrentState,
-      setCurrentState,
-      getKey,
-      setKey,
-      getIsInitial,
-      addOptionsGetter,
-    ]
+    [routeState, getCurrentState, setCurrentState, getKey, setKey, getIsInitial, addOptionsGetter]
   );
 
-  const ScreenComponent = screen.getComponent
-    ? screen.getComponent()
-    : screen.component;
+  const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;
 
   return (
     <NavigationStateContext.Provider value={context}>
@@ -188,8 +154,7 @@ export function SceneView<
             name={screen.name}
             render={ScreenComponent || screen.children}
             navigation={navigation}
-            route={route}
-          >
+            route={route}>
             {ScreenComponent !== undefined ? (
               <ScreenComponent navigation={navigation} route={route} />
             ) : screen.children !== undefined ? (

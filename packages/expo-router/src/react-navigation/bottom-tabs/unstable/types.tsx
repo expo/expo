@@ -1,3 +1,12 @@
+import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
+import type { EdgeInsets } from 'react-native-safe-area-context';
+import type {
+  TabBarItemLabelVisibilityMode,
+  TabsScreenBlurEffect,
+  TabsSystemItem,
+} from 'react-native-screens';
+import type { SFSymbol } from 'sf-symbols-typescript';
+
 import type {
   DefaultNavigatorOptions,
   Descriptor,
@@ -10,15 +19,6 @@ import type {
   TabRouterOptions,
   Theme,
 } from '../../native';
-import type { ColorValue, ImageSourcePropType, TextStyle } from 'react-native';
-import type { EdgeInsets } from 'react-native-safe-area-context';
-import type {
-  TabBarItemLabelVisibilityMode,
-  TabsScreenBlurEffect,
-  TabsSystemItem,
-} from 'react-native-screens';
-import type { SFSymbol } from 'sf-symbols-typescript';
-
 import type { NativeHeaderOptions } from './NativeScreen/types';
 
 export type Layout = { width: number; height: number };
@@ -166,9 +166,7 @@ export type NativeBottomTabNavigationOptions = NativeHeaderOptions & {
    *
    * Overrides the icon provided by `tabBarSystemItem` on iOS.
    */
-  tabBarIcon?:
-    | NativeBottomTabIcon
-    | ((props: { focused: boolean }) => NativeBottomTabIcon);
+  tabBarIcon?: NativeBottomTabIcon | ((props: { focused: boolean }) => NativeBottomTabIcon);
 
   /**
    * Text to show in a badge on the tab icon.
@@ -321,9 +319,7 @@ export type NativeBottomTabNavigationOptions = NativeHeaderOptions & {
    *
    * @platform ios
    */
-  bottomAccessory?: (options: {
-    placement: 'regular' | 'inline';
-  }) => React.ReactNode;
+  bottomAccessory?: (options: { placement: 'regular' | 'inline' }) => React.ReactNode;
 
   /**
    * Specifies whether `contentInsetAdjustmentBehavior` of the `ScrollView`
@@ -365,20 +361,14 @@ export type NativeBottomTabDescriptor = Descriptor<
   RouteProp<ParamListBase>
 >;
 
-export type NativeBottomTabDescriptorMap = Record<
-  string,
-  NativeBottomTabDescriptor
->;
+export type NativeBottomTabDescriptorMap = Record<string, NativeBottomTabDescriptor>;
 
 export type NativeBottomTabNavigationConfig = {};
 
 export type NativeBottomTabBarProps = {
   state: TabNavigationState<ParamListBase>;
   descriptors: NativeBottomTabDescriptorMap;
-  navigation: NavigationHelpers<
-    ParamListBase,
-    NativeBottomTabNavigationEventMap
-  >;
+  navigation: NavigationHelpers<ParamListBase, NativeBottomTabNavigationEventMap>;
   insets: EdgeInsets;
 };
 

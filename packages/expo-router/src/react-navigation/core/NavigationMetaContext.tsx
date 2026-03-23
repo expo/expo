@@ -9,6 +9,4 @@ import * as React from 'react';
  * It can be different depending on the navigator and may change without notice.
  * This is not intended to be used by application code.
  */
-export const NavigationMetaContext = React.createContext<object | undefined>(
-  undefined
-);
+export const NavigationMetaContext = React.createContext<object | undefined>(undefined);

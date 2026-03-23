@@ -8,12 +8,7 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import type {
-  CommonNavigationAction,
-  ParamListBase,
-  PartialState,
-  Router,
-} from './types';
+import type { CommonNavigationAction, ParamListBase, PartialState, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -43,29 +38,25 @@ export type DrawerNavigationState<ParamList extends ParamListBase> = Omit<
   /**
    * List of previously visited route keys and drawer open status.
    */
-  history: (
-    | { type: 'route'; key: string }
-    | { type: 'drawer'; status: DrawerStatus }
-  )[];
+  history: ({ type: 'route'; key: string } | { type: 'drawer'; status: DrawerStatus })[];
 };
 
-export type DrawerActionHelpers<ParamList extends ParamListBase> =
-  TabActionHelpers<ParamList> & {
-    /**
-     * Open the drawer sidebar.
-     */
-    openDrawer(): void;
+export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList> & {
+  /**
+   * Open the drawer sidebar.
+   */
+  openDrawer(): void;
 
-    /**
-     * Close the drawer sidebar.
-     */
-    closeDrawer(): void;
+  /**
+   * Close the drawer sidebar.
+   */
+  closeDrawer(): void;
 
-    /**
-     * Open the drawer sidebar if closed, or close if opened.
-     */
-    toggleDrawer(): void;
-  };
+  /**
+   * Open the drawer sidebar if closed, or close if opened.
+   */
+  toggleDrawer(): void;
+};
 
 export const DrawerActions = {
   ...TabActions,
@@ -93,9 +84,7 @@ export function DrawerRouter({
   >;
 
   const isDrawerInHistory = (
-    state:
-      | DrawerNavigationState<ParamListBase>
-      | PartialState<DrawerNavigationState<ParamListBase>>
+    state: DrawerNavigationState<ParamListBase> | PartialState<DrawerNavigationState<ParamListBase>>
   ) => Boolean(state.history?.some((it) => it.type === 'drawer'));
 
   const addDrawerToHistory = (
@@ -171,10 +160,7 @@ export function DrawerRouter({
       };
     },
 
-    getRehydratedState(
-      partialState,
-      { routeNames, routeParamList, routeGetIdList }
-    ) {
+    getRehydratedState(partialState, { routeNames, routeParamList, routeGetIdList }) {
       if (partialState.stale === false) {
         return partialState;
       }

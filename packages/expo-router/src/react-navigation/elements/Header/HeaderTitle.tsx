@@ -1,4 +1,3 @@
-import { useTheme } from '../../native';
 import {
   Animated,
   Platform,
@@ -7,6 +6,8 @@ import {
   type TextProps,
   type TextStyle,
 } from 'react-native';
+
+import { useTheme } from '../../native';
 
 type Props = Omit<TextProps, 'style'> & {
   tintColor?: string;

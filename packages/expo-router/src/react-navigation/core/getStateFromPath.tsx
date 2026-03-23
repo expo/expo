@@ -1,12 +1,7 @@
-import type {
-  InitialState,
-  NavigationState,
-  ParamListBase,
-  PartialState,
-} from '../routers';
 import escape from 'escape-string-regexp';
 import * as queryString from 'query-string';
 
+import type { InitialState, NavigationState, ParamListBase, PartialState } from '../routers';
 import { arrayStartsWith } from './arrayStartsWith';
 import { findFocusedRoute } from './findFocusedRoute';
 import { getPatternParts, type PatternPart } from './getPatternParts';
@@ -163,9 +158,7 @@ export function getStateFromPath<ParamList extends {}>(
  */
 const cachedConfigResources = new WeakMap<Options<{}>, ConfigResources>();
 
-function getConfigResources<ParamList extends {}>(
-  options: Options<ParamList> | undefined
-) {
+function getConfigResources<ParamList extends {}>(options: Options<ParamList> | undefined) {
   if (!options) return prepareConfigResources();
 
   const cached = cachedConfigResources.get(options);
@@ -316,9 +309,7 @@ function checkForDuplicatedConfigs(configs: RouteConfig[]) {
       // It's not a problem if the path string omitted from a inner most screen
       // For example, it's ok if a path resolves to `A > B > C` or `A > B`
       const intersects =
-        a.length > b.length
-          ? b.every((it, i) => a[i] === it)
-          : a.every((it, i) => b[i] === it);
+        a.length > b.length ? b.every((it, i) => a[i] === it) : a.every((it, i) => b[i] === it);
 
       if (!intersects) {
         throw new Error(
@@ -362,10 +353,7 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
       routes = config.routeNames.map((routeName) => {
         const routeConfig = configs.find((c) => {
           // Check matching name AND pattern in case same screen is used at different levels in config
-          return (
-            c.screen === routeName &&
-            arrayStartsWith(config.segments, c.segments)
-          );
+          return c.screen === routeName && arrayStartsWith(config.segments, c.segments);
         });
 
         const params =
@@ -374,9 +362,7 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
                 Object.entries(match.groups)
                   .map(([key, value]) => {
                     const index = Number(key.replace('param_', ''));
-                    const param = routeConfig.params.find(
-                      (it) => it.index === index
-                    );
+                    const param = routeConfig.params.find((it) => it.index === index);
 
                     if (param?.screen === routeName && param?.name) {
                       return [param.name, value];
@@ -483,18 +469,12 @@ const createNormalizedConfigs = (
       }
 
       paths.push({ screen, path: config.path });
-      configs.push(
-        createConfigItem(screen, [...routeNames], [...paths], config.parse)
-      );
+      configs.push(createConfigItem(screen, [...routeNames], [...paths], config.parse));
 
       configs.push(...aliasConfigs);
     }
 
-    if (
-      typeof config !== 'string' &&
-      typeof config.path !== 'string' &&
-      config.alias?.length
-    ) {
+    if (typeof config !== 'string' && typeof config.path !== 'string' && config.alias?.length) {
       throw new Error(
         `Screen '${screen}' doesn't specify a 'path'. A 'path' needs to be specified in order to use 'alias'.`
       );
@@ -610,9 +590,7 @@ const findInitialRoute = (
         }
       }
       if (sameParents) {
-        return routeName !== config.initialRouteName
-          ? config.initialRouteName
-          : undefined;
+        return routeName !== config.initialRouteName ? config.initialRouteName : undefined;
       }
     }
   }
@@ -664,11 +642,7 @@ const createNestedStateObject = (
 
   parentScreens.push(route.name);
 
-  const state: InitialState = createStateObject(
-    initialRoute,
-    route,
-    routes.length === 0
-  );
+  const state: InitialState = createStateObject(initialRoute, route, routes.length === 0);
 
   if (routes.length > 0) {
     let nestedState = state;
@@ -676,8 +650,7 @@ const createNestedStateObject = (
     while ((route = routes.shift() as ParsedRoute)) {
       initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
 
-      const nestedStateIndex =
-        nestedState.index || nestedState.routes.length - 1;
+      const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
 
       nestedState.routes[nestedStateIndex].state = createStateObject(
         initialRoute,
@@ -686,8 +659,7 @@ const createNestedStateObject = (
       );
 
       if (routes.length > 0) {
-        nestedState = nestedState.routes[nestedStateIndex]
-          .state as InitialState;
+        nestedState = nestedState.routes[nestedStateIndex].state as InitialState;
       }
 
       parentScreens.push(route.name);
@@ -718,10 +690,7 @@ const parseQueryParams = (
 
   if (parseConfig) {
     Object.keys(params).forEach((name) => {
-      if (
-        Object.hasOwnProperty.call(parseConfig, name) &&
-        typeof params[name] === 'string'
-      ) {
+      if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
         params[name] = parseConfig[name](params[name]);
       }
     });

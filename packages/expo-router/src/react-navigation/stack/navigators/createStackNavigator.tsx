@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import {
   createNavigatorFactory,
   type EventArg,
@@ -13,8 +15,6 @@ import {
   useLocale,
   useNavigationBuilder,
 } from '../../native';
-import * as React from 'react';
-
 import type {
   StackNavigationEventMap,
   StackNavigationOptions,
@@ -37,24 +37,23 @@ function StackNavigator({
 }: StackNavigatorProps) {
   const { direction } = useLocale();
 
-  const { state, describe, descriptors, navigation, NavigationContent } =
-    useNavigationBuilder<
-      StackNavigationState<ParamListBase>,
-      StackRouterOptions,
-      StackActionHelpers<ParamListBase>,
-      StackNavigationOptions,
-      StackNavigationEventMap
-    >(StackRouter, {
-      id,
-      initialRouteName,
-      UNSTABLE_routeNamesChangeBehavior,
-      children,
-      layout,
-      screenListeners,
-      screenOptions,
-      screenLayout,
-      UNSTABLE_router,
-    });
+  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+    StackNavigationState<ParamListBase>,
+    StackRouterOptions,
+    StackActionHelpers<ParamListBase>,
+    StackNavigationOptions,
+    StackNavigationEventMap
+  >(StackRouter, {
+    id,
+    initialRouteName,
+    UNSTABLE_routeNamesChangeBehavior,
+    children,
+    layout,
+    screenListeners,
+    screenOptions,
+    screenLayout,
+    UNSTABLE_router,
+  });
 
   React.useEffect(
     () =>
@@ -106,11 +105,7 @@ export function createStackNavigator<
     ScreenOptions: StackNavigationOptions;
     EventMap: StackNavigationEventMap;
     NavigationList: {
-      [RouteName in keyof ParamList]: StackNavigationProp<
-        ParamList,
-        RouteName,
-        NavigatorID
-      >;
+      [RouteName in keyof ParamList]: StackNavigationProp<ParamList, RouteName, NavigatorID>;
     };
     Navigator: typeof StackNavigator;
   },

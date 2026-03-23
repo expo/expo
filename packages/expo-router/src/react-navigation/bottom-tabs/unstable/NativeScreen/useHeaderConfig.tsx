@@ -1,10 +1,3 @@
-import { getHeaderTitle, HeaderTitle } from '../../../elements';
-import {
-  type Route,
-  type Theme,
-  useLocale,
-  useTheme,
-} from '../../../native';
 import Color from 'color';
 import { Platform, StyleSheet, type TextStyle, View } from 'react-native';
 import {
@@ -26,6 +19,8 @@ import type {
   NativeScreenHeaderItemMenuAction,
   NativeScreenHeaderItemMenuSubmenu,
 } from './types';
+import { getHeaderTitle, HeaderTitle } from '../../../elements';
+import { type Route, type Theme, useLocale, useTheme } from '../../../native';
 
 type Props = NativeHeaderOptions & {
   headerTopInsetEnabled: boolean;
@@ -48,9 +43,7 @@ const processBarButtonItems = (
       if (item.type === 'spacing') {
         if (item.spacing == null) {
           throw new Error(
-            `Spacing item must have a 'spacing' property defined: ${JSON.stringify(
-              item
-            )}`
+            `Spacing item must have a 'spacing' property defined: ${JSON.stringify(item)}`
           );
         }
 
@@ -59,11 +52,7 @@ const processBarButtonItems = (
 
       if (item.type === 'button' || item.type === 'menu') {
         if (item.type === 'menu' && item.menu == null) {
-          throw new Error(
-            `Menu item must have a 'menu' property defined: ${JSON.stringify(
-              item
-            )}`
-          );
+          throw new Error(`Menu item must have a 'menu' property defined: ${JSON.stringify(item)}`);
         }
 
         const { badge, label, labelStyle, icon, ...rest } = item;
@@ -105,11 +94,9 @@ const processBarButtonItems = (
         }
 
         if (badge) {
-          const badgeBackgroundColor =
-            badge.style?.backgroundColor ?? colors.notification;
+          const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
           const badgeTextColor =
-            typeof badgeBackgroundColor === 'string' &&
-            Color(badgeBackgroundColor)?.isLight()
+            typeof badgeBackgroundColor === 'string' && Color(badgeBackgroundColor)?.isLight()
               ? 'black'
               : 'white';
 
@@ -189,8 +176,7 @@ export function useHeaderConfig({
 }: Props): ScreenStackHeaderConfigProps {
   const { direction } = useLocale();
   const { colors, fonts, dark } = useTheme();
-  const tintColor =
-    headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
+  const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
 
   const headerLargeTitleStyleFlattened =
     StyleSheet.flatten([
@@ -215,9 +201,7 @@ export function useHeaderConfig({
       : (headerTintColor ?? colors.text);
 
   const titleFontSize =
-    'fontSize' in headerTitleStyleFlattened
-      ? headerTitleStyleFlattened.fontSize
-      : undefined;
+    'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
 
   const titleFontFamily = headerTitleStyleFlattened.fontFamily;
   const titleFontWeight = headerTitleStyleFlattened.fontWeight;
@@ -226,9 +210,7 @@ export function useHeaderConfig({
   const largeTitleBackgroundColor = headerLargeStyleFlattened.backgroundColor;
 
   const largeTitleColor =
-    'color' in headerLargeTitleStyleFlattened
-      ? headerLargeTitleStyleFlattened.color
-      : undefined;
+    'color' in headerLargeTitleStyleFlattened ? headerLargeTitleStyleFlattened.color : undefined;
 
   const largeTitleFontSize =
     'fontSize' in headerLargeTitleStyleFlattened
@@ -253,9 +235,7 @@ export function useHeaderConfig({
 
   const headerBackgroundColor =
     headerStyleFlattened.backgroundColor ??
-    (headerBackground != null || headerTransparent
-      ? 'transparent'
-      : colors.card);
+    (headerBackground != null || headerTransparent ? 'transparent' : colors.card);
 
   const headerLeftElement = headerLeft?.({
     tintColor,
@@ -311,8 +291,7 @@ export function useHeaderConfig({
                   <ScreenStackHeaderLeftView
                     // eslint-disable-next-line @eslint-react/no-array-index-key
                     key={index}
-                    hidesSharedBackground={item.hidesSharedBackground}
-                  >
+                    hidesSharedBackground={item.hidesSharedBackground}>
                     {item.element}
                   </ScreenStackHeaderLeftView>
                 );
@@ -321,14 +300,10 @@ export function useHeaderConfig({
               return null;
             })
           ) : headerLeftElement != null ? (
-            <ScreenStackHeaderLeftView>
-              {headerLeftElement}
-            </ScreenStackHeaderLeftView>
+            <ScreenStackHeaderLeftView>{headerLeftElement}</ScreenStackHeaderLeftView>
           ) : null}
           {headerTitleElement != null ? (
-            <ScreenStackHeaderCenterView>
-              {headerTitleElement}
-            </ScreenStackHeaderCenterView>
+            <ScreenStackHeaderCenterView>{headerTitleElement}</ScreenStackHeaderCenterView>
           ) : null}
         </>
       ) : (
@@ -337,19 +312,14 @@ export function useHeaderConfig({
             // The style passed to header left, together with title element being wrapped
             // in flex view is reqruied for proper header layout, in particular,
             // for the text truncation to work.
-            <ScreenStackHeaderLeftView
-              style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}
-            >
+            <ScreenStackHeaderLeftView style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}>
               {headerLeftElement}
               {headerTitleAlign !== 'center' ? (
                 typeof headerTitle === 'function' ? (
                   <View style={{ flex: 1 }}>{headerTitleElement}</View>
                 ) : (
                   <View style={{ flex: 1 }}>
-                    <HeaderTitle
-                      tintColor={tintColor}
-                      style={headerTitleStyleSupported}
-                    >
+                    <HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
                       {titleText}
                     </HeaderTitle>
                   </View>
@@ -362,10 +332,7 @@ export function useHeaderConfig({
               {typeof headerTitle === 'function' ? (
                 headerTitleElement
               ) : (
-                <HeaderTitle
-                  tintColor={tintColor}
-                  style={headerTitleStyleSupported}
-                >
+                <HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
                   {titleText}
                 </HeaderTitle>
               )}
@@ -380,8 +347,7 @@ export function useHeaderConfig({
               <ScreenStackHeaderRightView
                 // eslint-disable-next-line @eslint-react/no-array-index-key
                 key={index}
-                hidesSharedBackground={item.hidesSharedBackground}
-              >
+                hidesSharedBackground={item.hidesSharedBackground}>
                 {item.element}
               </ScreenStackHeaderRightView>
             );
@@ -390,9 +356,7 @@ export function useHeaderConfig({
           return null;
         })
       ) : headerRightElement != null ? (
-        <ScreenStackHeaderRightView>
-          {headerRightElement}
-        </ScreenStackHeaderRightView>
+        <ScreenStackHeaderRightView>{headerRightElement}</ScreenStackHeaderRightView>
       ) : null}
       {hasHeaderSearchBar ? (
         <ScreenStackHeaderSearchBarView>

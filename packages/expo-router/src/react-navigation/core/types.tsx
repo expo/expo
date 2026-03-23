@@ -1,3 +1,5 @@
+import type * as React from 'react';
+
 import type {
   DefaultRouterOptions,
   InitialState,
@@ -8,7 +10,6 @@ import type {
   Route,
   Router,
 } from '../routers';
-import type * as React from 'react';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -87,12 +88,7 @@ export type DefaultNavigatorOptions<
    * Layout for all screens under this navigator.
    */
   screenLayout?: (
-    props: ScreenLayoutArgs<
-      ParamList,
-      keyof ParamList,
-      ScreenOptions,
-      Navigation
-    >
+    props: ScreenLayoutArgs<ParamList, keyof ParamList, ScreenOptions, Navigation>
   ) => React.ReactElement;
 
   /**
@@ -137,10 +133,7 @@ export type DefaultNavigatorOptions<
         id?: undefined;
       });
 
-export type EventMapBase = Record<
-  string,
-  { data?: any; canPreventDefault?: boolean }
->;
+export type EventMapBase = Record<string, { data?: any; canPreventDefault?: boolean }>;
 
 export type EventMapCore<State extends NavigationState> = {
   focus: { data: undefined };
@@ -171,16 +164,12 @@ export type EventArg<
       preventDefault(): void;
     }
   : {}) &
-  (undefined extends Data
-    ? { readonly data?: Readonly<Data> }
-    : { readonly data: Readonly<Data> });
+  (undefined extends Data ? { readonly data?: Readonly<Data> } : { readonly data: Readonly<Data> });
 
 export type EventListenerCallback<
   EventMap extends EventMapBase,
   EventName extends keyof EventMap,
-  EventCanPreventDefault extends
-    | boolean
-    | undefined = EventMap[EventName]['canPreventDefault'],
+  EventCanPreventDefault extends boolean | undefined = EventMap[EventName]['canPreventDefault'],
 > = (
   e: EventArg<
     EventName,
@@ -219,17 +208,11 @@ export type EventEmitter<EventMap extends EventMapBase> = {
     options: {
       type: EventName;
       target?: string;
-    } & (EventMap[EventName]['canPreventDefault'] extends true
-      ? { canPreventDefault: true }
-      : {}) &
+    } & (EventMap[EventName]['canPreventDefault'] extends true ? { canPreventDefault: true } : {}) &
       (undefined extends EventMap[EventName]['data']
         ? { data?: EventMap[EventName]['data'] }
         : { data: EventMap[EventName]['data'] })
-  ): EventArg<
-    EventName,
-    EventMap[EventName]['canPreventDefault'],
-    EventMap[EventName]['data']
-  >;
+  ): EventArg<EventName, EventMap[EventName]['canPreventDefault'], EventMap[EventName]['data']>;
 };
 
 export class PrivateValueStore<T extends [any, any, any]> {
@@ -256,9 +239,7 @@ type NavigationHelpersCommon<
    *
    * @param action Action object or update function.
    */
-  dispatch(
-    action: NavigationAction | ((state: Readonly<State>) => NavigationAction)
-  ): void;
+  dispatch(action: NavigationAction | ((state: Readonly<State>) => NavigationAction)): void;
 
   /**
    * Navigate to a screen in the current or parent navigator.
@@ -417,9 +398,7 @@ type NavigationHelpersRoute<
    * @param params Partial params object for the current route.
    */
   setParams(
-    params: ParamList[RouteName] extends undefined
-      ? undefined
-      : Partial<ParamList[RouteName]>
+    params: ParamList[RouteName] extends undefined ? undefined : Partial<ParamList[RouteName]>
   ): void;
 
   /**
@@ -428,9 +407,7 @@ type NavigationHelpersRoute<
    * @param params Params object for the current route.
    */
   replaceParams(
-    params: ParamList[RouteName] extends undefined
-      ? undefined
-      : ParamList[RouteName]
+    params: ParamList[RouteName] extends undefined ? undefined : ParamList[RouteName]
   ): void;
 };
 
@@ -549,14 +526,7 @@ export type CompositeNavigationProp<
 
 export type CompositeScreenProps<
   A extends {
-    navigation: NavigationProp<
-      ParamListBase,
-      string,
-      string | undefined,
-      any,
-      any,
-      any
-    >;
+    navigation: NavigationProp<ParamListBase, string, string | undefined, any, any, any>;
     route: RouteProp<ParamListBase>;
   },
   B extends {
@@ -616,10 +586,7 @@ export type ScreenListeners<
   >;
 }>;
 
-type ScreenComponentType<
-  ParamList extends ParamListBase,
-  RouteName extends keyof ParamList,
-> =
+type ScreenComponentType<ParamList extends ParamListBase, RouteName extends keyof ParamList> =
   | React.ComponentType<{
       route: RouteProp<ParamList, RouteName>;
       navigation: any;
@@ -714,11 +681,7 @@ export type RouteConfigProps<
    * For a given screen name, there will always be only one screen corresponding to an ID.
    * If `undefined` is returned, it acts same as no `getId` being specified.
    */
-  getId?: ({
-    params,
-  }: {
-    params: Readonly<ParamList[RouteName]>;
-  }) => string | undefined;
+  getId?: ({ params }: { params: Readonly<ParamList[RouteName]> }) => string | undefined;
 
   /**
    * Initial params object for the route.
@@ -733,14 +696,7 @@ export type RouteConfig<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   Navigation,
-> = RouteConfigProps<
-  ParamList,
-  RouteName,
-  State,
-  ScreenOptions,
-  EventMap,
-  Navigation
-> &
+> = RouteConfigProps<ParamList, RouteName, State, ScreenOptions, EventMap, Navigation> &
   RouteConfigComponent<ParamList, RouteName>;
 
 export type RouteGroupConfig<
@@ -771,12 +727,7 @@ export type RouteGroupConfig<
    */
   screenLayout?:
     | ((
-        props: ScreenLayoutArgs<
-          ParamList,
-          keyof ParamList,
-          ScreenOptions,
-          Navigation
-        >
+        props: ScreenLayoutArgs<ParamList, keyof ParamList, ScreenOptions, Navigation>
       ) => React.ReactElement)
     | {
         // FIXME: TypeScript doesn't seem to infer `navigation` correctly without this
@@ -848,40 +799,39 @@ type MaybeParamListRoute<ParamList extends {}> = ParamList extends ParamListBase
   ? ParamListRoute<ParamList>
   : Route<string>;
 
-export type NavigationContainerRef<ParamList extends {}> =
-  NavigationHelpers<ParamList> &
-    EventConsumer<NavigationContainerEventMap> & {
-      /**
-       * Reset the navigation state of the root navigator to the provided state.
-       *
-       * @param state Navigation state object.
-       */
-      resetRoot(state?: PartialState<NavigationState> | NavigationState): void;
-      /**
-       * Get the rehydrated navigation state of the navigation tree.
-       */
-      getRootState(): NavigationState;
-      /**
-       * Get the currently focused navigation route.
-       */
-      getCurrentRoute(): MaybeParamListRoute<ParamList> | undefined;
-      /**
-       * Get the currently focused route's options.
-       */
-      getCurrentOptions(): object | undefined;
-      /**
-       * Whether the navigation container is ready to handle actions.
-       */
-      isReady(): boolean;
-      /**
-       * Stub function for setOptions on navigation object for use with useNavigation.
-       */
-      setOptions(): never;
-      /**
-       * Stub function for getParent on navigation object for use with useNavigation.
-       */
-      getParent(): undefined;
-    };
+export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<ParamList> &
+  EventConsumer<NavigationContainerEventMap> & {
+    /**
+     * Reset the navigation state of the root navigator to the provided state.
+     *
+     * @param state Navigation state object.
+     */
+    resetRoot(state?: PartialState<NavigationState> | NavigationState): void;
+    /**
+     * Get the rehydrated navigation state of the navigation tree.
+     */
+    getRootState(): NavigationState;
+    /**
+     * Get the currently focused navigation route.
+     */
+    getCurrentRoute(): MaybeParamListRoute<ParamList> | undefined;
+    /**
+     * Get the currently focused route's options.
+     */
+    getCurrentOptions(): object | undefined;
+    /**
+     * Whether the navigation container is ready to handle actions.
+     */
+    isReady(): boolean;
+    /**
+     * Stub function for setOptions on navigation object for use with useNavigation.
+     */
+    setOptions(): never;
+    /**
+     * Stub function for getParent on navigation object for use with useNavigation.
+     */
+    getParent(): undefined;
+  };
 
 export type NavigationContainerRefWithCurrent<ParamList extends {}> =
   NavigationContainerRef<ParamList> & {
@@ -988,14 +938,7 @@ type TypedNavigatorInternal<
    * Component used for specifying route configuration.
    */
   Screen: <RouteName extends keyof ParamList>(
-    _: RouteConfig<
-      ParamList,
-      RouteName,
-      State,
-      ScreenOptions,
-      EventMap,
-      NavigationList[RouteName]
-    >
+    _: RouteConfig<ParamList, RouteName, State, ScreenOptions, EventMap, NavigationList[RouteName]>
   ) => null;
 };
 
@@ -1085,9 +1028,9 @@ export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
 };
 
 export type PathConfigMap<ParamList extends {}> = {
-  [RouteName in keyof ParamList]?: NonNullable<
-    ParamList[RouteName]
-  > extends NavigatorScreenParams<infer T extends {}>
+  [RouteName in keyof ParamList]?: NonNullable<ParamList[RouteName]> extends NavigatorScreenParams<
+    infer T extends {}
+  >
     ? string | PathConfig<T>
     : string | Omit<PathConfig<{}>, 'screens' | 'initialRouteName'>;
 };

@@ -1,3 +1,7 @@
+import * as React from 'react';
+import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+
+import { Header } from './Header';
 import { getHeaderTitle, HeaderBackContext } from '../../../elements';
 import {
   NavigationProvider,
@@ -5,9 +9,6 @@ import {
   type Route,
   useLinkBuilder,
 } from '../../../native';
-import * as React from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-
 import {
   forNoAnimation,
   forSlideLeft,
@@ -21,7 +22,6 @@ import type {
   StackHeaderProps,
   StackNavigationProp,
 } from '../../types';
-import { Header } from './Header';
 
 export type Props = {
   mode: StackHeaderMode;
@@ -29,10 +29,7 @@ export type Props = {
   scenes: (Scene | undefined)[];
   getPreviousScene: (props: { route: Route<string> }) => Scene | undefined;
   getFocusedRoute: () => Route<string>;
-  onContentHeightChange?: (props: {
-    route: Route<string>;
-    height: number;
-  }) => void;
+  onContentHeightChange?: (props: { route: Route<string>; height: number }) => void;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -94,18 +91,14 @@ export function HeaderContainer({
         const previousDescriptor = self[i - 1]?.descriptor;
         const nextDescriptor = self[i + 1]?.descriptor;
 
-        const {
-          headerShown: previousHeaderShown = true,
-          headerMode: previousHeaderMode,
-        } = previousDescriptor?.options || {};
+        const { headerShown: previousHeaderShown = true, headerMode: previousHeaderMode } =
+          previousDescriptor?.options || {};
 
         // If any of the next screens don't have a header or header is part of the screen
         // Then we need to move this header offscreen so that it doesn't cover it
         const nextHeaderlessScene = self.slice(i + 1).find((scene) => {
-          const {
-            headerShown: currentHeaderShown = true,
-            headerMode: currentHeaderMode,
-          } = scene?.descriptor.options || {};
+          const { headerShown: currentHeaderShown = true, headerMode: currentHeaderMode } =
+            scene?.descriptor.options || {};
 
           return currentHeaderShown === false || currentHeaderMode === 'screen';
         });
@@ -126,8 +119,7 @@ export function HeaderContainer({
           progress: scene.progress,
           options: scene.descriptor.options,
           route: scene.descriptor.route,
-          navigation: scene.descriptor
-            .navigation as StackNavigationProp<ParamListBase>,
+          navigation: scene.descriptor.navigation as StackNavigationProp<ParamListBase>,
           styleInterpolator:
             mode === 'float'
               ? isHeaderStatic
@@ -145,8 +137,7 @@ export function HeaderContainer({
           <NavigationProvider
             key={scene.descriptor.route.key}
             route={scene.descriptor.route}
-            navigation={scene.descriptor.navigation}
-          >
+            navigation={scene.descriptor.navigation}>
             <View
               onLayout={
                 onContentHeightChange
@@ -165,11 +156,8 @@ export function HeaderContainer({
               style={
                 // Avoid positioning the focused header absolutely
                 // Otherwise accessibility tools don't seem to be able to find it
-                (mode === 'float' && !isFocused) || headerTransparent
-                  ? styles.header
-                  : null
-              }
-            >
+                (mode === 'float' && !isFocused) || headerTransparent ? styles.header : null
+              }>
               {header !== undefined ? header(props) : <Header {...props} />}
             </View>
           </NavigationProvider>

@@ -19,21 +19,14 @@ const StackNavigator = (
     unknown
   >
 ) => {
-  const { state, descriptors, NavigationContent } = useNavigationBuilder(
-    StackRouter,
-    props
-  );
+  const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
   return (
-    <NavigationContent>
-      {descriptors[state.routes[state.index].key].render()}
-    </NavigationContent>
+    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
   );
 };
 
-export function createStackNavigator<
-  ParamList extends ParamListBase,
->(): TypedNavigator<{
+export function createStackNavigator<ParamList extends ParamListBase>(): TypedNavigator<{
   ParamList: ParamList;
   NavigatorID: string | undefined;
   State: StackNavigationState<ParamList>;

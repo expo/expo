@@ -8,16 +8,11 @@ export function checkDuplicateRouteNames(state: NavigationState) {
     state: NavigationState | PartialState<NavigationState>
   ) => {
     state.routes.forEach((route: (typeof state.routes)[0]) => {
-      const currentLocation = location
-        ? `${location} > ${route.name}`
-        : route.name;
+      const currentLocation = location ? `${location} > ${route.name}` : route.name;
 
       route.state?.routeNames?.forEach((routeName) => {
         if (routeName === route.name) {
-          duplicates.push([
-            currentLocation,
-            `${currentLocation} > ${route.name}`,
-          ]);
+          duplicates.push([currentLocation, `${currentLocation} > ${route.name}`]);
         }
       });
 

@@ -1,23 +1,17 @@
+import * as React from 'react';
+import { Animated, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import {
   type NavigationProp,
   NavigationProvider,
   type ParamListBase,
   type RouteProp,
 } from '../native';
-import * as React from 'react';
-import {
-  Animated,
-  type StyleProp,
-  StyleSheet,
-  View,
-  type ViewStyle,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { Background } from './Background';
-import { getDefaultHeaderHeight } from './Header/getDefaultHeaderHeight';
 import { HeaderHeightContext } from './Header/HeaderHeightContext';
 import { HeaderShownContext } from './Header/HeaderShownContext';
+import { getDefaultHeaderHeight } from './Header/getDefaultHeaderHeight';
 import { useFrameSize } from './useFrameSize';
 
 type Props = {
@@ -72,8 +66,7 @@ export function Screen(props: Props) {
       style={[styles.container, style]}
       // On Fabric we need to disable collapsing for the background to ensure
       // that we won't render unnecessary views due to the view flattening.
-      collapsable={false}
-    >
+      collapsable={false}>
       {headerShown ? (
         <NavigationProvider route={route} navigation={navigation}>
           <View
@@ -84,19 +77,15 @@ export function Screen(props: Props) {
 
               setHeaderHeight(height);
             }}
-            style={[styles.header, headerTransparent ? styles.absolute : null]}
-          >
+            style={[styles.header, headerTransparent ? styles.absolute : null]}>
             {header}
           </View>
         </NavigationProvider>
       ) : null}
       <View style={styles.content}>
-        <HeaderShownContext.Provider
-          value={isParentHeaderShown || headerShown !== false}
-        >
+        <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
           <HeaderHeightContext.Provider
-            value={headerShown ? headerHeight : (parentHeaderHeight ?? 0)}
-          >
+            value={headerShown ? headerHeight : (parentHeaderHeight ?? 0)}>
             {children}
           </HeaderHeightContext.Provider>
         </HeaderShownContext.Provider>

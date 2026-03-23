@@ -1,5 +1,4 @@
 import type { NavigationState, ParamListBase } from '../routers';
-
 import type { EventMapBase, RouteConfig } from './types';
 
 /**
@@ -12,16 +11,7 @@ export function Screen<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
   NavigationProp,
->(
-  _: RouteConfig<
-    ParamList,
-    RouteName,
-    State,
-    ScreenOptions,
-    EventMap,
-    NavigationProp
-  >
-) {
+>(_: RouteConfig<ParamList, RouteName, State, ScreenOptions, EventMap, NavigationProp>) {
   /* istanbul ignore next */
   return null;
 }

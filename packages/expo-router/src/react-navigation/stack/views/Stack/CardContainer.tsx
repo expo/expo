@@ -1,24 +1,19 @@
+import * as React from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
+
+import { Card } from './Card';
+import { CardA11yWrapper, type CardA11yWrapperRef } from './CardA11yWrapper';
 import {
   getHeaderTitle,
   HeaderBackContext,
   HeaderHeightContext,
   HeaderShownContext,
 } from '../../../elements';
-import {
-  type Route,
-  useLinkBuilder,
-  useLocale,
-  useTheme,
-} from '../../../native';
-import * as React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-
+import { type Route, useLinkBuilder, useLocale, useTheme } from '../../../native';
 import type { Layout, Scene } from '../../types';
 import { ModalPresentationContext } from '../../utils/ModalPresentationContext';
 import { useKeyboardManager } from '../../utils/useKeyboardManager';
 import type { Props as HeaderContainerProps } from '../Header/HeaderContainer';
-import { Card } from './Card';
-import { CardA11yWrapper, type CardA11yWrapperRef } from './CardA11yWrapper';
 
 type Props = {
   interpolationIndex: number;
@@ -41,20 +36,14 @@ type Props = {
   renderHeader: (props: HeaderContainerProps) => React.ReactNode;
   onOpenRoute: (props: { route: Route<string> }) => void;
   onCloseRoute: (props: { route: Route<string> }) => void;
-  onTransitionStart: (
-    props: { route: Route<string> },
-    closing: boolean
-  ) => void;
+  onTransitionStart: (props: { route: Route<string> }, closing: boolean) => void;
   onTransitionEnd: (props: { route: Route<string> }, closing: boolean) => void;
   onGestureStart: (props: { route: Route<string> }) => void;
   onGestureEnd: (props: { route: Route<string> }) => void;
   onGestureCancel: (props: { route: Route<string> }) => void;
   hasAbsoluteFloatHeader: boolean;
   headerHeight: number;
-  onHeaderHeightChange: (props: {
-    route: Route<string>;
-    height: number;
-  }) => void;
+  onHeaderHeightChange: (props: { route: Route<string>; height: number }) => void;
   isParentHeaderShown: boolean;
   isNextScreenTransparent: boolean;
   detachCurrentScreen: boolean;
@@ -104,8 +93,10 @@ function CardContainerInner({
   const { options } = scene.descriptor;
   const enabled = focused && options.keyboardHandlingEnabled !== false;
 
-  const { onPageChangeStart, onPageChangeCancel, onPageChangeConfirm } =
-    useKeyboardManager({ enabled, focused });
+  const { onPageChangeStart, onPageChangeCancel, onPageChangeConfirm } = useKeyboardManager({
+    enabled,
+    focused,
+  });
 
   const handleOpen = () => {
     const { route } = scene.descriptor;
@@ -141,13 +132,7 @@ function CardContainerInner({
     onGestureEnd({ route });
   };
 
-  const handleTransition = ({
-    closing,
-    gesture,
-  }: {
-    closing: boolean;
-    gesture: boolean;
-  }) => {
+  const handleTransition = ({ closing, gesture }: { closing: boolean; gesture: boolean }) => {
     wrapperRef.current?.setInert(closing);
 
     const { route } = scene.descriptor;
@@ -167,11 +152,9 @@ function CardContainerInner({
   const { colors } = useTheme();
 
   React.useEffect(() => {
-    const listener = scene.progress.next?.addListener?.(
-      ({ value }: { value: number }) => {
-        wrapperRef.current?.setInert(value > EPSILON);
-      }
-    );
+    const listener = scene.progress.next?.addListener?.(({ value }: { value: number }) => {
+      wrapperRef.current?.setInert(value > EPSILON);
+    });
 
     return () => {
       if (listener) {
@@ -231,8 +214,7 @@ function CardContainerInner({
       active={active}
       animated={animated}
       isNextScreenTransparent={isNextScreenTransparent}
-      detachCurrentScreen={detachCurrentScreen}
-    >
+      detachCurrentScreen={detachCurrentScreen}>
       <Card
         animated={animated}
         interpolationIndex={interpolationIndex}
@@ -262,20 +244,15 @@ function CardContainerInner({
         pageOverflowEnabled={headerMode !== 'float' && presentation !== 'modal'}
         preloaded={preloaded}
         containerStyle={
-          hasAbsoluteFloatHeader && headerMode !== 'screen'
-            ? { marginTop: headerHeight }
-            : null
+          hasAbsoluteFloatHeader && headerMode !== 'screen' ? { marginTop: headerHeight } : null
         }
         contentStyle={[
           {
             backgroundColor:
-              presentation === 'transparentModal'
-                ? 'transparent'
-                : colors.background,
+              presentation === 'transparentModal' ? 'transparent' : colors.background,
           },
           cardStyle,
-        ]}
-      >
+        ]}>
         <View style={styles.container}>
           <ModalPresentationContext.Provider value={modal}>
             {headerMode !== 'float'
@@ -291,16 +268,9 @@ function CardContainerInner({
               : null}
             <View style={styles.scene}>
               <HeaderBackContext.Provider value={headerBack}>
-                <HeaderShownContext.Provider
-                  value={isParentHeaderShown || headerShown !== false}
-                >
+                <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
                   <HeaderHeightContext.Provider
-                    value={
-                      headerShown !== false
-                        ? headerHeight
-                        : (parentHeaderHeight ?? 0)
-                    }
-                  >
+                    value={headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0)}>
                     {scene.descriptor.render()}
                   </HeaderHeightContext.Provider>
                 </HeaderShownContext.Provider>

@@ -1,13 +1,8 @@
-import type { NavigationState, ParamListBase } from '../routers';
 import * as React from 'react';
 
+import type { NavigationState, ParamListBase } from '../routers';
 import { CurrentRenderContext } from './CurrentRenderContext';
-import type {
-  Descriptor,
-  NavigationHelpers,
-  NavigationProp,
-  RouteProp,
-} from './types';
+import type { Descriptor, NavigationHelpers, NavigationProp, RouteProp } from './types';
 
 type Options = {
   state: NavigationState;

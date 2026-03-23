@@ -1,6 +1,6 @@
-import type { ParamListBase, Route } from '../routers';
 import * as React from 'react';
 
+import type { ParamListBase, Route } from '../routers';
 import { NavigationContext } from './NavigationContext';
 import type { NavigationProp } from './types';
 import { FocusedRouteKeyContext, IsFocusedContext } from './useIsFocused';
@@ -8,9 +8,7 @@ import { FocusedRouteKeyContext, IsFocusedContext } from './useIsFocused';
 /**
  * Context which holds the route prop for a screen.
  */
-export const NavigationRouteContext = React.createContext<
-  Route<string> | undefined
->(undefined);
+export const NavigationRouteContext = React.createContext<Route<string> | undefined>(undefined);
 
 type Props = {
   route: Route<string>;
@@ -33,16 +31,12 @@ export function NavigationProvider({ route, navigation, children }: Props) {
   // - It doesn't have a parent navigator
   // - Parent navigator is focused
   const isFocused =
-    parentIsFocused == null || parentIsFocused
-      ? focusedRouteKey === route.key
-      : false;
+    parentIsFocused == null || parentIsFocused ? focusedRouteKey === route.key : false;
 
   return (
     <NavigationRouteContext.Provider value={route}>
       <NavigationContext.Provider value={navigation}>
-        <IsFocusedContext.Provider value={isFocused}>
-          {children}
-        </IsFocusedContext.Provider>
+        <IsFocusedContext.Provider value={isFocused}>{children}</IsFocusedContext.Provider>
       </NavigationContext.Provider>
     </NavigationRouteContext.Provider>
   );

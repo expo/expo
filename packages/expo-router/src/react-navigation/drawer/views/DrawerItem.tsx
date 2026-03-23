@@ -1,14 +1,9 @@
-import { PlatformPressable, Text } from '../../elements';
-import { type Route, useTheme } from '../../native';
 import Color from 'color';
 import * as React from 'react';
-import {
-  type StyleProp,
-  StyleSheet,
-  type TextStyle,
-  View,
-  type ViewStyle,
-} from 'react-native';
+import { type StyleProp, StyleSheet, type TextStyle, View, type ViewStyle } from 'react-native';
+
+import { PlatformPressable, Text } from '../../elements';
+import { type Route, useTheme } from '../../native';
 
 type Props = {
   /**
@@ -22,17 +17,11 @@ type Props = {
   /**
    * The label text of the item.
    */
-  label:
-    | string
-    | ((props: { focused: boolean; color: string }) => React.ReactNode);
+  label: string | ((props: { focused: boolean; color: string }) => React.ReactNode);
   /**
    * Icon to display for the `DrawerItem`.
    */
-  icon?: (props: {
-    focused: boolean;
-    size: number;
-    color: string;
-  }) => React.ReactNode;
+  icon?: (props: { focused: boolean; size: number; color: string }) => React.ReactNode;
   /**
    * Whether to highlight the drawer item as active.
    */
@@ -124,9 +113,7 @@ export function DrawerItem(props: Props) {
 
   const { borderRadius = 56 } = StyleSheet.flatten(style || {});
   const color = focused ? activeTintColor : inactiveTintColor;
-  const backgroundColor = focused
-    ? activeBackgroundColor
-    : inactiveBackgroundColor;
+  const backgroundColor = focused ? activeBackgroundColor : inactiveBackgroundColor;
 
   const iconNode = icon ? icon({ size: 24, focused, color }) : null;
 
@@ -134,8 +121,7 @@ export function DrawerItem(props: Props) {
     <View
       collapsable={false}
       {...rest}
-      style={[styles.container, { borderRadius, backgroundColor }, style]}
-    >
+      style={[styles.container, { borderRadius, backgroundColor }, style]}>
       <PlatformPressable
         testID={testID}
         onPress={onPress}
@@ -145,8 +131,7 @@ export function DrawerItem(props: Props) {
         pressColor={pressColor}
         pressOpacity={pressOpacity}
         hoverEffect={{ color }}
-        href={href}
-      >
+        href={href}>
         <View style={[styles.wrapper, { borderRadius }]}>
           {iconNode}
           <View style={[styles.label, { marginStart: iconNode ? 12 : 0 }]}>
@@ -154,8 +139,7 @@ export function DrawerItem(props: Props) {
               <Text
                 numberOfLines={1}
                 allowFontScaling={allowFontScaling}
-                style={[styles.labelText, { color }, fonts.medium, labelStyle]}
-              >
+                style={[styles.labelText, { color }, fonts.medium, labelStyle]}>
                 {label}
               </Text>
             ) : (

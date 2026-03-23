@@ -1,3 +1,6 @@
+import isEqual from 'fast-deep-equal';
+import * as React from 'react';
+
 import {
   findFocusedRoute,
   getActionFromState as getActionFromStateDefault,
@@ -8,11 +11,8 @@ import {
   type ParamListBase,
   useNavigationIndependentTree,
 } from '../core';
-import isEqual from 'fast-deep-equal';
-import * as React from 'react';
-
-import { createMemoryHistory } from './createMemoryHistory';
 import { ServerContext } from './ServerContext';
+import { createMemoryHistory } from './createMemoryHistory';
 import type { LinkingOptions } from './types';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
@@ -159,8 +159,7 @@ export function useLinking(
 
     if (enabledRef.current) {
       const location =
-        server?.location ??
-        (typeof window !== 'undefined' ? window.location : undefined);
+        server?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
 
       const path = location ? location.pathname + location.search : undefined;
 
@@ -233,10 +232,7 @@ export function useLinking(
         }
 
         if (index > previousIndex) {
-          const action = getActionFromStateRef.current(
-            state,
-            configRef.current
-          );
+          const action = getActionFromStateRef.current(state, configRef.current);
 
           if (action !== undefined) {
             try {
@@ -246,9 +242,7 @@ export function useLinking(
               // This could happen in case of malformed links, navigation object not being initialized etc.
               console.warn(
                 `An error occurred when trying to handle the link '${path}': ${
-                  typeof e === 'object' && e != null && 'message' in e
-                    ? e.message
-                    : e
+                  typeof e === 'object' && e != null && 'message' in e ? e.message : e
                 }`
               );
             }
@@ -263,13 +257,7 @@ export function useLinking(
         navigation.resetRoot(state);
       }
     });
-  }, [
-    enabled,
-    history,
-    onUnhandledLinking,
-    ref,
-    validateRoutesNotExistInRootState,
-  ]);
+  }, [enabled, history, onUnhandledLinking, ref, validateRoutesNotExistInRootState]);
 
   React.useEffect(() => {
     if (!enabled) {
@@ -285,10 +273,7 @@ export function useLinking(
       // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
       // This makes sure that we preserve the original URL for wildcard routes
       if (route?.path) {
-        const stateForPath = getStateFromPathRef.current(
-          route.path,
-          configRef.current
-        );
+        const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
 
         if (stateForPath) {
           const focusedRoute = findFocusedRoute(stateForPath);
@@ -368,10 +353,7 @@ export function useLinking(
       // - Find the common focused navigation state in previous and current state
       // - If only the route keys changed, compare history/routes.length to check if we go back/forward/replace
       // - If no common focused navigation state found, it's a replace
-      const [previousFocusedState, focusedState] = findMatchingState(
-        previousState,
-        state
-      );
+      const [previousFocusedState, focusedState] = findMatchingState(previousState, state);
 
       if (
         previousFocusedState &&
@@ -381,9 +363,7 @@ export function useLinking(
         path !== pendingPath
       ) {
         const historyDelta =
-          (focusedState.history
-            ? focusedState.history.length
-            : focusedState.routes.length) -
+          (focusedState.history ? focusedState.history.length : focusedState.routes.length) -
           (previousFocusedState.history
             ? previousFocusedState.history.length
             : previousFocusedState.routes.length);

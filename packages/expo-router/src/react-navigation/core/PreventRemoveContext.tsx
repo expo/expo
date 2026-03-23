@@ -9,11 +9,7 @@ export type PreventedRoutes = Record<string, { preventRemove: boolean }>;
 export const PreventRemoveContext = React.createContext<
   | {
       preventedRoutes: PreventedRoutes;
-      setPreventRemove: (
-        id: string,
-        routeKey: string,
-        preventRemove: boolean
-      ) => void;
+      setPreventRemove: (id: string, routeKey: string, preventRemove: boolean) => void;
     }
   | undefined
 >(undefined);

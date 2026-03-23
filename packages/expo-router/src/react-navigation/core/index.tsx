@@ -12,10 +12,7 @@ export { NavigationContext } from './NavigationContext';
 export { NavigationHelpersContext } from './NavigationHelpersContext';
 export { NavigationIndependentTree } from './NavigationIndependentTree';
 export { NavigationMetaContext } from './NavigationMetaContext';
-export {
-  NavigationProvider,
-  NavigationRouteContext,
-} from './NavigationProvider';
+export { NavigationProvider, NavigationRouteContext } from './NavigationProvider';
 export { PreventRemoveContext } from './PreventRemoveContext';
 export { PreventRemoveProvider } from './PreventRemoveProvider';
 export {

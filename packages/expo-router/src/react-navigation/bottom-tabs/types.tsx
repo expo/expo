@@ -1,7 +1,14 @@
+import type * as React from 'react';
 import type {
-  HeaderOptions,
-  PlatformPressable,
-} from '../elements';
+  Animated,
+  GestureResponderEvent,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
+import type { EdgeInsets } from 'react-native-safe-area-context';
+
+import type { HeaderOptions, PlatformPressable } from '../elements';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
@@ -14,15 +21,6 @@ import type {
   TabRouterOptions,
   Theme,
 } from '../native';
-import type * as React from 'react';
-import type {
-  Animated,
-  GestureResponderEvent,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-} from 'react-native';
-import type { EdgeInsets } from 'react-native-safe-area-context';
 
 export type Layout = { width: number; height: number };
 
@@ -88,18 +86,12 @@ export type BottomTabOptionsArgs<
 
 export type TimingKeyboardAnimationConfig = {
   animation: 'timing';
-  config?: Omit<
-    Partial<Animated.TimingAnimationConfig>,
-    'toValue' | 'useNativeDriver'
-  >;
+  config?: Omit<Partial<Animated.TimingAnimationConfig>, 'toValue' | 'useNativeDriver'>;
 };
 
 export type SpringKeyboardAnimationConfig = {
   animation: 'spring';
-  config?: Omit<
-    Partial<Animated.SpringAnimationConfig>,
-    'toValue' | 'useNativeDriver'
-  >;
+  config?: Omit<Partial<Animated.SpringAnimationConfig>, 'toValue' | 'useNativeDriver'>;
 };
 
 export type TabBarVisibilityAnimationConfig =
@@ -157,11 +149,7 @@ export type BottomTabNavigationOptions = HeaderOptions & {
   /**
    * A function that given { focused: boolean, color: string } returns a React.Node to display in the tab bar.
    */
-  tabBarIcon?: (props: {
-    focused: boolean;
-    color: string;
-    size: number;
-  }) => React.ReactNode;
+  tabBarIcon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
 
   /**
    * Style object for the tab icon.
@@ -353,17 +341,11 @@ export type BottomTabSceneStyleInterpolator = (
 export type TransitionSpec =
   | {
       animation: 'timing';
-      config: Omit<
-        Animated.TimingAnimationConfig,
-        'toValue' | keyof Animated.AnimationConfig
-      >;
+      config: Omit<Animated.TimingAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
     }
   | {
       animation: 'spring';
-      config: Omit<
-        Animated.SpringAnimationConfig,
-        'toValue' | keyof Animated.AnimationConfig
-      >;
+      config: Omit<Animated.SpringAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
     };
 
 export type BottomTabTransitionPreset = {
@@ -439,9 +421,7 @@ export type BottomTabBarButtonProps = Omit<
   href?: string;
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  onPress?: (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
-  ) => void;
+  onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 };
 
 export type BottomTabNavigatorProps = DefaultNavigatorOptions<

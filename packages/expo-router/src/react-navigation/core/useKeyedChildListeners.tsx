@@ -7,10 +7,7 @@ import type { KeyedListenerMap } from './NavigationBuilderContext';
  */
 export function useKeyedChildListeners() {
   const { current: keyedListeners } = React.useRef<{
-    [K in keyof KeyedListenerMap]: Record<
-      string,
-      KeyedListenerMap[K] | undefined
-    >;
+    [K in keyof KeyedListenerMap]: Record<string, KeyedListenerMap[K] | undefined>;
   }>(
     Object.assign(Object.create(null), {
       getState: {},
@@ -19,11 +16,7 @@ export function useKeyedChildListeners() {
   );
 
   const addKeyedListener = React.useCallback(
-    <T extends keyof KeyedListenerMap>(
-      type: T,
-      key: string,
-      listener: KeyedListenerMap[T]
-    ) => {
+    <T extends keyof KeyedListenerMap>(type: T, key: string, listener: KeyedListenerMap[T]) => {
       // @ts-expect-error: according to ref stated above you can use `key` to index type
       keyedListeners[type][key] = listener;
 

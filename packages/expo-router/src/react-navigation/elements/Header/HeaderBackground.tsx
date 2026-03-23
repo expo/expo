@@ -1,4 +1,3 @@
-import { useTheme } from '../../native';
 import * as React from 'react';
 import {
   Animated,
@@ -8,6 +7,8 @@ import {
   type ViewProps,
   type ViewStyle,
 } from 'react-native';
+
+import { useTheme } from '../../native';
 
 type Props = Omit<ViewProps, 'style'> & {
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
@@ -25,9 +26,7 @@ export function HeaderBackground({ style, ...rest }: Props) {
           backgroundColor: colors.card,
           borderBottomColor: colors.border,
           ...(Platform.OS === 'ios' && {
-            shadowColor: dark
-              ? 'rgba(255, 255, 255, 0.45)'
-              : 'rgba(0, 0, 0, 1)',
+            shadowColor: dark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 1)',
           }),
         },
         style,

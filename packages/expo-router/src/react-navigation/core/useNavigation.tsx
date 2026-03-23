@@ -1,6 +1,6 @@
-import { type NavigationState } from '../routers';
 import * as React from 'react';
 
+import { type NavigationState } from '../routers';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
 import { NavigationContext } from './NavigationContext';
 import type { NavigationProp } from './types';

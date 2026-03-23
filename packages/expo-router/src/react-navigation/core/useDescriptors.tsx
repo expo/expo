@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import type {
   NavigationAction,
   NavigationState,
@@ -5,8 +7,6 @@ import type {
   PartialState,
   Router,
 } from '../routers';
-import * as React from 'react';
-
 import {
   type AddKeyedListener,
   type AddListener,
@@ -35,14 +35,7 @@ export type ScreenConfigWithParent<
   keys: (string | undefined)[];
   options: (ScreenOptionsOrCallback<ScreenOptions> | undefined)[] | undefined;
   layout: ScreenLayout<ScreenOptions> | undefined;
-  props: RouteConfig<
-    ParamListBase,
-    string,
-    State,
-    ScreenOptions,
-    EventMap,
-    unknown
-  >;
+  props: RouteConfig<ParamListBase, string, State, ScreenOptions, EventMap, unknown>;
 };
 
 type ScreenLayout<ScreenOptions extends {}> = (props: {
@@ -67,10 +60,7 @@ type Options<
   EventMap extends EventMapBase,
 > = {
   state: State;
-  screens: Record<
-    string,
-    ScreenConfigWithParent<State, ScreenOptions, EventMap>
-  >;
+  screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
@@ -113,16 +103,9 @@ export function useDescriptors<
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = React.useContext(ThemeContext);
-  const [options, setOptions] = React.useState<Record<string, ScreenOptions>>(
-    {}
-  );
-  const {
-    onDispatchAction,
-    onOptionsChange,
-    scheduleUpdate,
-    flushUpdates,
-    stackRef,
-  } = React.useContext(NavigationBuilderContext);
+  const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
+  const { onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates, stackRef } =
+    React.useContext(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
@@ -151,12 +134,7 @@ export function useDescriptors<
     ]
   );
 
-  const { base, navigations } = useNavigationCache<
-    State,
-    ScreenOptions,
-    EventMap,
-    ActionHelpers
-  >({
+  const { base, navigations } = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
     state,
     getState,
     navigation,
@@ -279,14 +257,7 @@ export function useDescriptors<
       string,
       Descriptor<
         ScreenOptions,
-        NavigationProp<
-          ParamListBase,
-          string,
-          string | undefined,
-          State,
-          ScreenOptions,
-          EventMap
-        > &
+        NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions, EventMap> &
           ActionHelpers,
         RouteProp<ParamListBase>
       >
@@ -294,12 +265,7 @@ export function useDescriptors<
   >((acc, route, i) => {
     const navigation = navigations[route.key];
     const customOptions = getOptions(route, navigation, options[route.key]);
-    const element = render(
-      route,
-      navigation,
-      customOptions,
-      state.routes[i].state
-    );
+    const element = render(route, navigation, customOptions, state.routes[i].state);
 
     acc[route.key] = {
       route,

@@ -1,4 +1,3 @@
-import { useNavigation, useTheme } from '../../native';
 import Color from 'color';
 import * as React from 'react';
 import {
@@ -12,9 +11,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
+import { useNavigation, useTheme } from '../../native';
 import type { HeaderOptions, Layout } from '../types';
 import { useFrameSize } from '../useFrameSize';
-import { getDefaultHeaderHeight } from './getDefaultHeaderHeight';
 import { HeaderBackButton } from './HeaderBackButton';
 import { HeaderBackground } from './HeaderBackground';
 import { HeaderButton } from './HeaderButton';
@@ -22,6 +21,7 @@ import { HeaderIcon } from './HeaderIcon';
 import { HeaderSearchBar } from './HeaderSearchBar';
 import { HeaderShownContext } from './HeaderShownContext';
 import { HeaderTitle } from './HeaderTitle';
+import { getDefaultHeaderHeight } from './getDefaultHeaderHeight';
 
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;
@@ -79,19 +79,13 @@ export function Header(props: Props) {
   const isParentHeaderShown = React.useContext(HeaderShownContext);
 
   const [searchBarVisible, setSearchBarVisible] = React.useState(false);
-  const [titleLayout, setTitleLayout] = React.useState<Layout | undefined>(
-    undefined
-  );
+  const [titleLayout, setTitleLayout] = React.useState<Layout | undefined>(undefined);
 
   const onTitleLayout = (e: LayoutChangeEvent) => {
     const { height, width } = e.nativeEvent.layout;
 
     setTitleLayout((titleLayout) => {
-      if (
-        titleLayout &&
-        height === titleLayout.height &&
-        width === titleLayout.width
-      ) {
+      if (titleLayout && height === titleLayout.height && width === titleLayout.width) {
         return titleLayout;
       }
 
@@ -127,11 +121,7 @@ export function Header(props: Props) {
     headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top,
   } = props;
 
-  const defaultHeight = getDefaultHeaderHeight(
-    layout,
-    modal,
-    headerStatusBarHeight
-  );
+  const defaultHeight = getDefaultHeaderHeight(layout, modal, headerStatusBarHeight);
 
   const {
     height = defaultHeight,
@@ -302,20 +292,16 @@ export function Header(props: Props) {
 
   const headerTitle =
     typeof customTitle !== 'function'
-      ? (props: React.ComponentProps<typeof HeaderTitle>) => (
-          <HeaderTitle {...props} />
-        )
+      ? (props: React.ComponentProps<typeof HeaderTitle>) => <HeaderTitle {...props} />
       : customTitle;
 
   return (
     <Animated.View
       pointerEvents="box-none"
-      style={[{ height, minHeight, maxHeight, opacity, transform }]}
-    >
+      style={[{ height, minHeight, maxHeight, opacity, transform }]}>
       <Animated.View
         pointerEvents="box-none"
-        style={[StyleSheet.absoluteFill, backgroundContainerStyle]}
-      >
+        style={[StyleSheet.absoluteFill, backgroundContainerStyle]}>
         {headerBackground ? (
           headerBackground({ style: backgroundStyle })
         ) : (
@@ -337,11 +323,8 @@ export function Header(props: Props) {
         pointerEvents="box-none"
         style={[
           styles.content,
-          Platform.OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH
-            ? styles.large
-            : null,
-        ]}
-      >
+          Platform.OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH ? styles.large : null,
+        ]}>
         <Animated.View
           pointerEvents="box-none"
           style={[
@@ -349,8 +332,7 @@ export function Header(props: Props) {
             !searchBarVisible && headerTitleAlign === 'center' && styles.expand,
             { marginStart: insets.left },
             leftContainerStyle,
-          ]}
-        >
+          ]}>
           {leftButton}
         </Animated.View>
         {Platform.OS === 'ios' || !searchBarVisible ? (
@@ -364,11 +346,7 @@ export function Header(props: Props) {
                   maxWidth:
                     headerTitleAlign === 'center'
                       ? layout.width -
-                        ((leftButton
-                          ? headerBackButtonDisplayMode !== 'minimal'
-                            ? 80
-                            : 32
-                          : 16) +
+                        ((leftButton ? (headerBackButtonDisplayMode !== 'minimal' ? 80 : 32) : 16) +
                           (rightButton || headerSearchBarOptions ? 16 : 0) +
                           Math.max(insets.left, insets.right)) *
                           2
@@ -382,8 +360,7 @@ export function Header(props: Props) {
                   ? { marginStart: 4 }
                   : { marginHorizontal: 16 },
                 titleContainerStyle,
-              ]}
-            >
+              ]}>
               {headerTitle({
                 children: title,
                 allowFontScaling: titleAllowFontScaling,
@@ -394,13 +371,7 @@ export function Header(props: Props) {
             </Animated.View>
             <Animated.View
               pointerEvents="box-none"
-              style={[
-                styles.end,
-                styles.expand,
-                { marginEnd: insets.right },
-                rightContainerStyle,
-              ]}
-            >
+              style={[styles.end, styles.expand, { marginEnd: insets.right }, rightContainerStyle]}>
               {rightButton}
               {headerSearchBarOptions ? (
                 <HeaderButton
@@ -410,8 +381,7 @@ export function Header(props: Props) {
                   onPress={() => {
                     setSearchBarVisible(true);
                     headerSearchBarOptions?.onOpen?.();
-                  }}
-                >
+                  }}>
                   <HeaderIcon source={searchIcon} tintColor={iconTintColor} />
                 </HeaderButton>
               ) : null}

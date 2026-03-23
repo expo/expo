@@ -1,6 +1,6 @@
-import { CurrentRenderContext } from '../core';
 import * as React from 'react';
 
+import { CurrentRenderContext } from '../core';
 import { ServerContext, type ServerContextType } from './ServerContext';
 import type { ServerContainerRef } from './types';
 
@@ -49,9 +49,7 @@ export const ServerContainer = React.forwardRef(function ServerContainer(
   return (
     // eslint-disable-next-line @eslint-react/no-unstable-context-value
     <ServerContext.Provider value={{ location }}>
-      <CurrentRenderContext.Provider value={current}>
-        {children}
-      </CurrentRenderContext.Provider>
+      <CurrentRenderContext.Provider value={current}>{children}</CurrentRenderContext.Provider>
     </ServerContext.Provider>
   );
 });

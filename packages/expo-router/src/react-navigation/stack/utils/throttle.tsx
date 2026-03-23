@@ -1,7 +1,4 @@
-export function throttle<T extends (...args: any[]) => void>(
-  func: T,
-  duration: number
-): T {
+export function throttle<T extends (...args: any[]) => void>(func: T, duration: number): T {
   let timeout: ReturnType<typeof setTimeout> | undefined;
 
   return function (this: unknown, ...args) {

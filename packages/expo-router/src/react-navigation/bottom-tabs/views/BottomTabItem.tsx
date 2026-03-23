@@ -1,5 +1,3 @@
-import { getLabel, Label, PlatformPressable } from '../../elements';
-import { type Route, useTheme } from '../../native';
 import Color from 'color';
 import React from 'react';
 import {
@@ -12,12 +10,10 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import type {
-  BottomTabBarButtonProps,
-  BottomTabDescriptor,
-  LabelPosition,
-} from '../types';
+import { getLabel, Label, PlatformPressable } from '../../elements';
+import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 import { TabBarIcon } from './TabBarIcon';
+import { type Route, useTheme } from '../../native';
 
 type Props = {
   /**
@@ -50,11 +46,7 @@ type Props = {
   /**
    * Icon to display for the tab.
    */
-  icon: (props: {
-    focused: boolean;
-    size: number;
-    color: string;
-  }) => React.ReactNode;
+  icon: (props: { focused: boolean; size: number; color: string }) => React.ReactNode;
   /**
    * Text to show in a badge on the tab icon.
    */
@@ -79,9 +71,7 @@ type Props = {
    * Function to execute on press in React Native.
    * On the web, this will use onClick.
    */
-  onPress: (
-    e: React.MouseEvent<HTMLElement, MouseEvent> | GestureResponderEvent
-  ) => void;
+  onPress: (e: React.MouseEvent<HTMLElement, MouseEvent> | GestureResponderEvent) => void;
   /**
    * Function to execute on long press.
    */
@@ -143,12 +133,9 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-const renderButtonDefault = (props: BottomTabBarButtonProps) => (
-  <PlatformPressable {...props} />
-);
+const renderButtonDefault = (props: BottomTabBarButtonProps) => <PlatformPressable {...props} />;
 
-const SUPPORTS_LARGE_CONTENT_VIEWER =
-  Platform.OS === 'ios' && parseInt(Platform.Version, 10) >= 13;
+const SUPPORTS_LARGE_CONTENT_VIEWER = Platform.OS === 'ios' && parseInt(Platform.Version, 10) >= 13;
 
 export function BottomTabItem({
   route,
@@ -209,10 +196,7 @@ export function BottomTabItem({
   const { options } = descriptor;
   const labelString = getLabel(
     {
-      label:
-        typeof options.tabBarLabel === 'string'
-          ? options.tabBarLabel
-          : undefined,
+      label: typeof options.tabBarLabel === 'string' ? options.tabBarLabel : undefined,
       title: options.title,
     },
     route.name
@@ -221,12 +205,7 @@ export function BottomTabItem({
   let labelInactiveTintColor = inactiveTintColor;
   let iconInactiveTintColor = inactiveTintColor;
 
-  if (
-    variant === 'uikit' &&
-    sidebar &&
-    horizontal &&
-    customInactiveTintColor === undefined
-  ) {
+  if (variant === 'uikit' && sidebar && horizontal && customInactiveTintColor === undefined) {
     iconInactiveTintColor = colors.primary;
     labelInactiveTintColor = colors.text;
   }
@@ -263,14 +242,11 @@ export function BottomTabItem({
                 icon == null && { marginStart: 0 },
               ]
             : styles.labelBeneath,
-          compact || (variant === 'uikit' && sidebar && horizontal)
-            ? fonts.regular
-            : fonts.medium,
+          compact || (variant === 'uikit' && sidebar && horizontal) ? fonts.regular : fonts.medium,
           labelStyle,
         ]}
         allowFontScaling={allowFontScaling}
-        tintColor={color}
-      >
+        tintColor={color}>
         {label}
       </Label>
     );
@@ -304,19 +280,11 @@ export function BottomTabItem({
 
   const scene = { route, focused };
 
-  const backgroundColor = focused
-    ? activeBackgroundColor
-    : inactiveBackgroundColor;
+  const backgroundColor = focused ? activeBackgroundColor : inactiveBackgroundColor;
 
   const { flex } = StyleSheet.flatten(style || {});
   const borderRadius =
-    variant === 'material'
-      ? horizontal
-        ? 56
-        : 16
-      : sidebar && horizontal
-        ? 10
-        : 0;
+    variant === 'material' ? (horizontal ? 56 : 16) : sidebar && horizontal ? 10 : 0;
 
   return (
     <View
@@ -327,26 +295,23 @@ export function BottomTabItem({
           overflow: variant === 'material' ? 'hidden' : 'visible',
         },
         style,
-      ]}
-    >
+      ]}>
       {button({
         href,
         onPress,
         onLongPress,
         testID,
         'aria-label': accessibilityLabel,
-        'accessibilityLargeContentTitle': labelString,
-        'accessibilityShowsLargeContentViewer': true,
+        accessibilityLargeContentTitle: labelString,
+        accessibilityShowsLargeContentViewer: true,
         // FIXME: role: 'tab' doesn't seem to work as expected on iOS
-        'role': Platform.select({ ios: 'button', default: 'tab' }),
+        role: Platform.select({ ios: 'button', default: 'tab' }),
         'aria-selected': focused,
-        'android_ripple': { borderless: true },
-        'hoverEffect':
-          variant === 'material' || (sidebar && horizontal)
-            ? { color: colors.text }
-            : undefined,
-        'pressOpacity': 1,
-        'style': [
+        android_ripple: { borderless: true },
+        hoverEffect:
+          variant === 'material' || (sidebar && horizontal) ? { color: colors.text } : undefined,
+        pressOpacity: 1,
+        style: [
           styles.tab,
           { flex, backgroundColor, borderRadius },
           sidebar
@@ -363,11 +328,11 @@ export function BottomTabItem({
                 ? styles.tabHorizontalUiKit
                 : styles.tabVerticalUiKit,
         ],
-        'children': (
-          <React.Fragment>
+        children: (
+          <>
             {renderIcon(scene)}
             {renderLabel(scene)}
-          </React.Fragment>
+          </>
         ),
       })}
     </View>

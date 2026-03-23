@@ -8,7 +8,5 @@ type Props = {
 };
 
 export function ThemeProvider({ value, children }: Props) {
-  return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

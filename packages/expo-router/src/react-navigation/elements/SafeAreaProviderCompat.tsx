@@ -45,11 +45,7 @@ export function SafeAreaProviderCompat({ children, style }: Props) {
           // This avoids an issue with updates at the cost of potentially incorrect values
           // https://github.com/react-navigation/react-navigation/issues/174
           return (
-            <View
-              ref={ref}
-              onLayout={onLayout}
-              style={[styles.container, style]}
-            >
+            <View ref={ref} onLayout={onLayout} style={[styles.container, style]}>
               {children}
             </View>
           );
@@ -58,11 +54,7 @@ export function SafeAreaProviderCompat({ children, style }: Props) {
         // SafeAreaProvider doesn't forward ref
         // So we only pass onLayout to it
         return (
-          <SafeAreaProvider
-            initialMetrics={initialMetrics}
-            style={style}
-            onLayout={onLayout}
-          >
+          <SafeAreaProvider initialMetrics={initialMetrics} style={style} onLayout={onLayout}>
             {children}
           </SafeAreaProvider>
         );

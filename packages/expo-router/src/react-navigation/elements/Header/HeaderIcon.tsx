@@ -1,5 +1,6 @@
-import { useLocale, useTheme } from '../../native';
 import { Image, type ImageProps, Platform, StyleSheet } from 'react-native';
+
+import { useLocale, useTheme } from '../../native';
 
 export function HeaderIcon({ source, style, ...rest }: ImageProps) {
   const { colors } = useTheme();

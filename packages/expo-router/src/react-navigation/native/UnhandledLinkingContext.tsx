@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-const MISSING_CONTEXT_ERROR =
-  "Couldn't find an UnhandledLinkingContext context.";
+const MISSING_CONTEXT_ERROR = "Couldn't find an UnhandledLinkingContext context.";
 
 export const UnhandledLinkingContext = React.createContext<{
   lastUnhandledLink: string | undefined;

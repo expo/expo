@@ -1,3 +1,12 @@
+import * as React from 'react';
+
+import { NativeBottomTabView } from './NativeBottomTabView.native';
+import type {
+  NativeBottomTabNavigationEventMap,
+  NativeBottomTabNavigationOptions,
+  NativeBottomTabNavigationProp,
+  NativeBottomTabNavigatorProps,
+} from './types';
 import {
   createNavigatorFactory,
   type NavigatorTypeBagBase,
@@ -11,15 +20,6 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
-import * as React from 'react';
-
-import { NativeBottomTabView } from './NativeBottomTabView.native';
-import type {
-  NativeBottomTabNavigationEventMap,
-  NativeBottomTabNavigationOptions,
-  NativeBottomTabNavigationProp,
-  NativeBottomTabNavigatorProps,
-} from './types';
 
 function NativeBottomTabNavigator({
   id,
@@ -34,25 +34,24 @@ function NativeBottomTabNavigator({
   UNSTABLE_routeNamesChangeBehavior,
   ...rest
 }: NativeBottomTabNavigatorProps) {
-  const { state, navigation, descriptors, NavigationContent } =
-    useNavigationBuilder<
-      TabNavigationState<ParamListBase>,
-      TabRouterOptions,
-      TabActionHelpers<ParamListBase>,
-      NativeBottomTabNavigationOptions,
-      NativeBottomTabNavigationEventMap
-    >(TabRouter, {
-      id,
-      initialRouteName,
-      backBehavior,
-      children,
-      layout,
-      screenListeners,
-      screenOptions,
-      screenLayout,
-      UNSTABLE_router,
-      UNSTABLE_routeNamesChangeBehavior,
-    });
+  const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
+    TabNavigationState<ParamListBase>,
+    TabRouterOptions,
+    TabActionHelpers<ParamListBase>,
+    NativeBottomTabNavigationOptions,
+    NativeBottomTabNavigationEventMap
+  >(TabRouter, {
+    id,
+    initialRouteName,
+    backBehavior,
+    children,
+    layout,
+    screenListeners,
+    screenOptions,
+    screenLayout,
+    UNSTABLE_router,
+    UNSTABLE_routeNamesChangeBehavior,
+  });
 
   const focusedRouteKey = state.routes[state.index].key;
   const previousRouteKeyRef = React.useRef(focusedRouteKey);
@@ -64,9 +63,7 @@ function NativeBottomTabNavigator({
       previousRouteKey !== focusedRouteKey &&
       descriptors[previousRouteKey]?.options.popToTopOnBlur
     ) {
-      const prevRoute = state.routes.find(
-        (route) => route.key === previousRouteKey
-      );
+      const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
       if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
         const popToTopAction = {

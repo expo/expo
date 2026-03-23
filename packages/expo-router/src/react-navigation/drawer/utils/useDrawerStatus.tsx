@@ -1,7 +1,7 @@
-import type { DrawerStatus } from '../../native';
 import * as React from 'react';
 
 import { DrawerStatusContext } from './DrawerStatusContext';
+import type { DrawerStatus } from '../../native';
 
 /**
  * Hook to detect if the drawer's status in a parent navigator.
@@ -11,9 +11,7 @@ export function useDrawerStatus(): DrawerStatus {
   const drawerStatus = React.useContext(DrawerStatusContext);
 
   if (drawerStatus === undefined) {
-    throw new Error(
-      "Couldn't find a drawer. Is your component inside a drawer navigator?"
-    );
+    throw new Error("Couldn't find a drawer. Is your component inside a drawer navigator?");
   }
 
   return drawerStatus;

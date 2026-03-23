@@ -1,7 +1,6 @@
-import type { NavigationState } from '../../../react-navigation/native';
-
 import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';
+import type { NavigationState } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
 import {
   deepEqual,

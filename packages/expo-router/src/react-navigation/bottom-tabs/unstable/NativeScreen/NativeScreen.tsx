@@ -1,20 +1,14 @@
+import * as React from 'react';
+import { Animated, Platform, StyleSheet, useAnimatedValue, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenStack, ScreenStackItem } from 'react-native-screens';
+
 import {
   getDefaultHeaderHeight,
   HeaderHeightContext,
   HeaderShownContext,
   useFrameSize,
 } from '../../../elements';
-import * as React from 'react';
-import {
-  Animated,
-  Platform,
-  StyleSheet,
-  useAnimatedValue,
-  View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScreenStack, ScreenStackItem } from 'react-native-screens';
-
 import type { NativeBottomTabHeaderProps } from '../types';
 import { debounce } from './debounce';
 import { AnimatedHeaderHeightContext } from './useAnimatedHeaderHeight';
@@ -46,9 +40,7 @@ export function NativeScreen({ route, navigation, options, children }: Props) {
   const isLandscape = useFrameSize((frame) => frame.width > frame.height);
 
   const topInset =
-    isParentHeaderShown ||
-    (Platform.OS === 'ios' && isModal) ||
-    (isIPhone && isLandscape)
+    isParentHeaderShown || (Platform.OS === 'ios' && isModal) || (isIPhone && isLandscape)
       ? 0
       : insets.top;
 
@@ -132,12 +124,10 @@ export function NativeScreen({ route, navigation, options, children }: Props) {
         // Needed to show search bar in tab bar with systemItem=search
         stackPresentation="push"
         headerConfig={headerConfig}
-        onHeaderHeightChange={onHeaderHeightChange}
-      >
+        onHeaderHeightChange={onHeaderHeightChange}>
         <AnimatedHeaderHeightContext.Provider value={animatedHeaderHeight}>
           <HeaderHeightContext.Provider
-            value={headerShown ? headerHeight : (parentHeaderHeight ?? 0)}
-          >
+            value={headerShown ? headerHeight : (parentHeaderHeight ?? 0)}>
             {headerBackground != null ? (
               /**
                * To show a custom header background, we render it at the top of the screen below the header
@@ -148,8 +138,7 @@ export function NativeScreen({ route, navigation, options, children }: Props) {
                   styles.background,
                   headerTransparent ? styles.translucent : null,
                   { height: headerHeight },
-                ]}
-              >
+                ]}>
                 {headerBackground()}
               </View>
             ) : null}
@@ -161,11 +150,7 @@ export function NativeScreen({ route, navigation, options, children }: Props) {
                   setHeaderHeight(headerHeight);
                   animatedHeaderHeight.setValue(headerHeight);
                 }}
-                style={[
-                  styles.header,
-                  headerTransparent ? styles.absolute : null,
-                ]}
-              >
+                style={[styles.header, headerTransparent ? styles.absolute : null]}>
                 {renderCustomHeader?.({
                   route,
                   navigation,
@@ -173,9 +158,7 @@ export function NativeScreen({ route, navigation, options, children }: Props) {
                 })}
               </View>
             ) : null}
-            <HeaderShownContext.Provider
-              value={isParentHeaderShown || headerShown}
-            >
+            <HeaderShownContext.Provider value={isParentHeaderShown || headerShown}>
               {children}
             </HeaderShownContext.Provider>
           </HeaderHeightContext.Provider>

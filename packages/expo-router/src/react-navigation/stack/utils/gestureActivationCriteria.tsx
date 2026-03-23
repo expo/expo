@@ -1,5 +1,4 @@
 import type { LocaleDirection } from '../../native';
-
 import type { GestureDirection, Layout } from '../types';
 import { getInvertedMultiplier } from './getInvertedMultiplier';
 
@@ -25,8 +24,7 @@ export const gestureActivationCriteria = ({
   const distance =
     gestureResponseDistance !== undefined
       ? gestureResponseDistance
-      : gestureDirection === 'vertical' ||
-          gestureDirection === 'vertical-inverted'
+      : gestureDirection === 'vertical' || gestureDirection === 'vertical-inverted'
         ? GESTURE_RESPONSE_DISTANCE_VERTICAL
         : GESTURE_RESPONSE_DISTANCE_HORIZONTAL;
 
@@ -46,10 +44,7 @@ export const gestureActivationCriteria = ({
     };
   } else {
     const hitSlop = -layout.width + distance;
-    const invertedMultiplier = getInvertedMultiplier(
-      gestureDirection,
-      direction === 'rtl'
-    );
+    const invertedMultiplier = getInvertedMultiplier(gestureDirection, direction === 'rtl');
 
     if (invertedMultiplier === 1) {
       return {

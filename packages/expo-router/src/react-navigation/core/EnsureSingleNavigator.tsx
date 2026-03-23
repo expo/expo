@@ -45,8 +45,6 @@ export function EnsureSingleNavigator({ children }: Props) {
   );
 
   return (
-    <SingleNavigatorContext.Provider value={value}>
-      {children}
-    </SingleNavigatorContext.Provider>
+    <SingleNavigatorContext.Provider value={value}>{children}</SingleNavigatorContext.Provider>
   );
 }

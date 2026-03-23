@@ -1,3 +1,6 @@
+import type * as React from 'react';
+import type { Animated, StyleProp, TextStyle, ViewStyle } from 'react-native';
+
 import type {
   HeaderBackButton,
   HeaderBackButtonDisplayMode,
@@ -19,8 +22,6 @@ import type {
   StackRouterOptions,
   Theme,
 } from '../native';
-import type * as React from 'react';
-import type { Animated, StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 export type StackNavigationEventMap = {
   /**
@@ -45,10 +46,7 @@ export type StackNavigationEventMap = {
   gestureCancel: { data: undefined };
 };
 
-export type StackNavigationHelpers = NavigationHelpers<
-  ParamListBase,
-  StackNavigationEventMap
-> &
+export type StackNavigationHelpers = NavigationHelpers<ParamListBase, StackNavigationEventMap> &
   StackActionHelpers<ParamListBase>;
 
 export type StackNavigationProp<
@@ -118,8 +116,7 @@ export type Scene = {
    * Descriptor object for the screen.
    */
   descriptor: Omit<StackDescriptor, 'options'> & {
-    options: Omit<StackDescriptor['options'], keyof SceneOptionsDefaults> &
-      SceneOptionsDefaults;
+    options: Omit<StackDescriptor['options'], keyof SceneOptionsDefaults> & SceneOptionsDefaults;
   };
   /**
    * Animated nodes representing the progress of the animation.
@@ -433,17 +430,11 @@ export type StackNavigationConfig = {
 export type TransitionSpec =
   | {
       animation: 'spring';
-      config: Omit<
-        Animated.SpringAnimationConfig,
-        'toValue' | keyof Animated.AnimationConfig
-      >;
+      config: Omit<Animated.SpringAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
     }
   | {
       animation: 'timing';
-      config: Omit<
-        Animated.TimingAnimationConfig,
-        'toValue' | keyof Animated.AnimationConfig
-      >;
+      config: Omit<Animated.TimingAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
     };
 
 export type StackCardInterpolationProps = {

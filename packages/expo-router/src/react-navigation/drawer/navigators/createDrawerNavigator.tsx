@@ -10,7 +10,6 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
-
 import type {
   DrawerNavigationEventMap,
   DrawerNavigationOptions,
@@ -33,26 +32,25 @@ function DrawerNavigator({
   UNSTABLE_router,
   ...rest
 }: DrawerNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } =
-    useNavigationBuilder<
-      DrawerNavigationState<ParamListBase>,
-      DrawerRouterOptions,
-      DrawerActionHelpers<ParamListBase>,
-      DrawerNavigationOptions,
-      DrawerNavigationEventMap
-    >(DrawerRouter, {
-      id,
-      initialRouteName,
-      defaultStatus,
-      backBehavior,
-      UNSTABLE_routeNamesChangeBehavior,
-      children,
-      layout,
-      screenListeners,
-      screenOptions,
-      screenLayout,
-      UNSTABLE_router,
-    });
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+    DrawerNavigationState<ParamListBase>,
+    DrawerRouterOptions,
+    DrawerActionHelpers<ParamListBase>,
+    DrawerNavigationOptions,
+    DrawerNavigationEventMap
+  >(DrawerRouter, {
+    id,
+    initialRouteName,
+    defaultStatus,
+    backBehavior,
+    UNSTABLE_routeNamesChangeBehavior,
+    children,
+    layout,
+    screenListeners,
+    screenOptions,
+    screenLayout,
+    UNSTABLE_router,
+  });
 
   return (
     <NavigationContent>
@@ -77,11 +75,7 @@ export function createDrawerNavigator<
     ScreenOptions: DrawerNavigationOptions;
     EventMap: DrawerNavigationEventMap;
     NavigationList: {
-      [RouteName in keyof ParamList]: DrawerNavigationProp<
-        ParamList,
-        RouteName,
-        NavigatorID
-      >;
+      [RouteName in keyof ParamList]: DrawerNavigationProp<ParamList, RouteName, NavigatorID>;
     };
     Navigator: typeof DrawerNavigator;
   },

@@ -4,10 +4,7 @@ import useLatestCallback from 'use-latest-callback';
 
 import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationRouteContext } from './NavigationProvider';
-import {
-  type PreventedRoutes,
-  PreventRemoveContext,
-} from './PreventRemoveContext';
+import { type PreventedRoutes, PreventRemoveContext } from './PreventRemoveContext';
 
 type Props = {
   children: React.ReactNode;
@@ -24,9 +21,7 @@ type PreventedRoutesMap = Map<
 /**
  * Util function to transform map of prevented routes to a simpler object.
  */
-const transformPreventedRoutes = (
-  preventedRoutesMap: PreventedRoutesMap
-): PreventedRoutes => {
+const transformPreventedRoutes = (preventedRoutesMap: PreventedRoutesMap): PreventedRoutes => {
   const preventedRoutesToTransform = [...preventedRoutesMap.values()];
 
   const preventedRoutes = preventedRoutesToTransform.reduce<PreventedRoutes>(
@@ -47,8 +42,9 @@ const transformPreventedRoutes = (
  */
 export function PreventRemoveProvider({ children }: Props) {
   const [parentId] = React.useState(() => nanoid());
-  const [preventedRoutesMap, setPreventedRoutesMap] =
-    React.useState<PreventedRoutesMap>(() => new Map());
+  const [preventedRoutesMap, setPreventedRoutesMap] = React.useState<PreventedRoutesMap>(
+    () => new Map()
+  );
 
   const navigation = React.useContext(NavigationHelpersContext);
   const route = React.useContext(NavigationRouteContext);
@@ -62,9 +58,7 @@ export function PreventRemoveProvider({ children }: Props) {
       if (
         preventRemove &&
         (navigation == null ||
-          navigation
-            ?.getState()
-            .routes.every((route) => route.key !== routeKey))
+          navigation?.getState().routes.every((route) => route.key !== routeKey))
       ) {
         throw new Error(
           `Couldn't find a route with the key ${routeKey}. Is your component inside NavigationContent?`
@@ -96,9 +90,7 @@ export function PreventRemoveProvider({ children }: Props) {
     }
   );
 
-  const isPrevented = [...preventedRoutesMap.values()].some(
-    ({ preventRemove }) => preventRemove
-  );
+  const isPrevented = [...preventedRoutesMap.values()].some(({ preventRemove }) => preventRemove);
 
   React.useEffect(() => {
     if (route?.key !== undefined && setParentPrevented !== undefined) {
@@ -109,8 +101,6 @@ export function PreventRemoveProvider({ children }: Props) {
         setParentPrevented(parentId, route.key, false);
       };
     }
-
-    return;
   }, [parentId, isPrevented, route?.key, setParentPrevented]);
 
   const value = React.useMemo(
@@ -121,9 +111,5 @@ export function PreventRemoveProvider({ children }: Props) {
     [setPreventRemove, preventedRoutesMap]
   );
 
-  return (
-    <PreventRemoveContext.Provider value={value}>
-      {children}
-    </PreventRemoveContext.Provider>
-  );
+  return <PreventRemoveContext.Provider value={value}>{children}</PreventRemoveContext.Provider>;
 }

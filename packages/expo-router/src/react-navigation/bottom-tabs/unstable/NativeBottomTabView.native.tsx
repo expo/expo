@@ -1,27 +1,9 @@
-import {
-  getLabel,
-  Lazy,
-  SafeAreaProviderCompat,
-  Screen as ScreenContent,
-} from '../../elements';
-import {
-  CommonActions,
-  NavigationMetaContext,
-  type ParamListBase,
-  type Route,
-  StackActions,
-  type TabNavigationState,
-  useTheme,
-} from '../../native';
 import Color from 'color';
 import * as React from 'react';
 import { type ColorValue, Platform, PlatformColor } from 'react-native';
-import {
-  type PlatformIcon,
-  Tabs,
-  type TabsScreenItemStateAppearance,
-} from 'react-native-screens';
+import { type PlatformIcon, Tabs, type TabsScreenItemStateAppearance } from 'react-native-screens';
 
+import { getLabel, Lazy, SafeAreaProviderCompat, Screen as ScreenContent } from '../../elements';
 import { NativeScreen } from './NativeScreen/NativeScreen';
 import type {
   NativeBottomTabDescriptorMap,
@@ -31,6 +13,15 @@ import type {
   NativeBottomTabNavigationOptions,
   NativeBottomTabNavigationProp,
 } from './types';
+import {
+  CommonActions,
+  NavigationMetaContext,
+  type ParamListBase,
+  type Route,
+  StackActions,
+  type TabNavigationState,
+  useTheme,
+} from '../../native';
 
 type Props = NativeBottomTabNavigationConfig & {
   state: TabNavigationState<ParamListBase>;
@@ -55,9 +46,7 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
       previousRouteKey !== focusedRouteKey &&
       descriptors[previousRouteKey]?.options.popToTopOnBlur
     ) {
-      const prevRoute = state.routes.find(
-        (route) => route.key === previousRouteKey
-      );
+      const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
       if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
         const popToTopAction = {
@@ -87,8 +76,7 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
     color: fontColor,
   } = currentOptions.tabBarLabelStyle || {};
 
-  const activeTintColor =
-    currentOptions.tabBarActiveTintColor ?? colors.primary;
+  const activeTintColor = currentOptions.tabBarActiveTintColor ?? colors.primary;
 
   const inactiveTintColor =
     currentOptions.tabBarInactiveTintColor ??
@@ -98,18 +86,11 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
     });
 
   const activeIndicatorColor =
-    (currentOptions?.tabBarActiveIndicatorColor ??
-    typeof activeTintColor === 'string')
+    (currentOptions?.tabBarActiveIndicatorColor ?? typeof activeTintColor === 'string')
       ? Color(activeTintColor)?.alpha(0.1).string()
       : undefined;
 
-  const onTransitionStart = ({
-    closing,
-    route,
-  }: {
-    closing: boolean;
-    route: Route<string>;
-  }) => {
+  const onTransitionStart = ({ closing, route }: { closing: boolean; route: Route<string> }) => {
     navigation.emit({
       type: 'transitionStart',
       data: { closing },
@@ -117,13 +98,7 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
     });
   };
 
-  const onTransitionEnd = ({
-    closing,
-    route,
-  }: {
-    closing: boolean;
-    route: Route<string>;
-  }) => {
+  const onTransitionEnd = ({ closing, route }: { closing: boolean; route: Route<string> }) => {
     navigation.emit({
       type: 'transitionEnd',
       data: { closing },
@@ -149,14 +124,10 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
     <SafeAreaProviderCompat>
       <Tabs.Host
         bottomAccessory={
-          bottomAccessory
-            ? (environment) => bottomAccessory({ placement: environment })
-            : undefined
+          bottomAccessory ? (environment) => bottomAccessory({ placement: environment }) : undefined
         }
         tabBarHidden={shouldHideTabBar}
-        tabBarItemLabelVisibilityMode={
-          currentOptions?.tabBarLabelVisibilityMode
-        }
+        tabBarItemLabelVisibilityMode={currentOptions?.tabBarLabelVisibilityMode}
         tabBarControllerMode={tabBarControllerMode}
         tabBarMinimizeBehavior={tabBarMinimizeBehavior}
         tabBarTintColor={activeTintColor}
@@ -169,19 +140,13 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
         tabBarItemTitleFontSize={fontSize}
         tabBarItemTitleFontSizeActive={fontSize}
         tabBarItemTitleFontStyle={fontStyle}
-        tabBarBackgroundColor={
-          currentOptions.tabBarStyle?.backgroundColor ?? colors.card
-        }
+        tabBarBackgroundColor={currentOptions.tabBarStyle?.backgroundColor ?? colors.card}
         tabBarItemActiveIndicatorColor={activeIndicatorColor}
-        tabBarItemActiveIndicatorEnabled={
-          currentOptions?.tabBarActiveIndicatorEnabled
-        }
+        tabBarItemActiveIndicatorEnabled={currentOptions?.tabBarActiveIndicatorEnabled}
         tabBarItemRippleColor={currentOptions?.tabBarRippleColor}
         experimentalControlNavigationStateInJS={false}
         onNativeFocusChange={(e) => {
-          const route = state.routes.find(
-            (route) => route.key === e.nativeEvent.tabKey
-          );
+          const route = state.routes.find((route) => route.key === e.nativeEvent.tabKey);
 
           if (route) {
             navigation.emit({
@@ -189,9 +154,7 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
               target: route.key,
             });
 
-            const isFocused =
-              state.index ===
-              state.routes.findIndex((r) => r.key === route.key);
+            const isFocused = state.index === state.routes.findIndex((r) => r.key === route.key);
 
             if (!isFocused) {
               navigation.dispatch({
@@ -200,8 +163,7 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
               });
             }
           }
-        }}
-      >
+        }}>
         {state.routes.map((route, index) => {
           const { options, render, navigation } = descriptors[route.key];
           const isFocused = state.index === index;
@@ -220,10 +182,8 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
             overrideScrollViewContentInsetAdjustmentBehavior,
           } = options;
 
-          const {
-            backgroundColor: tabBarBackgroundColor,
-            shadowColor: tabBarShadowColor,
-          } = tabBarStyle || {};
+          const { backgroundColor: tabBarBackgroundColor, shadowColor: tabBarShadowColor } =
+            tabBarStyle || {};
 
           const tabTitle =
             // On iOS, `systemItem` already provides a localized label
@@ -232,8 +192,7 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
               ? tabBarLabel
               : getLabel({ label: tabBarLabel, title }, route.name);
 
-          const badgeBackgroundColor =
-            tabBarBadgeStyle?.backgroundColor ?? colors.notification;
+          const badgeBackgroundColor = tabBarBadgeStyle?.backgroundColor ?? colors.notification;
           const badgeTextColor =
             tabBarBadgeStyle?.color ??
             (typeof badgeBackgroundColor === 'string'
@@ -266,9 +225,7 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
 
           return (
             <Tabs.Screen
-              onWillDisappear={() =>
-                onTransitionStart({ closing: true, route })
-              }
+              onWillDisappear={() => onTransitionStart({ closing: true, route })}
               onWillAppear={() => onTransitionStart({ closing: false, route })}
               onDidAppear={() => onTransitionEnd({ closing: false, route })}
               onDidDisappear={() => onTransitionEnd({ closing: true, route })}
@@ -319,15 +276,13 @@ export function NativeBottomTabView({ state, navigation, descriptors }: Props) {
               overrideScrollViewContentInsetAdjustmentBehavior={
                 overrideScrollViewContentInsetAdjustmentBehavior
               }
-              experimental_userInterfaceStyle={dark ? 'dark' : 'light'}
-            >
+              experimental_userInterfaceStyle={dark ? 'dark' : 'light'}>
               <Lazy enabled={lazy} visible={isFocused || isPreloaded}>
                 <ScreenWithHeader
                   isFocused={isFocused}
                   route={route}
                   navigation={navigation}
-                  options={options}
-                >
+                  options={options}>
                   <NavigationMetaContext.Provider value={meta}>
                     {render()}
                   </NavigationMetaContext.Provider>
@@ -391,8 +346,7 @@ function ScreenWithHeader({
         route,
         navigation,
         options,
-      })}
-    >
+      })}>
       {children}
     </ScreenContent>
   );

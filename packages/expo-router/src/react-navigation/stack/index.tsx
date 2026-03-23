@@ -17,12 +17,7 @@ export { StackView } from './views/Stack/StackView';
 /**
  * Transition presets
  */
-export {
-  CardStyleInterpolators,
-  HeaderStyleInterpolators,
-  TransitionPresets,
-  TransitionSpecs,
-};
+export { CardStyleInterpolators, HeaderStyleInterpolators, TransitionPresets, TransitionSpecs };
 
 /**
  * Utilities

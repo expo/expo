@@ -118,9 +118,7 @@ const getRouteHistory = (
       }
       break;
     case 'initialRoute':
-      initialRouteIndex = routes.findIndex(
-        (route) => route.name === initialRouteName
-      );
+      initialRouteIndex = routes.findIndex((route) => route.name === initialRouteName);
       initialRouteIndex = initialRouteIndex === -1 ? 0 : initialRouteIndex;
 
       if (index !== initialRouteIndex) {
@@ -152,13 +150,9 @@ const changeIndex = (
 
     if (backBehavior === 'history') {
       // Remove the existing key from the history to de-duplicate it
-      history = history.filter((it) =>
-        it.type === 'route' ? it.key !== currentRoute.key : false
-      );
+      history = history.filter((it) => (it.type === 'route' ? it.key !== currentRoute.key : false));
     } else if (backBehavior === 'fullHistory') {
-      const lastHistoryRouteItemIndex = history.findLastIndex(
-        (item) => item.type === 'route'
-      );
+      const lastHistoryRouteItemIndex = history.findLastIndex((item) => item.type === 'route');
 
       if (currentRoute.key === history[lastHistoryRouteItemIndex]?.key) {
         // For full-history, only remove if it matches the last route
@@ -177,12 +171,7 @@ const changeIndex = (
       params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
     });
   } else {
-    history = getRouteHistory(
-      state.routes,
-      index,
-      backBehavior,
-      initialRouteName
-    );
+    history = getRouteHistory(state.routes, index, backBehavior, initialRouteName);
   }
 
   return {
@@ -192,10 +181,7 @@ const changeIndex = (
   };
 };
 
-export function TabRouter({
-  initialRouteName,
-  backBehavior = 'firstRoute',
-}: TabRouterOptions) {
+export function TabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRouterOptions) {
   const router: Router<
     TabNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
@@ -216,12 +202,7 @@ export function TabRouter({
         params: routeParamList[name],
       }));
 
-      const history = getRouteHistory(
-        routes,
-        index,
-        backBehavior,
-        initialRouteName
-      );
+      const history = getRouteHistory(routes, index, backBehavior, initialRouteName);
 
       return {
         stale: false,
@@ -243,17 +224,14 @@ export function TabRouter({
       }
 
       const routes = routeNames.map((name) => {
-        const route = (
-          state as PartialState<TabNavigationState<ParamListBase>>
-        ).routes.find((r) => r.name === name);
+        const route = (state as PartialState<TabNavigationState<ParamListBase>>).routes.find(
+          (r) => r.name === name
+        );
 
         return {
           ...route,
           name,
-          key:
-            route && route.name === name && route.key
-              ? route.key
-              : `${name}-${nanoid()}`,
+          key: route && route.name === name && route.key ? route.key : `${name}-${nanoid()}`,
           params:
             routeParamList[name] !== undefined
               ? {
@@ -273,8 +251,7 @@ export function TabRouter({
 
       const routeKeys = routes.map((route) => route.key);
 
-      const history =
-        state.history?.filter((it) => routeKeys.includes(it.key)) ?? [];
+      const history = state.history?.filter((it) => routeKeys.includes(it.key)) ?? [];
 
       return changeIndex(
         {
@@ -286,9 +263,7 @@ export function TabRouter({
           history,
           routes,
           preloadedRouteKeys:
-            state.preloadedRouteKeys?.filter((key) =>
-              routeKeys.includes(key)
-            ) ?? [],
+            state.preloadedRouteKeys?.filter((key) => routeKeys.includes(key)) ?? [],
         },
         index,
         backBehavior,
@@ -296,25 +271,17 @@ export function TabRouter({
       );
     },
 
-    getStateForRouteNamesChange(
-      state,
-      { routeNames, routeParamList, routeKeyChanges }
-    ) {
+    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
       const routes = routeNames.map(
         (name) =>
-          state.routes.find(
-            (r) => r.name === name && !routeKeyChanges.includes(r.name)
-          ) || {
+          state.routes.find((r) => r.name === name && !routeKeyChanges.includes(r.name)) || {
             name,
             key: `${name}-${nanoid()}`,
             params: routeParamList[name],
           }
       );
 
-      const index = Math.max(
-        0,
-        routeNames.indexOf(state.routes[state.index].name)
-      );
+      const index = Math.max(0, routeNames.indexOf(state.routes[state.index].name));
 
       let history = state.history.filter(
         // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
@@ -322,12 +289,7 @@ export function TabRouter({
       );
 
       if (!history.length) {
-        history = getRouteHistory(
-          routes,
-          index,
-          backBehavior,
-          initialRouteName
-        );
+        history = getRouteHistory(routes, index, backBehavior, initialRouteName);
       }
 
       return {
@@ -354,9 +316,7 @@ export function TabRouter({
         case 'JUMP_TO':
         case 'NAVIGATE':
         case 'NAVIGATE_DEPRECATED': {
-          const index = state.routes.findIndex(
-            (route) => route.name === action.payload.name
-          );
+          const index = state.routes.findIndex((route) => route.name === action.payload.name);
 
           if (index === -1) {
             return null;
@@ -375,22 +335,17 @@ export function TabRouter({
                 const currentId = getId?.({ params: route.params });
                 const nextId = getId?.({ params: action.payload.params });
 
-                const key =
-                  currentId === nextId
-                    ? route.key
-                    : `${route.name}-${nanoid()}`;
+                const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
 
                 let params;
 
                 if (
-                  (action.type === 'NAVIGATE' ||
-                    action.type === 'NAVIGATE_DEPRECATED') &&
+                  (action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED') &&
                   action.payload.merge &&
                   currentId === nextId
                 ) {
                   params =
-                    action.payload.params !== undefined ||
-                    routeParamList[route.name] !== undefined
+                    action.payload.params !== undefined || routeParamList[route.name] !== undefined
                       ? {
                           ...routeParamList[route.name],
                           ...route.params,
@@ -464,9 +419,7 @@ export function TabRouter({
 
           const previousHistoryItem = state.history[state.history.length - 2];
           const previousKey = previousHistoryItem?.key;
-          const index = state.routes.findLastIndex(
-            (route) => route.key === previousKey
-          );
+          const index = state.routes.findLastIndex((route) => route.key === previousKey);
 
           if (index === -1) {
             return null;
@@ -497,9 +450,7 @@ export function TabRouter({
         }
 
         case 'PRELOAD': {
-          const routeIndex = state.routes.findIndex(
-            (route) => route.name === action.payload.name
-          );
+          const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
 
           if (routeIndex === -1) {
             return null;
@@ -512,21 +463,17 @@ export function TabRouter({
           const currentId = getId?.({ params: route.params });
           const nextId = getId?.({ params: action.payload.params });
 
-          const key =
-            currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+          const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
 
           const params = createParamsFromAction({ action, routeParamList });
-          const newRoute =
-            params !== route.params ? { ...route, key, params } : route;
+          const newRoute = params !== route.params ? { ...route, key, params } : route;
 
           return {
             ...state,
             preloadedRouteKeys: state.preloadedRouteKeys
               .filter((key) => key !== route.key)
               .concat(newRoute.key),
-            routes: state.routes.map((route, index) =>
-              index === routeIndex ? newRoute : route
-            ),
+            routes: state.routes.map((route, index) => (index === routeIndex ? newRoute : route)),
             history:
               key === route.key
                 ? state.history

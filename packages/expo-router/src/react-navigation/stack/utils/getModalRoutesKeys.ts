@@ -1,11 +1,7 @@
 import type { Route } from '../../native';
-
 import type { StackDescriptorMap } from '../types';
 
-export const getModalRouteKeys = (
-  routes: Route<string>[],
-  descriptors: StackDescriptorMap
-) =>
+export const getModalRouteKeys = (routes: Route<string>[], descriptors: StackDescriptorMap) =>
   routes.reduce<string[]>((acc, route) => {
     const { presentation } = descriptors[route.key]?.options ?? {};
 

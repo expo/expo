@@ -1,9 +1,6 @@
 import { Animated, Platform } from 'react-native';
 
-import type {
-  StackHeaderInterpolatedStyle,
-  StackHeaderInterpolationProps,
-} from '../types';
+import type { StackHeaderInterpolatedStyle, StackHeaderInterpolationProps } from '../types';
 
 const { add, multiply } = Animated;
 
@@ -186,9 +183,7 @@ export function forSlideLeft({
 
   const translateX = progress.interpolate({
     inputRange: [0, 1, 2],
-    outputRange: isRTL
-      ? [-screen.width, 0, screen.width]
-      : [screen.width, 0, -screen.width],
+    outputRange: isRTL ? [-screen.width, 0, screen.width] : [screen.width, 0, -screen.width],
   });
 
   const transform = [{ translateX }];
@@ -228,9 +223,7 @@ export function forSlideRight({
 
   const translateX = progress.interpolate({
     inputRange: [0, 1, 2],
-    outputRange: isRTL
-      ? [screen.width, 0, -screen.width]
-      : [-screen.width, 0, screen.width],
+    outputRange: isRTL ? [screen.width, 0, -screen.width] : [-screen.width, 0, screen.width],
   });
 
   const transform = [{ translateX }];

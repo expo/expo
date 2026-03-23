@@ -1,8 +1,4 @@
-import type {
-  DrawerNavigationState,
-  DrawerStatus,
-  ParamListBase,
-} from '../../native';
+import type { DrawerNavigationState, DrawerStatus, ParamListBase } from '../../native';
 
 export function getDrawerStatusFromState(
   state: DrawerNavigationState<ParamListBase>

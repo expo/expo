@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import type {
   NavigationAction,
   NavigationState,
@@ -5,8 +7,6 @@ import type {
   Router,
   RouterConfigOptions,
 } from '../routers';
-import * as React from 'react';
-
 import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChildContext';
 import {
   type ChildActionListener,
@@ -53,22 +53,16 @@ export function useOnAction<State extends NavigationState>({
     addListener: addListenerParent,
     onDispatchAction,
   } = React.useContext(NavigationBuilderContext);
-  const navigationInChildEnabled = React.useContext(
-    DeprecatedNavigationInChildContext
-  );
+  const navigationInChildEnabled = React.useContext(DeprecatedNavigationInChildContext);
 
-  const routerConfigOptionsRef =
-    React.useRef<RouterConfigOptions>(routerConfigOptions);
+  const routerConfigOptionsRef = React.useRef<RouterConfigOptions>(routerConfigOptions);
 
   React.useEffect(() => {
     routerConfigOptionsRef.current = routerConfigOptions;
   });
 
   const onAction = React.useCallback(
-    (
-      action: NavigationAction,
-      visitedNavigators: Set<string> = new Set<string>()
-    ) => {
+    (action: NavigationAction, visitedNavigators: Set<string> = new Set<string>()) => {
       const state = getState();
 
       // Since actions can bubble both up and down, they could come to the same navigator again
@@ -80,16 +74,11 @@ export function useOnAction<State extends NavigationState>({
       visitedNavigators.add(state.key);
 
       if (typeof action.target !== 'string' || action.target === state.key) {
-        let result = router.getStateForAction(
-          state,
-          action,
-          routerConfigOptionsRef.current
-        );
+        let result = router.getStateForAction(state, action, routerConfigOptionsRef.current);
 
         // If a target is specified and set to current navigator, the action shouldn't bubble
         // So instead of `null`, we use the state object for such cases to signal that action was handled
-        result =
-          result === null && action.target === state.key ? state : result;
+        result = result === null && action.target === state.key ? state : result;
 
         if (result !== null) {
           onDispatchAction(action, state === result);
@@ -171,10 +160,7 @@ export function useOnAction<State extends NavigationState>({
     beforeRemoveListeners,
   });
 
-  React.useEffect(
-    () => addListenerParent?.('action', onAction),
-    [addListenerParent, onAction]
-  );
+  React.useEffect(() => addListenerParent?.('action', onAction), [addListenerParent, onAction]);
 
   return onAction;
 }

@@ -1,9 +1,6 @@
-import type {
-  NavigationContainerRef,
-  ParamListBase,
-} from '../core';
 import * as React from 'react';
 
+import type { NavigationContainerRef, ParamListBase } from '../core';
 import type { DocumentTitleOptions } from './types';
 
 /**
@@ -24,10 +21,7 @@ export function useDocumentTitle(
     const navigation = ref.current;
 
     if (navigation) {
-      const title = formatter(
-        navigation.getCurrentOptions(),
-        navigation.getCurrentRoute()
-      );
+      const title = formatter(navigation.getCurrentOptions(), navigation.getCurrentRoute());
 
       document.title = title;
     }

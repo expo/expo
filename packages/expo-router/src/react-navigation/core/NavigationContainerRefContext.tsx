@@ -1,6 +1,6 @@
-import type { ParamListBase } from '../routers';
 import * as React from 'react';
 
+import type { ParamListBase } from '../routers';
 import type { NavigationContainerRef } from './types';
 
 /**

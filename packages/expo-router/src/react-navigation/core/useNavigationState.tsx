@@ -1,12 +1,11 @@
-import type { NavigationState, ParamListBase } from '../routers';
 import * as React from 'react';
 import useLatestCallback from 'use-latest-callback';
 // TODO(@ubax) - RN Migration: remove this dependency and import from react
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
 
-type Selector<ParamList extends ParamListBase, T> = (
-  state: NavigationState<ParamList>
-) => T;
+import type { NavigationState, ParamListBase } from '../routers';
+
+type Selector<ParamList extends ParamListBase, T> = (state: NavigationState<ParamList>) => T;
 
 /**
  * Hook to get a value from the current navigation state using a selector.
@@ -19,9 +18,7 @@ export function useNavigationState<ParamList extends ParamListBase, T>(
   const stateListener = React.useContext(NavigationStateListenerContext);
 
   if (stateListener == null) {
-    throw new Error(
-      "Couldn't get the navigation state. Is your component inside a navigator?"
-    );
+    throw new Error("Couldn't get the navigation state. Is your component inside a navigator?");
   }
 
   const value = useSyncExternalStoreWithSelector(

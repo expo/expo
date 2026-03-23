@@ -1,6 +1,6 @@
-import { getPathFromState, useStateForPath } from '../core';
 import * as React from 'react';
 
+import { getPathFromState, useStateForPath } from '../core';
 import { LinkingContext } from './LinkingContext';
 
 /**

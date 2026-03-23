@@ -1,9 +1,6 @@
-import type {
-  NavigationAction,
-  NavigationState,
-} from '../routers';
 import * as React from 'react';
 
+import type { NavigationAction, NavigationState } from '../routers';
 import {
   type ChildBeforeRemoveListener,
   NavigationBuilderContext,
@@ -73,11 +70,7 @@ export const shouldPreventRemove = (
   return false;
 };
 
-export function useOnPreventRemove({
-  getState,
-  emitter,
-  beforeRemoveListeners,
-}: Options) {
+export function useOnPreventRemove({ getState, emitter, beforeRemoveListeners }: Options) {
   const { addKeyedListener } = React.useContext(NavigationBuilderContext);
   const route = React.useContext(NavigationRouteContext);
   const routeKey = route?.key;
@@ -87,13 +80,7 @@ export function useOnPreventRemove({
       return addKeyedListener?.('beforeRemove', routeKey, (action) => {
         const state = getState();
 
-        return shouldPreventRemove(
-          emitter,
-          beforeRemoveListeners,
-          state.routes,
-          [],
-          action
-        );
+        return shouldPreventRemove(emitter, beforeRemoveListeners, state.routes, [], action);
       });
     }
   }, [addKeyedListener, beforeRemoveListeners, emitter, getState, routeKey]);

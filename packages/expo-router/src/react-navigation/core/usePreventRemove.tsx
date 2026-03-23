@@ -1,8 +1,8 @@
-import type { NavigationAction } from '../routers';
 import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 import useLatestCallback from 'use-latest-callback';
 
+import type { NavigationAction } from '../routers';
 import type { EventListenerCallback, EventMapCore } from './types';
 import { useNavigation } from './useNavigation';
 import { usePreventRemoveContext } from './usePreventRemoveContext';

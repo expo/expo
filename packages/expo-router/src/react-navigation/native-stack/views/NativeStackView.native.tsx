@@ -1,3 +1,13 @@
+import * as React from 'react';
+import { Animated, Platform, StatusBar, StyleSheet, useAnimatedValue, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  compatibilityFlags,
+  type ScreenProps,
+  ScreenStack,
+  ScreenStackItem,
+} from 'react-native-screens';
+
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -7,6 +17,12 @@ import {
   SafeAreaProviderCompat,
   useFrameSize,
 } from '../../elements';
+import type {
+  NativeStackDescriptor,
+  NativeStackDescriptorMap,
+  NativeStackNavigationHelpers,
+} from '../types';
+import { useHeaderConfigProps } from './useHeaderConfigProps';
 import {
   NavigationProvider,
   type ParamListBase,
@@ -16,34 +32,11 @@ import {
   usePreventRemoveContext,
   useTheme,
 } from '../../native';
-import * as React from 'react';
-import {
-  Animated,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  useAnimatedValue,
-  View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  compatibilityFlags,
-  type ScreenProps,
-  ScreenStack,
-  ScreenStackItem,
-} from 'react-native-screens';
-
-import type {
-  NativeStackDescriptor,
-  NativeStackDescriptorMap,
-  NativeStackNavigationHelpers,
-} from '../types';
 import { debounce } from '../utils/debounce';
 import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 import { useDismissedRouteError } from '../utils/useDismissedRouteError';
 import { useInvalidPreventRemoveError } from '../utils/useInvalidPreventRemoveError';
-import { useHeaderConfigProps } from './useHeaderConfigProps';
 
 const ANDROID_DEFAULT_HEADER_HEIGHT = 56;
 
@@ -175,9 +168,7 @@ const SceneView = ({
 
   // `modal`, `formSheet` and `pageSheet` presentations do not take whole screen, so should not take the inset.
   const isModal =
-    presentation === 'modal' ||
-    presentation === 'formSheet' ||
-    presentation === 'pageSheet';
+    presentation === 'modal' || presentation === 'formSheet' || presentation === 'pageSheet';
 
   // Modals are fullscreen in landscape only on iPhone
   const isIPhone = Platform.OS === 'ios' && !(Platform.isPad || Platform.isTV);
@@ -189,9 +180,7 @@ const SceneView = ({
   const isLandscape = useFrameSize((frame) => frame.width > frame.height);
 
   const topInset =
-    isParentHeaderShown ||
-    (Platform.OS === 'ios' && isModal) ||
-    (isIPhone && isLandscape)
+    isParentHeaderShown || (Platform.OS === 'ios' && isModal) || (isIPhone && isLandscape)
       ? 0
       : insets.top;
 
@@ -224,11 +213,7 @@ const SceneView = ({
 
   let headerHeightCorrectionOffset = 0;
 
-  if (
-    Platform.OS === 'android' &&
-    !hasCustomHeader &&
-    !usesNewAndroidHeaderHeightImplementation
-  ) {
+  if (Platform.OS === 'android' && !hasCustomHeader && !usesNewAndroidHeaderHeightImplementation) {
     const statusBarHeight = StatusBar.currentHeight ?? 0;
 
     // On Android, the native header height is not correctly calculated
@@ -240,11 +225,7 @@ const SceneView = ({
 
   const rawAnimatedHeaderHeight = useAnimatedValue(defaultHeaderHeight);
   const animatedHeaderHeight = React.useMemo(
-    () =>
-      Animated.add<number>(
-        rawAnimatedHeaderHeight,
-        headerHeightCorrectionOffset
-      ),
+    () => Animated.add<number>(rawAnimatedHeaderHeight, headerHeightCorrectionOffset),
     [headerHeightCorrectionOffset, rawAnimatedHeaderHeight]
   );
 
@@ -255,9 +236,7 @@ const SceneView = ({
   // we apply additional padding in header only if its true.
   // For more details see: https://github.com/react-navigation/react-navigation/pull/12014
   const headerTopInsetEnabled =
-    typeof statusBarTranslucent === 'boolean'
-      ? statusBarTranslucent
-      : topInset !== 0;
+    typeof statusBarTranslucent === 'boolean' ? statusBarTranslucent : topInset !== 0;
 
   const canGoBack = previousDescriptor != null || parentHeaderBack != null;
   const backTitle = previousDescriptor
@@ -281,13 +260,8 @@ const SceneView = ({
     ...options,
     route,
     headerBackButtonMenuEnabled:
-      isRemovePrevented !== undefined
-        ? !isRemovePrevented
-        : headerBackButtonMenuEnabled,
-    headerBackTitle:
-      options.headerBackTitle !== undefined
-        ? options.headerBackTitle
-        : undefined,
+      isRemovePrevented !== undefined ? !isRemovePrevented : headerBackButtonMenuEnabled,
+    headerBackTitle: options.headerBackTitle !== undefined ? options.headerBackTitle : undefined,
     headerHeight,
     headerShown: header !== undefined ? false : headerShown,
     headerTopInsetEnabled,
@@ -325,8 +299,7 @@ const SceneView = ({
               // As it's the only case where the header height can change frequently
               const doesHeaderAnimate =
                 Platform.OS === 'ios' &&
-                (options.headerLargeTitleEnabled ||
-                  options.headerSearchBarOptions);
+                (options.headerLargeTitleEnabled || options.headerSearchBarOptions);
 
               if (doesHeaderAnimate) {
                 setHeaderHeightDebounced(headerHeight);
@@ -429,14 +402,10 @@ const SceneView = ({
         // When ts-expect-error is added, it affects all the props below it
         // So we keep any props that need it at the end
         // Otherwise invalid props may not be caught by TypeScript
-        shouldFreeze={shouldFreeze}
-      >
+        shouldFreeze={shouldFreeze}>
         <AnimatedHeaderHeightContext.Provider value={animatedHeaderHeight}>
           <HeaderHeightContext.Provider
-            value={
-              headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0)
-            }
-          >
+            value={headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0)}>
             {headerBackground != null ? (
               /**
                * To show a custom header background, we render it at the top of the screen below the header
@@ -447,8 +416,7 @@ const SceneView = ({
                   styles.background,
                   headerTransparent ? styles.translucent : null,
                   { height: headerHeight },
-                ]}
-              >
+                ]}>
                 {headerBackground()}
               </View>
             ) : null}
@@ -460,11 +428,7 @@ const SceneView = ({
                   setHeaderHeight(headerHeight);
                   rawAnimatedHeaderHeight.setValue(headerHeight);
                 }}
-                style={[
-                  styles.header,
-                  headerTransparent ? styles.absolute : null,
-                ]}
-              >
+                style={[styles.header, headerTransparent ? styles.absolute : null]}>
                 {header({
                   back: headerBack,
                   options,
@@ -473,12 +437,8 @@ const SceneView = ({
                 })}
               </View>
             ) : null}
-            <HeaderShownContext.Provider
-              value={isParentHeaderShown || headerShown !== false}
-            >
-              <HeaderBackContext.Provider value={headerBack}>
-                {render()}
-              </HeaderBackContext.Provider>
+            <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
+              <HeaderBackContext.Provider value={headerBack}>{render()}</HeaderBackContext.Provider>
             </HeaderShownContext.Provider>
           </HeaderHeightContext.Provider>
         </AnimatedHeaderHeightContext.Provider>
@@ -491,51 +451,41 @@ type Props = {
   state: StackNavigationState<ParamListBase>;
   navigation: NativeStackNavigationHelpers;
   descriptors: NativeStackDescriptorMap;
-  describe: (
-    route: RouteProp<ParamListBase>,
-    placeholder: boolean
-  ) => NativeStackDescriptor;
+  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
 };
 
-export function NativeStackView({
-  state,
-  navigation,
-  descriptors,
-  describe,
-}: Props) {
+export function NativeStackView({ state, navigation, descriptors, describe }: Props) {
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
   useInvalidPreventRemoveError(descriptors);
 
   const modalRouteKeys = getModalRouteKeys(state.routes, descriptors);
 
-  const preloadedDescriptors =
-    state.preloadedRoutes.reduce<NativeStackDescriptorMap>((acc, route) => {
+  const preloadedDescriptors = state.preloadedRoutes.reduce<NativeStackDescriptorMap>(
+    (acc, route) => {
       acc[route.key] = acc[route.key] || describe(route, true);
       return acc;
-    }, {});
+    },
+    {}
+  );
 
   return (
     <SafeAreaProviderCompat>
       <ScreenStack style={styles.container}>
         {state.routes.concat(state.preloadedRoutes).map((route, index) => {
-          const descriptor =
-            descriptors[route.key] ?? preloadedDescriptors[route.key];
+          const descriptor = descriptors[route.key] ?? preloadedDescriptors[route.key];
           const isFocused = state.index === index;
           const isBelowFocused = state.index - 1 === index;
           const previousKey = state.routes[index - 1]?.key;
           const nextKey = state.routes[index + 1]?.key;
-          const previousDescriptor = previousKey
-            ? descriptors[previousKey]
-            : undefined;
+          const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
           const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
 
           const isModal = modalRouteKeys.includes(route.key);
           const isModalOnIos = isModal && Platform.OS === 'ios';
 
           const isPreloaded =
-            preloadedDescriptors[route.key] !== undefined &&
-            descriptors[route.key] === undefined;
+            preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
 
           // On Fabric, when screen is frozen, animated and reanimated values are not updated
           // due to component being unmounted. To avoid this, we don't freeze the previous screen there

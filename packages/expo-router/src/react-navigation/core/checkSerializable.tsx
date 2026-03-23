@@ -19,10 +19,7 @@ const checkSerializableWithoutCircularReference = (
     return { serializable: true };
   }
 
-  if (
-    Object.prototype.toString.call(o) !== '[object Object]' &&
-    !Array.isArray(o)
-  ) {
+  if (Object.prototype.toString.call(o) !== '[object Object]' && !Array.isArray(o)) {
     return {
       serializable: false,
       location,
@@ -42,11 +39,10 @@ const checkSerializableWithoutCircularReference = (
 
   if (Array.isArray(o)) {
     for (let i = 0; i < o.length; i++) {
-      const childResult = checkSerializableWithoutCircularReference(
-        o[i],
-        new Set<any>(seen),
-        [...location, i]
-      );
+      const childResult = checkSerializableWithoutCircularReference(o[i], new Set<any>(seen), [
+        ...location,
+        i,
+      ]);
 
       if (!childResult.serializable) {
         return childResult;
@@ -54,11 +50,10 @@ const checkSerializableWithoutCircularReference = (
     }
   } else {
     for (const key in o) {
-      const childResult = checkSerializableWithoutCircularReference(
-        o[key],
-        new Set<any>(seen),
-        [...location, key]
-      );
+      const childResult = checkSerializableWithoutCircularReference(o[key], new Set<any>(seen), [
+        ...location,
+        key,
+      ]);
 
       if (!childResult.serializable) {
         return childResult;

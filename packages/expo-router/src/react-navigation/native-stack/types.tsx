@@ -1,17 +1,4 @@
 import type {
-  DefaultNavigatorOptions,
-  Descriptor,
-  NavigationHelpers,
-  NavigationProp,
-  ParamListBase,
-  Route,
-  RouteProp,
-  StackActionHelpers,
-  StackNavigationState,
-  StackRouterOptions,
-  Theme,
-} from '../native';
-import type {
   ColorValue,
   ImageSourcePropType,
   StyleProp,
@@ -25,6 +12,20 @@ import type {
   SearchBarProps,
 } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
+
+import type {
+  DefaultNavigatorOptions,
+  Descriptor,
+  NavigationHelpers,
+  NavigationProp,
+  ParamListBase,
+  Route,
+  RouteProp,
+  StackActionHelpers,
+  StackNavigationState,
+  StackRouterOptions,
+  Theme,
+} from '../native';
 
 export type NativeStackNavigationEventMap = {
   /**
@@ -336,9 +337,7 @@ export type NativeStackNavigationOptions = {
    *
    * @platform ios
    */
-  unstable_headerLeftItems?: (
-    props: NativeStackHeaderItemProps
-  ) => NativeStackHeaderItem[];
+  unstable_headerLeftItems?: (props: NativeStackHeaderItemProps) => NativeStackHeaderItem[];
   /**
    * Function which returns an array of items to display as on the right side of the header.
    * Overrides `headerRight`.
@@ -347,9 +346,7 @@ export type NativeStackNavigationOptions = {
    *
    * @platform ios
    */
-  unstable_headerRightItems?: (
-    props: NativeStackHeaderItemProps
-  ) => NativeStackHeaderItem[];
+  unstable_headerRightItems?: (props: NativeStackHeaderItemProps) => NativeStackHeaderItem[];
   /**
    * String or a function that returns a React Element to be used by the header.
    * Defaults to screen `title` or route name.
@@ -1133,10 +1130,7 @@ export type NativeStackHeaderItemMenu = SharedHeaderItem & {
     /**
      * Array of menu items (actions or submenus).
      */
-    items: (
-      | NativeStackHeaderItemMenuAction
-      | NativeStackHeaderItemMenuSubmenu
-    )[];
+    items: (NativeStackHeaderItemMenuAction | NativeStackHeaderItemMenuSubmenu)[];
   };
 };
 

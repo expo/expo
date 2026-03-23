@@ -11,9 +11,7 @@ export function getDefaultHeaderHeight(
 
   // On models with Dynamic Island the status bar height is smaller than the safe area top inset.
   const hasDynamicIsland = Platform.OS === 'ios' && topInset > 50;
-  const statusBarHeight = hasDynamicIsland
-    ? topInset - (5 + 1 / PixelRatio.get())
-    : topInset;
+  const statusBarHeight = hasDynamicIsland ? topInset - (5 + 1 / PixelRatio.get()) : topInset;
 
   const isLandscape = layout.width > layout.height;
 

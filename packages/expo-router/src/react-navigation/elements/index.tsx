@@ -1,5 +1,5 @@
-import backIcon from '../../../assets/react-navigation/elements/back-icon.png';
 import backIconMask from '../../../assets/react-navigation/elements/back-icon-mask.png';
+import backIcon from '../../../assets/react-navigation/elements/back-icon.png';
 import clearIcon from '../../../assets/react-navigation/elements/clear-icon.png';
 import closeIcon from '../../../assets/react-navigation/elements/close-icon.png';
 import searchIcon from '../../../assets/react-navigation/elements/search-icon.png';
@@ -30,12 +30,6 @@ export { Screen } from './Screen';
 export { Text } from './Text';
 export { useFrameSize } from './useFrameSize';
 
-export const Assets = [
-  backIcon,
-  backIconMask,
-  searchIcon,
-  closeIcon,
-  clearIcon,
-];
+export const Assets = [backIcon, backIconMask, searchIcon, closeIcon, clearIcon];
 
 export * from './types';

@@ -1,3 +1,6 @@
+import * as React from 'react';
+import type { ScrollView } from 'react-native';
+
 import {
   type EventArg,
   NavigationContext,
@@ -5,8 +8,6 @@ import {
   type ParamListBase,
   useRoute,
 } from '../core';
-import * as React from 'react';
-import type { ScrollView } from 'react-native';
 
 type ScrollOptions = { x?: number; y?: number; animated?: boolean };
 

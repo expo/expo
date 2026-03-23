@@ -1,5 +1,6 @@
-import type { NavigationState } from '../core';
 import { nanoid } from 'nanoid/non-secure';
+
+import type { NavigationState } from '../core';
 
 type HistoryRecord = {
   // Unique identifier for this record to match it with window.history.state

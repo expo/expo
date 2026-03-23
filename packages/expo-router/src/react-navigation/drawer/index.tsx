@@ -19,10 +19,7 @@ export { DrawerView } from './views/DrawerView';
 export { DrawerStatusContext } from './utils/DrawerStatusContext';
 export { getDrawerStatusFromState } from './utils/getDrawerStatusFromState';
 export { useDrawerStatus } from './utils/useDrawerStatus';
-export {
-  DrawerProgressContext,
-  useDrawerProgress,
-} from 'react-native-drawer-layout';
+export { DrawerProgressContext, useDrawerProgress } from 'react-native-drawer-layout';
 
 /**
  * Types

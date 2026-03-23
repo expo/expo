@@ -1,9 +1,6 @@
 import { Animated, Platform } from 'react-native';
 
-import type {
-  StackCardInterpolatedStyle,
-  StackCardInterpolationProps,
-} from '../types';
+import type { StackCardInterpolatedStyle, StackCardInterpolationProps } from '../types';
 import { conditional } from '../utils/conditional';
 
 const { add, multiply } = Animated;
@@ -111,11 +108,7 @@ export function forModalPresentationIOS({
   layouts: { screen },
   insets,
 }: StackCardInterpolationProps): StackCardInterpolatedStyle {
-  const hasNotchIos =
-    Platform.OS === 'ios' &&
-    !Platform.isPad &&
-    !Platform.isTV &&
-    insets.top > 20;
+  const hasNotchIos = Platform.OS === 'ios' && !Platform.isPad && !Platform.isTV && insets.top > 20;
   const isLandscape = screen.width > screen.height;
   const topOffset = isLandscape ? 0 : 10;
   const statusBarHeight = insets.top;
@@ -159,11 +152,7 @@ export function forModalPresentationIOS({
     ? 1
     : progress.interpolate({
         inputRange: [0, 1, 2],
-        outputRange: [
-          1,
-          1,
-          screen.width ? 1 - (topOffset * 2) / screen.width : 1,
-        ],
+        outputRange: [1, 1, screen.width ? 1 - (topOffset * 2) / screen.width : 1],
       });
 
   const borderRadius = isLandscape
@@ -279,10 +268,7 @@ export function forRevealFromBottomAndroid({
       transform: [{ translateY: containerTranslateY }],
     },
     cardStyle: {
-      transform: [
-        { translateY: cardTranslateYFocused },
-        { translateY: cardTranslateYUnfocused },
-      ],
+      transform: [{ translateY: cardTranslateYFocused }, { translateY: cardTranslateYUnfocused }],
     },
     overlayStyle: { opacity: overlayOpacity },
   };

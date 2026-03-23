@@ -1,3 +1,6 @@
+import * as React from 'react';
+import { type GestureResponderEvent, Platform } from 'react-native';
+
 import {
   getPathFromState,
   type NavigationAction,
@@ -7,9 +10,6 @@ import {
   type ParamListBase,
 } from '../core';
 import type { NavigationState, PartialState } from '../routers';
-import * as React from 'react';
-import { type GestureResponderEvent, Platform } from 'react-native';
-
 import { LinkingContext } from './LinkingContext';
 
 export type LinkProps<
@@ -46,11 +46,7 @@ const getStateFromParams = (
           params: params.params,
           // @ts-expect-error this is fine 🔥
           state: params.screen
-            ? getStateFromParams(
-                params.params as
-                  | NavigatorScreenParams<ParamListBase>
-                  | undefined
-              )
+            ? getStateFromParams(params.params as NavigatorScreenParams<ParamListBase> | undefined)
             : undefined,
         },
       ],
@@ -78,9 +74,7 @@ export function useLinkProps<ParamList extends ReactNavigation.RootParamList>({
   const navigation = React.useContext(NavigationHelpersContext);
   const { options } = React.useContext(LinkingContext);
 
-  const onPress = (
-    e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
-  ) => {
+  const onPress = (e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
     let shouldHandle = false;
 
     if (Platform.OS !== 'web' || !e) {
@@ -95,8 +89,7 @@ export function useLinkProps<ParamList extends ReactNavigation.RootParamList>({
         ('shiftKey' in e && e.shiftKey);
 
       // only handle left clicks
-      const isLeftClick =
-        'button' in e ? e.button == null || e.button === 0 : true;
+      const isLeftClick = 'button' in e ? e.button == null || e.button === 0 : true;
 
       // let browser handle "target=_blank" etc.
       const isSelfTarget =
@@ -141,7 +134,7 @@ export function useLinkProps<ParamList extends ReactNavigation.RootParamList>({
                   // @ts-expect-error this is fine 🔥
                   name: screen,
                   // @ts-expect-error this is fine 🔥
-                  params: params,
+                  params,
                   // @ts-expect-error this is fine 🔥
                   state: getStateFromParams(params),
                 },

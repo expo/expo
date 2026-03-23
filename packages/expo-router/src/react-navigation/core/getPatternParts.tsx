@@ -30,9 +30,7 @@ export function getPatternParts(path: string): PatternPart[] {
       if (current.segment === ':') {
         isParam = true;
       } else if (!isRegex) {
-        throw new Error(
-          `Encountered ':' in the middle of a segment in path: ${path}`
-        );
+        throw new Error(`Encountered ':' in the middle of a segment in path: ${path}`);
       }
     } else if (char === '(') {
       if (isParam) {
@@ -43,9 +41,7 @@ export function getPatternParts(path: string): PatternPart[] {
           isRegex = true;
         }
       } else {
-        throw new Error(
-          `Encountered '(' without preceding ':' in path: ${path}`
-        );
+        throw new Error(`Encountered '(' without preceding ':' in path: ${path}`);
       }
     } else if (char === ')') {
       if (isParam && isRegex) {
@@ -58,9 +54,7 @@ export function getPatternParts(path: string): PatternPart[] {
           isParam = false;
         }
       } else {
-        throw new Error(
-          `Encountered ')' without preceding '(' in path: ${path}`
-        );
+        throw new Error(`Encountered ')' without preceding '(' in path: ${path}`);
       }
     } else if (char === '?') {
       if (current.param) {
@@ -68,9 +62,7 @@ export function getPatternParts(path: string): PatternPart[] {
 
         current.optional = true;
       } else {
-        throw new Error(
-          `Encountered '?' without preceding ':' in path: ${path}`
-        );
+        throw new Error(`Encountered '?' without preceding ':' in path: ${path}`);
       }
     } else if (char == null || (char === '/' && !isRegex)) {
       isParam = false;

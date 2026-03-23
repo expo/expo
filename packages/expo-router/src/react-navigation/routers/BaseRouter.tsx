@@ -1,10 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 
-import type {
-  CommonNavigationAction,
-  NavigationState,
-  PartialState,
-} from './types';
+import type { CommonNavigationAction, NavigationState, PartialState } from './types';
 
 /**
  * Base router object that can be used when writing custom routers.
@@ -47,9 +43,7 @@ export const BaseRouter = {
 
         if (
           nextState.routes.length === 0 ||
-          nextState.routes.some(
-            (route: { name: string }) => !state.routeNames.includes(route.name)
-          )
+          nextState.routes.some((route: { name: string }) => !state.routeNames.includes(route.name))
         ) {
           return null;
         }
@@ -57,9 +51,7 @@ export const BaseRouter = {
         if (nextState.stale === false) {
           if (
             state.routeNames.length !== nextState.routeNames.length ||
-            nextState.routeNames.some(
-              (name) => !state.routeNames.includes(name)
-            )
+            nextState.routeNames.some((name) => !state.routeNames.includes(name))
           ) {
             return null;
           }

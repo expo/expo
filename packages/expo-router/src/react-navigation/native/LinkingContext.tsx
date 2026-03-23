@@ -1,6 +1,6 @@
-import type { ParamListBase } from '../core';
 import * as React from 'react';
 
+import type { ParamListBase } from '../core';
 import type { LinkingOptions } from './types';
 
 const MISSING_CONTEXT_ERROR = "Couldn't find a LinkingContext context.";

@@ -1,23 +1,15 @@
-import {
-  getHeaderTitle,
-  Header,
-  SafeAreaProviderCompat,
-  Screen,
-} from '../../elements';
+import * as React from 'react';
+import { Animated, Platform, StyleSheet } from 'react-native';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+
+import { getHeaderTitle, Header, SafeAreaProviderCompat, Screen } from '../../elements';
 import {
   type NavigationAction,
   type ParamListBase,
   StackActions,
   type TabNavigationState,
 } from '../../native';
-import * as React from 'react';
-import { Animated, Platform, StyleSheet } from 'react-native';
-import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
-
-import {
-  FadeTransition,
-  ShiftTransition,
-} from '../TransitionConfigs/TransitionPresets';
+import { FadeTransition, ShiftTransition } from '../TransitionConfigs/TransitionPresets';
 import type {
   BottomTabBarProps,
   BottomTabDescriptorMap,
@@ -27,11 +19,11 @@ import type {
   BottomTabNavigationOptions,
   BottomTabNavigationProp,
 } from '../types';
+import { BottomTabBar, getTabBarHeight } from './BottomTabBar';
+import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
 import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
 import { BottomTabBarHeightContext } from '../utils/BottomTabBarHeightContext';
 import { useAnimatedHashMap } from '../utils/useAnimatedHashMap';
-import { BottomTabBar, getTabBarHeight } from './BottomTabBar';
-import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
 
 type Props = BottomTabNavigationConfig & {
   state: TabNavigationState<ParamListBase>;
@@ -68,9 +60,7 @@ const hasAnimation = (options: BottomTabNavigationOptions) => {
   return Boolean(transitionSpec);
 };
 
-const renderTabBarDefault = (props: BottomTabBarProps) => (
-  <BottomTabBar {...props} />
-);
+const renderTabBarDefault = (props: BottomTabBarProps) => <BottomTabBar {...props} />;
 
 export function BottomTabView(props: Props) {
   const {
@@ -108,9 +98,7 @@ export function BottomTabView(props: Props) {
       previousRouteKey !== focusedRouteKey &&
       descriptors[previousRouteKey]?.options.popToTopOnBlur
     ) {
-      const prevRoute = state.routes.find(
-        (route) => route.key === previousRouteKey
-      );
+      const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
       if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
         popToTopAction = {
@@ -134,16 +122,12 @@ export function BottomTabView(props: Props) {
             const { options } = descriptors[route.key];
             const {
               animation = 'none',
-              transitionSpec = NAMED_TRANSITIONS_PRESETS[animation]
-                .transitionSpec,
+              transitionSpec = NAMED_TRANSITIONS_PRESETS[animation].transitionSpec,
             } = options;
 
             let spec = transitionSpec;
 
-            if (
-              route.key !== previousRouteKey &&
-              route.key !== focusedRouteKey
-            ) {
+            if (route.key !== previousRouteKey && route.key !== focusedRouteKey) {
               // Don't animate if the screen is not previous one or new one
               // This will avoid flicker for screens not involved in the transition
               spec = NAMED_TRANSITIONS_PRESETS.none.transitionSpec;
@@ -151,8 +135,7 @@ export function BottomTabView(props: Props) {
 
             spec = spec ?? NAMED_TRANSITIONS_PRESETS.none.transitionSpec;
 
-            const toValue =
-              index === state.index ? 0 : index >= state.index ? 1 : -1;
+            const toValue = index === state.index ? 0 : index >= state.index ? 1 : -1;
 
             return Animated[spec.animation](tabAnims[route.key], {
               ...spec.config,
@@ -178,14 +161,7 @@ export function BottomTabView(props: Props) {
     animateToIndex();
 
     previousRouteKeyRef.current = focusedRouteKey;
-  }, [
-    descriptors,
-    focusedRouteKey,
-    navigation,
-    state.index,
-    state.routes,
-    tabAnims,
-  ]);
+  }, [descriptors, focusedRouteKey, navigation, state.index, state.routes, tabAnims]);
 
   const dimensions = SafeAreaProviderCompat.initialMetrics.frame;
   const [tabBarHeight, setTabBarHeight] = React.useState(() =>
@@ -206,9 +182,9 @@ export function BottomTabView(props: Props) {
       <SafeAreaInsetsContext.Consumer>
         {(insets) =>
           tabBar({
-            state: state,
-            descriptors: descriptors,
-            navigation: navigation,
+            state,
+            descriptors,
+            navigation,
             insets: {
               top: safeAreaInsets?.top ?? insets?.top ?? 0,
               right: safeAreaInsets?.right ?? insets?.right ?? 0,
@@ -224,17 +200,12 @@ export function BottomTabView(props: Props) {
   const { routes } = state;
 
   // If there is no animation, we only have 2 states: visible and invisible
-  const hasTwoStates = !routes.some((route) =>
-    hasAnimation(descriptors[route.key].options)
-  );
+  const hasTwoStates = !routes.some((route) => hasAnimation(descriptors[route.key].options));
 
   const { tabBarPosition = 'bottom' } = descriptors[focusedRouteKey].options;
 
   const tabBarElement = (
-    <BottomTabBarHeightCallbackContext.Provider
-      key="tabbar"
-      value={setTabBarHeight}
-    >
+    <BottomTabBarHeightCallbackContext.Provider key="tabbar" value={setTabBarHeight}>
       {renderTabBar()}
     </BottomTabBarHeightCallbackContext.Provider>
   );
@@ -242,38 +213,25 @@ export function BottomTabView(props: Props) {
   return (
     <SafeAreaProviderCompat
       style={{
-        flexDirection:
-          tabBarPosition === 'left' || tabBarPosition === 'right'
-            ? 'row'
-            : 'column',
-      }}
-    >
-      {tabBarPosition === 'top' || tabBarPosition === 'left'
-        ? tabBarElement
-        : null}
+        flexDirection: tabBarPosition === 'left' || tabBarPosition === 'right' ? 'row' : 'column',
+      }}>
+      {tabBarPosition === 'top' || tabBarPosition === 'left' ? tabBarElement : null}
       <MaybeScreenContainer
         key="screens"
         enabled={detachInactiveScreens}
         hasTwoStates={hasTwoStates}
-        style={styles.screens}
-      >
+        style={styles.screens}>
         {routes.map((route, index) => {
           const descriptor = descriptors[route.key];
           const {
             lazy = true,
             animation = 'none',
-            sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation]
-              .sceneStyleInterpolator,
+            sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation].sceneStyleInterpolator,
           } = descriptor.options;
           const isFocused = state.index === index;
           const isPreloaded = state.preloadedRouteKeys.includes(route.key);
 
-          if (
-            lazy &&
-            !loaded.includes(route.key) &&
-            !isFocused &&
-            !isPreloaded
-          ) {
+          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
             // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
             return null;
           }
@@ -281,11 +239,7 @@ export function BottomTabView(props: Props) {
           const {
             freezeOnBlur,
             header = ({ layout, options }: BottomTabHeaderProps) => (
-              <Header
-                {...options}
-                layout={layout}
-                title={getHeaderTitle(options, route.name)}
-              />
+              <Header {...options} layout={layout} title={getHeaderTitle(options, route.name)} />
             ),
             headerShown,
             headerStatusBarHeight,
@@ -322,11 +276,9 @@ export function BottomTabView(props: Props) {
               active={activityState}
               enabled={detachInactiveScreens}
               freezeOnBlur={freezeOnBlur}
-              shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}
-            >
+              shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}>
               <BottomTabBarHeightContext.Provider
-                value={tabBarPosition === 'bottom' ? tabBarHeight : 0}
-              >
+                value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
                 <Screen
                   focused={isFocused}
                   route={descriptor.route}
@@ -337,12 +289,10 @@ export function BottomTabView(props: Props) {
                   header={header({
                     layout: dimensions,
                     route: descriptor.route,
-                    navigation:
-                      descriptor.navigation as BottomTabNavigationProp<ParamListBase>,
+                    navigation: descriptor.navigation as BottomTabNavigationProp<ParamListBase>,
                     options: descriptor.options,
                   })}
-                  style={[customSceneStyle, animationEnabled && sceneStyle]}
-                >
+                  style={[customSceneStyle, animationEnabled && sceneStyle]}>
                   {descriptor.render()}
                 </Screen>
               </BottomTabBarHeightContext.Provider>
@@ -350,9 +300,7 @@ export function BottomTabView(props: Props) {
           );
         })}
       </MaybeScreenContainer>
-      {tabBarPosition === 'bottom' || tabBarPosition === 'right'
-        ? tabBarElement
-        : null}
+      {tabBarPosition === 'bottom' || tabBarPosition === 'right' ? tabBarElement : null}
     </SafeAreaProviderCompat>
   );
 }

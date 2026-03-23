@@ -35,8 +35,7 @@ export function CardContent({ enabled, layout, style, ...rest }: Props) {
     let unsubscribe: (() => void) | undefined;
 
     if (isFullHeight && navigator.maxTouchPoints > 0) {
-      const style =
-        document.getElementById(id) ?? document.createElement('style');
+      const style = document.getElementById(id) ?? document.createElement('style');
 
       style.id = id;
 

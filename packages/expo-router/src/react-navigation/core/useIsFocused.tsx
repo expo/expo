@@ -2,13 +2,9 @@ import * as React from 'react';
 
 import { useNavigation } from './useNavigation';
 
-export const FocusedRouteKeyContext = React.createContext<string | undefined>(
-  undefined
-);
+export const FocusedRouteKeyContext = React.createContext<string | undefined>(undefined);
 
-export const IsFocusedContext = React.createContext<boolean | undefined>(
-  undefined
-);
+export const IsFocusedContext = React.createContext<boolean | undefined>(undefined);
 
 /**
  * Hook to get the current focus state of the screen. Returns a `true` if screen is focused, otherwise `false`.
@@ -41,11 +37,7 @@ export function useIsFocused(): boolean {
 
   // isFocused from context only works with NavigationProvider
   // So this is kept for backward compatibility
-  const value = React.useSyncExternalStore(
-    subscribe,
-    navigation.isFocused,
-    navigation.isFocused
-  );
+  const value = React.useSyncExternalStore(subscribe, navigation.isFocused, navigation.isFocused);
 
   return isFocused ?? value;
 }

@@ -1,13 +1,7 @@
 import * as React from 'react';
 import { type HostInstance, Keyboard, TextInput } from 'react-native';
 
-export function useKeyboardManager({
-  enabled,
-  focused,
-}: {
-  enabled: boolean;
-  focused: boolean;
-}) {
+export function useKeyboardManager({ enabled, focused }: { enabled: boolean; focused: boolean }) {
   // Numeric id of the previously focused text input
   // When a gesture didn't change the tab, we can restore the focused input with this
   const previouslyFocusedTextInputRef = React.useRef<HostInstance>(undefined);
@@ -72,15 +66,7 @@ export function useKeyboardManager({
   }, [clearKeyboardTimeout]);
 
   const onPageChangeConfirm = React.useCallback(
-    ({
-      gesture,
-      active,
-      closing,
-    }: {
-      gesture: boolean;
-      active: boolean;
-      closing: boolean;
-    }) => {
+    ({ gesture, active, closing }: { gesture: boolean; active: boolean; closing: boolean }) => {
       if (!enabledRef.current) {
         return;
       }

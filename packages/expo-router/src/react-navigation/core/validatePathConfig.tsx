@@ -20,9 +20,7 @@ export function validatePathConfig(config: unknown, root = true) {
 
   if (typeof config !== 'object' || config === null) {
     throw new Error(
-      `Expected the configuration to be an object, but got ${JSON.stringify(
-        config
-      )}.`
+      `Expected the configuration to be an object, but got ${JSON.stringify(config)}.`
     );
   }
 
@@ -62,12 +60,7 @@ export function validatePathConfig(config: unknown, root = true) {
     );
   }
 
-  if (
-    root &&
-    'path' in config &&
-    typeof config.path === 'string' &&
-    config.path.includes(':')
-  ) {
+  if (root && 'path' in config && typeof config.path === 'string' && config.path.includes(':')) {
     throw new Error(
       `Found invalid path '${config.path}'. The 'path' in the top-level configuration cannot contain patterns for params.`
     );

@@ -2,12 +2,9 @@ import * as React from 'react';
 import { View } from 'react-native';
 import type { PanGestureHandlerProperties } from 'react-native-gesture-handler';
 
-const Dummy: any = ({ children }: { children: React.ReactNode }) => (
-  <>{children}</>
-);
+const Dummy: any = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
-export const PanGestureHandler =
-  Dummy as React.ComponentType<PanGestureHandlerProperties>;
+export const PanGestureHandler = Dummy as React.ComponentType<PanGestureHandlerProperties>;
 
 export const GestureHandlerRootView = View;
 

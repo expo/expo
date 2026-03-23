@@ -8,11 +8,7 @@ import { IsFocusedContext } from './useIsFocused';
 /**
  * Component to make the child navigation container independent of parent containers.
  */
-export function NavigationIndependentTree({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function NavigationIndependentTree({ children }: { children: React.ReactNode }) {
   return (
     // We need to clear any existing contexts for nested independent container to work correctly
     <NavigationRouteContext.Provider value={undefined}>

@@ -19,14 +19,9 @@ type FrameContextType = {
   subscribeThrottled: (listener: Listener) => RemoveListener;
 };
 
-const FrameContext = React.createContext<FrameContextType | undefined>(
-  undefined
-);
+const FrameContext = React.createContext<FrameContextType | undefined>(undefined);
 
-export function useFrameSize<T>(
-  selector: (frame: Frame) => T,
-  throttle?: boolean
-): T {
+export function useFrameSize<T>(selector: (frame: Frame) => T, throttle?: boolean): T {
   const context = React.useContext(FrameContext);
 
   if (context == null) {
@@ -51,10 +46,7 @@ type FrameSizeProviderProps = {
   }) => React.ReactNode;
 };
 
-export function FrameSizeProvider({
-  initialFrame,
-  render,
-}: FrameSizeProviderProps) {
+export function FrameSizeProvider({ initialFrame, render }: FrameSizeProviderProps) {
   const frameRef = React.useRef<Frame>({
     width: initialFrame.width,
     height: initialFrame.height,
@@ -72,47 +64,45 @@ export function FrameSizeProvider({
     };
   });
 
-  const subscribeThrottled = useLatestCallback(
-    (listener: Listener): RemoveListener => {
-      const delay = 100; // Throttle delay in milliseconds
+  const subscribeThrottled = useLatestCallback((listener: Listener): RemoveListener => {
+    const delay = 100; // Throttle delay in milliseconds
 
-      let timer: ReturnType<typeof setTimeout>;
-      let updated = false;
-      let waiting = false;
+    let timer: ReturnType<typeof setTimeout>;
+    let updated = false;
+    let waiting = false;
 
-      const throttledListener = () => {
-        clearTimeout(timer);
+    const throttledListener = () => {
+      clearTimeout(timer);
 
-        updated = true;
+      updated = true;
 
-        if (waiting) {
-          // Schedule a timer to call the listener at the end
-          timer = setTimeout(() => {
-            if (updated) {
-              updated = false;
-              listener();
-            }
-          }, delay);
-        } else {
-          waiting = true;
-          setTimeout(function () {
-            waiting = false;
-          }, delay);
+      if (waiting) {
+        // Schedule a timer to call the listener at the end
+        timer = setTimeout(() => {
+          if (updated) {
+            updated = false;
+            listener();
+          }
+        }, delay);
+      } else {
+        waiting = true;
+        setTimeout(function () {
+          waiting = false;
+        }, delay);
 
-          // Call the listener immediately at start
-          updated = false;
-          listener();
-        }
-      };
+        // Call the listener immediately at start
+        updated = false;
+        listener();
+      }
+    };
 
-      const unsubscribe = subscribe(throttledListener);
+    const unsubscribe = subscribe(throttledListener);
 
-      return () => {
-        unsubscribe();
-        clearTimeout(timer);
-      };
-    }
-  );
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
+  });
 
   const context = React.useMemo<FrameContextType>(
     () => ({
@@ -124,10 +114,7 @@ export function FrameSizeProvider({
   );
 
   const onChange = useLatestCallback((frame: Frame) => {
-    if (
-      frameRef.current.height === frame.height &&
-      frameRef.current.width === frame.width
-    ) {
+    if (frameRef.current.height === frame.height && frameRef.current.width === frame.width) {
       return;
     }
 
@@ -156,9 +143,7 @@ export function FrameSizeProvider({
 
   return (
     <FrameContext.Provider value={context}>
-      {Platform.OS === 'web' ? (
-        <FrameSizeListenerWeb onChange={onChange} />
-      ) : null}
+      {Platform.OS === 'web' ? <FrameSizeListenerWeb onChange={onChange} /> : null}
       {render({ ref: viewRef, onLayout })}
     </FrameContext.Provider>
   );
@@ -166,11 +151,7 @@ export function FrameSizeProvider({
 
 // FIXME: On the Web, `onLayout` doesn't fire on resize
 // So we workaround this by using ResizeObserver
-function FrameSizeListenerWeb({
-  onChange,
-}: {
-  onChange: (frame: Frame) => void;
-}) {
+function FrameSizeListenerWeb({ onChange }: { onChange: (frame: Frame) => void }) {
   const elementRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {

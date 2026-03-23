@@ -1,7 +1,4 @@
-import type {
-  BottomTabSceneInterpolatedStyle,
-  BottomTabSceneInterpolationProps,
-} from '../types';
+import type { BottomTabSceneInterpolatedStyle, BottomTabSceneInterpolationProps } from '../types';
 
 /**
  * Simple cross fade animation

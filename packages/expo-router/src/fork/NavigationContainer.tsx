@@ -1,3 +1,12 @@
+import React from 'react';
+import { I18nManager } from 'react-native';
+import useLatestCallback from 'use-latest-callback';
+
+import { useBackButton } from './useBackButton';
+import { useDocumentTitle } from './useDocumentTitle';
+import { useLinking } from './useLinking';
+import { useThenable } from './useThenable';
+import { useImperativeApiEmitter } from '../imperative-api';
 import {
   BaseNavigationContainer,
   DefaultTheme,
@@ -17,15 +26,6 @@ import {
   getStateFromPath,
   validatePathConfig,
 } from '../react-navigation/native';
-import React from 'react';
-import { I18nManager } from 'react-native';
-import useLatestCallback from 'use-latest-callback';
-
-import { useBackButton } from './useBackButton';
-import { useDocumentTitle } from './useDocumentTitle';
-import { useLinking } from './useLinking';
-import { useThenable } from './useThenable';
-import { useImperativeApiEmitter } from '../imperative-api';
 
 declare global {
   // eslint-disable-next-line no-var

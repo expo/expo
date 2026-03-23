@@ -1,4 +1,3 @@
-import { useNavigation, useTheme } from '../../native';
 import Color from 'color';
 import * as React from 'react';
 import {
@@ -20,6 +19,7 @@ import { Text } from '../Text';
 import type { HeaderSearchBarOptions, HeaderSearchBarRef } from '../types';
 import { HeaderButton } from './HeaderButton';
 import { HeaderIcon } from './HeaderIcon';
+import { useNavigation, useTheme } from '../../native';
 
 type Props = Omit<HeaderSearchBarOptions, 'ref'> & {
   visible: boolean;
@@ -58,9 +58,7 @@ function HeaderSearchBarInternal(
   const { dark, colors, fonts } = useTheme();
   const [value, setValue] = React.useState('');
   const [rendered, setRendered] = React.useState(visible);
-  const [visibleAnim] = React.useState(
-    () => new Animated.Value(visible ? 1 : 0)
-  );
+  const [visibleAnim] = React.useState(() => new Animated.Value(visible ? 1 : 0));
   const [clearVisibleAnim] = React.useState(() => new Animated.Value(0));
 
   const visibleValueRef = React.useRef(visible);
@@ -125,10 +123,7 @@ function HeaderSearchBarInternal(
     onClose();
   }, [onClear, onClose]);
 
-  React.useEffect(
-    () => navigation?.addListener('blur', cancelSearch),
-    [cancelSearch, navigation]
-  );
+  React.useEffect(() => navigation?.addListener('blur', cancelSearch), [cancelSearch, navigation]);
 
   React.useImperativeHandle(
     ref,
@@ -160,23 +155,16 @@ function HeaderSearchBarInternal(
       pointerEvents={visible ? 'auto' : 'none'}
       aria-live="polite"
       aria-hidden={!visible}
-      style={[styles.container, { opacity: visibleAnim }, style]}
-    >
+      style={[styles.container, { opacity: visibleAnim }, style]}>
       <View style={styles.searchbarContainer}>
-        <HeaderIcon
-          source={searchIcon}
-          tintColor={textColor}
-          style={styles.inputSearchIcon}
-        />
+        <HeaderIcon source={searchIcon} tintColor={textColor} style={styles.inputSearchIcon} />
         <TextInput
           {...rest}
           ref={inputRef}
           onChange={onChangeText}
           onChangeText={setValue}
           autoFocus={autoFocus}
-          autoCapitalize={
-            autoCapitalize === 'systemDefault' ? undefined : autoCapitalize
-          }
+          autoCapitalize={autoCapitalize === 'systemDefault' ? undefined : autoCapitalize}
           inputMode={INPUT_TYPE_TO_MODE[inputType ?? 'text']}
           enterKeyHint={enterKeyHint}
           placeholder={placeholder}
@@ -206,8 +194,7 @@ function HeaderSearchBarInternal(
                 transform: [{ scale: clearVisibleAnim }],
               },
               styles.clearButton,
-            ]}
-          >
+            ]}>
             <Image
               source={clearIcon}
               resizeMode="contain"
@@ -226,20 +213,13 @@ function HeaderSearchBarInternal(
               onClose();
             }
           }}
-          style={styles.closeButton}
-        >
+          style={styles.closeButton}>
           <HeaderIcon source={closeIcon} tintColor={textColor} />
         </HeaderButton>
       ) : null}
       {Platform.OS === 'ios' ? (
         <PlatformPressable onPress={cancelSearch} style={styles.cancelButton}>
-          <Text
-            style={[
-              fonts.regular,
-              { color: tintColor ?? colors.primary },
-              styles.cancelText,
-            ]}
-          >
+          <Text style={[fonts.regular, { color: tintColor ?? colors.primary }, styles.cancelText]}>
             {cancelButtonText}
           </Text>
         </PlatformPressable>

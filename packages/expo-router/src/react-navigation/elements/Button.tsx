@@ -1,16 +1,9 @@
-import {
-  type LinkProps,
-  useLinkProps,
-  useTheme,
-} from '../native';
 import Color from 'color';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
-import {
-  PlatformPressable,
-  type Props as PlatformPressableProps,
-} from './PlatformPressable';
+import { type LinkProps, useLinkProps, useTheme } from '../native';
+import { PlatformPressable, type Props as PlatformPressableProps } from './PlatformPressable';
 import { Text } from './Text';
 
 type ButtonBaseProps = Omit<PlatformPressableProps, 'children'> & {
@@ -19,8 +12,8 @@ type ButtonBaseProps = Omit<PlatformPressableProps, 'children'> & {
   children: string | string[];
 };
 
-type ButtonLinkProps<ParamList extends ReactNavigation.RootParamList> =
-  LinkProps<ParamList> & Omit<ButtonBaseProps, 'onPress'>;
+type ButtonLinkProps<ParamList extends ReactNavigation.RootParamList> = LinkProps<ParamList> &
+  Omit<ButtonBaseProps, 'onPress'>;
 
 const BUTTON_RADIUS = 40;
 
@@ -80,9 +73,7 @@ function ButtonBase({
       break;
     case 'filled':
       backgroundColor = color;
-      textColor = Color(color).isDark()
-        ? 'white'
-        : Color(color).darken(0.71).string();
+      textColor = Color(color).isDark() ? 'white' : Color(color).darken(0.71).string();
       break;
   }
 
@@ -96,11 +87,8 @@ function ButtonBase({
       }}
       pressOpacity={Platform.OS === 'ios' ? undefined : 1}
       hoverEffect={{ color: textColor }}
-      style={[{ backgroundColor }, styles.button, style]}
-    >
-      <Text style={[{ color: textColor }, fonts.regular, styles.text]}>
-        {children}
-      </Text>
+      style={[{ backgroundColor }, styles.button, style]}>
+      <Text style={[{ color: textColor }, fonts.regular, styles.text]}>{children}</Text>
     </PlatformPressable>
   );
 }

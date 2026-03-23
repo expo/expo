@@ -1,14 +1,6 @@
 import * as React from 'react';
-import type {
-  ColorValue,
-  ImageSourcePropType,
-  StyleProp,
-  TextStyle,
-} from 'react-native';
-import type {
-  ScreenStackHeaderConfigProps,
-  SearchBarProps,
-} from 'react-native-screens';
+import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
+import type { ScreenStackHeaderConfigProps, SearchBarProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { NativeBottomTabHeaderProps } from '../types';
@@ -133,9 +125,7 @@ export type NativeHeaderOptions = {
    *
    * @platform ios
    */
-  unstable_headerLeftItems?: (
-    props: NativeScreenHeaderItemProps
-  ) => NativeScreenHeaderItem[];
+  unstable_headerLeftItems?: (props: NativeScreenHeaderItemProps) => NativeScreenHeaderItem[];
 
   /**
    * Function which returns an array of items to display as on the right side of the header.
@@ -145,9 +135,7 @@ export type NativeHeaderOptions = {
    *
    * @platform ios
    */
-  unstable_headerRightItems?: (
-    props: NativeScreenHeaderItemProps
-  ) => NativeScreenHeaderItem[];
+  unstable_headerRightItems?: (props: NativeScreenHeaderItemProps) => NativeScreenHeaderItem[];
 
   /**
    * String or a function that returns a React Element to be used by the header.
@@ -394,10 +382,7 @@ export type NativeScreenHeaderItemMenu = SharedHeaderItem & {
     /**
      * Array of menu items (actions or submenus).
      */
-    items: (
-      | NativeScreenHeaderItemMenuAction
-      | NativeScreenHeaderItemMenuSubmenu
-    )[];
+    items: (NativeScreenHeaderItemMenuAction | NativeScreenHeaderItemMenuSubmenu)[];
   };
 };
 

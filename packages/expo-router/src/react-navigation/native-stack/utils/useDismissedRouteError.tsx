@@ -1,15 +1,9 @@
-import type {
-  ParamListBase,
-  StackNavigationState,
-} from '../../native';
 import * as React from 'react';
 
-export function useDismissedRouteError(
-  state: StackNavigationState<ParamListBase>
-) {
-  const [nextDismissedKey, setNextDismissedKey] = React.useState<string | null>(
-    null
-  );
+import type { ParamListBase, StackNavigationState } from '../../native';
+
+export function useDismissedRouteError(state: StackNavigationState<ParamListBase>) {
+  const [nextDismissedKey, setNextDismissedKey] = React.useState<string | null>(null);
 
   const dismissedRouteName = nextDismissedKey
     ? state.routes.find((route) => route.key === nextDismissedKey)?.name

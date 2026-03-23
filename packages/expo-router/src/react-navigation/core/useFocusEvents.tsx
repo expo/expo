@@ -1,6 +1,6 @@
-import type { NavigationState } from '../routers';
 import * as React from 'react';
 
+import type { NavigationState } from '../routers';
 import { NavigationContext } from './NavigationContext';
 import type { EventMapCore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -13,10 +13,7 @@ type Options<State extends NavigationState> = {
 /**
  * Hook to take care of emitting `focus` and `blur` events.
  */
-export function useFocusEvents<State extends NavigationState>({
-  state,
-  emitter,
-}: Options<State>) {
+export function useFocusEvents<State extends NavigationState>({ state, emitter }: Options<State>) {
   const navigation = React.useContext(NavigationContext);
   const lastFocusedKeyRef = React.useRef<string | undefined>(undefined);
 
@@ -55,10 +52,7 @@ export function useFocusEvents<State extends NavigationState>({
 
     // We should only emit events when the focused key changed and navigator is focused
     // When navigator is not focused, screens inside shouldn't receive focused status either
-    if (
-      lastFocusedKey === currentFocusedKey ||
-      !(navigation ? navigation.isFocused() : true)
-    ) {
+    if (lastFocusedKey === currentFocusedKey || !(navigation ? navigation.isFocused() : true)) {
       return;
     }
 

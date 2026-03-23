@@ -1,10 +1,3 @@
-import { getHeaderTitle, HeaderTitle } from '../../elements';
-import {
-  type Route,
-  type Theme,
-  useLocale,
-  useTheme,
-} from '../../native';
 import color from 'color';
 import { Platform, StyleSheet, type TextStyle, View } from 'react-native';
 import {
@@ -22,6 +15,7 @@ import {
   SearchBar,
 } from 'react-native-screens';
 
+import { getHeaderTitle, HeaderTitle } from '../../elements';
 import type {
   NativeStackHeaderItem,
   NativeStackHeaderItemButton,
@@ -30,6 +24,7 @@ import type {
   NativeStackNavigationOptions,
 } from '../types';
 import { processFonts } from './FontProcessor';
+import { type Route, type Theme, useLocale, useTheme } from '../../native';
 
 type Props = NativeStackNavigationOptions & {
   headerTopInsetEnabled: boolean;
@@ -53,9 +48,7 @@ const processBarButtonItems = (
       if (item.type === 'spacing') {
         if (item.spacing == null) {
           throw new Error(
-            `Spacing item must have a 'spacing' property defined: ${JSON.stringify(
-              item
-            )}`
+            `Spacing item must have a 'spacing' property defined: ${JSON.stringify(item)}`
           );
         }
 
@@ -64,11 +57,7 @@ const processBarButtonItems = (
 
       if (item.type === 'button' || item.type === 'menu') {
         if (item.type === 'menu' && item.menu == null) {
-          throw new Error(
-            `Menu item must have a 'menu' property defined: ${JSON.stringify(
-              item
-            )}`
-          );
+          throw new Error(`Menu item must have a 'menu' property defined: ${JSON.stringify(item)}`);
         }
 
         const { badge, label, labelStyle, icon, ...rest } = item;
@@ -84,9 +73,7 @@ const processBarButtonItems = (
           icon: transformIcon(icon),
         };
 
-        let processedItem:
-          | HeaderBarButtonItemWithAction
-          | HeaderBarButtonItemWithMenu;
+        let processedItem: HeaderBarButtonItemWithAction | HeaderBarButtonItemWithMenu;
 
         if (processedItemCommon.type === 'menu' && item.type === 'menu') {
           const { multiselectable, layout } = item.menu;
@@ -100,10 +87,7 @@ const processBarButtonItems = (
               items: item.menu.items.map(getMenuItem),
             },
           };
-        } else if (
-          processedItemCommon.type === 'button' &&
-          item.type === 'button'
-        ) {
+        } else if (processedItemCommon.type === 'button' && item.type === 'button') {
           processedItem = processedItemCommon;
         } else {
           throw new Error(
@@ -112,11 +96,8 @@ const processBarButtonItems = (
         }
 
         if (badge) {
-          const badgeBackgroundColor =
-            badge.style?.backgroundColor ?? colors.notification;
-          const badgeTextColor = color(badgeBackgroundColor).isLight()
-            ? 'black'
-            : 'white';
+          const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
+          const badgeTextColor = color(badgeBackgroundColor).isLight() ? 'black' : 'white';
 
           processedItem = {
             ...processedItem,
@@ -145,9 +126,7 @@ const processBarButtonItems = (
 
 const transformIcon = (
   icon: NativeStackHeaderItemButton['icon']
-):
-  | HeaderBarButtonItemWithAction['icon']
-  | HeaderBarButtonItemWithMenu['icon'] => {
+): HeaderBarButtonItemWithAction['icon'] | HeaderBarButtonItemWithMenu['icon'] => {
   if (icon?.type === 'image') {
     return icon.tinted === false
       ? { type: 'imageSource', imageSource: icon.source }
@@ -161,8 +140,7 @@ const getMenuItem = (
   item: NativeStackHeaderItemMenuAction | NativeStackHeaderItemMenuSubmenu
 ): HeaderBarButtonItemMenuAction | HeaderBarButtonItemSubmenu => {
   if (item.type === 'submenu') {
-    const { label, icon, inline, layout, items, multiselectable, ...rest } =
-      item;
+    const { label, icon, inline, layout, items, multiselectable, ...rest } = item;
 
     return {
       ...rest,
@@ -220,8 +198,7 @@ export function useHeaderConfigProps({
 }: Props): ScreenStackHeaderConfigProps {
   const { direction } = useLocale();
   const { colors, fonts, dark } = useTheme();
-  const tintColor =
-    headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
+  const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
 
   const headerBackTitleStyleFlattened =
     StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
@@ -238,12 +215,11 @@ export function useHeaderConfigProps({
   const headerStyleFlattened = StyleSheet.flatten(headerStyle) || {};
   const headerLargeStyleFlattened = StyleSheet.flatten(headerLargeStyle) || {};
 
-  const [backTitleFontFamily, largeTitleFontFamily, titleFontFamily] =
-    processFonts([
-      headerBackTitleStyleFlattened.fontFamily,
-      headerLargeTitleStyleFlattened.fontFamily,
-      headerTitleStyleFlattened.fontFamily,
-    ]);
+  const [backTitleFontFamily, largeTitleFontFamily, titleFontFamily] = processFonts([
+    headerBackTitleStyleFlattened.fontFamily,
+    headerLargeTitleStyleFlattened.fontFamily,
+    headerTitleStyleFlattened.fontFamily,
+  ]);
 
   const backTitleFontSize =
     'fontSize' in headerBackTitleStyleFlattened
@@ -256,16 +232,12 @@ export function useHeaderConfigProps({
       ? headerTitleStyleFlattened.color
       : (headerTintColor ?? colors.text);
   const titleFontSize =
-    'fontSize' in headerTitleStyleFlattened
-      ? headerTitleStyleFlattened.fontSize
-      : undefined;
+    'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
   const titleFontWeight = headerTitleStyleFlattened.fontWeight;
 
   const largeTitleBackgroundColor = headerLargeStyleFlattened.backgroundColor;
   const largeTitleColor =
-    'color' in headerLargeTitleStyleFlattened
-      ? headerLargeTitleStyleFlattened.color
-      : undefined;
+    'color' in headerLargeTitleStyleFlattened ? headerLargeTitleStyleFlattened.color : undefined;
   const largeTitleFontSize =
     'fontSize' in headerLargeTitleStyleFlattened
       ? headerLargeTitleStyleFlattened.fontSize
@@ -324,8 +296,7 @@ export function useHeaderConfigProps({
       : // Fallback for older versions of react-native-screens
         Platform.OS === 'ios' && SearchBar != null;
 
-  const hasHeaderSearchBar =
-    supportsHeaderSearchBar && headerSearchBarOptions != null;
+  const hasHeaderSearchBar = supportsHeaderSearchBar && headerSearchBarOptions != null;
 
   /**
    * We need to set this in if:
@@ -334,9 +305,7 @@ export function useHeaderConfigProps({
    */
   const backButtonInCustomView =
     headerBackVisible ||
-    (Platform.OS === 'android' &&
-      headerTitleElement != null &&
-      headerLeftElement == null);
+    (Platform.OS === 'android' && headerTitleElement != null && headerLeftElement == null);
 
   const translucent =
     headerBackground != null ||
@@ -385,8 +354,7 @@ export function useHeaderConfigProps({
                   <ScreenStackHeaderLeftView
                     // eslint-disable-next-line @eslint-react/no-array-index-key
                     key={index}
-                    hidesSharedBackground={item.hidesSharedBackground}
-                  >
+                    hidesSharedBackground={item.hidesSharedBackground}>
                     {item.element}
                   </ScreenStackHeaderLeftView>
                 );
@@ -395,14 +363,10 @@ export function useHeaderConfigProps({
               return null;
             })
           ) : headerLeftElement != null ? (
-            <ScreenStackHeaderLeftView>
-              {headerLeftElement}
-            </ScreenStackHeaderLeftView>
+            <ScreenStackHeaderLeftView>{headerLeftElement}</ScreenStackHeaderLeftView>
           ) : null}
           {headerTitleElement != null ? (
-            <ScreenStackHeaderCenterView>
-              {headerTitleElement}
-            </ScreenStackHeaderCenterView>
+            <ScreenStackHeaderCenterView>{headerTitleElement}</ScreenStackHeaderCenterView>
           ) : null}
         </>
       ) : (
@@ -411,19 +375,14 @@ export function useHeaderConfigProps({
             // The style passed to header left, together with title element being wrapped
             // in flex view is reqruied for proper header layout, in particular,
             // for the text truncation to work.
-            <ScreenStackHeaderLeftView
-              style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}
-            >
+            <ScreenStackHeaderLeftView style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}>
               {headerLeftElement}
               {headerTitleAlign !== 'center' ? (
                 typeof headerTitle === 'function' ? (
                   <View style={{ flex: 1 }}>{headerTitleElement}</View>
                 ) : (
                   <View style={{ flex: 1 }}>
-                    <HeaderTitle
-                      tintColor={tintColor}
-                      style={headerTitleStyleSupported}
-                    >
+                    <HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
                       {titleText}
                     </HeaderTitle>
                   </View>
@@ -436,10 +395,7 @@ export function useHeaderConfigProps({
               {typeof headerTitle === 'function' ? (
                 headerTitleElement
               ) : (
-                <HeaderTitle
-                  tintColor={tintColor}
-                  style={headerTitleStyleSupported}
-                >
+                <HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
                   {titleText}
                 </HeaderTitle>
               )}
@@ -459,8 +415,7 @@ export function useHeaderConfigProps({
               <ScreenStackHeaderRightView
                 // eslint-disable-next-line @eslint-react/no-array-index-key
                 key={index}
-                hidesSharedBackground={item.hidesSharedBackground}
-              >
+                hidesSharedBackground={item.hidesSharedBackground}>
                 {item.element}
               </ScreenStackHeaderRightView>
             );
@@ -469,9 +424,7 @@ export function useHeaderConfigProps({
           return null;
         })
       ) : headerRightElement != null ? (
-        <ScreenStackHeaderRightView>
-          {headerRightElement}
-        </ScreenStackHeaderRightView>
+        <ScreenStackHeaderRightView>{headerRightElement}</ScreenStackHeaderRightView>
       ) : null}
       {hasHeaderSearchBar ? (
         <ScreenStackHeaderSearchBarView>

@@ -1,3 +1,6 @@
+import * as React from 'react';
+import { Animated, Image, StyleSheet, View } from 'react-native';
+
 import {
   getHeaderTitle,
   Header,
@@ -13,9 +16,6 @@ import {
   type StackNavigationState,
   useLinkBuilder,
 } from '../../native';
-import * as React from 'react';
-import { Animated, Image, StyleSheet, View } from 'react-native';
-
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
@@ -28,26 +28,22 @@ type Props = {
   // This is used for the native implementation of the stack.
   navigation: NativeStackNavigationHelpers;
   descriptors: NativeStackDescriptorMap;
-  describe: (
-    route: RouteProp<ParamListBase>,
-    placeholder: boolean
-  ) => NativeStackDescriptor;
+  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
 };
 
-const TRANSPARENT_PRESENTATIONS = [
-  'transparentModal',
-  'containedTransparentModal',
-];
+const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 
 export function NativeStackView({ state, descriptors, describe }: Props) {
   const parentHeaderBack = React.useContext(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
 
-  const preloadedDescriptors =
-    state.preloadedRoutes.reduce<NativeStackDescriptorMap>((acc, route) => {
+  const preloadedDescriptors = state.preloadedRoutes.reduce<NativeStackDescriptorMap>(
+    (acc, route) => {
       acc[route.key] = acc[route.key] || describe(route, true);
       return acc;
-    }, {});
+    },
+    {}
+  );
 
   return (
     <SafeAreaProviderCompat>
@@ -55,23 +51,15 @@ export function NativeStackView({ state, descriptors, describe }: Props) {
         const isFocused = state.index === i;
         const previousKey = state.routes[i - 1]?.key;
         const nextKey = state.routes[i + 1]?.key;
-        const previousDescriptor = previousKey
-          ? descriptors[previousKey]
-          : undefined;
+        const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
         const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
         const { options, navigation, render } =
           descriptors[route.key] ?? preloadedDescriptors[route.key];
 
         const headerBack = previousDescriptor
           ? {
-              title: getHeaderTitle(
-                previousDescriptor.options,
-                previousDescriptor.route.name
-              ),
-              href: buildHref(
-                previousDescriptor.route.name,
-                previousDescriptor.route.params
-              ),
+              title: getHeaderTitle(previousDescriptor.options, previousDescriptor.route.name),
+              href: buildHref(previousDescriptor.route.name, previousDescriptor.route.params),
             }
           : parentHeaderBack;
 
@@ -93,8 +81,7 @@ export function NativeStackView({ state, descriptors, describe }: Props) {
         const nextPresentation = nextDescriptor?.options.presentation;
 
         const isPreloaded =
-          preloadedDescriptors[route.key] !== undefined &&
-          descriptors[route.key] === undefined;
+          preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
 
         return (
           <Screen
@@ -131,14 +118,10 @@ export function NativeStackView({ state, descriptors, describe }: Props) {
                               label={headerBackTitle ?? label}
                               tintColor={tintColor}
                               backImage={
-                                headerBackIcon !== undefined ||
-                                headerBackImageSource !== undefined
+                                headerBackIcon !== undefined || headerBackImageSource !== undefined
                                   ? () => (
                                       <Image
-                                        source={
-                                          headerBackIcon?.source ??
-                                          headerBackImageSource
-                                        }
+                                        source={headerBackIcon?.source ?? headerBackImageSource}
                                         resizeMode="contain"
                                         tintColor={tintColor}
                                         style={styles.backImage}
@@ -166,17 +149,13 @@ export function NativeStackView({ state, descriptors, describe }: Props) {
                     ? 'flex'
                     : 'none',
               },
-              presentation != null &&
-              TRANSPARENT_PRESENTATIONS.includes(presentation)
+              presentation != null && TRANSPARENT_PRESENTATIONS.includes(presentation)
                 ? { backgroundColor: 'transparent' }
                 : null,
-            ]}
-          >
+            ]}>
             <HeaderBackContext.Provider value={headerBack}>
               <AnimatedHeaderHeightProvider>
-                <View style={[styles.contentContainer, contentStyle]}>
-                  {render()}
-                </View>
+                <View style={[styles.contentContainer, contentStyle]}>{render()}</View>
               </AnimatedHeaderHeightProvider>
             </HeaderBackContext.Provider>
           </Screen>
@@ -186,15 +165,9 @@ export function NativeStackView({ state, descriptors, describe }: Props) {
   );
 }
 
-const AnimatedHeaderHeightProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const AnimatedHeaderHeightProvider = ({ children }: { children: React.ReactNode }) => {
   const headerHeight = useHeaderHeight();
-  const [animatedHeaderHeight] = React.useState(
-    () => new Animated.Value(headerHeight)
-  );
+  const [animatedHeaderHeight] = React.useState(() => new Animated.Value(headerHeight));
 
   React.useEffect(() => {
     animatedHeaderHeight.setValue(headerHeight);

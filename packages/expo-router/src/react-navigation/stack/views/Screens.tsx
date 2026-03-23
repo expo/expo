@@ -36,9 +36,7 @@ export const MaybeScreen = ({
   homeIndicatorHidden?: boolean;
 }) => {
   if (Screens != null) {
-    return (
-      <Screens.Screen enabled={enabled} activityState={active} {...rest} />
-    );
+    return <Screens.Screen enabled={enabled} activityState={active} {...rest} />;
   }
 
   return <View {...rest} />;

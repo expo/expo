@@ -1,5 +1,4 @@
 import { CommonActions } from '../routers';
-
 import type {
   NavigationContainerEventMap,
   NavigationContainerRef,
@@ -29,10 +28,7 @@ export function createNavigationContainerRef<
 
   const listeners: Record<string, ((...args: any[]) => void)[]> = {};
 
-  const removeListener = (
-    event: string,
-    callback: (...args: any[]) => void
-  ) => {
+  const removeListener = (event: string, callback: (...args: any[]) => void) => {
     if (listeners[event]) {
       listeners[event] = listeners[event].filter((cb) => cb !== callback);
     }
@@ -50,10 +46,7 @@ export function createNavigationContainerRef<
       if (value != null) {
         Object.entries(listeners).forEach(([event, callbacks]) => {
           callbacks.forEach((callback) => {
-            value.addListener(
-              event as keyof NavigationContainerEventMap,
-              callback
-            );
+            value.addListener(event as keyof NavigationContainerEventMap, callback);
           });
         });
       }

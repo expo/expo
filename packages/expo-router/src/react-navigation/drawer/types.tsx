@@ -1,3 +1,6 @@
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { PanGesture } from 'react-native-gesture-handler';
+
 import type { HeaderOptions } from '../elements';
 import type {
   DefaultNavigatorOptions,
@@ -12,8 +15,6 @@ import type {
   RouteProp,
   Theme,
 } from '../native';
-import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
-import type { PanGesture } from 'react-native-gesture-handler';
 
 export type Scene = {
   route: Route<string>;
@@ -65,18 +66,12 @@ export type DrawerNavigationOptions = HeaderOptions & {
    * or a function that given { focused: boolean, color: string } returns a React.Node
    * When undefined, scene title is used.
    */
-  drawerLabel?:
-    | string
-    | ((props: { color: string; focused: boolean }) => React.ReactNode);
+  drawerLabel?: string | ((props: { color: string; focused: boolean }) => React.ReactNode);
 
   /**
    * A function that given { focused: boolean, color: string } returns a React.Node to display an icon the drawer.
    */
-  drawerIcon?: (props: {
-    color: string;
-    size: number;
-    focused: boolean;
-  }) => React.ReactNode;
+  drawerIcon?: (props: { color: string; size: number; focused: boolean }) => React.ReactNode;
 
   /**
    * Color for the icon and label in the active item in the drawer.
@@ -269,10 +264,7 @@ export type DrawerNavigationEventMap = {
   gestureCancel: { data: undefined };
 };
 
-export type DrawerNavigationHelpers = NavigationHelpers<
-  ParamListBase,
-  DrawerNavigationEventMap
-> &
+export type DrawerNavigationHelpers = NavigationHelpers<ParamListBase, DrawerNavigationEventMap> &
   DrawerActionHelpers<ParamListBase>;
 
 export type DrawerNavigationProp<

@@ -1,4 +1,3 @@
-import { useLocale, useTheme } from '../../native';
 import * as React from 'react';
 import {
   Animated,
@@ -10,12 +9,13 @@ import {
   View,
 } from 'react-native';
 
-import backIcon from '../../../../assets/react-navigation/elements/back-icon.png';
 import backIconMask from '../../../../assets/react-navigation/elements/back-icon-mask.png';
+import backIcon from '../../../../assets/react-navigation/elements/back-icon.png';
 import { MaskedView } from '../MaskedView';
 import type { HeaderBackButtonProps } from '../types';
 import { HeaderButton } from './HeaderButton';
 import { HeaderIcon, ICON_MARGIN } from './HeaderIcon';
+import { useLocale, useTheme } from '../../native';
 
 export function HeaderBackButton({
   disabled,
@@ -41,9 +41,7 @@ export function HeaderBackButton({
   const { direction } = useLocale();
 
   const [labelWidth, setLabelWidth] = React.useState<number | null>(null);
-  const [truncatedLabelWidth, setTruncatedLabelWidth] = React.useState<
-    number | null
-  >(null);
+  const [truncatedLabelWidth, setTruncatedLabelWidth] = React.useState<number | null>(null);
 
   const renderBackImage = () => {
     if (backImage) {
@@ -53,10 +51,7 @@ export function HeaderBackButton({
         <HeaderIcon
           source={backIcon}
           tintColor={tintColor}
-          style={[
-            styles.icon,
-            displayMode !== 'minimal' && styles.iconWithLabel,
-          ]}
+          style={[styles.icon, displayMode !== 'minimal' && styles.iconWithLabel]}
         />
       );
     }
@@ -69,12 +64,10 @@ export function HeaderBackButton({
 
     const availableSpace =
       titleLayout && screenLayout
-        ? (screenLayout.width - titleLayout.width) / 2 -
-          (ICON_WIDTH + ICON_MARGIN)
+        ? (screenLayout.width - titleLayout.width) / 2 - (ICON_WIDTH + ICON_MARGIN)
         : null;
 
-    const potentialLabelText =
-      displayMode === 'default' ? label : truncatedLabel;
+    const potentialLabelText = displayMode === 'default' ? label : truncatedLabel;
     const finalLabelText =
       availableSpace && labelWidth && truncatedLabelWidth
         ? availableSpace > labelWidth
@@ -106,8 +99,7 @@ export function HeaderBackButton({
           <Animated.Text
             style={hiddenStyle}
             numberOfLines={1}
-            onLayout={(e) => setLabelWidth(e.nativeEvent.layout.width)}
-          >
+            onLayout={(e) => setLabelWidth(e.nativeEvent.layout.width)}>
             {label}
           </Animated.Text>
         ) : null}
@@ -115,8 +107,7 @@ export function HeaderBackButton({
           <Animated.Text
             style={hiddenStyle}
             numberOfLines={1}
-            onLayout={(e) => setTruncatedLabelWidth(e.nativeEvent.layout.width)}
-          >
+            onLayout={(e) => setTruncatedLabelWidth(e.nativeEvent.layout.width)}>
             {truncatedLabel}
           </Animated.Text>
         ) : null}
@@ -126,8 +117,7 @@ export function HeaderBackButton({
             onLayout={onLabelLayout}
             style={[tintColor ? { color: tintColor } : null, commonStyle]}
             numberOfLines={1}
-            allowFontScaling={!!allowFontScaling}
-          >
+            allowFontScaling={!!allowFontScaling}>
             {finalLabelText}
           </Animated.Text>
         ) : null}
@@ -148,8 +138,7 @@ export function HeaderBackButton({
               styles.iconMaskContainer,
               // Extend the mask to the center of the screen so that label isn't clipped during animation
               screenLayout ? { minWidth: screenLayout.width / 2 - 27 } : null,
-            ]}
-          >
+            ]}>
             <Image
               source={backIconMask}
               resizeMode="contain"
@@ -157,8 +146,7 @@ export function HeaderBackButton({
             />
             <View style={styles.iconMaskFillerRect} />
           </View>
-        }
-      >
+        }>
         {labelElement}
       </MaskedView>
     );
@@ -179,12 +167,11 @@ export function HeaderBackButton({
       onPress={handlePress}
       pressColor={pressColor}
       pressOpacity={pressOpacity}
-      style={[styles.container, style]}
-    >
-      <React.Fragment>
+      style={[styles.container, style]}>
+      <>
         {renderBackImage()}
         {renderLabel()}
-      </React.Fragment>
+      </>
     </HeaderButton>
   );
 }
