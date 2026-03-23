@@ -17,7 +17,7 @@ declare function BadgeSlot(props: {
 }): import("react").JSX.Element;
 /**
  * A badged box matching Compose's `BadgedBox`.
- * Overlays a badge on top of content (e.g., an icon).
+ * Overlays a badge on top of content (for example, an icon).
  *
  * @see [Jetpack Compose BadgedBox](https://developer.android.com/develop/ui/compose/components/badges)
  */

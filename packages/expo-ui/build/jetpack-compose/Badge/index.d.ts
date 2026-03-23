@@ -16,14 +16,14 @@ export type BadgeProps = {
      */
     modifiers?: ModifierConfig[];
     /**
-     * Optional content inside the badge (e.g., a `Text` with a count).
+     * Optional content inside the badge (for example, a `Text` with a count).
      * When omitted, renders as a small indicator dot.
      */
     children?: React.ReactNode;
 };
 /**
  * A badge component matching Compose's `Badge`.
- * Renders as a small colored indicator dot, or with content (e.g., a count).
+ * Renders as a small colored indicator dot, or with content (for example, a count).
  *
  * @see [Jetpack Compose Badge](https://developer.android.com/develop/ui/compose/components/badges)
  */
