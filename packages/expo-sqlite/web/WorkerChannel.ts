@@ -120,7 +120,6 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
   });
 
   let i = 0;
-  // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
   const useAtomicsPause = typeof Atomics.pause === 'function';
   while (Atomics.load(lock, 0) === PENDING) {
     ++i;
@@ -129,7 +128,6 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
       if (i > 1_000_000) {
         throw new Error('Sync operation timeout');
       }
-      // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
       Atomics.pause();
     } else {
       // NOTE(kudo): Unfortunate for the busy loop,
