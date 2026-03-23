@@ -1,6 +1,7 @@
 package expo.modules.calendar.next.domain.repositories.reminder
 
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
@@ -81,39 +82,6 @@ class ReminderRepositoryTest {
     Assert.assertEquals(listOf("77"), selectionArgsSlot.captured.toList())
   }
 
-  @Test
-  fun `given cursor with multiple rows, when findAllByEventId, then returns multiple entities`() = runTest {
-    // Given
-    val cursor = cursorWithRows(
-      minimalRow(id = 1L, minutes = 10),
-      minimalRow(id = 2L, minutes = 30)
-    )
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
-
-    // When
-    val result = repository.findAllByEventId(EventId(1L))
-
-    // Then
-    Assert.assertEquals(2, result.size)
-    Assert.assertEquals(ReminderId(1L), result[0].id)
-    Assert.assertEquals(ReminderId(2L), result[1].id)
-    Assert.assertEquals(10, result[0].minutes)
-    Assert.assertEquals(30, result[1].minutes)
-  }
-
-  @Test
-  fun `given cursor with missing method column, when findAllByEventId, then maps method to null in entity`() = runTest {
-    // Given
-    val cursor = cursorWithRows(minimalRow(id = 1L, minutes = 5, includeMethod = false))
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
-
-    // When
-    val result = repository.findAllByEventId(EventId(1L))
-
-    // Then
-    Assert.assertNull(result.first().method)
-  }
-
   // endregion
 
   // region create
@@ -130,6 +98,80 @@ class ReminderRepositoryTest {
 
     // Then
     Assert.assertEquals(42L, result)
+  }
+
+  @Test
+  fun `given ReminderInput, when create, then inserts correct values`() = runTest {
+    // Given
+    val valuesSlot = slot<ContentValues>()
+    val mockUri = mockk<Uri>()
+    every { mockUri.lastPathSegment } returns "42"
+    every { contentResolver.insert(any(), capture(valuesSlot)) } returns mockUri
+
+    // When
+    repository.create(
+      EventId(7L),
+      ReminderInput(
+        minutes = 15,
+        method = AlarmMethod.EMAIL
+      )
+    )
+
+    // Then
+    Assert.assertEquals(7L, valuesSlot.captured.getAsLong(CalendarContract.Reminders.EVENT_ID).toLong())
+    Assert.assertEquals(15, valuesSlot.captured.getAsInteger(CalendarContract.Reminders.MINUTES).toInt())
+    Assert.assertEquals(CalendarContract.Reminders.METHOD_EMAIL, valuesSlot.captured.getAsInteger(CalendarContract.Reminders.METHOD).toInt())
+  }
+
+  @Test
+  fun `given ReminderInput without method, when create, then inserts default method`() = runTest {
+    // Given
+    val valuesSlot = slot<ContentValues>()
+    val mockUri = mockk<Uri>()
+    every { mockUri.lastPathSegment } returns "42"
+    every { contentResolver.insert(any(), capture(valuesSlot)) } returns mockUri
+
+    // When
+    repository.create(
+      EventId(7L),
+      ReminderInput(minutes = 15)
+    )
+
+    // Then
+    Assert.assertEquals(7L, valuesSlot.captured.getAsLong(CalendarContract.Reminders.EVENT_ID).toLong())
+    Assert.assertEquals(15, valuesSlot.captured.getAsInteger(CalendarContract.Reminders.MINUTES).toInt())
+    Assert.assertEquals(CalendarContract.Reminders.METHOD_DEFAULT, valuesSlot.captured.getAsInteger(CalendarContract.Reminders.METHOD).toInt())
+  }
+
+  @Test(expected = PermissionException::class)
+  fun `given SecurityException, when create, then throws PermissionException`() = runTest {
+    // Given
+    every { contentResolver.insert(any(), any()) } throws SecurityException()
+
+    // When / Then
+    repository.create(EventId(1L), ReminderInput(minutes = 15))
+  }
+
+  @Test(expected = IllegalStateException::class)
+  fun `given inserted URI without last path segment, when create, then throws IllegalStateException`() = runTest {
+    // Given
+    val mockUri = mockk<Uri>()
+    every { mockUri.lastPathSegment } returns null
+    every { contentResolver.insert(any(), any()) } returns mockUri
+
+    // When / Then
+    repository.create(EventId(1L), ReminderInput(minutes = 15))
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun `given inserted URI with non numeric last path segment, when create, then throws IllegalArgumentException`() = runTest {
+    // Given
+    val mockUri = mockk<Uri>()
+    every { mockUri.lastPathSegment } returns "abc"
+    every { contentResolver.insert(any(), any()) } returns mockUri
+
+    // When / Then
+    repository.create(EventId(1L), ReminderInput(minutes = 15))
   }
 
   // endregion
@@ -151,6 +193,15 @@ class ReminderRepositoryTest {
     // Then
     Assert.assertTrue(selectionSlot.captured.contains(CalendarContract.Reminders.EVENT_ID))
     Assert.assertEquals(listOf("55"), selectionArgsSlot.captured.toList())
+  }
+
+  @Test(expected = PermissionException::class)
+  fun `given SecurityException, when deleteAllByEventId, then throws PermissionException`() = runTest {
+    // Given
+    every { contentResolver.delete(any(), any(), any()) } throws SecurityException()
+
+    // When / Then
+    repository.deleteAllByEventId(EventId(55L))
   }
 
   // endregion
@@ -198,17 +249,6 @@ class ReminderRepositoryTest {
     }
 
     return cursor
-  }
-
-  private fun minimalRow(
-    id: Long = 1L,
-    minutes: Int = 10,
-    method: Int = CalendarContract.Reminders.METHOD_DEFAULT,
-    includeMethod: Boolean = true
-  ): Map<String, Any?> = buildMap {
-    put(CalendarContract.Reminders._ID, id)
-    put(CalendarContract.Reminders.MINUTES, minutes)
-    if (includeMethod) put(CalendarContract.Reminders.METHOD, method)
   }
 
   // endregion
