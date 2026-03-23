@@ -38,6 +38,7 @@ patchedDependencies:
 
 preferWorkspacePackages: true
 
+# TODO remove after https://github.com/expo/expo/pull/44109 is merged
 # Shorten .pnpm store directory names. Patched packages get 'patch_hash='
 # in their directory name, and the '=' breaks Android's prefab CLI which
 # misparses it as a command-line option. A low enough limit forces pnpm

@@ -18,7 +18,7 @@
           "EXPO_ROOT_DIR": "/home/expo/workingdir/build",
           "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
           "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
-          "GRADLE_OPTS": "-Xmx16g -XX:MaxMetaspaceSize=1g"
+          "GRADLE_OPTS": "-Xmx16g -XX:MaxMetaspaceSize=1g -Dorg.gradle.vfs.watch=false"
         }
       },
       "ios": {
