@@ -34,18 +34,31 @@ function testStringFromFontSource(asset: FontSource): string | undefined {
   return undefined;
 }
 
+function familyFromFontSource(asset: FontSource): string | undefined {
+  return typeof asset === 'object' && 'family' in asset ? asset.family : undefined;
+}
+
+function weightFromFontSource(asset: FontSource): string | number | undefined {
+  return typeof asset === 'object' && 'weight' in asset ? asset.weight : undefined;
+}
+
+function styleFromFontSource(asset: FontSource): 'normal' | 'italic' | undefined {
+  return typeof asset === 'object' && 'style' in asset ? asset.style : undefined;
+}
+
 export function getAssetForSource(source: FontSource): Asset | FontResource {
   const uri = uriFromFontSource(source);
-  const display = displayFromFontSource(source);
-  const testString = testStringFromFontSource(source);
   if (!uri || typeof uri !== 'string') {
     throwInvalidSourceError(uri);
   }
 
   return {
     uri,
-    display,
-    testString,
+    display: displayFromFontSource(source),
+    testString: testStringFromFontSource(source),
+    family: familyFromFontSource(source),
+    weight: weightFromFontSource(source),
+    style: styleFromFontSource(source),
   };
 }
 
