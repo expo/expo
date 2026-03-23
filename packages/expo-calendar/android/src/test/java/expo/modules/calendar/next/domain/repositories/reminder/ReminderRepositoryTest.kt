@@ -7,7 +7,7 @@ import android.database.MatrixCursor
 import android.net.Uri
 import android.provider.CalendarContract
 import expo.modules.calendar.next.domain.dto.reminder.ReminderInput
-import expo.modules.calendar.next.domain.model.reminder.AlarmMethod
+import expo.modules.calendar.next.domain.model.reminder.Method
 import expo.modules.calendar.next.domain.model.reminder.ReminderEntity
 import expo.modules.calendar.next.domain.wrappers.EventId
 import expo.modules.calendar.next.domain.wrappers.ReminderId
@@ -61,7 +61,7 @@ class ReminderRepositoryTest {
     val entity = result.first()
     Assert.assertEquals(ReminderId(5L), entity.id)
     Assert.assertEquals(EventId(99L), entity.eventId)
-    Assert.assertEquals(AlarmMethod.EMAIL, entity.method)
+    Assert.assertEquals(Method.EMAIL, entity.method)
     Assert.assertEquals(15, entity.minutes)
   }
 
@@ -113,7 +113,7 @@ class ReminderRepositoryTest {
       EventId(7L),
       ReminderInput(
         minutes = 15,
-        method = AlarmMethod.EMAIL
+        method = Method.EMAIL
       )
     )
 

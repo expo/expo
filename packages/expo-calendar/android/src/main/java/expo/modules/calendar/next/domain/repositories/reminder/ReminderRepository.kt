@@ -30,14 +30,7 @@ class ReminderRepository(private val contentResolver: ContentResolver) {
   suspend fun create(eventId: EventId, input: ReminderInput): Long = withContext(Dispatchers.IO) {
     val uri = contentResolver.safeInsert(
       uri = CalendarContract.Reminders.CONTENT_URI,
-      values = ContentValues().apply {
-        put(CalendarContract.Reminders.EVENT_ID, eventId.value)
-        put(
-          CalendarContract.Reminders.METHOD,
-          input.method?.value ?: CalendarContract.Reminders.METHOD_DEFAULT
-        )
-        put(CalendarContract.Reminders.MINUTES, input.minutes)
-      }
+      values = input.toContentValues(eventId)
     )
     uri.lastPathSegment
       ?.toLong()
@@ -58,5 +51,14 @@ class ReminderRepository(private val contentResolver: ContentResolver) {
       CalendarContract.Reminders.METHOD,
       CalendarContract.Reminders.MINUTES
     )
+  }
+
+  private fun ReminderInput.toContentValues(eventId: EventId) = ContentValues().apply {
+    put(CalendarContract.Reminders.EVENT_ID, eventId.value)
+    put(
+      CalendarContract.Reminders.METHOD,
+      method?.value ?: CalendarContract.Reminders.METHOD_DEFAULT
+    )
+    put(CalendarContract.Reminders.MINUTES, minutes)
   }
 }

@@ -1,8 +1,8 @@
 package expo.modules.calendar.next.domain.dto.reminder
 
-import expo.modules.calendar.next.domain.model.reminder.AlarmMethod
+import expo.modules.calendar.next.domain.model.reminder.Method
 
 class ReminderInput(
-  val method: AlarmMethod? = null,
+  val method: Method? = null,
   val minutes: Int
 )

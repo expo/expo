@@ -18,6 +18,6 @@ import expo.modules.calendar.next.domain.wrappers.ReminderId
 data class ReminderEntity(
   val id: ReminderId,
   val eventId: EventId,
-  val method: AlarmMethod?,
+  val method: Method?,
   val minutes: Int
 )
