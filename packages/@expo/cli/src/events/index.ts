@@ -14,6 +14,7 @@ interface InitMetadata {
 let logPath = process.cwd();
 let logStream: LogStream | undefined;
 let projectLogStream: LogStream | undefined;
+let projectLogRelativePath: string | undefined;
 let earlyBuffer: string[] = [];
 
 function parseLogTarget(env: string | undefined) {
@@ -67,6 +68,9 @@ export function installEventLogger(env = process.env.LOG_EVENTS) {
 
 /** Returns whether the event logger is active */
 export const isEventLoggerActive = () => !!logStream?.writable;
+
+/** Returns the relative path to the project log file, if active */
+export const getProjectLogPath = () => projectLogRelativePath;
 
 /** Whether logs shown in the terminal should be reduced.
  * @remarks
@@ -145,7 +149,7 @@ export const rootEvent = events('root', (t) => [t.event<'init', InitMetadata>()]
  * Any events emitted before this call are buffered and flushed to the file.
  * This is idempotent — subsequent calls are no-ops.
  */
-export function setProjectLogRoot(projectRoot: string, command: string) {
+export function setProjectLogRoot(projectRoot: string, command: string): string | undefined {
   if (projectLogStream) return;
   const logFile = path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`);
   fs.mkdirSync(path.dirname(logFile), { recursive: true });
@@ -155,6 +159,8 @@ export function setProjectLogRoot(projectRoot: string, command: string) {
     projectLogStream._write(line);
   }
   earlyBuffer.length = 0;
+  projectLogRelativePath = '.expo/dev/logs/' + command + '.log';
+  return projectLogRelativePath;
 }
 
 process.once('exit', () => {

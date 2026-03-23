@@ -101,6 +101,28 @@ describe('setProjectLogRoot', () => {
     });
   });
 
+  it('returns relative log path and exposes it via getProjectLogPath', () => {
+    const projectRoot = '/test/project';
+
+    jest.isolateModules(() => {
+      jest.doMock('../stream', () => ({
+        LogStream: jest.fn().mockImplementation(() => ({
+          writable: true,
+          _write: jest.fn(),
+          _end: jest.fn(),
+        })),
+      }));
+
+      const { setProjectLogRoot, getProjectLogPath } = require('..') as typeof import('..');
+
+      expect(getProjectLogPath()).toBeUndefined();
+
+      const result = setProjectLogRoot(projectRoot, 'start');
+      expect(result).toBe('.expo/dev/logs/start.log');
+      expect(getProjectLogPath()).toBe('.expo/dev/logs/start.log');
+    });
+  });
+
   it('writes events to both streams when both are active', () => {
     const projectRoot = '/test/project';
 
