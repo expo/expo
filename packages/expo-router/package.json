@@ -49,7 +49,6 @@
     "stack.d.ts",
     "stack.js",
     "tabs.js",
-    "types",
     "tabs.d.ts",
     "ui.js",
     "ui.d.ts",
@@ -122,6 +121,7 @@
     }
   },
   "devDependencies": {
+    "@expo/cli": "workspace:*",
     "@react-navigation/core": "^7.16.1",
     "@react-navigation/drawer": "^7.9.4",
     "@react-navigation/routers": "^7.5.3",
