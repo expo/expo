@@ -40,7 +40,6 @@ export const CardA11yWrapper = React.forwardRef(
             display: Platform.OS !== 'web' && isHidden ? 'none' : 'flex',
             // Hide unfocused screens when animation isn't enabled
             // This is also necessary for a11y on web
-            // @ts-expect-error visibility is only available on web
             visibility: isHidden ? 'hidden' : 'visible',
           },
         ]}

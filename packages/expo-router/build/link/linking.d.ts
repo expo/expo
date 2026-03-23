@@ -1,7 +1,7 @@
-import { LinkingOptions } from '@react-navigation/native';
 import { getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import { StoreRedirects } from '../global-state/router-store';
+import { LinkingOptions } from '../react-navigation/native';
 import { NativeIntent } from '../types';
 export declare function getInitialURL(): ReturnType<NonNullable<LinkingOptions<Record<string, unknown>>['getInitialURL']>>;
 export declare function getRootURL(): string;

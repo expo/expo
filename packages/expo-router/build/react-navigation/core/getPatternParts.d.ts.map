@@ -1,0 +1,1 @@
+{"version":3,"file":"getPatternParts.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/core/getPatternParts.tsx"],"names":[],"mappings":"AAAA,MAAM,MAAM,WAAW,GAAG;IACxB,OAAO,EAAE,MAAM,CAAC;IAChB,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,QAAQ,CAAC,EAAE,OAAO,CAAC;CACpB,CAAC;AAEF;;GAEG;AACH,wBAAgB,eAAe,CAAC,IAAI,EAAE,MAAM,GAAG,WAAW,EAAE,CA2G3D"}

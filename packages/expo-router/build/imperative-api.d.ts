@@ -1,6 +1,6 @@
-import type { NavigationContainerRef, ParamListBase } from '@react-navigation/native';
 import { type RefObject } from 'react';
 import { NavigationOptions } from './global-state/routing';
+import type { NavigationContainerRef, ParamListBase } from './react-navigation/native';
 import { Href, Route, RouteInputParams } from './types';
 /**
  * Returns `router` object for imperative navigation API.

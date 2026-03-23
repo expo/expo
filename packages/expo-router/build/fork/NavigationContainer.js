@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NavigationContainer = void 0;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
@@ -13,6 +12,7 @@ const useDocumentTitle_1 = require("./useDocumentTitle");
 const useLinking_1 = require("./useLinking");
 const useThenable_1 = require("./useThenable");
 const imperative_api_1 = require("../imperative-api");
+const native_1 = require("../react-navigation/native");
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 /**
  * Container component which holds the navigation state designed for React Native apps.

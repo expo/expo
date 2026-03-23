@@ -1,5 +1,5 @@
-import { type Route } from '@react-navigation/native';
 import type { Options, State, StringifyConfig } from './getPathFromState';
+import { type Route } from '../react-navigation/native';
 export type ExpoOptions = {
     preserveDynamicRoutes?: boolean;
     preserveGroups?: boolean;

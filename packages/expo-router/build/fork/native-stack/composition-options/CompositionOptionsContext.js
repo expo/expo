@@ -5,8 +5,8 @@ exports.CompositionContext = void 0;
 exports.registryReducer = registryReducer;
 exports.useCompositionRegistry = useCompositionRegistry;
 exports.useCompositionOption = useCompositionOption;
-const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
+const native_1 = require("../../../react-navigation/native");
 const useSafeLayoutEffect_1 = require("../../../views/useSafeLayoutEffect");
 /** @internal */
 exports.CompositionContext = (0, react_1.createContext)(null);

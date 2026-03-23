@@ -1,0 +1,1 @@
+{"version":3,"file":"Group.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/core/Group.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,YAAY,CAAC;AAChD,OAAO,KAAK,EAAE,gBAAgB,EAAE,MAAM,SAAS,CAAC;AAEhD;;GAEG;AACH,wBAAgB,KAAK,CAAC,SAAS,SAAS,aAAa,EAAE,aAAa,SAAS,MAAM,EAAE,UAAU,EAC7F,CAAC,EAAE,gBAAgB,CAAC,SAAS,EAAE,aAAa,EAAE,UAAU,CAAC,QAI1D"}

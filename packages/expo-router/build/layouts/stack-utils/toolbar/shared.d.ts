@@ -1,7 +1,7 @@
-import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import { type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
+import type { NativeStackHeaderItemButton } from '../../../react-navigation/native-stack';
 import { type BasicTextStyle } from '../../../utils/font';
 export interface StackHeaderItemSharedProps {
     children?: ReactNode;

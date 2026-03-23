@@ -1,0 +1,1 @@
+{"version":3,"file":"LinkingContext.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/native/LinkingContext.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAE/B,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,SAAS,CAAC;AAC7C,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAI9C,eAAO,MAAM,cAAc;cACf,cAAc,CAAC,aAAa,CAAC;EAKvC,CAAC"}

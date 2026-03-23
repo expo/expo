@@ -1,0 +1,1 @@
+{"version":3,"file":"useNavigationContainerRef.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/core/useNavigationContainerRef.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,YAAY,CAAC;AAEhD,OAAO,KAAK,EAAE,iCAAiC,EAAE,MAAM,SAAS,CAAC;AAEjE,wBAAgB,yBAAyB,CACvC,SAAS,SAAS,aAAa,GAAG,eAAe,CAAC,aAAa,KAC5D,iCAAiC,CAAC,SAAS,CAAC,CAQhD"}
