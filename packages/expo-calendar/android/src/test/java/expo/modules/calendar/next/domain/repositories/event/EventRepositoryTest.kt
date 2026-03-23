@@ -139,6 +139,43 @@ class EventRepositoryTest {
     Assert.assertEquals(false, result?.guestsCanSeeGuests)
   }
 
+  @Test
+  fun `given cursor with unknown enum values, when findById, then maps them to null`() = runTest {
+    // Given
+    val cursor = cursorWithRows(
+      mapOf(
+        CalendarContract.Events._ID to 2L,
+        CalendarContract.Events.ACCESS_LEVEL to 999,
+        CalendarContract.Events.ALL_DAY to 0,
+        CalendarContract.Events.AVAILABILITY to 999,
+        CalendarContract.Events.CALENDAR_ID to null,
+        CalendarContract.Events.DESCRIPTION to null,
+        CalendarContract.Events.DTEND to 2_000_000L,
+        CalendarContract.Events.DTSTART to 1_000_000L,
+        CalendarContract.Events.EVENT_END_TIMEZONE to null,
+        CalendarContract.Events.EVENT_LOCATION to null,
+        CalendarContract.Events.EVENT_TIMEZONE to null,
+        CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS to 0,
+        CalendarContract.Events.GUESTS_CAN_MODIFY to 0,
+        CalendarContract.Events.GUESTS_CAN_SEE_GUESTS to 0,
+        CalendarContract.Events.ORGANIZER to null,
+        CalendarContract.Events.ORIGINAL_ID to null,
+        CalendarContract.Events.RRULE to null,
+        CalendarContract.Events.STATUS to 999,
+        CalendarContract.Events.TITLE to null
+      )
+    )
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
+
+    // When
+    val result = repository.findById(EventId(2L))
+
+    // Then
+    Assert.assertNull(result?.accessLevel)
+    Assert.assertNull(result?.availability)
+    Assert.assertNull(result?.status)
+  }
+
   @Test(expected = PermissionException::class)
   fun `given SecurityException, when findById, then throws PermissionException`() = runTest {
     // Given
