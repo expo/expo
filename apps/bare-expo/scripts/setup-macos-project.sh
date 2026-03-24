@@ -23,6 +23,57 @@ remove_dependencies "@shopify/react-native-skia" "react-native-svg"
 echo " Copying macOS patches..."
 cp -r ./scripts/fixtures/macos/patches/* ../../patches/
 
+echo " Registering macOS patches in pnpm-workspace.yaml..."
+node -e "
+  const fs = require('fs');
+  const patchDir = './scripts/fixtures/macos/patches';
+  const workspaceFile = '../../pnpm-workspace.yaml';
+
+  const files = fs.readdirSync(patchDir).filter(f => f.endsWith('.patch'));
+  let yaml = fs.readFileSync(workspaceFile, 'utf8');
+
+  for (const file of files) {
+    if (yaml.includes('patches/' + file)) continue;
+
+    const name = file.replace('.patch', '');
+    const parts = name.split('+');
+    let pkg;
+    if (parts[0].startsWith('@')) {
+      pkg = parts[0] + '/' + parts[1];
+    } else {
+      pkg = parts[0];
+    }
+
+    const quotedKey = pkg.includes('/') || pkg.includes('@') ? \"'\" + pkg + \"'\" : pkg;
+    const entry = '  ' + quotedKey + ': patches/' + file;
+
+    // Insert after the last entry in patchedDependencies
+    const lines = yaml.split('\n');
+    let insertIdx = -1;
+    let inSection = false;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] === 'patchedDependencies:') {
+        inSection = true;
+        continue;
+      }
+      if (inSection) {
+        if (lines[i].startsWith('  ') && lines[i].trim()) {
+          insertIdx = i + 1;
+        } else if (lines[i].trim() && !lines[i].startsWith('  ')) {
+          break;
+        }
+      }
+    }
+
+    if (insertIdx !== -1) {
+      lines.splice(insertIdx, 0, entry);
+      yaml = lines.join('\n');
+    }
+  }
+
+  fs.writeFileSync(workspaceFile, yaml);
+"
+
 RN_MACOS_VERSION=$(jq -r '.dependencies["react-native-macos"]' package.json)
 if [[ "$RN_MACOS_VERSION" != "null" ]]; then
     echo " ✅ React Native macOS installed"
@@ -40,4 +91,4 @@ fi
 
 echo " Running pnpm from root..."
 cd ../../
-pnpm install --ignore-scripts
+pnpm install --ignore-scripts --frozen-lockfile=false
