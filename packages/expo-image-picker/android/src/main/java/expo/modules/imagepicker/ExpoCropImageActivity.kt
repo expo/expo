@@ -65,6 +65,7 @@ class ExpoCropImageActivity : CropImageActivity() {
 
     cropImageViewRef = cropImageView
 
+    // Inset the crop view margins so it doesn't overlap with system bars or display cutouts
     ViewCompat.setOnApplyWindowInsetsListener(cropImageView) { view, insets ->
       val values = insets.getInsets(
         WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
@@ -113,10 +114,13 @@ class ExpoCropImageActivity : CropImageActivity() {
     options.toolbarTitleColor = toolbarIconColor
 
     window.run {
+      // Create a view that will sit behind the status bar, colored to match the toolbar
       val statusBarView = View(context).apply { setBackgroundColor(toolbarColor) }
 
+      // Draw content edge-to-edge, behind system bars
       WindowCompat.enableEdgeToEdge(this)
 
+      // Set system bar icon colors based on the current theme (dark icons on light bg, and vice versa)
       WindowInsetsControllerCompat(this, decorView).run {
         isAppearanceLightStatusBars = !isNight
         isAppearanceLightNavigationBars = !isNight
@@ -124,9 +128,11 @@ class ExpoCropImageActivity : CropImageActivity() {
 
       decorView.setBackgroundColor(activityBackgroundColor)
 
+      // Add the status bar view with zero initial height (will be sized by insets listener below)
       addContentView(statusBarView,
         ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0))
 
+      // Dynamically resize the status bar view to match the actual status bar / display cutout height
       ViewCompat.setOnApplyWindowInsetsListener(decorView) { _, insets ->
         val values = insets.getInsets(
           WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout())
