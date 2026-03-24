@@ -41,9 +41,10 @@ class ExpoCropImageActivity : CropImageActivity() {
   }
 
   override fun onDestroy() {
+    ViewCompat.setOnApplyWindowInsetsListener(window.decorView, null)
+
     cropImageViewRef?.let { ViewCompat.setOnApplyWindowInsetsListener(it, null) }
     cropImageViewRef = null
-    window.decorView.setOnApplyWindowInsetsListener(null)
 
     super.onDestroy()
   }
