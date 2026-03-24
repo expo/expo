@@ -51,7 +51,7 @@ export async function reinstallPackagesAsync(projectRoot: string) {
     fs.promises.rm(path.join(projectRoot, 'bun.lockb'), { force: true }),
     fs.promises.rm(path.join(projectRoot, 'yarn.lock'), { force: true }),
   ]);
-  await runAsync('bun', ['install', '--ignore-scripts'], { cwd: projectRoot });
+  await runAsync('pnpm', ['install', '--ignore-scripts'], { cwd: projectRoot });
 }
 
 /**
