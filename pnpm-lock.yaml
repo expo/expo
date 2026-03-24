@@ -139,6 +139,9 @@ importers:
       expo-dev-client:
         specifier: workspace:*
         version: link:../../packages/expo-dev-client
+      expo-dev-menu:
+        specifier: workspace:*
+        version: link:../../packages/expo-dev-menu
       expo-font:
         specifier: workspace:*
         version: link:../../packages/expo-font
@@ -148,6 +151,9 @@ importers:
       expo-insights:
         specifier: workspace:*
         version: link:../../packages/expo-insights
+      expo-linking:
+        specifier: workspace:*
+        version: link:../../packages/expo-linking
       expo-location:
         specifier: workspace:*
         version: link:../../packages/expo-location
@@ -163,9 +169,15 @@ importers:
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
+      expo-status-bar:
+        specifier: workspace:*
+        version: link:../../packages/expo-status-bar
       expo-tracking-transparency:
         specifier: workspace:*
         version: link:../../packages/expo-tracking-transparency
+      expo-updates:
+        specifier: workspace:*
+        version: link:../../packages/expo-updates
       expo-video:
         specifier: workspace:*
         version: link:../../packages/expo-video
@@ -1393,6 +1405,12 @@ importers:
       '@expo/styleguide-base':
         specifier: ^1.0.1
         version: 1.0.1(react@19.2.3)
+      '@expo/vector-icons':
+        specifier: ^15.0.2
+        version: 15.1.1(expo-font@packages+expo-font)(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@react-native-async-storage/async-storage':
+        specifier: ^2.2.0
+        version: 2.2.0(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))
       '@react-navigation/native':
         specifier: ^7.1.33
         version: 7.1.33(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -1411,12 +1429,24 @@ importers:
       expo-asset:
         specifier: workspace:*
         version: link:../../packages/expo-asset
+      expo-audio:
+        specifier: workspace:*
+        version: link:../../packages/expo-audio
+      expo-auth-session:
+        specifier: workspace:*
+        version: link:../../packages/expo-auth-session
       expo-background-fetch:
         specifier: workspace:*
         version: link:../../packages/expo-background-fetch
+      expo-battery:
+        specifier: workspace:*
+        version: link:../../packages/expo-battery
       expo-blob:
         specifier: workspace:*
         version: link:../../packages/expo-blob
+      expo-blur:
+        specifier: workspace:*
+        version: link:../../packages/expo-blur
       expo-brightness:
         specifier: workspace:*
         version: link:../../packages/expo-brightness
@@ -1432,6 +1462,9 @@ importers:
       expo-checkbox:
         specifier: workspace:*
         version: link:../../packages/expo-checkbox
+      expo-clipboard:
+        specifier: workspace:*
+        version: link:../../packages/expo-clipboard
       expo-constants:
         specifier: workspace:*
         version: link:../../packages/expo-constants
@@ -1450,18 +1483,33 @@ importers:
       expo-file-system:
         specifier: workspace:*
         version: link:../../packages/expo-file-system
+      expo-font:
+        specifier: workspace:*
+        version: link:../../packages/expo-font
       expo-gl:
         specifier: workspace:*
         version: link:../../packages/expo-gl
       expo-haptics:
         specifier: workspace:*
         version: link:../../packages/expo-haptics
+      expo-image:
+        specifier: workspace:*
+        version: link:../../packages/expo-image
       expo-image-manipulator:
         specifier: workspace:*
         version: link:../../packages/expo-image-manipulator
+      expo-image-picker:
+        specifier: workspace:*
+        version: link:../../packages/expo-image-picker
       expo-keep-awake:
         specifier: workspace:*
         version: link:../../packages/expo-keep-awake
+      expo-linear-gradient:
+        specifier: workspace:*
+        version: link:../../packages/expo-linear-gradient
+      expo-linking:
+        specifier: workspace:*
+        version: link:../../packages/expo-linking
       expo-localization:
         specifier: workspace:*
         version: link:../../packages/expo-localization
@@ -1471,42 +1519,72 @@ importers:
       expo-media-library:
         specifier: workspace:*
         version: link:../../packages/expo-media-library
+      expo-modules-core:
+        specifier: workspace:*
+        version: link:../../packages/expo-modules-core
+      expo-navigation-bar:
+        specifier: workspace:*
+        version: link:../../packages/expo-navigation-bar
       expo-network:
         specifier: workspace:*
         version: link:../../packages/expo-network
       expo-notifications:
         specifier: workspace:*
         version: link:../../packages/expo-notifications
+      expo-screen-orientation:
+        specifier: workspace:*
+        version: link:../../packages/expo-screen-orientation
       expo-secure-store:
         specifier: workspace:*
         version: link:../../packages/expo-secure-store
+      expo-sms:
+        specifier: workspace:*
+        version: link:../../packages/expo-sms
       expo-speech:
         specifier: workspace:*
         version: link:../../packages/expo-speech
       expo-sqlite:
         specifier: workspace:*
         version: link:../../packages/expo-sqlite
+      expo-store-review:
+        specifier: workspace:*
+        version: link:../../packages/expo-store-review
+      expo-system-ui:
+        specifier: workspace:*
+        version: link:../../packages/expo-system-ui
       expo-task-manager:
         specifier: workspace:*
         version: link:../../packages/expo-task-manager
+      expo-video:
+        specifier: workspace:*
+        version: link:../../packages/expo-video
       expo-web-browser:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser
       firebase:
         specifier: ^9.3.0
         version: 9.23.0(encoding@0.1.13)
+      getenv:
+        specifier: ^2.0.0
+        version: 2.0.0
       i18n-js:
         specifier: ^3.1.0
         version: 3.9.2
       immutable:
         specifier: ^4.0.0
         version: 4.3.8
+      invariant:
+        specifier: ^2.2.4
+        version: 2.2.4
       jasmine-core:
         specifier: ^2.4.1
         version: 2.99.1
       lodash:
         specifier: ^4.17.19
         version: 4.17.23
+      path:
+        specifier: ^0.12.7
+        version: 0.12.7
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -1516,9 +1594,25 @@ importers:
       react-native-gesture-handler:
         specifier: ~2.30.0
         version: 2.30.0(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-safe-area-context:
+        specifier: ^5.6.2
+        version: 5.6.2(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      semver:
+        specifier: ^7.7.4
+        version: 7.7.4
       sinon:
         specifier: ^7.1.1
         version: 7.5.0
+    devDependencies:
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.3
+      '@types/invariant':
+        specifier: ^2.2.35
+        version: 2.2.37
+      '@types/semver':
+        specifier: ^7.7.1
+        version: 7.7.1
 
   packages/@expo/cli:
     dependencies:
