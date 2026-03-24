@@ -1,25 +1,57 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const matchers_1 = __importDefault(require("expect/build/matchers"));
-matchers_1.default.customTesters = [];
 expect.extend({
     toHavePathname(screen, expected) {
-        return matchers_1.default.toEqual(screen.getPathname(), expected);
+        const received = screen.getPathname();
+        const pass = this.equals(received, expected);
+        return {
+            pass,
+            message: () => this.utils.matcherHint('toHavePathname') +
+                '\n\n' +
+                `Expected: ${this.utils.printExpected(expected)}\n` +
+                `Received: ${this.utils.printReceived(received)}`,
+        };
     },
     toHavePathnameWithParams(screen, expected) {
-        return matchers_1.default.toEqual(screen.getPathnameWithParams(), expected);
+        const received = screen.getPathnameWithParams();
+        const pass = this.equals(received, expected);
+        return {
+            pass,
+            message: () => this.utils.matcherHint('toHavePathnameWithParams') +
+                '\n\n' +
+                `Expected: ${this.utils.printExpected(expected)}\n` +
+                `Received: ${this.utils.printReceived(received)}`,
+        };
     },
     toHaveSegments(screen, expected) {
-        return matchers_1.default.toEqual(screen.getSegments(), expected);
+        const received = screen.getSegments();
+        const pass = this.equals(received, expected);
+        return {
+            pass,
+            message: () => this.utils.matcherHint('toHaveSegments') +
+                '\n\n' +
+                this.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', this.expand !== false),
+        };
     },
     toHaveSearchParams(screen, expected) {
-        return matchers_1.default.toEqual(screen.getSearchParams(), expected);
+        const received = screen.getSearchParams();
+        const pass = this.equals(received, expected);
+        return {
+            pass,
+            message: () => this.utils.matcherHint('toHaveSearchParams') +
+                '\n\n' +
+                this.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', this.expand !== false),
+        };
     },
     toHaveRouterState(screen, expected) {
-        return matchers_1.default.toEqual(screen.getRouterState(), expected);
+        const received = screen.getRouterState();
+        const pass = this.equals(received, expected);
+        return {
+            pass,
+            message: () => this.utils.matcherHint('toHaveRouterState') +
+                '\n\n' +
+                this.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', this.expand !== false),
+        };
     },
 });
 //# sourceMappingURL=expect.js.map

@@ -51,10 +51,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     'metro-runtime/package.json': 'ignore-dev', // NOTE: Only used in developmnt in the expo/expo monorepo
   },
 
-  'expo-router': {
-    'expect/build/matchers': 'ignore-dev', // TODO: Unsure how to replace safely. Dep/Peer won't work. Globals and `@jest/globals` unclear
-  },
-
   '@expo/image-utils': {
     sharp: 'ignore-dev', // TODO: Mark as optional peer dep, if that's the intention
     'sharp-cli': 'ignore-dev',
