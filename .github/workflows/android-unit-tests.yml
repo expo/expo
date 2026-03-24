@@ -12,6 +12,7 @@ on:
       - tools/**
       - yarn.lock
       - '!packages/@expo/cli/**'
+      - '!tools/src/commands/GenerateDocsAPIData.ts'
   pull_request:
     paths:
       - .github/workflows/android-unit-tests.yml
@@ -21,6 +22,7 @@ on:
       - tools/**
       - yarn.lock
       - '!packages/@expo/cli/**'
+      - '!tools/src/commands/GenerateDocsAPIData.ts'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
