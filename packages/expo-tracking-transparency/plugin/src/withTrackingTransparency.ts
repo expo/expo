@@ -1,6 +1,6 @@
 import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
 
-const pkg = require('expo-tracking-transparency/package.json');
+const pkg = require('../../package.json');
 
 const DEFAULT_NSUserTrackingUsageDescription =
   'Allow this app to collect app-related data that can be used for tracking you or your device.';

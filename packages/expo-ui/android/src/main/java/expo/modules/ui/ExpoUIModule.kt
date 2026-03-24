@@ -210,8 +210,12 @@ class ExpoUIModule : Module() {
       ShapeContent(props)
     }
 
-    ExpoUIView("DividerView") { props: DividerProps ->
-      DividerContent(props)
+    ExpoUIView("HorizontalDividerView") { props: DividerProps ->
+      HorizontalDividerContent(props)
+    }
+
+    ExpoUIView("VerticalDividerView") { props: DividerProps ->
+      VerticalDividerContent(props)
     }
 
     ExpoUIView("DateTimePickerView", events = {
@@ -422,8 +426,12 @@ class ExpoUIModule : Module() {
       BasicAlertDialogContent(props) { onDismissRequest(Unit) }
     }
 
-    ExpoUIView("SurfaceView") { props: SurfaceProps ->
-      SurfaceContent(props)
+    ExpoUIView("SurfaceView", events = {
+      Events("onSurfaceClick", "onCheckedChange")
+    }) { props: SurfaceProps ->
+      val onSurfaceClick by remember { EventDispatcher<Unit>() }
+      val onCheckedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      SurfaceContent(props, onClick = { onSurfaceClick(Unit) }, onCheckedChange = { onCheckedChange(GenericEventPayload1(it)) })
     }
 
     ExpoUIView("AnimatedVisibilityView") { props: AnimatedVisibilityProps ->

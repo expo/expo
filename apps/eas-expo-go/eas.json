@@ -17,7 +17,8 @@
           "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
           "EXPO_ROOT_DIR": "/home/expo/workingdir/build",
           "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
-          "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1"
+          "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
+          "GRADLE_OPTS": "-Xmx16g -XX:MaxMetaspaceSize=1g -Dorg.gradle.vfs.watch=false"
         }
       },
       "ios": {
@@ -38,7 +39,7 @@
         "EAS_BUILD_PROFILE": "versioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleMobileDebug",
+        "gradleCommand": ":app:assembleMobileDebug -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false",
         "withoutCredentials": true
       },
       "ios": {
@@ -59,7 +60,7 @@
         "EAS_BUILD_PROFILE": "unversioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleMobileDebug",
+        "gradleCommand": ":app:assembleMobileDebug -PreactNativeArchitectures=arm64-v8a -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false",
         "withoutCredentials": true
       },
       "ios": {
@@ -79,7 +80,7 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:bundleMobileRelease"
+        "gradleCommand": ":app:bundleMobileRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       },
       "ios": {
         "autoIncrement": "buildNumber",
@@ -101,7 +102,7 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:assembleMobileRelease"
+        "gradleCommand": ":app:assembleMobileRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       },
       "ios": {
         "resourceClass": "large",
@@ -115,7 +116,7 @@
     "versioned-quest-client": {
       "extends": "versioned-client",
       "android": {
-        "gradleCommand": ":app:assembleQuestDebug"
+        "gradleCommand": ":app:assembleQuestDebug -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       }
     },
     "versioned-quest-client-add-sdk": {
@@ -127,7 +128,7 @@
     "unversioned-quest-client": {
       "extends": "unversioned-client",
       "android": {
-        "gradleCommand": ":app:assembleQuestDebug"
+        "gradleCommand": ":app:assembleQuestDebug -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       }
     },
     "release-quest-client": {
@@ -136,13 +137,13 @@
         "EAS_BUILD_PROFILE": "release-client"
       },
       "android": {
-        "gradleCommand": ":app:bundleQuestRelease"
+        "gradleCommand": ":app:bundleQuestRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       }
     },
     "publish-quest-client": {
       "extends": "publish-client",
       "android": {
-        "gradleCommand": ":app:assembleQuestRelease"
+        "gradleCommand": ":app:assembleQuestRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       }
     }
   },

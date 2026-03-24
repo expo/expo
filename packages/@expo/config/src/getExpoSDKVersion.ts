@@ -1,5 +1,5 @@
 import JsonFile from '@expo/json-file';
-import resolveFrom from 'resolve-from';
+import { resolveFrom } from '@expo/require-utils';
 
 import { ExpoConfig } from './Config.types';
 import { ConfigError } from './Errors';
@@ -20,7 +20,7 @@ export function getExpoSDKVersion(
  * version of the `expo` package.
  */
 function getExpoSDKVersionFromPackage(projectRoot: string): string {
-  const packageJsonPath = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const packageJsonPath = resolveFrom(projectRoot, 'expo/package.json');
   if (!packageJsonPath) {
     throw new ConfigError(
       `Cannot determine the project's Expo SDK version because the module \`expo\` is not installed. Install it with \`npm install expo\` and try again.`,

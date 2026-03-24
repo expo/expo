@@ -26,6 +26,7 @@
 - Add missing support for self-resolution via fallback resolver ([#44077](https://github.com/expo/expo/pull/44077) by [@kitten](https://github.com/kitten))
 - Add fallback resolution for `../../App` in `expo/AppEntry.js` ([#44084](https://github.com/expo/expo/pull/44084) by [@kitten](https://github.com/kitten))
 - Prevent out-of-monorepo `expo/expo` CLI detection to not mistrigger for user monorepos and update for pnpm compatibility ([#44101](https://github.com/expo/expo/pull/44101) by [@kitten](https://github.com/kitten))
+- Fix device being incorrectly tracked for `run:ios --device` invocation ([#43673](https://github.com/expo/expo/pull/43673) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -34,6 +35,8 @@
 - Pass on `tls` options from Metro config to Metro `runServer` fork ([#43186](https://github.com/expo/expo/pull/43186) by [@cortinico](https://github.com/cortinico))
 - Add internal `--skip-server` flag to skip server bundling in `export:embed` ([#43602](https://github.com/expo/expo/pull/43602) by [@kitten](https://github.com/kitten))
 - Add `package.json:exports` with no-op reexport paths ([#44002](https://github.com/expo/expo/pull/44002) by [@kitten](https://github.com/kitten), [@hassankhan](https://github.com/hassankhan))
+- Add `react-native-web` to autolinking module resolution modules ([#44160](https://github.com/expo/expo/pull/44160) by [@kitten](https://github.com/kitten))
+- Limit `/open-stack-frame` to paths within server root ([#44039](https://github.com/expo/expo/pull/44039) by [@kitten](https://github.com/kitten))
 
 ## 55.0.12 — 2026-02-25
 

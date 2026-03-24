@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - [android] Add `clickCoordinates` to `onCircleClick` callback. ([#43835](https://github.com/expo/expo/pull/43835) by [@nishan](https://github.com/intergalacticspacehighway))

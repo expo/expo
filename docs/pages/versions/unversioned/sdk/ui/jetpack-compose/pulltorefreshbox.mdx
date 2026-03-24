@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A pull-to-refresh container that wraps scrollable content and provides a standard refresh indicator when pulled. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/layouts/adaptive/support-different-screen-sizes) for more information.
+Expo UI PullToRefreshBox matches the official Jetpack Compose [PullToRefreshBox](<https://developer.android.com/reference/kotlin/androidx/compose/material3/pulltorefresh/package-summary#PullToRefreshBox(kotlin.Boolean,kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.material3.pulltorefresh.PullToRefreshState,androidx.compose.ui.Alignment,kotlin.Function1,kotlin.Function1)>) API. It wraps scrollable content and shows a refresh indicator when pulled.
 
 ## Installation
 
@@ -18,6 +18,8 @@ A pull-to-refresh container that wraps scrollable content and provides a standar
 ## Usage
 
 ### Basic pull to refresh
+
+Wrap scrollable content in a `PullToRefreshBox` to add pull-to-refresh behavior.
 
 ```tsx BasicPullToRefresh.tsx
 import { useState, useCallback } from 'react';
@@ -37,11 +39,62 @@ export default function BasicPullToRefresh() {
     <Host style={{ height: 400 }}>
       <PullToRefreshBox isRefreshing={refreshing} onRefresh={onRefresh}>
         <LazyColumn>
-          <ListItem headline="Item 1" />
-          <ListItem headline="Item 2" />
-          <ListItem headline="Item 3" />
-          <ListItem headline="Item 4" />
-          <ListItem headline="Item 5" />
+          <ListItem>
+            <ListItem.Headline>Item 1</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 2</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 3</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 4</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 5</ListItem.Headline>
+          </ListItem>
+        </LazyColumn>
+      </PullToRefreshBox>
+    </Host>
+  );
+}
+```
+
+### Custom indicator colors
+
+Use the `indicator` prop to customize the spinner and container colors.
+
+```tsx CustomIndicatorColors.tsx
+import { useState, useCallback } from 'react';
+import { Host, PullToRefreshBox, LazyColumn, ListItem } from '@expo/ui/jetpack-compose';
+
+export default function CustomIndicatorColors() {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  return (
+    <Host style={{ height: 400 }}>
+      <PullToRefreshBox
+        isRefreshing={refreshing}
+        onRefresh={onRefresh}
+        indicator={{ color: '#6200EE', containerColor: '#F5F5F5' }}>
+        <LazyColumn>
+          <ListItem>
+            <ListItem.Headline>Item 1</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 2</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 3</ListItem.Headline>
+          </ListItem>
         </LazyColumn>
       </PullToRefreshBox>
     </Host>

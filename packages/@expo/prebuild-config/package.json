@@ -7,7 +7,7 @@
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepublishOnly": "yarn run clean && yarn run build",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },
@@ -31,21 +31,21 @@
     "build"
   ],
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
     "@types/debug": "^4.1.5",
     "@types/semver": "^7.5.8",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "dependencies": {
-    "@expo/config": "~55.0.8",
-    "@expo/config-plugins": "~55.0.6",
-    "@expo/config-types": "^55.0.5",
-    "@expo/image-utils": "^0.8.12",
-    "@expo/json-file": "^10.0.12",
+    "@expo/config": "workspace:~55.0.8",
+    "@expo/config-plugins": "workspace:~55.0.6",
+    "@expo/config-types": "workspace:^55.0.5",
+    "@expo/image-utils": "workspace:^0.8.12",
+    "@expo/json-file": "workspace:^10.0.12",
     "@react-native/normalize-colors": "0.85.0-rc.5",
     "debug": "^4.3.1",
     "resolve-from": "^5.0.0",

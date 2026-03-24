@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1'
+    :ios => '16.4'
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
     :script => %Q{
       echo "Preparing ExpoWidgets.bundle..."
       source="#{__dir__}/../bundle/build/ExpoWidgets.bundle"
-      dest="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoWidgets.bundle"
+      dest="${BUILT_PRODUCTS_DIR}/ExpoWidgets.bundle"
       echo "Copying ${source} to ${dest}"
       cp "${source}" "${dest}"
     },

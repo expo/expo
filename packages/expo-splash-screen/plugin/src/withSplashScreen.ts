@@ -4,7 +4,7 @@ import { withAndroidSplashScreen } from '@expo/prebuild-config/build/plugins/unv
 import { withIosSplashScreen } from '@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/withIosSplashScreen';
 import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
-const pkg = require('expo-splash-screen/package.json');
+const pkg = require('../../package.json');
 
 type PluginConfig = {
   backgroundColor: string;

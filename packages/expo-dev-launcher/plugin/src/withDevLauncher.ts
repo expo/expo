@@ -9,7 +9,7 @@ import {
 
 import { PluginConfigType, validateConfig } from './pluginConfig';
 
-const pkg = require('expo-dev-launcher/package.json');
+const pkg = require('../../package.json');
 
 /**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys

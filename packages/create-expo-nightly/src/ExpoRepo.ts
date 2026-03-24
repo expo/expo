@@ -31,7 +31,7 @@ export async function setupExpoRepoAsync(
     expoRepoPath = useExpoRepoPath;
   }
 
-  console.log(`Running \`yarn install\` in ${expoRepoPath}`);
+  console.log(`Running \`pnpm install\` in ${expoRepoPath}`);
   console.time('Installed dependencies in expo repository');
   await setupDependenciesAsync(expoRepoPath, nightlyVersion);
 
@@ -44,7 +44,7 @@ export async function setupExpoRepoAsync(
   );
 
   try {
-    await runAsync('yarn', ['install'], { cwd: expoRepoPath });
+    await runAsync('pnpm', ['install'], { cwd: expoRepoPath });
   } catch (e) {
     if (e instanceof Error) {
       console.warn(`Failed to install dependencies in ${expoRepoPath}`, e.toString());

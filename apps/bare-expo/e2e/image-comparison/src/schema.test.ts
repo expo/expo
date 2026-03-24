@@ -76,7 +76,7 @@ describe('Zod schema validation', () => {
       platform: 'android' as const,
     });
 
-    expect(result.similarityThreshold).toBe(0.05);
+    expect(result.similarityThreshold).toBe(0.15);
   });
 
   it('should allow explicit similarityThreshold to override default', () => {

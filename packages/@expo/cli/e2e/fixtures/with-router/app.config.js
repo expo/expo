@@ -13,5 +13,6 @@ module.exports = {
   },
   experiments: {
     typedRoutes: process.env._EXPO_E2E_USE_TYPED_ROUTES ? true : undefined,
+    autolinkingModuleResolution: true,
   },
 };

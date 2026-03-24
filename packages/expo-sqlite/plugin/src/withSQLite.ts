@@ -6,7 +6,7 @@ import {
   withPodfileProperties,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-sqlite/package.json');
+const pkg = require('../../package.json');
 
 interface Props {
   customBuildFlags?: string;

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const pluginConfig_1 = require("./pluginConfig");
-const pkg = require('expo-dev-launcher/package.json');
+const pkg = require('../../package.json');
 /**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys
  * from non-Debug builds. This keeps the keys in Debug builds (where dev-launcher is active)

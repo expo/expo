@@ -12,7 +12,7 @@ const withPodsLinking_1 = __importDefault(require("./withPodsLinking"));
 const withPushNotifications_1 = __importDefault(require("./withPushNotifications"));
 const withWidgetSourceFiles_1 = __importDefault(require("./withWidgetSourceFiles"));
 const withTargetXcodeProject_1 = __importDefault(require("./xcode/withTargetXcodeProject"));
-const pkg = require('expo-widgets/package.json');
+const pkg = require('../../package.json');
 const withWidgets = (config, props) => {
     let plugins = [];
     const deploymentTarget = '16.2';

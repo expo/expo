@@ -1,3 +1,4 @@
+declare const global: any;
 declare let __METRO_GLOBAL_PREFIX__: string;
 
 /**

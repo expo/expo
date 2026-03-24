@@ -29,7 +29,7 @@
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\",\"src/**/__integration_tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepublishOnly": "yarn run clean && yarn run build",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },
@@ -54,9 +54,9 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "^55.0.5",
-    "@expo/json-file": "~10.0.12",
-    "@expo/plist": "^0.5.2",
+    "@expo/config-types": "workspace:^55.0.5",
+    "@expo/json-file": "workspace:~10.0.12",
+    "@expo/plist": "workspace:^0.5.2",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
@@ -74,7 +74,7 @@
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.7.0",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"
