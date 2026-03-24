@@ -258,6 +258,22 @@ export const UIScreens = [
       return optionalRequire(() => require('./ModifiersScreen'));
     },
   },
+  {
+    name: 'PullToRefreshBox component',
+    route: 'ui/pull-to-refresh-box',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./PullToRefreshBoxScreen'));
+    },
+  },
+  {
+    name: 'Surface component',
+    route: 'ui/surface',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SurfaceScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
