@@ -23,6 +23,7 @@
     "@types/node": "^22.14.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react-native": "*"
   }
 }
