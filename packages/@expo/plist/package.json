@@ -9,8 +9,8 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "yarn run build --watch --preserveWatchOutput",
-    "prepublishOnly": "yarn run clean && yarn run build"
+    "watch": "pnpm run build --watch --preserveWatchOutput",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

@@ -6,13 +6,13 @@ on:
     paths:
       - .github/workflows/router.yml
       - packages/expo-router/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!**.md'
   pull_request:
     paths:
       - .github/workflows/router.yml
       - packages/expo-router/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!**.md'
 
 concurrency:
@@ -27,22 +27,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'pnpm'
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Install workspace node modules
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: 🧪 Run types tests
         working-directory: packages/expo-router
-        run: yarn test:types
+        run: pnpm test:types

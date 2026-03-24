@@ -11,7 +11,7 @@ import {
 import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 
-const pkg = require('expo-location/package.json');
+const pkg = require('../../package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';

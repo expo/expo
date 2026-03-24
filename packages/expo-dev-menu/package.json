@@ -10,7 +10,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -33,19 +32,19 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu-interface": "55.0.1"
+    "expo-dev-menu-interface": "workspace:55.0.1"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.3.0",
     "@types/node": "^22.14.0",
-    "babel-preset-expo": "~55.0.8",
-    "expo-module-scripts": "^55.0.2",
+    "babel-preset-expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
     "react": "19.2.3",
     "react-native": "0.85.0-rc.5"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react-native": "*"
   }
 }

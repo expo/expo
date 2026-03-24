@@ -14,7 +14,6 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -48,18 +47,18 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/image-utils": "^0.8.12",
-    "expo-constants": "~55.0.7"
+    "@expo/image-utils": "workspace:^0.8.12",
+    "expo-constants": "workspace:~55.0.7"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/react-native__assets": "^1.0.3",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   }

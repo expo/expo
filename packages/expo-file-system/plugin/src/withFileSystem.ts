@@ -5,7 +5,7 @@ import {
   withInfoPlist,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-file-system/package.json');
+const pkg = require('../../package.json');
 
 type FileSystemProps = {
   supportsOpeningDocumentsInPlace?: boolean;

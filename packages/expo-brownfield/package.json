@@ -23,7 +23,6 @@
     "test": "expo-module test",
     "test:e2e-cli": "expo-module test --config e2e/cli/jest.config.js",
     "test:e2e-plugin": "expo-module test --config e2e/plugin/jest.config.js",
-    "prepare": "expo-module prepare",
     "prepack": "node scripts/resolve-symlinks.js resolve",
     "postpack": "node scripts/resolve-symlinks.js restore",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -49,24 +48,28 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/env": "~2.1.0",
+    "@expo/env": "workspace:~2.1.0",
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "diff": "^5.2.0",
-    "expo-build-properties": "~55.0.9",
-    "expo-manifests": "~55.0.9",
+    "expo-build-properties": "workspace:~55.0.9",
+    "expo-manifests": "workspace:~55.0.9",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
     "@bacons/xcode": "1.0.0-alpha.29",
+    "@expo/spawn-async": "^1.7.2",
     "@types/diff": "^5.2.0",
+    "@types/prompts": "^2.0.6",
     "@types/react": "~19.2.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2"
+    "create-expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "glob": "^13.0.6"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*"
   }
 }

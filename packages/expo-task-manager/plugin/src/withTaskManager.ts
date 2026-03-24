@@ -1,6 +1,6 @@
 import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from 'expo/config-plugins';
 
-const pkg = require('expo-task-manager/package.json');
+const pkg = require('../../package.json');
 
 const withTaskManager: ConfigPlugin = (config) => {
   config = withInfoPlist(config, (config) => {

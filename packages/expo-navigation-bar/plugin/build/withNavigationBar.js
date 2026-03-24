@@ -11,7 +11,7 @@ exports.applyEnforceNavigationBarContrast = applyEnforceNavigationBarContrast;
 const debug_1 = __importDefault(require("debug"));
 const config_plugins_1 = require("expo/config-plugins");
 const debug = (0, debug_1.default)('expo:system-navigation-bar:plugin');
-const pkg = require('expo-navigation-bar/package.json');
+const pkg = require('../../package.json');
 const EDGE_TO_EDGE_DEPRECATION_MESSAGE = 'property is deprecated due to Android 15 edge-to-edge enforcement and will be removed from Expo SDK';
 // strings.xml keys, this should not change.
 const VISIBILITY_KEY = 'expo_navigation_bar_visibility';

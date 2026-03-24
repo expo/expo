@@ -1,7 +1,6 @@
 /* eslint-env jest */
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
 import assert from 'node:assert';
 import fs from 'node:fs';
@@ -9,9 +8,9 @@ import path from 'node:path';
 
 import { copySync } from '../../src/utils/dir';
 import { toPosixPath } from '../../src/utils/filePath';
-import { executeBunAsync } from '../utils/expo';
+import { executePnpmAsync } from '../utils/expo';
 import { createVerboseLogger } from '../utils/log';
-import { createPackageTarball } from '../utils/package';
+import { createPackageLink } from '../utils/package';
 import { getTemporaryPath, TEMP_DIR } from '../utils/path';
 import { executeAsync } from '../utils/process';
 
@@ -52,8 +51,8 @@ export async function createFromFixtureAsync(
     fixtureName,
     config,
     pkg,
-    linkExpoPackages,
-    linkExpoPackagesDev,
+    linkExpoPackages = ['expo'],
+    linkExpoPackagesDev = [],
   }: {
     verbose?: boolean;
     dirName: string;
@@ -119,26 +118,22 @@ export async function createFromFixtureAsync(
       const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
       const resolutions = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
 
-      if (linkExpoPackages) {
-        for (const pkg of linkExpoPackages) {
-          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
-          log('Created and linked tarball for dependencies', tarball);
-          dependencies[pkg] = tarball.packageReference;
-          resolutions[pkg] = tarball.packageReference;
-        }
+      if (dependencies['expo']) linkExpoPackages.push('expo');
+      if (dependencies['expo-router']) linkExpoPackages.push('expo-router');
+
+      for (const pkg of linkExpoPackages) {
+        const link = createPackageLink(projectRoot, `packages/${pkg}`);
+        log('Linked into dependencies', pkg);
+        dependencies[pkg] = '*'
+        resolutions[pkg] = link;
       }
 
-      if (linkExpoPackagesDev) {
-        for (const pkg of linkExpoPackagesDev) {
-          const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
-          log('Created and linked tarball for devDependencies', tarball);
-          devDependencies[pkg] = tarball.packageReference;
-          resolutions[pkg] = tarball.packageReference;
-        }
+      for (const pkg of linkExpoPackagesDev) {
+        const link = createPackageLink(projectRoot, `packages/${pkg}`);
+        log('Linked into devDependencies', pkg);
+        devDependencies[pkg] = '*';
+        resolutions[pkg] = link;
       }
-
-      // TODO(@kitten): Temporary addition until we have at least one publish with the `@expo/metro` dependency
-      devDependencies['@expo/metro'] = '~0.1.0';
 
       await JsonFile.writeAsync(pkgPath, {
         ...pkg,
@@ -170,13 +165,7 @@ export async function createFromFixtureAsync(
     }
 
     // Install the packages for e2e experience.
-    await executeBunAsync(projectRoot, ['install']);
-
-    // TODO(cedric): Remove this once we publish `@expo/metro-config` with `export --dev` fixes
-    // Or when we can build `@expo/metro-config` on Windows
-    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
-    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
-    await fs.promises.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
+    await executePnpmAsync(projectRoot, ['install']);
   } catch (error) {
     log.error(error);
     throw error;
@@ -283,14 +272,23 @@ export function expectChunkPathMatching(name: string) {
  * This returns all paths in POSIX format, sorted alphabetically, and relative to the project root without any prefix.
  */
 export function findProjectFiles(projectRoot: string) {
-  return klawSync(projectRoot, { nodir: true })
-    .map((entry) =>
-      entry.path.includes('node_modules')
-        ? null
-        : toPosixPath(path.relative(projectRoot, entry.path))
-    )
-    .filter(Boolean)
-    .sort() as string[];
+  const baseDir = path.resolve(projectRoot);
+  const results: string[] = [];
+  function list(dir: string = '') {
+    const target = path.resolve(baseDir, dir);
+    const entries = fs.readdirSync(target, { withFileTypes: true });
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+    for (const entry of entries) {
+      const name = dir ? path.join(dir, entry.name) : entry.name;
+      if (entry.isFile()) {
+        results.push(toPosixPath(name));
+      } else if (entry.isDirectory() && entry.name !== 'node_modules') {
+        list(name);
+      }
+    }
+  }
+  list();
+  return results.sort();
 }
 
 export function stripWhitespace(str: string): string {

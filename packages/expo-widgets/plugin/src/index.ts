@@ -10,7 +10,7 @@ import withPushNotifications from './withPushNotifications';
 import withWidgetSourceFiles from './withWidgetSourceFiles';
 import withTargetXcodeProject from './xcode/withTargetXcodeProject';
 
-const pkg = require('expo-widgets/package.json');
+const pkg = require('../../package.json');
 
 type ExpoWidgetsConfigPluginProps = {
   // Widget target app bundle identifier. Defaults to `<main app bundle identifier>.ExpoWidgetsTarget`.

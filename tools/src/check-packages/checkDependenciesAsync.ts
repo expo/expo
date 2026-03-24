@@ -99,6 +99,7 @@ const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
 };
 
 const REGEXP_REPLACE_SLASHES = /\\/g;
+const WORKSPACE_SPECIFIER = 'workspace:';
 
 /**
  * Checks whether the package has valid dependency chains for each (external) import.
@@ -267,10 +268,13 @@ function createExternalImportValidator(pkg: Package) {
       seenDependencyName.add(ref.packageName);
       const dependency = dependencyMap.get(ref.packageName);
       if (dependency && dependency.kind !== DependencyKind.Dev) {
+        let { versionRange } = dependency;
+        if (versionRange.startsWith(WORKSPACE_SPECIFIER)) {
+          versionRange = versionRange.slice(WORKSPACE_SPECIFIER.length);
+        }
         // NOTE: Loose check to see if a dependency is pinned
-        const isLoose =
-          /[~|^><=](\s*\d+\.)/.test(dependency.versionRange) || dependency.versionRange === '*';
-        const isPinned = /^\d+\.\d+\.\d+$/.test(dependency.versionRange);
+        const isLoose = /[~|^><=](\s*\d+\.)/.test(versionRange) || versionRange === '*';
+        const isPinned = /^\d+\.\d+\.\d+$/.test(versionRange);
         return !isLoose || isPinned;
       }
       return null;

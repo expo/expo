@@ -7,7 +7,7 @@ import {
   withAndroidManifest,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-audio/package.json');
+const pkg = require('../../package.json');
 
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const PLAYBACK_SERVICE_NAME = 'expo.modules.audio.service.AudioControlsService';

@@ -13,7 +13,6 @@
     "build:plugin": "expo-module build plugin",
     "test:plugin": "expo-module test plugin",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -54,10 +53,10 @@
     "@types/fontfaceobserver": "^2.1.3",
     "@types/react": "~19.2.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   }
