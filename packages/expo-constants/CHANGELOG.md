@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fall back to embedded app config when `expoConfig` is missing `extra.expoClient` from the updates manifest, preventing crash loops on app version downgrades with the same fingerprint. ([#44091](https://github.com/expo/expo/issues/44091)) ([#44191](https://github.com/expo/expo/pull/44191) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-25
