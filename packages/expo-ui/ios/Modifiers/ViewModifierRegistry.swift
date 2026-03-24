@@ -1917,5 +1917,9 @@ extension ViewModifierRegistry {
     register("onSubmit") { params, appContext, eventDispatcher in
       return try OnSubmitModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
+
+    register("containerBackground") { params, appContext, _ in
+      return try ContainerBackgroundModifier(from: params, appContext: appContext)
+    }
   }
 }

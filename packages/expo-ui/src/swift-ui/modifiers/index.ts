@@ -7,6 +7,7 @@ import { requireNativeModule } from 'expo';
 
 import { animation } from './animation/index';
 import { background } from './background';
+import { containerBackground } from './containerBackground';
 import { containerShape } from './containerShape';
 import { contentShape } from './contentShape';
 import { createModifier, createModifierWithEventListener, ModifierConfig } from './createModifier';
@@ -1311,7 +1312,8 @@ export type BuiltInModifier =
   | ReturnType<typeof contentTransition>
   | ReturnType<typeof resizable>
   | ReturnType<typeof widgetAccentedRenderingMode>
-  | ReturnType<typeof widgetURL>;
+  | ReturnType<typeof widgetURL>
+  | ReturnType<typeof containerBackground>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1344,6 +1346,7 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 };
 
 export * from './animation/index';
+export * from './containerBackground';
 export * from './containerShape';
 export * from './contentShape';
 export * from './shapes/index';
