@@ -9,8 +9,8 @@ import {
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
-const wifiIcon = require('../../../assets/icons/ui/wifi.xml');
 const bluetoothIcon = require('../../../assets/icons/ui/bluetooth.xml');
+const wifiIcon = require('../../../assets/icons/ui/wifi.xml');
 
 export default function ListScreen() {
   const [wifiEnabled, setWifiEnabled] = React.useState(true);
