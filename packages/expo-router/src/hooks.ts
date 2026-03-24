@@ -1,6 +1,11 @@
 'use client';
 
-import { NavigationProp, useNavigation, useStateForPath } from '@react-navigation/native';
+import {
+  NavigationProp,
+  NavigationState,
+  useNavigation,
+  useStateForPath,
+} from '@react-navigation/native';
 import type { LoaderFunction } from 'expo-server';
 import React, { use, useMemo } from 'react';
 
@@ -34,7 +39,7 @@ export { useRouteInfo };
  * }
  * ```
  */
-export function useRootNavigationState() {
+export function useRootNavigationState(): NavigationState {
   const parent =
     // We assume that this is called from routes in __root
     // Users cannot customize the generated Sitemap or NotFound routes, so we should be safe
