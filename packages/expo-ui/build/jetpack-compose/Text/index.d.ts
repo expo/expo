@@ -18,7 +18,7 @@ export type TextAlign = 'left' | 'right' | 'center' | 'justify' | 'start' | 'end
 export type TextDecoration = 'none' | 'underline' | 'lineThrough';
 /**
  * Text overflow behavior options.
- * - 'clip': Clips the overflowing text to fix its container
+ * - 'clip': Clips the overflowing text to fit its container
  * - 'ellipsis': Uses an ellipsis to indicate that the text has overflowed
  * - 'visible': Renders overflow text outside its container
  */
@@ -33,7 +33,7 @@ export type TextLineBreak = 'simple' | 'heading' | 'paragraph';
 /**
  * Font family for text styling.
  * Built-in system families: 'default', 'sansSerif', 'serif', 'monospace', 'cursive'.
- * Custom font families loaded via expo-font can be referenced by name (e.g., 'Inter-Bold').
+ * Custom font families loaded via expo-font can be referenced by name (for example, 'Inter-Bold').
  */
 export type TextFontFamily = 'default' | 'sansSerif' | 'serif' | 'monospace' | 'cursive' | (string & {});
 /**
@@ -64,7 +64,7 @@ export type TextShadow = {
  */
 export type TypographyStyle = 'displayLarge' | 'displayMedium' | 'displaySmall' | 'headlineLarge' | 'headlineMedium' | 'headlineSmall' | 'titleLarge' | 'titleMedium' | 'titleSmall' | 'bodyLarge' | 'bodyMedium' | 'bodySmall' | 'labelLarge' | 'labelMedium' | 'labelSmall';
 /**
- * Shared span-level style properties used by both TextStyle and TextSpanRecord.
+ * Shared span-level style properties used by both `TextStyle` and `TextSpanRecord`.
  * Adding a property here ensures it's available on both parent text and nested spans.
  */
 export type TextSpanStyleBase = {
@@ -103,7 +103,7 @@ export type TextSpanStyleBase = {
 };
 /**
  * Text style properties that can be applied to text.
- * Corresponds to Jetpack Compose's TextStyle.
+ * Corresponds to Jetpack Compose's `TextStyle`.
  */
 export type TextStyle = TextSpanStyleBase & {
     /**
@@ -127,7 +127,7 @@ export type TextStyle = TextSpanStyleBase & {
 };
 export type TextProps = {
     /**
-     * The text content to display. Can be a string, number, or nested Text components
+     * The text content to display. Can be a string, number, or nested `Text` components
      * for inline styled spans.
      */
     children?: React.ReactNode;

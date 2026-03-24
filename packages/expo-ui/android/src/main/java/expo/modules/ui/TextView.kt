@@ -203,7 +203,8 @@ enum class TypographyStyle(val value: String) : Enumerable {
 
 /**
  * Shared text and span-level style properties.
- * Both TextSpanRecord and TextProps implement this to ensure
+ * Both TextSpanRecord and TextProps implement this to ensure style properties
+ * are consistent across parent text and nested spans.
  */
 interface TextSpanStyle {
   val text: String
@@ -304,32 +305,23 @@ fun FunctionalComposableScope.TextContent(props: TextProps) {
 
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
-  if (props.spans != null) {
+  val textValue = if (props.spans != null) {
     val context = appContext.reactContext
-    val annotatedString = buildAnnotatedString {
+    buildAnnotatedString {
       appendSpans(props.spans, context)
     }
-
-    Text(
-      text = annotatedString,
-      modifier = modifier,
-      textAlign = props.textAlign?.toComposeTextAlign(),
-      overflow = props.overflow?.toComposeTextOverflow() ?: TextOverflow.Clip,
-      softWrap = props.softWrap ?: true,
-      maxLines = props.maxLines ?: Int.MAX_VALUE,
-      minLines = props.minLines ?: 1,
-      style = mergedStyle
-    )
   } else {
-    Text(
-      text = props.text,
-      modifier = modifier,
-      textAlign = props.textAlign?.toComposeTextAlign(),
-      overflow = props.overflow?.toComposeTextOverflow() ?: TextOverflow.Clip,
-      softWrap = props.softWrap ?: true,
-      maxLines = props.maxLines ?: Int.MAX_VALUE,
-      minLines = props.minLines ?: 1,
-      style = mergedStyle
-    )
+    AnnotatedString(props.text)
   }
+
+  Text(
+    text = textValue,
+    modifier = modifier,
+    textAlign = props.textAlign?.toComposeTextAlign(),
+    overflow = props.overflow?.toComposeTextOverflow() ?: TextOverflow.Clip,
+    softWrap = props.softWrap ?: true,
+    maxLines = props.maxLines ?: Int.MAX_VALUE,
+    minLines = props.minLines ?: 1,
+    style = mergedStyle
+  )
 }

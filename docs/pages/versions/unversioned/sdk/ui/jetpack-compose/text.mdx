@@ -100,7 +100,7 @@ export default function StyledTextExample() {
 
 ### Nested text
 
-Nest `<Text>` components to apply inline styles to parts of a sentence. Child spans inherit styles from their parent. For example, a bold parent with an italic child renders the child as bold+italic.
+Nest `<Text>` components to apply inline styles to parts of a sentence. Child spans inherit styles from their parent. For example, a bold parent with an italic child renders the child as bold and italic.
 
 ```tsx NestedTextExample.tsx
 import { Host, Text, Column } from '@expo/ui/jetpack-compose';
@@ -151,7 +151,6 @@ Use fonts loaded via [`expo-font`](/versions/latest/sdk/font/) by passing the fo
 ```tsx CustomFontExample.tsx
 import { Host, Text, Column } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
-import { useFonts } from 'expo-font';
 
 export default function CustomFontExample() {
   return (
