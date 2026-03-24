@@ -446,15 +446,25 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         platformOptions.decorators ?? { legacy: true },
       ],
 
-      // Automatically add `react-native-reanimated/plugin` when the package is installed.
-      // TODO: Move to be a customTransformOption.
-      hasModule(api, 'react-native-worklets') &&
-      platformOptions.worklets !== false &&
-      platformOptions.reanimated !== false
-        ? [require('react-native-worklets/plugin')]
-        : hasModule(api, 'react-native-reanimated') &&
-          platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
-    ].filter(Boolean) as PluginItem[],
+      // Automatically add worklets or reanimated plugin when package is installed.
+      ((): PluginItem | null => {
+        if (platformOptions.worklets !== false) {
+          const workletsPlugin = resolveModule(api, 'react-native-worklets/plugin');
+          if (workletsPlugin) {
+            return [require(workletsPlugin)];
+          }
+        }
+
+        if (platformOptions.reanimated !== false) {
+          const reanimatedPlugin = resolveModule(api, 'react-native-reanimated/plugin');
+          if (reanimatedPlugin) {
+            return [require(reanimatedPlugin)];
+          }
+        }
+
+        return null;
+      })(),
+    ].filter((x): x is PluginItem => !!x) as PluginItem[],
   };
 }
 
