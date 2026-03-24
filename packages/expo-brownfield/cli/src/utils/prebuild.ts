@@ -1,5 +1,5 @@
-import { getConfig, getPackageJson } from 'expo/config';
 import chalk from 'chalk';
+import { getConfig, getPackageJson } from 'expo/config';
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
