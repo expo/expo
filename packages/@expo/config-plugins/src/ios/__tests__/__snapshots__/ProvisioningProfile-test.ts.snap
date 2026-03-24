@@ -1584,7 +1584,6 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				SWIFT_OBJC_BRIDGING_HEADER = "HelloWorld/HelloWorld-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TVOS_DEPLOYMENT_TARGET = 16.4;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1612,7 +1611,6 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				PRODUCT_NAME = HelloWorld;
 				SWIFT_OBJC_BRIDGING_HEADER = "HelloWorld/HelloWorld-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TVOS_DEPLOYMENT_TARGET = 16.4;
 				VERSIONING_SYSTEM = "apple-generic";
 				PROVISIONING_PROFILE_SPECIFIER = "*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z";
 				DEVELOPMENT_TEAM = "J5FM626PE2";
