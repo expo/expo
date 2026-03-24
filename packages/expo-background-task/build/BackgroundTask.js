@@ -2,7 +2,7 @@ import { isRunningInExpoGo } from 'expo';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 import { BackgroundTaskStatus } from './BackgroundTask.types';
-import { maybeInitDevToolsAsync } from './BackgroundTaskDevClient';
+import { maybeInitDevToolsAsync } from './BackgroundTaskDevToolsClient';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 // Flag to warn about running on Apple simulator
 let warnAboutRunningOniOSSimulator = false;
@@ -82,7 +82,7 @@ export async function registerTaskAsync(taskName, options = {}) {
         return;
     }
     _validate(taskName);
-    await maybeInitDevToolsAsync();
+    maybeInitDevToolsAsync();
     if (await TaskManager.isTaskRegisteredAsync(taskName)) {
         return;
     }

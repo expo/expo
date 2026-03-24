@@ -7,7 +7,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
-    "build-cli": "expo-module build cli",
+    "build:cli": "expo-module build cli",
     "build-plugin": "expo-module build plugin",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
