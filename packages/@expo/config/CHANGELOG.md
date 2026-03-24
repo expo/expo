@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Switch to `@expo/require-utils`'s `resolveFrom` to resolve unresolved entrypoint ([#44114](https://github.com/expo/expo/pull/44114) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Memoize server root detection ([#44101](https://github.com/expo/expo/pull/44101) by [@kitten](https://github.com/kitten))
 
 ## 55.0.8 — 2026-02-25
 

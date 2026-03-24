@@ -27,7 +27,8 @@ Each `StackToolbar*/` folder follows the same structure:
 
 - **types.ts** — Public props interface + native component props interface
 - **native.ios.tsx** — iOS implementation (renders native components like `RouterToolbarItem`)
-- **native.tsx** — Non-iOS noop (returns `null`)
+- **native.android.tsx** — Android implementation (renders Jetpack Compose components from `expo-ui`)
+- **native.tsx** — Fallback noop for other platforms (returns `null`)
 - **index.tsx** — Public component, convert functions, re-exports types
 
 ## Testing

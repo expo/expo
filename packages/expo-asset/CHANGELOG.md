@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Add support for .glb model assets. ([#42495](https://github.com/expo/expo/pull/42495) by [@pchalupa](https://github.com/pchalupa))
 
 ### 🐛 Bug fixes
 

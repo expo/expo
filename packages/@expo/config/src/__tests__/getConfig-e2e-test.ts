@@ -6,8 +6,6 @@ import { getDynamicConfig } from '../getConfig';
 
 const mockConfigContext = {} as any;
 
-jest.unmock('resolve-from');
-
 describe(getDynamicConfig, () => {
   describe('process.cwd in a child process', () => {
     const originalCwd = process.cwd();

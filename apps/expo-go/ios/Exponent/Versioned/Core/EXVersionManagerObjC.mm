@@ -15,6 +15,7 @@
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTExceptionsManager.h>
+#import <React/RCTBundleURLProvider.h>
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTPackagerConnection.h>
@@ -117,6 +118,8 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if ([self _isDevModeEnabledForHost:bundleURL]) {
     // Set the bundle url for the packager connection manually
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
+    RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
+    settings.packagerScheme = ([bundleURL.scheme isEqualToString:@"https"] || [bundleURL.scheme isEqualToString:@"exps"]) ? @"https" : @"http";
     
     RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
     if (devSettings == nil) {

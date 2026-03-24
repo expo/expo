@@ -6,6 +6,7 @@ export declare function resolveEntryPoint(projectRoot: string, { platform, pkg, 
     platform?: string;
     pkg?: PackageJSONConfig;
 }): string;
+/** @deprecated */
 export declare function getFileWithExtensions(fromDirectory: string, moduleId: string, extensions: string[]): string | null;
 /** Get the Metro server root, when working in monorepos */
 export declare function getMetroServerRoot(projectRoot: string): string;

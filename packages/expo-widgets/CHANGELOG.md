@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Pass environment to Widgets and Live Activities. ([#43681](https://github.com/expo/expo/pull/43681) by [@jakex7](https://github.com/jakex7))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
@@ -16,6 +17,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `ExpoWidgets.bundle` not copied to widget extension when `use_frameworks` is active. ([#44065](https://github.com/expo/expo/pull/44065) by [@marvwhere](https://github.com/marvwhere))
 - Add missing project root to `watchFolders` in `metro.config.js` ([#43449](https://github.com/expo/expo/pull/43449) by [@kitten](https://github.com/kitten))
 - [plugin] Fix reading undefined when config is not provided. ([#43568](https://github.com/expo/expo/pull/43568) by [@jakex7](https://github.com/jakex7))
 - Skip server bundling in `export:embed` call for `expo-widgets` bundle ([#43602](https://github.com/expo/expo/pull/43602) by [@kitten](https://github.com/kitten))

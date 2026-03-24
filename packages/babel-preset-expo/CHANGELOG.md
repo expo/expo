@@ -10,6 +10,7 @@
 
 - Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
 - Fix `"use no memo"` and `"use no forget"` default opt-out directives being ineffective in react-compiler transform ([#43521](https://github.com/expo/expo/pull/43521) by [@Titozzz](https://github.com/Titozzz), [@kitten](https://github.com/kitten))
+- Opt into `expo-router` plugins by default since `hasModule` is a heuristic ([#44114](https://github.com/expo/expo/pull/44114) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
