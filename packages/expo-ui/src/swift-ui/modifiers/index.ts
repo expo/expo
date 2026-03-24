@@ -495,7 +495,7 @@ export const grayscale = (amount: number) => createModifier('grayscale', { amoun
 
 /**
  * Sets the button style for button views.
- * @param style - The button style.
+ * @param style - The button style. `'glass'` and `'glassProminent'` are available on iOS 26+ and tvOS 26+ only.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonstyle(_:)).
  */
 export const buttonStyle = (
