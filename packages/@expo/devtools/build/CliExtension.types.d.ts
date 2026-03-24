@@ -98,35 +98,4 @@ export type ExpoCliExtensionExecutor<T extends ExpoCliExtensionCommandSchema> = 
     error: (message: string, ...args: any[]) => void;
     uri: (uri: string, altText?: string) => void;
 }) => Promise<void>;
-/** The envelope wrapping all CLI ↔ App messages over the broadcast channel. */
-export type CliMessageEnvelope<P> = {
-    messageKey: {
-        pluginName: string;
-        method: string;
-    };
-    payload: P;
-};
-/** Payload sent from the CLI to a running app. Generic over the user-provided params. */
-export type CliRequestPayload<Params extends Record<string, unknown> = Record<string, unknown>> = {
-    from: 'cli';
-    /** Unique ID for this request, used to correlate with the matching response. */
-    messageId: string;
-    /** Device name as reported by Metro's /json/list — used for targeting a specific device. */
-    targetDeviceName: string;
-    /** Application ID as reported by Metro's /json/list — used for targeting a specific app. */
-    targetAppId: string;
-    /** User-provided parameters for the message. */
-    params?: Params;
-};
-/** Payload sent from the app back to the CLI. */
-export type CliResponsePayload = {
-    /** Unique ID echoed from the request, used to correlate this response with the original request. */
-    messageId: string;
-    /** The result message from the app. */
-    message: string;
-    /** Device name — should match the targetDeviceName from the request. */
-    deviceName: string;
-    /** Application ID — should match the targetAppId from the request. */
-    applicationId: string;
-};
 //# sourceMappingURL=CliExtension.types.d.ts.map
