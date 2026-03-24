@@ -39,9 +39,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigationState = useNavigationState;
 exports.NavigationStateListenerProvider = NavigationStateListenerProvider;
 const React = __importStar(require("react"));
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
 // TODO(@ubax) - RN Migration: remove this dependency and import from react
 const with_selector_1 = require("use-sync-external-store/with-selector");
+const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 /**
  * Hook to get a value from the current navigation state using a selector.
  *
@@ -60,8 +60,8 @@ function useNavigationState(selector) {
 function NavigationStateListenerProvider({ state, children, }) {
     const listeners = React.useRef([]);
     const stateRef = React.useRef(state);
-    const getState = (0, use_latest_callback_1.default)(() => stateRef.current);
-    const subscribe = (0, use_latest_callback_1.default)((callback) => {
+    const getState = (0, useLatestCallback_1.default)(() => stateRef.current);
+    const subscribe = (0, useLatestCallback_1.default)((callback) => {
         listeners.current.push(callback);
         return () => {
             listeners.current = listeners.current.filter((cb) => cb !== callback);

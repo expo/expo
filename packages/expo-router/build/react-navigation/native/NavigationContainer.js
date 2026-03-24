@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NavigationContainer = void 0;
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
+const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const core_1 = require("../core");
 const LinkingContext_1 = require("./LinkingContext");
 const LocaleDirContext_1 = require("./LocaleDirContext");
@@ -66,7 +66,7 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
     }, setLastUnhandledLink);
     const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
     const unhandledLinkingContext = React.useMemo(() => ({ lastUnhandledLink, setLastUnhandledLink }), [lastUnhandledLink, setLastUnhandledLink]);
-    const onReadyForLinkingHandling = (0, use_latest_callback_1.default)(() => {
+    const onReadyForLinkingHandling = (0, useLatestCallback_1.default)(() => {
         // If the screen path matches lastUnhandledLink, we do not track it
         const path = refContainer.current?.getCurrentRoute()?.path;
         setLastUnhandledLink((previousLastUnhandledLink) => {
@@ -77,7 +77,7 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
         });
         onReady?.();
     });
-    const onStateChangeForLinkingHandling = (0, use_latest_callback_1.default)((state) => {
+    const onStateChangeForLinkingHandling = (0, useLatestCallback_1.default)((state) => {
         // If the screen path matches lastUnhandledLink, we do not track it
         const path = refContainer.current?.getCurrentRoute()?.path;
         setLastUnhandledLink((previousLastUnhandledLink) => {

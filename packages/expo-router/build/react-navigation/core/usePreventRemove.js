@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.usePreventRemove = usePreventRemove;
 const non_secure_1 = require("nanoid/non-secure");
 const React = __importStar(require("react"));
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
+const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const useNavigation_1 = require("./useNavigation");
 const usePreventRemoveContext_1 = require("./usePreventRemoveContext");
 const useRoute_1 = require("./useRoute");
@@ -60,7 +60,7 @@ function usePreventRemove(preventRemove, callback) {
             setPreventRemove(id, routeKey, false);
         };
     }, [setPreventRemove, id, routeKey, preventRemove]);
-    const beforeRemoveListener = (0, use_latest_callback_1.default)((e) => {
+    const beforeRemoveListener = (0, useLatestCallback_1.default)((e) => {
         if (!preventRemove) {
             return;
         }

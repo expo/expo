@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { I18nManager } from 'react-native';
-import useLatestCallback from 'use-latest-callback';
 
+import useLatestCallback from '../../utils/useLatestCallback';
 import {
   BaseNavigationContainer,
   getActionFromState,

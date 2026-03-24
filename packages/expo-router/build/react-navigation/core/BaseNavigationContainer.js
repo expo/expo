@@ -38,7 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseNavigationContainer = void 0;
 const React = __importStar(require("react"));
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
+const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const routers_1 = require("../routers");
 const DeprecatedNavigationInChildContext_1 = require("./DeprecatedNavigationInChildContext");
 const EnsureSingleNavigator_1 = require("./EnsureSingleNavigator");
@@ -109,7 +109,7 @@ exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContai
     }, []);
     const { listeners, addListener } = (0, useChildListeners_1.useChildListeners)();
     const { keyedListeners, addKeyedListener } = (0, useKeyedChildListeners_1.useKeyedChildListeners)();
-    const dispatch = (0, use_latest_callback_1.default)((action) => {
+    const dispatch = (0, useLatestCallback_1.default)((action) => {
         if (listeners.focus[0] == null) {
             console.error(createNavigationContainerRef_1.NOT_INITIALIZED_ERROR);
         }
@@ -117,7 +117,7 @@ exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContai
             listeners.focus[0]((navigation) => navigation.dispatch(action));
         }
     });
-    const canGoBack = (0, use_latest_callback_1.default)(() => {
+    const canGoBack = (0, useLatestCallback_1.default)(() => {
         if (listeners.focus[0] == null) {
             return false;
         }
@@ -129,7 +129,7 @@ exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContai
             return false;
         }
     });
-    const resetRoot = (0, use_latest_callback_1.default)((state) => {
+    const resetRoot = (0, useLatestCallback_1.default)((state) => {
         const target = state?.key ?? keyedListeners.getState.root?.().key;
         if (target == null) {
             console.error(createNavigationContainerRef_1.NOT_INITIALIZED_ERROR);
@@ -141,10 +141,10 @@ exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContai
             }));
         }
     });
-    const getRootState = (0, use_latest_callback_1.default)(() => {
+    const getRootState = (0, useLatestCallback_1.default)(() => {
         return keyedListeners.getState.root?.();
     });
-    const getCurrentRoute = (0, use_latest_callback_1.default)(() => {
+    const getCurrentRoute = (0, useLatestCallback_1.default)(() => {
         const state = getRootState();
         if (state == null) {
             return undefined;
@@ -152,7 +152,7 @@ exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContai
         const route = (0, findFocusedRoute_1.findFocusedRoute)(state);
         return route;
     });
-    const isReady = (0, use_latest_callback_1.default)(() => listeners.focus[0] != null);
+    const isReady = (0, useLatestCallback_1.default)(() => listeners.focus[0] != null);
     const emitter = (0, useEventEmitter_1.useEventEmitter)();
     const { addOptionsGetter, getCurrentOptions } = (0, useOptionsGetters_1.useOptionsGetters)({});
     const navigation = React.useMemo(() => ({
@@ -188,14 +188,14 @@ exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContai
         resetRoot,
     ]);
     React.useImperativeHandle(ref, () => navigation, [navigation]);
-    const onDispatchAction = (0, use_latest_callback_1.default)((action, noop) => {
+    const onDispatchAction = (0, useLatestCallback_1.default)((action, noop) => {
         emitter.emit({
             type: '__unsafe_action__',
             data: { action, noop, stack: stackRef.current },
         });
     });
     const lastEmittedOptionsRef = React.useRef(undefined);
-    const onOptionsChange = (0, use_latest_callback_1.default)((options) => {
+    const onOptionsChange = (0, useLatestCallback_1.default)((options) => {
         if (lastEmittedOptionsRef.current === options) {
             return;
         }
@@ -304,7 +304,7 @@ exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContai
         }
         isFirstMountRef.current = false;
     }, [getRootState, emitter, state]);
-    const defaultOnUnhandledAction = (0, use_latest_callback_1.default)((action) => {
+    const defaultOnUnhandledAction = (0, useLatestCallback_1.default)((action) => {
         if (process.env.NODE_ENV === 'production') {
             return;
         }

@@ -40,9 +40,9 @@ exports.useFrameSize = useFrameSize;
 exports.FrameSizeProvider = FrameSizeProvider;
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
 // TODO(@ubax) - RN Migration: remove this dependency and import from react
 const with_selector_1 = require("use-sync-external-store/with-selector");
+const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const FrameContext = React.createContext(undefined);
 function useFrameSize(selector, throttle) {
     const context = React.useContext(FrameContext);
@@ -58,14 +58,14 @@ function FrameSizeProvider({ initialFrame, render }) {
         height: initialFrame.height,
     });
     const listeners = React.useRef(new Set());
-    const getCurrent = (0, use_latest_callback_1.default)(() => frameRef.current);
-    const subscribe = (0, use_latest_callback_1.default)((listener) => {
+    const getCurrent = (0, useLatestCallback_1.default)(() => frameRef.current);
+    const subscribe = (0, useLatestCallback_1.default)((listener) => {
         listeners.current.add(listener);
         return () => {
             listeners.current.delete(listener);
         };
     });
-    const subscribeThrottled = (0, use_latest_callback_1.default)((listener) => {
+    const subscribeThrottled = (0, useLatestCallback_1.default)((listener) => {
         const delay = 100; // Throttle delay in milliseconds
         let timer;
         let updated = false;
@@ -103,7 +103,7 @@ function FrameSizeProvider({ initialFrame, render }) {
         subscribe,
         subscribeThrottled,
     }), [subscribe, subscribeThrottled, getCurrent]);
-    const onChange = (0, use_latest_callback_1.default)((frame) => {
+    const onChange = (0, useLatestCallback_1.default)((frame) => {
         if (frameRef.current.height === frame.height && frameRef.current.width === frame.width) {
             return;
         }

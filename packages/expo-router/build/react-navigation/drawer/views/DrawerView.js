@@ -40,7 +40,7 @@ exports.DrawerView = DrawerView;
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_drawer_layout_1 = require("react-native-drawer-layout");
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
+const useLatestCallback_1 = __importDefault(require("../../../utils/useLatestCallback"));
 const native_1 = require("../../native");
 const DrawerContent_1 = require("./DrawerContent");
 const DrawerToggleButton_1 = require("./DrawerToggleButton");
@@ -80,44 +80,44 @@ function DrawerViewBase({ state, navigation, descriptors, defaultStatus, drawerC
     const dimensions = (0, elements_1.useFrameSize)((size) => size, true);
     const { colors } = (0, native_1.useTheme)();
     const drawerStatus = (0, getDrawerStatusFromState_1.getDrawerStatusFromState)(state);
-    const handleDrawerOpen = (0, use_latest_callback_1.default)(() => {
+    const handleDrawerOpen = (0, useLatestCallback_1.default)(() => {
         navigation.dispatch({
             ...native_1.DrawerActions.openDrawer(),
             target: state.key,
         });
     });
-    const handleDrawerClose = (0, use_latest_callback_1.default)(() => {
+    const handleDrawerClose = (0, useLatestCallback_1.default)(() => {
         navigation.dispatch({
             ...native_1.DrawerActions.closeDrawer(),
             target: state.key,
         });
     });
-    const handleGestureStart = (0, use_latest_callback_1.default)(() => {
+    const handleGestureStart = (0, useLatestCallback_1.default)(() => {
         navigation.emit({
             type: 'gestureStart',
             target: state.key,
         });
     });
-    const handleGestureEnd = (0, use_latest_callback_1.default)(() => {
+    const handleGestureEnd = (0, useLatestCallback_1.default)(() => {
         navigation.emit({
             type: 'gestureEnd',
             target: state.key,
         });
     });
-    const handleGestureCancel = (0, use_latest_callback_1.default)(() => {
+    const handleGestureCancel = (0, useLatestCallback_1.default)(() => {
         navigation.emit({
             type: 'gestureCancel',
             target: state.key,
         });
     });
-    const handleTransitionStart = (0, use_latest_callback_1.default)((closing) => {
+    const handleTransitionStart = (0, useLatestCallback_1.default)((closing) => {
         navigation.emit({
             type: 'transitionStart',
             data: { closing },
             target: state.key,
         });
     });
-    const handleTransitionEnd = (0, use_latest_callback_1.default)((closing) => {
+    const handleTransitionEnd = (0, useLatestCallback_1.default)((closing) => {
         navigation.emit({
             type: 'transitionEnd',
             data: { closing },

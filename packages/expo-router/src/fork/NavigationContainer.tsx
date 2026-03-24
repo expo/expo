@@ -1,6 +1,5 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
-import useLatestCallback from 'use-latest-callback';
 
 import { useBackButton } from './useBackButton';
 import { useDocumentTitle } from './useDocumentTitle';
@@ -26,6 +25,7 @@ import {
   getStateFromPath,
   validatePathConfig,
 } from '../react-navigation/native';
+import useLatestCallback from '../utils/useLatestCallback';
 
 declare global {
   // eslint-disable-next-line no-var

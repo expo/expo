@@ -40,7 +40,7 @@ exports.Card = Card;
 const color_1 = __importDefault(require("color"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
+const useLatestCallback_1 = __importDefault(require("../../../../utils/useLatestCallback"));
 const CardAnimationContext_1 = require("../../utils/CardAnimationContext");
 const gestureActivationCriteria_1 = require("../../utils/gestureActivationCriteria");
 const getDistanceForDirection_1 = require("../../utils/getDistanceForDirection");
@@ -80,18 +80,18 @@ function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImp
         height: new react_native_1.Animated.Value(layout.height),
     }));
     const [isSwiping] = React.useState(() => new react_native_1.Animated.Value(FALSE));
-    const onStartInteraction = (0, use_latest_callback_1.default)(() => {
+    const onStartInteraction = (0, useLatestCallback_1.default)(() => {
         if (interactionHandleRef.current === undefined) {
             interactionHandleRef.current = react_native_1.InteractionManager.createInteractionHandle();
         }
     });
-    const onEndInteraction = (0, use_latest_callback_1.default)(() => {
+    const onEndInteraction = (0, useLatestCallback_1.default)(() => {
         if (interactionHandleRef.current !== undefined) {
             react_native_1.InteractionManager.clearInteractionHandle(interactionHandleRef.current);
             interactionHandleRef.current = undefined;
         }
     });
-    const animate = (0, use_latest_callback_1.default)(({ closing: isClosingParam, velocity }) => {
+    const animate = (0, useLatestCallback_1.default)(({ closing: isClosingParam, velocity }) => {
         const toValue = getAnimateToValue({
             closing: isClosingParam,
             layout,
@@ -143,7 +143,7 @@ function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImp
             onFinish();
         }
     });
-    const onGestureStateChange = (0, use_latest_callback_1.default)(({ nativeEvent }) => {
+    const onGestureStateChange = (0, useLatestCallback_1.default)(({ nativeEvent }) => {
         switch (nativeEvent.state) {
             case GestureHandler_1.GestureState.ACTIVE:
                 clearTimeout(pendingGestureCallbackRef.current);
@@ -232,7 +232,7 @@ function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImp
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const timeoutRef = React.useRef(undefined);
-    const maybeAnimate = (0, use_latest_callback_1.default)(() => {
+    const maybeAnimate = (0, useLatestCallback_1.default)(() => {
         clearTimeout(pendingGestureCallbackRef.current);
         clearTimeout(pendingOnCloseCallbackRef.current);
         if (!didInitiallyAnimate.current) {

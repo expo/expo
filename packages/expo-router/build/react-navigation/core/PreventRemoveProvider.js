@@ -39,10 +39,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PreventRemoveProvider = PreventRemoveProvider;
 const non_secure_1 = require("nanoid/non-secure");
 const React = __importStar(require("react"));
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
 const NavigationHelpersContext_1 = require("./NavigationHelpersContext");
 const NavigationProvider_1 = require("./NavigationProvider");
 const PreventRemoveContext_1 = require("./PreventRemoveContext");
+const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 /**
  * Util function to transform map of prevented routes to a simpler object.
  */
@@ -67,7 +67,7 @@ function PreventRemoveProvider({ children }) {
     const preventRemoveContextValue = React.useContext(PreventRemoveContext_1.PreventRemoveContext);
     // take `setPreventRemove` from parent context - if exist it means we're in a nested context
     const setParentPrevented = preventRemoveContextValue?.setPreventRemove;
-    const setPreventRemove = (0, use_latest_callback_1.default)((id, routeKey, preventRemove) => {
+    const setPreventRemove = (0, useLatestCallback_1.default)((id, routeKey, preventRemove) => {
         if (preventRemove &&
             (navigation == null ||
                 navigation?.getState().routes.every((route) => route.key !== routeKey))) {
@@ -102,7 +102,6 @@ function PreventRemoveProvider({ children }) {
                 setParentPrevented(parentId, route.key, false);
             };
         }
-        return undefined;
     }, [parentId, isPrevented, route?.key, setParentPrevented]);
     const value = React.useMemo(() => ({
         setPreventRemove,

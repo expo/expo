@@ -38,8 +38,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSyncState = useSyncState;
 const React = __importStar(require("react"));
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
 const deepFreeze_1 = require("./deepFreeze");
+const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const createStore = (getInitialState) => {
     const listeners = [];
     let initialized = false;
@@ -91,10 +91,10 @@ function useSyncState(getInitialState) {
     const state = React.useSyncExternalStore(store.subscribe, store.getState, store.getState);
     React.useDebugValue(state);
     const pendingUpdatesRef = React.useRef([]);
-    const scheduleUpdate = (0, use_latest_callback_1.default)((callback) => {
+    const scheduleUpdate = (0, useLatestCallback_1.default)((callback) => {
         pendingUpdatesRef.current.push(callback);
     });
-    const flushUpdates = (0, use_latest_callback_1.default)(() => {
+    const flushUpdates = (0, useLatestCallback_1.default)(() => {
         const pendingUpdates = pendingUpdatesRef.current;
         pendingUpdatesRef.current = [];
         if (pendingUpdates.length !== 0) {

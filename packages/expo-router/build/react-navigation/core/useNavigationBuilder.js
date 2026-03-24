@@ -41,7 +41,7 @@ const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 const react_is_1 = require("react-is");
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
+const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const routers_1 = require("../routers");
 const Group_1 = require("./Group");
 const NavigationHelpersContext_1 = require("./NavigationHelpersContext");
@@ -258,7 +258,7 @@ function useNavigationBuilder(createRouter, options) {
     const { state: currentState, getState: getCurrentState, setState: setCurrentState, setKey, getKey, getIsInitial, } = React.useContext(NavigationStateContext_1.NavigationStateContext);
     const stateCleanupRef = React.useRef(false);
     const lastStateRef = React.useRef(undefined);
-    const setState = (0, use_latest_callback_1.default)((state) => {
+    const setState = (0, useLatestCallback_1.default)((state) => {
         if (stateCleanupRef.current) {
             // Store the state locally in case the current navigator is in `Activity`
             lastStateRef.current = state;
@@ -509,7 +509,7 @@ function useNavigationBuilder(createRouter, options) {
     (0, useClientLayoutEffect_1.useClientLayoutEffect)(() => {
         stateRef.current = null;
     });
-    const getState = (0, use_latest_callback_1.default)(() => {
+    const getState = (0, useLatestCallback_1.default)(() => {
         const currentState = getCurrentState();
         return (0, deepFreeze_1.deepFreeze)((isStateInitialized(currentState) ? currentState : initializedState));
     });
@@ -581,7 +581,7 @@ function useNavigationBuilder(createRouter, options) {
         setState,
     });
     const onUnhandledActionParent = React.useContext(UnhandledActionContext_1.UnhandledActionContext);
-    const onUnhandledAction = (0, use_latest_callback_1.default)((action) => {
+    const onUnhandledAction = (0, useLatestCallback_1.default)((action) => {
         if (options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
             action.type === 'NAVIGATE' &&
             action.payload != null &&

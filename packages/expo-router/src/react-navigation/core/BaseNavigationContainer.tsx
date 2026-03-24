@@ -1,6 +1,6 @@
 import * as React from 'react';
-import useLatestCallback from 'use-latest-callback';
 
+import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
   type InitialState,

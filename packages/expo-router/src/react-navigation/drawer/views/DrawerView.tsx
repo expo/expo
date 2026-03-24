@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
-import useLatestCallback from 'use-latest-callback';
 
+import useLatestCallback from '../../../utils/useLatestCallback';
 import {
   DrawerActions,
   type DrawerNavigationState,

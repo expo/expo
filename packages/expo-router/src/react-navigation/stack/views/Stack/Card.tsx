@@ -10,8 +10,8 @@ import {
   type ViewStyle,
 } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
-import useLatestCallback from 'use-latest-callback';
 
+import useLatestCallback from '../../../../utils/useLatestCallback';
 import type { LocaleDirection } from '../../../native';
 import type {
   GestureDirection,

@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
-import useLatestCallback from 'use-latest-callback';
 
+import useLatestCallback from '../../utils/useLatestCallback';
 import type { NavigationAction } from '../routers';
 import type { EventListenerCallback, EventMapCore } from './types';
 import { useNavigation } from './useNavigation';

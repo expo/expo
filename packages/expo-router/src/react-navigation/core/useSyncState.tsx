@@ -1,7 +1,7 @@
 import * as React from 'react';
-import useLatestCallback from 'use-latest-callback';
 
 import { deepFreeze } from './deepFreeze';
+import useLatestCallback from '../../utils/useLatestCallback';
 
 const createStore = <T,>(getInitialState: () => T) => {
   const listeners: (() => void)[] = [];
