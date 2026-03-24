@@ -29,6 +29,8 @@ import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
 import expo.modules.ui.menu.ItemPressedEvent
+import expo.modules.ui.picker.ExposedDropdownMenuPickerContent
+import expo.modules.ui.picker.ExposedDropdownMenuPickerProps
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
@@ -464,6 +466,13 @@ class ExpoUIModule : Module() {
     }) { props: FloatingActionButtonProps ->
       val onButtonPressed by remember { EventDispatcher<Unit>() }
       FloatingActionButtonContent(props) { onButtonPressed(Unit) }
+    }
+
+    ExpoUIView("ExposedDropdownMenuPickerView", events = {
+      Events("onExpandedChange")
+    }) { props: ExposedDropdownMenuPickerProps ->
+      val onExpandedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      ExposedDropdownMenuPickerContent(props) { onExpandedChange(GenericEventPayload1(it)) }
     }
 
     //endregion Expo UI views
