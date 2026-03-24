@@ -40,14 +40,5 @@
   },
   "peerDependencies": {
     "expo": "workspace:*"
-  },
-  "exports": {
-    "./app.plugin": "./app.plugin.js",
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/BackgroundFetch.d.ts",
-      "default": "./build/BackgroundFetch.js"
-    }
   }
 }

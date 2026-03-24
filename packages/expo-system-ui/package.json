@@ -50,14 +50,5 @@
     "react-native-web": {
       "optional": true
     }
-  },
-  "exports": {
-    "./app.plugin": "./app.plugin.js",
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/SystemUI.d.ts",
-      "default": "./build/SystemUI.js"
-    }
   }
 }

@@ -53,15 +53,5 @@
         "RCTImageURLLoader": "MediaLibraryImageLoader"
       }
     }
-  },
-  "exports": {
-    "./app.plugin": "./app.plugin.js",
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/MediaLibrary.d.ts",
-      "default": "./build/MediaLibrary.js"
-    },
-    "./next": "./next.ts"
   }
 }

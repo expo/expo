@@ -50,14 +50,5 @@
   "peerDependencies": {
     "expo": "workspace:*",
     "react-native": "*"
-  },
-  "exports": {
-    "./app.plugin": "./app.plugin.js",
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/index.d.ts",
-      "default": "./build/index.js"
-    }
   }
 }

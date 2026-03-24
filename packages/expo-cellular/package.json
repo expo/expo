@@ -35,14 +35,5 @@
   },
   "peerDependencies": {
     "expo": "workspace:*"
-  },
-  "exports": {
-    "./app.plugin": "./app.plugin.js",
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/Cellular.d.ts",
-      "default": "./build/Cellular.js"
-    }
   }
 }

@@ -40,15 +40,5 @@
   "peerDependencies": {
     "expo": "workspace:*",
     "react-native": "*"
-  },
-  "exports": {
-    "./app.plugin": "./app.plugin.js",
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/Calendar.d.ts",
-      "default": "./build/Calendar.js"
-    },
-    "./next": "./next.ts"
   }
 }
