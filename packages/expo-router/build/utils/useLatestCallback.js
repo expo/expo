@@ -32,6 +32,8 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = useLatestCallback;
 const React = __importStar(require("react"));
 /**
  * Use `useEffect` during SSR and `useInsertionEffect` in the Browser & React Native to avoid warnings.
@@ -54,5 +56,4 @@ function useLatestCallback(callback) {
     }, [callback]);
     return latestCallback;
 }
-module.exports = useLatestCallback;
 //# sourceMappingURL=useLatestCallback.js.map

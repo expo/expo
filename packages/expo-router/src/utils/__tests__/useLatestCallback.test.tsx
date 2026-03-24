@@ -4,10 +4,10 @@ import useLatestCallback from '../useLatestCallback';
 
 describe('useLatestCallback', () => {
   it('returns a stable reference across re-renders', () => {
-    const cb1 = jest.fn();
-    const cb2 = jest.fn();
+    const cb1 = jest.fn(() => {});
+    const cb2 = jest.fn(() => {});
 
-    const { result, rerender } = renderHook(({ fn }) => useLatestCallback(fn), {
+    const { result, rerender } = renderHook(({ fn }: { fn: () => void }) => useLatestCallback(fn), {
       initialProps: { fn: cb1 },
     });
 
@@ -22,9 +22,12 @@ describe('useLatestCallback', () => {
     const cb1 = jest.fn(() => 'first');
     const cb2 = jest.fn(() => 'second');
 
-    const { result, rerender } = renderHook(({ fn }) => useLatestCallback(fn), {
-      initialProps: { fn: cb1 },
-    });
+    const { result, rerender } = renderHook(
+      ({ fn }: { fn: () => string }) => useLatestCallback(fn),
+      {
+        initialProps: { fn: cb1 },
+      }
+    );
 
     rerender({ fn: cb2 });
 

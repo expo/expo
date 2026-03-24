@@ -13,7 +13,7 @@ const useClientInsertionEffect =
  * React hook which returns the latest callback without changing the reference.
  */
 // TODO(@ubax): RN Migration - Consider replacing with useEffectEvent when it becomes stable
-function useLatestCallback<T extends Function>(callback: T): T {
+export default function useLatestCallback<T extends Function>(callback: T): T {
   const ref = React.useRef<T>(callback);
 
   const latestCallback = React.useRef(function latestCallback(this: unknown, ...args: unknown[]) {
@@ -26,5 +26,3 @@ function useLatestCallback<T extends Function>(callback: T): T {
 
   return latestCallback;
 }
-
-export = useLatestCallback;
