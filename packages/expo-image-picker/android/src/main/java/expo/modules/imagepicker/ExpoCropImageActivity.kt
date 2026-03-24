@@ -2,8 +2,17 @@ package expo.modules.imagepicker
 
 import android.graphics.Color
 import android.view.Menu
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.canhub.cropper.CropImageActivity
 import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
+import expo.modules.imagepicker.ExpoCropImageUtils.getColorResource
+import expo.modules.imagepicker.ExpoCropImageUtils.getThemeColor
 
 /**
  * A wrapper around `CropImageActivity` to provide custom theming and functionality.
@@ -15,6 +24,7 @@ import com.canhub.cropper.CropImageOptions
  */
 class ExpoCropImageActivity : CropImageActivity() {
   private var currentIconColor: Int = Color.BLACK
+  private var cropImageViewRef: CropImageView? = null
 
   // region Lifecycle Methods
   override fun onCreate(savedInstanceState: android.os.Bundle?) {
@@ -23,10 +33,18 @@ class ExpoCropImageActivity : CropImageActivity() {
     // the toolbar and menu icons are tinted correctly on first render.
     getCropOptions()?.let { opts ->
       val isNight = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
-      applyPalette(isNight, opts)
+      applyCustomization(isNight, opts)
       invokeSetCustomizations()
       invalidateOptionsMenu() // Recreate the menu to apply the new icon colors.
     }
+  }
+
+  override fun onDestroy() {
+    cropImageViewRef?.let { ViewCompat.setOnApplyWindowInsetsListener(it, null) }
+    cropImageViewRef = null
+    window.decorView.setOnApplyWindowInsetsListener(null)
+
+    super.onDestroy()
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -40,22 +58,78 @@ class ExpoCropImageActivity : CropImageActivity() {
     tintAllMenuItems(menu)
     return result
   }
+
+  override fun setCropImageView(cropImageView: CropImageView) {
+    super.setCropImageView(cropImageView)
+
+    cropImageViewRef = cropImageView
+
+    ViewCompat.setOnApplyWindowInsetsListener(cropImageView) { view, insets ->
+      val values = insets.getInsets(
+        WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+
+      view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        setMargins(values.left, values.top, values.right, values.bottom)
+      }
+
+      insets
+    }
+  }
+
   // endregion
 
-  private fun applyPalette(isNight: Boolean, opts: CropImageOptions) {
-    // Apply palette to options and get the toolbar widget color
-    val toolbarWidgetColor = ExpoCropImageUtils.applyPaletteToOptions(theme, resources, isNight, opts)
+  private fun applyCustomization(isNight: Boolean, options: CropImageOptions) {
+    val defaultBackgroundColor = if (isNight) Color.BLACK else Color.WHITE
+    val defaultContentColor = if (isNight) Color.WHITE else Color.BLACK
+
+    // Try theme attributes first, then fall back to color resources
+    val expoCropBackButtonIconColor = getThemeColor(theme, R.attr.expoCropBackButtonIconColor)
+      ?: getColorResource(resources, R.color.expoCropBackButtonIconColor)
+    val expoCropBackgroundColor = getThemeColor(theme, R.attr.expoCropBackgroundColor)
+      ?: getColorResource(resources, R.color.expoCropBackgroundColor)
+    val expoCropToolbarActionTextColor = getThemeColor(theme, R.attr.expoCropToolbarActionTextColor)
+      ?: getColorResource(resources, R.color.expoCropToolbarActionTextColor)
+    val expoCropToolbarColor = getThemeColor(theme, R.attr.expoCropToolbarColor)
+      ?: getColorResource(resources, R.color.expoCropToolbarColor)
+    val expoCropToolbarIconColor = getThemeColor(theme, R.attr.expoCropToolbarIconColor)
+      ?: getColorResource(resources, R.color.expoCropToolbarIconColor)
+
+    val activityBackgroundColor = expoCropBackgroundColor ?: defaultBackgroundColor
+    val toolbarColor = expoCropToolbarColor ?: defaultBackgroundColor
+    val toolbarIconColor = expoCropToolbarIconColor ?: defaultContentColor
 
     // Set the current icon color for menu tinting
-    currentIconColor = toolbarWidgetColor
-
-    // Set up toolbar color with fallback for status bar theming
-    val defaultToolbarColor = if (isNight) Color.BLACK else Color.WHITE
-    val toolbarColor = opts.toolbarColor ?: defaultToolbarColor
-    ExpoCropImageUtils.applyWindowTheming(window, toolbarColor, isNight)
+    currentIconColor = toolbarIconColor
 
     // Remove action bar elevation for a flat design
     supportActionBar?.elevation = 0f
+
+    options.activityBackgroundColor = activityBackgroundColor
+    options.activityMenuIconColor = toolbarIconColor
+    options.activityMenuTextColor = expoCropToolbarActionTextColor ?: defaultContentColor
+    options.toolbarBackButtonColor = expoCropBackButtonIconColor ?: toolbarIconColor
+    options.toolbarColor = toolbarColor
+    options.toolbarTitleColor = toolbarIconColor
+
+    window.run {
+      WindowCompat.enableEdgeToEdge(this)
+
+      decorView.setBackgroundColor(activityBackgroundColor)
+
+      val statusBarView = View(context).apply {
+        setBackgroundColor(toolbarColor)
+      }
+
+      addContentView(statusBarView,
+        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0))
+
+      ViewCompat.setOnApplyWindowInsetsListener(decorView) { _, insets ->
+        val values = insets.getInsets(
+          WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout())
+        statusBarView.updateLayoutParams { height = values.top }
+        insets
+      }
+    }
   }
 
   // region Helper Methods
