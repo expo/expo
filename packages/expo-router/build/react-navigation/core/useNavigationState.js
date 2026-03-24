@@ -40,8 +40,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigationState = useNavigationState;
 exports.NavigationStateListenerProvider = NavigationStateListenerProvider;
 const React = __importStar(require("react"));
-// TODO(@ubax) - RN Migration: remove this dependency and import from react
-const with_selector_1 = require("use-sync-external-store/with-selector");
+const useSyncExternalStoreWithSelector_1 = require("../../utils/useSyncExternalStoreWithSelector");
 const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 /**
  * Hook to get a value from the current navigation state using a selector.
@@ -53,7 +52,7 @@ function useNavigationState(selector) {
     if (stateListener == null) {
         throw new Error("Couldn't get the navigation state. Is your component inside a navigator?");
     }
-    const value = (0, with_selector_1.useSyncExternalStoreWithSelector)(stateListener.subscribe, 
+    const value = (0, useSyncExternalStoreWithSelector_1.useSyncExternalStoreWithSelector)(stateListener.subscribe, 
     // @ts-expect-error: this is unsafe, but needed to make the generic work
     stateListener.getState, stateListener.getState, selector);
     return value;

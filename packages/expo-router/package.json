@@ -127,7 +127,6 @@
     "@types/react": "~19.2.0",
     "@types/react-dom": "^19.1.7",
     "@types/react-is": "^19.0.0",
-    "@types/use-sync-external-store": "^0.0.6",
     "@types/react-test-renderer": "^19.1.0",
     "@types/node": "^22.14.0",
     "immer": "^10.1.1",
@@ -169,7 +168,6 @@
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "shallowequal": "^1.1.0",
-    "use-sync-external-store": "^1.5.0",
     "vaul": "^1.1.2"
   }
 }
