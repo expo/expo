@@ -1,11 +1,8 @@
 import { AndroidConfig, type ExportedConfig, IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
-import matchers from 'expect/build/matchers';
 import fs from 'fs';
 
 import { getInfoPlistPathLikePrebuild, getProjectRootLikePrebuild } from './prebuild-tester';
-
-matchers.customTesters = [];
 
 const cacheSymbol = Symbol('jest.prebuild.cache');
 
@@ -19,7 +16,20 @@ expect.extend({
     expected: any
   ) {
     if (config[cacheSymbol]?.infoPlist) {
-      return matchers.toEqual(config[cacheSymbol].infoPlist, expected);
+      const pass = this.equals(config[cacheSymbol].infoPlist, expected);
+      return {
+        pass,
+        message: () =>
+          this.utils.matcherHint('toMatchInfoPlist') +
+          '\n\n' +
+          this.utils.printDiffOrStringify(
+            expected,
+            config[cacheSymbol]!.infoPlist,
+            'Expected',
+            'Received',
+            this.expand !== false
+          ),
+      };
     }
 
     const infoPlistPath = getInfoPlistPathLikePrebuild(config);
@@ -28,13 +38,27 @@ expect.extend({
     config[cacheSymbol] = config[cacheSymbol] || {};
     config[cacheSymbol].infoPlist = config[cacheSymbol].infoPlist || infoPlist;
 
-    return matchers.toEqual(infoPlist, expected);
+    const pass = this.equals(infoPlist, expected);
+    return {
+      pass,
+      message: () =>
+        this.utils.matcherHint('toMatchInfoPlist') +
+        '\n\n' +
+        this.utils.printDiffOrStringify(expected, infoPlist, 'Expected', 'Received', this.expand !== false),
+    };
   },
   toMatchAppleEntitlements(config: ExportedConfig, expected: any) {
     const filePath = IOSConfig.Entitlements.getEntitlementsPath(getProjectRootLikePrebuild(config));
     if (!filePath) throw new Error('iOS entitlements path not found');
     const data = plist.parse(fs.readFileSync(filePath, 'utf8'));
-    return matchers.toEqual(data, expected);
+    const pass = this.equals(data, expected);
+    return {
+      pass,
+      message: () =>
+        this.utils.matcherHint('toMatchAppleEntitlements') +
+        '\n\n' +
+        this.utils.printDiffOrStringify(expected, data, 'Expected', 'Received', this.expand !== false),
+    };
   },
   toHaveModHistory(config: ExportedConfig, name: string) {
     if (!config._internal?.pluginHistory) {
@@ -57,13 +81,18 @@ expect.extend({
   },
 
   toMatchAndroidProjectBuildGradle(config: ExportedConfig, expected: any) {
-    return matchers.toEqual(
-      fs.readFileSync(
-        AndroidConfig.Paths.getProjectBuildGradleFilePath(getProjectRootLikePrebuild(config)),
-        'utf8'
-      ),
-      expected
+    const received = fs.readFileSync(
+      AndroidConfig.Paths.getProjectBuildGradleFilePath(getProjectRootLikePrebuild(config)),
+      'utf8'
     );
+    const pass = this.equals(received, expected);
+    return {
+      pass,
+      message: () =>
+        this.utils.matcherHint('toMatchAndroidProjectBuildGradle') +
+        '\n\n' +
+        this.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', this.expand !== false),
+    };
   },
 });
 
