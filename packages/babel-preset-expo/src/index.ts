@@ -289,13 +289,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(expoInlineManifestPlugin);
   }
 
-  extraPlugins.push(expoRouterBabelPlugin);
-  // Process `loader()` functions for client, loader and server bundles (excluding RSC)
-  // - Client bundles: Remove loader exports, they run on server only
-  // - Server bundles: Keep loader exports (needed for SSG)
-  // - Loader-only bundles: Keep only loader exports, remove everything else
-  if (!isReactServer) {
-    extraPlugins.push(serverDataLoadersPlugin);
+  if (hasModule(api, 'expo-router/package.json')) {
+    extraPlugins.push(expoRouterBabelPlugin);
+    // Process `loader()` functions for client, loader and server bundles (excluding RSC)
+    // - Client bundles: Remove loader exports, they run on server only
+    // - Server bundles: Keep loader exports (needed for SSG)
+    // - Loader-only bundles: Keep only loader exports, remove everything else
+    if (!isReactServer) {
+      extraPlugins.push(serverDataLoadersPlugin);
+    }
   }
 
   extraPlugins.push(reactClientReferencesPlugin);
