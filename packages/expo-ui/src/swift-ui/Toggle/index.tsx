@@ -2,9 +2,9 @@ import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { getStateId } from '../State';
 import { type ToggleState } from './state';
+import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type ToggleProps = {
