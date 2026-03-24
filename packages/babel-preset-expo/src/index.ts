@@ -16,7 +16,6 @@ import {
   getIsServer,
   getReactCompiler,
   getMetroSourceType,
-  hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
@@ -28,6 +27,7 @@ import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plu
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
+import { hasModule, resolveModule } from './utils/resolveModule';
 import { widgetsPlugin } from './widgets-plugin';
 
 type BabelPresetExpoPlatformOptions = {
@@ -315,7 +315,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // Transform widget component JSX expressions to capture widget components for native-side evaluation.
   // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
-  if (hasModule('expo-widgets')) {
+  if (hasModule(api, 'expo-widgets')) {
     extraPlugins.push(widgetsPlugin);
   }
 
@@ -448,11 +448,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
-      hasModule('react-native-worklets') &&
+      hasModule(api, 'react-native-worklets') &&
       platformOptions.worklets !== false &&
       platformOptions.reanimated !== false
         ? [require('react-native-worklets/plugin')]
-        : hasModule('react-native-reanimated') &&
+        : hasModule(api, 'react-native-reanimated') &&
           platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
