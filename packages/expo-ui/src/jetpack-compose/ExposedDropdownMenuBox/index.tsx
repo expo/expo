@@ -44,10 +44,14 @@ type NativeExposedDropdownMenuBoxProps = Omit<
  * Use the `menuAnchor()` modifier on the anchor content (e.g. a `TextInput` or `Text`).
  * Use `ExposedDropdownMenu` to wrap `DropdownMenuItem` children.
  *
+ * When using an uncontrolled `TextInput` as the anchor with `defaultValue`, pass `key={value}`
+ * to force a remount when the selected value changes — this is a limitation of uncontrolled
+ * inputs where `defaultValue` is only read on mount.
+ *
  * @example
  * ```tsx
  * <ExposedDropdownMenuBox expanded={expanded} onExpandedChange={setExpanded}>
- *   <TextInput modifiers={[menuAnchor()]} defaultValue={value} readOnly />
+ *   <TextInput key={value} modifiers={[menuAnchor()]} defaultValue={value} readOnly />
  *   <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
  *     <DropdownMenuItem onClick={() => { setSelected('a'); setExpanded(false); }}>
  *       <DropdownMenuItem.Text><Text>Option A</Text></DropdownMenuItem.Text>
