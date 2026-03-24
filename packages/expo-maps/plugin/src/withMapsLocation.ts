@@ -1,6 +1,6 @@
 import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
 
-const pkg = require('expo-maps/package.json');
+const pkg = require('../../package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 
 const withMapsLocation: ConfigPlugin<

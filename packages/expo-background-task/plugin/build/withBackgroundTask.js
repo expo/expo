@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-background-task/package.json');
+const pkg = require('../../package.json');
 const withBackgroundTask = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         // Enable background mode processing

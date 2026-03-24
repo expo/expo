@@ -12,7 +12,7 @@ import { ShareExtensionConfigPluginProps } from './sharingPlugin.types';
 import { withConfig } from './withConfig';
 
 const EXPO_SHARE_EXTENSION_TARGET_NAME = 'expo-sharing-extension';
-const pkg = require('expo-sharing/package.json');
+const pkg = require('../../package.json');
 
 type ShareExtensionConfigPlugin = ConfigPlugin<ShareExtensionConfigPluginProps>;
 
