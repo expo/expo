@@ -35,7 +35,13 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
         // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
         return null;
     }
-    const libraryConfig = (await (0, config_1.loadConfigAsync)(resolution.path));
+    // Workaround for Android Gradle/Prefab issue with special characters in paths.
+    // pnpm creates virtual store paths with '=' characters (e.g., _patch_hash=abc123),
+    // which cause build failures on Android due to Prefab not properly escaping them.
+    // See: https://github.com/google/prefab/issues/187
+    const shouldUseOriginPath = platform === 'android' && resolution.path.includes('=') && resolution.path.includes('.pnpm');
+    const modulePath = shouldUseOriginPath ? resolution.originPath : resolution.path;
+    const libraryConfig = (await (0, config_1.loadConfigAsync)(modulePath));
     const reactNativeConfig = {
         ...libraryConfig?.dependency,
         ...projectConfig?.dependencies?.[resolution.name],
@@ -61,7 +67,7 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
     }
     let platformData = null;
     if (platform === 'android') {
-        platformData = await (0, androidResolver_1.resolveDependencyConfigImplAndroidAsync)(resolution.path, reactNativeConfig.platforms?.android, maybeExpoModuleConfig);
+        platformData = await (0, androidResolver_1.resolveDependencyConfigImplAndroidAsync)(modulePath, reactNativeConfig.platforms?.android, maybeExpoModuleConfig);
     }
     else if (platform === 'ios') {
         platformData = await (0, iosResolver_1.resolveDependencyConfigImplIosAsync)(resolution, reactNativeConfig.platforms?.ios, maybeExpoModuleConfig);
@@ -70,7 +76,7 @@ async function resolveReactNativeModule(resolution, projectConfig, platform, exc
         platformData = await (0, webResolver_1.checkDependencyWebAsync)(resolution, reactNativeConfig, maybeExpoModuleConfig);
     }
     return (platformData && {
-        root: resolution.path,
+        root: modulePath,
         name: resolution.name,
         platforms: {
             [platform]: platformData,

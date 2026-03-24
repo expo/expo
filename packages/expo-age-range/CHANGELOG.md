@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - bump android dependency, expose new `DECLARED` user status ([#43345](https://github.com/expo/expo/pull/43345) by [@vonovak](https://github.com/vonovak))

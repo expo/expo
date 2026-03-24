@@ -17,7 +17,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           name
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#name"
         >
           <span
@@ -170,7 +170,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           androidNavigationBar
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#androidnavigationbar"
         >
           <span
@@ -322,7 +322,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             visible
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#visible"
           >
             <span
@@ -434,7 +434,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               always
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#always"
             >
               <span
@@ -520,7 +520,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             backgroundColor
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#backgroundcolor"
           >
             <span
@@ -620,7 +620,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           intentFilters
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#intentfilters"
         >
           <span
@@ -800,7 +800,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             autoVerify
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#autoverify"
           >
             <span
@@ -885,7 +885,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#data"
           >
             <span
@@ -963,7 +963,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               host
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#host"
             >
               <span

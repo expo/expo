@@ -4,7 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- [android] add toolbar support ([#43970](https://github.com/expo/expo/pull/43970) by [@Ubax](https://github.com/Ubax))
+- [android] add support for menus in toolbar ([#43979](https://github.com/expo/expo/pull/43979) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -23,6 +28,7 @@
 - Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
 - Upgrade react-navigation to the latest version ([#43993](https://github.com/expo/expo/pull/43993) by [@Ubax](https://github.com/Ubax))
 - Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
+- add processHeaderItemsForPlatform ([#44051](https://github.com/expo/expo/pull/44051) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.2 — 2026-02-25
 

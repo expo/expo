@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Removed deprecated `setString` function. Use `setStringAsync` instead. ([#41758](https://github.com/expo/expo/pull/41758) by [@barthap](https://github.com/barthap))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 

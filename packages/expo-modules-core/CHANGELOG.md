@@ -4,12 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - [iOS] Added `Equatable` conformance to `Either` type. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - `NativeArrayBuffer` and `JavaScriptArrayBuffer` arguments now also accept typed arrays. ([#43082](https://github.com/expo/expo/pull/43082) by [@barthap](https://github.com/barthap))
 - [Android] Use the `RuntimeScheduler` to schedule tasks on the JS thread. ([#43481](https://github.com/expo/expo/pull/43481) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Add `nativeModule` look up function and `bundleURL` to AppContext. ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Added a polyfill for Swift [`Mutex`](https://developer.apple.com/documentation/synchronization/mutex) for older platform versions. ([#44122](https://github.com/expo/expo/pull/44122) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -20,6 +23,7 @@
 - [iOS] Fix crash that can occur when reloading JavaScript bundle due to object deallocating off the JavaScript thread. ([#43937](https://github.com/expo/expo/pull/43937) by [@cltnschlosser](https://github.com/cltnschlosser))
 - [iOS] Fixed `PersistentFileLog.readEntries` race condition by serializing reads on the dispatch queue. ([#43958](https://github.com/expo/expo/pull/43958) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Make access to module registry thread safe. ([#44042](https://github.com/expo/expo/pull/44042) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed runtime setup crashing in the old bridge module. ([#44121](https://github.com/expo/expo/pull/44121) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
@@ -27,6 +31,7 @@
 - [iOS] Decoupled Worklets integration into separate podspec. ([#42971](https://github.com/expo/expo/pull/42971) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Improved conversions of returned arrays and dictionaries with mixed element types. ([#42641](https://github.com/expo/expo/pull/42641) by [@barthap](https://github.com/barthap))
 - [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added broader colors support to convertibles. ([#44041](https://github.com/expo/expo/pull/44041) by [@kudo](https://github.com/kudo))
 
 ## 55.0.12 — 2026-02-25
 
