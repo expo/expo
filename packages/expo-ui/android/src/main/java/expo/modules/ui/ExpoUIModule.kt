@@ -210,8 +210,12 @@ class ExpoUIModule : Module() {
       ShapeContent(props)
     }
 
-    ExpoUIView("DividerView") { props: DividerProps ->
-      DividerContent(props)
+    ExpoUIView("HorizontalDividerView") { props: DividerProps ->
+      HorizontalDividerContent(props)
+    }
+
+    ExpoUIView("VerticalDividerView") { props: DividerProps ->
+      VerticalDividerContent(props)
     }
 
     ExpoUIView("DateTimePickerView", events = {

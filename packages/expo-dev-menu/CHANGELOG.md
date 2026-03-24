@@ -12,6 +12,7 @@
 
 - [iOS] Fix support for react-native 0.84 ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fix crash in FabState coerceTo ([#43752](https://github.com/expo/expo/pull/43752) by [@kot331107](https://github.com/kot331107))
+- [iOS] Fix react-native version resolution in podspec ([#44178](https://github.com/expo/expo/pull/44178) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
