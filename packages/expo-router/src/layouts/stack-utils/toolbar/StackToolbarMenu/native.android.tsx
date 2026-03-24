@@ -2,7 +2,7 @@
 import {
   DropdownMenu,
   DropdownMenuItem,
-  Divider,
+  HorizontalDivider,
   Icon,
   IconButton,
   Text as ComposeText,
@@ -50,7 +50,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   if (isNested && props.inline) {
     return (
       <>
-        <Divider />
+        <HorizontalDivider />
         {props.children}
       </>
     );

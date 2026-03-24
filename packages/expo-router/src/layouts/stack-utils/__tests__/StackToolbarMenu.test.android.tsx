@@ -40,7 +40,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
   return {
     DropdownMenu,
     DropdownMenuItem,
-    Divider: jest.fn(() => <View testID="Divider" />),
+    HorizontalDivider: jest.fn(() => <View testID="HorizontalDivider" />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
     Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
@@ -279,11 +279,11 @@ describe('NativeToolbarMenu', () => {
       );
     }
 
-    it('renders Divider and action inside root items', () => {
+    it('renders HorizontalDivider and action inside root items', () => {
       renderInline();
 
       const rootItems = screen.getByTestId('DropdownMenu.Items');
-      expect(within(rootItems).getByTestId('Divider')).toBeDefined();
+      expect(within(rootItems).getByTestId('HorizontalDivider')).toBeDefined();
       expect(within(rootItems).getByTestId('DropdownMenuItem')).toBeDefined();
     });
 

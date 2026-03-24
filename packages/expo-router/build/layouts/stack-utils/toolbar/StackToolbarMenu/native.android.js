@@ -35,7 +35,7 @@ const NativeToolbarMenu = (props) => {
     // Inline nested: render children directly with a divider separator
     if (isNested && props.inline) {
         return (<>
-        <jetpack_compose_1.Divider />
+        <jetpack_compose_1.HorizontalDivider />
         {props.children}
       </>);
     }
