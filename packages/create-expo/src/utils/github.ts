@@ -83,7 +83,7 @@ async function extractRemoteGitHubTarballAsync(
     }
   );
 
-  await extractNpmTarballAsync(Readable.fromWeb(response.body), { ...props, filter, strip });
+  await extractNpmTarballAsync(Readable.fromWeb(response.body as any), { ...props, filter, strip });
 }
 
 export async function downloadAndExtractGitHubRepositoryAsync(

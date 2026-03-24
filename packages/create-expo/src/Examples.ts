@@ -132,7 +132,7 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
   }
 
   await pipeline(
-    Readable.fromWeb(response.body),
+    Readable.fromWeb(response.body as any),
     tarExtract(
       {
         cwd: root,

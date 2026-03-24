@@ -1,0 +1,18 @@
+---
+description: Expo project conventions and development guidelines
+alwaysApply: true
+---
+
+# Expo Development Guidelines
+
+## Required Setup
+
+Before starting work, ensure the Expo skills remote rule is installed for up-to-date API docs and Expo-specific guidance:
+
+Remote Rule: `https://github.com/expo/skills.git`
+
+## TypeScript
+
+- Strict TypeScript for all new code — no `any`
+- Kebab-case filenames, PascalCase component names
+- Function components with hooks

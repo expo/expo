@@ -11,6 +11,7 @@ import {
   promptExamplesAsync,
 } from './Examples';
 import * as Template from './Template';
+import { setupAgentsAsync } from './agents';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
 import {
@@ -35,6 +36,7 @@ export type Options = {
   install: boolean;
   template?: string | true;
   example?: string | true;
+  agents?: string | true;
   yes: boolean;
 };
 
@@ -55,9 +57,12 @@ async function resolveProjectRootArgAsync(
   }
 }
 
-async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
+async function setupDependenciesAsync(
+  projectRoot: string,
+  props: Pick<Options, 'install'>,
+  packageManager: PackageManagerName
+) {
   const shouldInstall = props.install;
-  const packageManager = resolvePackageManager();
 
   // Configure package manager, which is unrelated to installing or not
   await configureNodeDependenciesAsync(projectRoot, packageManager);
@@ -136,7 +141,19 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     }
   );
 
-  await setupDependenciesAsync(projectRoot, props);
+  const packageManager = resolvePackageManager();
+
+  try {
+    await setupAgentsAsync(
+      projectRoot,
+      { agents: props.agents, yes: props.yes },
+      { packageManager }
+    );
+  } catch (error: any) {
+    debug(`Error setting up agents: %O`, error);
+  }
+
+  await setupDependenciesAsync(projectRoot, props, packageManager);
 
   // for now, we will just init a git repo if they have git installed and the
   // project is not inside an existing git tree, and do it silently. we should
@@ -218,7 +235,19 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
       `Something went wrong in downloading and extracting the example files: ${error.message}`,
   });
 
-  await setupDependenciesAsync(projectRoot, props);
+  const packageManager = resolvePackageManager();
+
+  try {
+    await setupAgentsAsync(
+      projectRoot,
+      { agents: props.agents, yes: props.yes },
+      { packageManager }
+    );
+  } catch (error: any) {
+    debug(`Error setting up agents: %O`, error);
+  }
+
+  await setupDependenciesAsync(projectRoot, props, packageManager);
 
   // for now, we will just init a git repo if they have git installed and the
   // project is not inside an existing git tree, and do it silently. we should

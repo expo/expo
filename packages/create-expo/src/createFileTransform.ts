@@ -12,7 +12,7 @@ export function sanitizedName(name: string) {
 }
 
 // Directories that can be added to the template with an underscore instead of a dot, e.g. `.vscode` and be added with `_vscode`.
-const SUPPORTED_DIRECTORIES = ['eas', 'vscode', 'github', 'cursor'];
+const SUPPORTED_DIRECTORIES = ['eas', 'vscode', 'github', 'cursor', 'claude', 'windsurf'];
 const SUPPORTED_DIRECTORIES_PATTERN = new RegExp(
   `(^|/|\\\\)_(${SUPPORTED_DIRECTORIES.join('|')})(/|\\\\|$)`
 );

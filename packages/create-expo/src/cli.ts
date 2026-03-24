@@ -42,6 +42,7 @@ async function run() {
         `    --no-install      Skip installing npm packages or CocoaPods`,
         chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,
         chalk`-e, --example {gray [name]}  Example name from {underline https://github.com/expo/examples}.`,
+        chalk`-a, --agents {gray <list>}   Configure AI coding agents (claude,cursor,windsurf,copilot)`,
         `-v, --version         Version number`,
         `-h, --help            Usage info`,
       ].join('\n'),
@@ -73,8 +74,12 @@ async function run() {
     const parsed = await resolveStringOrBooleanArgsAsync(argv, rawArgsMap, {
       '--template': Boolean,
       '--example': Boolean,
+      '--agents': Boolean,
       '-t': '--template',
       '-e': '--example',
+      '-a': '--agents',
+      // Note: --agents is only in extraArgs (not rawArgsMap) so it's
+      // treated as string-or-boolean via resolveStringOrBooleanArgsAsync
     });
 
     debug(`Default args:\n%O`, args);
@@ -85,6 +90,7 @@ async function run() {
       yes: !!args['--yes'],
       template: parsed.args['--template'],
       example: parsed.args['--example'],
+      agents: parsed.args['--agents'],
       install: !args['--no-install'],
     });
 

@@ -1,0 +1,41 @@
+# Expo Development Guidelines
+
+## Required Setup
+
+Before starting work, install the Expo skills for up-to-date API docs and Expo-specific guidance:
+
+`npx skills add expo/skills`
+
+## TypeScript
+
+- Strict TypeScript for all new code — no `any`
+- Kebab-case filenames, PascalCase component names
+- Function components with hooks
+
+## Expo Router Navigation
+
+File-based routing in `app/`:
+- `_layout.tsx` — navigation structure (stacks, tabs, drawers)
+- `(groupName)/` — route groups (no URL impact)
+- `+not-found.tsx` — 404 handler
+- `+api.ts` — server endpoints
+- `<Link href="/path">` for declarative navigation
+- `router.push("/path")` for imperative navigation
+- `useLocalSearchParams()` for route parameters
+
+## Library Preferences
+
+- **Images**: `expo-image` (not react-native `<Image>`)
+- **Audio**: `expo-audio` (not expo-av)
+- **Icons**: `expo-symbols`
+- **Animations**: `react-native-reanimated`
+- **Gestures**: `react-native-gesture-handler`
+- **Storage**: `expo-sqlite`, `expo-sqlite/kv-store`
+- **Platform**: `process.env.EXPO_OS` not `Platform.OS`
+
+## Styling
+
+- Use `flex` and `gap` for layout, not margins between siblings
+- `borderCurve: 'continuous'` for rounded corners
+- CSS `boxShadow` syntax instead of platform-specific shadow props
+- `contentInsetAdjustmentBehavior="automatic"` on ScrollViews

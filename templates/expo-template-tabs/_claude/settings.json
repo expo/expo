@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx expo start*)",
+      "Bash(npx expo install *)",
+      "Bash(npx expo lint*)",
+      "Bash(npx expo prebuild*)",
+      "Bash(npx expo run:android*)",
+      "Bash(npx expo run:ios*)",
+      "Bash(npx expo doctor)",
+      "Bash(npx expo export*)",
+      "Bash(npx expo customize*)"
+    ]
+  }
+}

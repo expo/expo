@@ -33,6 +33,38 @@ describe(modifyFileDuringPipe, () => {
       }).path
     ).toEqual('_package/.vscode/foo/_vscode/settings.json');
   });
+  it(`renames _claude to .claude`, () => {
+    expect(
+      modifyFileDuringPipe({
+        path: 'package/_claude/settings.json',
+        type: 'File',
+      }).path
+    ).toEqual('package/.claude/settings.json');
+  });
+  it(`renames _windsurf to .windsurf`, () => {
+    expect(
+      modifyFileDuringPipe({
+        path: 'package/_windsurf/rules/expo.md',
+        type: 'File',
+      }).path
+    ).toEqual('package/.windsurf/rules/expo.md');
+  });
+  it(`renames _cursor to .cursor`, () => {
+    expect(
+      modifyFileDuringPipe({
+        path: 'package/_cursor/rules/expo.mdc',
+        type: 'File',
+      }).path
+    ).toEqual('package/.cursor/rules/expo.mdc');
+  });
+  it(`renames _github to .github`, () => {
+    expect(
+      modifyFileDuringPipe({
+        path: 'package/_github/copilot-instructions.md',
+        type: 'File',
+      }).path
+    ).toEqual('package/.github/copilot-instructions.md');
+  });
 });
 
 describe(createGlobFilter, () => {
