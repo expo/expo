@@ -14,7 +14,7 @@
     "expo-blur": "~55.0.10",
     "expo-brownfield": "~55.0.15",
     "expo-build-properties": "~55.0.10",
-    "expo-camera": "~55.0.10",
+    "expo-camera": "~55.0.11",
     "expo-dev-client": "~55.0.18",
     "expo-image": "~55.0.6",
     "expo-linear-gradient": "~55.0.9",
