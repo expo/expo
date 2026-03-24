@@ -466,7 +466,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
         return null;
       })(),
-    ].filter((x): x is PluginItem => !!x) as PluginItem[],
+    ].filter((x): x is PluginItem => !!x),
   };
 }
 
