@@ -1,7 +1,7 @@
 import Combine
 internal import ExpoBrownfield
 
-public struct BrownfieldState {
+public struct ${{prefix}}BrownfieldState {
   public static func get(_ key: String) -> Any? {
     return BrownfieldStateInternal.shared.get(key)
   }
@@ -12,7 +12,7 @@ public struct BrownfieldState {
 
   @discardableResult
   public static func subscribe(
-    _ key: String, 
+    _ key: String,
     _ callback: @escaping (Any?) -> Void
   ) -> AnyCancellable {
     return BrownfieldStateInternal.shared.subscribe(key, callback)

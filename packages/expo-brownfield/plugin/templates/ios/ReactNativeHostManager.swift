@@ -10,10 +10,10 @@ import UIKit
 internal import EXDevMenu
 #endif
 
-public class ReactNativeHostManager {
-  public static let shared = ReactNativeHostManager()
+public class ${{prefix}}ReactNativeHostManager {
+  public static let shared = ${{prefix}}ReactNativeHostManager()
 
-  private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  private var reactNativeDelegate: ${{prefix}}ReactNativeDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
   private var firstLoadInitialized: Bool = false
   private var devMenuInitialized: Bool = false
@@ -62,7 +62,7 @@ public class ReactNativeHostManager {
   * Initializes a React Native instance
   */
   public func initializeInstance() {
-    let delegate = ReactNativeDelegate(turboModuleClasses: turboModuleClasses)
+    let delegate = ${{prefix}}ReactNativeDelegate(turboModuleClasses: turboModuleClasses)
     reactNativeFactory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
     reactNativeDelegate = delegate

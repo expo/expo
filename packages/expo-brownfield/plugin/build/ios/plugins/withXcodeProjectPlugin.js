@@ -33,9 +33,12 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
             'ExpoAppDelegate.swift',
             // ReactNativeDelegate
             'ReactNativeDelegate.swift',
+            // Typealiases for convenient access to prefixed types
+            'Typealiases.swift',
         ];
-        // Create files from templates
-        templateFiles.forEach((templateFile) => (0, utils_1.createFileFromTemplate)(templateFile, groupPath));
+        // Create files from templates with prefix for unique class names
+        const templateVars = { prefix: pluginConfig.targetName };
+        templateFiles.forEach((templateFile) => (0, utils_1.createFileFromTemplate)(templateFile, groupPath, templateVars));
         // Apply patch to ExpoAppDelegate.swift to make it compatible with the brownfield framework
         (0, utils_1.applyPatchToFile)('ExpoAppDelegate.patch', node_path_1.default.join(groupPath, 'ExpoAppDelegate.swift'));
         // Create and properly add a new group for the framework

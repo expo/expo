@@ -2,6 +2,7 @@ export interface PluginConfig {
     bundleIdentifier: string;
     targetName: string;
     buildReactNativeFromSource: boolean;
+    multipleFrameworks: boolean;
 }
 export type IOSPluginProps = Partial<PluginConfig>;
 export type PluginProps = IOSPluginProps | undefined;

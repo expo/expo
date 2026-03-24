@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addPrebuiltSettings = exports.addNewPodsTarget = void 0;
+exports.addPrebuiltSettings = exports.addNewPodsTarget = exports.addManglePlugin = void 0;
 const getTargetNameLines = (targetName) => {
     return [`  target '${targetName}' do`, '    inherit! :complete', '  end'];
 };
@@ -19,6 +19,57 @@ const getPrebuiltSettingsLines = () => {
       end
     end`.split('\n');
 };
+const MANGLE_REQUIRE_LINE = `require File.join(File.dirname(\`node --print "require.resolve('expo-brownfield/package.json')"\`.strip), "ios/scripts/mangle")`;
+const getMangleCallLine = (targetName) => {
+    return `    mangle_pods(installer, targets: ['${targetName}'], mangle_prefix: '${targetName}_')`;
+};
+/**
+ * Add cocoapods-mangle to the Podfile.
+ * This adds a post_install script so that all ObjC symbols in pod dependencies
+ * are prefixed, allowing multiple brownfield frameworks to coexist in
+ * the same host app without duplicate symbol errors.
+ */
+const addManglePlugin = (podfile, targetName) => {
+    let podFileLines = podfile.split('\n');
+    // Insert after existing require/plugin/source lines at the top
+    const lastRequireIndex = podFileLines.reduce((acc, line, index) => {
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith('require ') ||
+            trimmed.startsWith('plugin ') ||
+            trimmed.startsWith('source ')) {
+            return index;
+        }
+        return acc;
+    }, -1);
+    podFileLines.splice(lastRequireIndex + 1, 0, MANGLE_REQUIRE_LINE);
+    // Add mangle_pods call at the end of post_install block if not already present
+    if (!podFileLines.some((line) => line.includes('mangle_pods'))) {
+        const postInstallIndex = podFileLines.findIndex((line) => line.includes('post_install do |installer|'));
+        if (postInstallIndex !== -1) {
+            // Find the closing `end` of the post_install block
+            let depth = 0;
+            let postInstallEndIndex = -1;
+            for (let i = postInstallIndex; i < podFileLines.length; i++) {
+                const trimmed = podFileLines[i].trimStart();
+                if (trimmed.match(/\bdo\b/) || trimmed.match(/^if\b/) || trimmed.match(/^unless\b/)) {
+                    depth++;
+                }
+                if (trimmed === 'end' || trimmed.startsWith('end ')) {
+                    depth--;
+                    if (depth === 0) {
+                        postInstallEndIndex = i;
+                        break;
+                    }
+                }
+            }
+            if (postInstallEndIndex !== -1) {
+                podFileLines.splice(postInstallEndIndex, 0, getMangleCallLine(targetName));
+            }
+        }
+    }
+    return podFileLines.join('\n');
+};
+exports.addManglePlugin = addManglePlugin;
 const addNewPodsTarget = (podfile, targetName) => {
     const targetLines = getTargetNameLines(targetName);
     let podFileLines = podfile.split('\n');

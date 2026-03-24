@@ -1,6 +1,6 @@
 internal import ExpoBrownfield
 
-public struct BrownfieldMessaging {
+public struct ${{prefix}}BrownfieldMessaging {
   @discardableResult
   public static func addListener(_ callback: @escaping ([String: Any?]) -> Void) -> String {
     return BrownfieldMessagingInternal.shared.addListener(callback)
