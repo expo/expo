@@ -661,6 +661,51 @@ it('push should also add anchor routes', () => {
   });
 });
 
+it('preserves params containing parentheses', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="index" />,
+    test: function Test() {
+      const params = useLocalSearchParams();
+      return <Text testID="params">{JSON.stringify(params)}</Text>;
+    },
+  });
+
+  act(() =>
+    router.push({
+      pathname: '/test',
+      params: { a: '(value)', b: 'normal' },
+    })
+  );
+
+  expect(screen).toHavePathname('/test');
+  const params = JSON.parse(screen.getByTestId('params').props.children);
+  expect(params.a).toBe('(value)');
+  expect(params.b).toBe('normal');
+});
+
+it('preserves params with phone number format containing parentheses', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="index" />,
+    test: function Test() {
+      const params = useLocalSearchParams();
+      return <Text testID="params">{JSON.stringify(params)}</Text>;
+    },
+  });
+
+  act(() =>
+    router.push({
+      pathname: '/test',
+      params: { phone: '(123) 456-7890' },
+    })
+  );
+
+  expect(screen).toHavePathname('/test');
+  const params = JSON.parse(screen.getByTestId('params').props.children);
+  expect(params.phone).toBe('(123) 456-7890');
+});
+
 describe('singular', () => {
   test('can dynamically route using singular', () => {
     renderRouter(
