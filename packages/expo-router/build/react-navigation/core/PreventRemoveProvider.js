@@ -60,6 +60,7 @@ const transformPreventedRoutes = (preventedRoutesMap) => {
  * Component used for managing which routes have to be prevented from removal in native-stack.
  */
 function PreventRemoveProvider({ children }) {
+    'use no memo';
     const [parentId] = React.useState(() => (0, non_secure_1.nanoid)());
     const [preventedRoutesMap, setPreventedRoutesMap] = React.useState(() => new Map());
     const navigation = React.useContext(NavigationHelpersContext_1.NavigationHelpersContext);
@@ -67,6 +68,7 @@ function PreventRemoveProvider({ children }) {
     const preventRemoveContextValue = React.useContext(PreventRemoveContext_1.PreventRemoveContext);
     // take `setPreventRemove` from parent context - if exist it means we're in a nested context
     const setParentPrevented = preventRemoveContextValue?.setPreventRemove;
+    // TODO(@ubax): RN Migration - For some reason this breaks with react compiler
     const setPreventRemove = (0, useLatestCallback_1.default)((id, routeKey, preventRemove) => {
         if (preventRemove &&
             (navigation == null ||
@@ -102,6 +104,7 @@ function PreventRemoveProvider({ children }) {
                 setParentPrevented(parentId, route.key, false);
             };
         }
+        return undefined;
     }, [parentId, isPrevented, route?.key, setParentPrevented]);
     const value = React.useMemo(() => ({
         setPreventRemove,
