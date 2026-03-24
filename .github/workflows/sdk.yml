@@ -14,12 +14,14 @@ on:
       - tools/**
       - packages/**
       - pnpm-lock.yaml
+      - pnpm-workspace.yaml
   pull_request:
     paths:
       - .github/workflows/sdk.yml
       - tools/**
       - packages/**
       - pnpm-lock.yaml
+      - pnpm-workspace.yaml
   schedule:
     - cron: 0 14 * * *
 
