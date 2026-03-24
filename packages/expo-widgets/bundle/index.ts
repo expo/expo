@@ -5,6 +5,7 @@ import * as modifiers from '@expo/ui/swift-ui/modifiers';
 
 import { decorateInteractiveTargets } from './decorator';
 import * as jsxRuntime from './jsx-runtime-stub';
+import * as ReactNative from './react-native-stub';
 import * as React from './react-stub';
 
 type Dictionary = Record<string, unknown>;
@@ -61,6 +62,7 @@ Object.assign(globalThis, {
   ...modifiers,
   ...jsxRuntime,
   ...React,
+  ...ReactNative,
   React,
   __expoWidgetRender,
   __expoWidgetHandlePress,
