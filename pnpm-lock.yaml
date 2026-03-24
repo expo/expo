@@ -1259,6 +1259,12 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-asset:
+        specifier: workspace:*
+        version: link:../../packages/expo-asset
+      expo-build-properties:
+        specifier: workspace:*
+        version: link:../../packages/expo-build-properties
       expo-haptics:
         specifier: workspace:*
         version: link:../../packages/expo-haptics

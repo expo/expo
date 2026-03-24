@@ -63,6 +63,8 @@
     "@expo/dom-webview": "workspace:*",
     "@expo/vector-icons": "^15.0.2",
     "expo": "workspace:*",
+    "expo-asset": "workspace:*",
+    "expo-build-properties": "workspace:*",
     "expo-haptics": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-router": "workspace:*",
