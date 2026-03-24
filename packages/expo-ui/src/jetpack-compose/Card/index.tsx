@@ -40,9 +40,11 @@ function createCardComponent<P extends { modifiers?: ModifierConfig[] }>(
   viewName: string
 ): React.ComponentType<P> {
   const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
-  return function CardComponent(props: P) {
+  function Component(props: P) {
     return <NativeView {...transformProps(props)} />;
-  };
+  }
+  Component.displayName = viewName;
+  return Component;
 }
 
 // region Card

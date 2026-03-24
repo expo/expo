@@ -2,7 +2,7 @@ import {
   Button,
   Checkbox,
   DropdownMenu,
-  Divider,
+  HorizontalDivider,
   DropdownMenuItem,
   Host,
   Icon,
@@ -221,7 +221,7 @@ export default function DropdownMenuScreen() {
                   <Icon source={homeIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
               </DropdownMenuItem>
-              <Divider />
+              <HorizontalDivider />
               <DropdownMenu
                 expanded={submenuExpanded}
                 onDismissRequest={() => setSubmenuExpanded(false)}>
@@ -272,7 +272,7 @@ export default function DropdownMenuScreen() {
                   </DropdownMenuItem>
                 </DropdownMenu.Items>
               </DropdownMenu>
-              <Divider />
+              <HorizontalDivider />
               <DropdownMenuItem
                 onClick={() => {
                   setSectionsMenuExpanded(false);
