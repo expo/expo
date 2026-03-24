@@ -124,6 +124,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-background-fetch:
+        specifier: workspace:*
+        version: link:../../packages/expo-background-fetch
       expo-brownfield:
         specifier: workspace:*
         version: link:../../packages/expo-brownfield
@@ -136,12 +139,18 @@ importers:
       expo-dev-client:
         specifier: workspace:*
         version: link:../../packages/expo-dev-client
+      expo-font:
+        specifier: workspace:*
+        version: link:../../packages/expo-font
       expo-image:
         specifier: workspace:*
         version: link:../../packages/expo-image
       expo-insights:
         specifier: workspace:*
         version: link:../../packages/expo-insights
+      expo-location:
+        specifier: workspace:*
+        version: link:../../packages/expo-location
       expo-network-addons:
         specifier: workspace:*
         version: link:../../packages/expo-network-addons
@@ -154,9 +163,15 @@ importers:
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
+      expo-tracking-transparency:
+        specifier: workspace:*
+        version: link:../../packages/expo-tracking-transparency
       expo-video:
         specifier: workspace:*
         version: link:../../packages/expo-video
+      expo-web-browser:
+        specifier: workspace:*
+        version: link:../../packages/expo-web-browser
       lottie-react-native:
         specifier: ^7.3.4
         version: 7.3.6(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
