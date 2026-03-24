@@ -37,3 +37,5 @@ patchedDependencies:
   react-server-dom-webpack: patches/react-server-dom-webpack.patch
 
 preferWorkspacePackages: true
+
+minimumReleaseAge: 1440
