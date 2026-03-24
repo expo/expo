@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updateLayoutParams
 import com.canhub.cropper.CropImageActivity
 import com.canhub.cropper.CropImageOptions
@@ -112,13 +113,16 @@ class ExpoCropImageActivity : CropImageActivity() {
     options.toolbarTitleColor = toolbarIconColor
 
     window.run {
+      val statusBarView = View(context).apply { setBackgroundColor(toolbarColor) }
+
       WindowCompat.enableEdgeToEdge(this)
 
-      decorView.setBackgroundColor(activityBackgroundColor)
-
-      val statusBarView = View(context).apply {
-        setBackgroundColor(toolbarColor)
+      WindowInsetsControllerCompat(this, decorView).run {
+        isAppearanceLightStatusBars = !isNight
+        isAppearanceLightNavigationBars = !isNight
       }
+
+      decorView.setBackgroundColor(activityBackgroundColor)
 
       addContentView(statusBarView,
         ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0))
