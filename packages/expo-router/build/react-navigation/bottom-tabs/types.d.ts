@@ -104,7 +104,7 @@ export type BottomTabNavigationOptions = HeaderOptions & {
     /**
      * Style object for the tab icon.
      */
-    tabBarIconStyle?: StyleProp<TextStyle>;
+    tabBarIconStyle?: StyleProp<ViewStyle>;
     /**
      * Text to show in a badge on the tab icon.
      */
