@@ -12,6 +12,15 @@ config.resolver.assetExts.push(
   'wasm' // For expo-sqlite on web
 );
 
+// With pnpm, dependencies of workspace apps are not hoisted to the root node_modules.
+// Metro needs to know where to find node_modules for bare-expo, NCL and test-suite dependencies.
+config.resolver.nodeModulesPaths = [
+  path.join(__dirname, 'node_modules'),
+  path.join(monorepoRoot, 'node_modules'),
+  path.join(monorepoRoot, 'apps/native-component-list/node_modules'),
+  path.join(monorepoRoot, 'apps/test-suite/node_modules'),
+];
+
 // Minimize the "watched" folders that Metro crawls through to speed up Metro in big monorepos.
 // Note, omitting folders disables Metro from resolving files within these folders
 // This also happens when symlinks falls within these folders, but the real location doesn't.

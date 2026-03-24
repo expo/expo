@@ -29,7 +29,7 @@ const helper_module_imports_1 = require("@babel/helper-module-imports");
 const node_path_1 = __importDefault(require("node:path"));
 function hasModule(name) {
     try {
-        return !!require.resolve(name);
+        return !!require.resolve(name, { paths: [process.cwd()] });
     }
     catch (error) {
         if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {

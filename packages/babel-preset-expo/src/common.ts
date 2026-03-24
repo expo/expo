@@ -6,7 +6,7 @@ import path from 'node:path';
 
 export function hasModule(name: string): boolean {
   try {
-    return !!require.resolve(name);
+    return !!require.resolve(name, { paths: [process.cwd()] });
   } catch (error: any) {
     if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
       return false;

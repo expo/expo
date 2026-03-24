@@ -451,9 +451,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       hasModule('react-native-worklets') &&
       platformOptions.worklets !== false &&
       platformOptions.reanimated !== false
-        ? [require('react-native-worklets/plugin')]
+        ? [require(require.resolve('react-native-worklets/plugin', { paths: [process.cwd()] }))]
         : hasModule('react-native-reanimated') &&
-          platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
+          platformOptions.reanimated !== false && [
+            require(require.resolve('react-native-reanimated/plugin', { paths: [process.cwd()] })),
+          ],
     ].filter(Boolean) as PluginItem[],
   };
 }
