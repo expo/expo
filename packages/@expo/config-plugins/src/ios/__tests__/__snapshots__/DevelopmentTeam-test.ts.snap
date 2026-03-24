@@ -268,7 +268,6 @@ exports[`DevelopmentTeam module setDevelopmentTeamForPbxproj adds the \`DEVELOPM
 				SWIFT_OBJC_BRIDGING_HEADER = "HelloWorld/HelloWorld-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TVOS_DEPLOYMENT_TARGET = 16.4;
 				VERSIONING_SYSTEM = "apple-generic";
 				DEVELOPMENT_TEAM = X0XX00XXXX;
 			};
@@ -297,7 +296,6 @@ exports[`DevelopmentTeam module setDevelopmentTeamForPbxproj adds the \`DEVELOPM
 				PRODUCT_NAME = HelloWorld;
 				SWIFT_OBJC_BRIDGING_HEADER = "HelloWorld/HelloWorld-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TVOS_DEPLOYMENT_TARGET = 16.4;
 				VERSIONING_SYSTEM = "apple-generic";
 				DEVELOPMENT_TEAM = X0XX00XXXX;
 			};
