@@ -1,4 +1,3 @@
-import { getActionFromState, LinkingOptions } from '@react-navigation/native';
 import { Platform } from 'expo-modules-core';
 
 import { RouteNode } from './Route';
@@ -9,6 +8,7 @@ import { applyRedirects } from './getRoutesRedirects';
 import { UrlObject } from './global-state/routeInfo';
 import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath, subscribe } from './link/linking';
+import { getActionFromState, LinkingOptions } from './react-navigation/native';
 import { NativeIntent, RequireContext } from './types';
 
 export function getNavigationConfig(

@@ -1,0 +1,1 @@
+{"version":3,"file":"DrawerContentScrollView.d.ts","sourceRoot":"","sources":["../../../../src/react-navigation/drawer/views/DrawerContentScrollView.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAC/B,OAAO,EAAE,UAAU,EAAE,KAAK,eAAe,EAAc,MAAM,cAAc,CAAC;AAyC5E,eAAO,MAAM,uBAAuB;cAlCxB,KAAK,CAAC,SAAS;oCAkC0D,CAAC"}

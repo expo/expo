@@ -1,15 +1,15 @@
 'use client';
-import type {
-  NativeStackHeaderItemMenu,
-  NativeStackHeaderItemMenuAction,
-  NativeStackHeaderItemMenuSubmenu,
-} from '@react-navigation/native-stack';
 import { Children, useMemo, type ReactNode } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { PlatformIconIOS } from 'react-native-screens';
 
 import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
 import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
+import type {
+  NativeStackHeaderItemMenu,
+  NativeStackHeaderItemMenuAction,
+  NativeStackHeaderItemMenuSubmenu,
+} from '../../../../react-navigation/native-stack';
 import {
   filterAllowedChildrenElements,
   getFirstChildOfType,

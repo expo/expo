@@ -24,4 +24,5 @@ export type * from './types';
 export { Badge, BadgeProps, Icon, IconProps, Label, LabelProps, VectorIcon, VectorIconProps, } from './primitives';
 export { unstable_navigationEvents } from './navigationEvents';
 export { Tabs } from './layouts/Tabs';
+export * from './react-navigation';
 //# sourceMappingURL=exports.d.ts.map

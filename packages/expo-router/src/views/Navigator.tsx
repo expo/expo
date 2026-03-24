@@ -1,7 +1,6 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
-import { RouterFactory, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
 import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +9,7 @@ import { Screen } from './Screen';
 import { useContextKey } from '../Route';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
+import { RouterFactory, useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {

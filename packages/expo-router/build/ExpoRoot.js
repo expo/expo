@@ -35,7 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = ExpoRoot;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -48,6 +47,7 @@ const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
 const primitives_1 = require("./primitives");
+const native_1 = require("./react-navigation/native");
 const screensFeatureFlags_1 = require("./screensFeatureFlags");
 const statusbar_1 = require("./utils/statusbar");
 const url_1 = require("./utils/url");

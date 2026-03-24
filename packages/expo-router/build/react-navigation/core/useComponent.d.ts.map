@@ -1,0 +1,1 @@
+{"version":3,"file":"useComponent.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/core/useComponent.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAE/B,KAAK,MAAM,GAAG,CAAC,QAAQ,EAAE,KAAK,CAAC,SAAS,KAAK,KAAK,CAAC,GAAG,CAAC,OAAO,CAAC;AAW/D,wBAAgB,YAAY,CAAC,MAAM,EAAE,MAAM,kBAYN;IAAE,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAA;CAAE,uBAWjE"}

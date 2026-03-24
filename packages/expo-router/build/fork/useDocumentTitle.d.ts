@@ -1,5 +1,5 @@
-import type { DocumentTitleOptions, NavigationContainerRef, ParamListBase } from '@react-navigation/native';
 import * as React from 'react';
+import type { DocumentTitleOptions, NavigationContainerRef, ParamListBase } from '../react-navigation/native';
 /**
  * Set the document title for the active screen
  */

@@ -1,5 +1,4 @@
 'use client';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { useMemo, type ReactNode } from 'react';
 
 import { StackToolbarButton } from './StackToolbarButton';
@@ -12,6 +11,7 @@ import { processHeaderItemsForPlatform } from './processHeaderItemsForPlatform';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { RouterToolbarHost } from '../../../toolbar/native';
 
 export interface StackToolbarProps {

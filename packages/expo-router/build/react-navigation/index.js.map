@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/react-navigation/index.ts"],"names":[],"mappings":";;;AAAA,mCAA8F;AAArF,uGAAA,aAAa,OAAA;AAAE,mGAAA,SAAS,OAAA;AAAE,sGAAA,YAAY,OAAA;AAAE,kGAAA,QAAQ,OAAA;AAAE,0GAAA,gBAAgB,OAAA","sourcesContent":["export { ThemeProvider, DarkTheme, DefaultTheme, useTheme, usePreventRemove } from './native';\n"]}

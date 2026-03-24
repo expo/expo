@@ -35,11 +35,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLinking = useLinking;
 exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
-const native_1 = require("@react-navigation/native");
 const ExpoLinking = __importStar(require("expo-linking"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("./extractPathFromURL");
+const native_1 = require("../react-navigation/native");
 const linkingHandlers = [];
 function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialURL = () => getInitialURLWithTimeout(), subscribe = (listener) => {
     const callback = ({ url }) => listener(url);

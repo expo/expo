@@ -1,0 +1,1 @@
+{"version":3,"file":"useDocumentTitle.native.js","sourceRoot":"","sources":["../../../src/react-navigation/native/useDocumentTitle.native.tsx"],"names":[],"mappings":";;AAAA,4CAEC;AAFD,SAAgB,gBAAgB;IAC9B,4BAA4B;AAC9B,CAAC","sourcesContent":["export function useDocumentTitle() {\n  // Noop for native platforms\n}\n"]}

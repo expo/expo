@@ -1,6 +1,6 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { type ReactNode } from 'react';
 import { type ToolbarPlacement } from './context';
+import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 export interface StackToolbarProps {
     /**
      * Child elements to compose the toolbar. Can include Stack.Toolbar.Button,

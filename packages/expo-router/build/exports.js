@@ -32,6 +32,9 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tabs = exports.unstable_navigationEvents = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useIsFocused = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.router = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
@@ -85,4 +88,5 @@ var navigationEvents_1 = require("./navigationEvents");
 Object.defineProperty(exports, "unstable_navigationEvents", { enumerable: true, get: function () { return navigationEvents_1.unstable_navigationEvents; } });
 var Tabs_1 = require("./layouts/Tabs");
 Object.defineProperty(exports, "Tabs", { enumerable: true, get: function () { return Tabs_1.Tabs; } });
+__exportStar(require("./react-navigation"), exports);
 //# sourceMappingURL=exports.js.map

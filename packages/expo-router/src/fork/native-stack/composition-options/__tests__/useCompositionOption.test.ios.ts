@@ -8,10 +8,10 @@ jest.mock('../../../../views/useSafeLayoutEffect', () => ({
   useSafeLayoutEffect: require('react').useLayoutEffect,
 }));
 
-jest.mock('@react-navigation/native', () => {
+jest.mock('../../../../react-navigation/native', () => {
   const actual = jest.requireActual(
-    '@react-navigation/native'
-  ) as typeof import('@react-navigation/native');
+    '../../../../react-navigation/native'
+  ) as typeof import('../../../../react-navigation/native');
   return {
     ...actual,
     useRoute: () => ({ key: 'test-route', name: 'test' }),

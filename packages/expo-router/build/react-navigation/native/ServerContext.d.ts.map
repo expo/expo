@@ -1,0 +1,1 @@
+{"version":3,"file":"ServerContext.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/native/ServerContext.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAE/B,MAAM,MAAM,iBAAiB,GAAG;IAC9B,QAAQ,CAAC,EAAE;QACT,QAAQ,EAAE,MAAM,CAAC;QACjB,MAAM,EAAE,MAAM,CAAC;KAChB,CAAC;CACH,CAAC;AAEF,eAAO,MAAM,aAAa,8CAAgE,CAAC"}

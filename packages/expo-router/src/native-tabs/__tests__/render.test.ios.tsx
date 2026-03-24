@@ -1,4 +1,3 @@
-import { usePreventRemove } from '@react-navigation/core';
 import { screen } from '@testing-library/react-native';
 import React, { isValidElement } from 'react';
 import { Button, View } from 'react-native';
@@ -8,6 +7,7 @@ import { usePathname } from '../../hooks';
 import { router } from '../../imperative-api';
 import { Stack } from '../../layouts/Stack';
 import { Redirect } from '../../link/Redirect';
+import { usePreventRemove } from '../../react-navigation/core';
 import { act, fireEvent, renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';

@@ -1,5 +1,5 @@
-import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '@react-navigation/native-stack';
 import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
+import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '../../../../react-navigation/native-stack';
 export type { StackToolbarMenuProps, NativeToolbarMenuProps, StackToolbarMenuActionProps, NativeToolbarMenuActionProps, } from './types';
 /**
  * Use as `Stack.Toolbar.Menu` to provide menus in iOS toolbar.

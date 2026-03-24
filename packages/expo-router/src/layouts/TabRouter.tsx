@@ -1,8 +1,8 @@
 'use client';
-import { type NavigationAction, type StackActionType } from '@react-navigation/native';
 import type { ComponentProps } from 'react';
 
 import type { BottomTabNavigator } from './TabsClient';
+import { type NavigationAction, type StackActionType } from '../react-navigation/native';
 
 export const tabRouterOverride: NonNullable<
   ComponentProps<BottomTabNavigator>['UNSTABLE_router']

@@ -1,9 +1,9 @@
-import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import { Children, type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
+import type { NativeStackHeaderItemButton } from '../../../react-navigation/native-stack';
 import { getFirstChildOfType } from '../../../utils/children';
 import { convertTextStyleToRNTextStyle, type BasicTextStyle } from '../../../utils/font';
 

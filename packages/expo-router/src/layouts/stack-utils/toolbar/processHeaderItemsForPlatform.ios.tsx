@@ -1,4 +1,3 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React, { Fragment, isValidElement, type ReactNode } from 'react';
 
 import {
@@ -12,6 +11,7 @@ import {
 } from './StackToolbarSpacer';
 import { convertStackToolbarViewPropsToRNHeaderItem, StackToolbarView } from './StackToolbarView';
 import type { ToolbarPlacement } from './context';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { isChildOfType } from '../../../utils/children';
 
 function convertToolbarChildrenToUnstableItems(

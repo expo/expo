@@ -1,16 +1,16 @@
+import * as ExpoLinking from 'expo-linking';
+import * as React from 'react';
+import { Linking, Platform } from 'react-native';
+
+import { extractExpoPathFromURL } from './extractPathFromURL';
+import { LinkingOptions } from '../react-navigation/native';
 import {
   getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
   type ParamListBase,
   useNavigationIndependentTree,
-} from '@react-navigation/native';
-import { LinkingOptions } from '@react-navigation/native';
-import * as ExpoLinking from 'expo-linking';
-import * as React from 'react';
-import { Linking, Platform } from 'react-native';
-
-import { extractExpoPathFromURL } from './extractPathFromURL';
+} from '../react-navigation/native';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 

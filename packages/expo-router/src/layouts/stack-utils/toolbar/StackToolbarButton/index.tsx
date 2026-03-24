@@ -1,9 +1,9 @@
 'use client';
-import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import { Children, useMemo } from 'react';
 
 import { NativeToolbarButton } from './native';
 import type { StackToolbarButtonProps } from './types';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../../utils/children';
 import { useToolbarPlacement } from '../context';
 import {

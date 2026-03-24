@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMemoryHistory = createMemoryHistory;
+// Forked from React Navigation in order to use a custom `useLinking` function.
+// https://github.com/react-navigation/react-navigation/blob/main/packages/native/src/createMemoryHistory.tsx
+// Look for 'START OF FORK' comments
+// Currently no forked behaviour.
 const non_secure_1 = require("nanoid/non-secure");
 function createMemoryHistory() {
     let index = 0;

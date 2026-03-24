@@ -1,0 +1,1 @@
+{"version":3,"file":"checkSerializable.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/core/checkSerializable.tsx"],"names":[],"mappings":"AAkEA,wBAAgB,iBAAiB,CAAC,CAAC,EAAE;IAAE,CAAC,GAAG,EAAE,MAAM,GAAG,GAAG,CAAA;CAAE;kBA7DvC,IAAI;;kBAEJ,KAAK;cACT,CAAC,MAAM,GAAG,MAAM,CAAC,EAAE;YACrB,MAAM;EA2DnB"}

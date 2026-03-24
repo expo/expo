@@ -1,7 +1,7 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import type { ReactNode } from 'react';
 
 import type { ToolbarPlacement } from './context';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 
 /**
  * Default/web noop. On iOS, the `.ios.tsx` variant converts children to
