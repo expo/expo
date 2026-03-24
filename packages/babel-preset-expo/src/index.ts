@@ -16,7 +16,6 @@ import {
   getIsServer,
   getReactCompiler,
   getMetroSourceType,
-  hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
@@ -28,6 +27,7 @@ import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plu
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
+import { hasModule, resolveModule } from './utils/resolveModule';
 import { widgetsPlugin } from './widgets-plugin';
 
 type BabelPresetExpoPlatformOptions = {
@@ -289,13 +289,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(expoInlineManifestPlugin);
   }
 
-  extraPlugins.push(expoRouterBabelPlugin);
-  // Process `loader()` functions for client, loader and server bundles (excluding RSC)
-  // - Client bundles: Remove loader exports, they run on server only
-  // - Server bundles: Keep loader exports (needed for SSG)
-  // - Loader-only bundles: Keep only loader exports, remove everything else
-  if (!isReactServer) {
-    extraPlugins.push(serverDataLoadersPlugin);
+  if (hasModule(api, 'expo-router/package.json')) {
+    extraPlugins.push(expoRouterBabelPlugin);
+    // Process `loader()` functions for client, loader and server bundles (excluding RSC)
+    // - Client bundles: Remove loader exports, they run on server only
+    // - Server bundles: Keep loader exports (needed for SSG)
+    // - Loader-only bundles: Keep only loader exports, remove everything else
+    if (!isReactServer) {
+      extraPlugins.push(serverDataLoadersPlugin);
+    }
   }
 
   extraPlugins.push(reactClientReferencesPlugin);
@@ -315,7 +317,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // Transform widget component JSX expressions to capture widget components for native-side evaluation.
   // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
-  if (hasModule('expo-widgets')) {
+  if (hasModule(api, 'expo-widgets/package.json')) {
     extraPlugins.push(widgetsPlugin);
   }
 
@@ -446,15 +448,25 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         platformOptions.decorators ?? { legacy: true },
       ],
 
-      // Automatically add `react-native-reanimated/plugin` when the package is installed.
-      // TODO: Move to be a customTransformOption.
-      hasModule('react-native-worklets') &&
-      platformOptions.worklets !== false &&
-      platformOptions.reanimated !== false
-        ? [require('react-native-worklets/plugin')]
-        : hasModule('react-native-reanimated') &&
-          platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
-    ].filter(Boolean) as PluginItem[],
+      // Automatically add worklets or reanimated plugin when package is installed.
+      ((): PluginItem | null => {
+        if (platformOptions.worklets !== false && platformOptions.reanimated !== false) {
+          const workletsPlugin = resolveModule(api, 'react-native-worklets/plugin');
+          if (workletsPlugin) {
+            return [require(workletsPlugin)];
+          }
+        }
+
+        if (platformOptions.reanimated !== false) {
+          const reanimatedPlugin = resolveModule(api, 'react-native-reanimated/plugin');
+          if (reanimatedPlugin) {
+            return [require(reanimatedPlugin)];
+          }
+        }
+
+        return null;
+      })(),
+    ].filter((x): x is PluginItem => !!x),
   };
 }
 
