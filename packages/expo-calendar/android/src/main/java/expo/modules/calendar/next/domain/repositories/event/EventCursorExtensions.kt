@@ -30,10 +30,8 @@ fun Cursor.toEventEntity(): EventEntity {
       CalendarId(it)
     },
     description = getOptionalString(CalendarContract.Events.DESCRIPTION),
-    dtEnd = getOptionalLong(CalendarContract.Events.DTEND)
-      ?: throw IllegalStateException("event end date must not be null"),
-    dtStart = getOptionalLong(CalendarContract.Events.DTSTART)
-      ?: throw IllegalStateException("event start date must not be null"),
+    dtEnd = getOptionalLong(CalendarContract.Events.DTEND),
+    dtStart = getOptionalLong(CalendarContract.Events.DTSTART),
     eventEndTimezone = getOptionalString(CalendarContract.Events.EVENT_END_TIMEZONE),
     eventLocation = getOptionalString(CalendarContract.Events.EVENT_LOCATION),
     eventTimezone = getOptionalString(CalendarContract.Events.EVENT_TIMEZONE),
