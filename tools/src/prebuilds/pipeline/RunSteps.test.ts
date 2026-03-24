@@ -2,14 +2,20 @@
  * Tests for RunSteps helper functions:
  *  - resolveFlavorTemplatedPath
  *  - sortPackagesByDependencies
+ *  - collectSharedSPMDependencies
  *  - expandWithUnbuiltDependencies (with mocked fs/getPackageByName)
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { resolveFlavorTemplatedPath, sortPackagesByDependencies, CACHE_DEPS } from './RunSteps';
+import {
+  resolveFlavorTemplatedPath,
+  sortPackagesByDependencies,
+  collectSharedSPMDependencies,
+  CACHE_DEPS,
+} from './RunSteps';
 import type { SPMPackageSource } from '../ExternalPackage';
-import type { SPMProduct } from '../SPMConfig.types';
+import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
 
 // ---------------------------------------------------------------------------
 // Stub helpers
@@ -195,5 +201,106 @@ describe('CACHE_DEPS', () => {
 
   it('does not contain non-cache names', () => {
     assert.ok(!CACHE_DEPS.has('expo-modules-core'));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// collectSharedSPMDependencies
+// ---------------------------------------------------------------------------
+
+function makeSPMDep(
+  productName: string,
+  url: string = `https://github.com/example/${productName}.git`
+): SPMPackageDependencyConfig {
+  return { url, productName, version: { exact: '1.0.0' } };
+}
+
+function makeProductWithSPMDeps(
+  name: string,
+  spmPackages: SPMPackageDependencyConfig[]
+): SPMProduct {
+  return {
+    name,
+    podName: name,
+    platforms: ['iOS(.v15)'],
+    targets: [],
+    spmPackages,
+  };
+}
+
+describe('collectSharedSPMDependencies', () => {
+  it('returns empty array when no packages have spmPackages', () => {
+    const a = makePkg('a', [makeProduct('A')]);
+    const result = collectSharedSPMDependencies([a]);
+    assert.deepEqual(result, []);
+  });
+
+  it('collects SPM deps from a single package', () => {
+    const sdwebimage = makeSPMDep('SDWebImage');
+    const product = makeProductWithSPMDeps('ExpoImage', [sdwebimage]);
+    const a = makePkg('expo-image', [product]);
+    const result = collectSharedSPMDependencies([a]);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].dep.productName, 'SDWebImage');
+    assert.deepEqual(result[0].usedBy, ['expo-image']);
+  });
+
+  it('deduplicates overlapping SPM deps across packages', () => {
+    const sdwebimage1 = makeSPMDep('SDWebImage');
+    const sdwebimage2 = makeSPMDep('SDWebImage');
+    const lottie = makeSPMDep('Lottie');
+
+    const productA = makeProductWithSPMDeps('ExpoImage', [sdwebimage1, lottie]);
+    const productB = makeProductWithSPMDeps('ExpoImageManipulator', [sdwebimage2]);
+
+    const a = makePkg('expo-image', [productA]);
+    const b = makePkg('expo-image-manipulator', [productB]);
+
+    const result = collectSharedSPMDependencies([a, b]);
+    const names = result.map((d) => d.dep.productName);
+    assert.equal(names.length, 2);
+    assert.ok(names.includes('SDWebImage'));
+    assert.ok(names.includes('Lottie'));
+
+    // SDWebImage should be used by both packages
+    const sdwebimageEntry = result.find((d) => d.dep.productName === 'SDWebImage')!;
+    assert.deepEqual(sdwebimageEntry.usedBy, ['expo-image', 'expo-image-manipulator']);
+    // Lottie only by expo-image
+    const lottieEntry = result.find((d) => d.dep.productName === 'Lottie')!;
+    assert.deepEqual(lottieEntry.usedBy, ['expo-image']);
+  });
+
+  it('first encountered version wins for duplicate deps', () => {
+    const v1 = makeSPMDep('SDWebImage', 'https://github.com/SDWebImage/SDWebImage.git');
+    (v1.version as any).exact = '5.21.6';
+    const v2 = makeSPMDep('SDWebImage', 'https://github.com/SDWebImage/SDWebImage.git');
+    (v2.version as any).exact = '5.14.0';
+
+    const productA = makeProductWithSPMDeps('ExpoImage', [v1]);
+    const productB = makeProductWithSPMDeps('ExpoImageManipulator', [v2]);
+
+    const a = makePkg('expo-image', [productA]);
+    const b = makePkg('expo-image-manipulator', [productB]);
+
+    const result = collectSharedSPMDependencies([a, b]);
+    assert.equal(result.length, 1);
+    assert.equal((result[0].dep.version as any).exact, '5.21.6');
+    assert.deepEqual(result[0].usedBy, ['expo-image', 'expo-image-manipulator']);
+  });
+
+  it('handles packages with getSwiftPMConfiguration errors gracefully', () => {
+    const sdwebimage = makeSPMDep('SDWebImage');
+    const product = makeProductWithSPMDeps('ExpoImage', [sdwebimage]);
+    const a = makePkg('expo-image', [product]);
+    const broken = makePkg('broken', [], {
+      getSwiftPMConfiguration: () => {
+        throw new Error('no config');
+      },
+    });
+
+    const result = collectSharedSPMDependencies([broken, a]);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].dep.productName, 'SDWebImage');
+    assert.deepEqual(result[0].usedBy, ['expo-image']);
   });
 });

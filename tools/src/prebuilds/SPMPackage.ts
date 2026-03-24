@@ -1296,6 +1296,7 @@ async function buildPackageSwiftContext(
   spinner.succeed('Resolved external dependencies');
 
   // Resolve SPM package dependencies (remote packages fetched by SPM)
+  // SPM deps that have a shared xcframework are added as binary targets instead.
   const resolvedSPMPackages: ResolvedSPMPackage[] = [];
   const spmProductToPackage = new Map<string, string>(); // Maps product name -> package name
 
@@ -1303,8 +1304,31 @@ async function buildPackageSwiftContext(
     spinner = createAsyncSpinner(`Resolving SPM packages`, pkg, product);
     for (const spmPkg of product.spmPackages) {
       const packageName = spmPkg.packageName || derivePackageNameFromUrl(spmPkg.url);
-      const versionRequirement = formatSPMVersionRequirement(spmPkg.version);
 
+      // Check if this SPM dep has been built as a shared xcframework
+      const sharedXCFrameworkPath = Frameworks.getSharedSPMDepFrameworkPath(
+        spmPkg.productName,
+        buildType
+      );
+      if (fs.existsSync(sharedXCFrameworkPath)) {
+        // Use as binary target instead of SPM package dependency
+        const relativePath = path.relative(packageSwiftDir, sharedXCFrameworkPath);
+        spinner.info(
+          `Using shared SPM dep: ${spmPkg.productName} → .binaryTarget(path: "${relativePath}")`
+        );
+        resolvedTargets.push({
+          type: 'binary',
+          name: spmPkg.productName,
+          path: relativePath,
+          dependencies: [],
+          linkedFrameworks: [],
+        });
+        // Don't add to spmProductToPackage — target deps will resolve as plain string binary refs
+        continue;
+      }
+
+      // No shared xcframework — use .package(url:) as before
+      const versionRequirement = formatSPMVersionRequirement(spmPkg.version);
       spinner.info(`Adding SPM package: ${packageName} (${spmPkg.productName})`);
 
       resolvedSPMPackages.push({

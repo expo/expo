@@ -323,3 +323,35 @@ describe('getBuildPlatformsForProduct', () => {
     assert.deepEqual(result, ['iOS', 'iOS Simulator', 'tvOS', 'tvOS Simulator']);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Shared SPM dependency path functions
+// ---------------------------------------------------------------------------
+
+describe('Shared SPM dependency path functions', () => {
+  describe('getSharedSPMDepsRoot', () => {
+    it('returns path under precompile/.build/.spm-deps/', () => {
+      const result = Frameworks.getSharedSPMDepsRoot();
+      assert.ok(result.endsWith(path.join('.build', '.spm-deps')));
+      assert.ok(result.includes('precompile'));
+    });
+  });
+
+  describe('getSharedSPMDepFrameworkPath', () => {
+    it('returns correct path for Debug', () => {
+      const result = Frameworks.getSharedSPMDepFrameworkPath('SDWebImage', 'Debug');
+      assert.ok(result.endsWith(path.join('SDWebImage', 'debug', 'SDWebImage.xcframework')));
+    });
+
+    it('returns correct path for Release', () => {
+      const result = Frameworks.getSharedSPMDepFrameworkPath('Lottie', 'Release');
+      assert.ok(result.endsWith(path.join('Lottie', 'release', 'Lottie.xcframework')));
+    });
+
+    it('lowercases the flavor', () => {
+      const result = Frameworks.getSharedSPMDepFrameworkPath('SDWebImage', 'Debug');
+      assert.ok(result.includes('/debug/'));
+      assert.ok(!result.includes('/Debug/'));
+    });
+  });
+});

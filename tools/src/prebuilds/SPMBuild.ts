@@ -1,11 +1,12 @@
 import chalk from 'chalk';
-import { spawn } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 
 import type { SPMPackageSource } from './ExternalPackage';
+import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
-import { BuildPlatform, ProductPlatform, SPMProduct } from './SPMConfig.types';
+import { BuildPlatform, ProductPlatform, SPMPackageDependencyConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { createAsyncSpinner } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
@@ -460,3 +461,461 @@ export const getBuildFolderPrefixForPlatform = (platform: BuildPlatform): string
       return '';
   }
 };
+
+/**
+ * Copies Headers/ and Modules/ into a framework bundle from build intermediates.
+ * SPM's PackageFrameworks/ output only contains the binary — headers and module maps
+ * are in the build intermediates. We need them for the xcframework to be usable as
+ * a build dependency with `import Module`.
+ */
+async function enrichFrameworkWithHeaders(
+  frameworkPath: string,
+  productName: string,
+  checkoutDir: string,
+  derivedDataPath: string,
+  buildFolderPrefix: string,
+  buildType: string
+): Promise<void> {
+  // 1. Copy public headers from the checkout.
+  // SPM packages declare public headers via `publicHeadersPath` in Package.swift,
+  // or use the default `include/` convention. We parse the Package.swift to find it.
+  const checkoutPkgSwift = await fs.readFile(path.join(checkoutDir, 'Package.swift'), 'utf-8');
+  const publicHeadersMatch = checkoutPkgSwift.match(
+    /publicHeadersPath:\s*"([^"]+)"/
+  );
+  const headersCandidates = [
+    // Explicit publicHeadersPath from Package.swift
+    ...(publicHeadersMatch ? [path.join(checkoutDir, publicHeadersMatch[1])] : []),
+    // Default SPM conventions
+    path.join(checkoutDir, productName, 'include', productName),
+    path.join(checkoutDir, productName, 'include'),
+    path.join(checkoutDir, 'include', productName),
+    path.join(checkoutDir, 'include'),
+  ];
+  const headersDir = await findFirstExisting(headersCandidates);
+  if (headersDir) {
+    const destHeaders = path.join(frameworkPath, 'Headers');
+    await fs.mkdirp(destHeaders);
+    // Only copy .h files (skip .m, .c, .swift etc. that may be in the same dir)
+    // Use -L to follow symlinks (some packages symlink umbrella headers from other dirs)
+    execSync(`rsync -aL --include='*.h' --exclude='*' "${headersDir}/" "${destHeaders}/"`, { stdio: 'pipe' });
+  }
+
+  // 2. Copy the generated module map
+  const modulemapPaths = [
+    path.join(derivedDataPath, 'Build', 'Intermediates.noindex',
+      `GeneratedModuleMaps-${buildFolderPrefix}`, `${productName}.modulemap`),
+    path.join(derivedDataPath, 'Build', 'Intermediates.noindex',
+      `${productName}.build`, `${buildType}-${buildFolderPrefix}`,
+      `${productName}.build`, `${productName}.modulemap`),
+  ];
+  const modulemapPath = await findFirstExisting(modulemapPaths);
+  if (modulemapPath) {
+    const destModules = path.join(frameworkPath, 'Modules');
+    await fs.mkdirp(destModules);
+    // Rewrite the xcodebuild-generated modulemap to use the framework's Headers/ directory.
+    // The original modulemap may use:
+    //   umbrella header "/absolute/path/to/Header.h"  → umbrella header "Header.h"
+    //   umbrella "/absolute/path/to/dir"               → umbrella "Headers"
+    let modulemapContent = await fs.readFile(modulemapPath, 'utf-8');
+    const destHeaders = path.join(frameworkPath, 'Headers');
+
+    // The xcodebuild-generated modulemap uses `module X` but inside a .framework
+    // bundle it must be `framework module X` so Clang resolves headers from Headers/.
+    modulemapContent = modulemapContent.replace(
+      /^module /m,
+      'framework module '
+    );
+
+    if (modulemapContent.includes('umbrella header')) {
+      // Single umbrella header — rewrite to just the filename
+      modulemapContent = modulemapContent.replace(
+        /umbrella header "[^"]*\/([^"\/]+)"/,
+        'umbrella header "$1"'
+      );
+      // Copy the umbrella header if not already in Headers/
+      const umbrellaMatch = modulemapContent.match(/umbrella header "([^"]+)"/);
+      if (umbrellaMatch) {
+        const umbrellaName = umbrellaMatch[1];
+        const destUmbrella = path.join(destHeaders, umbrellaName);
+        if (!(await fs.pathExists(destUmbrella))) {
+          const umbrellaSource = await findFirstExisting([
+            path.join(checkoutDir, productName, 'Module', umbrellaName),
+            path.join(checkoutDir, 'Sources', productName, umbrellaName),
+            path.join(checkoutDir, productName, umbrellaName),
+          ]);
+          if (umbrellaSource) {
+            await fs.copy(umbrellaSource, destUmbrella);
+          }
+        }
+      }
+    } else {
+      // Directory-based umbrella — rewrite to point to the framework's Headers/ dir
+      modulemapContent = modulemapContent.replace(
+        /umbrella "[^"]+"/,
+        'umbrella "Headers"'
+      );
+    }
+    await fs.writeFile(path.join(destModules, 'module.modulemap'), modulemapContent, 'utf-8');
+  }
+
+  // 3. Copy Swift module interfaces if they exist (for Swift packages)
+  const swiftmoduleDir = path.join(derivedDataPath, 'Build', 'Intermediates.noindex',
+    `${productName}.build`, `${buildType}-${buildFolderPrefix}`,
+    `${productName}.build`, 'Objects-normal');
+  if (await fs.pathExists(swiftmoduleDir)) {
+    for (const arch of await fs.readdir(swiftmoduleDir)) {
+      const swiftinterface = path.join(swiftmoduleDir, arch, `${productName}.swiftinterface`);
+      if (await fs.pathExists(swiftinterface)) {
+        const destSwiftmodule = path.join(frameworkPath, 'Modules', `${productName}.swiftmodule`);
+        await fs.mkdirp(destSwiftmodule);
+        await fs.copy(swiftinterface, path.join(destSwiftmodule, `${arch}-apple-ios.swiftinterface`));
+      }
+    }
+  }
+}
+
+/** Recursively searches a directory for an xcframework with the given product name. */
+export async function findXCFrameworkInDir(dir: string, productName: string): Promise<string | null> {
+  const target = `${productName}.xcframework`;
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === target) return fullPath;
+      const found = await findXCFrameworkInDir(fullPath, productName);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+/** Returns the first path that exists, or null if none do. */
+export async function findFirstExisting(paths: string[]): Promise<string | null> {
+  for (const p of paths) {
+    if (await fs.pathExists(p)) return p;
+  }
+  return null;
+}
+
+/**
+ * Derives the SPM package name from a URL.
+ * e.g., "https://github.com/airbnb/lottie-spm.git" → "lottie-spm"
+ */
+export function derivePackageName(url: string): string {
+  const lastSlash = url.lastIndexOf('/');
+  let name = url.substring(lastSlash + 1);
+  if (name.endsWith('.git')) {
+    name = name.slice(0, -4);
+  }
+  return name;
+}
+
+/**
+ * Formats a version requirement for Package.swift.
+ */
+export function formatVersionRequirement(version: SPMPackageDependencyConfig['version']): string {
+  if ('exact' in version) return `exact: "${version.exact}"`;
+  if ('from' in version) return `from: "${version.from}"`;
+  if ('branch' in version) return `branch: "${version.branch}"`;
+  if ('revision' in version) return `revision: "${version.revision}"`;
+  throw new Error(`Invalid SPM version: ${JSON.stringify(version)}`);
+}
+
+/**
+ * Generates a minimal Package.swift to build a standalone SPM dependency as a dynamic library.
+ */
+function generateStandaloneSPMPackageSwift(dep: SPMPackageDependencyConfig): string {
+  const packageName = dep.packageName || derivePackageName(dep.url);
+  const versionReq = formatVersionRequirement(dep.version);
+
+  return `// swift-tools-version: 5.9
+// Auto-generated for standalone SPM dependency build
+
+import PackageDescription
+
+let package = Package(
+    name: "${dep.productName}-standalone",
+
+    platforms: [
+        .iOS(.v15)
+    ],
+
+    products: [
+        .library(
+            name: "${dep.productName}-standalone",
+            type: .dynamic,
+            targets: ["${dep.productName}-standalone"]
+        )
+    ],
+
+    dependencies: [
+        .package(url: "${dep.url}", ${versionReq})
+    ],
+
+    targets: [
+        .target(
+            name: "${dep.productName}-standalone",
+            dependencies: [
+                .product(name: "${dep.productName}", package: "${packageName}")
+            ],
+            path: "Sources"
+        )
+    ]
+)
+`;
+}
+
+/**
+ * Builds a standalone SPM dependency as an xcframework and stores it at the shared location.
+ *
+ * This is called on first encounter when building a product that depends on an SPM package.
+ * The resulting xcframework is shared across all products that use the same dependency,
+ * preventing duplicate symbols at runtime.
+ *
+ * @param dep The SPM package dependency config
+ * @param buildType Build flavor (Debug or Release)
+ * @param platforms Build platforms to target (defaults to iOS + iOS Simulator)
+ */
+export async function buildSharedSPMDependencyAsync(
+  dep: SPMPackageDependencyConfig,
+  buildType: BuildFlavor,
+  platforms: BuildPlatform[] = ['iOS', 'iOS Simulator']
+): Promise<void> {
+  const productName = dep.productName;
+
+  // Check if already built
+  if (Frameworks.hasSharedSPMDepFramework(productName, buildType)) {
+    logger.info(
+      `⏭️  Shared SPM dep ${chalk.cyan(productName)} already exists for ${buildType}`
+    );
+    return;
+  }
+
+  logger.info(
+    `🔨 Building shared SPM dependency ${chalk.cyan(productName)} [${buildType.toLowerCase()}]...`
+  );
+
+  // Set up build directory under .spm-deps/<productName>/
+  // SourcePackages are shared across all shared dep builds via -clonedSourcePackagesDirPath
+  // so xcodebuild clones each transitive dependency only once. DerivedData is per-dep
+  // to avoid "Multiple commands produce" conflicts between different dep builds.
+  const spmDepsRoot = Frameworks.getSharedSPMDepsRoot();
+  const buildDir = path.join(spmDepsRoot, productName, '_build');
+  const derivedDataPath = path.join(buildDir, 'DerivedData');
+  const sharedSourcePackages = path.join(spmDepsRoot, '_SourcePackages');
+  await fs.mkdirp(sharedSourcePackages);
+  const sourcesDir = path.join(buildDir, 'Sources');
+
+  // Only re-resolve if the Package.swift has changed (avoids re-downloading deps).
+  // The stub and Package.swift are deterministic, so we compare against the previous content.
+  await fs.mkdirp(sourcesDir);
+
+  const stubPath = path.join(sourcesDir, 'Stub.swift');
+  const stubContent = `// Stub file for standalone SPM dependency build\nimport Foundation\n`;
+  const packageSwiftContent = generateStandaloneSPMPackageSwift(dep);
+  const packageSwiftPath = path.join(buildDir, 'Package.swift');
+
+  const existingPackageSwift = await fs.pathExists(packageSwiftPath)
+    ? await fs.readFile(packageSwiftPath, 'utf-8')
+    : null;
+  const needsResolve = existingPackageSwift !== packageSwiftContent;
+
+  await fs.writeFile(stubPath, stubContent, 'utf-8');
+  await fs.writeFile(packageSwiftPath, packageSwiftContent, 'utf-8');
+
+  if (needsResolve) {
+    // Package.swift changed or first run — resolve from scratch
+    await resolveSPMDependenciesAndPatch(buildDir);
+  } else {
+    logger.info(`   ⏭️  SPM dependencies already resolved (Package.swift unchanged)`);
+  }
+
+  // Build from the dependency's own checkout so we get a framework with the correct
+  // module name. The wrapper approach produces `<name>-standalone.framework` which has
+  // the wrong module name. Building the checkout directly uses the dependency's own
+  // Package.swift and scheme, producing `<name>.framework`.
+  //
+  // We copy the checkout to a clean location outside .build/ because SPM gets confused
+  // about the workspace root when the checkout is nested inside another SPM workspace.
+  const checkoutsDir = path.join(buildDir, '.build', 'checkouts');
+  const packageName = dep.packageName || derivePackageName(dep.url);
+  const checkoutSource = path.join(checkoutsDir, packageName);
+
+  if (!(await fs.pathExists(checkoutSource))) {
+    throw new Error(
+      `Checkout not found for ${productName} at ${checkoutSource}. ` +
+      `Available: ${(await fs.readdir(checkoutsDir)).join(', ')}`
+    );
+  }
+
+  // Check if this is a binary xcframework (pre-compiled, not built from source).
+  // If the Package.swift contains a .binaryTarget for this product, the xcframework
+  // is downloaded during resolution — just copy it to the shared location.
+  const checkoutPkgSwift = await fs.readFile(path.join(checkoutSource, 'Package.swift'), 'utf-8');
+  if (checkoutPkgSwift.includes('.binaryTarget(')) {
+    // Look for the downloaded artifact in SPM's artifacts cache
+    const artifactsDir = path.join(buildDir, '.build', 'artifacts');
+    if (await fs.pathExists(artifactsDir)) {
+      const xcframeworkPath = await findXCFrameworkInDir(artifactsDir, productName);
+      if (xcframeworkPath) {
+        const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
+        await fs.mkdirp(path.dirname(destPath));
+        await fs.remove(destPath);
+        execSync(`rsync -a "${xcframeworkPath}/" "${destPath}/"`, { stdio: 'pipe' });
+        logger.info(`✅ Copied binary SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`);
+        // Keep buildDir for caching — resolved artifacts persist for reuse
+        return;
+      }
+    }
+    logger.warn(`⚠️  ${productName} has .binaryTarget but xcframework not found in artifacts, falling back to build`);
+  }
+
+  // Copy checkout to a clean location so xcodebuild can resolve its own dependencies.
+  // We patch the copy to ensure xcodebuild produces a .framework bundle:
+  //  - Remove .xcodeproj/.xcworkspace so xcodebuild uses Package.swift for SPM resolution
+  //  - Force the library type to .dynamic (automatic defaults to static → no .framework)
+  const cleanBuildDir = path.join(buildDir, '_pkg');
+  await fs.remove(cleanBuildDir);
+  execSync(`rsync -a "${checkoutSource}/" "${cleanBuildDir}/"`, { stdio: 'pipe' });
+  // Make the copy writable (git checkouts may be read-only)
+  execSync(`chmod -R u+w "${cleanBuildDir}"`, { stdio: 'pipe' });
+  for (const entry of await fs.readdir(cleanBuildDir)) {
+    if (entry.endsWith('.xcodeproj') || entry.endsWith('.xcworkspace')) {
+      await fs.remove(path.join(cleanBuildDir, entry));
+    }
+  }
+  // Patch Package.swift: change `.library(name: "...", targets:` to `.library(name: "...", type: .dynamic, targets:`
+  // so that xcodebuild produces a .framework bundle instead of a static archive.
+  const pkgSwift = path.join(cleanBuildDir, 'Package.swift');
+  let pkgSwiftContent = await fs.readFile(pkgSwift, 'utf-8');
+  pkgSwiftContent = pkgSwiftContent.replace(
+    /\.library\(\s*name:\s*"([^"]+)",\s*targets:/g,
+    '.library(name: "$1", type: .dynamic, targets:'
+  );
+  await fs.writeFile(pkgSwift, pkgSwiftContent, 'utf-8');
+
+  for (const platform of platforms) {
+    const args = [
+      '-scheme', productName,
+      '-destination', `generic/platform=${platform}`,
+      '-derivedDataPath', derivedDataPath,
+      '-clonedSourcePackagesDirPath', sharedSourcePackages,
+      '-configuration', buildType,
+      'SKIP_INSTALL=NO',
+      'BUILD_LIBRARY_FOR_DISTRIBUTION=YES',
+      ...(buildType === 'Release'
+        ? ['GCC_PREPROCESSOR_DEFINITIONS=$(inherited) NDEBUG=1 NS_BLOCK_ASSERTIONS=1']
+        : ['GCC_PREPROCESSOR_DEFINITIONS=$(inherited) DEBUG=1']),
+      'build',
+    ];
+
+    const { code, error: buildError } = await spawnXcodeBuildWithSpinner(
+      args,
+      cleanBuildDir,
+      `Building ${chalk.cyan(productName)} for ${chalk.green(platform)}/${chalk.green(buildType.toLowerCase())}`
+    );
+
+    if (code !== 0) {
+      throw new Error(
+        `Failed to build shared SPM dep ${productName} for ${platform}:\n${buildError}\n\nxcodebuild ${args.join(' ')}`
+      );
+    }
+  }
+
+  // Collect built frameworks for xcframework creation
+  const frameworkArgs: string[] = ['-create-xcframework'];
+
+  for (const platform of platforms) {
+    const buildFolderPrefix = getBuildFolderPrefixForPlatform(platform);
+    const buildProductsDir = path.join(
+      derivedDataPath,
+      'Build',
+      'Products',
+      `${buildType}-${buildFolderPrefix}`
+    );
+    // Check PackageFrameworks/ first (where SPM places dependency frameworks),
+    // then the top-level build products dir
+    const candidatePaths = [
+      path.join(buildProductsDir, 'PackageFrameworks', `${productName}.framework`),
+      path.join(buildProductsDir, `${productName}.framework`),
+    ];
+
+    const frameworkPath = await findFirstExisting(candidatePaths);
+    const dsymPath = await findFirstExisting(
+      candidatePaths.map((p) => `${p}.dSYM`)
+    );
+
+    if (frameworkPath) {
+      // SPM's PackageFrameworks/ output doesn't include Headers/ or Modules/ —
+      // they're in the build intermediates. We need to copy them into the framework
+      // so the xcframework can be used as a build dependency with module imports.
+      await enrichFrameworkWithHeaders(
+        frameworkPath,
+        productName,
+        cleanBuildDir,
+        derivedDataPath,
+        buildFolderPrefix,
+        buildType
+      );
+      frameworkArgs.push('-framework', frameworkPath);
+      if (dsymPath) {
+        frameworkArgs.push('-debug-symbols', dsymPath);
+      }
+    } else {
+      // The dependency might be delivered as a binary xcframework (not built from source).
+      // Check SourcePackages/artifacts for it.
+      const artifactXCFrameworkPath = path.join(
+        derivedDataPath,
+        'SourcePackages',
+        'artifacts',
+        packageName,
+        productName,
+        `${productName}.xcframework`
+      );
+
+      if (await fs.pathExists(artifactXCFrameworkPath)) {
+        // Binary xcframework from SPM — copy it directly to the shared location
+        const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
+        await fs.mkdirp(path.dirname(destPath));
+        await fs.remove(destPath);
+        execSync(`rsync -a "${artifactXCFrameworkPath}/" "${destPath}/"`, { stdio: 'pipe' });
+        logger.info(`✅ Copied binary SPM dep ${chalk.cyan(productName)} to shared location`);
+
+        // Clean up build directory
+        await fs.remove(buildDir);
+        return;
+      }
+
+      logger.warn(
+        `⚠️  Framework not found for ${productName} at platform ${platform}. Checked:\n` +
+        candidatePaths.map((p) => `      ${p}`).join('\n')
+      );
+    }
+  }
+
+  // Create the xcframework
+  const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
+  await fs.mkdirp(path.dirname(destPath));
+  await fs.remove(destPath);
+  frameworkArgs.push('-output', destPath);
+
+  const { code, error: composeError } = await spawnXcodeBuildWithSpinner(
+    frameworkArgs,
+    buildDir,
+    `Composing ${chalk.cyan(productName)}.xcframework`
+  );
+
+  if (code !== 0) {
+    throw new Error(
+      `Failed to compose xcframework for ${productName}:\n${composeError}`
+    );
+  }
+
+  // Keep the build directory for caching — resolved checkouts persist so
+  // subsequent rebuilds (after deleting the xcframework) skip re-downloading.
+  // Only DerivedData is cleaned since it's large and not reusable across builds.
+  await fs.remove(derivedDataPath);
+
+  logger.info(`✅ Built shared SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`);
+}

@@ -9,6 +9,7 @@
  */
 import chalk from 'chalk';
 import fs from 'fs';
+import fsExtra from 'fs-extra';
 import path from 'path';
 
 import { PACKAGES_DIR } from '../../Constants';
@@ -21,6 +22,8 @@ import type { SPMPackageSource } from '../ExternalPackage';
 import { isExternalPackage } from '../ExternalPackage';
 import { Frameworks } from '../Frameworks';
 import type { BuildFlavor } from '../Prebuilder.types';
+import { buildSharedSPMDependencyAsync } from '../SPMBuild';
+import type { SPMPackageDependencyConfig } from '../SPMConfig.types';
 import {
   getVersionsInfoAsync,
   setForceNonInteractive,
@@ -360,7 +363,108 @@ export const prepareCacheStep: Step<PrebuildContext> = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// Helper: collectSharedSPMDependencies
+// ---------------------------------------------------------------------------
+
+export interface SharedSPMDependency {
+  dep: SPMPackageDependencyConfig;
+  /** Package names that use this dependency */
+  usedBy: string[];
+}
+
+/**
+ * Collects all unique SPM package dependencies across all packages/products.
+ * Dependencies are deduplicated by productName — the first encountered version wins.
+ * Also tracks which packages use each dependency.
+ */
+export function collectSharedSPMDependencies(
+  packages: SPMPackageSource[]
+): SharedSPMDependency[] {
+  const seen = new Map<string, SharedSPMDependency>();
+
+  for (const pkg of packages) {
+    let spmConfig;
+    try {
+      spmConfig = pkg.getSwiftPMConfiguration();
+    } catch {
+      continue;
+    }
+
+    for (const product of spmConfig.products) {
+      if (!product.spmPackages) continue;
+      for (const dep of product.spmPackages) {
+        const existing = seen.get(dep.productName);
+        if (existing) {
+          if (!existing.usedBy.includes(pkg.packageName)) {
+            existing.usedBy.push(pkg.packageName);
+          }
+        } else {
+          seen.set(dep.productName, { dep, usedBy: [pkg.packageName] });
+        }
+      }
+    }
+  }
+
+  return [...seen.values()];
+}
+
+// ---------------------------------------------------------------------------
+// prepare:shared-spm-deps
+// ---------------------------------------------------------------------------
+
+export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
+  id: 'prepare:shared-spm-deps',
+  scope: 'run',
+  label: 'Build shared SPM dependencies',
+  onError: 'stop-run',
+
+  shouldRun: (ctx) => {
+    // Skip if builds are being skipped entirely
+    if (ctx.request.skipBuild && ctx.request.skipGenerate) return false;
+    // Only run if any package has spmPackages
+    const shared = collectSharedSPMDependencies(ctx.packages);
+    return shared.length > 0;
+  },
+
+  async run(ctx) {
+    const shared = collectSharedSPMDependencies(ctx.packages);
+
+    logger.info(
+      `📦 Found ${shared.length} shared SPM ${shared.length === 1 ? 'dependency' : 'dependencies'}:`
+    );
+    for (const { dep, usedBy } of shared) {
+      logger.info(
+        `   ${chalk.cyan(dep.productName)} ← ${usedBy.join(', ')}`
+      );
+    }
+
+    // When --clean is passed, wipe shared SPM dep build dirs and xcframeworks
+    // so they're rebuilt from scratch (including re-resolving dependencies).
+    if (ctx.request.clean) {
+      const spmDepsRoot = Frameworks.getSharedSPMDepsRoot();
+      logger.info(`🧹 Cleaning shared SPM dependency caches...`);
+      for (const { dep } of shared) {
+        const depDir = path.join(spmDepsRoot, dep.productName);
+        await fsExtra.remove(depDir);
+      }
+      // Also clean the shared SourcePackages cache
+      await fsExtra.remove(path.join(spmDepsRoot, '_SourcePackages'));
+    }
+
+    for (const flavor of ctx.request.buildFlavors) {
+      for (const { dep } of shared) {
+        await buildSharedSPMDependencyAsync(dep, flavor);
+      }
+    }
+  },
+};
+
 /**
  * All run-scope steps in execution order.
  */
-export const runSteps: Step<PrebuildContext>[] = [prepareInputsStep, prepareCacheStep];
+export const runSteps: Step<PrebuildContext>[] = [
+  prepareInputsStep,
+  prepareCacheStep,
+  prepareSharedSPMDepsStep,
+];

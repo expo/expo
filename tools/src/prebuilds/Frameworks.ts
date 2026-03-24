@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { getPrecompileDir } from '../Directories';
 import logger from '../Logger';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
@@ -179,6 +180,39 @@ export const Frameworks = {
       Frameworks.getFrameworksOutputPath(buildPath, buildType),
       `${productName}.tar.gz`
     );
+  },
+
+  /**
+   * Returns the root directory for shared SPM dependency xcframeworks.
+   * Shared deps are stored under: packages/precompile/.build/.spm-deps/
+   */
+  getSharedSPMDepsRoot: (): string => {
+    return path.join(getPrecompileDir(), '.build', '.spm-deps');
+  },
+
+  /**
+   * Returns the path to a shared SPM dependency xcframework.
+   * @param productName The SPM product name (e.g., "SDWebImage")
+   * @param buildType Build flavor (Debug or Release)
+   * @returns Full path to the shared xcframework
+   */
+  getSharedSPMDepFrameworkPath: (productName: string, buildType: BuildFlavor): string => {
+    return path.join(
+      Frameworks.getSharedSPMDepsRoot(),
+      productName,
+      buildType.toLowerCase(),
+      `${productName}.xcframework`
+    );
+  },
+
+  /**
+   * Checks if a shared SPM dependency xcframework exists.
+   * @param productName The SPM product name (e.g., "SDWebImage")
+   * @param buildType Build flavor (Debug or Release)
+   * @returns true if the shared xcframework exists
+   */
+  hasSharedSPMDepFramework: (productName: string, buildType: BuildFlavor): boolean => {
+    return fs.existsSync(Frameworks.getSharedSPMDepFrameworkPath(productName, buildType));
   },
 };
 
@@ -387,6 +421,15 @@ const copySPMDependencyXCFrameworksAsync = async (
     const packageName = spmPkg.packageName || path.basename(spmPkg.url, '.git');
     const productName = spmPkg.productName;
 
+    // Skip deps that are shared — they were built as standalone xcframeworks
+    // and will be vendored separately at pod install time
+    if (Frameworks.hasSharedSPMDepFramework(productName, buildType)) {
+      logger.info(
+        `⏭️  Skipping shared SPM dep ${chalk.cyan(productName)} (already at shared location)`
+      );
+      continue;
+    }
+
     // Look for the pre-built xcframework in SourcePackages/artifacts/<packageName>/<productName>/
     const artifactsDir = path.join(
       buildPath,
@@ -506,10 +549,15 @@ const createProductTarballAsync = async (
   const xcframeworkEntries = [`${product.name}.xcframework`];
 
   // Include SPM dependency xcframeworks (e.g., Lottie.xcframework for lottie-react-native)
+  // Skip deps that exist at the shared location — they are distributed independently
   const spmPackages = product.spmPackages;
   if (spmPackages && spmPackages.length > 0) {
     for (const spmPkg of spmPackages) {
       const depName = spmPkg.productName;
+      // Skip shared deps — they live at .spm-deps/ and are vendored separately
+      if (Frameworks.hasSharedSPMDepFramework(depName, buildType)) {
+        continue;
+      }
       const depXcframework = `${depName}.xcframework`;
       if (await fs.pathExists(path.join(outputDir, depXcframework))) {
         xcframeworkEntries.push(depXcframework);
