@@ -127,6 +127,7 @@ class ExpoCropImageActivity : CropImageActivity() {
         isAppearanceLightNavigationBars = !isNight
       }
 
+      // Set the root background color so it shows through transparent system bars
       decorView.setBackgroundColor(activityBackgroundColor)
 
       // Add the status bar view with zero initial height (will be sized by insets listener below)
