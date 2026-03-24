@@ -1,10 +1,10 @@
 {
-  "platforms": [ "apple", "android", "devtools" ],
+  "platforms": ["apple", "android", "devtools"],
   "apple": {
-    "modules": [ "SQLiteModule" ]
+    "modules": ["SQLiteModule"]
   },
   "android": {
-    "modules": [ "expo.modules.sqlite.SQLiteModule" ],
+    "modules": ["expo.modules.sqlite.SQLiteModule"],
     "shouldUsePublicationScriptPath": "android/shouldUsePublication.groovy"
   },
   "devtools": {
@@ -44,7 +44,7 @@
           ]
         }
       ],
-      "entryPoint": "cli/build/index.js"
+      "entryPoint": "cli/build/index.mjs"
     }
   }
 }
