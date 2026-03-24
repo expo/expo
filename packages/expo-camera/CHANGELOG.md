@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Web] Fix `isAvailableAsync` returning `true` on devices without a camera. ([#43932](https://github.com/expo/expo/pull/43932) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Use runtime camera availability checks in Simulator so camera code paths can run when a runtime video device is present while preserving fallback behavior when no device is available. (by [@kmagiera](https://github.com/kmagiera)) ([#44159](https://github.com/expo/expo/pull/44159) by [@kmagiera](https://github.com/kmagiera))
 
 ### 💡 Others
 
