@@ -18,6 +18,30 @@ const getPrebuiltSettingsLines = (): string[] => {
     end`.split('\n');
 };
 
+/**
+ * Add the cocoapods-mangle plugin to the Podfile.
+ * This prefixes all ObjC symbols in pod dependencies so that
+ * multiple brownfield frameworks can coexist in the same host app without
+ * duplicate symbol errors.
+ */
+export const addManglePlugin = (podfile: string, targetName: string): string => {
+  const mangleLine = `plugin 'cocoapods-mangle', targets: ['${targetName}'], mangle_prefix: '${targetName}_'`;
+  const podFileLines = podfile.split('\n');
+
+  // Insert the plugin line near the top, after any existing `plugin` or `source` lines
+  const lastPluginOrSourceIndex = podFileLines.reduce((acc, line, index) => {
+    if (line.trimStart().startsWith('plugin ') || line.trimStart().startsWith('source ')) {
+      return index;
+    }
+    return acc;
+  }, -1);
+
+  const insertAt = lastPluginOrSourceIndex + 1;
+  podFileLines.splice(insertAt, 0, mangleLine);
+
+  return podFileLines.join('\n');
+};
+
 export const addNewPodsTarget = (podfile: string, targetName: string): string => {
   const targetLines = getTargetNameLines(targetName);
   let podFileLines = podfile.split('\n');
