@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 
 package expo.modules.ui
 
@@ -28,7 +28,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import expo.modules.ui.convertibles.resolveAnimatable
@@ -199,6 +201,15 @@ internal enum class SemanticRoleType(val value: String) : Enumerable {
 internal data class ToggleableParams(
   @Field val value: Boolean = false,
   @Field val role: SemanticRoleType? = null
+) : Record
+
+internal enum class MenuAnchorType(val value: String) : Enumerable {
+  PRIMARY_NOT_EDITABLE("primaryNotEditable")
+}
+
+internal data class MenuAnchorParams(
+  @Field val type: MenuAnchorType = MenuAnchorType.PRIMARY_NOT_EDITABLE,
+  @Field val enabled: Boolean = true
 ) : Record
 
 // endregion
@@ -559,6 +570,21 @@ object ModifierRegistry {
         role = role,
         onValueChange = { eventDispatcher("toggleable", emptyMap()) }
       )
+    }
+
+    // ExposedDropdownMenuBox scope-dependent modifier
+    register("menuAnchor") { map, scope, _, _ ->
+      val dropdownScope = scope?.exposedDropdownMenuBoxScope
+        ?: error("menuAnchor modifier can only be used inside ExposedDropdownMenuBox")
+      val params = recordFromMap<MenuAnchorParams>(map)
+      with(dropdownScope) {
+        Modifier.menuAnchor(
+          type = when (params.type) {
+            MenuAnchorType.PRIMARY_NOT_EDITABLE -> ExposedDropdownMenuAnchorType.PrimaryNotEditable
+          },
+          enabled = params.enabled
+        )
+      }
     }
   }
 }
