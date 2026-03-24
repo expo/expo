@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.Request
 
-private val portsToCheck = arrayOf(8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002)
+private val portsToCheck = arrayOf(8081, 8082, 8083, 8084, 19000, 19001, 19002)
 private val hostToCheck = if (EmulatorUtilities.isRunningOnEmulator()) {
   "10.0.2.2"
 } else {

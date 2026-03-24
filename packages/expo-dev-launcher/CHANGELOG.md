@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS][Android] Stop probing localhost port 8085 during local dev server discovery.
+
 ### 💡 Others
 
 ## 6.0.20 — 2025-12-05
