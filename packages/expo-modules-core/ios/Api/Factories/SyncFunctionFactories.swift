@@ -1,4 +1,20 @@
 /**
+ Synchronous function from an optimized function descriptor.
+ The descriptor is produced by `@OptimizedFunction` macro-generated peer functions.
+ */
+public func Function(
+  _ name: String,
+  _ descriptor: OptimizedFunctionDescriptor
+) -> BaseOptimizedSyncFunctionDefinition {
+  return BaseOptimizedSyncFunctionDefinition(
+    name: name,
+    typeEncoding: descriptor.typeEncoding,
+    argsCount: descriptor.argsCount,
+    block: descriptor.block
+  )
+}
+
+/**
  Synchronous function without arguments.
  */
 public func Function<R>(

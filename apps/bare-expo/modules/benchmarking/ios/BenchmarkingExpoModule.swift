@@ -1,12 +1,12 @@
 import ExpoModulesCore
 
 public final class BenchmarkingExpoModule: Module {
-  @OptimizedFunction("addNumbersOptimized")
+  @OptimizedFunction
   private func addNumbersOptimized(a: Double, b: Double) throws -> Double {
     return a + b
   }
 
-  @OptimizedFunction("addNumbersOptimizedSlowPath")
+  @OptimizedFunction
   private func addNumbersOptimizedSlowPath(a: Int, b: Int, c: Int) throws -> Int {
     return a + b + c
   }
@@ -20,8 +20,8 @@ public final class BenchmarkingExpoModule: Module {
       return a + b
     }
 
-    addNumbersOptimized()
-    addNumbersOptimizedSlowPath()
+    Function("addNumbersOptimized", addNumbersOptimized())
+    Function("addNumbersOptimizedSlowPath", addNumbersOptimizedSlowPath())
 
     Function("addStrings") { (a: String, b: String) in
       return a + b

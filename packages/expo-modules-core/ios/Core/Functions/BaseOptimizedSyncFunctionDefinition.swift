@@ -61,19 +61,31 @@ open class BaseOptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unch
 }
 
 /**
- Helper function to create an optimized sync function definition.
- This wrapper ensures the return type is explicitly AnyDefinition, which helps
- Swift's type checker and result builders recognize the type before macro expansion.
+ A lightweight descriptor carrying the optimized closure metadata.
+ The JS-facing name is supplied separately via the `Function("name", descriptor)` overload.
+ */
+public struct OptimizedFunctionDescriptor {
+  public let typeEncoding: String
+  public let argsCount: Int
+  public let block: AnyObject
+
+  public init(typeEncoding: String, argsCount: Int, block: AnyObject) {
+    self.typeEncoding = typeEncoding
+    self.argsCount = argsCount
+    self.block = block
+  }
+}
+
+/**
+ Helper function called by macro-generated code to create an optimized function descriptor.
  */
 @inline(__always)
-public func _createOptimizedFunction(
-  name: String,
+public func _createOptimizedFunctionDescriptor(
   typeEncoding: String,
   argsCount: Int,
   block: AnyObject
-) -> AnyDefinition {
-  return BaseOptimizedSyncFunctionDefinition(
-    name: name,
+) -> OptimizedFunctionDescriptor {
+  return OptimizedFunctionDescriptor(
     typeEncoding: typeEncoding,
     argsCount: argsCount,
     block: block

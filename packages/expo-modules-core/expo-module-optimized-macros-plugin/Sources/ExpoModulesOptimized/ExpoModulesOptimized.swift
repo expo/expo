@@ -1,20 +1,30 @@
-/// An attached macro that generates an optimized synchronous function definition factory.
-/// Creates a peer function that returns AnyDefinition, suitable for use in result builders.
+/// An attached macro that generates an optimized synchronous function descriptor.
+/// Creates a peer function that returns `OptimizedFunctionDescriptor`, for use with
+/// the `Function("name", descriptor)` overload in ModuleDefinition result builders.
 ///
 /// Usage:
 ///
-///     @OptimizedFunction("addNumbers")
-///     private func addNumbersImpl(a: Double, b: Double) -> Double {
+///     @OptimizedFunction
+///     private func addNumbers(a: Double, b: Double) -> Double {
 ///         return a + b
 ///     }
 ///
-/// Generates a peer function:
+///     // In definition():
+///     Function("addNumbers", addNumbers())
 ///
-///     private func addNumbers() -> AnyDefinition {
-///         return _createOptimizedFunction(...)
-///     }
+/// You can also provide an explicit peer name if the Swift function name differs:
 ///
-/// The generated peer function can be called directly in ModuleDefinition result builders.
-/// It uses the optimized JSI bridge path with @convention(block) closures for maximum performance.
+///     @OptimizedFunction("addNumbers")
+///     private func addNumbersImpl(a: Double, b: Double) -> Double { ... }
+///
+///     // In definition():
+///     Function("addNumbers", addNumbers())
+///
+/// The generated peer function uses the optimized JSI bridge path with
+/// @convention(block) closures for maximum performance.
 @attached(peer, names: arbitrary)
 public macro OptimizedFunction(_ name: String) = #externalMacro(module: "ExpoModulesOptimizedMacros", type: "OptimizedFunctionAttachedMacro")
+
+/// Variant that derives the peer function name from the Swift function name.
+@attached(peer, names: arbitrary)
+public macro OptimizedFunction() = #externalMacro(module: "ExpoModulesOptimizedMacros", type: "OptimizedFunctionAttachedMacro")

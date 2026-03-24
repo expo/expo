@@ -28,12 +28,40 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 return a + b
             }
 
-            private func addNumbers() -> AnyDefinition {
-                return _createOptimizedFunction(
-                    name: "addNumbers",
+            private func addNumbers() -> OptimizedFunctionDescriptor {
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "d@?dd",
                     argsCount: 2,
                     block: (addNumbersImpl as @convention(block) (Double, Double) -> Double) as AnyObject
+                )
+            }
+            """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+
+    func testAttachedMacroWithNoNameArgument() throws {
+        #if canImport(ExpoModulesOptimizedMacros)
+        assertMacroExpansion(
+            """
+            @OptimizedFunction
+            private func addNumbers(a: Double, b: Double) -> Double {
+                return a + b
+            }
+            """,
+            expandedSource: """
+            private func addNumbers(a: Double, b: Double) -> Double {
+                return a + b
+            }
+
+            private func addNumbers() -> OptimizedFunctionDescriptor {
+                return _createOptimizedFunctionDescriptor(
+                    typeEncoding: "d@?dd",
+                    argsCount: 2,
+                    block: (addNumbers as @convention(block) (Double, Double) -> Double) as AnyObject
                 )
             }
             """,
@@ -58,9 +86,8 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 return a + b
             }
 
-            private func addInts() -> AnyDefinition {
-                return _createOptimizedFunction(
-                    name: "addInts",
+            private func addInts() -> OptimizedFunctionDescriptor {
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "q@?qq",
                     argsCount: 2,
                     block: (addIntsImpl as @convention(block) (Int, Int) -> Int) as AnyObject
@@ -88,9 +115,8 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 return x * 2
             }
 
-            private func double() -> AnyDefinition {
-                return _createOptimizedFunction(
-                    name: "double",
+            private func double() -> OptimizedFunctionDescriptor {
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "d@?d",
                     argsCount: 1,
                     block: (doubleImpl as @convention(block) (Double) -> Double) as AnyObject
@@ -118,9 +144,8 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 print("nothing")
             }
 
-            private func doNothing() -> AnyDefinition {
-                return _createOptimizedFunction(
-                    name: "doNothing",
+            private func doNothing() -> OptimizedFunctionDescriptor {
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "v@?",
                     argsCount: 0,
                     block: (doNothingImpl as @convention(block) () -> Void) as AnyObject
@@ -148,9 +173,8 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 return a + b
             }
 
-            private func concat() -> AnyDefinition {
-                return _createOptimizedFunction(
-                    name: "concat",
+            private func concat() -> OptimizedFunctionDescriptor {
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "@@?@@",
                     argsCount: 2,
                     block: (concatImpl as @convention(block) (String, String) -> String) as AnyObject
@@ -178,9 +202,8 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 return !value
             }
 
-            private func negate() -> AnyDefinition {
-                return _createOptimizedFunction(
-                    name: "negate",
+            private func negate() -> OptimizedFunctionDescriptor {
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "B@?B",
                     argsCount: 1,
                     block: (negateImpl as @convention(block) (Bool) -> Bool) as AnyObject
@@ -212,7 +235,7 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 }
             }
 
-            private func validateValue() -> AnyDefinition {
+            private func validateValue() -> OptimizedFunctionDescriptor {
                 let impl: (Double) throws -> Void = validateValueImpl
                 let wrapper: @convention(block) (Double) -> Void = { arg0 in
                     do {
@@ -236,8 +259,7 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                         exception.raise()
                     }
                 }
-                return _createOptimizedFunction(
-                    name: "validateValue",
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "v@?d",
                     argsCount: 1,
                     block: wrapper as AnyObject
@@ -271,7 +293,7 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 return a / b
             }
 
-            private func divide() -> AnyDefinition {
+            private func divide() -> OptimizedFunctionDescriptor {
                 let impl: (Double, Double) throws -> Double = divideImpl
                 let wrapper: @convention(block) (Double, Double) -> Double = { arg0, arg1 in
                     do {
@@ -296,8 +318,7 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                         fatalError("Unreachable")
                     }
                 }
-                return _createOptimizedFunction(
-                    name: "divide",
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "d@?dd",
                     argsCount: 2,
                     block: wrapper as AnyObject
@@ -325,7 +346,7 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                 throw NSError(domain: "ConfigError", code: 404)
             }
 
-            private func getConfig() -> AnyDefinition {
+            private func getConfig() -> OptimizedFunctionDescriptor {
                 let impl: () throws -> String = getConfigImpl
                 let wrapper: @convention(block) () -> String = {
                     do {
@@ -350,8 +371,7 @@ final class ExpoModulesOptimizedTests: XCTestCase {
                         fatalError("Unreachable")
                     }
                 }
-                return _createOptimizedFunction(
-                    name: "getConfig",
+                return _createOptimizedFunctionDescriptor(
                     typeEncoding: "@@?",
                     argsCount: 0,
                     block: wrapper as AnyObject

@@ -50,26 +50,28 @@ internal func typeToEncoding(_ type: String) -> String? {
 
 // MARK: - Macro Implementation
 
-/// Implementation of the `@OptimizedFunction` attached macro (Solution 3).
-/// Generates a peer function that returns AnyDefinition for use in result builders.
+/// Implementation of the `@OptimizedFunction` attached macro.
+/// Generates a peer function that returns `OptimizedFunctionDescriptor` for use with
+/// the `Function("name", descriptor)` overload.
 ///
-/// For example:
+/// Usage:
 ///
-///     @OptimizedFunction("addNumbers")
-///     private func addNumbersImpl(a: Double, b: Double) -> Double {
+///     @OptimizedFunction
+///     private func addNumbers(a: Double, b: Double) -> Double {
 ///         return a + b
 ///     }
 ///
 /// generates a peer function:
 ///
-///     private func addNumbers() -> AnyDefinition {
-///         return _createOptimizedFunction(
-///             name: "addNumbers",
+///     private func addNumbers() -> OptimizedFunctionDescriptor {
+///         return _createOptimizedFunctionDescriptor(
 ///             typeEncoding: "d@?dd",
 ///             argsCount: 2,
-///             block: (addNumbersImpl as @convention(block) (Double, Double) -> Double) as AnyObject
+///             block: (addNumbers as @convention(block) (Double, Double) -> Double) as AnyObject
 ///         )
 ///     }
+///
+/// Then use in definition(): `Function("addNumbers", addNumbers())`
 public struct OptimizedFunctionAttachedMacro: PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
@@ -81,14 +83,16 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
             throw MacroExpansionErrorMessage("@OptimizedFunction can only be attached to function declarations")
         }
 
-        // Extract the function name from the macro argument
-        guard case let .argumentList(arguments) = node.arguments,
-              let firstArg = arguments.first,
-              let nameExpr = firstArg.expression.as(StringLiteralExprSyntax.self),
-              let nameSegment = nameExpr.segments.first?.as(StringSegmentSyntax.self) else {
-            throw MacroExpansionErrorMessage("@OptimizedFunction requires a string literal name argument")
+        // Extract the function name from the macro argument, or default to the Swift function name
+        let functionName: String
+        if case let .argumentList(arguments) = node.arguments,
+           let firstArg = arguments.first,
+           let nameExpr = firstArg.expression.as(StringLiteralExprSyntax.self),
+           let nameSegment = nameExpr.segments.first?.as(StringSegmentSyntax.self) {
+            functionName = nameSegment.content.text
+        } else {
+            functionName = funcDecl.name.text
         }
-        let functionName = nameSegment.content.text
 
         // Extract parameter types and names from the function signature
         var paramTypes: [String] = []
@@ -133,7 +137,7 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
             if returnType == "Void" || returnType == "()" {
                 if hasParams {
                     peerFunc = """
-                    private func \(raw: peerFuncName)() -> AnyDefinition {
+                    private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
                         let impl: (\(raw: blockParamTypes)) throws -> \(raw: returnType) = \(raw: implFuncName)
                         let wrapper: @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType) = { \(raw: implParamNames) in
                             do {
@@ -157,8 +161,7 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
                                 exception.raise()
                             }
                         }
-                        return _createOptimizedFunction(
-                            name: "\(raw: functionName)",
+                        return _createOptimizedFunctionDescriptor(
                             typeEncoding: "\(raw: typeEncoding)",
                             argsCount: \(raw: String(paramTypes.count)),
                             block: wrapper as AnyObject
@@ -167,7 +170,7 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
                     """
                 } else {
                     peerFunc = """
-                    private func \(raw: peerFuncName)() -> AnyDefinition {
+                    private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
                         let impl: () throws -> \(raw: returnType) = \(raw: implFuncName)
                         let wrapper: @convention(block) () -> \(raw: returnType) = {
                             do {
@@ -191,8 +194,7 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
                                 exception.raise()
                             }
                         }
-                        return _createOptimizedFunction(
-                            name: "\(raw: functionName)",
+                        return _createOptimizedFunctionDescriptor(
                             typeEncoding: "\(raw: typeEncoding)",
                             argsCount: \(raw: String(paramTypes.count)),
                             block: wrapper as AnyObject
@@ -203,7 +205,7 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
             } else {
                 if hasParams {
                     peerFunc = """
-                    private func \(raw: peerFuncName)() -> AnyDefinition {
+                    private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
                         let impl: (\(raw: blockParamTypes)) throws -> \(raw: returnType) = \(raw: implFuncName)
                         let wrapper: @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType) = { \(raw: implParamNames) in
                             do {
@@ -228,8 +230,7 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
                                 fatalError("Unreachable")
                             }
                         }
-                        return _createOptimizedFunction(
-                            name: "\(raw: functionName)",
+                        return _createOptimizedFunctionDescriptor(
                             typeEncoding: "\(raw: typeEncoding)",
                             argsCount: \(raw: String(paramTypes.count)),
                             block: wrapper as AnyObject
@@ -238,7 +239,7 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
                     """
                 } else {
                     peerFunc = """
-                    private func \(raw: peerFuncName)() -> AnyDefinition {
+                    private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
                         let impl: () throws -> \(raw: returnType) = \(raw: implFuncName)
                         let wrapper: @convention(block) () -> \(raw: returnType) = {
                             do {
@@ -263,8 +264,7 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
                                 fatalError("Unreachable")
                             }
                         }
-                        return _createOptimizedFunction(
-                            name: "\(raw: functionName)",
+                        return _createOptimizedFunctionDescriptor(
                             typeEncoding: "\(raw: typeEncoding)",
                             argsCount: \(raw: String(paramTypes.count)),
                             block: wrapper as AnyObject
@@ -279,9 +279,8 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
 
             if returnType == "Void" || returnType == "()" {
                 peerFunc = """
-                private func \(raw: peerFuncName)() -> AnyDefinition {
-                    return _createOptimizedFunction(
-                        name: "\(raw: functionName)",
+                private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
+                    return _createOptimizedFunctionDescriptor(
                         typeEncoding: "\(raw: typeEncoding)",
                         argsCount: \(raw: String(paramTypes.count)),
                         block: (\(raw: implFuncName) as @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType)) as AnyObject
@@ -290,9 +289,8 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
                 """
             } else {
                 peerFunc = """
-                private func \(raw: peerFuncName)() -> AnyDefinition {
-                    return _createOptimizedFunction(
-                        name: "\(raw: functionName)",
+                private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
+                    return _createOptimizedFunctionDescriptor(
                         typeEncoding: "\(raw: typeEncoding)",
                         argsCount: \(raw: String(paramTypes.count)),
                         block: (\(raw: implFuncName) as @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType)) as AnyObject
