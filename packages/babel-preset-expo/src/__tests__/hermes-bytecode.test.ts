@@ -7,22 +7,27 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
   return props as unknown as babel.TransformCaller;
 }
 
-jest.mock('../common.ts', () => ({
-  ...jest.requireActual('../common.ts'),
-  hasModule: jest.fn((moduleId) => {
+jest.mock('../utils/resolveModule.ts', () => {
+  function resolveModule(_api: any, id: string): string | null {
     if (
       [
-        'react-native-worklets',
-        'react-native-reanimated',
-        'expo-router',
+        'react-native-worklets/plugin',
+        'react-native-reanimated/plugin',
+        'expo-router/package.json',
         '@expo/vector-icons',
-      ].includes(moduleId)
+      ].includes(id)
     ) {
-      return true;
+      return id;
     }
-    return false;
-  }),
-}));
+    return null;
+  }
+
+  return {
+    ...jest.requireActual('../utils/resolveModule.ts'),
+    resolveModule: jest.fn(resolveModule),
+    hasModule: jest.fn((api, id) => !!resolveModule(api, id)),
+  };
+});
 
 const SAMPLE_CODE = `
 try {
