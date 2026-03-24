@@ -1,6 +1,8 @@
 import type {
+  DefaultNavigatorOptions,
   DefaultRouterOptions,
   EventMapBase,
+  NavigationProp,
   NavigationState,
   ParamListBase,
   RouteProp,
@@ -308,11 +310,12 @@ export interface NativeTabsProps extends PropsWithChildren {
    * </NativeTabs>
    * ```
    */
-  screenListeners?:
-    | ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>
-    | ((prop: {
-        route: RouteProp<ParamListBase, string>;
-      }) => ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>);
+  screenListeners?: DefaultNavigatorOptions<
+    ParamListBase,
+    TabNavigationState<ParamListBase>,
+    any,
+    NativeTabNavigationEventMap
+  >['screenListeners'];
 }
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
@@ -487,6 +490,7 @@ export interface NativeTabTriggerProps {
     | ScreenListeners<NavigationState, EventMapBase>
     | ((prop: {
         route: RouteProp<ParamListBase, string>;
+        navigation: NavigationProp<ParamListBase>;
       }) => ScreenListeners<NavigationState, EventMapBase>);
 }
 

@@ -228,6 +228,43 @@ describe('NativeTabs screenListeners prop', () => {
     });
   });
 
+  it('calls functional screenListeners with route and navigation', () => {
+    const screenListener = jest.fn();
+    renderRouter({
+      _layout: () => (
+        <NativeTabs
+          screenListeners={({ route, navigation }) => ({
+            tabPress: () => {
+              screenListener({
+                routeName: route.name,
+                hasNavigation: !!navigation,
+              });
+            },
+          })}>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    const indexTabKey = TabsScreen.mock.calls[0][0].tabKey;
+
+    triggerNativeFocusChange({
+      nativeEvent: { tabKey: indexTabKey, repeatedSelectionHandledBySpecialEffect: false },
+    } as NativeSyntheticEvent<{
+      tabKey: string;
+      repeatedSelectionHandledBySpecialEffect: boolean;
+    }>);
+
+    act(() => jest.runAllTimers());
+    expect(screenListener).toHaveBeenCalledWith({
+      routeName: 'index',
+      hasNavigation: true,
+    });
+  });
+
   it('calls both screenListeners and trigger listeners', () => {
     const screenListener = jest.fn();
     const triggerListener = jest.fn();
