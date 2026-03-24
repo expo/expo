@@ -20,6 +20,7 @@
 - Fix params mutation in getPathDataFromState ([#43934](https://github.com/expo/expo/pull/43934) by [@Ubax](https://github.com/Ubax))
 - fix hash order to be RFC compliant ([#43933](https://github.com/expo/expo/pull/43933) by [@Ubax](https://github.com/Ubax))
 - [ios] fix tint color on VectorIcon ([#43904](https://github.com/expo/expo/pull/43904) by [@Ubax](https://github.com/Ubax))
+- [Android] Fix @expo/ui divider in toolbar. ([#44209](https://github.com/expo/expo/pull/44209) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
