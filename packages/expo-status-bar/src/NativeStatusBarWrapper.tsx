@@ -4,7 +4,6 @@ import {
   StatusBar as NativeStatusBar,
   useColorScheme,
   type ColorSchemeName,
-  type ColorValue,
 } from 'react-native';
 
 import { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
@@ -54,35 +53,6 @@ export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
 export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimation) {
   NativeStatusBar.setHidden(hidden, animation);
 }
-
-// @needsAudit
-/**
- * Set the background color of the status bar.
- * @param backgroundColor The background color of the status bar.
- * @param animated `true` to animate the background color change, `false` to change immediately.
- * @platform android
- * @deprecated Due to Android edge-to-edge enforcement, setting the status bar background color is deprecated and has no effect. This will be removed in a future release.
- */
-export function setStatusBarBackgroundColor(backgroundColor: ColorValue, animated?: boolean) {}
-
-// @needsAudit
-/**
- * Toggle visibility of the network activity indicator.
- * @param visible If the network activity indicator should be visible.
- * @platform ios
- * @deprecated The status bar network activity indicator is not supported in iOS 13 and later. This will be removed in a future release.
- */
-export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {}
-
-// @needsAudit
-/**
- * Set the translucency of the status bar.
- * @param translucent Whether the app can draw under the status bar. When `true`, content will be
- * rendered under the status bar. This is always `true` on iOS and cannot be changed.
- * @platform android
- * @deprecated Due to Android edge-to-edge enforcement, setting the status bar as translucent is deprecated and has no effect. This will be removed in a future release.
- */
-export function setStatusBarTranslucent(translucent: boolean) {}
 
 function styleToBarStyle(
   style: StatusBarStyle = 'auto',

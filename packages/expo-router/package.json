@@ -164,7 +164,6 @@
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
     "react-native-drawer-layout": "^4.2.2",
-    "react-native-is-edge-to-edge": "^1.2.1",
     "react-native-screens": "~4.24.0",
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",

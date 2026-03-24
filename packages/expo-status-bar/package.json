@@ -36,9 +36,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
-  "dependencies": {
-    "react-native-is-edge-to-edge": "^1.2.1"
-  },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

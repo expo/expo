@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed `setBackgroundColorAsync`, `getBackgroundColorAsync`, `setBorderColorAsync`, `getBorderColorAsync`, `setButtonStyleAsync`, `getButtonStyleAsync`, `setPositionAsync`, `unstable_getPositionAsync`, `setBehaviorAsync`, `getBehaviorAsync` functions, `NavigationBarButtonStyle`, `NavigationBarBehavior`, `NavigationBarPosition` types, and `backgroundColor`, `borderColor`, `behavior`, `position` config plugin properties. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
+
 ### 🎉 New features
 
 - Add `style` and `hidden` properties to config plugin, replacing `barStyle` and `visibility`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
@@ -12,6 +14,7 @@
 
 ### 💡 Others
 
+- Removed `react-native-is-edge-to-edge` dependency. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
 - Deprecated `NavigationBarButtonStyle` type. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
 - Deprecated `barStyle` and `visibility` config plugin properties in favor of `style` and `hidden`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
 

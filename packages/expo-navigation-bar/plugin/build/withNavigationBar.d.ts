@@ -1,6 +1,6 @@
 import { ExpoConfig } from 'expo/config';
 import { AndroidConfig, ConfigPlugin, ExportedConfigWithProps } from 'expo/config-plugins';
-import { NavigationBarBehavior, NavigationBarButtonStyle, NavigationBarPosition, NavigationBarVisibility } from '../..';
+import { NavigationBarVisibility } from '../..';
 export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
 type AndroidNavigationBar = NonNullable<ExpoConfig['androidNavigationBar']>;
 type NavigationBarStyle = 'light' | 'dark';
@@ -9,17 +9,9 @@ export type Props = {
     hidden?: boolean;
     style?: NavigationBarStyle;
     /** @deprecated */
-    barStyle?: NavigationBarButtonStyle | null;
+    barStyle?: NavigationBarStyle | null;
     /** @deprecated */
     visibility?: NavigationBarVisibility;
-    /** @deprecated */
-    backgroundColor?: string | null;
-    /** @deprecated */
-    behavior?: NavigationBarBehavior;
-    /** @deprecated */
-    borderColor?: string;
-    /** @deprecated */
-    position?: NavigationBarPosition;
 };
 type ResolvedProps = {
     enforceContrast?: boolean;

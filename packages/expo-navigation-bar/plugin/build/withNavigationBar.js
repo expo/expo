@@ -37,15 +37,6 @@ function resolveProps(config, props) {
     if ('visibility' in props) {
         config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar visibility', 'Use `hidden` instead. This will be removed in a future release.');
     }
-    if ('behavior' in props) {
-        config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar behavior', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
-    }
-    if ('borderColor' in props) {
-        config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar borderColor', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
-    }
-    if ('position' in props) {
-        config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar position', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
-    }
     const hidden = props.hidden ?? (props.visibility == null ? undefined : props.visibility === 'hidden');
     return {
         enforceContrast: props.enforceContrast,
