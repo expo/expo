@@ -147,6 +147,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Text component',
+    route: 'ui/text',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextScreen'));
+    },
+  },
+  {
     name: 'TextInput component',
     route: 'ui/textInput',
     options: {},

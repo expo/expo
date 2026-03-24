@@ -32,7 +32,7 @@ export * from './FloatingActionButton';
 export * from './PullToRefreshBox';
 export * from './RadioButton';
 export * from './Surface';
-export * from './Text';
+export { type TextProps, Text } from './Text';
 
 export * from './AnimatedVisibility';
 export * from './Box';
