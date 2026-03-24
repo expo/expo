@@ -463,6 +463,112 @@ export const getBuildFolderPrefixForPlatform = (platform: BuildPlatform): string
 };
 
 /**
+ * Normalizes a git URL for comparison (strips trailing .git and lowercases).
+ */
+function normalizeGitUrl(url: string): string {
+  return url.replace(/\.git$/, '').toLowerCase();
+}
+
+/**
+ * Detects which of the shared SPM dependencies are also dependencies of a given checkout.
+ * Parses the checkout's Package.swift for `.package(url:)` entries and matches them
+ * against the full set of shared deps by URL.
+ *
+ * @returns Array of productNames that are both shared deps and dependencies of this checkout
+ */
+function getSharedInterDeps(
+  checkoutPkgSwift: string,
+  allSharedDeps: Map<string, SPMPackageDependencyConfig>
+): string[] {
+  // Extract all .package(url: "...") URLs from the checkout's Package.swift
+  const urlPattern = /\.package\(\s*url:\s*"([^"]+)"/g;
+  const checkoutUrls = new Set<string>();
+  let match;
+  while ((match = urlPattern.exec(checkoutPkgSwift)) !== null) {
+    checkoutUrls.add(normalizeGitUrl(match[1]));
+  }
+
+  // Match against shared deps
+  const interDeps: string[] = [];
+  for (const [productName, dep] of allSharedDeps) {
+    if (checkoutUrls.has(normalizeGitUrl(dep.url))) {
+      interDeps.push(productName);
+    }
+  }
+  return interDeps;
+}
+
+/**
+ * Patches a checkout's Package.swift to use pre-built binary targets for shared deps
+ * instead of fetching them from source. This prevents duplicate symbols when multiple
+ * shared xcframeworks are linked together.
+ *
+ * Strategy:
+ * 1. Remove the `.package(url:)` entry for each shared dep
+ * 2. Add a `.binaryTarget(name:, path:)` entry in the targets array
+ * The target's `dependencies:` references (e.g., `"SDWebImage"`) resolve automatically
+ * since SPM matches by name regardless of whether it's a package product or binary target.
+ */
+async function patchCheckoutWithSharedDeps(
+  pkgSwiftPath: string,
+  builtDeps: Map<string, string> // productName → absolute xcframework path (will be made relative)
+): Promise<void> {
+  let content = await fs.readFile(pkgSwiftPath, 'utf-8');
+  const pkgDir = path.dirname(pkgSwiftPath);
+  const headerSearchFlags: string[] = [];
+
+  for (const [productName, xcframeworkPath] of builtDeps) {
+    // Create a local wrapper package that provides the xcframework as a binary target.
+    // This avoids bumping the checkout's swift-tools-version (which causes compatibility
+    // issues like strict resource validation and explicit product declarations).
+    // The wrapper uses 5.3 (minimum for .binaryTarget) while the checkout stays at its
+    // original version and uses .package(path:) to reference it.
+    const wrapperDir = path.join(pkgDir, '_deps', productName);
+    await fs.mkdirp(wrapperDir);
+    // Path must be relative to the wrapper package root
+    const xcfwRelativePath = path.relative(wrapperDir, xcframeworkPath);
+    await fs.writeFile(
+      path.join(wrapperDir, 'Package.swift'),
+      `// swift-tools-version:5.3\nimport PackageDescription\nlet package = Package(\n    name: "${productName}",\n    products: [.library(name: "${productName}", targets: ["${productName}"])],\n    targets: [.binaryTarget(name: "${productName}", path: "${xcfwRelativePath}")]\n)\n`,
+      'utf-8'
+    );
+
+    // Replace .package(url:) with .package(path:) pointing to the local wrapper
+    const pkgPattern = new RegExp(
+      `\\.package\\(\\s*url:\\s*"[^"]*\\b${productName}\\b[^"]*"[^)]*\\)`,
+      'i'
+    );
+    const relativePath = path.relative(pkgDir, wrapperDir);
+    content = content.replace(pkgPattern, `.package(path: "${relativePath}")`);
+
+    // Binary targets don't expose C headers automatically — collect -I flags
+    const headersDir = path.join(xcframeworkPath, 'ios-arm64', `${productName}.framework`, 'Headers');
+    if (await fs.pathExists(headersDir)) {
+      headerSearchFlags.push(`"-I", "${headersDir}"`);
+    }
+  }
+
+  // Inject -I flags for binary target headers into the main target's cSettings.
+  if (headerSearchFlags.length > 0) {
+    const flagsStr = `.unsafeFlags([${headerSearchFlags.join(', ')}])`;
+    if (content.includes('cSettings:')) {
+      content = content.replace(
+        /cSettings:\s*\[/,
+        `cSettings: [\n                ${flagsStr},`
+      );
+    } else {
+      // Add cSettings before the closing `)` of the main .target
+      content = content.replace(
+        /(\n(\s*)\)\s*\n\s*\]\s*\n\s*\)\s*)$/,
+        `,\n$2    cSettings: [${flagsStr}]$1`
+      );
+    }
+  }
+
+  await fs.writeFile(pkgSwiftPath, content, 'utf-8');
+}
+
+/**
  * Copies Headers/ and Modules/ into a framework bundle from build intermediates.
  * SPM's PackageFrameworks/ output only contains the binary — headers and module maps
  * are in the build intermediates. We need them for the xcframework to be usable as
@@ -478,17 +584,30 @@ async function enrichFrameworkWithHeaders(
 ): Promise<void> {
   // 1. Copy public headers from the checkout.
   // SPM packages declare public headers via `publicHeadersPath` in Package.swift,
-  // or use the default `include/` convention. We parse the Package.swift to find it.
+  // relative to the target's `path:`. We parse both to find the actual headers dir.
   const checkoutPkgSwift = await fs.readFile(path.join(checkoutDir, 'Package.swift'), 'utf-8');
-  const publicHeadersMatch = checkoutPkgSwift.match(
-    /publicHeadersPath:\s*"([^"]+)"/
+
+  // Extract target path and publicHeadersPath for the product's target.
+  // Find the `.target(` block that contains `name: "<productName>"` by matching
+  // from `.target(` through to `publicHeadersPath` or the closing `)`.
+  const targetBlockMatch = checkoutPkgSwift.match(
+    new RegExp(`\\.target\\(\\s*\\n[\\s\\S]*?name:\\s*"${productName}"[\\s\\S]*?(?=\\.target\\(|\\.testTarget\\(|\\.binaryTarget\\(|\\]\\s*[\\n\\r])`)
   );
+  const targetBlock = targetBlockMatch ? targetBlockMatch[0] : '';
+  const targetPathMatch = targetBlock.match(/\bpath:\s*"([^"]+)"/);
+  const publicHeadersMatch = targetBlock.match(/publicHeadersPath:\s*"([^"]+)"/);
+  const targetPath = targetPathMatch ? targetPathMatch[1] : '.';
+
   const headersCandidates = [
-    // Explicit publicHeadersPath from Package.swift
-    ...(publicHeadersMatch ? [path.join(checkoutDir, publicHeadersMatch[1])] : []),
+    // Explicit publicHeadersPath relative to target path
+    ...(publicHeadersMatch
+      ? [path.join(checkoutDir, targetPath, publicHeadersMatch[1])]
+      : []),
     // Default SPM conventions
     path.join(checkoutDir, productName, 'include', productName),
     path.join(checkoutDir, productName, 'include'),
+    path.join(checkoutDir, targetPath, 'include', productName),
+    path.join(checkoutDir, targetPath, 'include'),
     path.join(checkoutDir, 'include', productName),
     path.join(checkoutDir, 'include'),
   ];
@@ -496,9 +615,10 @@ async function enrichFrameworkWithHeaders(
   if (headersDir) {
     const destHeaders = path.join(frameworkPath, 'Headers');
     await fs.mkdirp(destHeaders);
-    // Only copy .h files (skip .m, .c, .swift etc. that may be in the same dir)
-    // Use -L to follow symlinks (some packages symlink umbrella headers from other dirs)
-    execSync(`rsync -aL --include='*.h' --exclude='*' "${headersDir}/" "${destHeaders}/"`, { stdio: 'pipe' });
+    // Copy .h files preserving subdirectory structure (e.g., avif/avif.h).
+    // Use -L to follow symlinks (some packages symlink umbrella headers from other dirs).
+    // --include='*/' keeps subdirectories, --include='*.h' keeps headers, --exclude='*' drops the rest.
+    execSync(`rsync -aL --include='*/' --include='*.h' --exclude='*' "${headersDir}/" "${destHeaders}/"`, { stdio: 'pipe' });
   }
 
   // 2. Copy the generated module map
@@ -673,13 +793,18 @@ let package = Package(
  * The resulting xcframework is shared across all products that use the same dependency,
  * preventing duplicate symbols at runtime.
  *
+ * If this dependency depends on other shared SPM deps, those are built first (recursively)
+ * and provided as binary targets to avoid statically linking duplicate code.
+ *
  * @param dep The SPM package dependency config
  * @param buildType Build flavor (Debug or Release)
+ * @param allSharedDeps Map of all shared SPM deps (productName → config) for inter-dep detection
  * @param platforms Build platforms to target (defaults to iOS + iOS Simulator)
  */
 export async function buildSharedSPMDependencyAsync(
   dep: SPMPackageDependencyConfig,
   buildType: BuildFlavor,
+  allSharedDeps: Map<string, SPMPackageDependencyConfig> = new Map(),
   platforms: BuildPlatform[] = ['iOS', 'iOS Simulator']
 ): Promise<void> {
   const productName = dep.productName;
@@ -794,6 +919,45 @@ export async function buildSharedSPMDependencyAsync(
     '.library(name: "$1", type: .dynamic, targets:'
   );
   await fs.writeFile(pkgSwift, pkgSwiftContent, 'utf-8');
+
+  // Detect inter-dependencies with other shared SPM deps.
+  // If SDWebImageWebPCoder depends on SDWebImage (also a shared dep), we need to:
+  // 1. Build SDWebImage first (recursively)
+  // 2. Patch this checkout's Package.swift to use SDWebImage as a binary target
+  // This prevents SDWebImage from being statically linked into SDWebImageWebPCoder,
+  // which would cause duplicate symbols at runtime.
+  if (allSharedDeps.size > 0) {
+    const interDeps = getSharedInterDeps(pkgSwiftContent, allSharedDeps);
+    // Filter out self-reference
+    const externalInterDeps = interDeps.filter((d) => d !== productName);
+
+    if (externalInterDeps.length > 0) {
+      logger.info(
+        `   🔗 ${productName} depends on shared deps: ${externalInterDeps.map((d) => chalk.cyan(d)).join(', ')}`
+      );
+
+      // Recursively build any inter-deps that haven't been built yet
+      for (const interDepName of externalInterDeps) {
+        const interDep = allSharedDeps.get(interDepName);
+        if (interDep && !Frameworks.hasSharedSPMDepFramework(interDepName, buildType)) {
+          logger.info(`   ↳ Building dependency ${chalk.cyan(interDepName)} first...`);
+          await buildSharedSPMDependencyAsync(interDep, buildType, allSharedDeps, platforms);
+        }
+      }
+
+      // Patch the checkout's Package.swift to use pre-built binary targets
+      const builtDeps = new Map<string, string>();
+      for (const interDepName of externalInterDeps) {
+        const xcfwPath = Frameworks.getSharedSPMDepFrameworkPath(interDepName, buildType);
+        if (await fs.pathExists(xcfwPath)) {
+          builtDeps.set(interDepName, xcfwPath);
+        }
+      }
+      if (builtDeps.size > 0) {
+        await patchCheckoutWithSharedDeps(pkgSwift, builtDeps);
+      }
+    }
+  }
 
   for (const platform of platforms) {
     const args = [

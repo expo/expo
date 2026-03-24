@@ -452,9 +452,12 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
       await fsExtra.remove(path.join(spmDepsRoot, '_SourcePackages'));
     }
 
+    // Build a lookup map of all shared deps for inter-dependency detection
+    const allSharedDeps = new Map(shared.map(({ dep }) => [dep.productName, dep]));
+
     for (const flavor of ctx.request.buildFlavors) {
       for (const { dep } of shared) {
-        await buildSharedSPMDependencyAsync(dep, flavor);
+        await buildSharedSPMDependencyAsync(dep, flavor, allSharedDeps);
       }
     }
   },
