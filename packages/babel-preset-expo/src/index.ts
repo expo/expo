@@ -317,7 +317,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // Transform widget component JSX expressions to capture widget components for native-side evaluation.
   // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
-  if (hasModule(api, 'expo-widgets')) {
+  if (hasModule(api, 'expo-widgets/package.json')) {
     extraPlugins.push(widgetsPlugin);
   }
 
@@ -450,7 +450,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
       // Automatically add worklets or reanimated plugin when package is installed.
       ((): PluginItem | null => {
-        if (platformOptions.worklets !== false) {
+        if (platformOptions.worklets !== false && platformOptions.reanimated !== false) {
           const workletsPlugin = resolveModule(api, 'react-native-worklets/plugin');
           if (workletsPlugin) {
             return [require(workletsPlugin)];
