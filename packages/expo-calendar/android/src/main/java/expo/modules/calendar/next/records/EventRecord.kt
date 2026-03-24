@@ -1,63 +1,34 @@
 package expo.modules.calendar.next.records
 
-import android.provider.CalendarContract
-import expo.modules.calendar.domain.event.enums.Availability
 import expo.modules.calendar.next.utils.parseRrDate
 import expo.modules.calendar.next.utils.rrFormat
 import expo.modules.calendar.next.utils.sdf
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.records.Required
 import expo.modules.kotlin.types.Enumerable
 import java.util.Locale
 
-sealed interface EventRecord : Record {
-  data class New(
-    @Field val startDate: String,
-    @Field val endDate: String,
-    @Field val title: String? = null,
-    @Field val location: String? = null,
-    @Field val timeZone: String? = null,
-    @Field val endTimeZone: String? = null,
-    @Field val notes: String? = null,
-    @Field val alarms: List<AlarmRecord>? = null,
-    @Field val recurrenceRule: RecurrenceRuleRecord? = null,
-    @Field val allDay: Boolean? = null,
-    @Field val availability: EventAvailability? = null,
-    @Field val status: EventStatus? = null,
-    @Field val organizerEmail: String? = null,
-    @Field val accessLevel: EventAccessLevel? = null,
-    @Field val guestsCanModify: Boolean? = null,
-    @Field val guestsCanInviteOthers: Boolean? = null,
-    @Field val guestsCanSeeGuests: Boolean? = null,
-    @Field val originalId: String? = null,
-    @Field val instanceId: String? = null
-  ) : EventRecord
-
-  data class Existing(
-    @Required @Field val id: String,
-    @Field val startDate: String,
-    @Field val endDate: String,
-    @Field val calendarId: String? = null,
-    @Field val title: String? = null,
-    @Field val location: String? = null,
-    @Field val timeZone: String? = null,
-    @Field val endTimeZone: String? = null,
-    @Field val notes: String? = null,
-    @Field val alarms: List<AlarmRecord>? = null,
-    @Field val recurrenceRule: RecurrenceRuleRecord? = null,
-    @Field val allDay: Boolean? = null,
-    @Field val availability: EventAvailability? = null,
-    @Field val status: EventStatus? = null,
-    @Field val organizerEmail: String? = null,
-    @Field val accessLevel: EventAccessLevel? = null,
-    @Field val guestsCanModify: Boolean? = null,
-    @Field val guestsCanInviteOthers: Boolean? = null,
-    @Field val guestsCanSeeGuests: Boolean? = null,
-    @Field val originalId: String? = null,
-    @Field val instanceId: String? = null
-  ) : EventRecord
-}
+data class EventInputRecord(
+  @Field val startDate: String,
+  @Field val endDate: String,
+  @Field val title: String? = null,
+  @Field val location: String? = null,
+  @Field val timeZone: String? = null,
+  @Field val endTimeZone: String? = null,
+  @Field val notes: String? = null,
+  @Field val alarms: List<AlarmRecord>? = null,
+  @Field val recurrenceRule: RecurrenceRuleRecord? = null,
+  @Field val allDay: Boolean? = null,
+  @Field val availability: EventAvailability? = null,
+  @Field val status: EventStatus? = null,
+  @Field val organizerEmail: String? = null,
+  @Field val accessLevel: EventAccessLevel? = null,
+  @Field val guestsCanModify: Boolean? = null,
+  @Field val guestsCanInviteOthers: Boolean? = null,
+  @Field val guestsCanSeeGuests: Boolean? = null,
+  @Field val originalId: String? = null,
+  @Field val instanceId: String? = null
+) : Record
 
 data class AlarmRecord(
   @Field
@@ -124,65 +95,20 @@ data class RecurringEventOptions(
 enum class EventAvailability(val value: String) : Enumerable {
   BUSY("busy"),
   FREE("free"),
-  TENTATIVE("tentative");
-
-  fun toAndroidValue(availability: EventAvailability?): Int? {
-    return availability?.value?.let { Availability.fromString(it).contentProviderValue }
-  }
-
-  companion object {
-    fun fromAndroidValue(value: Int?): EventAvailability = when (value) {
-      CalendarContract.Events.AVAILABILITY_BUSY -> BUSY
-      CalendarContract.Events.AVAILABILITY_FREE -> FREE
-      CalendarContract.Events.AVAILABILITY_TENTATIVE -> TENTATIVE
-      else -> BUSY
-    }
-  }
+  TENTATIVE("tentative")
 }
 
 enum class EventStatus(val value: String) : Enumerable {
   CONFIRMED("confirmed"),
   TENTATIVE("tentative"),
-  CANCELED("canceled");
-
-  fun toAndroidValue(status: EventStatus?): Int = when (status) {
-    CONFIRMED -> CalendarContract.Events.STATUS_CONFIRMED
-    TENTATIVE -> CalendarContract.Events.STATUS_TENTATIVE
-    CANCELED -> CalendarContract.Events.STATUS_CANCELED
-    else -> CalendarContract.Events.STATUS_CANCELED
-  }
-
-  companion object {
-    fun fromAndroidValue(value: Int): EventStatus = when (value) {
-      CalendarContract.Events.STATUS_CONFIRMED -> CONFIRMED
-      CalendarContract.Events.STATUS_TENTATIVE -> TENTATIVE
-      CalendarContract.Events.STATUS_CANCELED -> CANCELED
-      else -> CANCELED
-    }
-  }
+  CANCELED("canceled")
 }
 
 enum class EventAccessLevel(val value: String) : Enumerable {
   CONFIDENTIAL("confidential"),
   PRIVATE("private"),
   PUBLIC("public"),
-  DEFAULT("default");
-
-  fun toAndroidValue(accessLevel: EventAccessLevel?): Int? {
-    return accessLevel?.value?.let {
-      expo.modules.calendar.domain.event.enums.EventAccessLevel.fromString(it).contentProviderValue
-    }
-  }
-
-  companion object {
-    fun fromAndroidValue(value: Int): EventAccessLevel = when (value) {
-      CalendarContract.Events.ACCESS_CONFIDENTIAL -> CONFIDENTIAL
-      CalendarContract.Events.ACCESS_PRIVATE -> PRIVATE
-      CalendarContract.Events.ACCESS_PUBLIC -> PUBLIC
-      CalendarContract.Events.ACCESS_DEFAULT -> DEFAULT
-      else -> DEFAULT
-    }
-  }
+  DEFAULT("default")
 }
 
 enum class AlarmMethod(val value: String) : Enumerable {
@@ -190,33 +116,5 @@ enum class AlarmMethod(val value: String) : Enumerable {
   ALERT("alert"),
   EMAIL("email"),
   SMS("sms"),
-  DEFAULT("default");
-
-  fun toAndroidValue(): Int = when (this) {
-    ALERT -> CalendarContract.Reminders.METHOD_ALERT
-    ALARM -> CalendarContract.Reminders.METHOD_ALARM
-    EMAIL -> CalendarContract.Reminders.METHOD_EMAIL
-    SMS -> CalendarContract.Reminders.METHOD_SMS
-    else -> CalendarContract.Reminders.METHOD_DEFAULT
-  }
-
-  companion object {
-    fun fromAndroidValue(value: Int): AlarmMethod = when (value) {
-      CalendarContract.Reminders.METHOD_ALARM -> ALARM
-      CalendarContract.Reminders.METHOD_ALERT -> ALERT
-      CalendarContract.Reminders.METHOD_EMAIL -> EMAIL
-      CalendarContract.Reminders.METHOD_SMS -> SMS
-      CalendarContract.Reminders.METHOD_DEFAULT -> DEFAULT
-      else -> DEFAULT
-    }
-
-    fun fromReminderString(remindersString: String?): List<AlarmMethod> {
-      return remindersString
-        ?.split(",")
-        ?.filter { it.isNotBlank() }
-        ?.map { reminderString ->
-          entries.find { it.value == reminderString } ?: DEFAULT
-        } ?: emptyList()
-    }
-  }
+  DEFAULT("default")
 }

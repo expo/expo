@@ -2,6 +2,7 @@ package expo.modules.calendar.next.mappers
 
 import expo.modules.calendar.next.domain.model.event.AccessLevel
 import expo.modules.calendar.next.domain.model.event.Availability
+import expo.modules.calendar.next.domain.model.event.EventEntity
 import expo.modules.calendar.next.domain.model.event.RecurrenceRule
 import expo.modules.calendar.next.domain.model.event.Status
 import expo.modules.calendar.next.domain.model.instance.InstanceEntity
@@ -113,7 +114,7 @@ class ExpoCalendarEventMapperTest {
       eventId = EventId(7L),
       eventLocation = null,
       eventTimezone = null,
-      id = 0L,
+      id = 42L,
       guestsCanInviteOthers = false,
       guestsCanModify = false,
       guestsCanSeeGuests = false,
@@ -143,7 +144,134 @@ class ExpoCalendarEventMapperTest {
     Assert.assertEquals(false, result.guestsCanModify)
     Assert.assertEquals(false, result.guestsCanSeeGuests)
     Assert.assertNull(result.originalId)
-    Assert.assertEquals(0L, result.instanceId)
+    Assert.assertEquals(42L, result.instanceId)
+    Assert.assertNull(result.recurrenceRule)
+    Assert.assertNull(result.status)
+  }
+
+  @Test
+  fun `given EventEntity, when toData, then maps event data and sets instanceId to null`() {
+    // Given
+    val eventEntity = EventEntity(
+      id = EventId(42L),
+      accessLevel = AccessLevel.PUBLIC,
+      allDay = true,
+      availability = Availability.FREE,
+      calendarId = CalendarId(3L),
+      description = "Standup",
+      dtEnd = 2_000_000L,
+      dtStart = 1_000_000L,
+      eventEndTimezone = "Europe/Warsaw",
+      eventLocation = "Room 1",
+      eventTimezone = "Europe/Warsaw",
+      guestsCanInviteOthers = true,
+      guestsCanModify = false,
+      guestsCanSeeGuests = true,
+      organizer = "organizer@example.com",
+      originalId = EventId(12L),
+      rrule = RecurrenceRule(
+        frequency = "weekly",
+        interval = 1,
+        occurrence = null,
+        endDate = "2026-03-31T10:00:00.000Z"
+      ),
+      status = Status.CONFIRMED,
+      title = "Meeting"
+    )
+    val reminders = listOf(
+      ReminderEntity(
+        id = ReminderId(1L),
+        eventId = EventId(42L),
+        method = Method.EMAIL,
+        minutes = 15
+      )
+    )
+
+    // When
+    val result = mapper.toData(eventEntity, reminders)
+
+    // Then
+    Assert.assertEquals("42", result.id)
+    Assert.assertEquals("3", result.calendarId)
+    Assert.assertEquals("Meeting", result.title)
+    Assert.assertEquals("Standup", result.notes)
+    Assert.assertEquals(sdf.format(1_000_000L), result.startDate)
+    Assert.assertEquals(sdf.format(2_000_000L), result.endDate)
+    Assert.assertEquals(true, result.allDay)
+    Assert.assertEquals("Room 1", result.location)
+    Assert.assertEquals("Europe/Warsaw", result.timeZone)
+    Assert.assertEquals("Europe/Warsaw", result.endTimeZone)
+    Assert.assertEquals(EventAvailability.FREE, result.availability)
+    Assert.assertEquals("organizer@example.com", result.organizerEmail)
+    Assert.assertEquals(EventAccessLevel.PUBLIC, result.accessLevel)
+    Assert.assertEquals(true, result.guestsCanInviteOthers)
+    Assert.assertEquals(false, result.guestsCanModify)
+    Assert.assertEquals(true, result.guestsCanSeeGuests)
+    Assert.assertEquals(EventStatus.CONFIRMED, result.status)
+    Assert.assertEquals("12", result.originalId)
+    Assert.assertNull(result.instanceId)
+    Assert.assertEquals(
+      RecurrenceRuleRecord(
+        endDate = "2026-03-31T10:00:00.000Z",
+        frequency = "weekly",
+        interval = 1,
+        occurrence = null
+      ),
+      result.recurrenceRule
+    )
+    Assert.assertEquals(1, result.alarms.size)
+    Assert.assertEquals(15, result.alarms[0].relativeOffset)
+    Assert.assertEquals(AlarmMethod.EMAIL, result.alarms[0].method)
+  }
+
+  @Test
+  fun `given EventEntity with null fields, when toData, then preserves nulls and sets instanceId to null`() {
+    // Given
+    val eventEntity = EventEntity(
+      id = EventId(7L),
+      accessLevel = null,
+      allDay = null,
+      availability = null,
+      calendarId = null,
+      description = null,
+      dtEnd = null,
+      dtStart = null,
+      eventEndTimezone = null,
+      eventLocation = null,
+      eventTimezone = null,
+      guestsCanInviteOthers = null,
+      guestsCanModify = null,
+      guestsCanSeeGuests = null,
+      organizer = null,
+      originalId = null,
+      rrule = null,
+      status = null,
+      title = null
+    )
+
+    // When
+    val result = mapper.toData(eventEntity)
+
+    // Then
+    Assert.assertEquals("7", result.id)
+    Assert.assertTrue(result.alarms.isEmpty())
+    Assert.assertNull(result.calendarId)
+    Assert.assertNull(result.title)
+    Assert.assertNull(result.notes)
+    Assert.assertEquals(sdf.format(0L), result.startDate)
+    Assert.assertEquals(sdf.format(0L), result.endDate)
+    Assert.assertNull(result.allDay)
+    Assert.assertNull(result.location)
+    Assert.assertNull(result.timeZone)
+    Assert.assertNull(result.endTimeZone)
+    Assert.assertNull(result.availability)
+    Assert.assertNull(result.organizerEmail)
+    Assert.assertNull(result.accessLevel)
+    Assert.assertNull(result.guestsCanInviteOthers)
+    Assert.assertNull(result.guestsCanModify)
+    Assert.assertNull(result.guestsCanSeeGuests)
+    Assert.assertNull(result.originalId)
+    Assert.assertNull(result.instanceId)
     Assert.assertNull(result.recurrenceRule)
     Assert.assertNull(result.status)
   }

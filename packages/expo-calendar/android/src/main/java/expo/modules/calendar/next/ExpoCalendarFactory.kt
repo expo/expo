@@ -29,7 +29,8 @@ class ExpoCalendarFactory(
       eventMapper = eventMapper,
       reminderMapper = reminderMapper,
       calendarMapper = calendarMapper,
-      calendarEntity = entity
+      calendarId = entity.id,
+      data = calendarMapper.toExpoCalendarData(entity)
     )
   }
 }

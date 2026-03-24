@@ -4,44 +4,62 @@ import expo.modules.calendar.next.domain.dto.event.EventInput
 import expo.modules.calendar.next.domain.dto.event.EventUpdate
 import expo.modules.calendar.next.domain.model.event.AccessLevel
 import expo.modules.calendar.next.domain.model.event.Availability
-import expo.modules.calendar.next.domain.model.event.EventEntity
 import expo.modules.calendar.next.domain.model.event.RecurrenceRule
-import expo.modules.calendar.next.domain.model.event.Status
-import expo.modules.calendar.next.domain.model.instance.InstanceEntity
 import expo.modules.calendar.next.domain.wrappers.CalendarId
-import expo.modules.calendar.next.domain.wrappers.EventId
 import expo.modules.calendar.next.records.EventAccessLevel
 import expo.modules.calendar.next.records.EventAvailability
-import expo.modules.calendar.next.records.EventRecord
-import expo.modules.calendar.next.records.EventStatus
+import expo.modules.calendar.next.records.EventInputRecord
 import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.utils.dateToMilliseconds
-import expo.modules.calendar.next.utils.sdf
 import expo.modules.kotlin.types.ValueOrUndefined
-import java.util.Date
 
 class EventMapper {
-  fun toEventUpdate(eventRecord: EventRecord) = when (eventRecord) {
-    is EventRecord.New -> eventRecord.toEventUpdate()
-    is EventRecord.Existing -> eventRecord.toEventUpdate()
-  }
+  fun toEventUpdate(input: EventUpdateRecord) = EventUpdate(
+    title = input.title,
+    description = input.notes,
+    dtStart = if (input.startDate.isUndefined) {
+      ValueOrUndefined.Undefined()
+    } else {
+      ValueOrUndefined.Value(dateToMilliseconds(input.startDate.optional))
+    },
+    dtEnd = if (input.endDate.isUndefined) {
+      ValueOrUndefined.Undefined()
+    } else {
+      ValueOrUndefined.Value(dateToMilliseconds(input.endDate.optional))
+    },
+    availability = if (input.availability.isUndefined) {
+      ValueOrUndefined.Undefined()
+    } else {
+      ValueOrUndefined.Value(input.availability.optional?.toDomain())
+    },
+    allDay = input.allDay,
+    eventLocation = input.location,
+    organizer = input.organizerEmail,
+    guestsCanModify = input.guestsCanModify,
+    guestsCanInviteOthers = input.guestsCanInviteOthers,
+    guestsCanSeeGuests = input.guestsCanSeeGuests,
+    eventTimezone = input.timeZone,
+    eventEndTimezone = input.endTimeZone,
+    accessLevel = if (input.accessLevel.isUndefined) {
+      ValueOrUndefined.Undefined()
+    } else {
+      ValueOrUndefined.Value(input.accessLevel.optional?.toDomain())
+    },
+    rrule = if (input.recurrenceRule.isUndefined) {
+      ValueOrUndefined.Undefined()
+    } else {
+      ValueOrUndefined.Value(input.recurrenceRule.optional?.toDomain())
+    }
+  )
 
-  fun toEventUpdate(input: EventUpdateRecord) = input.toEventUpdate()
-
-  fun toDomainEventInput(calendarId: CalendarId, eventRecord: EventRecord.New) = EventInput(
+  fun toEventInput(calendarId: CalendarId, eventRecord: EventInputRecord) = EventInput(
     calendarId = calendarId,
     title = eventRecord.title,
     description = eventRecord.notes,
     dtStart = dateToMilliseconds(eventRecord.startDate),
     dtEnd = dateToMilliseconds(eventRecord.endDate),
-    availability = eventRecord.availability?.let {
-      when (it) {
-        EventAvailability.BUSY -> Availability.BUSY
-        EventAvailability.FREE -> Availability.FREE
-        EventAvailability.TENTATIVE -> Availability.TENTATIVE
-      }
-    },
+    availability = eventRecord.availability?.toDomain(),
     allDay = eventRecord.allDay,
     eventLocation = eventRecord.location,
     organizer = eventRecord.organizerEmail,
@@ -50,168 +68,28 @@ class EventMapper {
     guestsCanSeeGuests = eventRecord.guestsCanSeeGuests,
     eventTimezone = eventRecord.timeZone,
     eventEndTimezone = eventRecord.endTimeZone,
-    accessLevel = eventRecord.accessLevel?.let {
-      when (it) {
-        EventAccessLevel.PUBLIC -> AccessLevel.PUBLIC
-        EventAccessLevel.PRIVATE -> AccessLevel.PRIVATE
-        EventAccessLevel.CONFIDENTIAL -> AccessLevel.CONFIDENTIAL
-        EventAccessLevel.DEFAULT -> AccessLevel.DEFAULT
-      }
-    },
-    rrule = eventRecord.recurrenceRule?.let {
-      RecurrenceRule(
-        frequency = it.frequency ?: "",
-        interval = it.interval,
-        occurrence = it.occurrence,
-        endDate = it.endDate
-      )
-    }
+    accessLevel = eventRecord.accessLevel?.toDomain(),
+    rrule = eventRecord.recurrenceRule?.toDomain()
   )
 
-  fun toInstanceEntity(eventRecord: EventRecord.Existing) = InstanceEntity(
-    id = eventRecord.instanceId?.toLong()
-      ?: throw IllegalStateException("instanceId must not be null for existing event record"),
-    accessLevel = eventRecord.accessLevel?.let { al ->
-      AccessLevel.entries.find { it.name == al.name }
-    },
-    allDay = eventRecord.allDay == true,
-    availability = eventRecord.availability?.let { av ->
-      when (av) {
-        EventAvailability.BUSY -> Availability.BUSY
-        EventAvailability.FREE -> Availability.FREE
-        EventAvailability.TENTATIVE -> Availability.TENTATIVE
-      }
-    },
-    begin = dateToMilliseconds(eventRecord.startDate) ?: 0L,
-    calendarId = CalendarId(
-      eventRecord.calendarId?.toLong()
-        ?: throw IllegalStateException("calendarId must not be null for existing event record")
-    ),
-    description = eventRecord.notes,
-    end = dateToMilliseconds(eventRecord.endDate) ?: 0L,
-    eventEndTimezone = eventRecord.endTimeZone,
-    eventId = EventId(eventRecord.id.toLong()),
-    eventLocation = eventRecord.location,
-    eventTimezone = eventRecord.timeZone,
-    guestsCanInviteOthers = eventRecord.guestsCanInviteOthers == true,
-    guestsCanModify = eventRecord.guestsCanModify == true,
-    guestsCanSeeGuests = eventRecord.guestsCanSeeGuests == true,
-    organizer = eventRecord.organizerEmail,
-    originalId = eventRecord.originalId?.let {
-      EventId(it.toLong())
-    },
-    rrule = eventRecord.recurrenceRule?.let {
-      RecurrenceRule(
-        frequency = it.frequency ?: "",
-        interval = it.interval,
-        occurrence = it.occurrence,
-        endDate = it.endDate
-      )
-    },
-    title = eventRecord.title,
-    status = eventRecord.status?.toDomain()
-  )
+  private fun EventAvailability.toDomain() = when (this) {
+    EventAvailability.BUSY -> Availability.BUSY
+    EventAvailability.FREE -> Availability.FREE
+    EventAvailability.TENTATIVE -> Availability.TENTATIVE
+  }
 
-  fun toInstanceEntity(entity: EventEntity) = InstanceEntity(
-    accessLevel = entity.accessLevel,
-    allDay = entity.allDay == true,
-    availability = entity.availability,
-    begin = entity.dtStart ?: 0L,
-    calendarId = entity.calendarId,
-    description = entity.description,
-    end = entity.dtEnd ?: 0L,
-    eventEndTimezone = entity.eventEndTimezone,
-    eventId = entity.id,
-    eventLocation = entity.eventLocation,
-    eventTimezone = entity.eventTimezone,
-    guestsCanInviteOthers = entity.guestsCanInviteOthers == true,
-    guestsCanModify = entity.guestsCanModify == true,
-    guestsCanSeeGuests = entity.guestsCanSeeGuests == true,
-    organizer = entity.organizer,
-    originalId = entity.originalId,
-    rrule = entity.rrule,
-    title = entity.title,
-    id = 0L,
-    status = entity.status
+  private fun EventAccessLevel.toDomain() = when (this) {
+    EventAccessLevel.PUBLIC -> AccessLevel.PUBLIC
+    EventAccessLevel.PRIVATE -> AccessLevel.PRIVATE
+    EventAccessLevel.CONFIDENTIAL -> AccessLevel.CONFIDENTIAL
+    EventAccessLevel.DEFAULT -> AccessLevel.DEFAULT
+  }
+
+  private fun RecurrenceRuleRecord.toDomain() = RecurrenceRule(
+    frequency = frequency
+      ?: throw IllegalArgumentException("Frequency is required for recurrence rule"),
+    interval = interval,
+    occurrence = occurrence,
+    endDate = endDate
   )
 }
-
-private fun EventAvailability.toDomain() = when (this) {
-  EventAvailability.BUSY -> Availability.BUSY
-  EventAvailability.FREE -> Availability.FREE
-  EventAvailability.TENTATIVE -> Availability.TENTATIVE
-}
-
-private fun EventStatus.toDomain() = when (this) {
-  EventStatus.TENTATIVE -> Status.TENTATIVE
-  EventStatus.CONFIRMED -> Status.CONFIRMED
-  EventStatus.CANCELED -> Status.CANCELED
-}
-
-private fun EventAccessLevel.toDomain() = when (this) {
-  EventAccessLevel.PUBLIC -> AccessLevel.PUBLIC
-  EventAccessLevel.PRIVATE -> AccessLevel.PRIVATE
-  EventAccessLevel.CONFIDENTIAL -> AccessLevel.CONFIDENTIAL
-  EventAccessLevel.DEFAULT -> AccessLevel.DEFAULT
-}
-
-private fun RecurrenceRuleRecord.toDomain() = RecurrenceRule(
-  frequency = frequency ?: "",
-  interval = interval,
-  occurrence = occurrence,
-  endDate = endDate
-)
-
-private fun EventUpdateRecord.toEventUpdate() = EventUpdate(
-  title = title,
-  description = notes,
-  dtStart = if (startDate.isUndefined) ValueOrUndefined.Undefined() else ValueOrUndefined.Value(dateToMilliseconds(startDate.optional)),
-  dtEnd = if (endDate.isUndefined) ValueOrUndefined.Undefined() else ValueOrUndefined.Value(dateToMilliseconds(endDate.optional)),
-  availability = if (availability.isUndefined) ValueOrUndefined.Undefined() else ValueOrUndefined.Value(availability.optional?.toDomain()),
-  allDay = allDay,
-  eventLocation = location,
-  organizer = organizerEmail,
-  guestsCanModify = guestsCanModify,
-  guestsCanInviteOthers = guestsCanInviteOthers,
-  guestsCanSeeGuests = guestsCanSeeGuests,
-  eventTimezone = timeZone,
-  eventEndTimezone = endTimeZone,
-  accessLevel = if (accessLevel.isUndefined) ValueOrUndefined.Undefined() else ValueOrUndefined.Value(accessLevel.optional?.toDomain()),
-  rrule = if (recurrenceRule.isUndefined) ValueOrUndefined.Undefined() else ValueOrUndefined.Value(recurrenceRule.optional?.toDomain())
-)
-
-private fun EventRecord.New.toEventUpdate() = EventUpdate(
-  title = ValueOrUndefined.Value(title),
-  description = ValueOrUndefined.Value(notes),
-  dtStart = ValueOrUndefined.Value(dateToMilliseconds(startDate)),
-  dtEnd = ValueOrUndefined.Value(dateToMilliseconds(endDate)),
-  availability = ValueOrUndefined.Value(availability?.toDomain()),
-  allDay = ValueOrUndefined.Value(allDay),
-  eventLocation = ValueOrUndefined.Value(location),
-  organizer = ValueOrUndefined.Value(organizerEmail),
-  guestsCanModify = ValueOrUndefined.Value(guestsCanModify),
-  guestsCanInviteOthers = ValueOrUndefined.Value(guestsCanInviteOthers),
-  guestsCanSeeGuests = ValueOrUndefined.Value(guestsCanSeeGuests),
-  eventTimezone = ValueOrUndefined.Value(timeZone),
-  eventEndTimezone = ValueOrUndefined.Value(endTimeZone),
-  accessLevel = ValueOrUndefined.Value(accessLevel?.toDomain()),
-  rrule = ValueOrUndefined.Value(recurrenceRule?.toDomain())
-)
-
-private fun EventRecord.Existing.toEventUpdate() = EventUpdate(
-  title = ValueOrUndefined.Value(title),
-  description = ValueOrUndefined.Value(notes),
-  dtStart = ValueOrUndefined.Value(dateToMilliseconds(startDate)),
-  dtEnd = ValueOrUndefined.Value(dateToMilliseconds(endDate)),
-  availability = ValueOrUndefined.Value(availability?.toDomain()),
-  allDay = ValueOrUndefined.Value(allDay),
-  eventLocation = ValueOrUndefined.Value(location),
-  organizer = ValueOrUndefined.Value(organizerEmail),
-  guestsCanModify = ValueOrUndefined.Value(guestsCanModify),
-  guestsCanInviteOthers = ValueOrUndefined.Value(guestsCanInviteOthers),
-  guestsCanSeeGuests = ValueOrUndefined.Value(guestsCanSeeGuests),
-  eventTimezone = ValueOrUndefined.Value(timeZone),
-  eventEndTimezone = ValueOrUndefined.Value(endTimeZone),
-  accessLevel = ValueOrUndefined.Value(accessLevel?.toDomain()),
-  rrule = ValueOrUndefined.Value(recurrenceRule?.toDomain())
-)

@@ -10,18 +10,22 @@ import expo.modules.calendar.next.domain.wrappers.CalendarId
 import expo.modules.calendar.next.records.AlarmMethod
 import expo.modules.calendar.next.records.AttendeeType
 import expo.modules.calendar.next.records.CalendarAccessLevel
-import expo.modules.calendar.next.records.CalendarRecord
+import expo.modules.calendar.next.records.CalendarInputRecord
+import expo.modules.calendar.next.records.CalendarUpdateRecord
 import expo.modules.calendar.next.records.Source
+import expo.modules.kotlin.types.ValueOrUndefined
 import org.junit.Assert
 import org.junit.Test
 
 class CalendarMapperTest {
   private val mapper = CalendarMapper()
 
+  // region toCalendarInput
+
   @Test
-  fun `given CalendarRecord New, when toCalendarInput, then maps source enums and defaults`() {
+  fun `given CalendarInputRecord with defined fields, when toCalendarInput, then maps input fields`() {
     // Given
-    val record = CalendarRecord.New(
+    val record = CalendarInputRecord(
       title = "Work",
       name = "work_calendar",
       source = Source(
@@ -31,16 +35,16 @@ class CalendarMapperTest {
         isLocalAccount = true
       ),
       color = 0x00FF00,
-      isVisible = null,
-      isSynced = null,
+      isVisible = false,
+      isSynced = false,
       timeZone = "Europe/Warsaw",
-      isPrimary = null,
-      allowsModifications = null,
+      isPrimary = true,
       allowedAvailabilities = listOf("free", "busy"),
       allowedReminders = listOf(AlarmMethod.EMAIL, AlarmMethod.ALARM),
       allowedAttendeeTypes = listOf(AttendeeType.REQUIRED, AttendeeType.OPTIONAL),
       ownerAccount = "owner@example.com",
-      accessLevel = CalendarAccessLevel.OWNER
+      accessLevel = CalendarAccessLevel.OWNER,
+      allowsModifications = true
     )
 
     // When
@@ -58,57 +62,54 @@ class CalendarMapperTest {
     Assert.assertEquals("Europe/Warsaw", result.calendarTimeZone)
     Assert.assertEquals("work_calendar", result.name)
     Assert.assertEquals("owner@example.com", result.ownerAccount)
-    Assert.assertEquals(false, result.isPrimary)
-    Assert.assertEquals(true, result.syncEvents)
-    Assert.assertEquals(true, result.visible)
+    Assert.assertEquals(true, result.isPrimary)
+    Assert.assertEquals(false, result.syncEvents)
+    Assert.assertEquals(false, result.visible)
   }
 
   @Test
-  fun `given CalendarRecord Existing, when toDomain, then maps id and defaults primary to false`() {
+  fun `given CalendarInputRecord with null fields, when toCalendarInput, then preserves nulls and uses boolean defaults`() {
     // Given
-    val record = CalendarRecord.Existing(
-      id = "7",
-      title = "Personal",
-      name = "personal_calendar",
-      source = Source(
-        id = "src-1",
-        name = "me@example.com",
-        type = "local",
-        isLocalAccount = false
-      ),
-      color = 0x112233,
+    val record = CalendarInputRecord(
+      title = "Work",
+      name = null,
+      source = null,
+      color = null,
       isVisible = null,
       isSynced = null,
-      timeZone = "Europe/Warsaw",
+      timeZone = null,
       isPrimary = null,
-      allowsModifications = null,
-      allowedAvailabilities = listOf("tentative"),
-      allowedReminders = listOf(AlarmMethod.DEFAULT),
-      allowedAttendeeTypes = listOf(AttendeeType.RESOURCE),
-      ownerAccount = "owner@example.com",
-      accessLevel = CalendarAccessLevel.READ
+      allowedAvailabilities = null,
+      allowedReminders = null,
+      allowedAttendeeTypes = null,
+      ownerAccount = null,
+      accessLevel = null,
+      allowsModifications = null
     )
 
     // When
-    val result = mapper.toDomain(record)
+    val result = mapper.toCalendarInput(record)
 
     // Then
-    Assert.assertEquals(CalendarId(7L), result.id)
-    Assert.assertEquals("me@example.com", result.accountName)
-    Assert.assertEquals("local", result.accountType)
-    Assert.assertEquals(listOf(AllowedAvailability.TENTATIVE), result.allowedAvailability)
-    Assert.assertEquals(listOf(AllowedReminder.DEFAULT), result.allowedReminders)
-    Assert.assertEquals(listOf(AllowedAttendeeType.RESOURCE), result.allowedAttendeeTypes)
-    Assert.assertEquals(DomainCalendarAccessLevel.READ, result.calendarAccessLevel)
-    Assert.assertEquals(0x112233, result.calendarColor)
-    Assert.assertEquals("Personal", result.calendarDisplayName)
-    Assert.assertEquals("Europe/Warsaw", result.calendarTimeZone)
+    Assert.assertNull(result.accountName)
+    Assert.assertNull(result.accountType)
+    Assert.assertTrue(result.allowedAttendeeTypes.isEmpty())
+    Assert.assertTrue(result.allowedAvailability.isEmpty())
+    Assert.assertTrue(result.allowedReminders.isEmpty())
+    Assert.assertNull(result.calendarAccessLevel)
+    Assert.assertNull(result.calendarColor)
+    Assert.assertEquals("Work", result.calendarDisplayName)
+    Assert.assertNull(result.calendarTimeZone)
     Assert.assertEquals(false, result.isPrimary)
-    Assert.assertEquals("personal_calendar", result.name)
-    Assert.assertEquals("owner@example.com", result.ownerAccount)
+    Assert.assertNull(result.name)
+    Assert.assertNull(result.ownerAccount)
     Assert.assertEquals(true, result.syncEvents)
     Assert.assertEquals(true, result.visible)
   }
+
+  // endregion
+
+  // region toExpoCalendarData
 
   @Test
   fun `given CalendarEntity, when toExpoCalendarData, then maps source color and allowsModifications`() {
@@ -159,4 +160,117 @@ class CalendarMapperTest {
       result.source
     )
   }
+
+  @Test
+  fun `given CalendarEntity with null fields, when toExpoCalendarData, then preserves nulls and defaults allowsModifications to false`() {
+    // Given
+    val entity = CalendarEntity(
+      id = CalendarId(9L),
+      accountName = null,
+      accountType = null,
+      allowedAttendeeTypes = emptyList(),
+      allowedAvailability = emptyList(),
+      allowedReminders = emptyList(),
+      calendarAccessLevel = null,
+      calendarColor = null,
+      calendarDisplayName = "Work",
+      calendarTimeZone = null,
+      isPrimary = false,
+      name = null,
+      ownerAccount = null,
+      syncEvents = true,
+      visible = false
+    )
+
+    // When
+    val result = mapper.toExpoCalendarData(entity)
+
+    // Then
+    Assert.assertNull(result.accessLevel)
+    Assert.assertTrue(result.allowedAttendeeTypes.isEmpty())
+    Assert.assertTrue(result.allowedAvailabilities.isEmpty())
+    Assert.assertTrue(result.allowedReminders.isEmpty())
+    Assert.assertEquals(false, result.allowsModifications)
+    Assert.assertNull(result.color)
+    Assert.assertEquals("9", result.id)
+    Assert.assertEquals(false, result.isPrimary)
+    Assert.assertEquals(true, result.isSynced)
+    Assert.assertEquals(false, result.isVisible)
+    Assert.assertNull(result.name)
+    Assert.assertNull(result.ownerAccount)
+    Assert.assertNull(result.source)
+    Assert.assertNull(result.timeZone)
+    Assert.assertEquals("Work", result.title)
+  }
+
+  // endregion
+
+  // region toCalendarUpdate
+
+  @Test
+  fun `given CalendarUpdateRecord with defined fields, when toCalendarUpdate, then maps update fields`() {
+    // Given
+    val record = CalendarUpdateRecord(
+      name = ValueOrUndefined.Value("work_calendar"),
+      title = ValueOrUndefined.Value("Work"),
+      color = ValueOrUndefined.Value(0x00A0B0),
+      isVisible = ValueOrUndefined.Value(false),
+      isSynced = ValueOrUndefined.Value(true),
+      timeZone = ValueOrUndefined.Value("Europe/Warsaw")
+    )
+
+    // When
+    val result = mapper.toCalendarUpdate(record)
+
+    // Then
+    Assert.assertEquals("work_calendar", result.name.optional)
+    Assert.assertEquals("Work", result.calendarDisplayName.optional)
+    Assert.assertEquals(0x00A0B0, result.calendarColor.optional)
+    Assert.assertEquals(false, result.visible.optional)
+    Assert.assertEquals(true, result.syncEvents.optional)
+    Assert.assertEquals("Europe/Warsaw", result.calendarTimeZone.optional)
+  }
+
+  @Test
+  fun `given CalendarUpdateRecord with null fields, when toCalendarUpdate, then preserves explicit nulls`() {
+    // Given
+    val record = CalendarUpdateRecord(
+      name = ValueOrUndefined.Value(null),
+      title = ValueOrUndefined.Value(null),
+      color = ValueOrUndefined.Value(null),
+      isVisible = ValueOrUndefined.Value(null),
+      isSynced = ValueOrUndefined.Value(null),
+      timeZone = ValueOrUndefined.Value(null)
+    )
+
+    // When
+    val result = mapper.toCalendarUpdate(record)
+
+    // Then
+    Assert.assertNull(result.name.optional)
+    Assert.assertNull(result.calendarDisplayName.optional)
+    Assert.assertNull(result.calendarColor.optional)
+    Assert.assertNull(result.visible.optional)
+    Assert.assertNull(result.syncEvents.optional)
+    Assert.assertNull(result.calendarTimeZone.optional)
+  }
+
+  @Test
+  fun `given CalendarUpdateRecord with undefined fields, when toCalendarUpdate, then preserves undefineds`() {
+    // Given
+    val record = CalendarUpdateRecord()
+
+    // When
+    val result = mapper.toCalendarUpdate(record)
+
+    // Then
+    Assert.assertTrue(result.name.isUndefined)
+    Assert.assertTrue(result.calendarDisplayName.isUndefined)
+    Assert.assertTrue(result.calendarColor.isUndefined)
+    Assert.assertTrue(result.visible.isUndefined)
+    Assert.assertTrue(result.syncEvents.isUndefined)
+    Assert.assertTrue(result.calendarTimeZone.isUndefined)
+  }
+
+  // endregion
 }

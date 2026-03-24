@@ -6,7 +6,6 @@ import expo.modules.calendar.next.domain.wrappers.AttendeeId
 import expo.modules.calendar.next.exceptions.AttendeeCouldNotBeDeletedException
 import expo.modules.calendar.next.exceptions.AttendeeNotFoundException
 import expo.modules.calendar.next.mappers.AttendeeMapper
-import expo.modules.calendar.next.mappers.ExpoCalendarAttendeeData
 import expo.modules.calendar.next.records.AttendeeUpdateRecord
 import expo.modules.calendar.next.records.AttendeeRole as RecordAttendeeRole
 import expo.modules.calendar.next.records.AttendeeStatus as RecordAttendeeStatus

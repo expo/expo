@@ -9,7 +9,8 @@ import expo.modules.calendar.next.records.AlarmRecord
 class ReminderMapper {
   fun toDomain(record: AlarmRecord) = ReminderInput(
     method = record.method?.toDomain(),
-    minutes = record.relativeOffset ?: 0
+    minutes = record.relativeOffset
+      ?: throw IllegalArgumentException("AlarmRecord must have relativeOffset defined")
   )
 
   fun toRecord(entity: ReminderEntity) = AlarmRecord(

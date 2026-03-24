@@ -18,13 +18,13 @@ import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.mappers.CalendarMapper
 import expo.modules.calendar.next.mappers.EventMapper
 import expo.modules.calendar.next.mappers.ReminderMapper
-import expo.modules.calendar.next.records.CalendarRecord
-import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurringEventOptions
 import expo.modules.calendar.next.permissions.CalendarPermissionsDelegate
 import expo.modules.calendar.next.records.AttendeeUpdateRecord
+import expo.modules.calendar.next.records.CalendarInputRecord
 import expo.modules.calendar.next.records.CalendarUpdateRecord
+import expo.modules.calendar.next.records.EventInputRecord
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
@@ -128,19 +128,18 @@ class CalendarNextModule : Module() {
       ExpoCalendarEvent.findAll(instanceRepository, startDate, endDate, calendarIds, reminderRepository, expoCalendarEventFactory)
     }
 
-    AsyncFunction("createCalendar") Coroutine { calendarRecord: CalendarRecord.New ->
+    AsyncFunction("createCalendar") Coroutine { calendarInputRecord: CalendarInputRecord ->
       permissionsDelegate.requireSystemPermissions(true)
-      ExpoCalendar.create(calendarRecord, calendarMapper, calendarRepository, expoCalendarFactory)
+      ExpoCalendar.create(calendarInputRecord, calendarMapper, calendarRepository, expoCalendarFactory)
     }
 
     AsyncFunction("getEventById") Coroutine { eventId: String ->
-      ExpoCalendarEvent.findById(eventId, eventRepository, reminderRepository, eventMapper, expoCalendarEventFactory)
+      ExpoCalendarEvent.findById(eventId, eventRepository, reminderRepository, expoCalendarEventFactory)
     }
 
     Class(ExpoCalendar::class) {
-      Constructor { calendarRecord: CalendarRecord.Existing ->
-        val existingCalendarEntity = calendarMapper.toDomain(calendarRecord)
-        expoCalendarFactory.create(existingCalendarEntity)
+      Constructor { ->
+        throw IllegalArgumentException("Creating an ExpoCalendar directly from a CalendarRecord is not supported. Please use ExpoCalendar.getCalendarById or ExpoCalendar.getCalendars to retrieve calendars.")
       }
 
       Property("id") { expoCalendar: ExpoCalendar ->
@@ -207,7 +206,7 @@ class CalendarNextModule : Module() {
         expoCalendar.getEvents(startDate, endDate)
       }
 
-      AsyncFunction("createEvent") Coroutine { expoCalendar: ExpoCalendar, record: EventRecord.New ->
+      AsyncFunction("createEvent") Coroutine { expoCalendar: ExpoCalendar, record: EventInputRecord ->
         permissionsDelegate.requireSystemPermissions(true)
         expoCalendar.createEvent(record)
       }
@@ -224,8 +223,8 @@ class CalendarNextModule : Module() {
     }
 
     Class(ExpoCalendarEvent::class) {
-      Constructor { eventRecord: EventRecord.Existing ->
-        expoCalendarEventFactory.create(eventMapper.toInstanceEntity(eventRecord))
+      Constructor { ->
+        throw IllegalArgumentException("Creating an ExpoCalendarEvent directly from an EventRecord is not supported. Please use ExpoCalendarEvent.findById or ExpoCalendar.getEvents to retrieve events.")
       }
 
       Property("id") { expoCalendarEvent: ExpoCalendarEvent ->
@@ -318,7 +317,7 @@ class CalendarNextModule : Module() {
       }
 
       AsyncFunction("openInCalendar") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions ->
-        val eventId = expoCalendarEvent.instanceId?.toString() ?: ""
+        val eventId = expoCalendarEvent.eventId.value.toString()
 
         val params = ViewedEventOptions(
           id = eventId,
@@ -330,7 +329,7 @@ class CalendarNextModule : Module() {
       }
 
       AsyncFunction("editInCalendar") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions? ->
-        val eventId = expoCalendarEvent.instanceId?.toString() ?: ""
+        val eventId = expoCalendarEvent.eventId.value.toString()
         val params = ViewedEventOptions(
           id = eventId,
           startNewActivityTask = rawParams?.startNewActivityTask ?: true

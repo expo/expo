@@ -1,5 +1,6 @@
 package expo.modules.calendar.next
 
+import expo.modules.calendar.next.domain.model.event.EventEntity
 import expo.modules.calendar.next.domain.model.instance.InstanceEntity
 import expo.modules.calendar.next.domain.model.reminder.ReminderEntity
 import expo.modules.calendar.next.domain.repositories.attendee.AttendeeRepository
@@ -8,6 +9,7 @@ import expo.modules.calendar.next.domain.repositories.instance.InstanceRepositor
 import expo.modules.calendar.next.domain.repositories.reminder.ReminderRepository
 import expo.modules.calendar.next.mappers.AttendeeMapper
 import expo.modules.calendar.next.mappers.EventMapper
+import expo.modules.calendar.next.mappers.ExpoCalendarEventMapper
 import expo.modules.calendar.next.mappers.ReminderMapper
 
 class ExpoCalendarEventFactory(
@@ -19,6 +21,8 @@ class ExpoCalendarEventFactory(
   private val reminderMapper: ReminderMapper,
   private val reminderRepository: ReminderRepository
 ) {
+  private val expoCalendarEventMapper = ExpoCalendarEventMapper(reminderMapper)
+
   fun create(
     instanceEntity: InstanceEntity,
     reminders: List<ReminderEntity> = emptyList()
@@ -27,10 +31,25 @@ class ExpoCalendarEventFactory(
     attendeeRepository = attendeeRepository,
     eventMapper = eventMapper,
     reminderMapper = reminderMapper,
-    initialInstanceEntity = instanceEntity,
     instanceRepository = instanceRepository,
     attendeeMapper = attendeeMapper,
     reminderRepository = reminderRepository,
-    reminders = reminders
+    data = expoCalendarEventMapper.toData(instanceEntity, reminders),
+    eventId = instanceEntity.eventId
+  )
+
+  fun create(
+    eventEntity: EventEntity,
+    reminders: List<ReminderEntity> = emptyList()
+  ) = ExpoCalendarEvent(
+    eventRepository = eventRepository,
+    attendeeRepository = attendeeRepository,
+    eventMapper = eventMapper,
+    reminderMapper = reminderMapper,
+    instanceRepository = instanceRepository,
+    attendeeMapper = attendeeMapper,
+    reminderRepository = reminderRepository,
+    data = expoCalendarEventMapper.toData(eventEntity, reminders),
+    eventId = eventEntity.id
   )
 }

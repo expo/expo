@@ -1,5 +1,6 @@
 package expo.modules.calendar.next.mappers
 
+import expo.modules.calendar.next.ExpoCalendarAttendeeData
 import expo.modules.calendar.next.domain.model.attendee.AttendeeEntity as DomainAttendeeEntity
 import expo.modules.calendar.next.domain.model.attendee.AttendeeRole as DomainAttendeeRole
 import expo.modules.calendar.next.domain.model.attendee.AttendeeStatus as DomainAttendeeStatus
@@ -17,7 +18,7 @@ import expo.modules.calendar.next.records.AttendeeUpdateRecord
 
 class AttendeeMapper {
   fun toAttendeeData(entity: DomainAttendeeEntity) = ExpoCalendarAttendeeData(
-    id = entity.id.toString(),
+    id = entity.id.value.toString(),
     email = entity.email,
     name = entity.name,
     role = entity.role?.toRecord(),
@@ -68,15 +69,6 @@ class AttendeeMapper {
       // Clearing attendee enum fields maps to NONE rather than null.
       ValueOrUndefined.Value(record.type.optional?.toDomain() ?: DomainAttendeeType.NONE)
     }
-  )
-
-  fun toRecord(entity: DomainAttendeeEntity) = AttendeeRecord(
-    id = entity.id.toString(),
-    email = entity.email,
-    name = entity.name,
-    role = entity.role?.toRecord(),
-    status = entity.status?.toRecord(),
-    type = entity.type?.toRecord()
   )
 
   private fun RecordAttendeeRole.toDomain() = when (this) {

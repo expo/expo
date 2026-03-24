@@ -3,8 +3,6 @@ package expo.modules.calendar.next
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
 import expo.modules.calendar.next.domain.dto.event.EventExceptionInput
-import expo.modules.calendar.next.domain.model.instance.InstanceEntity
-import expo.modules.calendar.next.domain.model.reminder.ReminderEntity
 import expo.modules.calendar.next.domain.repositories.attendee.AttendeeRepository
 import expo.modules.calendar.next.domain.repositories.event.EventRepository
 import expo.modules.calendar.next.domain.repositories.instance.InstanceRepository
@@ -14,7 +12,6 @@ import expo.modules.calendar.next.domain.wrappers.EventId
 import expo.modules.calendar.next.exceptions.AttendeeNotFoundException
 import expo.modules.calendar.next.mappers.AttendeeMapper
 import expo.modules.calendar.next.mappers.EventMapper
-import expo.modules.calendar.next.mappers.ExpoCalendarEventData
 import expo.modules.calendar.next.mappers.ExpoCalendarEventMapper
 import expo.modules.calendar.next.mappers.ReminderMapper
 import expo.modules.calendar.next.records.AttendeeRecord
@@ -32,16 +29,10 @@ class ExpoCalendarEvent(
   private val reminderMapper: ReminderMapper,
   private val instanceRepository: InstanceRepository,
   private val reminderRepository: ReminderRepository,
-  val options: RecurringEventOptions? = RecurringEventOptions(),
-  private val initialInstanceEntity: InstanceEntity,
-  reminders: List<ReminderEntity> = emptyList()
+  private var data: ExpoCalendarEventData?,
+  val eventId: EventId,
+  val options: RecurringEventOptions? = RecurringEventOptions()
 ) : SharedObject() {
-  private val expoCalendarEventMapper = ExpoCalendarEventMapper(reminderMapper)
-
-  // Grouped data object to avoid manual reassignment of each field on update, reload or clear
-  private var data: ExpoCalendarEventData? = expoCalendarEventMapper.toData(initialInstanceEntity, reminders)
-  private val eventId = initialInstanceEntity.eventId
-
   val id get() = data?.id
   val calendarId get() = data?.calendarId
   val title get() = data?.title
@@ -63,6 +54,8 @@ class ExpoCalendarEvent(
   val instanceId get() = data?.instanceId
   val recurrenceRule get() = data?.recurrenceRule
   val alarms get() = data?.alarms
+
+  private val expoCalendarEventMapper = ExpoCalendarEventMapper(reminderMapper)
 
   suspend fun createAttendee(attendeeRecord: AttendeeRecord): ExpoCalendarAttendee {
     val entity = attendeeMapper.toAttendeeInput(attendeeRecord, eventId)
@@ -93,8 +86,7 @@ class ExpoCalendarEvent(
     val updatedEvent = eventRepository.findById(eventId)
       ?: throw IllegalStateException("Event not found after update")
     val updatedReminders = reminderRepository.findAllByEventId(eventId)
-    data = eventMapper.toInstanceEntity(updatedEvent)
-      .let { expoCalendarEventMapper.toData(it, updatedReminders) }
+    data = expoCalendarEventMapper.toData(updatedEvent, updatedReminders)
   }
 
   suspend fun getAttendees(): List<ExpoCalendarAttendee> = withContext(Dispatchers.IO) {
@@ -111,15 +103,16 @@ class ExpoCalendarEvent(
       return this
     }
     return ExpoCalendarEvent(
-      eventRepository,
-      attendeeRepository,
-      attendeeMapper,
-      eventMapper,
-      reminderMapper,
-      instanceRepository,
-      reminderRepository,
-      options,
-      initialInstanceEntity
+      eventRepository = eventRepository,
+      attendeeRepository = attendeeRepository,
+      attendeeMapper = attendeeMapper,
+      eventMapper = eventMapper,
+      reminderMapper = reminderMapper,
+      instanceRepository = instanceRepository,
+      reminderRepository = reminderRepository,
+      data = data,
+      eventId = eventId,
+      options = options
     )
   }
 
@@ -148,16 +141,14 @@ class ExpoCalendarEvent(
       eventId: String,
       eventRepository: EventRepository,
       reminderRepository: ReminderRepository,
-      eventMapper: EventMapper,
       expoCalendarEventFactory: ExpoCalendarEventFactory
     ): ExpoCalendarEvent? {
       val eventId = EventId(eventId.toLong())
       val eventEntity = eventRepository.findById(eventId)
         ?: return null
       val reminders = reminderRepository.findAllByEventId(eventId)
-      val instanceEntity = eventMapper.toInstanceEntity(eventEntity)
       return expoCalendarEventFactory.create(
-        instanceEntity = instanceEntity,
+        eventEntity = eventEntity,
         reminders = reminders
       )
     }

@@ -1,4 +1,4 @@
-package expo.modules.calendar.next.mappers
+package expo.modules.calendar.next
 
 import expo.modules.calendar.next.records.AttendeeRole
 import expo.modules.calendar.next.records.AttendeeStatus

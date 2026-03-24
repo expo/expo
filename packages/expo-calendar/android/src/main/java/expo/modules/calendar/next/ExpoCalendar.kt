@@ -2,7 +2,6 @@ package expo.modules.calendar.next
 
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
-import expo.modules.calendar.next.domain.model.calendar.CalendarEntity
 import expo.modules.calendar.next.domain.repositories.calendar.CalendarRepository
 import expo.modules.calendar.next.domain.wrappers.CalendarId
 import expo.modules.calendar.next.domain.repositories.event.EventRepository
@@ -16,14 +15,12 @@ import expo.modules.calendar.next.mappers.CalendarMapper
 import expo.modules.calendar.next.mappers.EventMapper
 import expo.modules.calendar.next.mappers.ReminderMapper
 import expo.modules.calendar.next.records.AlarmRecord
-import expo.modules.calendar.next.records.CalendarRecord
-import expo.modules.calendar.next.domain.dto.calendar.CalendarUpdate
+import expo.modules.calendar.next.records.CalendarInputRecord
 import expo.modules.calendar.next.records.CalendarUpdateRecord
-import expo.modules.calendar.next.records.EventRecord
+import expo.modules.calendar.next.records.EventInputRecord
 import expo.modules.kotlin.sharedobjects.SharedObject
 
 class ExpoCalendar(
-  calendarEntity: CalendarEntity,
   private val calendarRepository: CalendarRepository,
   private val eventRepository: EventRepository,
   private val reminderRepository: ReminderRepository,
@@ -31,7 +28,9 @@ class ExpoCalendar(
   private val eventFactory: ExpoCalendarEventFactory,
   private val eventMapper: EventMapper,
   private val calendarMapper: CalendarMapper,
-  private val reminderMapper: ReminderMapper
+  private val reminderMapper: ReminderMapper,
+  private val calendarId: CalendarId,
+  private var data: ExpoCalendarData?
 ) : SharedObject() {
   val id get() = data?.id
   val title get() = data?.title
@@ -49,11 +48,6 @@ class ExpoCalendar(
   val ownerAccount get() = data?.ownerAccount
   val accessLevel get() = data?.accessLevel
 
-  private val calendarId = calendarEntity.id
-
-  // Grouped data object to avoid manual reassignment of each field on update, reload or clear
-  private var data: ExpoCalendarData? = calendarMapper.toExpoCalendarData(calendarEntity)
-
   suspend fun getEvents(startDate: DateTimeInput, endDate: DateTimeInput): List<ExpoCalendarEvent> =
     instanceRepository.findAll(
       startDate = startDate.getTimeInMillis(),
@@ -66,9 +60,9 @@ class ExpoCalendar(
     data = null
   }
 
-  suspend fun createEvent(record: EventRecord.New): ExpoCalendarEvent {
+  suspend fun createEvent(record: EventInputRecord): ExpoCalendarEvent {
     try {
-      val eventInput = eventMapper.toDomainEventInput(calendarId, record)
+      val eventInput = eventMapper.toEventInput(calendarId, record)
       val eventId = EventId(eventRepository.insert(eventInput))
       insertReminders(eventId, record.alarms)
       return buildExpoCalendarEvent(eventId, eventInput)
@@ -86,9 +80,8 @@ class ExpoCalendar(
 
   private suspend fun buildExpoCalendarEvent(eventId: EventId, eventInput: EventInput): ExpoCalendarEvent {
     val reminders = reminderRepository.findAllByEventId(eventId)
-    val instanceEntity = eventMapper.toInstanceEntity(eventInput.toExistingEntity(eventId))
     return eventFactory.create(
-      instanceEntity = instanceEntity,
+      eventEntity = eventInput.toExistingEntity(eventId),
       reminders = reminders
     )
   }
@@ -96,14 +89,7 @@ class ExpoCalendar(
   suspend fun update(updateRecord: CalendarUpdateRecord) {
     calendarRepository.update(
       calendarId,
-      CalendarUpdate(
-        name = updateRecord.name,
-        calendarDisplayName = updateRecord.title,
-        calendarColor = updateRecord.color,
-        visible = updateRecord.isVisible,
-        syncEvents = updateRecord.isSynced,
-        calendarTimeZone = updateRecord.timeZone
-      )
+      calendarMapper.toCalendarUpdate(updateRecord)
     )
     reloadProperties()
   }
@@ -115,12 +101,12 @@ class ExpoCalendar(
 
   companion object {
     suspend fun create(
-      calendarRecord: CalendarRecord.New,
+      calendarInputRecord: CalendarInputRecord,
       calendarMapper: CalendarMapper,
       calendarRepository: CalendarRepository,
       calendarFactory: ExpoCalendarFactory
     ): ExpoCalendar {
-      val calendarInput = calendarMapper.toCalendarInput(calendarRecord)
+      val calendarInput = calendarMapper.toCalendarInput(calendarInputRecord)
       val calendarId = calendarRepository.insert(calendarInput)
       val existingCalendarEntity = calendarInput.toCalendarEntity(calendarId)
       return calendarFactory.create(existingCalendarEntity)
