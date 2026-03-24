@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [android] Split `Divider` into `HorizontalDivider` and `VerticalDivider` matching native Compose components. Added `thickness` and `color` props. ([#44035](https://github.com/expo/expo/pull/44035) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `AlertDialog` API to native Compose: replaced string props (`title`, `text`, `confirmButtonText`, `dismissButtonText`) with slot sub-components (`AlertDialog.Title`, `AlertDialog.Text`, `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`). Removed `visible` prop (use conditional rendering), `onConfirmPressed`/`onDismissPressed` (renamed to `onDismissRequest`), and `confirmButtonColors`/`dismissButtonColors` (replaced with dialog-level `colors`). ([#43997](https://github.com/expo/expo/pull/43997) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `Carousel` into `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel` matching native Compose components. Added `HorizontalCenteredHeroCarousel`. ([#44034](https://github.com/expo/expo/pull/44034) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Renamed Stepper `defaultValue` to `value` and `onValueChanged` to `onValueChange`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
