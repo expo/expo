@@ -3,10 +3,10 @@
 import { TextDecoder, TextEncoder } from 'node:util';
 
 import MockWebSocket from './MockWebSocket';
-import { createDevToolsPluginClient } from '../DevToolsPluginClientFactory';
 import { DevToolsPluginClient } from '../DevToolsPluginClient';
-import { sendDevToolsRequestAsync } from '../sendDevToolsRequestAsync';
+import { createDevToolsPluginClient } from '../DevToolsPluginClientFactory';
 import { WebSocketBackingStore } from '../WebSocketBackingStore';
+import { sendDevToolsRequestAsync } from '../sendDevToolsRequestAsync';
 
 // @ts-expect-error - We don't mock all properties from WebSocket
 globalThis.WebSocket = MockWebSocket;
