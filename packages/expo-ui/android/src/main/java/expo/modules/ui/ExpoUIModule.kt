@@ -426,8 +426,8 @@ class ExpoUIModule : Module() {
       Events("onSurfaceClick", "onCheckedChange")
     }) { props: SurfaceProps ->
       val onSurfaceClick by remember { EventDispatcher<Unit>() }
-      val onCheckedChange by remember { EventDispatcher<Boolean>() }
-      SurfaceContent(props, onClick = { onSurfaceClick(Unit) }, onCheckedChange = { onCheckedChange(it) })
+      val onCheckedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      SurfaceContent(props, onClick = { onSurfaceClick(Unit) }, onCheckedChange = { onCheckedChange(GenericEventPayload1(it)) })
     }
 
     ExpoUIView("AnimatedVisibilityView") { props: AnimatedVisibilityProps ->

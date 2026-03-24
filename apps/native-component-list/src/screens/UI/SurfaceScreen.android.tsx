@@ -35,7 +35,6 @@ export default function SurfaceScreen() {
   const [checked, setChecked] = React.useState(false);
 
   const { label: shapeName, shape: currentShape } = shapeEntries[shapeIndex];
-  console.log('currentShape', currentShape);
   const isCircle = shapeName === 'circle';
   const surfaceW = isCircle ? 160 : 280;
   const surfaceH = 160;

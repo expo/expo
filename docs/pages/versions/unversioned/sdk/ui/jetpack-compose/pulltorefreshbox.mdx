@@ -39,11 +39,21 @@ export default function BasicPullToRefresh() {
     <Host style={{ height: 400 }}>
       <PullToRefreshBox isRefreshing={refreshing} onRefresh={onRefresh}>
         <LazyColumn>
-          <ListItem headline="Item 1" />
-          <ListItem headline="Item 2" />
-          <ListItem headline="Item 3" />
-          <ListItem headline="Item 4" />
-          <ListItem headline="Item 5" />
+          <ListItem>
+            <ListItem.Headline>Item 1</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 2</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 3</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 4</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 5</ListItem.Headline>
+          </ListItem>
         </LazyColumn>
       </PullToRefreshBox>
     </Host>
@@ -76,9 +86,15 @@ export default function CustomIndicatorColors() {
         onRefresh={onRefresh}
         indicator={{ color: '#6200EE', containerColor: '#F5F5F5' }}>
         <LazyColumn>
-          <ListItem headline="Item 1" />
-          <ListItem headline="Item 2" />
-          <ListItem headline="Item 3" />
+          <ListItem>
+            <ListItem.Headline>Item 1</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 2</ListItem.Headline>
+          </ListItem>
+          <ListItem>
+            <ListItem.Headline>Item 3</ListItem.Headline>
+          </ListItem>
         </LazyColumn>
       </PullToRefreshBox>
     </Host>

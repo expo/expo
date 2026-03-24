@@ -12,7 +12,8 @@ export type SurfaceBorder = {
      */
     width?: number;
     /**
-     * Border color. Defaults to `MaterialTheme.colorScheme.outline`.
+     * Border color.
+     * @default MaterialTheme.colorScheme.outline
      */
     color?: ColorValue;
 };
@@ -79,7 +80,7 @@ export type SurfaceProps = {
      */
     onCheckedChange?: (checked: boolean) => void;
     /**
-     * Jetpack Compose modifiers to apply to the surface.
+     * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
 };

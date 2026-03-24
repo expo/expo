@@ -16,7 +16,8 @@ export type SurfaceBorder = {
    */
   width?: number;
   /**
-   * Border color. Defaults to `MaterialTheme.colorScheme.outline`.
+   * Border color.
+   * @default MaterialTheme.colorScheme.outline
    */
   color?: ColorValue;
 };
@@ -90,14 +91,14 @@ export type SurfaceProps = {
   onCheckedChange?: (checked: boolean) => void;
 
   /**
-   * Jetpack Compose modifiers to apply to the surface.
+   * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
 };
 
 type NativeSurfaceProps = Omit<SurfaceProps, 'onClick' | 'onCheckedChange' | 'shape'> &
   ViewEvent<'onSurfaceClick', void> &
-  ViewEvent<'onCheckedChange', { payload: boolean }> & {
+  ViewEvent<'onCheckedChange', { value: boolean }> & {
     clickable?: boolean;
     shape?: ShapeRecordProps;
   };
@@ -118,8 +119,8 @@ function transformProps(props: SurfaceProps): NativeSurfaceProps {
     shape: parseJSXShape(shape),
     onSurfaceClick: onClick ? () => onClick() : undefined,
     onCheckedChange: onCheckedChange
-      ? (e: { nativeEvent: { payload: boolean } }) => {
-          onCheckedChange(e.nativeEvent.payload);
+      ? (e: { nativeEvent: { value: boolean } }) => {
+          onCheckedChange(e.nativeEvent.value);
         }
       : undefined,
   };

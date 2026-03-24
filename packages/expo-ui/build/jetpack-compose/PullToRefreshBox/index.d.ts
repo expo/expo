@@ -7,12 +7,12 @@ import { type ContentAlignment } from '../layout-types';
 export type PullToRefreshIndicatorProps = {
     /**
      * Color of the loading indicator spinner.
-     * Defaults to `MaterialTheme.colorScheme.primary`.
+     * @default MaterialTheme.colorScheme.primary
      */
     color?: ColorValue;
     /**
      * Background color of the loading indicator container.
-     * Defaults to `MaterialTheme.colorScheme.surfaceContainerHigh`.
+     * @default MaterialTheme.colorScheme.surfaceContainerHigh
      */
     containerColor?: ColorValue;
     /**
