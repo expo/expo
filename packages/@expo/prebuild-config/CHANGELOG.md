@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix Jest 30 compatibility in prebuild test helpers by removing internal `expect/build/matchers` import. ([#44188](https://github.com/expo/expo/pull/44188) by [@mvincentong](https://github.com/mvincentong))
 - Fixed `STATUS_BAR_PLUGIN` deprecation warning shown on prebuild for default `create-expo-app` template by no longer auto-populating `androidStatusBar.backgroundColor` from the splash background color. ([#43444](https://github.com/expo/expo/issues/43444)) ([#43453](https://github.com/expo/expo/pull/43453) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
