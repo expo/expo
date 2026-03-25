@@ -4,7 +4,7 @@ import React from 'react';
  */
 export type SuspenseFallbackProps = {
     /**
-     * The route module's `contextKey`
+     * The route module's `contextKey`.
      *
      * @example
      * `./index.tsx`
