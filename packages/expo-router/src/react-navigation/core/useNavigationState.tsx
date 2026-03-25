@@ -1,9 +1,8 @@
 'use client';
-import * as React from 'react';
-
-import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
+import React, { use } from 'react';
 
 import useLatestCallback from '../../utils/useLatestCallback';
+import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
 import type { NavigationState, ParamListBase } from '../routers';
 
 type Selector<ParamList extends ParamListBase, T> = (state: NavigationState<ParamList>) => T;
@@ -16,7 +15,7 @@ type Selector<ParamList extends ParamListBase, T> = (state: NavigationState<Para
 export function useNavigationState<ParamList extends ParamListBase, T>(
   selector: Selector<ParamList, T>
 ): T {
-  const stateListener = React.useContext(NavigationStateListenerContext);
+  const stateListener = use(NavigationStateListenerContext);
 
   if (stateListener == null) {
     throw new Error("Couldn't get the navigation state. Is your component inside a navigator?");

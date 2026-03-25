@@ -40,6 +40,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PreventRemoveProvider = PreventRemoveProvider;
 const non_secure_1 = require("nanoid/non-secure");
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationHelpersContext_1 = require("./NavigationHelpersContext");
 const NavigationProvider_1 = require("./NavigationProvider");
 const PreventRemoveContext_1 = require("./PreventRemoveContext");
@@ -64,9 +65,9 @@ function PreventRemoveProvider({ children }) {
     'use no memo';
     const [parentId] = React.useState(() => (0, non_secure_1.nanoid)());
     const [preventedRoutesMap, setPreventedRoutesMap] = React.useState(() => new Map());
-    const navigation = React.useContext(NavigationHelpersContext_1.NavigationHelpersContext);
-    const route = React.useContext(NavigationProvider_1.NavigationRouteContext);
-    const preventRemoveContextValue = React.useContext(PreventRemoveContext_1.PreventRemoveContext);
+    const navigation = (0, react_1.use)(NavigationHelpersContext_1.NavigationHelpersContext);
+    const route = (0, react_1.use)(NavigationProvider_1.NavigationRouteContext);
+    const preventRemoveContextValue = (0, react_1.use)(PreventRemoveContext_1.PreventRemoveContext);
     // take `setPreventRemove` from parent context - if exist it means we're in a nested context
     const setParentPrevented = preventRemoveContextValue?.setPreventRemove;
     // TODO(@ubax): RN Migration - For some reason this breaks with react compiler

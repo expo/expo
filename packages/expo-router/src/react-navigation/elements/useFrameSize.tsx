@@ -1,10 +1,10 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 import { type LayoutChangeEvent, Platform, View } from 'react-native';
 
-import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
-
 import useLatestCallback from '../../utils/useLatestCallback';
+import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
 
 type Frame = {
   width: number;
@@ -24,7 +24,7 @@ type FrameContextType = {
 const FrameContext = React.createContext<FrameContextType | undefined>(undefined);
 
 export function useFrameSize<T>(selector: (frame: Frame) => T, throttle?: boolean): T {
-  const context = React.useContext(FrameContext);
+  const context = use(FrameContext);
 
   if (context == null) {
     throw new Error('useFrameSize must be used within a FrameSizeProvider');

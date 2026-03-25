@@ -68,19 +68,17 @@ type Props<ParamList extends ParamListBase> = NavigationContainerProps & {
   documentTitle?: DocumentTitleOptions;
 };
 
-function NavigationContainerInner(
-  {
-    direction = I18nManager.getConstants().isRTL ? 'rtl' : 'ltr',
-    theme = DefaultTheme,
-    linking,
-    fallback = null,
-    documentTitle,
-    onReady,
-    onStateChange,
-    ...rest
-  }: Props<ParamListBase>,
-  ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
-) {
+function NavigationContainerInner({
+  ref,
+  direction = I18nManager.getConstants().isRTL ? 'rtl' : 'ltr',
+  theme = DefaultTheme,
+  linking,
+  fallback = null,
+  documentTitle,
+  onReady,
+  onStateChange,
+  ...rest
+}: Props<ParamListBase> & { ref?: React.Ref<NavigationContainerRef<ParamListBase> | null> }) {
   const isLinkingEnabled = linking ? linking.enabled !== false : false;
 
   if (linking?.config) {
@@ -193,7 +191,7 @@ function NavigationContainerInner(
  * Container component that manages the navigation state.
  * This should be rendered at the root wrapping the whole app.
  */
-export const NavigationContainer = React.forwardRef(NavigationContainerInner) as <
+export const NavigationContainer = NavigationContainerInner as <
   RootParamList extends ParamListBase = ReactNavigation.RootParamList,
 >(
   props: Props<RootParamList> & {

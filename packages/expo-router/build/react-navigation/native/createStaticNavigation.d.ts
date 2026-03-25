@@ -29,6 +29,8 @@ type Props = Omit<React.ComponentProps<typeof NavigationContainer>, 'linking' | 
  * @param tree Static navigation config.
  * @returns Navigation component to use in your app.
  */
-export declare function createStaticNavigation(tree: StaticNavigation<any, any, any>): React.ForwardRefExoticComponent<Omit<Props, "ref"> & React.RefAttributes<NavigationContainerRef<ParamListBase>>>;
+export declare function createStaticNavigation(tree: StaticNavigation<any, any, any>): ({ ref, linking, ...rest }: Props & {
+    ref?: React.Ref<NavigationContainerRef<ParamListBase>>;
+}) => React.JSX.Element;
 export {};
 //# sourceMappingURL=createStaticNavigation.d.ts.map

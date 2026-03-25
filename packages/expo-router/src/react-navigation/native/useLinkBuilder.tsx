@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import {
   CommonActions,
@@ -21,10 +22,10 @@ type MinimalState = {
  * Helper to build a href for a screen based on the linking options.
  */
 export function useBuildHref() {
-  const navigation = React.useContext(NavigationHelpersContext);
-  const route = React.useContext(NavigationRouteContext);
+  const navigation = use(NavigationHelpersContext);
+  const route = use(NavigationRouteContext);
 
-  const { options } = React.useContext(LinkingContext);
+  const { options } = use(LinkingContext);
 
   const focusedRouteState = useStateForPath();
 
@@ -102,7 +103,7 @@ export function useBuildHref() {
  * Helper to build a navigation action from a href based on the linking options.
  */
 export const useBuildAction = () => {
-  const { options } = React.useContext(LinkingContext);
+  const { options } = use(LinkingContext);
 
   const getStateFromPathHelper = options?.getStateFromPath ?? getStateFromPath;
   const getActionFromStateHelper = options?.getActionFromState ?? getActionFromState;

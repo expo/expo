@@ -1,6 +1,7 @@
 'use client';
 import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
+import { use } from 'react';
 
 import { SingleNavigatorContext } from './EnsureSingleNavigator';
 
@@ -10,7 +11,7 @@ import { SingleNavigatorContext } from './EnsureSingleNavigator';
  */
 export function useRegisterNavigator() {
   const [key] = React.useState(() => nanoid());
-  const container = React.useContext(SingleNavigatorContext);
+  const container = use(SingleNavigatorContext);
 
   if (container === undefined) {
     throw new Error(

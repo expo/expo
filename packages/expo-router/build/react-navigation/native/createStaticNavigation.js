@@ -47,7 +47,7 @@ const NavigationContainer_1 = require("./NavigationContainer");
  */
 function createStaticNavigation(tree) {
     const Component = (0, core_1.createComponentForStaticNavigation)(tree, 'RootNavigator');
-    function Navigation({ linking, ...rest }, ref) {
+    function Navigation({ ref, linking, ...rest }) {
         const linkingConfig = React.useMemo(() => {
             const screens = (0, core_1.createPathConfigForStaticNavigation)(tree, { initialRouteName: linking?.config?.initialRouteName }, linking?.enabled === 'auto');
             if (!screens)
@@ -80,6 +80,6 @@ function createStaticNavigation(tree) {
         <Component />
       </NavigationContainer_1.NavigationContainer>);
     }
-    return React.forwardRef(Navigation);
+    return Navigation;
 }
 //# sourceMappingURL=createStaticNavigation.js.map

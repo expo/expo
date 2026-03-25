@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useOnRouteFocus = useOnRouteFocus;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
 /**
  * Hook to handle focus actions for a route.
@@ -43,7 +44,7 @@ const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
  * the parent navigators also needs to be focused.
  */
 function useOnRouteFocus({ router, getState, key: sourceRouteKey, setState, }) {
-    const { onRouteFocus: onRouteFocusParent } = React.useContext(NavigationBuilderContext_1.NavigationBuilderContext);
+    const { onRouteFocus: onRouteFocusParent } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
     return React.useCallback((key) => {
         const state = getState();
         const result = router.getStateForRouteFocus(state, key);

@@ -37,7 +37,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CardA11yWrapper = void 0;
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
-exports.CardA11yWrapper = React.forwardRef(({ focused, active, animated, isNextScreenTransparent, detachCurrentScreen, children }, ref) => {
+const CardA11yWrapper = ({ ref, focused, active, animated, isNextScreenTransparent, detachCurrentScreen, children, }) => {
     // Manage this in separate component to avoid re-rendering card during gestures
     // Otherwise the gesture animation will be interrupted as state hasn't updated yet
     const [inert, setInert] = React.useState(false);
@@ -59,8 +59,8 @@ exports.CardA11yWrapper = React.forwardRef(({ focused, active, animated, isNextS
     // Make sure this view is not removed on the new architecture, as it causes focus loss during navigation on Android.
     // This can happen when the view flattening results in different trees - due to `overflow` style changing in a parent.
     collapsable={false}>
-        {children}
-      </react_native_1.View>);
-});
-exports.CardA11yWrapper.displayName = 'CardA11yWrapper';
+      {children}
+    </react_native_1.View>);
+};
+exports.CardA11yWrapper = CardA11yWrapper;
 //# sourceMappingURL=CardA11yWrapper.js.map

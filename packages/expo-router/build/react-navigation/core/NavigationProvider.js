@@ -37,6 +37,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NamedRouteContextListContext = exports.NavigationRouteContext = void 0;
 exports.NavigationProvider = NavigationProvider;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationContext_1 = require("./NavigationContext");
 const useIsFocused_1 = require("./useIsFocused");
 /**
@@ -48,8 +49,8 @@ exports.NavigationRouteContext = React.createContext(undefined);
  */
 exports.NamedRouteContextListContext = React.createContext(undefined);
 function NavigationProvider({ route, navigation, children }) {
-    const parentIsFocused = React.useContext(useIsFocused_1.IsFocusedContext);
-    const focusedRouteKey = React.useContext(useIsFocused_1.FocusedRouteKeyContext);
+    const parentIsFocused = (0, react_1.use)(useIsFocused_1.IsFocusedContext);
+    const focusedRouteKey = (0, react_1.use)(useIsFocused_1.FocusedRouteKeyContext);
     // Mark route as focused only if:
     // - It doesn't have a parent navigator
     // - Parent navigator is focused

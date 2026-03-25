@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type { NavigationAction, NavigationState, Router } from '../routers';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
@@ -22,7 +23,7 @@ export function useOnRouteFocus<State extends NavigationState, Action extends Na
   key: sourceRouteKey,
   setState,
 }: Options<State, Action>) {
-  const { onRouteFocus: onRouteFocusParent } = React.useContext(NavigationBuilderContext);
+  const { onRouteFocus: onRouteFocusParent } = use(NavigationBuilderContext);
 
   return React.useCallback(
     (key: string) => {

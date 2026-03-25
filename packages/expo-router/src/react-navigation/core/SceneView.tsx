@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type { NavigationState, ParamListBase, PartialState, Route } from '../routers';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
@@ -97,7 +98,7 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
 
   const getIsInitial = React.useCallback(() => isInitialRef.current, []);
 
-  const parentFocusedRouteState = React.useContext(NavigationFocusedRouteStateContext);
+  const parentFocusedRouteState = use(NavigationFocusedRouteStateContext);
 
   const focusedRouteState = React.useMemo(() => {
     const state: FocusedRouteState = {

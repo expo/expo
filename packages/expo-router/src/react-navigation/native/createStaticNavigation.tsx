@@ -42,10 +42,11 @@ type Props = Omit<React.ComponentProps<typeof NavigationContainer>, 'linking' | 
 export function createStaticNavigation(tree: StaticNavigation<any, any, any>) {
   const Component = createComponentForStaticNavigation(tree, 'RootNavigator');
 
-  function Navigation(
-    { linking, ...rest }: Props,
-    ref: React.Ref<NavigationContainerRef<ParamListBase>>
-  ) {
+  function Navigation({
+    ref,
+    linking,
+    ...rest
+  }: Props & { ref?: React.Ref<NavigationContainerRef<ParamListBase>> }) {
     const linkingConfig = React.useMemo(() => {
       const screens = createPathConfigForStaticNavigation(
         tree,
@@ -94,5 +95,5 @@ export function createStaticNavigation(tree: StaticNavigation<any, any, any>) {
     );
   }
 
-  return React.forwardRef(Navigation);
+  return Navigation;
 }

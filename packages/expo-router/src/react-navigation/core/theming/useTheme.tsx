@@ -1,10 +1,10 @@
 'use client';
-import * as React from 'react';
+import { use } from 'react';
 
 import { ThemeContext } from './ThemeContext';
 
 export function useTheme() {
-  const theme = React.useContext(ThemeContext);
+  const theme = use(ThemeContext);
 
   if (theme == null) {
     throw new Error(
