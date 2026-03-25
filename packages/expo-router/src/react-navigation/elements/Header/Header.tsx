@@ -1,6 +1,7 @@
 'use client';
 import Color from 'color';
 import * as React from 'react';
+import { use } from 'react';
 import {
   Animated,
   type LayoutChangeEvent,
@@ -77,7 +78,7 @@ export function Header(props: Props) {
   const { colors } = useTheme();
 
   const navigation = useNavigation();
-  const isParentHeaderShown = React.useContext(HeaderShownContext);
+  const isParentHeaderShown = use(HeaderShownContext);
 
   const [searchBarVisible, setSearchBarVisible] = React.useState(false);
   const [titleLayout, setTitleLayout] = React.useState<Layout | undefined>(undefined);

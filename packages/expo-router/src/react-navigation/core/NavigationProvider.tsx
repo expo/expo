@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type { ParamListBase, Route } from '../routers';
 import { NavigationContext } from './NavigationContext';
@@ -25,8 +26,8 @@ export const NamedRouteContextListContext = React.createContext<
 >(undefined);
 
 export function NavigationProvider({ route, navigation, children }: Props) {
-  const parentIsFocused = React.useContext(IsFocusedContext);
-  const focusedRouteKey = React.useContext(FocusedRouteKeyContext);
+  const parentIsFocused = use(IsFocusedContext);
+  const focusedRouteKey = use(FocusedRouteKeyContext);
 
   // Mark route as focused only if:
   // - It doesn't have a parent navigator

@@ -38,23 +38,21 @@ const INPUT_TYPE_TO_MODE = {
 
 const useNativeDriver = Platform.OS !== 'web';
 
-function HeaderSearchBarInternal(
-  {
-    visible,
-    inputType,
-    autoFocus = true,
-    autoCapitalize,
-    placeholder = 'Search',
-    cancelButtonText = 'Cancel',
-    enterKeyHint = 'search',
-    onChangeText,
-    onClose,
-    tintColor,
-    style,
-    ...rest
-  }: Props,
-  ref: React.ForwardedRef<HeaderSearchBarRef>
-) {
+function HeaderSearchBarInternal({
+  ref,
+  visible,
+  inputType,
+  autoFocus = true,
+  autoCapitalize,
+  placeholder = 'Search',
+  cancelButtonText = 'Cancel',
+  enterKeyHint = 'search',
+  onChangeText,
+  onClose,
+  tintColor,
+  style,
+  ...rest
+}: Props & { ref?: React.Ref<HeaderSearchBarRef> }) {
   const navigation = useNavigation();
   const { dark, colors, fonts } = useTheme();
   const [value, setValue] = React.useState('');
@@ -301,4 +299,4 @@ const styles = StyleSheet.create({
   }),
 });
 
-export const HeaderSearchBar = React.forwardRef(HeaderSearchBarInternal);
+export const HeaderSearchBar = HeaderSearchBarInternal;

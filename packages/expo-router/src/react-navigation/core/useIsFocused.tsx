@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import { useNavigation } from './useNavigation';
 
@@ -12,7 +13,7 @@ export const IsFocusedContext = React.createContext<boolean | undefined>(undefin
  * This can be used if a component needs to render something based on the focus state.
  */
 export function useIsFocused(): boolean {
-  const isFocused = React.useContext(IsFocusedContext);
+  const isFocused = use(IsFocusedContext);
   const navigation = useNavigation();
 
   const isFocusedAvailable = isFocused !== undefined;

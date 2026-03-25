@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HeaderSegment } from './HeaderSegment';
@@ -43,8 +44,8 @@ export const Header = React.memo(function Header({
     [navigation, route.key]
   );
 
-  const isModal = React.useContext(ModalPresentationContext);
-  const isParentHeaderShown = React.useContext(HeaderShownContext);
+  const isModal = use(ModalPresentationContext);
+  const isParentHeaderShown = use(HeaderShownContext);
 
   const statusBarHeight =
     options.headerStatusBarHeight !== undefined

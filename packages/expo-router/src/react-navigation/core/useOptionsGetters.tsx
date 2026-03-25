@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type { ParamListBase } from '../routers';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
@@ -18,8 +19,8 @@ export function useOptionsGetters({ key, options, navigation }: Options) {
     {}
   );
 
-  const { onOptionsChange } = React.useContext(NavigationBuilderContext);
-  const { addOptionsGetter: parentAddOptionsGetter } = React.useContext(NavigationStateContext);
+  const { onOptionsChange } = use(NavigationBuilderContext);
+  const { addOptionsGetter: parentAddOptionsGetter } = use(NavigationStateContext);
 
   const optionsChangeListener = React.useCallback(() => {
     const isFocused = navigation?.isFocused() ?? true;

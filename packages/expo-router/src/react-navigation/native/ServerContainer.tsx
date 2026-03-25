@@ -16,10 +16,11 @@ type Props = ServerContextType & {
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which contains helper methods.
  */
-export const ServerContainer = React.forwardRef(function ServerContainer(
-  { children, location }: Props,
-  ref: React.Ref<ServerContainerRef>
-) {
+export function ServerContainer({
+  ref,
+  children,
+  location,
+}: Props & { ref?: React.Ref<ServerContainerRef> }) {
   React.useEffect(() => {
     console.error(
       "'ServerContainer' should only be used on the server with 'react-dom/server' for SSR."
@@ -51,4 +52,4 @@ export const ServerContainer = React.forwardRef(function ServerContainer(
       <CurrentRenderContext.Provider value={current}>{children}</CurrentRenderContext.Provider>
     </ServerContext.Provider>
   );
-});
+}

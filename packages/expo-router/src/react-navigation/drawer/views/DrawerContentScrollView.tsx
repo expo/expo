@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 import { ScrollView, type ScrollViewProps, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,16 +8,20 @@ import { useLocale } from '../../native';
 import { DrawerPositionContext } from '../utils/DrawerPositionContext';
 
 type Props = ScrollViewProps & {
+  ref?: React.Ref<ScrollView>;
   children: React.ReactNode;
 };
 
 const SPACING = 12;
 
-function DrawerContentScrollViewInner(
-  { contentContainerStyle, style, children, ...rest }: Props,
-  ref?: React.Ref<ScrollView>
-) {
-  const drawerPosition = React.useContext(DrawerPositionContext);
+function DrawerContentScrollViewInner({
+  ref,
+  contentContainerStyle,
+  style,
+  children,
+  ...rest
+}: Props) {
+  const drawerPosition = use(DrawerPositionContext);
   const insets = useSafeAreaInsets();
   const { direction } = useLocale();
 
@@ -41,7 +46,7 @@ function DrawerContentScrollViewInner(
   );
 }
 
-export const DrawerContentScrollView = React.forwardRef(DrawerContentScrollViewInner);
+export const DrawerContentScrollView = DrawerContentScrollViewInner;
 
 const styles = StyleSheet.create({
   container: {

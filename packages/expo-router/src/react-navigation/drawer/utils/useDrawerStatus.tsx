@@ -1,5 +1,5 @@
 'use client';
-import * as React from 'react';
+import { use } from 'react';
 
 import { DrawerStatusContext } from './DrawerStatusContext';
 import type { DrawerStatus } from '../../native';
@@ -9,7 +9,7 @@ import type { DrawerStatus } from '../../native';
  * Returns 'open' if the drawer is open, 'closed' if the drawer is closed.
  */
 export function useDrawerStatus(): DrawerStatus {
-  const drawerStatus = React.useContext(DrawerStatusContext);
+  const drawerStatus = use(DrawerStatusContext);
 
   if (drawerStatus === undefined) {
     throw new Error("Couldn't find a drawer. Is your component inside a drawer navigator?");

@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type { NavigationState } from '../routers';
 import { NavigationContext } from './NavigationContext';
@@ -15,7 +16,7 @@ type Options<State extends NavigationState> = {
  * Hook to take care of emitting `focus` and `blur` events.
  */
 export function useFocusEvents<State extends NavigationState>({ state, emitter }: Options<State>) {
-  const navigation = React.useContext(NavigationContext);
+  const navigation = use(NavigationContext);
   const lastFocusedKeyRef = React.useRef<string | undefined>(undefined);
 
   const currentFocusedKey = state.routes[state.index].key;

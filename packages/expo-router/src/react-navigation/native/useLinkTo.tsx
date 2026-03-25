@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import { NavigationContainerRefContext } from '../core';
 import { useBuildAction } from './useLinkBuilder';
@@ -10,7 +11,7 @@ import { useBuildAction } from './useLinkBuilder';
  * @returns function that receives the href to navigate to.
  */
 export function useLinkTo() {
-  const navigation = React.useContext(NavigationContainerRefContext);
+  const navigation = use(NavigationContainerRefContext);
   const buildAction = useBuildAction();
 
   const linkTo = React.useCallback(

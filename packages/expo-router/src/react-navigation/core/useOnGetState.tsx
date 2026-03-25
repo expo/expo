@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type { NavigationState } from '../routers';
 import { type GetStateListener, NavigationBuilderContext } from './NavigationBuilderContext';
@@ -12,8 +13,8 @@ type Options = {
 };
 
 export function useOnGetState({ getState, getStateListeners }: Options) {
-  const { addKeyedListener } = React.useContext(NavigationBuilderContext);
-  const route = React.useContext(NavigationRouteContext);
+  const { addKeyedListener } = use(NavigationBuilderContext);
+  const route = use(NavigationRouteContext);
   const key = route ? route.key : 'root';
 
   const getRehydratedState = React.useCallback(() => {

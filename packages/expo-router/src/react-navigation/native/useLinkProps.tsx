@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 import { type GestureResponderEvent, Platform } from 'react-native';
 
 import {
@@ -71,9 +72,9 @@ export function useLinkProps<ParamList extends ReactNavigation.RootParamList>({
   href,
   action,
 }: LinkProps<ParamList>) {
-  const root = React.useContext(NavigationContainerRefContext);
-  const navigation = React.useContext(NavigationHelpersContext);
-  const { options } = React.useContext(LinkingContext);
+  const root = use(NavigationContainerRefContext);
+  const navigation = use(NavigationHelpersContext);
+  const { options } = use(LinkingContext);
 
   const onPress = (e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
     let shouldHandle = false;

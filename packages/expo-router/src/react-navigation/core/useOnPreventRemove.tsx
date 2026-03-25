@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type { NavigationAction, NavigationState } from '../routers';
 import {
@@ -72,8 +73,8 @@ export const shouldPreventRemove = (
 };
 
 export function useOnPreventRemove({ getState, emitter, beforeRemoveListeners }: Options) {
-  const { addKeyedListener } = React.useContext(NavigationBuilderContext);
-  const route = React.useContext(NavigationRouteContext);
+  const { addKeyedListener } = use(NavigationBuilderContext);
+  const route = use(NavigationRouteContext);
   const routeKey = route?.key;
 
   React.useEffect(() => {
