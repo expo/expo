@@ -21,9 +21,6 @@ const JSStack = withLayoutContext<
 /**
  * Renders a JavaScript-based stack navigator.
  *
- * Unlike the default `Stack` which uses native navigation primitives,
- * this stack is fully implemented in JavaScript using animated transitions.
- *
  * @hideType
  */
 const Stack = Object.assign(
