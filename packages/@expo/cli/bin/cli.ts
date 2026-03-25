@@ -36,6 +36,9 @@ export type Command = (argv?: string[]) => void;
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
   // NOTE(EvanBacon): Ensure every bundler-related command sets `NODE_ENV` as expected for the command.
+  build: () => import('../src/build/index.js').then((i) => i.expoBuild),
+  'build:ios': () => import('../src/build/ios/index.js').then((i) => i.expoBuildIos),
+  'build:android': () => import('../src/build/android/index.js').then((i) => i.expoBuildAndroid),
   run: () => import('../src/run/index.js').then((i) => i.expoRun),
   'run:ios': () => import('../src/run/ios/index.js').then((i) => i.expoRunIos),
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
@@ -115,6 +118,9 @@ if (!isSubcommand && args['--help']) {
     // The export:web command is deprecated. Hide it from the help prompt.
     'export:web': exportWeb_unused,
     // Other ignored commands, these are intentially not listed in the `--help` output
+    build: _build,
+    'build:ios': _buildIos,
+    'build:android': _buildAndroid,
     run: _run,
     // NOTE(cedric): Still pending the migration to ESLint's flat config
     lint: _lint,
@@ -152,8 +158,8 @@ if (!isSubcommand) {
     eject: 'npx expo prebuild',
     web: 'npx expo start --web',
     'start:web': 'npx expo start --web',
-    'build:ios': 'eas build -p ios',
-    'build:android': 'eas build -p android',
+    // 'build:ios': 'eas build -p ios',
+    // 'build:android': 'eas build -p android',
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
     doctor: 'npx expo-doctor',
