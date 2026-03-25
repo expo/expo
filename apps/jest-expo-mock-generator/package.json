@@ -9,6 +9,6 @@
     "expo": "~55.0.8",
     "expo-clipboard": "~55.0.9",
     "react": "19.2.0",
-    "react-native": "0.83.2"
+    "react-native": "0.83.4"
   }
 }
