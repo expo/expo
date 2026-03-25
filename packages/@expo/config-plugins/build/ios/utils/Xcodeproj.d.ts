@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ExpoConfig } from '@expo/config-types';
-import { PBXFile, PBXGroup, PBXNativeTarget, PBXProject, XCBuildConfiguration, XCConfigurationList, XcodeProject } from 'xcode';
+import xcode, { PBXFile, PBXGroup, PBXNativeTarget, PBXProject, UUID, XCBuildConfiguration, XCConfigurationList, XcodeProject } from 'xcode';
 export type ProjectSectionEntry = [string, PBXProject];
 export type NativeTargetSection = Record<string, PBXNativeTarget>;
 export type NativeTargetSectionEntry = [string, PBXNativeTarget];
@@ -53,7 +53,10 @@ export declare function addFileToGroupAndLink({ filepath, groupName, project, ve
 export declare function getApplicationNativeTarget({ project, projectName, }: {
     project: XcodeProject;
     projectName: string;
-}): any;
+}): {
+    uuid: UUID;
+    target: PBXNativeTarget;
+};
 /**
  * Add a framework to the default app native target.
  *
@@ -64,7 +67,7 @@ export declare function addFramework({ project, projectName, framework, }: {
     project: XcodeProject;
     projectName: string;
     framework: string;
-}): any;
+}): unknown;
 export declare function ensureGroupRecursively(project: XcodeProject, filepath: string): PBXGroup | null;
 /**
  * Get the pbxproj for the given path
@@ -76,7 +79,7 @@ export declare function getPbxproj(projectRoot: string): XcodeProject;
  * @param project
  */
 export declare function getProductName(project: XcodeProject): string;
-export declare function getProjectSection(project: XcodeProject): any;
+export declare function getProjectSection(project: XcodeProject): Record<string, xcode.PBXProject> & Record<string, string>;
 export declare function getXCConfigurationListEntries(project: XcodeProject): ConfigurationListEntry[];
 export declare function getBuildConfigurationsForListId(project: XcodeProject, configurationListId: string): ConfigurationSectionEntry[];
 export declare function getBuildConfigurationForListIdAndName(project: XcodeProject, { configurationListId, buildConfiguration, }: {
