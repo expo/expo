@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - [Android] Add NDS service discovery.
+- [plugin] Add option to disable tools button by default.
 
 ### 🐛 Bug fixes
 

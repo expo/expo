@@ -102,6 +102,13 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
             return config;
         });
     }
+    const iOSFloatingButton = props.ios?.floatingButton ?? props.floatingButton;
+    if (iOSFloatingButton !== undefined) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults['EXDevMenuShowFloatingActionButton'] = iOSFloatingButton;
+            return config;
+        });
+    }
     const androidLaunchMode = props.android?.launchMode ??
         props.launchMode ??
         props.android?.launchModeExperimental ??
@@ -110,6 +117,14 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
             const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE', false?.toString());
+            return config;
+        });
+    }
+    const androidFloatingButton = props.android?.floatingButton ?? props.floatingButton;
+    if (androidFloatingButton !== undefined) {
+        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevMenuShowFloatingActionButton', String(androidFloatingButton));
             return config;
         });
     }

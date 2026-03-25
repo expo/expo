@@ -130,6 +130,14 @@ export default createRunOncePlugin<PluginConfigType>(
       });
     }
 
+    const iOSFloatingButton = props.ios?.floatingButton ?? props.floatingButton;
+    if (iOSFloatingButton !== undefined) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['EXDevMenuShowFloatingActionButton'] = iOSFloatingButton;
+        return config;
+      });
+    }
+
     const androidLaunchMode =
       props.android?.launchMode ??
       props.launchMode ??
@@ -143,6 +151,20 @@ export default createRunOncePlugin<PluginConfigType>(
           mainApplication,
           'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE',
           false?.toString()
+        );
+        return config;
+      });
+    }
+
+    const androidFloatingButton = props.android?.floatingButton ?? props.floatingButton;
+    if (androidFloatingButton !== undefined) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'EXDevMenuShowFloatingActionButton',
+          String(androidFloatingButton)
         );
         return config;
       });
