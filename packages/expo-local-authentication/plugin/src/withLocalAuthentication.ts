@@ -1,6 +1,6 @@
 import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
 
-const pkg = require('expo-local-authentication/package.json');
+const pkg = require('../../package.json');
 const FACE_ID_USAGE = 'Allow $(PRODUCT_NAME) to use Face ID';
 
 const withLocalAuthentication: ConfigPlugin<{ faceIDPermission?: string | false } | void> = (

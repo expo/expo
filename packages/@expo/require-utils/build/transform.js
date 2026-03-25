@@ -15,6 +15,7 @@ function toCommonJS(filename, code) {
   const result = (0, _core().transformSync)(code, {
     filename,
     babelrc: false,
+    configFile: false,
     plugins: [[require('@babel/plugin-transform-modules-commonjs'), {
       // NOTE(@kitten): We used to use sucrase to transform, which is why
       // we're doing this CJS-to-ESM transform in the first place. Our

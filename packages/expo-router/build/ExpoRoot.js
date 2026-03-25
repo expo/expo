@@ -35,7 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = ExpoRoot;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -48,6 +47,7 @@ const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
 const primitives_1 = require("./primitives");
+const native_1 = require("./react-navigation/native");
 const screensFeatureFlags_1 = require("./screensFeatureFlags");
 const statusbar_1 = require("./utils/statusbar");
 const url_1 = require("./utils/url");
@@ -101,21 +101,15 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     //  - linking.getInitialURL is used on native
     const serverContext = (0, react_1.useMemo)(() => {
         let contextType = {};
-        if (initialLocation instanceof URL) {
-            contextType = {
-                location: {
-                    pathname: initialLocation.pathname + initialLocation.hash,
-                    search: initialLocation.search,
-                },
-            };
-        }
-        else if (typeof initialLocation === 'string') {
-            // The initial location is a string, so we need to parse it into a URL.
-            const url = (0, url_1.parseUrlUsingCustomBase)(initialLocation);
+        const url = typeof initialLocation === 'string'
+            ? (0, url_1.parseUrlUsingCustomBase)(initialLocation)
+            : initialLocation;
+        if (url && url instanceof URL) {
             contextType = {
                 location: {
                     pathname: url.pathname,
                     search: url.search,
+                    hash: url.hash,
                 },
             };
         }
@@ -126,7 +120,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
      * e.g Static renders, units tests, etc
      */
     const serverUrl = serverContext.location
-        ? `${serverContext.location.pathname}${serverContext.location.search}`
+        ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
         : undefined;
     const store = (0, router_store_1.useStore)(context, linking, serverUrl);
     (0, useDomComponentNavigation_1.useDomComponentNavigation)();

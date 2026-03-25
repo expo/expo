@@ -360,13 +360,10 @@ describe('Stack nested in Tabs render counts', () => {
       expect(screen.getByTestId('index')).toBeVisible();
 
       expect(layoutRender).not.toHaveBeenCalled();
-      // TODO(@ubax): reduce the number of renders
-      expect(homeTabRender).toHaveBeenCalledTimes(2);
+      expect(homeTabRender).toHaveBeenCalledTimes(1);
       expect(indexMount).toHaveBeenCalledTimes(1);
-      // TODO(@ubax): reduce the number of renders
-      expect(indexRender).toHaveBeenCalledTimes(4);
-      // TODO(@ubax): reduce the number of renders
-      expect(twoRender).toHaveBeenCalledTimes(2);
+      expect(indexRender).toHaveBeenCalledTimes(2);
+      expect(twoRender).toHaveBeenCalledTimes(1);
       expect(otherRender).not.toHaveBeenCalled();
       expect(router.canGoBack()).toBe(true);
 
@@ -470,12 +467,9 @@ describe('Stack nested in Tabs render counts', () => {
     expect(screen.getByTestId('index')).toBeVisible();
 
     expect(layoutRender).toHaveBeenCalledTimes(1);
-    // TODO(@ubax): reduce the number of renders
     expect(homeTabRender).toHaveBeenCalledTimes(2);
     expect(indexMount).toHaveBeenCalledTimes(1);
-    // TODO(@ubax): reduce the number of renders
-    expect(indexRender).toHaveBeenCalledTimes(4); // pathname change causes rerender
-    // TODO(@ubax): reduce the number of renders
+    expect(indexRender).toHaveBeenCalledTimes(3);
     expect(twoRender).toHaveBeenCalledTimes(2);
     expect(otherRender).toHaveBeenCalledTimes(1);
     expect(router.canGoBack()).toBe(true);

@@ -1,6 +1,6 @@
-import { NavigationAction, type NavigationState, PartialRoute, type PartialState, type NavigationContainerRef, ParamListBase } from '@react-navigation/native';
 import { type RefObject } from 'react';
 import { ResultState } from '../fork/getStateFromPath';
+import { NavigationAction, type NavigationState, PartialRoute, type PartialState, type NavigationContainerRef, ParamListBase } from '../react-navigation/native';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 interface LinkAction {
@@ -67,7 +67,7 @@ export declare function findDivergentState(_actionState: ResultState, _navigatio
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>>;
@@ -76,12 +76,12 @@ export declare function findDivergentState(_actionState: ResultState, _navigatio
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>;
     actionStateRoute: PartialRoute<any> | undefined;
-    navigationRoutes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+    navigationRoutes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
 };
 export {};
 //# sourceMappingURL=routing.d.ts.map

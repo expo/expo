@@ -9,7 +9,7 @@ import {
 
 const { Colors } = AndroidConfig;
 
-const pkg = require('expo-image-picker/package.json');
+const pkg = require('../../package.json');
 
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';

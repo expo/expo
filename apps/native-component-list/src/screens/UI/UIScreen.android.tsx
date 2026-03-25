@@ -19,6 +19,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'BasicAlertDialog component',
+    route: 'ui/basic-alert-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BasicAlertDialogScreen'));
+    },
+  },
+  {
+    name: 'Card component',
+    route: 'ui/card',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CardScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
@@ -27,11 +43,35 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Picker component',
-    route: 'ui/picker',
+    name: 'Checkbox component',
+    route: 'ui/checkbox',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./PickerScreen'));
+      return optionalRequire(() => require('./CheckboxScreen'));
+    },
+  },
+  {
+    name: 'IconButton component',
+    route: 'ui/icon-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./IconButtonScreen'));
+    },
+  },
+  {
+    name: 'Radio Button component',
+    route: 'ui/radio-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RadioButtonScreen'));
+    },
+  },
+  {
+    name: 'Segmented Control component',
+    route: 'ui/segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SegmentedControlScreen'));
     },
   },
   {
@@ -40,6 +80,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./DateTimePickerScreen'));
+    },
+  },
+  {
+    name: 'Community DateTimePicker replacement',
+    route: 'ui/community-datetimepicker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityDateTimePickerScreen'));
     },
   },
   {
@@ -67,6 +115,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Divider component',
+    route: 'ui/divider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DividerScreen'));
+    },
+  },
+  {
     name: 'Slider component',
     route: 'ui/slider',
     options: {},
@@ -88,6 +144,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ColorPickerScreen'));
+    },
+  },
+  {
+    name: 'Text component',
+    route: 'ui/text',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextScreen'));
     },
   },
   {
@@ -155,6 +219,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ToggleButton component',
+    route: 'ui/toggle-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ToggleButtonScreen'));
+    },
+  },
+  {
     name: 'FloatingActionButton component',
     route: 'ui/floating-action-button',
     options: {},
@@ -184,6 +256,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ModifiersScreen'));
+    },
+  },
+  {
+    name: 'PullToRefreshBox component',
+    route: 'ui/pull-to-refresh-box',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./PullToRefreshBoxScreen'));
+    },
+  },
+  {
+    name: 'Surface component',
+    route: 'ui/surface',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SurfaceScreen'));
     },
   },
 ];

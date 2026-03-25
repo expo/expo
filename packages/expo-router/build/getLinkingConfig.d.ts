@@ -1,8 +1,8 @@
-import { LinkingOptions } from '@react-navigation/native';
 import { RouteNode } from './Route';
 import { UrlObject } from './global-state/routeInfo';
 import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath } from './link/linking';
+import { LinkingOptions } from './react-navigation/native';
 import { RequireContext } from './types';
 export declare function getNavigationConfig(routes: RouteNode, metaOnly: boolean, { sitemap, notFound }: {
     sitemap: boolean;

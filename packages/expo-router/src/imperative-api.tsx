@@ -1,4 +1,3 @@
-import type { NavigationContainerRef, ParamListBase } from '@react-navigation/native';
 import { type RefObject, useEffect, useSyncExternalStore } from 'react';
 
 import {
@@ -17,6 +16,7 @@ import {
   routingQueue,
   setParams,
 } from './global-state/routing';
+import type { NavigationContainerRef, ParamListBase } from './react-navigation/native';
 import { Href, Route, RouteInputParams } from './types';
 
 /**

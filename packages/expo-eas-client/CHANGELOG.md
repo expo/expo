@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Add `deterministicUniformValue` constant ([#44075](https://github.com/expo/expo/pull/44075) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

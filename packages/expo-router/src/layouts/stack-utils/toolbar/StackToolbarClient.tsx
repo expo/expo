@@ -1,28 +1,18 @@
 'use client';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { Fragment, isValidElement, useMemo, type ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 
-import {
-  convertStackToolbarButtonPropsToRNHeaderItem,
-  StackToolbarButton,
-} from './StackToolbarButton';
-import {
-  convertStackToolbarMenuPropsToRNHeaderItem,
-  StackToolbarMenu,
-  StackToolbarMenuAction,
-} from './StackToolbarMenu';
+import { StackToolbarButton } from './StackToolbarButton';
+import { StackToolbarMenu, StackToolbarMenuAction } from './StackToolbarMenu';
 import { StackToolbarSearchBarSlot } from './StackToolbarSearchBarSlot';
-import {
-  convertStackToolbarSpacerPropsToRNHeaderItem,
-  StackToolbarSpacer,
-} from './StackToolbarSpacer';
-import { convertStackToolbarViewPropsToRNHeaderItem, StackToolbarView } from './StackToolbarView';
+import { StackToolbarSpacer } from './StackToolbarSpacer';
+import { StackToolbarView } from './StackToolbarView';
 import { ToolbarPlacementContext, useToolbarPlacement, type ToolbarPlacement } from './context';
+import { processHeaderItemsForPlatform } from './processHeaderItemsForPlatform';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { RouterToolbarHost } from '../../../toolbar/native';
-import { isChildOfType } from '../../../utils/children';
 
 export interface StackToolbarProps {
   /**
@@ -50,6 +40,15 @@ export interface StackToolbarProps {
    * @default false
    */
   asChild?: boolean;
+  /**
+   * When `true`, disables automatic keyboard (IME) padding on the bottom toolbar.
+   *
+   * Only applies to `placement="bottom"` on Android.
+   *
+   * @default false
+   * @platform android
+   */
+  disableImePadding?: boolean;
 }
 
 /**
@@ -127,17 +126,22 @@ export const StackToolbar = (props: StackToolbarProps) => {
   return <StackToolbarHeader {...props} key={props.placement} />;
 };
 
-const StackToolbarBottom = ({ children }: StackToolbarProps) => {
+const StackToolbarBottom = ({ children, disableImePadding }: StackToolbarProps) => {
   return (
     <ToolbarPlacementContext.Provider value="bottom">
       <NativeMenuContext value>
-        <RouterToolbarHost>{children}</RouterToolbarHost>
+        <RouterToolbarHost withImePadding={!disableImePadding}>{children}</RouterToolbarHost>
       </NativeMenuContext>
     </ToolbarPlacementContext.Provider>
   );
 };
 
-const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps) => {
+const StackToolbarHeader = ({
+  children,
+  placement,
+  asChild,
+  disableImePadding,
+}: StackToolbarProps) => {
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
       `Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`
@@ -149,61 +153,17 @@ const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps)
       appendStackToolbarPropsToOptions(
         {},
         // satisfies ensures every prop is listed here
-        { children, placement, asChild } satisfies Record<keyof StackToolbarProps, unknown>
+        { children, placement, asChild, disableImePadding } satisfies Record<
+          keyof StackToolbarProps,
+          unknown
+        >
       ),
-    [children, placement, asChild]
+    [children, placement, asChild, disableImePadding]
   );
   useCompositionOption(options);
 
   return null;
 };
-
-function convertToolbarChildrenToUnstableItems(
-  children: React.ReactNode,
-  side: 'left' | 'right'
-):
-  | NativeStackNavigationOptions['unstable_headerRightItems']
-  | NativeStackNavigationOptions['unstable_headerLeftItems'] {
-  const allChildren = React.Children.toArray(children);
-  const actions = allChildren.filter(
-    (child) =>
-      isChildOfType(child, StackToolbarButton) ||
-      isChildOfType(child, StackToolbarMenu) ||
-      isChildOfType(child, StackToolbarSpacer) ||
-      isChildOfType(child, StackToolbarView)
-  );
-  if (actions.length !== allChildren.length && process.env.NODE_ENV !== 'production') {
-    const otherElements = allChildren
-      .filter((child) => !actions.some((action) => action === child))
-      .map((e) => {
-        if (isValidElement(e)) {
-          if (e.type === Fragment) {
-            return '<Fragment>';
-          } else {
-            return (e.type as { name: string })?.name ?? e.type;
-          }
-        }
-
-        return String(e);
-      });
-    console.warn(
-      `Stack.Toolbar with placement="${side}" only accepts <Stack.Toolbar.Button>, <Stack.Toolbar.Menu>, <Stack.Toolbar.View>, and <Stack.Toolbar.Spacer> as children. Found invalid children: ${otherElements.join(', ')}`
-    );
-  }
-  return () =>
-    actions
-      .map((action) => {
-        if (isChildOfType(action, StackToolbarButton)) {
-          return convertStackToolbarButtonPropsToRNHeaderItem(action.props);
-        } else if (isChildOfType(action, StackToolbarMenu)) {
-          return convertStackToolbarMenuPropsToRNHeaderItem(action.props);
-        } else if (isChildOfType(action, StackToolbarSpacer)) {
-          return convertStackToolbarSpacerPropsToRNHeaderItem(action.props);
-        }
-        return convertStackToolbarViewPropsToRNHeaderItem(action.props);
-      })
-      .filter((item) => !!item);
-}
 
 export function appendStackToolbarPropsToOptions(
   options: NativeStackNavigationOptions,
@@ -232,19 +192,7 @@ export function appendStackToolbarPropsToOptions(
     }
   }
 
-  if (placement === 'left') {
-    return {
-      ...options,
-      headerShown: true,
-      unstable_headerLeftItems: convertToolbarChildrenToUnstableItems(children, 'left'),
-    };
-  }
-
-  return {
-    ...options,
-    headerShown: true,
-    unstable_headerRightItems: convertToolbarChildrenToUnstableItems(children, 'right'),
-  };
+  return { ...options, ...(processHeaderItemsForPlatform(children, placement) ?? {}) };
 }
 
 StackToolbar.Button = StackToolbarButton;

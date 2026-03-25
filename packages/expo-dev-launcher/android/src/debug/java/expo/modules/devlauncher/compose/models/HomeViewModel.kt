@@ -18,7 +18,10 @@ import expo.modules.devlauncher.services.ErrorRegistryService
 import expo.modules.devlauncher.services.NsdPreferences
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devlauncher.services.PackagerService
+import expo.modules.devlauncher.services.SessionService
+import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -29,13 +32,15 @@ sealed interface HomeAction {
   class NavigateToCrashReport(val crashReport: DevLauncherErrorInstance) : HomeAction
   object ScanQRCode : HomeAction
   object ClearLoadingError : HomeAction
+  object RefreshServers : HomeAction
 }
 
 data class HomeState(
   val runningPackagers: Set<PackagerInfo> = emptySet(),
   val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList(),
   val crashReport: DevLauncherErrorInstance? = null,
-  val loadingError: String? = null
+  val loadingError: String? = null,
+  val isRefreshing: Boolean = false
 )
 
 class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
@@ -43,6 +48,7 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
   val packagerService = inject<PackagerService>()
   val errorRegistryService = inject<ErrorRegistryService>()
   private val nsdPreferences = inject<NsdPreferences>()
+  private val sessionService = inject<SessionService>()
 
   private val appPackageName: String = devLauncherController.context.packageName
 
@@ -79,6 +85,15 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
     packagerService.resumeHealthCheck()
     ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     nsdPreferences.addOnChangeListener(nsdListener)
+
+    sessionService
+      .user
+      .onEach {
+        _state.value = _state.value.copy(
+          runningPackagers = filterPackagers(allPackagers)
+        )
+      }
+      .launchIn(viewModelScope)
   }
 
   override fun onResume(owner: LifecycleOwner) {
@@ -107,6 +122,14 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
       filtered = filtered.filter { it.slug == slugFilter }.toSet()
     }
 
+    if (nsdPreferences.filterByUsername) {
+      val currentUsername = (sessionService.user.value as? UserState.LoggedIn)
+        ?.data?.meUserActor?.username
+      if (currentUsername != null) {
+        filtered = filtered.filter { it.username == currentUsername }.toSet()
+      }
+    }
+
     return filtered
   }
 
@@ -130,9 +153,22 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
 
       is HomeAction.ClearLoadingError -> _state.value = _state.value.copy(loadingError = null)
 
+      is HomeAction.RefreshServers -> refreshServers()
+
       is HomeAction.NavigateToCrashReport -> throw IllegalStateException("Navigation action should be handled by the UI layer, not the ViewModel.")
 
       is HomeAction.ScanQRCode -> throw IllegalStateException("QR code scanning should be handled by the UI layer, not the ViewModel.")
+    }
+  }
+
+  private fun refreshServers() {
+    if (_state.value.isRefreshing) return
+    _state.value = _state.value.copy(isRefreshing = true)
+
+    viewModelScope.launch {
+      packagerService.restart()
+      delay(2000)
+      _state.value = _state.value.copy(isRefreshing = false)
     }
   }
 

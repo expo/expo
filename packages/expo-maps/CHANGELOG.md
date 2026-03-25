@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- [android] Add `clickCoordinates` to `onCircleClick` callback. ([#43835](https://github.com/expo/expo/pull/43835) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42189](https://github.com/expo/expo/pull/42189) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add programmatic selection support for annotations via `selectAnnotation()` ref method. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))

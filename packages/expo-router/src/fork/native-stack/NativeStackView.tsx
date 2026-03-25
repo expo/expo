@@ -1,7 +1,7 @@
-import { NativeStackView as RNNativeStackView } from '@react-navigation/native-stack';
 import { ComponentProps, use, useMemo } from 'react';
 
 import { RootModalContext, RootModalProvider } from '../../layouts/RootModal';
+import { NativeStackView as RNNativeStackView } from '../../react-navigation/native-stack';
 
 export function NativeStackView(props: ComponentProps<typeof RNNativeStackView>) {
   return (

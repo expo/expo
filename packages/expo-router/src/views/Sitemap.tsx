@@ -1,7 +1,6 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import Constants from 'expo-constants';
 import React from 'react';
 import {
@@ -20,6 +19,7 @@ import { NoSSR } from './NoSSR';
 import { Pressable, PressableProps } from './Pressable';
 import { useSitemap, SitemapType } from './useSitemap';
 import { Link } from '../link/Link';
+import { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { canOverrideStatusBarBehavior } from '../utils/statusbar';
 
 const INDENT = 20;
@@ -232,11 +232,11 @@ function ArrowIcon({ rotation = 0 }: { rotation?: number }) {
 
 function SystemInfo() {
   const getHermesVersion = () => {
-    if (!global.HermesInternal) {
+    if (!(global as any).HermesInternal) {
       return null;
     }
 
-    const HERMES_RUNTIME = global.HermesInternal?.getRuntimeProperties?.() ?? {};
+    const HERMES_RUNTIME = (global as any).HermesInternal?.getRuntimeProperties?.() ?? {};
     const HERMES_VERSION = HERMES_RUNTIME['OSS Release Version'];
     const isStaticHermes = HERMES_RUNTIME['Static Hermes'];
 

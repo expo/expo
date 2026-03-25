@@ -1,4 +1,3 @@
-import type { NavigationProp } from '@react-navigation/native';
 import { screen } from '@testing-library/react-native';
 import React, { useEffect, type PropsWithChildren } from 'react';
 import { View, Text } from 'react-native';
@@ -13,6 +12,7 @@ import {
   useSegments,
 } from '../../../hooks';
 import { Stack } from '../../../layouts/Stack';
+import type { NavigationProp } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 import { Redirect } from '../../Redirect';

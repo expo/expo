@@ -55,6 +55,10 @@ const parsePackageJsonOptions = (packageJson, appRoot, platform) => {
         }
     }
     const mergedOptions = { ...autolinkingOptions, ...platformOptions };
+    // NOTE(@kitten): For `include`, we don't override options per platform, but merge the lists
+    if (Array.isArray(autolinkingOptions?.include) && Array.isArray(platformOptions?.include)) {
+        mergedOptions.include = [...autolinkingOptions.include, ...platformOptions.include];
+    }
     const outputOptions = {};
     // legacy_shallowReactNativeLinking
     if (mergedOptions.legacy_shallowReactNativeLinking != null) {
@@ -75,6 +79,10 @@ const parsePackageJsonOptions = (packageJson, appRoot, platform) => {
     // exclude
     if (Array.isArray(mergedOptions.exclude)) {
         outputOptions.exclude = mergedOptions.exclude.filter((x) => typeof x === 'string');
+    }
+    // include
+    if (Array.isArray(mergedOptions.include)) {
+        outputOptions.include = mergedOptions.include.filter((x) => typeof x === 'string');
     }
     // buildFromSource
     if (Array.isArray(mergedOptions.buildFromSource)) {
@@ -163,6 +171,7 @@ const normalizeAutolinkingOptions = (options, appRoot) => {
             ? (resolvePathMaybe(options.nativeModulesDir, appRoot) ?? null)
             : (resolvePathMaybe('./modules', appRoot) ?? null),
         exclude: options.exclude ?? [],
+        include: options.include ?? [],
         buildFromSource: options.buildFromSource,
         flags: options.flags,
     };

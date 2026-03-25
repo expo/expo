@@ -1,0 +1,1 @@
+{"version":3,"file":"useKeyboardManager.d.ts","sourceRoot":"","sources":["../../../../src/react-navigation/stack/utils/useKeyboardManager.tsx"],"names":[],"mappings":"AAGA,wBAAgB,kBAAkB,CAAC,EAAE,OAAO,EAAE,OAAO,EAAE,EAAE;IAAE,OAAO,EAAE,OAAO,CAAC;IAAC,OAAO,EAAE,OAAO,CAAA;CAAE;;wDAiE5D;QAAE,OAAO,EAAE,OAAO,CAAC;QAAC,MAAM,EAAE,OAAO,CAAC;QAAC,OAAO,EAAE,OAAO,CAAA;KAAE;;EAqDzF"}

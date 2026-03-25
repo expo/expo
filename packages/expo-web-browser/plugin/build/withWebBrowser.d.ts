@@ -1,6 +1,4 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-type PluginConfig = {
-    experimentalLauncherActivity?: boolean;
-};
+import { PluginConfig } from './withWebBrowserAndroid';
 declare const _default: ConfigPlugin<PluginConfig | null>;
 export default _default;

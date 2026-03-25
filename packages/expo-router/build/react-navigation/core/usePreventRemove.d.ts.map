@@ -1,0 +1,1 @@
+{"version":3,"file":"usePreventRemove.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/core/usePreventRemove.tsx"],"names":[],"mappings":"AAIA,OAAO,KAAK,EAAE,gBAAgB,EAAE,MAAM,YAAY,CAAC;AAMnD;;;;;GAKG;AACH,wBAAgB,gBAAgB,CAC9B,aAAa,EAAE,OAAO,EACtB,QAAQ,EAAE,CAAC,OAAO,EAAE;IAAE,IAAI,EAAE;QAAE,MAAM,EAAE,gBAAgB,CAAA;KAAE,CAAA;CAAE,KAAK,IAAI,QAgCpE"}

@@ -1,10 +1,10 @@
 import { ModConfig } from '@expo/config-plugins';
 import JsonFile, { JSONObject } from '@expo/json-file';
+import { resolveFrom } from '@expo/require-utils';
 import deepMerge from 'deepmerge';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 import semver from 'semver';
 import slugify from 'slugify';
 
@@ -74,10 +74,10 @@ function reduceExpoObject(config?: any): SplitConfigs | null {
  */
 function getSupportedPlatforms(projectRoot: string): Platform[] {
   const platforms: Platform[] = [];
-  if (resolveFrom.silent(projectRoot, 'react-native')) {
+  if (resolveFrom(projectRoot, 'react-native/package.json')) {
     platforms.push('ios', 'android');
   }
-  if (resolveFrom.silent(projectRoot, 'react-dom')) {
+  if (resolveFrom(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
   }
   return platforms;

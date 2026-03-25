@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- [iOS] Ignore [`locationUnknown`](https://developer.apple.com/documentation/corelocation/clerror-swift.struct/locationunknown) errors in `watchPositionAsync`. ([#44027](https://github.com/expo/expo/pull/44027) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

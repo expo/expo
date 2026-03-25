@@ -659,7 +659,7 @@ jobs:
   title="${{ github }} context"
   description="View the ${{ github }} definition source code."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/eas-build-job/src/common.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/eas-build-job/src/common.ts"
 />
 
 #### `workflow`
@@ -1104,7 +1104,7 @@ jobs:
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
       android_system_image_package: string # optional. Android emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
-      output_format?: string # optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
 ```
 
 #### `maestro-cloud`
@@ -1442,7 +1442,7 @@ jobs:
   title="eas/checkout source code"
   description="View the source code for the eas/checkout function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
 />
 
 #### `eas/install_node_modules`
@@ -1463,7 +1463,7 @@ jobs:
   title="eas/install_node_modules source code"
   description="View the source code for the eas/install_node_modules function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
 />
 
 #### `eas/download_build`
@@ -1515,7 +1515,7 @@ jobs:
   title="eas/download_build source code"
   description="View the source code for the eas/download_build function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
 />
 
 #### `eas/prebuild`
@@ -1558,7 +1558,7 @@ jobs:
   title="eas/prebuild source code"
   description="View the source code for the eas/prebuild function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
 />
 
 #### `eas/restore_cache`
@@ -1606,7 +1606,7 @@ jobs:
   title="eas/restore_cache source code"
   description="View the source code for the eas/restore_cache function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/restoreCache.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/restoreCache.ts"
 />
 
 #### `eas/save_cache`
@@ -1643,7 +1643,7 @@ jobs:
   title="eas/save_cache source code"
   description="View the source code for the eas/save_cache function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/saveCache.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/saveCache.ts"
 />
 
 #### `eas/send_slack_message`
@@ -1676,7 +1676,7 @@ jobs:
   title="eas/send_slack_message source code"
   description="View the source code for the eas/send_slack_message function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
 />
 
 #### `eas/use_npm_token`
@@ -1702,7 +1702,7 @@ jobs:
   title="eas/use_npm_token source code"
   description="View the source code for the eas/use_npm_token function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
 />
 
 #### `eas/download_artifact`
@@ -1741,7 +1741,6 @@ jobs:
     params:
       build_id: '123-abc'
       flow_path: 'path/to/flow.yaml'
-      output_format: 'junit'
   my_job:
     needs: [maestro_tests]
     steps:
@@ -1757,7 +1756,7 @@ jobs:
   title="eas/download_artifact source code"
   description="View the source code for the eas/download_artifact function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
 />
 
 ## Built-in shell functions

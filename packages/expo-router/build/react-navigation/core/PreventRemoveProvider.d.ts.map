@@ -1,0 +1,1 @@
+{"version":3,"file":"PreventRemoveProvider.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/core/PreventRemoveProvider.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAO/B,KAAK,KAAK,GAAG;IACX,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;CAC3B,CAAC;AA6BF;;GAEG;AACH,wBAAgB,qBAAqB,CAAC,EAAE,QAAQ,EAAE,EAAE,KAAK,qBA4ExD"}

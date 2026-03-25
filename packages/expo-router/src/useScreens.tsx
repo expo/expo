@@ -1,17 +1,5 @@
 'use client';
 
-import type { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
-import {
-  useStateForPath,
-  type EventConsumer,
-  type EventMapBase,
-  type NavigationProp,
-  type NavigationState,
-  type ParamListBase,
-  type RouteProp,
-  type ScreenListeners,
-} from '@react-navigation/native';
-import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import React, { useEffect, useMemo } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
@@ -28,6 +16,18 @@ import {
   removeParams,
 } from './navigationParams';
 import { Screen } from './primitives';
+import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
+import {
+  useStateForPath,
+  type EventConsumer,
+  type EventMapBase,
+  type NavigationProp,
+  type NavigationState,
+  type ParamListBase,
+  type RouteProp,
+  type ScreenListeners,
+} from './react-navigation/native';
+import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import { SuspenseFallback } from './views/SuspenseFallback';
@@ -95,7 +95,9 @@ function getSortedChildren(
           );
           return null;
         }
-        const matchIndex = entries.findIndex((child) => child.route === name);
+        const matchIndex = entries.findIndex(
+          (child) => child.route === name || child.route === `${name}/index`
+        );
         if (matchIndex === -1) {
           console.warn(
             `[Layout children]: No route named "${name}" exists in nested children:`,
@@ -168,7 +170,11 @@ export function useSortedScreens(
   const nodeChildren = node?.children ?? [];
   const children = useOnlyUserDefinedScreens
     ? nodeChildren.filter((child) =>
-        order.some((userDefinedScreen) => userDefinedScreen.name === child.route)
+        order.some(
+          (userDefinedScreen) =>
+            userDefinedScreen.name === child.route ||
+            `${userDefinedScreen.name}/index` === child.route
+        )
       )
     : nodeChildren;
 
@@ -176,7 +182,12 @@ export function useSortedScreens(
   return React.useMemo(
     () =>
       sorted
-        .filter((item) => !protectedScreens.has(item.route.route))
+        .filter((item) => {
+          const route = item.route.route;
+          return (
+            !protectedScreens.has(route) && !protectedScreens.has(route.replace(/\/index$/, ''))
+          );
+        })
         .map((value) => {
           return routeToScreen(value.route, value.props);
         }),

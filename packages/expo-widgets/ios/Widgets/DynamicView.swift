@@ -18,27 +18,30 @@ extension ObjectIdentifier: @retroactive Encodable {
 
 public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   let node: [String: Any]
-  let source: String
+  let name: String
   let kind: WidgetsKind
   let entryIndex: Int?
+  let environmentString: String?
 
   let uuid = NodeIdentityWrapper(id: UUID())
   public var id: ObjectIdentifier {
     ObjectIdentifier(uuid)
   }
 
-  public init(source: String, kind: WidgetsKind, node: [String: Any]) {
-    self.source = source
+  public init(name: String, kind: WidgetsKind, node: [String: Any]) {
+    self.name = name
     self.kind = kind
     self.node = node
     self.entryIndex = nil
+    self.environmentString = nil
   }
 
-  public init(source: String, kind: WidgetsKind, node: [String: Any], entryIndex: Int?) {
-    self.source = source
+  public init(name: String, kind: WidgetsKind, node: [String: Any], entryIndex: Int?, environmentString: String?) {
+    self.name = name
     self.kind = kind
     self.node = node
     self.entryIndex = entryIndex
+    self.environmentString = environmentString
   }
 
   @ViewBuilder
@@ -82,13 +85,14 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
         case .widget:
           render(WidgetButtonView.self, ButtonProps.self) { buttonProps in
             try updateChildren(buttonProps)
-            buttonProps.source = source
+            buttonProps.source = name
             buttonProps.entryIndex = entryIndex
+            buttonProps.environmentString = environmentString
           }
         case .liveActivity:
           render(LiveActivityButtonView.self, ButtonProps.self) { buttonProps in
             try updateChildren(buttonProps)
-            buttonProps.source = source
+            buttonProps.source = name
           }
         }
       } else {
@@ -96,6 +100,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       }
     case "react.fragment":
       render(FragmentView.self, FragmentProps.self, updateProps: updateChildren)
+    case "LinkView":
+      render(LinkView.self, LinkViewProps.self, updateProps: updateChildren)
     default:
       ZStack {
         Color.red.opacity(0.5)
@@ -132,9 +138,9 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [Any] {
         let validChildren = children.compactMap { $0 as? [String: Any] }
-        initialProps.children = validChildren.map { WidgetsDynamicView(source: source, kind: kind, node: $0, entryIndex: entryIndex) }
+        initialProps.children = validChildren.map { WidgetsDynamicView(name: name, kind: kind, node: $0, entryIndex: entryIndex, environmentString: environmentString) }
       } else if let child = props["children"] as? [String: Any] {
-        initialProps.children = [WidgetsDynamicView(source: source, kind: kind, node: child, entryIndex: entryIndex)]
+        initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString)]
       }
     }
   }

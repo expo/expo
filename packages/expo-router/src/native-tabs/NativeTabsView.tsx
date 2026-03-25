@@ -1,4 +1,3 @@
-import { useTheme } from '@react-navigation/native';
 import React, { useDeferredValue, useMemo } from 'react';
 import { View, type ColorValue } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,13 +16,14 @@ import {
   type NativeTabOptions,
   type NativeTabsViewProps,
 } from './types';
+import { useTheme } from '../react-navigation/native';
+import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
 import {
   convertOptionsIconToRNScreensPropsIcon,
   convertOptionsIconToIOSPropsIcon,
   useAwaitedScreensIcon,
 } from './utils/icon';
 import { getFirstChildOfType } from '../utils/children';
-import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const {

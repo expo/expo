@@ -1,8 +1,8 @@
-import type { DefaultRouterOptions, EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
+import type { DefaultRouterOptions, EventMapBase, NavigationState, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '../react-navigation/native';
 /**
  * Event map for `NativeTabs` navigation events.
  * Only `tabPress` is currently supported.

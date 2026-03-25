@@ -35,7 +35,8 @@ export function createMetadataJson({
       (metadata, [platform, bundle]) => {
         if (platform === 'web') return metadata;
 
-        // Collect all of the assets and convert them to the serial format.
+        // Collect all of the assets and convert them to the serial format, deduplicating by path.
+        const seen = new Set<string>();
         const assets = bundle.assets
           .filter((asset) => !embeddedHashSet || !embeddedHashSet.has(asset.hash))
           .map((asset) =>
@@ -46,7 +47,12 @@ export function createMetadataJson({
             }))
           )
           .filter(Boolean)
-          .flat();
+          .flat()
+          .filter((a) => {
+            if (seen.has(a.path)) return false;
+            seen.add(a.path);
+            return true;
+          });
 
         if (domComponentAssetsMetadata?.[platform] != null) {
           assets.push(...domComponentAssetsMetadata?.[platform]);

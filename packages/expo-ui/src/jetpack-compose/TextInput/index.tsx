@@ -4,6 +4,16 @@ import { Ref } from 'react';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
+type SlotNativeViewProps = {
+  slotName: string;
+  children: React.ReactNode;
+};
+
+const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
+
 /**
  * @hidden Not used anywhere yet.
  */
@@ -12,6 +22,8 @@ export type TextInputRole = 'default' | 'cancel' | 'destructive';
 export type TextInputRef = {
   setText: (newText: string) => Promise<void>;
 };
+
+export type TextInputVariant = 'filled' | 'outlined';
 
 export type TextInputProps = {
   /**
@@ -22,6 +34,14 @@ export type TextInputProps = {
    * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, change the key prop if you need to change the text value.
    */
   defaultValue?: string;
+  /**
+   * The visual style of the text input field.
+   * - `filled` - A text field with a filled background (default).
+   * - `outlined` - A text field with a transparent background and a border outline.
+   * @default filled
+   * @platform android
+   */
+  variant?: TextInputVariant;
   /**
    * A callback triggered when user types in text into the TextInput.
    */
@@ -79,17 +99,22 @@ export type TextInputProps = {
    * @platform android
    */
   autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
-
   /**
-   * Modifiers for the component.
+   * Placeholder text shown inside the field when empty and focused.
+   *
    */
+  placeholder?: string;
+  /** Modifiers for the component */
   modifiers?: ExpoModifier[];
+  /**
+   * Slot children (e.g. `TextInput.Label`).
+   */
+  children?: React.ReactNode;
 };
 
-export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<
-    'onValueChanged',
-    { value: string }
-  >;
+export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText' | 'children'> & {
+  children?: React.ReactNode;
+} & ViewEvent<'onValueChanged', { value: string }>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const TextInputNativeView: React.ComponentType<NativeTextInputProps> = requireNativeView(
@@ -98,11 +123,12 @@ const TextInputNativeView: React.ComponentType<NativeTextInputProps> = requireNa
 );
 
 function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
-  const { modifiers, ...restProps } = props;
+  const { modifiers, children, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    children,
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
     },
@@ -110,8 +136,22 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
 }
 
 /**
+ * A label slot for `TextInput`.
+ * The label floats above the text field when focused or filled.
+ *
+ * @platform android
+ */
+function Label(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+/**
  * Renders a `TextInput` component.
  */
-export function TextInput(props: TextInputProps) {
+function TextInputComponent(props: TextInputProps) {
   return <TextInputNativeView {...transformTextInputProps(props)} />;
 }
+
+TextInputComponent.Label = Label;
+
+export { TextInputComponent as TextInput };

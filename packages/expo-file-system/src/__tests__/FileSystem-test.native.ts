@@ -1,4 +1,4 @@
-import { File, Directory, Paths } from 'expo-file-system';
+import { File, Directory, Paths } from '../..';
 
 describe('expo-file-system new API', () => {
   it('exports File, Directory, and Paths classes', () => {

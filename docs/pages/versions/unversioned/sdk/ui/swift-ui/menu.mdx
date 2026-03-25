@@ -146,6 +146,53 @@ export default function StyledMenuExample() {
 }
 ```
 
+### Glass menu
+
+To create a menu with the iOS Liquid Glass appearance, use `buttonStyle('glass')` or `buttonStyle('glassProminent')` on the Menu component.
+
+> **Important:** Do not apply the `glassEffect()` modifier to the Menu's label view to achieve a glass look. This causes a visual artifact where a rectangular halo briefly appears behind the trigger when the menu is dismissed. Always use `buttonStyle` instead, which correctly integrates with the Menu's dismiss animation.
+
+```tsx GlassMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function GlassMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Glass Menu" systemImage="ellipsis.circle" modifiers={[buttonStyle('glass')]}>
+        <Button label="Action 1" onPress={() => console.log('Action 1')} />
+        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+For a more prominent glass effect, use `glassProminent`:
+
+```tsx GlassProminentMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function GlassProminentMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu
+        label="Glass Prominent Menu"
+        systemImage="slider.horizontal.3"
+        modifiers={[buttonStyle('glassProminent')]}>
+        <Button label="Settings" systemImage="gear" onPress={() => console.log('Settings')} />
+        <Button
+          label="Filter"
+          systemImage="line.3.horizontal.decrease"
+          onPress={() => console.log('Filter')}
+        />
+      </Menu>
+    </Host>
+  );
+}
+```
+
 ### With control group
 
 Use a [`ControlGroup`](controlgroup) inside a menu to render a horizontal row of icon buttons, similar to the quick actions row in Apple Music or Safari menus.

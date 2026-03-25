@@ -3,7 +3,7 @@ import { type ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 import { withAssetsAndroid } from './withAssetsAndroid';
 import { withAssetsIos } from './withAssetsIos';
 
-const pkg = require('expo-asset/package.json');
+const pkg = require('../../package.json');
 
 export type AssetProps = {
   assets?: string[];

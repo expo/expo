@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - [Android] Add NDS service discovery.
@@ -13,6 +15,8 @@
 - [iOS] Fix issue when using `fullScreenModal` with `expo-router`. ([#43520](https://github.com/expo/expo/pull/43520) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix missing navigation bar padding ([#43672](https://github.com/expo/expo/pull/43672) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix orientation change regression. ([#43847](https://github.com/expo/expo/pull/43847) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix hard-coded usage of http with exps URLs ([#43982](https://github.com/expo/expo/pull/43982) by [@muvaf](https://github.com/muvaf))
+- [iOS] Fix react-native version resolution in podspec ([#44178](https://github.com/expo/expo/pull/44178) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

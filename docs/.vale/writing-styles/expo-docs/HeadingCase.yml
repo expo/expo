@@ -305,3 +305,8 @@ exceptions:
   - Integrated vs Isolated
   - Expo Skills
   - DSL
+  - TriStateCheckbox
+  - MainApplication
+  - MainActivity
+  - HorizontalCenteredHeroCarousel
+  - HorizontalUncontainedCarousel

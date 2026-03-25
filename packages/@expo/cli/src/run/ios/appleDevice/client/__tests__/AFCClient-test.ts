@@ -1,4 +1,8 @@
-import { Socket } from 'net';
+import * as fs from 'fs';
+import { vol } from 'memfs';
+import type { Socket } from 'net';
+import * as os from 'os';
+import * as path from 'path';
 
 import { AFCClient } from '../AFCClient';
 
@@ -117,6 +121,74 @@ describe('closeFile', () => {
       data: expect.anything(),
       operation: 20,
     });
+  });
+});
+
+describe('uploadFile', () => {
+  const fakeFd = Buffer.from([1, 0, 0, 0, 0, 0, 0, 0]);
+  const mockResponse = { operation: 2, id: 0, data: Buffer.from('') };
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = path.join(os.tmpdir(), 'afc-test');
+    vol.mkdirSync(tmpDir, { recursive: true });
+  });
+
+  afterEach(() => {
+    vol.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  function mockClient() {
+    const client = new AFCClient(mockSocket());
+    client['openFile'] = jest.fn(async () => fakeFd);
+    client['closeFile'] = jest.fn(async () => mockResponse);
+    return client;
+  }
+
+  it(`streams file in chunks`, async () => {
+    const tmpFile = path.join(tmpDir, 'test.bin');
+    fs.writeFileSync(tmpFile, Buffer.alloc(1024, 0x42));
+
+    const client = mockClient();
+    const chunks: number[] = [];
+    client['writeFile'] = jest.fn(async (_fd: Buffer, chunk: Buffer) => {
+      chunks.push(chunk.length);
+      return mockResponse;
+    });
+
+    await client['uploadFile'](tmpFile, 'PublicStaging/test.bin');
+
+    expect(chunks.reduce((a, b) => a + b, 0)).toBe(1024);
+    expect(client['openFile']).toHaveBeenCalledWith('PublicStaging/test.bin');
+    expect(client['closeFile']).toHaveBeenCalledWith(fakeFd);
+  });
+
+  it(`handles empty files`, async () => {
+    const tmpFile = path.join(tmpDir, 'empty.bin');
+    fs.writeFileSync(tmpFile, Buffer.alloc(0));
+
+    const client = mockClient();
+    client['writeFile'] = jest.fn();
+
+    await client['uploadFile'](tmpFile, 'PublicStaging/empty.bin');
+
+    expect(client['writeFile']).not.toHaveBeenCalled();
+    expect(client['closeFile']).toHaveBeenCalledWith(fakeFd);
+  });
+
+  it(`closes remote file on write error`, async () => {
+    const tmpFile = path.join(tmpDir, 'fail.bin');
+    fs.writeFileSync(tmpFile, Buffer.alloc(1024));
+
+    const client = mockClient();
+    client['writeFile'] = jest.fn(async () => {
+      throw new Error('write failed');
+    });
+
+    await expect(client['uploadFile'](tmpFile, 'PublicStaging/fail.bin')).rejects.toThrow(
+      'write failed'
+    );
+    expect(client['closeFile']).toHaveBeenCalledWith(fakeFd);
   });
 });
 

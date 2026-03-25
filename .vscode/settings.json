@@ -4,5 +4,6 @@
   "search.exclude": {
     "packages/**/build": true,
     "docs/public/static/data": true
-  }
+  },
+  "search.followSymlinks": false
 }

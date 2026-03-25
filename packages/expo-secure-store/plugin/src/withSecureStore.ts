@@ -6,7 +6,7 @@ import {
   AndroidConfig,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-secure-store/package.json');
+const pkg = require('../../package.json');
 
 const BACKUP_RULES_PATH = '@xml/secure_store_backup_rules';
 const EXTRACTION_RULES_PATH = '@xml/secure_store_data_extraction_rules';

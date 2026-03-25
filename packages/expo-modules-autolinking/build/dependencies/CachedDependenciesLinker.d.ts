@@ -3,12 +3,13 @@ import { type ResolutionResult } from './types';
 import { type Memoizer } from '../memoize';
 import { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
 export interface CachedDependenciesSearchOptions {
+    includeNames: Set<string>;
     excludeNames: Set<string>;
     searchPaths: string[];
 }
 export interface CachedDependenciesLinker {
     memoizer: Memoizer;
-    getOptionsForPlatform(platform: SupportedPlatform): Promise<CachedDependenciesSearchOptions>;
+    getOptionsForPlatform(platform: SupportedPlatform, extraInclude?: string[]): Promise<CachedDependenciesSearchOptions>;
     loadReactNativeProjectConfig(): Promise<RNConfigReactNativeProjectConfig | null>;
     scanDependenciesFromRNProjectConfig(): Promise<ResolutionResult>;
     scanDependenciesRecursively(): Promise<ResolutionResult>;
@@ -17,5 +18,5 @@ export interface CachedDependenciesLinker {
 export declare function makeCachedDependenciesLinker(params: {
     projectRoot: string;
 }): CachedDependenciesLinker;
-export declare function scanDependencyResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform, include?: string[]): Promise<ResolutionResult>;
-export declare function scanExpoModuleResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform): Promise<Record<string, PackageRevision>>;
+export declare function scanDependencyResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform, extraInclude?: string[]): Promise<ResolutionResult>;
+export declare function scanExpoModuleResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform, extraInclude?: string[]): Promise<Record<string, PackageRevision>>;

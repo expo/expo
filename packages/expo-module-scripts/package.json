@@ -45,11 +45,9 @@
       "import": "./*/jest-preset.cjs",
       "require": "./*/jest-preset.cjs"
     },
+    "./types/*": "./types/*",
     "./tsconfig.*": "./tsconfig.*.json",
-    "./tsconfig": "./tsconfig.json",
-    "./types/*.d.ts": {
-      "types": "./types/*.d.ts"
-    }
+    "./tsconfig": "./tsconfig.json"
   },
   "scripts": {
     "lint": "expo-module eslint ."
@@ -75,18 +73,17 @@
     "@babel/plugin-transform-export-namespace-from": "^7.23.4",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
-    "@expo/npm-proofread": "^1.0.1",
     "@expo/spawn-async": "^1.7.2",
-    "@react-native/jest-preset": "0.85.0-rc.1",
+    "@react-native/jest-preset": "0.85.0-rc.5",
     "@testing-library/react-native": "^13.3.0",
     "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.2.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",
-    "babel-preset-expo": "~55.0.8",
+    "babel-preset-expo": "workspace:~55.0.8",
     "commander": "^12.1.0",
-    "eslint-config-universe": "^15.0.3",
+    "eslint-config-universe": "workspace:^15.0.3",
     "glob": "^13.0.0",
-    "jest-expo": "~55.0.9",
+    "jest-expo": "workspace:~55.0.9",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
     "resolve-workspace-root": "^2.0.0",
@@ -94,6 +91,7 @@
     "typescript": "^5.9.2"
   },
   "devDependencies": {
+    "@expo/metro": "~54.2.0",
     "@babel/core": "^7.26.0"
   }
 }

@@ -1,13 +1,16 @@
 import {
   Button,
+  Checkbox,
   DropdownMenu,
-  Divider,
+  HorizontalDivider,
   DropdownMenuItem,
   Host,
   Icon,
   Row,
   Switch,
   Text as ComposeText,
+  FilledTonalButton,
+  OutlinedButton,
 } from '@expo/ui/jetpack-compose';
 import { background } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
@@ -58,10 +61,9 @@ export default function DropdownMenuScreen() {
               color={themeBackgroundColor}>
               <DropdownMenu.Trigger>
                 <Button
-                  elementColors={{ containerColor: 'transparent', contentColor: 'blue' }}
-                  trailingIcon="filled.ArrowDropDown"
-                  onPress={() => setThemeMenuExpanded(true)}>
-                  {selectedTheme}
+                  colors={{ containerColor: 'transparent', contentColor: 'blue' }}
+                  onClick={() => setThemeMenuExpanded(true)}>
+                  <ComposeText>{selectedTheme}</ComposeText>
                 </Button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Items>
@@ -128,9 +130,9 @@ export default function DropdownMenuScreen() {
             onDismissRequest={() => setColorfulMenuExpanded(false)}
             color="#e3b7ff">
             <DropdownMenu.Trigger>
-              <Button variant="bordered" onPress={() => setColorfulMenuExpanded(true)}>
-                Show Colorful Menu
-              </Button>
+              <FilledTonalButton onClick={() => setColorfulMenuExpanded(true)}>
+                <ComposeText>Show Colorful Menu</ComposeText>
+              </FilledTonalButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Items>
               <DropdownMenuItem
@@ -162,16 +164,15 @@ export default function DropdownMenuScreen() {
                 <DropdownMenuItem.Text>
                   <Row verticalAlignment="center">
                     <ComposeText>I'm very colorful!</ComposeText>
-                    <Switch
+                    <Checkbox
                       value={switchChecked}
-                      variant="checkbox"
-                      elementColors={{
+                      colors={{
                         checkedColor: '#ff0000',
                         disabledCheckedColor: '#00ff00',
                         uncheckedColor: '#0000ff',
                         checkmarkColor: '#ffff00',
                       }}
-                      onValueChange={setSwitchChecked}
+                      onCheckedChange={setSwitchChecked}
                     />
                   </Row>
                 </DropdownMenuItem.Text>
@@ -182,9 +183,8 @@ export default function DropdownMenuScreen() {
                     <ComposeText>Switches can be colorful too!</ComposeText>
                     <Switch
                       value={switch2Checked}
-                      variant="switch"
-                      onValueChange={setSwitch2Checked}
-                      elementColors={{
+                      onCheckedChange={setSwitch2Checked}
+                      colors={{
                         checkedThumbColor: '#ff0000',
                         checkedTrackColor: '#00ff00',
                         uncheckedThumbColor: '#0000ff',
@@ -204,9 +204,9 @@ export default function DropdownMenuScreen() {
             expanded={sectionsMenuExpanded}
             onDismissRequest={() => setSectionsMenuExpanded(false)}>
             <DropdownMenu.Trigger>
-              <Button variant="outlined" onPress={() => setSectionsMenuExpanded(true)}>
-                Show Menu with Sections
-              </Button>
+              <OutlinedButton onClick={() => setSectionsMenuExpanded(true)}>
+                <ComposeText>Show Menu with Sections</ComposeText>
+              </OutlinedButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Items>
               <DropdownMenuItem
@@ -221,7 +221,7 @@ export default function DropdownMenuScreen() {
                   <Icon source={homeIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
               </DropdownMenuItem>
-              <Divider />
+              <HorizontalDivider />
               <DropdownMenu
                 expanded={submenuExpanded}
                 onDismissRequest={() => setSubmenuExpanded(false)}>
@@ -272,7 +272,7 @@ export default function DropdownMenuScreen() {
                   </DropdownMenuItem>
                 </DropdownMenu.Items>
               </DropdownMenu>
-              <Divider />
+              <HorizontalDivider />
               <DropdownMenuItem
                 onClick={() => {
                   setSectionsMenuExpanded(false);

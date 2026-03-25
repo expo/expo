@@ -69,6 +69,7 @@ The following environment variables are additional system environment variables 
 - `EAS_BUILD_COCOAPODS_CACHE_URL`: The URL of CocoaPods cache ([learn more](/build-reference/caching/#ios-dependencies))
 - `EAS_BUILD_USERNAME`: The username of the user initiating the build (it's undefined for bot users)
 - `EAS_BUILD_WORKINGDIR`: The remote directory path with your project
+- `EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP`: Set to `1` to skip the early JavaScript bundling check. By default, EAS Build runs the JavaScript bundler before the native build to surface JS errors earlier. Disabling this step means JavaScript errors won't be caught until the native build step.
 
 </Collapsible>
 

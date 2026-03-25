@@ -42,7 +42,6 @@ exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 exports.screenOptionsFactory = screenOptionsFactory;
 exports.routeToScreen = routeToScreen;
 exports.getSingularId = getSingularId;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
@@ -54,6 +53,7 @@ const navigationEvents_1 = require("./navigationEvents");
 const utils_2 = require("./navigationEvents/utils");
 const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
+const native_1 = require("./react-navigation/native");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
@@ -70,7 +70,7 @@ function getSortedChildren(children, order = [], initialRouteName) {
             console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
             return null;
         }
-        const matchIndex = entries.findIndex((child) => child.route === name);
+        const matchIndex = entries.findIndex((child) => child.route === name || child.route === `${name}/index`);
         if (matchIndex === -1) {
             console.warn(`[Layout children]: No route named "${name}" exists in nested children:`, children.map(({ route }) => route));
             return null;
@@ -122,11 +122,15 @@ function useSortedScreens(order, protectedScreens, useOnlyUserDefinedScreens = f
     const node = (0, Route_1.useRouteNode)();
     const nodeChildren = node?.children ?? [];
     const children = useOnlyUserDefinedScreens
-        ? nodeChildren.filter((child) => order.some((userDefinedScreen) => userDefinedScreen.name === child.route))
+        ? nodeChildren.filter((child) => order.some((userDefinedScreen) => userDefinedScreen.name === child.route ||
+            `${userDefinedScreen.name}/index` === child.route))
         : nodeChildren;
     const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
     return react_1.default.useMemo(() => sorted
-        .filter((item) => !protectedScreens.has(item.route.route))
+        .filter((item) => {
+        const route = item.route.route;
+        return (!protectedScreens.has(route) && !protectedScreens.has(route.replace(/\/index$/, '')));
+    })
         .map((value) => {
         return routeToScreen(value.route, value.props);
     }), [sorted, protectedScreens]);
