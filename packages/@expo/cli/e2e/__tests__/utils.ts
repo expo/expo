@@ -18,7 +18,7 @@ export { getTemporaryPath } from '../utils/path';
 
 export const bin = require.resolve('../../build/bin/cli');
 
-// Set this to true to enable caching and prevent rerunning yarn installs
+// Set this to true to enable caching and prevent rerunning pnpm installs
 const testingLocally = !process.env.CI;
 
 export const projectRoot = getTemporaryPath();
