@@ -9,7 +9,7 @@
 ### 🎉 New features
 
 - [Android] Add NDS service discovery.
-- [plugin] Add option to disable tools button by default.
+- [plugin] Add option to disable tools button by default. ([#44251](https://github.com/expo/expo/pull/44251) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
