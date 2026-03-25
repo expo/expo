@@ -1,4 +1,6 @@
 name: Xcode - Build and Analyze
+permissions:
+  contents: read
 
 on:
   push:
