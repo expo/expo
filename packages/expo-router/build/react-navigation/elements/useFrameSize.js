@@ -41,8 +41,7 @@ exports.useFrameSize = useFrameSize;
 exports.FrameSizeProvider = FrameSizeProvider;
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
-// TODO(@ubax) - RN Migration: remove this dependency and import from react
-const with_selector_1 = require("use-sync-external-store/with-selector");
+const useSyncExternalStoreWithSelector_1 = require("../../utils/useSyncExternalStoreWithSelector");
 const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const FrameContext = React.createContext(undefined);
 function useFrameSize(selector, throttle) {
@@ -50,7 +49,7 @@ function useFrameSize(selector, throttle) {
     if (context == null) {
         throw new Error('useFrameSize must be used within a FrameSizeProvider');
     }
-    const value = (0, with_selector_1.useSyncExternalStoreWithSelector)(throttle ? context.subscribeThrottled : context.subscribe, context.getCurrent, context.getCurrent, selector);
+    const value = (0, useSyncExternalStoreWithSelector_1.useSyncExternalStoreWithSelector)(throttle ? context.subscribeThrottled : context.subscribe, context.getCurrent, context.getCurrent, selector);
     return value;
 }
 function FrameSizeProvider({ initialFrame, render }) {

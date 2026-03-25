@@ -1,8 +1,8 @@
 'use client';
 import * as React from 'react';
 import { type LayoutChangeEvent, Platform, View } from 'react-native';
-// TODO(@ubax) - RN Migration: remove this dependency and import from react
-import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
+
+import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
 
 import useLatestCallback from '../../utils/useLatestCallback';
 
