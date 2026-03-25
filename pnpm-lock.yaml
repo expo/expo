@@ -2208,6 +2208,9 @@ importers:
 
   packages/@expo/image-utils:
     dependencies:
+      '@expo/require-utils':
+        specifier: workspace:^55.0.2
+        version: link:../require-utils
       '@expo/spawn-async':
         specifier: ^1.7.2
         version: 1.7.2
@@ -2223,9 +2226,6 @@ importers:
       parse-png:
         specifier: ^2.1.0
         version: 2.1.0
-      resolve-from:
-        specifier: ^5.0.0
-        version: 5.0.0
       semver:
         specifier: ^7.6.0
         version: 7.7.4
