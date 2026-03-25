@@ -41,7 +41,7 @@ export type PluginConfigOptions = {
    */
   launchModeExperimental?: 'most-recent' | 'launcher';
   /**
-   * Whether to show the floating action button by default.
+   * Whether to show the tools button by default.
    *
    * @default true
    */
