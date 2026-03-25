@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add web haptics for iOS Safari using checkbox.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
