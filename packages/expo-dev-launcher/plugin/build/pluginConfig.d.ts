@@ -41,7 +41,7 @@ export type PluginConfigOptions = {
      *
      * @default true
      */
-    floatingButton?: boolean;
+    toolsButton?: boolean;
 };
 /**
  * @ignore

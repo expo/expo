@@ -130,10 +130,10 @@ export default createRunOncePlugin<PluginConfigType>(
       });
     }
 
-    const iOSFloatingButton = props.ios?.floatingButton ?? props.floatingButton;
-    if (iOSFloatingButton !== undefined) {
+    const iOSToolsButton = props.ios?.toolsButton ?? props.toolsButton;
+    if (iOSToolsButton !== undefined) {
       config = withInfoPlist(config, (config) => {
-        config.modResults['EXDevMenuShowFloatingActionButton'] = iOSFloatingButton;
+        config.modResults['EXDevMenuShowFloatingActionButton'] = iOSToolsButton;
         return config;
       });
     }
@@ -156,15 +156,15 @@ export default createRunOncePlugin<PluginConfigType>(
       });
     }
 
-    const androidFloatingButton = props.android?.floatingButton ?? props.floatingButton;
-    if (androidFloatingButton !== undefined) {
+    const androidToolsButton = props.android?.toolsButton ?? props.toolsButton;
+    if (androidToolsButton !== undefined) {
       config = withAndroidManifest(config, (config) => {
         const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
         AndroidConfig.Manifest.addMetaDataItemToMainApplication(
           mainApplication,
           'EXDevMenuShowFloatingActionButton',
-          String(androidFloatingButton)
+          String(androidToolsButton)
         );
         return config;
       });

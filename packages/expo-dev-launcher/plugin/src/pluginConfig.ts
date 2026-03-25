@@ -45,7 +45,7 @@ export type PluginConfigOptions = {
    *
    * @default true
    */
-  floatingButton?: boolean;
+  toolsButton?: boolean;
 };
 
 const schema: JSONSchema<PluginConfigType> = {
@@ -62,7 +62,7 @@ const schema: JSONSchema<PluginConfigType> = {
       enum: ['most-recent', 'launcher'],
       nullable: true,
     },
-    floatingButton: {
+    toolsButton: {
       type: 'boolean',
       nullable: true,
     },
@@ -79,7 +79,7 @@ const schema: JSONSchema<PluginConfigType> = {
           enum: ['most-recent', 'launcher'],
           nullable: true,
         },
-        floatingButton: {
+        toolsButton: {
           type: 'boolean',
           nullable: true,
         },
@@ -99,7 +99,7 @@ const schema: JSONSchema<PluginConfigType> = {
           enum: ['most-recent', 'launcher'],
           nullable: true,
         },
-        floatingButton: {
+        toolsButton: {
           type: 'boolean',
           nullable: true,
         },

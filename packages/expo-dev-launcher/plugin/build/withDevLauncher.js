@@ -102,10 +102,10 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
             return config;
         });
     }
-    const iOSFloatingButton = props.ios?.floatingButton ?? props.floatingButton;
-    if (iOSFloatingButton !== undefined) {
+    const iOSToolsButton = props.ios?.toolsButton ?? props.toolsButton;
+    if (iOSToolsButton !== undefined) {
         config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
-            config.modResults['EXDevMenuShowFloatingActionButton'] = iOSFloatingButton;
+            config.modResults['EXDevMenuShowFloatingActionButton'] = iOSToolsButton;
             return config;
         });
     }
@@ -120,11 +120,11 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
             return config;
         });
     }
-    const androidFloatingButton = props.android?.floatingButton ?? props.floatingButton;
-    if (androidFloatingButton !== undefined) {
+    const androidToolsButton = props.android?.toolsButton ?? props.toolsButton;
+    if (androidToolsButton !== undefined) {
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
             const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
-            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevMenuShowFloatingActionButton', String(androidFloatingButton));
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevMenuShowFloatingActionButton', String(androidToolsButton));
             return config;
         });
     }

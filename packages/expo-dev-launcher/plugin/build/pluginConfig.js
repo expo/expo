@@ -16,7 +16,7 @@ const schema = {
             enum: ['most-recent', 'launcher'],
             nullable: true,
         },
-        floatingButton: {
+        toolsButton: {
             type: 'boolean',
             nullable: true,
         },
@@ -33,7 +33,7 @@ const schema = {
                     enum: ['most-recent', 'launcher'],
                     nullable: true,
                 },
-                floatingButton: {
+                toolsButton: {
                     type: 'boolean',
                     nullable: true,
                 },
@@ -53,7 +53,7 @@ const schema = {
                     enum: ['most-recent', 'launcher'],
                     nullable: true,
                 },
-                floatingButton: {
+                toolsButton: {
                     type: 'boolean',
                     nullable: true,
                 },
