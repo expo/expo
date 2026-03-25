@@ -40,7 +40,7 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     if (options.runtime === 'expo') {
       resolveSettings = {
         ...resolveSettings,
-        device: { ...resolveSettings?.device, osType: 'iOS' },
+        device: { ...resolveSettings?.device, osType: 'iOS' } as Device,
       };
     }
 
