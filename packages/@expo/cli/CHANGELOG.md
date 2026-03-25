@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Pass optional name to metro require for async modules. ([#44224](https://github.com/expo/expo/pull/44224) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Deduplicate assets listed in `metadata.json` ([#44095](https://github.com/expo/expo/pull/44095) by [@quinlanj](https://github.com/quinlanj))
