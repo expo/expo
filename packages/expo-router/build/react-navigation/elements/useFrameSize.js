@@ -42,8 +42,8 @@ exports.FrameSizeProvider = FrameSizeProvider;
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const useSyncExternalStoreWithSelector_1 = require("../../utils/useSyncExternalStoreWithSelector");
 const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
+const useSyncExternalStoreWithSelector_1 = require("../../utils/useSyncExternalStoreWithSelector");
 const FrameContext = React.createContext(undefined);
 function useFrameSize(selector, throttle) {
     const context = (0, react_1.use)(FrameContext);

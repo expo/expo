@@ -59,8 +59,8 @@ const CardA11yWrapper = ({ ref, focused, active, animated, isNextScreenTranspare
     // Make sure this view is not removed on the new architecture, as it causes focus loss during navigation on Android.
     // This can happen when the view flattening results in different trees - due to `overflow` style changing in a parent.
     collapsable={false}>
-        {children}
-      </react_native_1.View>);
+      {children}
+    </react_native_1.View>);
 };
 exports.CardA11yWrapper = CardA11yWrapper;
 //# sourceMappingURL=CardA11yWrapper.js.map
