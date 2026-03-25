@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBottomTabNavigator = createBottomTabNavigator;
 const native_1 = require("../../native");

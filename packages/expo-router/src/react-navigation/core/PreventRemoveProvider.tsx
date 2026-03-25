@@ -1,3 +1,4 @@
+'use client';
 import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 

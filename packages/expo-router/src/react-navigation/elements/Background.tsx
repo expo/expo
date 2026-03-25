@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { Animated, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 

@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 
 import type { NavigationState, ParamListBase, PartialState, Route } from '../routers';

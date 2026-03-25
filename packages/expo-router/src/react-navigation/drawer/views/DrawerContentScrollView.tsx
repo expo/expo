@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { ScrollView, type ScrollViewProps, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

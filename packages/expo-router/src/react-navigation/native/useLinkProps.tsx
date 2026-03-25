@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { type GestureResponderEvent, Platform } from 'react-native';
 

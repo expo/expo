@@ -1,3 +1,4 @@
+'use client';
 import { Image, type ImageSourcePropType, StyleSheet } from 'react-native';
 
 import toggleDrawerIcon from '../../../../../assets/react-navigation/drawer/toggle-drawer-icon.png';

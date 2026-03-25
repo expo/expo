@@ -1,3 +1,4 @@
+'use client';
 import deepEqual from 'fast-deep-equal';
 import * as React from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase

@@ -1,3 +1,4 @@
+'use client';
 import {
   createNavigatorFactory,
   type DrawerActionHelpers,

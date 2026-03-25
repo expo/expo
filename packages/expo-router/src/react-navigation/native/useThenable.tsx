@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 
 export function useThenable<T>(create: () => PromiseLike<T>) {

@@ -1,3 +1,4 @@
+'use client';
 import Color from 'color';
 import * as React from 'react';
 import { type ColorValue, Platform, PlatformColor } from 'react-native';

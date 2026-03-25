@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeaderShownContext = void 0;
 const getNamedContext_1 = require("../getNamedContext");

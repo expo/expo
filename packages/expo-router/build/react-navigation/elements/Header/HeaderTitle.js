@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeaderTitle = HeaderTitle;
 const react_native_1 = require("react-native");
