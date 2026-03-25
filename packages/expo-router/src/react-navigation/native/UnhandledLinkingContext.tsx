@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 
 const MISSING_CONTEXT_ERROR = "Couldn't find an UnhandledLinkingContext context.";

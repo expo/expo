@@ -1,3 +1,4 @@
+'use client';
 import Color from 'color';
 import React from 'react';
 import {

@@ -1,3 +1,4 @@
+'use client';
 import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 

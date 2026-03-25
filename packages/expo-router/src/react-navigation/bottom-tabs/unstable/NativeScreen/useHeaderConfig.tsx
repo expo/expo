@@ -1,3 +1,4 @@
+'use client';
 import Color from 'color';
 import { Platform, StyleSheet, type TextStyle, View } from 'react-native';
 import {

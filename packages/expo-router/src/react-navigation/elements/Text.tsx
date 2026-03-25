@@ -1,3 +1,4 @@
+'use client';
 import { Text as NativeText, type TextProps } from 'react-native';
 
 import { useTheme } from '../native';

@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { type LayoutChangeEvent, Platform, View } from 'react-native';
 // TODO(@ubax) - RN Migration: remove this dependency and import from react
