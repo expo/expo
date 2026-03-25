@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Pass optional name to metro require for async modules.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
