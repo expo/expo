@@ -85,13 +85,13 @@ Pod::Spec.new do |s|
   end
 
   if shouldEnableWorkletsIntegration
-    installation_root = Pod::Config.instance.installation_root.to_s
     rn_worklets_dep = Pod::Config.instance.podfile.dependencies.find { |dep| dep.name == 'RNWorklets' }
     rn_worklets_path = rn_worklets_dep&.external_source&.dig(:path)
     react_native_worklets_dir_absolute = if rn_worklets_path
-      File.expand_path(rn_worklets_path, installation_root)
+      File.expand_path(rn_worklets_path, Pod::Config.instance.installation_root.to_s)
     else
-      File.dirname(`cd "#{installation_root}" && node --print "require.resolve('react-native-worklets/package.json')"`)
+      project_root = ENV['PROJECT_ROOT'] || Pod::Config.instance.installation_root.to_s
+      File.dirname(`node --print "require.resolve('react-native-worklets/package.json', { paths: ['#{__dir__}', '#{project_root}'] })"`)
     end
 
     pods_root = Pod::Config.instance.project_pods_root
