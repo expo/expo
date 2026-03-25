@@ -1,14 +1,10 @@
-// NOTE: This file is replicated to multiple packages! Keep these files in-sync:
-// - packages/@expo/cli/src/utils/resolveGlobal.ts
-// - packages/@expo/image-utils/src/resolveGlobal.ts
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import Module from 'node:module';
+import os from 'node:os';
+import path from 'node:path';
 
-import { spawnSync } from 'child_process';
-import fs from 'fs';
-import Module from 'module';
-import os from 'os';
-import path from 'path';
-
-declare module 'module' {
+declare module 'node:module' {
   namespace Module {
     const globalPaths: readonly string[] | void;
   }

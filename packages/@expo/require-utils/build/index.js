@@ -25,4 +25,15 @@ Object.keys(_resolve).forEach(function (key) {
     }
   });
 });
+var _resolveGlobal = require("./resolveGlobal");
+Object.keys(_resolveGlobal).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _resolveGlobal[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _resolveGlobal[key];
+    }
+  });
+});
 //# sourceMappingURL=index.js.map
