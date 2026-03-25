@@ -15,7 +15,8 @@
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "test:e2e-cli": "pnpm run prepare && expo-module test --config e2e-cli/jest.config.js"
+    "pretest:e2e-cli": "expo-module prepublishOnly",
+    "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js"
   },
   "keywords": [
     "react-native",

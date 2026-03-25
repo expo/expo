@@ -122,9 +122,9 @@ Web builds render into Shadow DOM (`renderInShadowRoot.ts`):
 ## Build Process
 
 ```bash
-yarn build:lib     # TypeScript → build/ (types + JS)
-yarn build:bundle  # Metro bundle → dist/ExpoLogBox.bundle/
-yarn build         # Both
+pnpm build:lib     # TypeScript → build/ (types + JS)
+pnpm build:bundle  # Metro bundle → dist/ExpoLogBox.bundle/
+pnpm build         # Both
 ```
 
 **Output:**
