@@ -1,4 +1,122 @@
----
+import React, { useState, useEffect } from 'react';
+import './App.css';
+
+const STORIES = [
+  { id: '1', user: 'Your Story', img: 'https://i.pravatar.cc/150?img=3' },
+  { id: '2', user: 'coding_ninja', img: 'https://i.pravatar.cc/150?img=12' },
+  { id: '3', user: 'react_dev', img: 'https://i.pravatar.cc/150?img=8' },
+  { id: '4', user: 'design_pro', img: 'https://i.pravatar.cc/150?img=11' },
+];
+
+const POSTS_DATA = [
+  {
+    id: '1',
+    user: 'mohammad_hussain',
+    avatar: 'https://i.pravatar.cc/150?img=1',
+    image: 'https://picsum.photos/id/237/600/600',
+    likes: 452,
+    caption: 'Building something from scratch is the best feeling! 🚀 #coding',
+    time: '2 HOURS AGO'
+  },
+  {
+    id: '2',
+    user: 'tech_guru',
+    avatar: 'https://i.pravatar.cc/150?img=5',
+    image: 'https://picsum.photos/id/1/600/600',
+    likes: 1205,
+    caption: 'Clean code is a myth, but we try anyway. 💻',
+    time: '5 HOURS AGO'
+  },
+];
+
+const Header = () => (
+  <header className="top-bar">
+    <h1 className="logo-text">Instagram</h1>
+    <div className="header-icons">
+      <button className="top-icon">➕</button>
+      <button className="top-icon">❤️</button>
+      <button className="top-icon">💬</button>
+    </div>
+  </header>
+);
+
+const Stories = () => (
+  <div className="stories-container">
+    {STORIES.map(story => (
+      <div key={story.id} className="story-circle">
+        <div className="story-gradient">
+           <img src={story.img} alt={story.user} className="story-image" />
+        </div>
+        <p className="story-user">{story.user}</p>
+      </div>
+    ))}
+  </div>
+);
+
+const Post = ({ item }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [showHeart, setShowHeart] = useState(false);
+
+  // Double Click handle karne ke liye function
+  const handleDoubleClick = () => {
+    setIsLiked(true);
+    setShowHeart(true);
+    // 1 second baad heart gayab ho jaye
+    setTimeout(() => setShowHeart(false), 1000);
+  };
+
+  return (
+    <article className="post-card">
+      <div className="post-header">
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img src={item.avatar} alt="avatar" className="avatar" />
+          <span className="username-text">{item.user}</span>
+        </div>
+        <button className="more-btn">•••</button>
+      </div>
+
+      {/* Image Section with Heart Animation */}
+      <div className="image-container" onDoubleClick={handleDoubleClick}>
+        <img src={item.image} alt="post" className="main-image" />
+        {showHeart && <div className="overlay-heart">❤️</div>}
+      </div>
+
+      <div className="action-row">
+        <button onClick={() => setIsLiked(!isLiked)} className="action-btn">
+          <span style={{ fontSize: '26px', color: isLiked ? '#ff3040' : '#262626' }}>
+            {isLiked ? '❤️' : '♡'}
+          </span>
+        </button>
+        <button className="action-btn">💬</button>
+        <button className="action-btn">✈️</button>
+      </div>
+
+      <div className="details-section">
+        <p className="likes-text">{isLiked ? item.likes + 1 : item.likes} likes</p>
+        <p className="caption-text">
+          <span className="username-text">{item.user} </span>
+          {item.caption}
+        </p>
+        <p className="time-text">{item.time}</p>
+      </div>
+    </article>
+  );
+};
+
+export default function App() {
+  return (
+    <div className="container">
+      <Header />
+      <main className="feed">
+        <Stories />
+        <div className="posts-list">
+          {POSTS_DATA.map(post => <Post key={post.id} item={post} />)}
+        </div>
+      </main>
+    </div>
+  );
+}
+pg ---
 title: Expo SDK reference
 description: Access device and system functionality in your Expo and React Native apps using Expo SDK packages.
 hideTOC: true
