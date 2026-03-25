@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Cache state machine events for native interface. ([#44256](https://github.com/expo/expo/pull/44256) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 - Remove pin on `arg` dependency ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
