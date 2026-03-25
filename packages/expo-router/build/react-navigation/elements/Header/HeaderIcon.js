@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ICON_MARGIN = exports.ICON_SIZE = void 0;
 exports.HeaderIcon = HeaderIcon;

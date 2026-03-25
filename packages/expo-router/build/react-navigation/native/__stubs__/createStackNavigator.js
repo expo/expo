@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createStackNavigator = createStackNavigator;
 const core_1 = require("../../core");
