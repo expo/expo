@@ -2,6 +2,7 @@
 
 import Photos
 import ExpoModulesCore
+import React
 
 public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
   static public func permissionType() -> String {

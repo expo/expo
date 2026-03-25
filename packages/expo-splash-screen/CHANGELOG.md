@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Make `backgroundColor` plugin prop optional, defaulting to `#ffffff`. ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- [iOS] Use `internal import React` and reduce public API surface to internal access level. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - Removed the `expo_splash_screen_status_bar_translucent` Android leftover attribute. ([#43514](https://github.com/expo/expo/pull/43514) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.9 — 2026-02-25

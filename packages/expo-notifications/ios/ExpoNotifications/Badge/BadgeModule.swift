@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 import UIKit
+import React
 
 public class BadgeModule: Module {
   public func definition() -> ModuleDefinition {

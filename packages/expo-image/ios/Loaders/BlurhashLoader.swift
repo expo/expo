@@ -1,4 +1,4 @@
-@preconcurrency import SDWebImage
+@preconcurrency internal import SDWebImage
 import ExpoModulesCore
 
 class BlurhashLoader: NSObject, SDImageLoader {

@@ -1,5 +1,6 @@
 import ExpoModulesCore
 import EventKit
+import React
 
 public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
   private let eventStore: EKEventStore
