@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] When `ios.buildReactNativeFromSource` is enabled, inject a Podfile `post_install` step that sets `FMT_USE_CONSTEVAL=0` in `fmt`'s `base.h` so Xcode 26.4+ can compile React Native's bundled `fmt` from source. ([#44229](https://github.com/expo/expo/issues/44229))
+
 ### 💡 Others
 
 - Update useHermesV1 to support React Native 0.84 ([#43625](https://github.com/expo/expo/pull/43625) by [@gabrieldonadel](https://github.com/gabrieldonadel))

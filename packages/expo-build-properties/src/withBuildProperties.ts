@@ -10,6 +10,7 @@ import {
   withAndroidSettingsGradle,
 } from './android';
 import { withIosBuildProperties, withIosDeploymentTarget, withIosInfoPlist } from './ios';
+import { withIosFmtConstevalFix } from './iosFmtConstevalFix';
 import { PluginConfigType, validateConfig } from './pluginConfig';
 
 /**
@@ -37,6 +38,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   config = withAndroidDayNightTheme(config, pluginConfig);
 
   config = withIosBuildProperties(config, pluginConfig);
+  config = withIosFmtConstevalFix(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);
   config = withIosInfoPlist(config, pluginConfig);
 

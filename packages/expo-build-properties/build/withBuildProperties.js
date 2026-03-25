@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.withBuildProperties = void 0;
 const android_1 = require("./android");
 const ios_1 = require("./ios");
+const iosFmtConstevalFix_1 = require("./iosFmtConstevalFix");
 const pluginConfig_1 = require("./pluginConfig");
 /**
  * Config plugin allowing customizing native Android and iOS build properties for managed apps.
@@ -26,6 +27,7 @@ const withBuildProperties = (config, props) => {
     config = (0, android_1.withAndroidPurgeProguardRulesOnce)(config);
     config = (0, android_1.withAndroidDayNightTheme)(config, pluginConfig);
     config = (0, ios_1.withIosBuildProperties)(config, pluginConfig);
+    config = (0, iosFmtConstevalFix_1.withIosFmtConstevalFix)(config, pluginConfig);
     config = (0, ios_1.withIosDeploymentTarget)(config, pluginConfig);
     config = (0, ios_1.withIosInfoPlist)(config, pluginConfig);
     return config;

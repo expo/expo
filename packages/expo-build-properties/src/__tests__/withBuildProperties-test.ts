@@ -9,6 +9,7 @@ jest.mock('expo/config-plugins', () => {
   return {
     ...plugins,
     withDangerousMod: jest.fn().mockImplementation((config) => config),
+    withPodfile: jest.fn().mockImplementation((config) => config),
   };
 });
 
@@ -24,6 +25,7 @@ jest.mock('@expo/config-plugins/build/plugins/ios-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins/build/plugins/ios-plugins');
   return {
     ...plugins,
+    withPodfile: jest.fn().mockImplementation((config) => config),
     withPodfileProperties: jest.fn().mockImplementation((config) => config),
   };
 });
