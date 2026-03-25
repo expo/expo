@@ -71,9 +71,10 @@ const StackToolbarButton = (props) => {
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props, true);
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+    const source = sharedProps?.icon?.type === 'image' ? sharedProps.icon.source : undefined;
     const xcassetName = (0, shared_1.extractXcassetName)(props);
     const imageRenderingMode = (0, shared_1.extractIconRenderingMode)(props) ?? props.iconRenderingMode;
-    return (<native_1.NativeToolbarButton {...sharedProps} icon={icon} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode}/>);
+    return (<native_1.NativeToolbarButton {...sharedProps} icon={icon} source={source} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode}/>);
 };
 exports.StackToolbarButton = StackToolbarButton;
 function convertStackToolbarButtonPropsToRNHeaderItem(props) {

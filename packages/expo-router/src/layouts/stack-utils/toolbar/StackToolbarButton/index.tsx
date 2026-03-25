@@ -1,9 +1,9 @@
 'use client';
-import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import { Children, useMemo } from 'react';
 
 import { NativeToolbarButton } from './native';
 import type { StackToolbarButtonProps } from './types';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../../utils/children';
 import { useToolbarPlacement } from '../context';
 import {
@@ -89,12 +89,14 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props, true);
   // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
   const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+  const source = sharedProps?.icon?.type === 'image' ? sharedProps.icon.source : undefined;
   const xcassetName = extractXcassetName(props);
   const imageRenderingMode = extractIconRenderingMode(props) ?? props.iconRenderingMode;
   return (
     <NativeToolbarButton
       {...sharedProps}
       icon={icon}
+      source={source}
       xcassetName={xcassetName}
       image={props.image}
       imageRenderingMode={imageRenderingMode}

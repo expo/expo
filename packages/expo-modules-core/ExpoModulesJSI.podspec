@@ -13,9 +13,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '15.1',
-    :osx => '11.0',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :osx => '13.4',
+    :tvos => '16.4'
   }
   s.swift_version    = '6.0'
   s.source           = { git: 'https://github.com/expo/expo.git' }
@@ -81,5 +81,8 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'ios/JSI/Tests/**/*.{m,swift}'
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '-lc++'
+    }
   end
 end

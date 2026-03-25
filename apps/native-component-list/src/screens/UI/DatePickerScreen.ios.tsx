@@ -13,6 +13,8 @@ import {
 import {
   animation,
   datePickerStyle,
+  disabled as disabledModifier,
+  environment,
   pickerStyle,
   tag,
   tint,
@@ -45,6 +47,7 @@ export default function DatePickerScreen() {
   const today = new Date();
   const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
   const [animate, setAnimate] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -104,6 +107,32 @@ export default function DatePickerScreen() {
           </Picker>
           <Toggle isOn={useRange} label="Limit to next 30 days" onIsOnChange={setUseRange} />
           <ColorPicker label="Tint Color" selection={tintColor} onSelectionChange={setTintColor} />
+        </Section>
+        <Section title="Disabled">
+          <Toggle isOn={isDisabled} label="Disabled" onIsOnChange={setIsDisabled} />
+          <DatePicker
+            title="Select date"
+            selection={selectedDate}
+            onDateChange={(date) => setSelectedDate(date)}
+            modifiers={[disabledModifier(isDisabled)]}
+          />
+        </Section>
+        <Section title='locale="fr_FR"'>
+          <DatePicker
+            title="Sélectionner la date"
+            selection={selectedDate}
+            onDateChange={(date) => setSelectedDate(date)}
+            modifiers={[environment('locale', 'fr_FR')]}
+          />
+        </Section>
+        <Section title='timeZone="Asia/Tokyo"'>
+          <DatePicker
+            title="Tokyo time"
+            selection={selectedDate}
+            displayedComponents={['date', 'hourAndMinute']}
+            onDateChange={(date) => setSelectedDate(date)}
+            modifiers={[environment('timeZone', 'Asia/Tokyo')]}
+          />
         </Section>
         <Section title="Date Picker with custom label">
           <DatePicker

@@ -1,5 +1,3 @@
-import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
-
 import type { ExpoTabActionType } from './TabRouter';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
@@ -9,6 +7,7 @@ import { Href } from '../types';
 import { routeToScreen } from '../useScreens';
 import { Slot } from './Slot';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import { LinkingOptions, ParamListBase, PartialRoute, Route } from '../react-navigation/native';
 
 export const ViewSlot = Slot;
 

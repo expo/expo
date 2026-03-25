@@ -34,14 +34,14 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/metro-runtime": "^55.0.6",
+    "@expo/metro-runtime": "workspace:^55.0.6",
     "react": "*",
     "react-dom": "*",
-    "expo": "*",
-    "expo-constants": "^55.0.7",
-    "expo-font": "^55.0.4",
-    "expo-router": "*",
-    "expo-server": "^55.0.5",
+    "expo": "workspace:*",
+    "expo-constants": "workspace:^55.0.7",
+    "expo-font": "workspace:^55.0.4",
+    "expo-router": "workspace:*",
+    "expo-server": "workspace:^55.0.5",
     "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
   },
   "peerDependenciesMeta": {
@@ -61,6 +61,10 @@
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.2.1",
+    "@types/react": "~19.2.0",
+    "@types/react-dom": "^19.1.7",
+    "@types/node": "^22.14.0",
+    "@expo/cli": "workspace:*",
     "react-server-dom-webpack": "~19.0.1",
     "tsd": "^0.28.1",
     "tsd-lite": "^0.8.0"

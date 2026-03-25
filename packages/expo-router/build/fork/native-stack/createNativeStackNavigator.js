@@ -34,14 +34,14 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNativeStackNavigator = createNativeStackNavigator;
-const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
 const expo_glass_effect_1 = require("expo-glass-effect");
 const React = __importStar(require("react"));
 const composition_options_1 = require("./composition-options");
 const descriptors_context_1 = require("./descriptors-context");
 const usePreviewTransition_1 = require("./usePreviewTransition");
 const navigationParams_1 = require("../../navigationParams");
+const native_1 = require("../../react-navigation/native");
+const native_stack_1 = require("../../react-navigation/native-stack");
 const GLASS = (0, expo_glass_effect_1.isLiquidGlassAvailable)();
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
     const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {

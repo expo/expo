@@ -1,12 +1,3 @@
-import type {
-  DefaultRouterOptions,
-  EventMapBase,
-  NavigationState,
-  ParamListBase,
-  RouteProp,
-  ScreenListeners,
-  TabNavigationState,
-} from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
 import type {
   ColorValue,
@@ -17,6 +8,16 @@ import type {
 } from 'react-native';
 import type { TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
+
+import type {
+  DefaultRouterOptions,
+  EventMapBase,
+  NavigationState,
+  ParamListBase,
+  RouteProp,
+  ScreenListeners,
+  TabNavigationState,
+} from '../react-navigation/native';
 
 /**
  * Event map for `NativeTabs` navigation events.

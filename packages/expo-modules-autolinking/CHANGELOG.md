@@ -6,11 +6,14 @@
 
 ### 🎉 New features
 
+- Add `include` option to `package.json:expo.autolinking` and per-platform configurations. This allows the verification and deduplication checks to also apply to additional packages that aren't otherwise recognized as native modules, which is useful to detect or deduplicate additional packages with singleton state, for example. ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 - Fix regression that caused `pod install` to fail with `no implicit conversion of nil into String` due to an off-by-one in the depth limit check. ([#43731](https://github.com/expo/expo/pull/43731) by [@zoontek](https://github.com/zoontek))
 - Stop dependency resolution at depth limit and increase max depth limit to 9 ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
 - Sort on unresolved path and load `version` for duplicate dependencies ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+- [Android] Fixed build failures caused by the "=" character in pnpm virtual store paths. ([#44109](https://github.com/expo/expo/pull/44109) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

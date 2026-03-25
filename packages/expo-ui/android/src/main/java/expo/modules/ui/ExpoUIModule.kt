@@ -210,8 +210,12 @@ class ExpoUIModule : Module() {
       ShapeContent(props)
     }
 
-    ExpoUIView("DividerView") { props: DividerProps ->
-      DividerContent(props)
+    ExpoUIView("HorizontalDividerView") { props: DividerProps ->
+      HorizontalDividerContent(props)
+    }
+
+    ExpoUIView("VerticalDividerView") { props: DividerProps ->
+      VerticalDividerContent(props)
     }
 
     ExpoUIView("DateTimePickerView", events = {
@@ -312,23 +316,23 @@ class ExpoUIModule : Module() {
       PullToRefreshBoxContent(props) { onRefresh(Unit) }
     }
 
-    ExpoUIView("CarouselView") { props: CarouselProps ->
-      CarouselContent(props)
+    ExpoUIView("HorizontalCenteredHeroCarouselView") { props: HorizontalCenteredHeroCarouselProps ->
+      HorizontalCenteredHeroCarouselContent(props)
+    }
+
+    ExpoUIView("HorizontalMultiBrowseCarouselView") { props: HorizontalMultiBrowseCarouselProps ->
+      HorizontalMultiBrowseCarouselContent(props)
+    }
+
+    ExpoUIView("HorizontalUncontainedCarouselView") { props: HorizontalUncontainedCarouselProps ->
+      HorizontalUncontainedCarouselContent(props)
     }
 
     ExpoUIView("AlertDialogView", events = {
-      Events(
-        "onDismissPressed",
-        "onConfirmPressed"
-      )
+      Events("onDismissRequest")
     }) { props: AlertDialogProps ->
-      val onDismissPressed by remember { EventDispatcher<AlertDialogButtonPressedEvent>() }
-      val onConfirmPressed by remember { EventDispatcher<AlertDialogButtonPressedEvent>() }
-      AlertDialogContent(
-        props,
-        { onDismissPressed(it) },
-        { onConfirmPressed(it) }
-      )
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      AlertDialogContent(props) { onDismissRequest(Unit) }
     }
 
     ExpoUIView("AssistChipView", events = {
@@ -414,8 +418,12 @@ class ExpoUIModule : Module() {
       BasicAlertDialogContent(props) { onDismissRequest(Unit) }
     }
 
-    ExpoUIView("SurfaceView") { props: SurfaceProps ->
-      SurfaceContent(props)
+    ExpoUIView("SurfaceView", events = {
+      Events("onSurfaceClick", "onCheckedChange")
+    }) { props: SurfaceProps ->
+      val onSurfaceClick by remember { EventDispatcher<Unit>() }
+      val onCheckedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      SurfaceContent(props, onClick = { onSurfaceClick(Unit) }, onCheckedChange = { onCheckedChange(GenericEventPayload1(it)) })
     }
 
     ExpoUIView("AnimatedVisibilityView") { props: AnimatedVisibilityProps ->

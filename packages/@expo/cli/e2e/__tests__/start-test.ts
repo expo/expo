@@ -98,14 +98,8 @@ describeSkipWin('server', () => {
 
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
-      // TODO(@hassankhan, @krystofwoldrich, @kitten): remove all linked after publishing
       linkExpoPackages: [
-        '@expo/router-server',
-        '@expo/log-box',
-        '@expo/require-utils',
         'expo',
-        '@expo/local-build-cache-provider',
-        // Without this, the hermes-parser install a version that is incompatible with flow Readonly / ReadonlyArray
         'babel-preset-expo',
       ],
     });
@@ -131,13 +125,12 @@ describeSkipWin('server', () => {
     // URLs
     expect(manifest.launchAsset.url).toBe(
       new URL(
-        '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+        '/index.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
         expo.url
       ).href
     );
 
     expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
-    expect(manifest.extra.expoGo?.mainModuleName).toMatchPath('node_modules/expo/AppEntry');
     expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
 
     // Manifest

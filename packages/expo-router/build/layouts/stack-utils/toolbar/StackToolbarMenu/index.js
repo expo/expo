@@ -65,10 +65,12 @@ const StackToolbarMenu = (props) => {
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
     }
     const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
-    const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
-    const computedLabel = sharedProps?.label;
-    const computedMenuTitle = sharedProps?.menu?.title;
+    // Use shared conversion that doesn't bail on hidden, so source is always computed
+    // and NativeToolbarMenu always renders — letting AnimatedItemContainer handle visibility.
+    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props, true);
+    const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(props.children, props.title);
     const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+    const source = sharedProps?.icon?.type === 'image' ? sharedProps.icon.source : undefined;
     const xcassetName = (0, shared_1.extractXcassetName)(props);
     const imageRenderingMode = (0, shared_1.extractIconRenderingMode)(props) ?? props.iconRenderingMode;
     if (process.env.NODE_ENV !== 'production') {
@@ -84,7 +86,7 @@ const StackToolbarMenu = (props) => {
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return (<native_1.NativeToolbarMenu {...props} icon={icon} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
+    return (<native_1.NativeToolbarMenu {...props} icon={icon} source={source} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
@@ -196,7 +198,8 @@ const StackToolbarMenuAction = (props) => {
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = typeof props.icon === 'string' ? props.icon : undefined;
-    return (<native_1.NativeToolbarMenuAction {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+    const source = typeof props.icon !== 'string' ? props.icon : undefined;
+    return (<native_1.NativeToolbarMenuAction {...props} icon={icon} source={source} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
 };
 exports.StackToolbarMenuAction = StackToolbarMenuAction;
 function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {

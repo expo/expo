@@ -1,15 +1,15 @@
 'use client';
-import type {
-  NativeStackHeaderItemMenu,
-  NativeStackHeaderItemMenuAction,
-  NativeStackHeaderItemMenuSubmenu,
-} from '@react-navigation/native-stack';
 import { Children, useMemo, type ReactNode } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { PlatformIconIOS } from 'react-native-screens';
 
 import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
 import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
+import type {
+  NativeStackHeaderItemMenu,
+  NativeStackHeaderItemMenuAction,
+  NativeStackHeaderItemMenuSubmenu,
+} from '../../../../react-navigation/native-stack';
 import {
   filterAllowedChildrenElements,
   getFirstChildOfType,
@@ -95,11 +95,15 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     [props.children]
   );
 
-  const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
-
-  const computedLabel = sharedProps?.label;
-  const computedMenuTitle = sharedProps?.menu?.title;
+  // Use shared conversion that doesn't bail on hidden, so source is always computed
+  // and NativeToolbarMenu always renders — letting AnimatedItemContainer handle visibility.
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props, true);
+  const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(
+    props.children,
+    props.title
+  );
   const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+  const source = sharedProps?.icon?.type === 'image' ? sharedProps.icon.source : undefined;
   const xcassetName = extractXcassetName(props);
   const imageRenderingMode = extractIconRenderingMode(props) ?? props.iconRenderingMode;
 
@@ -126,6 +130,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     <NativeToolbarMenu
       {...props}
       icon={icon}
+      source={source}
       xcassetName={xcassetName}
       image={props.image}
       imageRenderingMode={imageRenderingMode}
@@ -276,10 +281,12 @@ export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (pr
 
   // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
   const icon = typeof props.icon === 'string' ? props.icon : undefined;
+  const source = typeof props.icon !== 'string' ? props.icon : undefined;
   return (
     <NativeToolbarMenuAction
       {...props}
       icon={icon}
+      source={source}
       image={props.image}
       imageRenderingMode={props.iconRenderingMode}
     />

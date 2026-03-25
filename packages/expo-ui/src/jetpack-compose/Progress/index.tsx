@@ -12,7 +12,7 @@ export type StrokeCap = 'round' | 'butt' | 'square';
 /**
  * Common props shared by all progress indicator variants.
  */
-type BaseProgressProps = {
+export type ProgressCommonConfig = {
   /**
    * The current progress value between `0` and `1`. Omit for indeterminate.
    */
@@ -31,7 +31,7 @@ type BaseProgressProps = {
   modifiers?: ModifierConfig[];
 };
 
-function transformProps<T extends BaseProgressProps>(props: T): T {
+function transformProps<T extends ProgressCommonConfig>(props: T): T {
   const { modifiers, ...restProps } = props;
   return {
     modifiers,
@@ -40,13 +40,15 @@ function transformProps<T extends BaseProgressProps>(props: T): T {
   } as T;
 }
 
-function createProgressComponent<P extends BaseProgressProps>(
+function createProgressComponent<P extends ProgressCommonConfig>(
   viewName: string
 ): React.ComponentType<P> {
   const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
-  return function ProgressComponent(props: P) {
+  function Component(props: P) {
     return <NativeView {...transformProps(props)} />;
-  };
+  }
+  Component.displayName = viewName;
+  return Component;
 }
 
 // region LinearProgressIndicator
@@ -70,7 +72,7 @@ export type DrawStopIndicatorConfig = {
   stopSize?: number;
 };
 
-export type LinearProgressIndicatorProps = BaseProgressProps & {
+export type LinearProgressIndicatorProps = ProgressCommonConfig & {
   /**
    * Stroke cap style for the indicator ends.
    * @default 'round'
@@ -99,7 +101,7 @@ export const LinearProgressIndicator = createProgressComponent<LinearProgressInd
 
 // region CircularProgressIndicator
 
-export type CircularProgressIndicatorProps = BaseProgressProps & {
+export type CircularProgressIndicatorProps = ProgressCommonConfig & {
   /**
    * Width of the circular stroke in dp.
    */
@@ -128,7 +130,7 @@ export const CircularProgressIndicator = createProgressComponent<CircularProgres
 
 // region LinearWavyProgressIndicator
 
-export type LinearWavyProgressIndicatorProps = BaseProgressProps & {
+export type LinearWavyProgressIndicatorProps = ProgressCommonConfig & {
   /**
    * Size of the stop indicator in dp at the end of the determinate progress track.
    */
@@ -147,7 +149,7 @@ export const LinearWavyProgressIndicator =
 
 // region CircularWavyProgressIndicator
 
-export type CircularWavyProgressIndicatorProps = BaseProgressProps;
+export type CircularWavyProgressIndicatorProps = ProgressCommonConfig;
 
 /**
  * A circular progress indicator with wavy animation style.

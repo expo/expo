@@ -1,11 +1,5 @@
 'use client';
 
-import {
-  LinkingOptions,
-  NavigationAction,
-  StackRouter,
-  useNavigationBuilder,
-} from '@react-navigation/native';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -20,6 +14,12 @@ import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { Screen } from './primitives';
+import {
+  LinkingOptions,
+  NavigationAction,
+  StackRouter,
+  useNavigationBuilder,
+} from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';

@@ -5,7 +5,7 @@ import {
   withPodfileProperties,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-sensors/package.json');
+const pkg = require('../../package.json');
 const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to access your device motion';
 
 const withSensors: ConfigPlugin<{ motionPermission?: string | false } | void> = (

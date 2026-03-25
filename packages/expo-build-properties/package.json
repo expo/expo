@@ -9,7 +9,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -31,16 +30,16 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/build-properties",
   "dependencies": {
-    "@expo/schema-utils": "^55.0.2",
+    "@expo/schema-utils": "workspace:^55.0.2",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },
   "devDependencies": {
     "@types/semver": "^7.0.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   }
 }

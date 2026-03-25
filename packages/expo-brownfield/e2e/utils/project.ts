@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { glob } from 'glob';
 import fs from 'node:fs';
 import path from 'node:path';
-import tempDir from 'temp-dir';
+import os from 'node:os';
 
 import {
   executeCommandAsync,
@@ -15,7 +15,7 @@ import type { PluginProps, TemplateEntry } from './types';
 const PROJECT_NAME = 'testapp';
 const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
   ? path.resolve(process.env.EXPO_E2E_TEMP_DIR)
-  : tempDir;
+  : fs.realpathSync(os.tmpdir());
 
 export const projectName = (suffix: string) => PROJECT_NAME + suffix;
 
@@ -81,6 +81,8 @@ export const addPlugin = async (
     ...appConfig.expo.android,
     ...android,
   };
+  
+  appConfig.expo.experiments.autolinkingModuleResolution = true;
 
   await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
 };
@@ -128,6 +130,7 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     projectName,
     '--template',
     path.join(templatePath, tarballs[0]),
+    '--no-install'
   ]);
 };
 
@@ -135,25 +138,18 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
  * Install `expo-brownfield` package from a tarball
  */
 const installPackage = async (projectRoot: string) => {
+  const packageJsonPath = path.join(projectRoot, 'package.json');
+  const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
   const packageRoot = path.join(__dirname, '../../');
-  let tarballs = await glob('*.tgz', { cwd: packageRoot });
-  if (tarballs.length === 0) {
-    await executeCommandAsync(packageRoot, 'npm', ['pack', '--json']);
-    tarballs = await glob('*.tgz', { cwd: packageRoot });
-    if (tarballs.length === 0) {
-      throw new Error(`No tarballs found in package directory: ${packageRoot}`);
-    }
-  }
 
-  const packageTarball = tarballs[0];
-  const packageTarballPath = path.join(packageRoot, packageTarball);
-  await fs.promises.cp(packageTarballPath, path.join(projectRoot, packageTarball), {
-    recursive: true,
-    force: true,
-  });
+  packageJson.resolutions ??= {};
+  packageJson.dependencies ??= {};
+
+  packageJson.resolutions['expo-brownfield'] = path.relative(projectRoot, packageRoot);
+  packageJson.dependencies['expo-brownfield'] = '*';
 
   // Use --legacy-peer-deps for better stability
-  await spawnAsync('npm', ['install', packageTarball, '--legacy-peer-deps'], {
+  await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,
     stdio: 'pipe',
   });

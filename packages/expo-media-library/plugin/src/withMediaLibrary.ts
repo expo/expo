@@ -7,7 +7,7 @@ import {
   withInfoPlist,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-media-library/package.json');
+const pkg = require('../../package.json');
 
 type GranularPermission = 'photo' | 'video' | 'audio';
 const GRANULAR_PERMISSIONS_MAP: Record<GranularPermission, string> = {

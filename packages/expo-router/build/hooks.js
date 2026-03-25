@@ -46,7 +46,6 @@ exports.useGlobalSearchParams = useGlobalSearchParams;
 exports.useLocalSearchParams = useLocalSearchParams;
 exports.useSearchParams = useSearchParams;
 exports.useLoaderData = useLoaderData;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const constants_1 = require("./constants");
@@ -59,6 +58,7 @@ const LoaderCache_1 = require("./loaders/LoaderCache");
 const ServerDataLoaderContext_1 = require("./loaders/ServerDataLoaderContext");
 const getLoaderData_1 = require("./loaders/getLoaderData");
 const utils_1 = require("./loaders/utils");
+const native_1 = require("./react-navigation/native");
 const useScreens_1 = require("./useScreens");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)

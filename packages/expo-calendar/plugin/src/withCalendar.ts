@@ -1,6 +1,6 @@
 import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
 
-const pkg = require('expo-calendar/package.json');
+const pkg = require('../../package.json');
 
 const CALENDARS_USAGE = 'Allow $(PRODUCT_NAME) to access your calendars';
 const REMINDERS_USAGE = 'Allow $(PRODUCT_NAME) to access your reminders';

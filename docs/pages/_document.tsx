@@ -1,4 +1,3 @@
-import { BlockingSetInitialColorMode } from '@expo/styleguide';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 
 export default class DocsDocument extends Document {
@@ -16,7 +15,6 @@ export default class DocsDocument extends Document {
       <Html lang="en">
         <Head />
         <body className="text-pretty">
-          <BlockingSetInitialColorMode />
           <Main />
           <NextScript />
         </body>

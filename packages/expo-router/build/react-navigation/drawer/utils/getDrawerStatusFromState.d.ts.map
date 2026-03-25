@@ -1,0 +1,1 @@
+{"version":3,"file":"getDrawerStatusFromState.d.ts","sourceRoot":"","sources":["../../../../src/react-navigation/drawer/utils/getDrawerStatusFromState.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,qBAAqB,EAAE,YAAY,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAEvF,wBAAgB,wBAAwB,CACtC,KAAK,EAAE,qBAAqB,CAAC,aAAa,CAAC,GAC1C,YAAY,CAYd"}

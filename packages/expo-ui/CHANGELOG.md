@@ -4,6 +4,10 @@
 
 ### 🛠 Breaking changes
 
+- [android] Refactored `PullToRefreshBox` indicator props: replaced `loadingIndicatorModifiers` with nested `indicator` prop containing `color`, `containerColor`, and `modifiers`. Added `contentAlignment` prop. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Split `Divider` into `HorizontalDivider` and `VerticalDivider` matching native Compose components. Added `thickness` and `color` props. ([#44035](https://github.com/expo/expo/pull/44035) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Match `AlertDialog` API to native Compose: replaced string props (`title`, `text`, `confirmButtonText`, `dismissButtonText`) with slot sub-components (`AlertDialog.Title`, `AlertDialog.Text`, `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`). Removed `visible` prop (use conditional rendering), `onConfirmPressed`/`onDismissPressed` (renamed to `onDismissRequest`), and `confirmButtonColors`/`dismissButtonColors` (replaced with dialog-level `colors`). ([#43997](https://github.com/expo/expo/pull/43997) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Split `Carousel` into `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel` matching native Compose components. Added `HorizontalCenteredHeroCarousel`. ([#44034](https://github.com/expo/expo/pull/44034) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Renamed Stepper `defaultValue` to `value` and `onValueChanged` to `onValueChange`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Replace `Picker` with `SingleChoiceSegmentedButtonRow`, `MultiChoiceSegmentedButtonRow`, and `SegmentedButton` components. Replace `RadioButton` `nativeClickable` prop with `onClick` event. ([#43809](https://github.com/expo/expo/pull/43809) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `ToggleButton` into separate M3 components: `ToggleButton`, `IconToggleButton`, `FilledIconToggleButton`, `OutlinedIconToggleButton`. Removed `variant`, `text`, `color`, `disabled` props. Added `colors` with checked/unchecked variants. ([#43974](https://github.com/expo/expo/pull/43974) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -17,9 +21,15 @@
 - [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
 - [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
 - [android] control ContextMenu expanded state from JS ([#43793](https://github.com/expo/expo/pull/43793) by [@Ubax](https://github.com/Ubax))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
+- [android] Added `shape`, `border`, `selected`, `checked`, `onClick`, and `onCheckedChange` props to `Surface`, supporting clickable, selectable, and toggleable variants. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added nested text support for Compose `Text` with style inheritance, custom fonts via `expo-font`, `background`, `shadow`, and `lineBreak` properties. ([#44094](https://github.com/expo/expo/pull/44094) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `outlined` variant to `TextInput` component. ([#43719](https://github.com/expo/expo/pull/43719) by [@benjaminkomen](https://github.com/benjaminkomen))
+- Added `@expo/ui/datetimepicker` — a cross-platform `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`. ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `locale` and `timeZone` support to `modifiers`. ([#44013](https://github.com/expo/expo/pull/44013) by [@vonovak](https://github.com/vonovak))
 - [android] Added `ref.hide()` for animated dismiss and more configurable props (`containerColor`, `contentColor`, `scrimColor`, `showDragHandle`, `sheetGesturesEnabled`, `properties`, `DragHandle` slot) to `BottomSheet`. ([#43972](https://github.com/expo/expo/pull/43972) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `date`, `dateStyle`, `timerInterval`, `countsDown`, and `pauseTime` props to `Text` component for displaying auto-updating dates, timers, and countdowns using SwiftUI's `Text.DateStyle`. ([#43552](https://github.com/expo/expo/pull/43552) by [@LouisRaverdy](https://github.com/LouisRaverdy))
 - [android] Added `Checkbox` and `TriStateCheckbox` components. ([#43887](https://github.com/expo/expo/pull/43887) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -217,6 +227,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [Android] Add `label`, and `placeholder` props to TextField component. ([#40452](https://github.com/expo/expo/pull/40452) by [@akshayjadhav4](https://github.com/akshayjadhav4))
 - [iOS] Add `refreshable` modifier. ([#40201](https://github.com/expo/expo/pull/40201) by [@christianwooldridge](https://github.com/christianwooldridge))
 - [iOS] Add RTL support in swiftui. ([#40335](https://github.com/expo/expo/pull/40335) by [@kfirfitousi](https://github.com/kfirfitousi))
 - [Android] Add Carousel component. ([#40325](https://github.com/expo/expo/pull/40325) by [@aleqsio](https://github.com/aleqsio))

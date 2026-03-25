@@ -1,10 +1,5 @@
 'use client';
 
-import {
-  NavigationContext,
-  type NavigationProp,
-  type ParamListBase,
-} from '@react-navigation/native';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
@@ -16,6 +11,11 @@ import { CompositionContext } from '../../fork/native-stack/composition-options'
 import { store } from '../../global-state/router-store';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
+import {
+  NavigationContext,
+  type NavigationProp,
+  type ParamListBase,
+} from '../../react-navigation/native';
 import { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';

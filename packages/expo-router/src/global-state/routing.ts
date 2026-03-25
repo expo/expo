@@ -1,11 +1,3 @@
-import {
-  NavigationAction,
-  type NavigationState,
-  PartialRoute,
-  type PartialState,
-  type NavigationContainerRef,
-  ParamListBase,
-} from '@react-navigation/native';
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { type RefObject } from 'react';
@@ -29,6 +21,14 @@ import {
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
+import {
+  NavigationAction,
+  type NavigationState,
+  PartialRoute,
+  type PartialState,
+  type NavigationContainerRef,
+  ParamListBase,
+} from '../react-navigation/native';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';

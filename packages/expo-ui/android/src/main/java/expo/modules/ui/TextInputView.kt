@@ -3,6 +3,7 @@ package expo.modules.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -11,20 +12,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 
+enum class TextInputViewVariant(val value: String) : Enumerable {
+  FILLED("filled"),
+  OUTLINED("outlined"),
+}
+
 data class TextInputProps(
   val defaultValue: MutableState<String> = mutableStateOf(""),
   val placeholder: MutableState<String> = mutableStateOf(""),
+  val variant: MutableState<TextInputViewVariant> = mutableStateOf(TextInputViewVariant.FILLED),
   val multiline: MutableState<Boolean> = mutableStateOf(false),
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
-  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
+  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList()),
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -70,21 +78,47 @@ class TextInputView(context: Context, appContext: AppContext) :
 
   @Composable
   override fun ComposableScope.Content() {
-    TextField(
-      value = textState.value ?: props.defaultValue.value,
-      onValueChange = {
-        textState.value = it
-        onValueChanged(mapOf("value" to it))
-      },
-      placeholder = { Text(props.placeholder.value) },
-      maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
-      singleLine = !props.multiline.value,
-      keyboardOptions = KeyboardOptions.Default.copy(
-        keyboardType = props.keyboardType.value.keyboardType(),
-        autoCorrectEnabled = props.autocorrection.value,
-        capitalization = props.autoCapitalize.value.autoCapitalize()
-      ),
-      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
+    val value = textState.value ?: props.defaultValue.value
+    val onValueChange: (String) -> Unit = {
+      textState.value = it
+      onValueChanged(mapOf("value" to it))
+    }
+    val placeholder: @Composable () -> Unit = { Text(props.placeholder.value) }
+    val maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1
+    val singleLine = !props.multiline.value
+    val keyboardOptions = KeyboardOptions.Default.copy(
+      keyboardType = props.keyboardType.value.keyboardType(),
+      autoCorrectEnabled = props.autocorrection.value,
+      capitalization = props.autoCapitalize.value.autoCapitalize()
     )
+    val labelSlotView = findChildSlotView(this@TextInputView, "label")
+    val label: (@Composable () -> Unit)? = labelSlotView?.let {
+      { with(ComposableScope()) { with(it) { Content() } } }
+    }
+    val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
+
+    if (props.variant.value == TextInputViewVariant.OUTLINED) {
+      OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = placeholder,
+        maxLines = maxLines,
+        singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
+        label = label,
+        modifier = modifier
+      )
+    } else {
+      TextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = placeholder,
+        maxLines = maxLines,
+        singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
+        label = label,
+        modifier = modifier
+      )
+    }
   }
 }

@@ -1,4 +1,7 @@
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { createContext } from 'react';
+
+import { TriggerMap } from './common';
+import { BottomTabNavigationOptions } from '../react-navigation/bottom-tabs';
 import {
   DefaultNavigatorOptions,
   NavigationAction,
@@ -8,10 +11,7 @@ import {
   TabNavigationState,
   TabRouterOptions,
   useNavigationBuilder,
-} from '@react-navigation/native';
-import { createContext } from 'react';
-
-import { TriggerMap } from './common';
+} from '../react-navigation/native';
 
 export type ExpoTabsProps = ExpoTabsNavigatorOptions;
 

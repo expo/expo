@@ -32,8 +32,11 @@ export default function TextInputScreen() {
             ref={textRef}
             autocorrection={false}
             defaultValue="hey there"
-            onChangeText={setValue}
-          />
+            onChangeText={setValue}>
+            <TextInput.Label>
+              <ComposeText>Filled Label</ComposeText>
+            </TextInput.Label>
+          </TextInput>
         </Host>
       </Section>
       <Section title="Multiline Text Input">
@@ -57,6 +60,28 @@ export default function TextInputScreen() {
             defaultValue="324342324"
             onChangeText={setValue}
           />
+        </Host>
+      </Section>
+
+      <Section title="Outlined Text Input">
+        <Host matchContents>
+          <TextInput variant="outlined" defaultValue="Outlined" onChangeText={setValue}>
+            <TextInput.Label>
+              <ComposeText>Outlined Label</ComposeText>
+            </TextInput.Label>
+          </TextInput>
+        </Host>
+        <Host matchContents>
+          <TextInput
+            variant="outlined"
+            multiline
+            numberOfLines={3}
+            defaultValue="Outlined multiline"
+            onChangeText={setValue}>
+            <TextInput.Label>
+              <ComposeText>Outlined multiline</ComposeText>
+            </TextInput.Label>
+          </TextInput>
         </Host>
       </Section>
 

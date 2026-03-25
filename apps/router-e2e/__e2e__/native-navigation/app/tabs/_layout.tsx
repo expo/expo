@@ -1,4 +1,4 @@
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { Appearance, useColorScheme } from 'react-native';

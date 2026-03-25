@@ -13,13 +13,13 @@ const withShareExtensionFiles_1 = require("./ios/withShareExtensionFiles");
 const withShareExtensionXcodeProject_1 = require("./ios/withShareExtensionXcodeProject");
 const withConfig_1 = require("./withConfig");
 const EXPO_SHARE_EXTENSION_TARGET_NAME = 'expo-sharing-extension';
-const pkg = require('expo-sharing/package.json');
+const pkg = require('../../package.json');
 const withShareExtension = (config, props) => {
     let plugins = [];
     const iosEnabled = props?.ios?.enabled ?? false;
     const androidEnabled = props?.android?.enabled ?? false;
     if (iosEnabled) {
-        const deploymentTarget = '15.1';
+        const deploymentTarget = '16.4';
         const bundleIdentifier = config.ios?.bundleIdentifier;
         if (!bundleIdentifier) {
             throw new Error("The application config doesn't define a bundle identifier. Make sure that `ios.bundleIdentifier` field has a value.");

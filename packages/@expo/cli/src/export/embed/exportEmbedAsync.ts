@@ -229,14 +229,17 @@ export async function exportEmbedBundleAndAssetsAsync(
       });
     }
 
-    // TODO: Remove duplicates...
-    const expoDomComponentReferences = bundles.artifacts
-      .map((artifact) =>
-        Array.isArray(artifact.metadata.expoDomComponentReferences)
-          ? artifact.metadata.expoDomComponentReferences
-          : []
-      )
-      .flat();
+    const expoDomComponentReferences = [
+      ...new Set(
+        bundles.artifacts
+          .map((artifact) =>
+            Array.isArray(artifact.metadata.expoDomComponentReferences)
+              ? artifact.metadata.expoDomComponentReferences
+              : []
+          )
+          .flat()
+      ),
+    ];
     if (expoDomComponentReferences.length > 0) {
       await Promise.all(
         // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.

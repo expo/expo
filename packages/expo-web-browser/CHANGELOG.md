@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Bring back the `experimentalLauncherActivity` config plugin option. ([#44073](https://github.com/expo/expo/pull/44073) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.9 — 2026-02-25
 

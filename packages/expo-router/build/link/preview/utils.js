@@ -5,8 +5,8 @@ exports.getPreloadedRouteFromRootStateByHref = getPreloadedRouteFromRootStateByH
 exports.deepEqual = deepEqual;
 const router_store_1 = require("../../global-state/router-store");
 const routing_1 = require("../../global-state/routing");
-const href_1 = require("../href");
 const navigationParams_1 = require("../../navigationParams");
+const href_1 = require("../href");
 function getTabPathFromRootStateByHref(href, rootState) {
     const hrefState = router_store_1.store.getStateForHref((0, href_1.resolveHref)(href));
     const state = rootState;

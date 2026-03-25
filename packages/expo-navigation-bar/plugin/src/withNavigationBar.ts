@@ -9,16 +9,17 @@ import {
   withAndroidStyles,
   withStringsXml,
 } from 'expo/config-plugins';
+
 import {
   NavigationBarBehavior,
   NavigationBarButtonStyle,
   NavigationBarPosition,
   NavigationBarVisibility,
-} from 'expo-navigation-bar';
+} from '../..';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 
-const pkg = require('expo-navigation-bar/package.json');
+const pkg = require('../../package.json');
 
 export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
 

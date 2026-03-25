@@ -4,7 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- Remove dependency on react-navigation and move the navigation code to expo-router ([#44176](https://github.com/expo/expo/pull/44176) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
+
+- [android] add toolbar support ([#43970](https://github.com/expo/expo/pull/43970) by [@Ubax](https://github.com/Ubax))
+- [android] add support for menus in toolbar ([#43979](https://github.com/expo/expo/pull/43979) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -15,6 +21,8 @@
 - Fix params mutation in getPathDataFromState ([#43934](https://github.com/expo/expo/pull/43934) by [@Ubax](https://github.com/Ubax))
 - fix hash order to be RFC compliant ([#43933](https://github.com/expo/expo/pull/43933) by [@Ubax](https://github.com/Ubax))
 - [ios] fix tint color on VectorIcon ([#43904](https://github.com/expo/expo/pull/43904) by [@Ubax](https://github.com/Ubax))
+- [Android] Fix @expo/ui divider in toolbar. ([#44209](https://github.com/expo/expo/pull/44209) by [@jakex7](https://github.com/jakex7))
+- Fix `Stack.Screen.Title` string/number concatenation. ([#44213](https://github.com/expo/expo/pull/44213) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
@@ -23,6 +31,7 @@
 - Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
 - Upgrade react-navigation to the latest version ([#43993](https://github.com/expo/expo/pull/43993) by [@Ubax](https://github.com/Ubax))
 - Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
+- add processHeaderItemsForPlatform ([#44051](https://github.com/expo/expo/pull/44051) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.2 — 2026-02-25
 

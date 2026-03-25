@@ -1,6 +1,6 @@
 import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from 'expo/config-plugins';
 
-const pkg = require('expo-mail-composer/package.json');
+const pkg = require('../../package.json');
 
 /**
  * Keep the mail client URLs in sync with those in the file `ios/MailClients.swift`.

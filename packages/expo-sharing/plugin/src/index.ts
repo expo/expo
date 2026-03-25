@@ -12,7 +12,7 @@ import { ShareExtensionConfigPluginProps } from './sharingPlugin.types';
 import { withConfig } from './withConfig';
 
 const EXPO_SHARE_EXTENSION_TARGET_NAME = 'expo-sharing-extension';
-const pkg = require('expo-sharing/package.json');
+const pkg = require('../../package.json');
 
 type ShareExtensionConfigPlugin = ConfigPlugin<ShareExtensionConfigPluginProps>;
 
@@ -22,7 +22,7 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
   const androidEnabled = props?.android?.enabled ?? false;
 
   if (iosEnabled) {
-    const deploymentTarget = '15.1';
+    const deploymentTarget = '16.4';
     const bundleIdentifier = config.ios?.bundleIdentifier;
     if (!bundleIdentifier) {
       throw new Error(

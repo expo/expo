@@ -10,7 +10,7 @@ import {
   findProjectFiles,
   stripWhitespace,
 } from './utils';
-import { executeBunAsync, executeExpoAsync } from '../utils/expo';
+import { executePnpmAsync, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -77,9 +77,10 @@ it('runs `npx expo install expo-sms`', async () => {
   expect(findProjectFiles(projectRoot)).toStrictEqual([
     'App.js',
     'app.json',
-    'bun.lock',
+    'index.js',
     'metro.config.js',
     'package.json',
+    'pnpm-lock.yaml',
   ]);
 });
 
@@ -91,7 +92,7 @@ it('runs `npx expo install --check` fails', async () => {
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
   // Install wrong package versions of `expo-sms` and `expo-auth-session`
-  await executeBunAsync(projectRoot, ['install', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+  await executePnpmAsync(projectRoot, ['install', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
 
   // Ensure the wrong versions are installed
   expect(pkg.read().dependencies).toMatchObject({
@@ -126,7 +127,7 @@ it('runs `npx expo install --fix` fails', async () => {
   });
 
   // Install wrong package versions of `expo-sms` and `expo-auth-session`
-  await executeBunAsync(projectRoot, ['install', 'expo-sms@9.0.0', 'expo-auth-session@4.0.0']);
+  await executePnpmAsync(projectRoot, ['install', 'expo-sms@9.0.0', 'expo-auth-session@4.0.0']);
 
   // Load the installed and expected dependency versions
   const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
@@ -203,7 +204,7 @@ it('validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --chec
   await expect(
     executeExpoAsync(projectRoot, ['install', 'expo-image@1.0.0'], { env })
   ).resolves.toMatchObject({
-    stdout: expect.stringContaining('Installing 1 other package using bun'),
+    stdout: expect.stringContaining('Installing 1 other package using'),
   });
 
   // Ensure the wrong version is installed

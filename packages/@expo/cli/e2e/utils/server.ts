@@ -25,8 +25,8 @@ export type BackgroundServerOptions = ExpoSpawnOptions & {
    * The command to spawn as background process.
    * You can also provide a function that receives the configured port.
    *
-   * @example command: ['yarn', 'expo', 'start']
-   * @example command: (port) => ['yarn', 'expo', 'start', '--port', port]
+   * @example command: ['pnpm', 'expo', 'start']
+   * @example command: (port) => ['pnpm', 'expo', 'start', '--port', port]
    */
   command: string[] | ((port: number) => string[]);
   /**
