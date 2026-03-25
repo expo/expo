@@ -40,5 +40,5 @@ async function generateCodeSigningAsync(projectRoot, { certificateValidityDurati
     ]);
     (0, log_1.log)(`Generated public and private keys output in ${keyOutputDir}. Remember to add them to .gitignore or to encrypt them. (e.g. with git-crypt)`);
     (0, log_1.log)(`Generated code signing certificate output in ${certificateOutputDir}.`);
-    (0, log_1.log)(`To automatically configure this project for code signing, run \`yarn expo-updates codesigning:configure --certificate-input-directory=${certificateOutput} --key-input-directory=${keyOutput}\`.`);
+    (0, log_1.log)(`To automatically configure this project for code signing, run \`expo-updates codesigning:configure --certificate-input-directory=${certificateOutput} --key-input-directory=${keyOutput}\`.`);
 }

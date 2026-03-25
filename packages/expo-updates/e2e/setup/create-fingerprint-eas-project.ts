@@ -1,4 +1,4 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env pnpm --silent ts-node --transpile-only
 
 import path from 'path';
 

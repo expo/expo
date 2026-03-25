@@ -35,7 +35,7 @@ function cleanup()
 {
   echo 'Cleaning up...'
   killUpdatesServerIfNeeded
-  yarn maestro:$MAESTRO_PLATFORM:uninstall || true
+  pnpm maestro:$MAESTRO_PLATFORM:uninstall || true
 }
 
 # Fail if anything errors
