@@ -1,11 +1,10 @@
-import { expect, test } from '@jest/globals';
-import type { ParamListBase } from '../../routers';
 import { act, render, screen } from '@testing-library/react-native';
 
+import type { ParamListBase } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
+import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { getPathFromState } from '../getPathFromState';
-import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
 import { useStateForPath } from '../useStateForPath';
@@ -13,10 +12,7 @@ import { MockRouter } from './__fixtures__/MockRouter';
 
 test('gets focused route state at root', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -71,10 +67,7 @@ test('gets focused route state at root', () => {
 
 test('gets focused route state in nested navigator', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -201,10 +194,7 @@ test('gets path in each screen', () => {
   };
 
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>

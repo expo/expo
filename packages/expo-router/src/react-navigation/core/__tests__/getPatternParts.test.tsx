@@ -1,10 +1,7 @@
-import { expect, test } from '@jest/globals';
-
 import { getPatternParts } from '../getPatternParts';
 
 test('splits a path into parts', () => {
-  const path =
-    '/users/:type//:page(profile|settings)/:id([a-z]+:(\\d+))?/:name?';
+  const path = '/users/:type//:page(profile|settings)/:id([a-z]+:(\\d+))?/:name?';
 
   expect(getPatternParts(path)).toEqual([
     { segment: 'users' },
@@ -31,9 +28,7 @@ test('splits a path into parts', () => {
 test('thrown an error if duplicate params are found', () => {
   const path = '/users/:id/profile/:id';
 
-  expect(() => getPatternParts(path)).toThrow(
-    `Duplicate param name 'id' found in path: ${path}`
-  );
+  expect(() => getPatternParts(path)).toThrow(`Duplicate param name 'id' found in path: ${path}`);
 });
 
 test('throws an error if a colon is in the middle of a segment', () => {
@@ -87,7 +82,5 @@ test('throws an error if a question mark starts at the beginning', () => {
 test('throws an error if a regex is not closed', () => {
   const path = '/users/:id(\\d+';
 
-  expect(() => getPatternParts(path)).toThrow(
-    `Could not find closing ')' in path: ${path}`
-  );
+  expect(() => getPatternParts(path)).toThrow(`Could not find closing ')' in path: ${path}`);
 });

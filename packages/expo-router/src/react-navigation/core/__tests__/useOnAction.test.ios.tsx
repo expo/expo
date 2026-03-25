@@ -1,4 +1,6 @@
-import { beforeEach, expect, jest, test } from '@jest/globals';
+import { act, render } from '@testing-library/react-native';
+import * as React from 'react';
+
 import {
   type DefaultRouterOptions,
   type NavigationState,
@@ -7,18 +9,11 @@ import {
   StackActions,
   StackRouter,
 } from '../../routers';
-import { act, render } from '@testing-library/react-native';
-import * as React from 'react';
-
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
-import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { Screen } from '../Screen';
+import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import {
-  type MockActions,
-  MockRouter,
-  MockRouterKey,
-} from './__fixtures__/MockRouter';
+import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 jest.mock('nanoid/non-secure', () => {
   const m = { nanoid: () => String(++m.__key), __key: 0 };
@@ -35,10 +30,7 @@ beforeEach(() => {
 test("lets parent handle the action if child didn't", () => {
   function CurrentRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const ParentRouter: Router<
-      NavigationState,
-      MockActions | { type: 'REVERSE' }
-    > = {
+    const ParentRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       getStateForAction(state, action, options) {
@@ -55,28 +47,18 @@ test("lets parent handle the action if child didn't", () => {
     return ParentRouter;
   }
   const ParentNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      CurrentRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(CurrentRouter, props);
 
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 
   const ChildNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 
@@ -128,10 +110,7 @@ test("lets children handle the action if parent didn't with navigationInChildEna
 
   function CurrentChildRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const ChildRouter: Router<
-      NavigationState,
-      MockActions | { type: 'REVERSE' }
-    > = {
+    const ChildRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       shouldActionChangeFocus() {
@@ -158,9 +137,7 @@ test("lets children handle the action if parent didn't with navigationInChildEna
     );
 
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 
@@ -213,8 +190,7 @@ test("lets children handle the action if parent didn't with navigationInChildEna
     <BaseNavigationContainer
       navigationInChildEnabled
       initialState={initialState}
-      onStateChange={onStateChange}
-    >
+      onStateChange={onStateChange}>
       <ParentNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
@@ -262,10 +238,7 @@ test("lets children handle the action if parent didn't with navigationInChildEna
 
 test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -285,8 +258,7 @@ test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED"
     <BaseNavigationContainer
       ref={navigation}
       onStateChange={onStateChange}
-      onUnhandledAction={onUnhandledAction}
-    >
+      onUnhandledAction={onUnhandledAction}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={TestScreen} />
@@ -328,10 +300,7 @@ test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED"
 test('action goes to correct parent navigator if target is specified', () => {
   function CurrentTestRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const TestRouter: Router<
-      NavigationState,
-      MockActions | { type: 'REVERSE' }
-    > = {
+    const TestRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       shouldActionChangeFocus() {
@@ -403,10 +372,7 @@ test('action goes to correct parent navigator if target is specified', () => {
   const onStateChange = jest.fn();
 
   const element = (
-    <BaseNavigationContainer
-      initialState={initialState}
-      onStateChange={onStateChange}
-    >
+    <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -456,10 +422,7 @@ test('action goes to correct parent navigator if target is specified', () => {
 test('action goes to correct child navigator if target is specified', () => {
   function CurrentTestRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const TestRouter: Router<
-      NavigationState,
-      MockActions | { type: 'REVERSE' }
-    > = {
+    const TestRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       shouldActionChangeFocus() {
@@ -525,11 +488,7 @@ test('action goes to correct child navigator if target is specified', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer
-      ref={ref}
-      initialState={initialState}
-      onStateChange={onStateChange}
-    >
+    <BaseNavigationContainer ref={ref} initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -585,10 +544,7 @@ test("action doesn't bubble if target is specified", () => {
 
   function CurrentChildRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
-    const ChildRouter: Router<
-      NavigationState,
-      MockActions | { type: 'REVERSE' }
-    > = {
+    const ChildRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
       shouldActionChangeFocus() {
@@ -616,9 +572,7 @@ test("action doesn't bubble if target is specified", () => {
     );
 
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 
@@ -673,10 +627,7 @@ test('logs error if no navigator handled the action', () => {
   const TestRouter = MockRouter;
 
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      TestRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(TestRouter, props);
 
     return (
       <NavigationContent>
@@ -738,9 +689,7 @@ test('logs error if no navigator handled the action', () => {
 
   expect(spy).toHaveBeenCalledTimes(1);
   expect(spy).toHaveBeenCalledWith(
-    expect.stringContaining(
-      "The action 'UNKNOWN' was not handled by any navigator."
-    )
+    expect.stringContaining("The action 'UNKNOWN' was not handled by any navigator.")
   );
 
   spy.mockRestore();
@@ -748,10 +697,7 @@ test('logs error if no navigator handled the action', () => {
 
 test("prevents removing a screen with 'beforeRemove' event", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -891,10 +837,7 @@ test("prevents removing a screen with 'beforeRemove' event", () => {
 
 test("prevents removing a child screen with 'beforeRemove' event", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -1062,10 +1005,7 @@ test("prevents removing a child screen with 'beforeRemove' event", () => {
 
 test("prevents removing a grand child screen with 'beforeRemove' event", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -1266,10 +1206,7 @@ test("prevents removing a grand child screen with 'beforeRemove' event", () => {
 
 test("prevents removing by multiple screens with 'beforeRemove' event", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -1431,10 +1368,7 @@ test("prevents removing by multiple screens with 'beforeRemove' event", () => {
 
 test("prevents removing a child screen with 'beforeRemove' event with 'resetRoot'", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>

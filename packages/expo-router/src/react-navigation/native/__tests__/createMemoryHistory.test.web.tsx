@@ -1,17 +1,35 @@
-import { expect, jest, test } from '@jest/globals';
 import type { NavigationState } from '../../core';
-
-import { window } from '../__stubs__/window';
+import { window as stubWindow } from '../__stubs__/window';
 import { createMemoryHistory } from '../createMemoryHistory';
 
-Object.assign(global, window);
+const originalDescriptors: Record<string, PropertyDescriptor | undefined> = {};
 
-// eslint-disable-next-line import-x/extensions
-jest.mock('../useLinking', () => require('../useLinking.tsx'));
+beforeEach(() => {
+  // Save original descriptors and override globals with the stub
+  for (const key of Object.keys(stubWindow) as (keyof typeof stubWindow)[]) {
+    originalDescriptors[key] = Object.getOwnPropertyDescriptor(global, key);
+    Object.defineProperty(global, key, {
+      get: () => stubWindow[key],
+      configurable: true,
+    });
+  }
+});
+
+afterEach(() => {
+  // Restore original globals to avoid corrupting jsdom
+  for (const key of Object.keys(stubWindow) as (keyof typeof stubWindow)[]) {
+    const original = originalDescriptors[key];
+    if (original) {
+      Object.defineProperty(global, key, original);
+    } else {
+      delete (global as any)[key];
+    }
+  }
+});
 
 test('will not attempt to navigate beyond whatever browser history it is possible to know about', () => {
   jest.useFakeTimers();
-  const windowGoSpy = jest.spyOn(window.history, 'go');
+  const windowGoSpy = jest.spyOn(stubWindow.history, 'go');
 
   // Create a new memory history
   const history = createMemoryHistory();
@@ -94,7 +112,7 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
   expect(windowGoSpy).toHaveBeenCalledTimes(3);
 
   const item = history.get(0);
-  expect(window.history.state).toEqual({ id: item.id });
+  expect(stubWindow.history.state).toEqual({ id: item.id });
 
   // Next replace the state and verify the item we are replacing
   // has the same id but the path has changed
@@ -126,7 +144,7 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
   expect(item.path).toBe('/route-one');
   expect(replacedItem.path).toBe('/route-three');
   expect(item.id).toEqual(replacedItem.id);
-  expect(window.history.state).toEqual({ id: replacedItem.id });
+  expect(stubWindow.history.state).toEqual({ id: replacedItem.id });
 
   // Push another item
   const mockStateFour: NavigationState = {
@@ -156,5 +174,5 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
   expect(history.index).toBe(1);
   expect(history.get(0).path).toBe('/route-three');
   const newItem = history.get(1);
-  expect(window.history.state).toEqual({ id: newItem.id });
+  expect(stubWindow.history.state).toEqual({ id: newItem.id });
 });

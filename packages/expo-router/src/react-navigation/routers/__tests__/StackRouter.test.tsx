@@ -1,11 +1,6 @@
 import { expect, jest, test } from '@jest/globals';
 
-import {
-  CommonActions,
-  type RouterConfigOptions,
-  StackActions,
-  StackRouter,
-} from '..';
+import { CommonActions, type RouterConfigOptions, StackActions, StackRouter } from '..';
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
 
@@ -2483,9 +2478,7 @@ test('adds route to preloaded list with preload', () => {
     type: 'stack',
     key: 'root',
     index: 2,
-    preloadedRoutes: [
-      { key: 'bar-test', name: 'bar', params: { color: 'test' } },
-    ],
+    preloadedRoutes: [{ key: 'bar-test', name: 'bar', params: { color: 'test' } }],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
@@ -2560,9 +2553,7 @@ test('adds route to preloaded list with preload', () => {
     type: 'stack',
     key: 'root',
     index: 1,
-    preloadedRoutes: [
-      { key: 'bar-test', name: 'bar', params: { answer: 43, color: 'test' } },
-    ],
+    preloadedRoutes: [{ key: 'bar-test', name: 'bar', params: { answer: 43, color: 'test' } }],
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       {

@@ -1065,9 +1065,7 @@ test('handles back action with backBehavior: history', () => {
 
   let state = router.getInitialState(options);
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 
   state = router.getStateForAction(
     state,
@@ -1075,9 +1073,7 @@ test('handles back action with backBehavior: history', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1098,9 +1094,7 @@ test('handles back action with backBehavior: history', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1124,9 +1118,7 @@ test('handles back action with backBehavior: history', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1155,9 +1147,7 @@ test('handles back action with backBehavior: fullHistory', () => {
 
   let state = router.getInitialState(options);
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 
   state = router.getStateForAction(
     state,
@@ -1165,9 +1155,7 @@ test('handles back action with backBehavior: fullHistory', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1188,9 +1176,7 @@ test('handles back action with backBehavior: fullHistory', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1214,9 +1200,7 @@ test('handles back action with backBehavior: fullHistory', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1246,9 +1230,7 @@ test('handles back action with backBehavior: order', () => {
 
   let state = router.getInitialState(options);
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 
   state = router.getStateForAction(
     state,
@@ -1256,9 +1238,7 @@ test('handles back action with backBehavior: order', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1282,9 +1262,7 @@ test('handles back action with backBehavior: order', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1305,9 +1283,7 @@ test('handles back action with backBehavior: order', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 });
 
 test('handles back action with backBehavior: initialRoute', () => {
@@ -1320,9 +1296,7 @@ test('handles back action with backBehavior: initialRoute', () => {
 
   let state = router.getInitialState(options);
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 
   state = router.getStateForAction(
     state,
@@ -1330,9 +1304,7 @@ test('handles back action with backBehavior: initialRoute', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1353,9 +1325,7 @@ test('handles back action with backBehavior: initialRoute', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1376,9 +1346,7 @@ test('handles back action with backBehavior: initialRoute', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 });
 
 test('handles back action with backBehavior: initialRoute and initialRouteName', () => {
@@ -1395,9 +1363,7 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
 
   let state = router.getInitialState(options);
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 
   state = router.getStateForAction(
     state,
@@ -1405,9 +1371,7 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1428,9 +1392,7 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toEqual({
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toEqual({
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -1451,9 +1413,7 @@ test('handles back action with backBehavior: initialRoute and initialRouteName',
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 });
 
 test('handles back action with backBehavior: none', () => {
@@ -1472,9 +1432,7 @@ test('handles back action with backBehavior: none', () => {
     options
   ) as TabNavigationState<ParamListBase>;
 
-  expect(
-    router.getStateForAction(state, CommonActions.goBack(), options)
-  ).toBeNull();
+  expect(router.getStateForAction(state, CommonActions.goBack(), options)).toBeNull();
 });
 
 test('updates route key history on navigate and jump to with backBehavior: history', () => {

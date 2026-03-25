@@ -1,17 +1,10 @@
 import { afterEach, describe, expect, jest, test } from '@jest/globals';
-import { Text, useHeaderHeight } from '../../elements';
-import { NavigationContainer } from '../../native';
-import {
-  fireEvent,
-  isHiddenFromAccessibility,
-  render,
-} from '@testing-library/react-native';
+import { act, fireEvent, isHiddenFromAccessibility, render } from '@testing-library/react-native';
 import { Button, Platform, View } from 'react-native';
 
-import {
-  createNativeStackNavigator,
-  type NativeStackScreenProps,
-} from '../index';
+import { NavigationContainer } from '../../../fork/NavigationContainer';
+import { Text, useHeaderHeight } from '../../elements';
+import { createNativeStackNavigator, type NativeStackScreenProps } from '../index';
 
 type StackParamList = {
   A: undefined;
@@ -27,10 +20,7 @@ afterEach(() => {
 });
 
 test('renders a native-stack navigator with screens', async () => {
-  const Test = ({
-    route,
-    navigation,
-  }: NativeStackScreenProps<StackParamList>) => (
+  const Test = ({ route, navigation }: NativeStackScreenProps<StackParamList>) => (
     <View>
       <Text>Screen {route.name}</Text>
       <Button onPress={() => navigation.navigate('A')} title="Go to A" />
@@ -52,7 +42,9 @@ test('renders a native-stack navigator with screens', async () => {
   expect(isHiddenFromAccessibility(getByText('Screen A'))).toBe(false);
   expect(queryByText('Screen B')).toBeNull();
 
-  fireEvent.press(getByText(/go to b/i));
+  await act(async () => {
+    fireEvent.press(getByText(/go to b/i));
+  });
 
   expect(isHiddenFromAccessibility(queryByText('Screen A'))).toBe(true);
   expect(isHiddenFromAccessibility(getByText('Screen B'))).toBe(false);
@@ -65,9 +57,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -82,7 +72,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(64);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -92,9 +84,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -109,7 +99,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(44);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(44);
   });
 
@@ -119,9 +111,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -136,7 +126,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(64);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -146,9 +138,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -169,7 +159,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(44);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(56);
   });
 
@@ -179,9 +171,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -209,7 +199,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(44);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(56);
   });
 
@@ -219,9 +211,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -249,7 +239,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(64);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -259,9 +251,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -269,18 +259,16 @@ describe('useHeaderHeight in native-stack', () => {
     const { findByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
-            name="A"
-            component={Test}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
           <Stack.Screen name="B" component={Test} />
         </Stack.Navigator>
       </NavigationContainer>
     );
 
     expect(headerHeight).toBe(0);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(44);
   });
 
@@ -290,9 +278,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -300,18 +286,16 @@ describe('useHeaderHeight in native-stack', () => {
     const { findByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
-            name="A"
-            component={Test}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
           <Stack.Screen name="B" component={Test} />
         </Stack.Navigator>
       </NavigationContainer>
     );
 
     expect(headerHeight).toBe(0);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -321,9 +305,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -331,18 +313,16 @@ describe('useHeaderHeight in native-stack', () => {
     const { findByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
-            name="A"
-            component={Test}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
           <Stack.Screen name="B" component={Test} />
         </Stack.Navigator>
       </NavigationContainer>
     );
 
     expect(headerHeight).toBe(0);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -352,9 +332,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -376,7 +354,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(44);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(44);
   });
 
@@ -386,9 +366,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -401,11 +379,7 @@ describe('useHeaderHeight in native-stack', () => {
           <Stack.Screen name="B">
             {() => (
               <NestedStack.Navigator>
-                <NestedStack.Screen
-                  name="C"
-                  component={Test}
-                  options={{ headerShown: false }}
-                />
+                <NestedStack.Screen name="C" component={Test} options={{ headerShown: false }} />
               </NestedStack.Navigator>
             )}
           </Stack.Screen>
@@ -414,7 +388,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(44);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(44);
   });
 
@@ -424,9 +400,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -448,7 +422,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(0);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(0);
   });
 
@@ -458,9 +434,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -482,7 +456,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(64);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -492,9 +468,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -507,11 +481,7 @@ describe('useHeaderHeight in native-stack', () => {
           <Stack.Screen name="B">
             {() => (
               <NestedStack.Navigator>
-                <NestedStack.Screen
-                  name="C"
-                  component={Test}
-                  options={{ headerShown: false }}
-                />
+                <NestedStack.Screen name="C" component={Test} options={{ headerShown: false }} />
               </NestedStack.Navigator>
             )}
           </Stack.Screen>
@@ -520,7 +490,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(64);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -530,9 +502,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -554,7 +524,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(0);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(0);
   });
 
@@ -564,9 +536,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -588,7 +558,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(64);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -598,9 +570,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -613,11 +583,7 @@ describe('useHeaderHeight in native-stack', () => {
           <Stack.Screen name="B">
             {() => (
               <NestedStack.Navigator>
-                <NestedStack.Screen
-                  name="C"
-                  component={Test}
-                  options={{ headerShown: false }}
-                />
+                <NestedStack.Screen name="C" component={Test} options={{ headerShown: false }} />
               </NestedStack.Navigator>
             )}
           </Stack.Screen>
@@ -626,7 +592,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(64);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(64);
   });
 
@@ -636,9 +604,7 @@ describe('useHeaderHeight in native-stack', () => {
     let headerHeight;
     const Test = ({ navigation }: NativeStackScreenProps<StackParamList>) => {
       headerHeight = useHeaderHeight();
-      return (
-        <Button onPress={() => navigation.navigate('B')} title="Go to B" />
-      );
+      return <Button onPress={() => navigation.navigate('B')} title="Go to B" />;
     };
 
     const Stack = createNativeStackNavigator<StackParamList>();
@@ -660,7 +626,9 @@ describe('useHeaderHeight in native-stack', () => {
     );
 
     expect(headerHeight).toBe(0);
-    fireEvent.press(await findByText(/go to b/i));
+    await act(async () => {
+      fireEvent.press(await findByText(/go to b/i));
+    });
     expect(headerHeight).toBe(0);
   });
 });

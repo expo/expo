@@ -1,4 +1,3 @@
-import { describe, expect, jest, test } from '@jest/globals';
 import { act, renderHook } from '@testing-library/react-native';
 import { Keyboard, TextInput } from 'react-native';
 
@@ -9,16 +8,12 @@ jest.useFakeTimers();
 describe('useKeyboardManager', () => {
   describe('onPageChangeConfirm', () => {
     test('calls onPageChangeCancel when closing is false', () => {
-      const { result } = renderHook(() =>
-        useKeyboardManager({ enabled: true, focused: true })
-      );
+      const { result } = renderHook(() => useKeyboardManager({ enabled: true, focused: true }));
 
       const blurMock = jest.fn();
       const input = { blur: blurMock } as any;
 
-      jest
-        .spyOn(TextInput.State, 'currentlyFocusedInput')
-        .mockReturnValue(input);
+      jest.spyOn(TextInput.State, 'currentlyFocusedInput').mockReturnValue(input);
 
       act(() => result.current.onPageChangeStart());
       act(() =>
@@ -35,9 +30,7 @@ describe('useKeyboardManager', () => {
     test('dismisses keyboard when closing without gesture', () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
-      const { result } = renderHook(() =>
-        useKeyboardManager({ enabled: true, focused: true })
-      );
+      const { result } = renderHook(() => useKeyboardManager({ enabled: true, focused: true }));
 
       act(() =>
         result.current.onPageChangeConfirm({
@@ -53,16 +46,12 @@ describe('useKeyboardManager', () => {
     });
 
     test('blurs previously focused input when closing with gesture and active', () => {
-      const { result } = renderHook(() =>
-        useKeyboardManager({ enabled: true, focused: true })
-      );
+      const { result } = renderHook(() => useKeyboardManager({ enabled: true, focused: true }));
 
       const blurMock = jest.fn();
       const input = { blur: blurMock } as any;
 
-      jest
-        .spyOn(TextInput.State, 'currentlyFocusedInput')
-        .mockReturnValue(input);
+      jest.spyOn(TextInput.State, 'currentlyFocusedInput').mockReturnValue(input);
 
       act(() => result.current.onPageChangeStart());
 
@@ -85,8 +74,7 @@ describe('useKeyboardManager', () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
       const { rerender } = renderHook(
-        (props: { enabled: boolean; focused: boolean }) =>
-          useKeyboardManager(props),
+        (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: true, focused: true } }
       );
 
@@ -103,8 +91,7 @@ describe('useKeyboardManager', () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
       const { rerender } = renderHook(
-        (props: { enabled: boolean; focused: boolean }) =>
-          useKeyboardManager(props),
+        (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: false, focused: false } }
       );
 
@@ -121,8 +108,7 @@ describe('useKeyboardManager', () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
       const { rerender } = renderHook(
-        (props: { enabled: boolean; focused: boolean }) =>
-          useKeyboardManager(props),
+        (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: true, focused: true } }
       );
 
@@ -139,8 +125,7 @@ describe('useKeyboardManager', () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
       const { rerender } = renderHook(
-        (props: { enabled: boolean; focused: boolean }) =>
-          useKeyboardManager(props),
+        (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: false, focused: true } }
       );
 

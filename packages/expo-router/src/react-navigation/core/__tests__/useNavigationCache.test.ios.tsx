@@ -1,4 +1,3 @@
-import { beforeEach, expect, test } from '@jest/globals';
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
@@ -48,7 +47,6 @@ test('preserves reference for navigation objects', () => {
 
     if (previous.current) {
       Object.keys(navigations).forEach((key) => {
-        // eslint-disable-next-line jest/no-conditional-expect
         expect(navigations[key]).toBe(previous.current[key]);
       });
     }
@@ -67,10 +65,7 @@ test('preserves reference for navigation objects', () => {
 
 test('returns correct value for isFocused', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -113,9 +108,7 @@ test('returns correct value for isFocused', () => {
 });
 
 test('returns correct value for isFocused after changing screens', () => {
-  const TestRouter = (
-    options: Parameters<typeof MockRouter>[0]
-  ): ReturnType<typeof MockRouter> => {
+  const TestRouter = (options: Parameters<typeof MockRouter>[0]): ReturnType<typeof MockRouter> => {
     const router = MockRouter(options);
 
     return {
@@ -141,10 +134,7 @@ test('returns correct value for isFocused after changing screens', () => {
   };
 
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      TestRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(TestRouter, props);
 
     return (
       <NavigationContent>

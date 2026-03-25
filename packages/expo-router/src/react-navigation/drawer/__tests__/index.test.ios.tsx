@@ -1,18 +1,25 @@
 import 'react-native-gesture-handler/jestSetup';
 
 import { expect, test } from '@jest/globals';
-import { Text } from '../../elements';
-import {
-  createNavigationContainerRef,
-  NavigationContainer,
-} from '../../native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import { Button, View } from 'react-native';
-import { setUpTests } from 'react-native-reanimated';
 
+import { NavigationContainer } from '../../../fork/NavigationContainer';
+import { Text } from '../../elements';
+import { createNavigationContainerRef } from '../../native';
 import { createDrawerNavigator, type DrawerScreenProps } from '../index';
 
-setUpTests();
+jest.mock('react-native-drawer-layout', () => {
+  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actual = jest.requireActual(
+    'react-native-drawer-layout'
+  ) as typeof import('react-native-drawer-layout');
+  const Drawer = jest.fn((props) => <View testID="Drawer" {...props} />);
+  return {
+    ...actual,
+    Drawer,
+  };
+});
 
 type DrawerParamList = {
   A: undefined;
@@ -63,7 +70,5 @@ test('handles screens preloading', async () => {
 
   expect(queryByText('Screen B', { includeHiddenElements: true })).toBeNull();
   act(() => navigation.preload('B'));
-  expect(
-    queryByText('Screen B', { includeHiddenElements: true })
-  ).not.toBeNull();
+  expect(queryByText('Screen B', { includeHiddenElements: true })).not.toBeNull();
 });

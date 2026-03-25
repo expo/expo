@@ -1,4 +1,3 @@
-import { beforeEach, expect, test } from '@jest/globals';
 import { render } from '@testing-library/react-native';
 
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
@@ -15,10 +14,7 @@ test('gets navigation prop from context', () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -48,10 +44,7 @@ test("gets navigation's parent from context", () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -87,10 +80,7 @@ test("gets navigation's parent's parent from context", () => {
   expect.assertions(2);
 
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -134,10 +124,7 @@ test('gets navigation from container from context', () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>

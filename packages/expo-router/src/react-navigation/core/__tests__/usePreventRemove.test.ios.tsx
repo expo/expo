@@ -1,14 +1,9 @@
-import { beforeEach, expect, jest, test } from '@jest/globals';
-import {
-  type ParamListBase,
-  StackActions,
-  StackRouter,
-} from '../../routers';
 import { act, render } from '@testing-library/react-native';
 
+import { type ParamListBase, StackActions, StackRouter } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
-import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { Screen } from '../Screen';
+import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { usePreventRemove } from '../usePreventRemove';
 import { MockRouterKey } from './__fixtures__/MockRouter';
@@ -27,10 +22,7 @@ beforeEach(() => {
 
 test("prevents removing a screen with 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -141,10 +133,7 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
 
 test("prevents removing a screen when 'usePreventRemove' hook is called multiple times", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -257,10 +246,7 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
 
 test("should have no effect when 'usePreventRemove' hook is set to false", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -361,10 +347,7 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
 
 test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -534,10 +517,7 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
 
 test("prevents removing a grand child screen with 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -712,10 +692,7 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
 
 test("prevents removing by multiple screens with 'usePreventRemove' hook", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>
@@ -872,10 +849,7 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
 
 test("prevents removing a child screen with 'usePreventRemove' hook with 'resetRoot'", () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      StackRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
     return (
       <NavigationContent>

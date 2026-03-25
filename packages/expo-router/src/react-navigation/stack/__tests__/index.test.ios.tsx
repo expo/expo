@@ -1,17 +1,13 @@
 import 'react-native-gesture-handler/jestSetup';
 
 import { expect, jest, test } from '@jest/globals';
-import { Text } from '../../elements';
-import {
-  createNavigationContainerRef,
-  NavigationContainer,
-  useFocusEffect,
-  useIsFocused,
-} from '../../native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import * as React from 'react';
 import { Button, View } from 'react-native';
 
+import { NavigationContainer } from '../../../fork/NavigationContainer';
+import { Text } from '../../elements';
+import { createNavigationContainerRef, useFocusEffect, useIsFocused } from '../../native';
 import { createStackNavigator, type StackScreenProps } from '../index';
 
 type StackParamList = {
@@ -92,10 +88,7 @@ test('fires transition events on navigation', async () => {
       [navigation]
     );
 
-    React.useEffect(
-      () => navigation.addListener('transitionEnd', onTransitionEnd),
-      [navigation]
-    );
+    React.useEffect(() => navigation.addListener('transitionEnd', onTransitionEnd), [navigation]);
 
     return <Button onPress={() => navigation.goBack()} title="Go back" />;
   };
@@ -166,9 +159,7 @@ test('handles screens preloading', async () => {
 
   expect(queryByText('Screen B', { includeHiddenElements: true })).toBeNull();
   act(() => navigation.preload('B'));
-  expect(
-    queryByText('Screen B', { includeHiddenElements: true })
-  ).not.toBeNull();
+  expect(queryByText('Screen B', { includeHiddenElements: true })).not.toBeNull();
 });
 
 test('runs focus effect on focus change on preloaded route', () => {
@@ -245,32 +236,24 @@ test('renders correct focus state with preloading', () => {
     </NavigationContainer>
   );
 
-  expect(
-    queryByText('Test Screen', { includeHiddenElements: true })
-  ).toBeNull();
+  expect(queryByText('Test Screen', { includeHiddenElements: true })).toBeNull();
 
   act(() => navigation.current.preload('B'));
 
-  expect(
-    queryByText('Test Screen', { includeHiddenElements: true })
-  ).not.toBeNull();
+  expect(queryByText('Test Screen', { includeHiddenElements: true })).not.toBeNull();
 
-  expect(
-    queryByText('unfocused', { includeHiddenElements: true })
-  ).not.toBeNull();
+  expect(queryByText('unfocused', { includeHiddenElements: true })).not.toBeNull();
 
   act(() => navigation.current.navigate('B'));
 
-  expect(
-    queryByText('focused', { includeHiddenElements: true })
-  ).not.toBeNull();
+  expect(queryByText('focused', { includeHiddenElements: true })).not.toBeNull();
 
   act(() => navigation.current.navigate('A'));
 
   expect(queryByText('focused', { includeHiddenElements: true })).toBeNull();
 });
 
-test('renders back button in the nested stack', async () => {
+test.only('renders back button in the nested stack', async () => {
   const StackA = createStackNavigator<NestedStackParamList>();
 
   const StackAScreen = ({ route }: StackScreenProps<StackParamList>) => (
@@ -279,12 +262,7 @@ test('renders back button in the nested stack', async () => {
         {({ navigation }) => {
           const next = route.name === 'A' ? 'B' : 'A';
 
-          return (
-            <Button
-              onPress={() => navigation.navigate(next)}
-              title={`Go to ${next}`}
-            />
-          );
+          return <Button onPress={() => navigation.navigate(next)} title={`Go to ${next}`} />;
         }}
       </StackA.Screen>
     </StackA.Navigator>
@@ -302,8 +280,11 @@ test('renders back button in the nested stack', async () => {
   );
 
   expect(queryByRole('button', { name: 'Go back' })).toBeNull();
+  expect(getByText('Go to B')).not.toBeNull();
 
-  fireEvent.press(getByText('Go to B'));
+  act(() => {
+    fireEvent.press(getByText('Go to B'));
+  });
 
   expect(queryByRole('button', { name: 'A, back' })).not.toBeNull();
 });

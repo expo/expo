@@ -1,21 +1,12 @@
-import { beforeEach, expect, jest, test } from '@jest/globals';
-import type {
-  DefaultRouterOptions,
-  NavigationState,
-  Router,
-} from '../../routers';
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import type { DefaultRouterOptions, NavigationState, Router } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Group } from '../Group';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import {
-  type MockActions,
-  MockRouter,
-  MockRouterKey,
-} from './__fixtures__/MockRouter';
+import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 jest.useFakeTimers();
 
@@ -28,7 +19,7 @@ test('sets options with options prop as an object', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(MockRouter, props);
@@ -49,11 +40,7 @@ test('sets options with options prop as an object', () => {
   const root = render(
     <BaseNavigationContainer>
       <TestNavigator>
-        <Screen
-          name="foo"
-          component={TestScreen}
-          options={{ title: 'Hello world' }}
-        />
+        <Screen name="foo" component={TestScreen} options={{ title: 'Hello world' }} />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>
     </BaseNavigationContainer>
@@ -76,7 +63,7 @@ test('sets options with options prop as a fuction', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(MockRouter, props);
@@ -125,7 +112,7 @@ test('sets options with screenOptions prop as an object', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(MockRouter, props);
@@ -186,7 +173,7 @@ test('sets options with screenOptions prop as a fuction', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(MockRouter, props);
@@ -216,18 +203,9 @@ test('sets options with screenOptions prop as a fuction', () => {
       <TestNavigator
         screenOptions={({ route }: any) => ({
           title: `${route.name}: ${route.params.author || route.params.fruit}`,
-        })}
-      >
-        <Screen
-          name="foo"
-          component={TestScreenA}
-          initialParams={{ author: 'Jane' }}
-        />
-        <Screen
-          name="bar"
-          component={TestScreenB}
-          initialParams={{ fruit: 'Apple' }}
-        />
+        })}>
+        <Screen name="foo" component={TestScreenA} initialParams={{ author: 'Jane' }} />
+        <Screen name="bar" component={TestScreenB} initialParams={{ fruit: 'Apple' }} />
       </TestNavigator>
     </BaseNavigationContainer>
   );
@@ -259,7 +237,7 @@ test('sets initial options with setOptions', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       {
         title?: string;
         color?: string;
@@ -413,9 +391,7 @@ test('renders layout defined for the screen', () => {
 
   const element = (
     <BaseNavigationContainer>
-      <TestNavigator
-        screenLayout={({ children }: any) => <main>{children}</main>}
-      >
+      <TestNavigator screenLayout={({ children }: any) => <main>{children}</main>}>
         <Group screenLayout={({ children }) => <section>{children}</section>}>
           <Screen
             name="foo"
@@ -457,9 +433,7 @@ test('renders layout defined for the group', () => {
 
   const element = (
     <BaseNavigationContainer>
-      <TestNavigator
-        screenLayout={({ children }: any) => <main>{children}</main>}
-      >
+      <TestNavigator screenLayout={({ children }: any) => <main>{children}</main>}>
         <Group screenLayout={({ children }) => <section>{children}</section>}>
           <Screen name="foo" component={TestScreen} />
           <Screen name="bar" component={React.Fragment} />
@@ -497,9 +471,7 @@ test('renders layout defined for the navigator', () => {
 
   const element = (
     <BaseNavigationContainer>
-      <TestNavigator
-        screenLayout={({ children }: any) => <main>{children}</main>}
-      >
+      <TestNavigator screenLayout={({ children }: any) => <main>{children}</main>}>
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>
@@ -520,7 +492,7 @@ test("returns correct value for canGoBack when it's not overridden", () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(MockRouter, props);
@@ -549,11 +521,7 @@ test("returns correct value for canGoBack when it's not overridden", () => {
   const root = (
     <BaseNavigationContainer>
       <TestNavigator>
-        <Screen
-          name="foo"
-          component={TestScreen}
-          options={{ title: 'Hello world' }}
-        />
+        <Screen name="foo" component={TestScreen} options={{ title: 'Hello world' }} />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>
     </BaseNavigationContainer>
@@ -591,9 +559,7 @@ test(`returns false for canGoBack when current router doesn't handle GO_BACK`, (
     >(TestRouter, props);
 
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 
@@ -641,14 +607,12 @@ test('returns true for canGoBack when current router handles GO_BACK', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(ParentRouter, props);
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 
@@ -656,15 +620,13 @@ test('returns true for canGoBack when current router handles GO_BACK', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(MockRouter, props);
 
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 
@@ -718,14 +680,12 @@ test('returns true for canGoBack when parent router handles GO_BACK', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(OverrodeRouter, props);
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 
@@ -733,15 +693,13 @@ test('returns true for canGoBack when parent router handles GO_BACK', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(MockRouter, props);
 
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 

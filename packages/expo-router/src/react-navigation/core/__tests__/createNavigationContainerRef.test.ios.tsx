@@ -1,10 +1,9 @@
-import { beforeEach, expect, jest, test } from '@jest/globals';
-import type { NavigationState, ParamListBase } from '../../routers';
 import { render } from '@testing-library/react-native';
 
+import type { NavigationState, ParamListBase } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
-import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { Screen } from '../Screen';
+import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
@@ -22,7 +21,7 @@ test('adds the listener even if container is mounted later', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder<
       NavigationState,
       any,
-      {},
+      Record<string, never>,
       { title?: string },
       any
     >(MockRouter, props);

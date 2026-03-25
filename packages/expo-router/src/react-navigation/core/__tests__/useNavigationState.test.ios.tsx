@@ -1,8 +1,7 @@
-import { beforeEach, expect, jest, test } from '@jest/globals';
-import type { NavigationState } from '../../routers';
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import type { NavigationState } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
@@ -15,10 +14,7 @@ beforeEach(() => {
 
 test('gets the current navigation state', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -27,7 +23,7 @@ test('gets the current navigation state', () => {
     );
   };
 
-  const callback = jest.fn<(state: NavigationState) => void>();
+  const callback = jest.fn();
 
   const Test = () => {
     const state = useNavigationState((state) => state);
@@ -73,10 +69,7 @@ test('gets the current navigation state', () => {
 
 test('gets the current navigation state with selector', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -130,10 +123,7 @@ test('gets the current navigation state with selector', () => {
 
 test('gets the correct value if selector changes', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -184,10 +174,7 @@ test('gets the correct value if selector changes', () => {
 
 test('gets the current navigation state at navigator level', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>

@@ -1,9 +1,8 @@
-import { expect, test } from '@jest/globals';
-import { NavigationRouteContext } from '../../core';
 import { render } from '@testing-library/react-native';
 
+import { NavigationContainer } from '../../../fork/NavigationContainer';
+import { NavigationRouteContext } from '../../core';
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
-import { NavigationContainer } from '../NavigationContainer';
 import { useLinkBuilder } from '../useLinkBuilder';
 
 const config = {
@@ -86,13 +85,10 @@ test('builds href in route context', () => {
     <NavigationContainer linking={config}>
       <Stack.Navigator
         layout={({ state }) => (
-          <NavigationRouteContext.Provider
-            value={state.routes.find((r) => r.name === 'Foo')}
-          >
+          <NavigationRouteContext.Provider value={state.routes.find((r) => r.name === 'Foo')}>
             <Test />
           </NavigationRouteContext.Provider>
-        )}
-      >
+        )}>
         <Stack.Screen name="Foo">{() => null}</Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
@@ -144,9 +140,7 @@ test('builds href in nested navigator layout', () => {
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (
-            <StackB.Navigator
-              layout={({ children }) => <Test>{children}</Test>}
-            >
+            <StackB.Navigator layout={({ children }) => <Test>{children}</Test>}>
               <StackB.Screen name="Bar">{() => null}</StackB.Screen>
             </StackB.Navigator>
           )}
@@ -179,13 +173,10 @@ test('builds href in nested route context', () => {
           {() => (
             <StackB.Navigator
               layout={({ state }) => (
-                <NavigationRouteContext.Provider
-                  value={state.routes.find((r) => r.name === 'Bar')}
-                >
+                <NavigationRouteContext.Provider value={state.routes.find((r) => r.name === 'Bar')}>
                   <Test />
                 </NavigationRouteContext.Provider>
-              )}
-            >
+              )}>
               <StackB.Screen name="Bar">{() => null}</StackB.Screen>
             </StackB.Navigator>
           )}

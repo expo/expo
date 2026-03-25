@@ -1,4 +1,3 @@
-import { beforeEach, expect, test } from '@jest/globals';
 import { render } from '@testing-library/react-native';
 
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
@@ -16,10 +15,7 @@ test('gets route prop from context', () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>

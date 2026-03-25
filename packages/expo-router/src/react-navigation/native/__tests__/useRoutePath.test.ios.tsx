@@ -1,14 +1,13 @@
-import { expect, test } from '@jest/globals';
+import { act, render, screen } from '@testing-library/react-native';
+import * as React from 'react';
+
+import { NavigationContainer } from '../../../fork/NavigationContainer';
 import {
   createNavigationContainerRef,
   NavigationRouteContext,
   type NavigatorScreenParams,
 } from '../../core';
-import { act, render, screen } from '@testing-library/react-native';
-import * as React from 'react';
-
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
-import { NavigationContainer } from '../NavigationContainer';
 import { useRoutePath } from '../useRoutePath';
 
 const config = {
@@ -99,11 +98,7 @@ test('gets path for route in nested navigator screen', () => {
         <StackA.Screen name="a">
           {() => (
             <StackB.Navigator>
-              <StackB.Screen
-                name="b"
-                component={Test}
-                initialParams={{ id: 'apple' }}
-              />
+              <StackB.Screen name="b" component={Test} initialParams={{ id: 'apple' }} />
               <StackB.Screen name="c" component={Test} />
             </StackB.Navigator>
           )}

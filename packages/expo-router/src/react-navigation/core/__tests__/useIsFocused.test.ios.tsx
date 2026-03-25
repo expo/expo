@@ -1,11 +1,10 @@
-import { beforeEach, expect, test } from '@jest/globals';
-import { type ParamListBase } from '../../routers';
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { type ParamListBase } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
-import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { Screen } from '../Screen';
+import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useIsFocused } from '../useIsFocused';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
@@ -17,10 +16,7 @@ beforeEach(() => {
 
 test('renders correct focus state', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -32,9 +28,7 @@ test('renders correct focus state', () => {
   const Test = () => {
     const isFocused = useIsFocused();
 
-    return (
-      <React.Fragment>{isFocused ? 'focused' : 'unfocused'}</React.Fragment>
-    );
+    return <>{isFocused ? 'focused' : 'unfocused'}</>;
   };
 
   const navigation = React.createRef<any>();
@@ -66,15 +60,10 @@ test('renders correct focus state', () => {
 
 test('returns correct focus state after conditional rendering', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>
-        {descriptors[state.routes[state.index].key].render()}
-      </NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
     );
   };
 

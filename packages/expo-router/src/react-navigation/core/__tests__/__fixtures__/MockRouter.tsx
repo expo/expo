@@ -17,9 +17,7 @@ export function MockRouter(options: DefaultRouterOptions) {
 
     getInitialState({ routeNames, routeParamList }) {
       const index =
-        options.initialRouteName === undefined
-          ? 0
-          : routeNames.indexOf(options.initialRouteName);
+        options.initialRouteName === undefined ? 0 : routeNames.indexOf(options.initialRouteName);
 
       return {
         stale: false,
@@ -71,9 +69,7 @@ export function MockRouter(options: DefaultRouterOptions) {
       const index = Math.min(
         Math.max(
           previousIndex != null
-            ? routes.findIndex(
-                (route) => route.name === state.routes[previousIndex]?.name
-              )
+            ? routes.findIndex((route) => route.name === state.routes[previousIndex]?.name)
             : 0,
           0
         ),
@@ -91,9 +87,7 @@ export function MockRouter(options: DefaultRouterOptions) {
     },
 
     getStateForRouteNamesChange(state, { routeNames }) {
-      const routes = state.routes.filter((route) =>
-        routeNames.includes(route.name)
-      );
+      const routes = state.routes.filter((route) => routeNames.includes(route.name));
 
       if (routes.length === 0) {
         routes.push({
@@ -134,9 +128,7 @@ export function MockRouter(options: DefaultRouterOptions) {
             return null;
           }
 
-          let index = state.routes.findIndex(
-            (route) => route.name === action.payload.name
-          );
+          let index = state.routes.findIndex((route) => route.name === action.payload.name);
 
           let routes;
 
@@ -197,9 +189,7 @@ export function MockRouter(options: DefaultRouterOptions) {
     },
 
     shouldActionChangeFocus(action: CommonNavigationAction) {
-      return (
-        action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED'
-      );
+      return action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED';
     },
   };
 

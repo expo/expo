@@ -1,9 +1,4 @@
 import { afterEach, expect, jest, test } from '@jest/globals';
-import { Text } from '../../elements';
-import {
-  createNavigationContainerRef,
-  NavigationContainer,
-} from '../../native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import {
   type EmitterSubscription,
@@ -14,6 +9,9 @@ import {
   View,
 } from 'react-native';
 
+import { NavigationContainer } from '../../../fork/NavigationContainer';
+import { Text } from '../../elements';
+import { createNavigationContainerRef } from '../../native';
 import { type BottomTabScreenProps, createBottomTabNavigator } from '../index';
 
 type BottomTabParamList = {
@@ -48,9 +46,7 @@ test('renders a bottom tab navigator with screens', async () => {
   expect(queryByText('Screen A')).not.toBeNull();
   expect(queryByText('Screen B')).toBeNull();
 
-  expect(
-    getAllByRole('button', { name: /(A|B), tab, (1|2) of 2/ })
-  ).toHaveLength(2);
+  expect(getAllByRole('button', { name: /(A|B), tab, (1|2) of 2/ })).toHaveLength(2);
 
   fireEvent.press(getByRole('button', { name: 'B, tab, 2 of 2' }), {});
 
@@ -73,9 +69,7 @@ test('handles screens preloading', async () => {
 
   expect(queryByText('Screen B', { includeHiddenElements: true })).toBeNull();
   act(() => navigation.preload('B'));
-  expect(
-    queryByText('Screen B', { includeHiddenElements: true })
-  ).not.toBeNull();
+  expect(queryByText('Screen B', { includeHiddenElements: true })).not.toBeNull();
 });
 
 test('tab bar cannot be tapped when hidden', async () => {
@@ -85,17 +79,15 @@ test('tab bar cannot be tapped when hidden', async () => {
     keyboardWillHide: [],
   };
 
-  const spy = jest
-    .spyOn(Keyboard, 'addListener')
-    .mockImplementation((name, callback) => {
-      listeners[name].push(callback);
+  const spy = jest.spyOn(Keyboard, 'addListener').mockImplementation((name, callback) => {
+    listeners[name].push(callback);
 
-      return {
-        remove: () => {
-          listeners[name] = listeners[name].filter((c) => c !== callback);
-        },
-      } as EmitterSubscription;
-    });
+    return {
+      remove: () => {
+        listeners[name] = listeners[name].filter((c) => c !== callback);
+      },
+    } as EmitterSubscription;
+  });
 
   const Test = ({ route }: BottomTabScreenProps<BottomTabParamList>) => (
     <View>
@@ -110,8 +102,7 @@ test('tab bar cannot be tapped when hidden', async () => {
       <Tab.Navigator
         screenOptions={{
           tabBarHideOnKeyboard: true,
-        }}
-      >
+        }}>
         <Tab.Screen name="A" component={Test} />
         <Tab.Screen name="B" component={Test} />
       </Tab.Navigator>
@@ -161,11 +152,8 @@ test('tab bars render appropriate hrefs on web', () => {
           },
         },
         getInitialURL: () => null,
-      }}
-    >
-      <Tab.Navigator
-        screenOptions={{ tabBarButton: ({ href }) => <Text>{href}</Text> }}
-      >
+      }}>
+      <Tab.Navigator screenOptions={{ tabBarButton: ({ href }) => <Text>{href}</Text> }}>
         <Tab.Screen name="A">{() => null}</Tab.Screen>
         <Tab.Screen name="B">{() => null}</Tab.Screen>
       </Tab.Navigator>

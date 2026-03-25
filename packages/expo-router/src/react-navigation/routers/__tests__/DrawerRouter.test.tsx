@@ -408,9 +408,7 @@ test('handles open drawer action', () => {
     default: 'closed',
   };
 
-  expect(
-    router.getStateForAction(state, DrawerActions.openDrawer(), options)
-  ).toBe(state);
+  expect(router.getStateForAction(state, DrawerActions.openDrawer(), options)).toBe(state);
 });
 
 test('handles close drawer action', () => {
@@ -476,9 +474,7 @@ test('handles close drawer action', () => {
     default: 'closed',
   };
 
-  expect(
-    router.getStateForAction(state, DrawerActions.closeDrawer(), options)
-  ).toBe(state);
+  expect(router.getStateForAction(state, DrawerActions.closeDrawer(), options)).toBe(state);
 });
 
 test('handles toggle drawer action', () => {

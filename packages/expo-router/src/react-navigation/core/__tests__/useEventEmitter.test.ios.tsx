@@ -1,8 +1,7 @@
-import { beforeEach, expect, jest, test } from '@jest/globals';
-import type { NavigationState, Router } from '../../routers';
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import type { NavigationState, Router } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
@@ -13,12 +12,11 @@ beforeEach(() => {
 });
 
 test('fires focus and blur events in root navigator', () => {
-  const TestNavigator = React.forwardRef(function TestNavigator(
-    props: any,
-    ref: any
-  ): any {
-    const { state, navigation, descriptors, NavigationContent } =
-      useNavigationBuilder(MockRouter, props);
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      MockRouter,
+      props
+    );
 
     React.useImperativeHandle(ref, () => navigation, [navigation]);
 
@@ -44,15 +42,9 @@ test('fires focus and blur events in root navigator', () => {
   const createComponent =
     (focusCallback: any, blurCallback: any) =>
     ({ navigation }: any) => {
-      React.useEffect(
-        () => navigation.addListener('focus', focusCallback),
-        [navigation]
-      );
+      React.useEffect(() => navigation.addListener('focus', focusCallback), [navigation]);
 
-      React.useEffect(
-        () => navigation.addListener('blur', blurCallback),
-        [navigation]
-      );
+      React.useEffect(() => navigation.addListener('blur', blurCallback), [navigation]);
 
       return null;
     };
@@ -62,18 +54,12 @@ test('fires focus and blur events in root navigator', () => {
   const element = (
     <BaseNavigationContainer>
       <TestNavigator ref={navigation}>
-        <Screen
-          name="first"
-          component={createComponent(firstFocusCallback, firstBlurCallback)}
-        />
+        <Screen name="first" component={createComponent(firstFocusCallback, firstBlurCallback)} />
         <Screen
           name="second"
           component={createComponent(secondFocusCallback, secondBlurCallback)}
         />
-        <Screen
-          name="third"
-          component={createComponent(thirdFocusCallback, thirdBlurCallback)}
-        />
+        <Screen name="third" component={createComponent(thirdFocusCallback, thirdBlurCallback)} />
         <Screen
           name="fourth"
           component={createComponent(fourthFocusCallback, fourthBlurCallback)}
@@ -111,12 +97,11 @@ test('fires focus and blur events in root navigator', () => {
 });
 
 test('fires focus event after blur', () => {
-  const TestNavigator = React.forwardRef(function TestNavigator(
-    props: any,
-    ref: any
-  ): any {
-    const { state, navigation, descriptors, NavigationContent } =
-      useNavigationBuilder(MockRouter, props);
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      MockRouter,
+      props
+    );
 
     React.useImperativeHandle(ref, () => navigation, [navigation]);
 
@@ -131,8 +116,7 @@ test('fires focus event after blur', () => {
 
   const Test = ({ route, navigation }: any) => {
     React.useEffect(
-      () =>
-        navigation.addListener('focus', () => callback(route.name, 'focus')),
+      () => navigation.addListener('focus', () => callback(route.name, 'focus')),
       [navigation, route.name]
     );
 
@@ -179,12 +163,11 @@ test('fires focus event after blur', () => {
 });
 
 test('fires focus and blur events in nested navigator', () => {
-  const TestNavigator = React.forwardRef(function TestNavigator(
-    props: any,
-    ref: any
-  ): any {
-    const { state, navigation, descriptors, NavigationContent } =
-      useNavigationBuilder(MockRouter, props);
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      MockRouter,
+      props
+    );
 
     React.useImperativeHandle(ref, () => navigation, [navigation]);
 
@@ -210,15 +193,9 @@ test('fires focus and blur events in nested navigator', () => {
   const createComponent =
     (focusCallback: any, blurCallback: any) =>
     ({ navigation }: any) => {
-      React.useEffect(
-        () => navigation.addListener('focus', focusCallback),
-        [navigation]
-      );
+      React.useEffect(() => navigation.addListener('focus', focusCallback), [navigation]);
 
-      React.useEffect(
-        () => navigation.addListener('blur', blurCallback),
-        [navigation]
-      );
+      React.useEffect(() => navigation.addListener('blur', blurCallback), [navigation]);
 
       return null;
     };
@@ -229,10 +206,7 @@ test('fires focus and blur events in nested navigator', () => {
   const element = (
     <BaseNavigationContainer>
       <TestNavigator ref={parent}>
-        <Screen
-          name="first"
-          component={createComponent(firstFocusCallback, firstBlurCallback)}
-        />
+        <Screen name="first" component={createComponent(firstFocusCallback, firstBlurCallback)} />
         <Screen
           name="second"
           component={createComponent(secondFocusCallback, secondBlurCallback)}
@@ -242,17 +216,11 @@ test('fires focus and blur events in nested navigator', () => {
             <TestNavigator ref={child}>
               <Screen
                 name="third"
-                component={createComponent(
-                  thirdFocusCallback,
-                  thirdBlurCallback
-                )}
+                component={createComponent(thirdFocusCallback, thirdBlurCallback)}
               />
               <Screen
                 name="fourth"
-                component={createComponent(
-                  fourthFocusCallback,
-                  fourthBlurCallback
-                )}
+                component={createComponent(fourthFocusCallback, fourthBlurCallback)}
               />
             </TestNavigator>
           )}
@@ -333,9 +301,7 @@ test('fires blur event when a route is removed with a delay', async () => {
 
       getInitialState({ routeNames, routeParamList }) {
         const initialRouteName =
-          options.initialRouteName !== undefined
-            ? options.initialRouteName
-            : routeNames[0];
+          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0];
 
         return {
           stale: false,
@@ -387,12 +353,11 @@ test('fires blur event when a route is removed with a delay', async () => {
     };
   };
 
-  const TestNavigator = React.forwardRef(function TestNavigator(
-    props: any,
-    ref: any
-  ): any {
-    const { state, navigation, descriptors, NavigationContent } =
-      useNavigationBuilder(TestRouter, props);
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      TestRouter,
+      props
+    );
 
     React.useImperativeHandle(ref, () => navigation, [navigation]);
 
@@ -413,9 +378,7 @@ test('fires blur event when a route is removed with a delay', async () => {
 
     return (
       <NavigationContent>
-        {previous.routes.map((route: any) =>
-          previous.descriptors[route.key].render()
-        )}
+        {previous.routes.map((route: any) => previous.descriptors[route.key].render())}
       </NavigationContent>
     );
   });
@@ -425,10 +388,7 @@ test('fires blur event when a route is removed with a delay', async () => {
   const First = () => null;
 
   const Second = ({ navigation }: any) => {
-    React.useEffect(
-      () => navigation.addListener('blur', blurCallback),
-      [navigation]
-    );
+    React.useEffect(() => navigation.addListener('blur', blurCallback), [navigation]);
 
     return null;
   };
@@ -463,17 +423,13 @@ test('fires blur event when a route is removed with a delay', async () => {
 test('fires custom events added with addListener', () => {
   const eventName = 'someSuperCoolEvent';
 
-  const TestNavigator = React.forwardRef(function TestNavigator(
-    props: any,
-    ref: any
-  ): any {
-    const { state, navigation, descriptors, NavigationContent } =
-      useNavigationBuilder(MockRouter, props);
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      MockRouter,
+      props
+    );
 
-    React.useImperativeHandle(ref, () => ({ navigation, state }), [
-      navigation,
-      state,
-    ]);
+    React.useImperativeHandle(ref, () => ({ navigation, state }), [navigation, state]);
 
     return (
       <NavigationContent>
@@ -489,10 +445,7 @@ test('fires custom events added with addListener', () => {
   const createComponent =
     (callback: any) =>
     ({ navigation }: any) => {
-      React.useEffect(
-        () => navigation.addListener(eventName, callback),
-        [navigation]
-      );
+      React.useEffect(() => navigation.addListener(eventName, callback), [navigation]);
 
       return null;
     };
@@ -515,8 +468,7 @@ test('fires custom events added with addListener', () => {
   expect(secondCallback).toHaveBeenCalledTimes(0);
   expect(thirdCallback).toHaveBeenCalledTimes(0);
 
-  const target =
-    ref.current.state.routes[ref.current.state.routes.length - 1].key;
+  const target = ref.current.state.routes[ref.current.state.routes.length - 1].key;
 
   act(() => {
     ref.current.navigation.emit({
@@ -551,17 +503,13 @@ test('fires custom events added with addListener', () => {
 test("doesn't call same listener multiple times with addListener", () => {
   const eventName = 'someSuperCoolEvent';
 
-  const TestNavigator = React.forwardRef(function TestNavigator(
-    props: any,
-    ref: any
-  ): any {
-    const { state, navigation, descriptors, NavigationContent } =
-      useNavigationBuilder(MockRouter, props);
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      MockRouter,
+      props
+    );
 
-    React.useImperativeHandle(ref, () => ({ navigation, state }), [
-      navigation,
-      state,
-    ]);
+    React.useImperativeHandle(ref, () => ({ navigation, state }), [navigation, state]);
 
     return (
       <NavigationContent>
@@ -573,10 +521,7 @@ test("doesn't call same listener multiple times with addListener", () => {
   const callback = jest.fn();
 
   const Test = ({ navigation }: any) => {
-    React.useEffect(
-      () => navigation.addListener(eventName, callback),
-      [navigation]
-    );
+    React.useEffect(() => navigation.addListener(eventName, callback), [navigation]);
 
     return null;
   };
@@ -607,14 +552,10 @@ test("doesn't call same listener multiple times with addListener", () => {
 test('fires custom events added with listeners prop', () => {
   const eventName = 'someSuperCoolEvent';
 
-  // eslint-disable-next-line @eslint-react/no-missing-component-display-name
   const TestNavigator = React.forwardRef((props: any, ref: any): any => {
     const { state, navigation } = useNavigationBuilder(MockRouter, props);
 
-    React.useImperativeHandle(ref, () => ({ navigation, state }), [
-      navigation,
-      state,
-    ]);
+    React.useImperativeHandle(ref, () => ({ navigation, state }), [navigation, state]);
 
     return null;
   });
@@ -653,8 +594,7 @@ test('fires custom events added with listeners prop', () => {
   expect(secondCallback).toHaveBeenCalledTimes(0);
   expect(thirdCallback).toHaveBeenCalledTimes(0);
 
-  const target =
-    ref.current.state.routes[ref.current.state.routes.length - 1].key;
+  const target = ref.current.state.routes[ref.current.state.routes.length - 1].key;
 
   act(() => {
     ref.current.navigation.emit({
@@ -687,14 +627,10 @@ test('fires custom events added with listeners prop', () => {
 test("doesn't call same listener multiple times with listeners", () => {
   const eventName = 'someSuperCoolEvent';
 
-  // eslint-disable-next-line @eslint-react/no-missing-component-display-name
   const TestNavigator = React.forwardRef((props: any, ref: any): any => {
     const { state, navigation } = useNavigationBuilder(MockRouter, props);
 
-    React.useImperativeHandle(ref, () => ({ navigation, state }), [
-      navigation,
-      state,
-    ]);
+    React.useImperativeHandle(ref, () => ({ navigation, state }), [navigation, state]);
 
     return null;
   });
@@ -739,14 +675,10 @@ test("doesn't call same listener multiple times with listeners", () => {
 test('fires listeners when callback is provided for listeners prop', () => {
   const eventName = 'someSuperCoolEvent';
 
-  // eslint-disable-next-line @eslint-react/no-missing-component-display-name
   const TestNavigator = React.forwardRef((props: any, ref: any): any => {
     const { state, navigation } = useNavigationBuilder(MockRouter, props);
 
-    React.useImperativeHandle(ref, () => ({ navigation, state }), [
-      navigation,
-      state,
-    ]);
+    React.useImperativeHandle(ref, () => ({ navigation, state }), [navigation, state]);
 
     return null;
   });
@@ -791,8 +723,7 @@ test('fires listeners when callback is provided for listeners prop', () => {
   expect(secondCallback).toHaveBeenCalledTimes(0);
   expect(thirdCallback).toHaveBeenCalledTimes(0);
 
-  const target =
-    ref.current.state.routes[ref.current.state.routes.length - 1].key;
+  const target = ref.current.state.routes[ref.current.state.routes.length - 1].key;
 
   act(() => {
     ref.current.navigation.emit({
@@ -827,17 +758,13 @@ test('has option to prevent default', () => {
 
   const eventName = 'someSuperCoolEvent';
 
-  const TestNavigator = React.forwardRef(function TestNavigator(
-    props: any,
-    ref: any
-  ): any {
-    const { state, navigation, descriptors, NavigationContent } =
-      useNavigationBuilder(MockRouter, props);
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      MockRouter,
+      props
+    );
 
-    React.useImperativeHandle(ref, () => ({ navigation, state }), [
-      navigation,
-      state,
-    ]);
+    React.useImperativeHandle(ref, () => ({ navigation, state }), [navigation, state]);
 
     return (
       <NavigationContent>
@@ -858,10 +785,7 @@ test('has option to prevent default', () => {
   };
 
   const Test = ({ navigation }: any) => {
-    React.useEffect(
-      () => navigation.addListener(eventName, callback),
-      [navigation]
-    );
+    React.useEffect(() => navigation.addListener(eventName, callback), [navigation]);
 
     return null;
   };
@@ -890,17 +814,13 @@ test('has option to prevent default', () => {
 test('removes only one listener when unsubscribe is called multiple times', () => {
   const eventName = 'someSuperCoolEvent';
 
-  const TestNavigator = React.forwardRef(function TestNavigator(
-    props: any,
-    ref: any
-  ): any {
-    const { state, navigation, descriptors, NavigationContent } =
-      useNavigationBuilder(MockRouter, props);
+  const TestNavigator = React.forwardRef(function TestNavigator(props: any, ref: any): any {
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(
+      MockRouter,
+      props
+    );
 
-    React.useImperativeHandle(ref, () => ({ navigation, state }), [
-      navigation,
-      state,
-    ]);
+    React.useImperativeHandle(ref, () => ({ navigation, state }), [navigation, state]);
 
     return (
       <NavigationContent>

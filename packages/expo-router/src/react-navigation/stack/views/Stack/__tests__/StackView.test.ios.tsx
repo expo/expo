@@ -1,13 +1,9 @@
 import 'react-native-gesture-handler/jestSetup';
 
 import { describe, expect, test } from '@jest/globals';
-import type {
-  ParamListBase,
-  Route,
-  StackNavigationState,
-} from '../../../../../native';
 import * as React from 'react';
 
+import type { ParamListBase, Route, StackNavigationState } from '../../../../native';
 import type { StackDescriptorMap } from '../../../types';
 import { StackView } from '../StackView';
 
@@ -43,7 +39,7 @@ const createDescriptors = (
         animation: options.animation ?? 'default',
       },
       navigation: {} as any,
-      render: () => <React.Fragment />,
+      render: () => <></>,
     };
   }
   return descriptors;
@@ -64,10 +60,7 @@ const createProps = (
   describe: (() => {}) as any,
 });
 
-const createState = (
-  overrides: Partial<State> = {},
-  routes: Route<string>[] = []
-): State => ({
+const createState = (overrides: Partial<State> = {}, routes: Route<string>[] = []): State => ({
   routes,
   previousState: undefined,
   previousDescriptors: {},

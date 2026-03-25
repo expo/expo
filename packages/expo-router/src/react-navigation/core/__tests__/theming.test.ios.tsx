@@ -1,4 +1,3 @@
-import { expect, test } from '@jest/globals';
 import { render } from '@testing-library/react-native';
 import * as React from 'react';
 
@@ -10,10 +9,7 @@ import { MockRouter } from './__fixtures__/MockRouter';
 
 test('can get current theme with useTheme', () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -52,10 +48,7 @@ test('can get current theme with useTheme', () => {
 
 test("throws if theme isn't passed to BaseNavigationContainer", () => {
   const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      MockRouter,
-      props
-    );
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -146,9 +139,7 @@ test('passes theme to screenOptions prop', () => {
 
   render(
     <BaseNavigationContainer theme={theme}>
-      <TestNavigator
-        screenOptions={({ theme }: any) => ({ title: theme.colors.primary })}
-      >
+      <TestNavigator screenOptions={({ theme }: any) => ({ title: theme.colors.primary })}>
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>

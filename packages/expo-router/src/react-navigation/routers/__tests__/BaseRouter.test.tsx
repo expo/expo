@@ -19,10 +19,7 @@ const STATE = {
 };
 
 test('sets params for the focused screen with SET_PARAMS', () => {
-  const result = BaseRouter.getStateForAction(
-    STATE,
-    CommonActions.setParams({ answer: 42 })
-  );
+  const result = BaseRouter.getStateForAction(STATE, CommonActions.setParams({ answer: 42 }));
 
   expect(result).toEqual({
     stale: false,
@@ -88,10 +85,7 @@ test("doesn't handle SET_PARAMS if source key isn't present", () => {
 });
 
 test('replaces params for the focused screen with REPLACE_PARAMS', () => {
-  const result = BaseRouter.getStateForAction(
-    STATE,
-    CommonActions.replaceParams({ answer: 42 })
-  );
+  const result = BaseRouter.getStateForAction(STATE, CommonActions.replaceParams({ answer: 42 }));
 
   expect(result).toEqual({
     stale: false,
