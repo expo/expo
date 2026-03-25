@@ -11,7 +11,8 @@
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "test:e2e": "pnpm run prepare && expo-module test --config e2e/jest.config.js",
+    "pretest:e2e": "expo-module prepublishOnly",
+    "test:e2e": "expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch"
   },
