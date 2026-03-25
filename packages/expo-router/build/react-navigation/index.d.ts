@@ -1,2 +1,2 @@
-export { ThemeProvider, DarkTheme, DefaultTheme, useTheme, usePreventRemove } from './native';
+export { ThemeProvider, DarkTheme, DefaultTheme, type Theme, useTheme, usePreventRemove, useRoute, useScrollToTop, useNavigationState, createNavigatorFactory, useNavigationBuilder, } from './native';
 //# sourceMappingURL=index.d.ts.map
