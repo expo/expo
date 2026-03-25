@@ -179,8 +179,14 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
   public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription {
     let subscriptionId = UUID().uuidString
     let subscription = EnabledUpdatesStateChangeSubscription(subscriptionId)
-
     stateChangeListeners[subscriptionId] = listener
+
+    // Send cached events to the listener
+    let cachedEvents = getRecentStateChangeEventsForNativeInterface()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+      cachedEvents.forEach { listener.updatesStateDidChange($0) }
+    }
+
     return subscription
   }
 
@@ -188,6 +194,10 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     if stateChangeListeners[subscriptionId] != nil {
       stateChangeListeners.removeValue(forKey: subscriptionId)
     }
+  }
+
+  internal func getRecentStateChangeEventsForNativeInterface() -> [[String: Any]] {
+    return stateMachine.nativeInterfaceCache.events()
   }
 
   public var runtimeVersion: String? {

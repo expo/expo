@@ -1,6 +1,7 @@
 //  Copyright © 2023 650 Industries. All rights reserved.
 
 // swiftlint:disable no_grouping_extension
+// swiftlint:disable no_fallthrough_only
 
 import Foundation
 import EXUpdatesInterface
@@ -87,19 +88,20 @@ internal enum UpdatesStateEvent {
   }
 
   var toMap: [String: Any] {
+    let map = ["type": "\(type)", "timestamp": floor(Date.now.timeIntervalSince1970 * 1000)] as [String: Any]
     switch self {
     case .checkCompleteWithUpdate(manifest: let manifest):
-      return ["type": "checkCompleteWithUpdate", "manifest": manifest]
+      return map.merging(["type": "checkCompleteWithUpdate", "manifest": manifest]) { _, new in new }
     case .checkCompleteWithRollback:
-      return ["type": "checkCompleteWithRollback"]
+      return map.merging(["type": "checkCompleteWithRollback"]) { _, new in new }
     case .downloadCompleteWithUpdate(manifest: let manifest):
-      return ["type": "downloadCompleteWithUpdate", "manifest": manifest]
+      return map.merging(["type": "downloadCompleteWithUpdate", "manifest": manifest]) { _, new in new }
     case .checkError(errorMessage: let errorMessage):
-      return ["type": "checkError", "errorMessage": errorMessage]
+      return map.merging(["type": "checkError", "errorMessage": errorMessage]) { _, new in new }
     case .downloadError(errorMessage: let errorMessage):
-      return ["type": "downloadError", "errorMessage": errorMessage]
+      return map.merging(["type": "downloadError", "errorMessage": errorMessage]) { _, new in new }
     case .downloadProgress(progress: let progress):
-      return ["type": "downloadProgress", "progress": progress]
+      return map.merging(["type": "downloadProgress", "progress": progress]) { _, new in new }
     case .check:
       fallthrough
     case .checkCompleteUnavailable:
@@ -115,7 +117,7 @@ internal enum UpdatesStateEvent {
     case .startStartup:
       fallthrough
     case .endStartup:
-      return ["type": "\(type)"]
+      return map
     }
   }
 }
@@ -273,6 +275,30 @@ public extension UpdatesStateContext {
   }
 }
 
+// MARK: - State machine native interface event cache
+internal class UpdatesStateMachineNativeInterfaceCache {
+  private var cachedEvents: [[String: Any]] = []
+  private let MAX_SIZE = 50
+
+  internal func add(_ event: [String: Any]) {
+    cachedEvents.append(event)
+    if cachedEvents.count > MAX_SIZE {
+      cachedEvents.removeFirst()
+    }
+  }
+
+  internal func events() -> [[String: Any]] {
+    return cachedEvents
+      .sorted { event1, event2 in
+        if let ts1 = event1["timestamp"] as? Double,
+          let ts2 = event2["timestamp"] as? Double {
+          return ts1 < ts2
+        }
+        return false
+      }
+  }
+}
+
 // MARK: - State machine class
 
 /**
@@ -283,6 +309,9 @@ internal class UpdatesStateMachine {
   private let logger: UpdatesLogger
   private let eventManager: UpdatesEventManager
   private let validUpdatesStateValues: Set<UpdatesStateValue>
+
+  // Accessed by updates controller native interface implementation
+  let nativeInterfaceCache = UpdatesStateMachineNativeInterfaceCache()
 
   required init(logger: UpdatesLogger, eventManager: UpdatesEventManager, validUpdatesStateValues: Set<UpdatesStateValue>) {
     self.logger = logger
@@ -353,14 +382,7 @@ internal class UpdatesStateMachine {
       if event.type != .downloadProgress {
         logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
       }
-      // Notify the controller state change listener
-      if let controller = UpdatesControllerRegistry.sharedInstance.controller as? EnabledAppController {
-        controller.stateChangeListeners.keys.forEach {subscriptionId in
-          if let listener = controller.stateChangeListeners[subscriptionId] {
-            listener.updatesStateDidChange(event.toMap)
-          }
-        }
-      }
+      notifyStateChangeListener(event)
       sendContextToJS()
     }
   }
@@ -387,6 +409,25 @@ internal class UpdatesStateMachine {
     // Successful transition
     state = newStateValue
     return true
+  }
+
+  /**
+   * Notify the state change listener in the native interface
+   */
+  private func notifyStateChangeListener(_ event: UpdatesStateEvent) {
+    // Notify the controller state change listener
+    if let controller = UpdatesControllerRegistry.sharedInstance.controller as? EnabledAppController {
+      let nativeInterfaceEvent = event.toMap
+      // Don't cache the download progress events
+      if event.type != .downloadProgress {
+        nativeInterfaceCache.add(nativeInterfaceEvent)
+      }
+      controller.stateChangeListeners.keys.forEach {subscriptionId in
+        if let listener = controller.stateChangeListeners[subscriptionId] {
+          listener.updatesStateDidChange(event.toMap)
+        }
+      }
+    }
   }
 
   /**
@@ -525,4 +566,5 @@ internal class UpdatesStateMachine {
   ]
 }
 
+// swiftlint:enable no_fallthrough_only
 // swiftlint:enable no_grouping_extension

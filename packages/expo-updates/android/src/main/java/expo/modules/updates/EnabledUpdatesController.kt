@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
@@ -349,6 +351,12 @@ class EnabledUpdatesController(
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     val subscriptionId = UUID.randomUUID().toString()
     stateChangeListenerMap[subscriptionId] = listener
+    val cachedEvents = getRecentStateChangeEventsForNativeInterface()
+    Handler(Looper.getMainLooper()).postDelayed({
+      cachedEvents.forEach { event ->
+        listener.updatesStateDidChange(event)
+      }
+    }, 200)
     return EnabledUpdatesStateChangeSubscription(subscriptionId = subscriptionId)
   }
 
@@ -356,6 +364,10 @@ class EnabledUpdatesController(
     if (stateChangeListenerMap.containsKey(subscriptionId)) {
       stateChangeListenerMap.remove(subscriptionId)
     }
+  }
+
+  internal fun getRecentStateChangeEventsForNativeInterface(): List<Map<String, Any>> {
+    return stateMachine.nativeInterfaceCache.events()
   }
 
   override val isEnabled: Boolean = true

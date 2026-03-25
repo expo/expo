@@ -10,6 +10,7 @@ import expo.modules.updatesinterface.UpdatesControllerRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.Date
+import kotlin.math.floor
 
 /**
  * The Updates state machine class. There should be only one instance of this class
@@ -68,22 +69,29 @@ class UpdatesStateMachine(
     sendContextToJS()
   }
 
+  // Accessed by updates controller native interface implementation
+  val nativeInterfaceCache = UpdatesStateMachineNativeInterfaceCache()
+
   private fun toMap(event: UpdatesStateEvent): Map<String, Any> {
+    val base = mutableMapOf(
+      "type" to event.type.type,
+      "timestamp" to floor(System.currentTimeMillis().toDouble()).toLong()
+    )
     return when (event) {
-      is UpdatesStateEvent.DownloadCompleteWithUpdate -> mapOf("type" to "downloadCompleteWithUpdate", "manifest" to event.manifest.toMap())
-      is UpdatesStateEvent.CheckCompleteWithUpdate -> mapOf("type" to "checkCompleteWithUpdate", "manifest" to event.manifest.toMap())
-      is UpdatesStateEvent.CheckCompleteWithRollback -> mapOf("type" to "checkCompleteWithRollback")
-      is UpdatesStateEvent.CheckError -> mapOf("type" to "checkError", "errorMessage" to event.error.message)
-      is UpdatesStateEvent.DownloadError -> mapOf("type" to "downloadError", "errorMessage" to event.error.message)
-      is UpdatesStateEvent.DownloadProgress -> mapOf("type" to "downloadProgress", "progress" to event.progress)
-      is UpdatesStateEvent.Check -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.CheckCompleteUnavailable -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.Download -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.DownloadComplete -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.DownloadCompleteWithRollback -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.Restart -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.StartStartup -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.EndStartup -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.DownloadCompleteWithUpdate -> base + mapOf("type" to "downloadCompleteWithUpdate", "manifest" to event.manifest.toMap())
+      is UpdatesStateEvent.CheckCompleteWithUpdate -> base + mapOf("type" to "checkCompleteWithUpdate", "manifest" to event.manifest.toMap())
+      is UpdatesStateEvent.CheckCompleteWithRollback -> base + mapOf("type" to "checkCompleteWithRollback")
+      is UpdatesStateEvent.CheckError -> base + mapOf("type" to "checkError", "errorMessage" to event.error.message)
+      is UpdatesStateEvent.DownloadError -> base + mapOf("type" to "downloadError", "errorMessage" to event.error.message)
+      is UpdatesStateEvent.DownloadProgress -> base + mapOf("type" to "downloadProgress", "progress" to event.progress)
+      is UpdatesStateEvent.Check -> base
+      is UpdatesStateEvent.CheckCompleteUnavailable -> base
+      is UpdatesStateEvent.Download -> base
+      is UpdatesStateEvent.DownloadComplete -> base
+      is UpdatesStateEvent.DownloadCompleteWithRollback -> base
+      is UpdatesStateEvent.Restart -> base
+      is UpdatesStateEvent.StartStartup -> base
+      is UpdatesStateEvent.EndStartup -> base
     }
   }
 
@@ -96,14 +104,7 @@ class UpdatesStateMachine(
       if (event !is UpdatesStateEvent.DownloadProgress) {
         logger.info("Updates state change: ${event.type}, context = ${context.json}")
       }
-      UpdatesControllerRegistry.controller?.get()?.let {
-        if (it is EnabledUpdatesController) {
-          // Notify the controller state change listener
-          it.stateChangeListenerMap.keys.forEach { key ->
-            it.stateChangeListenerMap[key]?.updatesStateDidChange(toMap(event))
-          }
-        }
-      }
+      notifyStateChangeListener(event)
       sendContextToJS()
     }
   }
@@ -124,6 +125,24 @@ class UpdatesStateMachine(
     }
     state = newStateValue
     return true
+  }
+
+  /**
+   * Notify the state change listener in the native interface
+   */
+  private fun notifyStateChangeListener(event: UpdatesStateEvent) {
+    UpdatesControllerRegistry.controller?.get()?.let {
+      if (it is EnabledUpdatesController) {
+        val nativeInterfaceEvent = toMap(event)
+        // Don't cache the download progress events
+        if (event !is UpdatesStateEvent.DownloadProgress) {
+          nativeInterfaceCache.add(nativeInterfaceEvent)
+        }
+        it.stateChangeListenerMap.keys.forEach { key ->
+          it.stateChangeListenerMap[key]?.updatesStateDidChange(nativeInterfaceEvent)
+        }
+      }
+    }
   }
 
   fun sendContextToJS() {
@@ -239,5 +258,22 @@ class UpdatesStateMachine(
         )
       }
     }
+  }
+}
+
+// State machine native interface event cache
+class UpdatesStateMachineNativeInterfaceCache {
+  private val cachedEvents: MutableList<Map<String, Any>> = mutableListOf()
+  private val maxSize = 50
+
+  fun add(event: Map<String, Any>) {
+    cachedEvents.add(event)
+    if (cachedEvents.size > maxSize) {
+      cachedEvents.removeAt(0)
+    }
+  }
+
+  fun events(): List<Map<String, Any>> {
+    return cachedEvents.toList().sortedBy { (it["timestamp"] as? Double) ?: 0.0 }
   }
 }
