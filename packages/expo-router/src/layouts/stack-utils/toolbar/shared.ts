@@ -82,14 +82,28 @@ export function extractIconRenderingMode(
   return undefined;
 }
 
+const PRIMITIVE_TYPES = ['string', 'number'];
+
+export function areAllChildrenPrimitiveValues(children: ReactNode) {
+  const childrenArray = Children.toArray(children);
+  return (
+    childrenArray.filter((child) => PRIMITIVE_TYPES.includes(typeof child)).length ===
+    childrenArray.length
+  );
+}
+
+export function convertChildrenToString(children: ReactNode): string {
+  return Children.toArray(children)
+    .filter((child) => PRIMITIVE_TYPES.includes(typeof child))
+    .join('');
+}
+
 export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
   props: StackHeaderItemSharedProps,
   isBottomPlacement: boolean = false
 ): RNSharedHeaderItem {
   const { children, style, separateBackground, icon, ...rest } = props;
-  const stringChildren = Children.toArray(children)
-    .filter((child) => typeof child === 'string')
-    .join('');
+  const stringChildren = convertChildrenToString(children);
   const label = getFirstChildOfType(children, StackToolbarLabel);
   const iconPropConvertedToIcon = props.icon
     ? typeof props.icon === 'string'
