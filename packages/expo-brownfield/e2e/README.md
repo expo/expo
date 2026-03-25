@@ -19,7 +19,7 @@ The tests should be automatically executed anytime changes are made to `packages
 To run the tests manually make sure that you build the dependencies mentioned above (Expo CLI, Create Expo and expo-default-template) and then run the `test:e2e-cli` npm script:
 
 ```bash
-yarn test:e2e-cli
+pnpm test:e2e-cli
 ```
 
 # 🧪 expo-brownfield/e2e-plugin
@@ -37,5 +37,5 @@ The tests should be automatically executed anytime changes are made to `packages
 To run the tests manually make sure that you build the dependencies mentioned above (Expo CLI, Create Expo and expo-default-template) and then run the `test:e2e-plugin` npm script:
 
 ```bash
-yarn test:e2e-plugin
+pnpm test:e2e-plugin
 ```
