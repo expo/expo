@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] On Android 13 (API 33), skip `setOnExitAnimationListener` so dismissing the splash does not crash with `SurfaceControl.checkNotReleased()` when the app is backgrounded during the transition. ([#44243](https://github.com/expo/expo/pull/44243) by [@huextrat](https://github.com/huextrat))
+
 ### 💡 Others
 
 - Removed the `expo_splash_screen_status_bar_translucent` Android leftover attribute. ([#43514](https://github.com/expo/expo/pull/43514) by [@zoontek](https://github.com/zoontek))
