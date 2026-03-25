@@ -35,6 +35,7 @@ describe('asyncRequireModule', () => {
     // Evaluate the compiled module in a scope where `require` is our mock.
     // We use Function constructor to create a scope with our own `require`.
     const moduleObj = { exports: {} as any };
+    // eslint-disable-next-line no-new-func
     const moduleFn = new Function(
       'require',
       'module',
