@@ -2051,6 +2051,9 @@ importers:
       '@babel/cli':
         specifier: ^7.23.4
         version: 7.28.6(@babel/core@7.29.0)
+      '@expo/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
@@ -2944,12 +2947,27 @@ importers:
       '@octokit/types':
         specifier: ^15.0.0
         version: 15.0.2
+      '@types/cross-spawn':
+        specifier: ^6.0.6
+        version: 6.0.6
       '@types/ejs':
         specifier: ^3.1.5
         version: 3.1.5
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.3
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
       '@types/prompts':
         specifier: ^2.4.9
         version: 2.4.9
+      '@types/validate-npm-package-name':
+        specifier: ^4.0.2
+        version: 4.0.2
       '@vercel/ncc':
         specifier: ^0.38.4
         version: 0.38.4
@@ -8883,6 +8901,9 @@ packages:
 
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
+
+  '@types/validate-npm-package-name@4.0.2':
+    resolution: {integrity: sha512-lrpDziQipxCEeK5kWxvljWYhUvOiB2A9izZd9B2AFarYAkqZshb4lPbRs7zKEic6eGtH8V/2qJW+dPp9OtF6bw==}
 
   '@types/webgl2@0.0.6':
     resolution: {integrity: sha512-50GQhDVTq/herLMiqSQkdtRu+d5q/cWHn4VvKJtrj4DJAjo1MNkWYa2MA41BaBO1q1HgsUjuQvEOk0QHvlnAaQ==}
@@ -18996,6 +19017,8 @@ snapshots:
   '@types/use-sync-external-store@0.0.6': {}
 
   '@types/uuid@9.0.8': {}
+
+  '@types/validate-npm-package-name@4.0.2': {}
 
   '@types/webgl2@0.0.6': {}
 
