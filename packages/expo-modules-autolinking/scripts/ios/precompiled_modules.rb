@@ -25,6 +25,7 @@
 #   artifacts/.last_build_configuration       (written by prepare_command / switch script)
 
 require 'fileutils'
+require 'json'
 require 'uri'
 
 module Expo
@@ -867,6 +868,154 @@ touch "$STAMP_FILE"
         installer.pods_project.save
       end
 
+      # Prevents swiftinterface verification failures when BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+      # is propagated from brownfield/framework user targets to pod targets by CocoaPods 1.16+.
+      def disable_swift_interface_verification(installer)
+        return if ENV['RCT_USE_PREBUILT_RNCORE'] != '1'
+
+        Pod::UI.puts "[Expo] ".blue + "Disabling SWIFT_EMIT_MODULE_INTERFACE for pod targets (prebuilt React compatibility)"
+
+        installer.pod_targets.each do |pod_target|
+          pod_target.build_settings.each do |config_name, _|
+            xcconfig_path = pod_target.xcconfig_path(config_name)
+            next unless File.exist?(xcconfig_path)
+
+            content = File.read(xcconfig_path)
+            next if content.include?('SWIFT_EMIT_MODULE_INTERFACE')
+
+            File.open(xcconfig_path, 'a') do |f|
+              f.puts 'SWIFT_EMIT_MODULE_INTERFACE = NO'
+            end
+          end
+        end
+      end
+
+      # Configures use_frameworks! compatibility for prebuilt React.xcframework.
+      # With use_frameworks!, the framework's modulemap resolves <React/X.h> to DerivedData
+      # paths the VFS doesn't cover. This method:
+      # 1. Creates a non-framework modulemap so <React/X.h> resolves through -isystem + VFS
+      # 2. Patches framework modulemaps to remove `framework module React` (keep React_RCTAppDelegate)
+      # 3. Injects -isystem and -fmodule-map-file into all pod and aggregate xcconfigs
+      def configure_use_frameworks(installer)
+        return if ENV['RCT_USE_PREBUILT_RNCORE'] != '1'
+        return if get_linkage?(installer) == nil
+
+        react_prebuilt_dir = File.join(installer.sandbox.root, 'React-Core-prebuilt')
+        xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
+        return unless File.exist?(xcframework_path)
+
+        # 1. Create non-framework modulemap with umbrella header.
+        modulemap_path = File.join(react_prebuilt_dir, 'React-use-frameworks.modulemap')
+        modulemap_content = <<~MODULEMAP
+          module React {
+            umbrella header "React.xcframework/Headers/React_Core/React_Core-umbrella.h"
+            export *
+          }
+        MODULEMAP
+        File.write(modulemap_path, modulemap_content)
+
+        # 2. Patch framework modulemaps: remove `framework module React` but keep
+        #    `framework module React_RCTAppDelegate` (its umbrella uses quoted includes).
+        Dir.glob(File.join(xcframework_path, '*/React.framework/Modules/module.modulemap')).each do |fw_modulemap|
+          content = File.read(fw_modulemap)
+          content.gsub!(/framework module React \{.*?\n\}\s*/m, '')
+          File.write(fw_modulemap, content)
+        end
+        shared_modulemap = File.join(xcframework_path, 'Modules', 'module.modulemap')
+        if File.exist?(shared_modulemap)
+          content = File.read(shared_modulemap)
+          content.gsub!(/framework module React \{.*?\n\}\s*/m, '')
+          File.write(shared_modulemap, content)
+        end
+
+        # 3. Inject -fmodule-map-file and -isystem into all pod target xcconfigs.
+        #    Module builds don't inherit -I (HEADER_SEARCH_PATHS) but DO inherit -isystem.
+        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+        extra_isystem = "-isystem \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
+        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+        swift_extra_isystem = "-Xcc -isystem -Xcc \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
+
+        installer.pod_targets.each do |pod_target|
+          pod_target.build_settings.each do |config_name, _|
+            xcconfig_path = pod_target.xcconfig_path(config_name)
+            next unless File.exist?(xcconfig_path)
+
+            content = File.read(xcconfig_path)
+            next if content.include?('React-use-frameworks.modulemap')
+
+            all_isystem_paths = []
+
+            if content =~ /HEADER_SEARCH_PATHS\s*=\s*(.*)/
+              all_isystem_paths += $1.scan(/"([^"]+)"/).flatten
+            end
+
+            # Framework pods put headers inside .framework/Headers/ — add those too
+            if content =~ /FRAMEWORK_SEARCH_PATHS\s*=\s*(.*)/
+              $1.scan(/"([^"]+)"/).flatten.each do |fw_dir|
+                basename = fw_dir.split('/').last
+                all_isystem_paths << "#{fw_dir}/#{basename}.framework/Headers"
+              end
+            end
+
+            isystem_flags = all_isystem_paths.map { |p| "-isystem \"#{p}\"" }.join(' ')
+            isystem_flags += " #{extra_isystem}"
+
+            swift_isystem = all_isystem_paths.map { |p| "-Xcc -isystem -Xcc \"#{p}\"" }.join(' ')
+            swift_isystem += " #{swift_extra_isystem}"
+
+            if content.include?('OTHER_CFLAGS')
+              content.gsub!(/(OTHER_CFLAGS\s*=\s*)(.*)/) do
+                "#{$1}#{$2} #{isystem_flags} #{modulemap_flag}"
+              end
+            end
+
+            if content.include?('OTHER_SWIFT_FLAGS')
+              content.gsub!(/(OTHER_SWIFT_FLAGS\s*=\s*)(.*)/) do
+                "#{$1}#{$2} #{swift_isystem} #{swift_modulemap}"
+              end
+            end
+
+            File.write(xcconfig_path, content)
+          end
+        end
+
+        # Also patch aggregate target xcconfigs (these flow to the app target)
+        installer.aggregate_targets.each do |agg_target|
+          agg_target.user_build_configurations.each_key do |config_name|
+            xcconfig_path = agg_target.xcconfig_path(config_name)
+            next unless File.exist?(xcconfig_path)
+
+            content = File.read(xcconfig_path)
+            next if content.include?('React-use-frameworks.modulemap')
+
+            if content.include?('OTHER_CFLAGS')
+              content.gsub!(/(OTHER_CFLAGS\s*=\s*)(.*)/) do
+                "#{$1}#{$2} #{extra_isystem} #{modulemap_flag}"
+              end
+            end
+
+            if content.include?('OTHER_SWIFT_FLAGS')
+              content.gsub!(/(OTHER_SWIFT_FLAGS\s*=\s*)(.*)/) do
+                "#{$1}#{$2} #{swift_extra_isystem} #{swift_modulemap}"
+              end
+            end
+
+            File.write(xcconfig_path, content)
+          end
+        end
+
+        Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
+      end
+
+      # Returns true if the pod target vendors .xcframework files.
+      # These pods are already precompiled — CocoaPods doesn't need to wrap them in a framework.
+      def has_vendored_xcframeworks?(pod_target)
+        vendored = pod_target.root_spec.attributes_hash['vendored_frameworks']
+        return false unless vendored
+        frameworks = vendored.is_a?(Array) ? vendored : [vendored]
+        frameworks.any? { |f| f.to_s.include?('.xcframework') }
+      end
+
       # Configures the ReactCodegen target to properly handle prebuilt modules.
       # This removes source file references for prebuilt libraries from the compile sources phase
       # and adds a shell script build phase to clean up regenerated codegen files.
@@ -904,6 +1053,23 @@ touch "$STAMP_FILE"
           add_codegen_cleanup_script_phase(react_codegen_target, script_phase_name, codegen_exclusions)
           installer.pods_project.save
         end
+      end
+
+      # Returns the linkage type if use_frameworks! is active, otherwise returns nil.
+      # Checks both the USE_FRAMEWORKS env var and podfile properties (ios.useFrameworks).
+      def get_linkage?(installer)
+        linkage = ENV["USE_FRAMEWORKS"]
+        if linkage == nil
+          podfile_dir = File.dirname(installer.podfile.defined_in_file)
+          props_path = File.join(podfile_dir, 'Podfile.properties.json')
+          if File.exist?(props_path)
+            linkage = JSON.parse(File.read(props_path))['ios.useFrameworks']
+          end
+        end
+        return nil if linkage == nil
+        return :dynamic if linkage.downcase == 'dynamic'
+        return :static if linkage.downcase == 'static'
+        nil
       end
 
       private

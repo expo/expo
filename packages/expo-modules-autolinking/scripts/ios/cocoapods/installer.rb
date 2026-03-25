@@ -47,6 +47,12 @@ module Pod
       # causing full recompilation on every incremental build.
       add_early_exit_to_rn_codegen()
 
+      # Disable swiftinterface verification for pod targets when using prebuilt React.xcframework.
+      Expo::PrecompiledModules.disable_swift_interface_verification(self)
+
+      # Configure use_frameworks! compatibility: non-framework React modulemap + -isystem injection.
+      Expo::PrecompiledModules.configure_use_frameworks(self)
+
       # Copy flavor tarballs into Pods/<PodName>/artifacts/ for build-time switching.
       # This must run in post_install because prepare_command is unreliable —
       # CocoaPods skips it when the pod is considered "unchanged" via Manifest.lock.
@@ -74,15 +80,25 @@ module Pod
 
       return unless should_disable_use_frameworks_for_core_expo_pods?()
 
-      # Disable USE_FRAMEWORKS in core targets when USE_FRAMEWORKS is set
-      # This method overrides the build_type field to always use static_library for
-      # the following pod targets:
-      # - ExpoModulesCore, Expo, ReactAppDependencyProvider, expo-dev-menu
-      # These are all including files from React Native Core in their public header files,
-      # which causes their own modular headers to be invalid.
-      Pod::UI.puts "[Expo] ".blue + "Disabling USE_FRAMEWORKS for modules #{@podfile.framework_modules_to_patch.join(', ')}"
+      # Collect pod names to downgrade to static_library:
+      # 1. The hardcoded list — source-built pods with React headers in their public API
+      pods_to_downgrade = Set.new(@podfile.framework_modules_to_patch)
+
+      # 2. Pods that vendor xcframeworks — already built, don't need framework wrapping
+      # 3. Source-built pods that directly depend on React-Core — their headers include
+      #    <React/X.h> which is non-modular, causing "non-modular include in framework module"
       self.pod_targets.each do |t|
-        if @podfile.framework_modules_to_patch.include?(t.name)
+        if Expo::PrecompiledModules.has_vendored_xcframeworks?(t)
+          pods_to_downgrade.add(t.name)
+        elsif t.root_spec.dependencies.any? { |d| d.name.start_with?('React-Core') }
+          pods_to_downgrade.add(t.name)
+        end
+      end
+
+      Pod::UI.puts "[Expo] ".blue + "Disabling USE_FRAMEWORKS for #{pods_to_downgrade.size} pods (#{pods_to_downgrade.to_a.join(', ')})"
+
+      self.pod_targets.each do |t|
+        if pods_to_downgrade.include?(t.name)
           def t.build_type
             Pod::BuildType.static_library
           end
@@ -269,20 +285,12 @@ module Pod
     end
 
     # We should only disable USE_FRAMEWORKS for specific pods when:
-    # - RCT_USE_PREBUILT_RNCORE is not '1'
-    # - USE_FRAMEWORKS is not set
+    # - RCT_USE_PREBUILT_RNCORE is '1' (using prebuilt React.xcframework)
+    # - use_frameworks! is active (via USE_FRAMEWORKS env var or podfile properties)
     def should_disable_use_frameworks_for_core_expo_pods?()
       return false if ENV['RCT_USE_PREBUILT_RNCORE'] != '1'
-      return true if get_linkage?() != nil
+      return true if Expo::PrecompiledModules.get_linkage?(self) != nil
       false
-    end
-
-    # Returns the linkage type if USE_FRAMEWORKS is set, otherwise returns nil
-    def get_linkage?()
-      return nil if ENV["USE_FRAMEWORKS"] == nil
-      return :dynamic if ENV["USE_FRAMEWORKS"].downcase == 'dynamic'
-      return :static if ENV["USE_FRAMEWORKS"].downcase == 'static'
-      nil
     end
   end
 end
