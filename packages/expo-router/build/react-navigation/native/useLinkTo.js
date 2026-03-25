@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLinkTo = useLinkTo;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const core_1 = require("../core");
 const useLinkBuilder_1 = require("./useLinkBuilder");
 /**
@@ -44,7 +45,7 @@ const useLinkBuilder_1 = require("./useLinkBuilder");
  * @returns function that receives the href to navigate to.
  */
 function useLinkTo() {
-    const navigation = React.useContext(core_1.NavigationContainerRefContext);
+    const navigation = (0, react_1.use)(core_1.NavigationContainerRefContext);
     const buildAction = (0, useLinkBuilder_1.useBuildAction)();
     const linkTo = React.useCallback((href) => {
         if (navigation === undefined) {

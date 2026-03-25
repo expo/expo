@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useDescriptors = useDescriptors;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
 const NavigationProvider_1 = require("./NavigationProvider");
 const SceneView_1 = require("./SceneView");
@@ -51,9 +52,9 @@ const useRouteCache_1 = require("./useRouteCache");
  * - Navigation object intended for the route
  */
 function useDescriptors({ state, screens, navigation, screenOptions, screenLayout, onAction, getState, setState, addListener, addKeyedListener, onRouteFocus, router, emitter, }) {
-    const theme = React.useContext(ThemeContext_1.ThemeContext);
+    const theme = (0, react_1.use)(ThemeContext_1.ThemeContext);
     const [options, setOptions] = React.useState({});
-    const { onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates, stackRef } = React.useContext(NavigationBuilderContext_1.NavigationBuilderContext);
+    const { onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates, stackRef } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
     const context = React.useMemo(() => ({
         navigation,
         onAction,

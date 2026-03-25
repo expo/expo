@@ -40,6 +40,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Header = Header;
 const color_1 = __importDefault(require("color"));
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const search_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/search-icon.png"));
@@ -71,7 +72,7 @@ function Header(props) {
     const frame = (0, useFrameSize_1.useFrameSize)((size) => size, true);
     const { colors } = (0, native_1.useTheme)();
     const navigation = (0, native_1.useNavigation)();
-    const isParentHeaderShown = React.useContext(HeaderShownContext_1.HeaderShownContext);
+    const isParentHeaderShown = (0, react_1.use)(HeaderShownContext_1.HeaderShownContext);
     const [searchBarVisible, setSearchBarVisible] = React.useState(false);
     const [titleLayout, setTitleLayout] = React.useState(undefined);
     const onTitleLayout = (e) => {

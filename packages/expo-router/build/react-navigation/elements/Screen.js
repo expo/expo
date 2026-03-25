@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Screen = Screen;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const native_1 = require("../native");
@@ -46,8 +47,8 @@ const getDefaultHeaderHeight_1 = require("./Header/getDefaultHeaderHeight");
 const useFrameSize_1 = require("./useFrameSize");
 function Screen(props) {
     const insets = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
-    const isParentHeaderShown = React.useContext(HeaderShownContext_1.HeaderShownContext);
-    const parentHeaderHeight = React.useContext(HeaderHeightContext_1.HeaderHeightContext);
+    const isParentHeaderShown = (0, react_1.use)(HeaderShownContext_1.HeaderShownContext);
+    const parentHeaderHeight = (0, react_1.use)(HeaderHeightContext_1.HeaderHeightContext);
     const { focused, modal = false, header, headerShown = true, headerTransparent, headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top, navigation, route, children, style, } = props;
     const defaultHeaderHeight = (0, useFrameSize_1.useFrameSize)((size) => (0, getDefaultHeaderHeight_1.getDefaultHeaderHeight)(size, modal, headerStatusBarHeight));
     const headerRef = React.useRef(null);

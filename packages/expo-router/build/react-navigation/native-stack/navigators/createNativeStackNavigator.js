@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNativeStackNavigator = createNativeStackNavigator;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const native_1 = require("../../native");
 const NativeStackView_1 = require("../views/NativeStackView");
 function NativeStackNavigator({ id, initialRouteName, UNSTABLE_routeNamesChangeBehavior, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
@@ -50,7 +51,7 @@ function NativeStackNavigator({ id, initialRouteName, UNSTABLE_routeNamesChangeB
         screenLayout,
         UNSTABLE_router,
     });
-    const meta = React.useContext(native_1.NavigationMetaContext);
+    const meta = (0, react_1.use)(native_1.NavigationMetaContext);
     React.useEffect(() => {
         if (meta && 'type' in meta && meta.type === 'native-tabs') {
             // If we're inside native tabs, we don't need to handle popToTop

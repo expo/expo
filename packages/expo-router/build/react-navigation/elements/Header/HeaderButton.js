@@ -38,7 +38,7 @@ exports.HeaderButton = void 0;
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const PlatformPressable_1 = require("../PlatformPressable");
-function HeaderButtonInternal({ disabled, onPress, pressColor, pressOpacity, accessibilityLabel, testID, style, href, children, }, ref) {
+function HeaderButtonInternal({ ref, disabled, onPress, pressColor, pressOpacity, accessibilityLabel, testID, style, href, children, }) {
     return (<PlatformPressable_1.PlatformPressable ref={ref} disabled={disabled} href={href} aria-label={accessibilityLabel} testID={testID} onPress={onPress} pressColor={pressColor} pressOpacity={pressOpacity} android_ripple={androidRipple} style={[styles.container, disabled && styles.disabled, style]} hitSlop={react_native_1.Platform.select({
             ios: undefined,
             default: { top: 16, right: 16, bottom: 16, left: 16 },
@@ -46,8 +46,7 @@ function HeaderButtonInternal({ disabled, onPress, pressColor, pressOpacity, acc
       {children}
     </PlatformPressable_1.PlatformPressable>);
 }
-exports.HeaderButton = React.forwardRef(HeaderButtonInternal);
-exports.HeaderButton.displayName = 'HeaderButton';
+exports.HeaderButton = HeaderButtonInternal;
 const androidRipple = {
     borderless: true,
     foreground: react_native_1.Platform.OS === 'android' && react_native_1.Platform.Version >= 23,

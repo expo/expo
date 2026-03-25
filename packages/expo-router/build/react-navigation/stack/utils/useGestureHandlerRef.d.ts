@@ -1,3 +1,2 @@
-import * as React from 'react';
-export declare function useGestureHandlerRef(): React.Ref<React.ComponentType<import("react-native-gesture-handler").PanGestureHandlerProps & React.RefAttributes<any>>>;
+export declare function useGestureHandlerRef(): import("react").Ref<import("react").ComponentType<import("react-native-gesture-handler").PanGestureHandlerProps & import("react").RefAttributes<any>>>;
 //# sourceMappingURL=useGestureHandlerRef.d.ts.map

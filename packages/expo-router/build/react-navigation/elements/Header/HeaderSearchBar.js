@@ -56,7 +56,7 @@ const INPUT_TYPE_TO_MODE = {
     email: 'email',
 };
 const useNativeDriver = react_native_1.Platform.OS !== 'web';
-function HeaderSearchBarInternal({ visible, inputType, autoFocus = true, autoCapitalize, placeholder = 'Search', cancelButtonText = 'Cancel', enterKeyHint = 'search', onChangeText, onClose, tintColor, style, ...rest }, ref) {
+function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, autoCapitalize, placeholder = 'Search', cancelButtonText = 'Cancel', enterKeyHint = 'search', onChangeText, onClose, tintColor, style, ...rest }) {
     const navigation = (0, native_1.useNavigation)();
     const { dark, colors, fonts } = (0, native_1.useTheme)();
     const [value, setValue] = React.useState('');
@@ -247,5 +247,5 @@ const styles = react_native_1.StyleSheet.create({
         },
     }),
 });
-exports.HeaderSearchBar = React.forwardRef(HeaderSearchBarInternal);
+exports.HeaderSearchBar = HeaderSearchBarInternal;
 //# sourceMappingURL=HeaderSearchBar.js.map

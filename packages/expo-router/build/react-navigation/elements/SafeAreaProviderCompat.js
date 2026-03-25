@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SafeAreaProviderCompat = SafeAreaProviderCompat;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const useFrameSize_1 = require("./useFrameSize");
@@ -50,7 +51,7 @@ const initialMetrics = react_native_1.Platform.OS === 'web' || react_native_safe
     }
     : react_native_safe_area_context_1.initialWindowMetrics;
 function SafeAreaProviderCompat({ children, style }) {
-    const insets = React.useContext(react_native_safe_area_context_1.SafeAreaInsetsContext);
+    const insets = (0, react_1.use)(react_native_safe_area_context_1.SafeAreaInsetsContext);
     return (<useFrameSize_1.FrameSizeProvider initialFrame={initialMetrics.frame} render={({ ref, onLayout }) => {
             if (insets) {
                 // If we already have insets, don't wrap the stack in another safe area provider

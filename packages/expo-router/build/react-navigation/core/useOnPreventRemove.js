@@ -37,6 +37,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.shouldPreventRemove = void 0;
 exports.useOnPreventRemove = useOnPreventRemove;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
 const NavigationProvider_1 = require("./NavigationProvider");
 const VISITED_ROUTE_KEYS = Symbol('VISITED_ROUTE_KEYS');
@@ -78,8 +79,8 @@ const shouldPreventRemove = (emitter, beforeRemoveListeners, currentRoutes, next
 };
 exports.shouldPreventRemove = shouldPreventRemove;
 function useOnPreventRemove({ getState, emitter, beforeRemoveListeners }) {
-    const { addKeyedListener } = React.useContext(NavigationBuilderContext_1.NavigationBuilderContext);
-    const route = React.useContext(NavigationProvider_1.NavigationRouteContext);
+    const { addKeyedListener } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
+    const route = (0, react_1.use)(NavigationProvider_1.NavigationRouteContext);
     const routeKey = route?.key;
     React.useEffect(() => {
         if (routeKey) {

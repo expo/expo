@@ -13,5 +13,7 @@ import type { NavigationContainerProps, NavigationContainerRef } from './types';
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
-export declare const BaseNavigationContainer: React.ForwardRefExoticComponent<NavigationContainerProps & React.RefAttributes<NavigationContainerRef<ParamListBase>>>;
+export declare function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, onUnhandledAction, navigationInChildEnabled, theme, children, }: NavigationContainerProps & {
+    ref?: React.Ref<NavigationContainerRef<ParamListBase>>;
+}): React.JSX.Element;
 //# sourceMappingURL=BaseNavigationContainer.d.ts.map

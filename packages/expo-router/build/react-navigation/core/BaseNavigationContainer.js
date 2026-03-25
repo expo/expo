@@ -37,8 +37,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseNavigationContainer = void 0;
+exports.BaseNavigationContainer = BaseNavigationContainer;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const routers_1 = require("../routers");
 const DeprecatedNavigationInChildContext_1 = require("./DeprecatedNavigationInChildContext");
@@ -95,8 +96,8 @@ const getPartialState = (state) => {
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
-exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContainer({ initialState, onStateChange, onReady, onUnhandledAction, navigationInChildEnabled = false, theme, children, }, ref) {
-    const parent = React.useContext(NavigationStateContext_1.NavigationStateContext);
+function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, onUnhandledAction, navigationInChildEnabled = false, theme, children, }) {
+    const parent = (0, react_1.use)(NavigationStateContext_1.NavigationStateContext);
     const independent = (0, useNavigationIndependentTree_1.useNavigationIndependentTree)();
     if (!parent.isDefault && !independent) {
         throw new Error("Looks like you have nested a 'NavigationContainer' inside another. Normally you need only one container at the root of the app, so this was probably an error. If this was intentional, wrap the container in 'NavigationIndependentTree' explicitly. Note that this will make the child navigators disconnected from the parent and you won't be able to navigate between them.");
@@ -354,5 +355,5 @@ exports.BaseNavigationContainer = React.forwardRef(function BaseNavigationContai
         </NavigationBuilderContext_1.NavigationBuilderContext.Provider>
       </NavigationContainerRefContext_1.NavigationContainerRefContext.Provider>
     </NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider>);
-});
+}
 //# sourceMappingURL=BaseNavigationContainer.js.map

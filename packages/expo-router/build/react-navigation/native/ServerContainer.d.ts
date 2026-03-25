@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { type ServerContextType } from './ServerContext';
 import type { ServerContainerRef } from './types';
+type Props = ServerContextType & {
+    children: React.ReactNode;
+};
 /**
  * Container component for server rendering.
  *
@@ -8,7 +11,8 @@ import type { ServerContainerRef } from './types';
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which contains helper methods.
  */
-export declare const ServerContainer: React.ForwardRefExoticComponent<ServerContextType & {
-    children: React.ReactNode;
-} & React.RefAttributes<ServerContainerRef>>;
+export declare function ServerContainer({ ref, children, location, }: Props & {
+    ref?: React.Ref<ServerContainerRef>;
+}): React.JSX.Element;
+export {};
 //# sourceMappingURL=ServerContainer.d.ts.map

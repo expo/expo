@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigationCache = useNavigationCache;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const routers_1 = require("../routers");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
 /**
@@ -44,7 +45,7 @@ const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
  * This lets us apply optimizations like `React.memo` to minimize re-rendering screens.
  */
 function useNavigationCache({ state, getState, navigation, setOptions, router, emitter, }) {
-    const { stackRef } = React.useContext(NavigationBuilderContext_1.NavigationBuilderContext);
+    const { stackRef } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
     const base = React.useMemo(() => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { emit, ...rest } = navigation;

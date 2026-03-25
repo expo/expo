@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigationHelpers = useNavigationHelpers;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const routers_1 = require("../routers");
 const NavigationContext_1 = require("./NavigationContext");
 const types_1 = require("./types");
@@ -47,7 +48,7 @@ types_1.PrivateValueStore;
  * This object includes methods for common actions as well as methods the parent screen's navigation object.
  */
 function useNavigationHelpers({ id: navigatorId, onAction, onUnhandledAction, getState, emitter, router, stateRef, }) {
-    const parentNavigationHelpers = React.useContext(NavigationContext_1.NavigationContext);
+    const parentNavigationHelpers = (0, react_1.use)(NavigationContext_1.NavigationContext);
     return React.useMemo(() => {
         const dispatch = (op) => {
             const action = typeof op === 'function' ? op(getState()) : op;

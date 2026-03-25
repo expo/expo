@@ -51,7 +51,7 @@ const useDocumentTitle_1 = require("./useDocumentTitle");
 const useLinking_1 = require("./useLinking");
 const useThenable_1 = require("./useThenable");
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
-function NavigationContainerInner({ direction = react_native_1.I18nManager.getConstants().isRTL ? 'rtl' : 'ltr', theme = DefaultTheme_1.DefaultTheme, linking, fallback = null, documentTitle, onReady, onStateChange, ...rest }, ref) {
+function NavigationContainerInner({ ref, direction = react_native_1.I18nManager.getConstants().isRTL ? 'rtl' : 'ltr', theme = DefaultTheme_1.DefaultTheme, linking, fallback = null, documentTitle, onReady, onStateChange, ...rest }) {
     const isLinkingEnabled = linking ? linking.enabled !== false : false;
     if (linking?.config) {
         (0, core_1.validatePathConfig)(linking.config);
@@ -129,5 +129,5 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
  * Container component that manages the navigation state.
  * This should be rendered at the root wrapping the whole app.
  */
-exports.NavigationContainer = React.forwardRef(NavigationContainerInner);
+exports.NavigationContainer = NavigationContainerInner;
 //# sourceMappingURL=NavigationContainer.js.map

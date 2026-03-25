@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useRoutePath = useRoutePath;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const core_1 = require("../core");
 const LinkingContext_1 = require("./LinkingContext");
 /**
@@ -44,7 +45,7 @@ const LinkingContext_1 = require("./LinkingContext");
  * @returns Path for the current route.
  */
 function useRoutePath() {
-    const { options } = React.useContext(LinkingContext_1.LinkingContext);
+    const { options } = (0, react_1.use)(LinkingContext_1.LinkingContext);
     const state = (0, core_1.useStateForPath)();
     if (state === undefined) {
         throw new Error("Couldn't find a state for the route object. Is your component inside a screen in a navigator?");

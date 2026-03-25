@@ -41,6 +41,7 @@ exports.series = void 0;
 exports.useLinking = useLinking;
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const core_1 = require("../core");
 const ServerContext_1 = require("./ServerContext");
 const createMemoryHistory_1 = require("./createMemoryHistory");
@@ -137,7 +138,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
         // Otherwise there's an error in the linking configuration
         return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
     }, [ref]);
-    const server = React.useContext(ServerContext_1.ServerContext);
+    const server = (0, react_1.use)(ServerContext_1.ServerContext);
     const getInitialState = React.useCallback(() => {
         let value;
         if (enabledRef.current) {

@@ -37,6 +37,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useRegisterNavigator = useRegisterNavigator;
 const non_secure_1 = require("nanoid/non-secure");
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const EnsureSingleNavigator_1 = require("./EnsureSingleNavigator");
 /**
  * Register a navigator in the parent context (either a navigation container or a screen).
@@ -44,7 +45,7 @@ const EnsureSingleNavigator_1 = require("./EnsureSingleNavigator");
  */
 function useRegisterNavigator() {
     const [key] = React.useState(() => (0, non_secure_1.nanoid)());
-    const container = React.useContext(EnsureSingleNavigator_1.SingleNavigatorContext);
+    const container = (0, react_1.use)(EnsureSingleNavigator_1.SingleNavigatorContext);
     if (container === undefined) {
         throw new Error("Couldn't register the navigator. Have you wrapped your app with 'NavigationContainer'?\n\nThis can also happen if there are multiple copies of '@react-navigation' packages installed.");
     }
