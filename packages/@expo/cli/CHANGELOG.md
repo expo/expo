@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- Remove dom components warning. ([#44253](https://github.com/expo/expo/pull/44253) by [@EvanBacon](https://github.com/EvanBacon))
 - Limit `/open-stack-frame` to paths within server root ([#44039](https://github.com/expo/expo/pull/44039) by [@kitten](https://github.com/kitten))
 
 ## 55.0.18 — 2026-03-18
