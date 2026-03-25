@@ -59,7 +59,13 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-worklets": "^0.7.4 || ^0.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native-worklets": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
