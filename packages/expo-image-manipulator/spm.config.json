@@ -15,6 +15,13 @@
       ],
       "spmPackages": [
         {
+          "url": "https://github.com/SDWebImage/SDWebImage.git",
+          "productName": "SDWebImage",
+          "version": {
+            "exact": "5.21.1"
+          }
+        },
+        {
           "url": "https://github.com/SDWebImage/SDWebImageWebPCoder.git",
           "productName": "SDWebImageWebPCoder",
           "version": {
@@ -33,6 +40,7 @@
             "React",
             "Hermes",
             "expo-modules-core/ExpoModulesCore",
+            "SDWebImage",
             "SDWebImageWebPCoder"
           ],
           "linkedFrameworks": [
