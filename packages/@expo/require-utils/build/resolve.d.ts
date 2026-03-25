@@ -1,4 +1,3 @@
-import Module from 'node:module';
 declare module 'node:module' {
     function _nodeModulePaths(base: string): readonly string[];
     function _resolveFilename(mod: string, parent?: Partial<Module>): string;
