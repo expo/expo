@@ -6,11 +6,6 @@ public final class BenchmarkingExpoModule: Module {
     return a + b
   }
 
-  @OptimizedFunction
-  private func addNumbersOptimizedSlowPath(a: Int, b: Int, c: Int) throws -> Int {
-    return a + b + c
-  }
-
   public func definition() -> ModuleDefinition {
     Name("BenchmarkingExpoModule")
 
@@ -21,7 +16,6 @@ public final class BenchmarkingExpoModule: Module {
     }
 
     Function("addNumbersOptimized", addNumbersOptimized())
-    Function("addNumbersOptimizedSlowPath", addNumbersOptimizedSlowPath())
 
     Function("addStrings") { (a: String, b: String) in
       return a + b
