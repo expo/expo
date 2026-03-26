@@ -113,6 +113,15 @@ export async function generateModulesProviderAsync(
     params
   );
   const parentPath = path.dirname(targetPath);
+
+  // Avoid writing the file if the content hasn't changed to prevent unnecessary recompilation.
+  try {
+    const existingContent = await fs.promises.readFile(targetPath, 'utf8');
+    if (existingContent === generatedFileContent) {
+      return;
+    }
+  } catch {}
+
   await fs.promises.mkdir(parentPath, { recursive: true });
   await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
