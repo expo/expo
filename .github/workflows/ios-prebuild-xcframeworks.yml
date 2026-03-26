@@ -16,9 +16,6 @@ on:
         description: 'Max parallel packages (default: auto)'
         required: false
         default: ''
-  pull_request:
-    paths:
-      - .github/workflows/ios-prebuild-xcframeworks.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
