@@ -3,6 +3,7 @@ import {
   ExpoConfig,
   getConfig,
   getProjectConfigDescriptionWithPaths,
+  PackageJSONConfig,
   ProjectConfig,
 } from '@expo/config';
 import chalk from 'chalk';
@@ -29,7 +30,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     const result = await this._shouldSetupWebSupportAsync();
 
     // Ensure web packages are installed
-    await this._ensureWebDependenciesInstalledAsync({ exp: result.exp });
+    await this._ensureWebDependenciesInstalledAsync({ exp: result.exp, pkg: result.pkg });
   }
 
   /** Exposed for testing. */
@@ -50,11 +51,20 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   }
 
   /** Exposed for testing. */
-  async _ensureWebDependenciesInstalledAsync({ exp }: { exp: ExpoConfig }): Promise<boolean> {
+  async _ensureWebDependenciesInstalledAsync({
+    exp,
+    pkg,
+  }: {
+    exp: ExpoConfig;
+    pkg: PackageJSONConfig;
+  }): Promise<boolean> {
     const requiredPackages: ResolvedPackage[] = [
       { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
-    if (!env.EXPO_NO_REACT_NATIVE_WEB) {
+    const hasReactNative = !!(
+      pkg.dependencies?.['react-native'] || pkg.devDependencies?.['react-native']
+    );
+    if (!env.EXPO_NO_REACT_NATIVE_WEB && hasReactNative) {
       // use react-native-web/package.json to skip node module cache issues when the user installs
       // the package and attempts to resolve the module in the same process.
       requiredPackages.push({ file: 'react-native-web/package.json', pkg: 'react-native-web' });

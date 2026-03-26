@@ -210,3 +210,27 @@ describe('start - dev clients', () => {
     expect(response.ok).toBeTruthy();
   });
 });
+
+describeSkipWin('web-only server (no react-native)', () => {
+  const expo = createExpoStart();
+
+  beforeEach(async () => {
+    expo.options.cwd = await setupTestProjectWithOptionsAsync('web-only-start', 'with-web-only', {
+      linkExpoPackages: ['expo', 'babel-preset-expo'],
+    });
+    await expo.startAsync(['--web']);
+  });
+
+  afterAll(async () => {
+    await expo.stopAsync();
+  });
+
+  it('starts and serves web bundle without react-native', async () => {
+    const response = await expo.fetchBundleAsync(
+      '/index.bundle?platform=web&dev=true'
+    );
+    expect(response.ok).toBeTruthy();
+    const content = await response.text();
+    expect(content.length).toBeGreaterThan(100);
+  });
+});
