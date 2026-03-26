@@ -116,6 +116,22 @@ class FileSystemModule : Module() {
       }
     }
 
+    AsyncFunction("zip") Coroutine { sources: List<FileSystemPath>, destination: FileSystemPath, options: ZipOptions? ->
+      ZipOperations.zip(sources, destination, options ?: ZipOptions())
+    }
+
+    Function("zipSync") { sources: List<FileSystemPath>, destination: FileSystemPath, options: ZipOptions? ->
+      ZipOperations.zip(sources, destination, options ?: ZipOptions())
+    }
+
+    AsyncFunction("unzip") Coroutine { source: FileSystemFile, destination: FileSystemDirectory, options: UnzipOptions? ->
+      ZipOperations.unzip(source, destination, options ?: UnzipOptions())
+    }
+
+    Function("unzipSync") { source: FileSystemFile, destination: FileSystemDirectory, options: UnzipOptions? ->
+      ZipOperations.unzip(source, destination, options ?: UnzipOptions())
+    }
+
     Class(FileSystemFile::class) {
       Constructor { uri: Uri ->
         FileSystemFile(uri)
