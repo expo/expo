@@ -182,9 +182,8 @@ function HeaderSearchBarInternal({
               }),
               color: textColor,
               borderBottomColor:
-                (Color(textColor)?.alpha(0.2).string() ?? dark)
-                  ? 'rgba(255, 255, 255, 0.2)'
-                  : 'rgba(0, 0, 0, 0.2)',
+                Color(textColor)?.alpha(0.2).string() ??
+                (dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'),
             },
           ]}
         />

@@ -146,9 +146,8 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
                     default: 'transparent',
                 }),
                 color: textColor,
-                borderBottomColor: ((0, color_1.Color)(textColor)?.alpha(0.2).string() ?? dark)
-                    ? 'rgba(255, 255, 255, 0.2)'
-                    : 'rgba(0, 0, 0, 0.2)',
+                borderBottomColor: (0, color_1.Color)(textColor)?.alpha(0.2).string() ??
+                    (dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'),
             },
         ]}/>
         {react_native_1.Platform.OS === 'ios' ? (<PlatformPressable_1.PlatformPressable onPress={onClear} style={[
