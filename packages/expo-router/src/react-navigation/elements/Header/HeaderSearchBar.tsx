@@ -1,8 +1,8 @@
 'use client';
-import Color from 'color';
 import * as React from 'react';
 import {
   Animated,
+  type ColorValue,
   Image,
   Platform,
   type StyleProp,
@@ -15,6 +15,7 @@ import {
 import clearIcon from '../../../../assets/react-navigation/elements/clear-icon.png';
 import closeIcon from '../../../../assets/react-navigation/elements/close-icon.png';
 import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
+import { Color } from '../../../utils/color';
 import { PlatformPressable } from '../PlatformPressable';
 import { Text } from '../Text';
 import type { HeaderSearchBarOptions, HeaderSearchBarRef } from '../types';
@@ -25,7 +26,7 @@ import { useNavigation, useTheme } from '../../native';
 type Props = Omit<HeaderSearchBarOptions, 'ref'> & {
   visible: boolean;
   onClose: () => void;
-  tintColor?: string;
+  tintColor?: ColorValue;
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
 };
 
@@ -167,10 +168,10 @@ function HeaderSearchBarInternal({
           inputMode={INPUT_TYPE_TO_MODE[inputType ?? 'text']}
           enterKeyHint={enterKeyHint}
           placeholder={placeholder}
-          placeholderTextColor={Color(textColor).alpha(0.5).string()}
+          placeholderTextColor={Color(textColor)?.alpha(0.5).string()}
           cursorColor={colors.primary}
           selectionHandleColor={colors.primary}
-          selectionColor={Color(colors.primary).alpha(0.3).string()}
+          selectionColor={Color(colors.primary)?.alpha(0.3).string()}
           style={[
             fonts.regular,
             styles.searchbar,
@@ -180,7 +181,10 @@ function HeaderSearchBarInternal({
                 default: 'transparent',
               }),
               color: textColor,
-              borderBottomColor: Color(textColor).alpha(0.2).string(),
+              borderBottomColor:
+                (Color(textColor)?.alpha(0.2).string() ?? dark)
+                  ? 'rgba(255, 255, 255, 0.2)'
+                  : 'rgba(0, 0, 0, 0.2)',
             },
           ]}
         />
