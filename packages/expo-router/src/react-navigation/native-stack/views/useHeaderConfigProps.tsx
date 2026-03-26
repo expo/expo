@@ -1,5 +1,4 @@
 'use client';
-import color from 'color';
 import { Platform, StyleSheet, type TextStyle, View } from 'react-native';
 import {
   type HeaderBarButtonItemMenuAction,
@@ -25,6 +24,7 @@ import type {
   NativeStackNavigationOptions,
 } from '../types';
 import { processFonts } from './FontProcessor';
+import { Color } from '../../../utils/color';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
 
 type Props = NativeStackNavigationOptions & {
@@ -98,7 +98,7 @@ const processBarButtonItems = (
 
         if (badge) {
           const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
-          const badgeTextColor = color(badgeBackgroundColor).isLight() ? 'black' : 'white';
+          const badgeTextColor = Color(badgeBackgroundColor)?.isLight() ? 'black' : 'white';
 
           processedItem = {
             ...processedItem,

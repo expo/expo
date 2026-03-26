@@ -1,9 +1,9 @@
-import { type ImageSourcePropType } from 'react-native';
+import { type ColorValue, type ImageSourcePropType } from 'react-native';
 type Props = {
     accessibilityLabel?: string;
-    pressColor?: string;
+    pressColor?: ColorValue;
     pressOpacity?: number;
-    tintColor?: string;
+    tintColor?: ColorValue;
     imageSource?: ImageSourcePropType;
 };
 export declare function DrawerToggleButton({ tintColor, accessibilityLabel, imageSource, ...rest }: Props): import("react").JSX.Element;

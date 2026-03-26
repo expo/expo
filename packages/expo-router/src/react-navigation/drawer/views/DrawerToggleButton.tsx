@@ -1,5 +1,5 @@
 'use client';
-import { Image, type ImageSourcePropType, StyleSheet } from 'react-native';
+import { type ColorValue, Image, type ImageSourcePropType, StyleSheet } from 'react-native';
 
 import toggleDrawerIcon from '../../../../../assets/react-navigation/drawer/toggle-drawer-icon.png';
 import { HeaderButton } from '../../elements';
@@ -8,9 +8,9 @@ import type { DrawerNavigationProp } from '../types';
 
 type Props = {
   accessibilityLabel?: string;
-  pressColor?: string;
+  pressColor?: ColorValue;
   pressOpacity?: number;
-  tintColor?: string;
+  tintColor?: ColorValue;
   imageSource?: ImageSourcePropType;
 };
 

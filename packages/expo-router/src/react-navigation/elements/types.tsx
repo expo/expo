@@ -1,5 +1,6 @@
 import type {
   Animated,
+  ColorValue,
   LayoutChangeEvent,
   StyleProp,
   TextInputProps,
@@ -154,8 +155,8 @@ export type HeaderOptions = {
    * Function which returns a React Element to display on the right side of the header.
    */
   headerRight?: (props: {
-    tintColor?: string;
-    pressColor?: string;
+    tintColor?: ColorValue;
+    pressColor?: ColorValue;
     pressOpacity?: number;
     canGoBack: boolean;
   }) => React.ReactNode;
@@ -166,7 +167,7 @@ export type HeaderOptions = {
   /**
    * Color for material ripple (Android >= 5.0 only).
    */
-  headerPressColor?: string;
+  headerPressColor?: ColorValue;
   /**
    * Color for material ripple (Android >= 5.0 only).
    */
@@ -174,7 +175,7 @@ export type HeaderOptions = {
   /**
    * Tint color for the header.
    */
-  headerTintColor?: string;
+  headerTintColor?: ColorValue;
   /**
    * Function which returns a React Element to render as the background of the header.
    * This is useful for using backgrounds such as an image, a gradient, blur effect etc.
@@ -234,7 +235,7 @@ export type HeaderTitleProps = {
   /**
    * Tint color for the header.
    */
-  tintColor?: string;
+  tintColor?: ColorValue;
   /**
    * Callback to trigger when the size of the title element changes.
    */
@@ -269,11 +270,11 @@ export type HeaderButtonProps = {
   /**
    * Tint color for the header button.
    */
-  tintColor?: string;
+  tintColor?: ColorValue;
   /**
    * Color for material ripple (Android >= 5.0 only).
    */
-  pressColor?: string;
+  pressColor?: ColorValue;
   /**
    * Opacity when the button is pressed, used when ripple is not supported.
    */
@@ -292,7 +293,7 @@ export type HeaderBackButtonProps = Omit<HeaderButtonProps, 'children'> & {
   /**
    * Function which returns a React Element to display custom image in header's back button.
    */
-  backImage?: (props: { tintColor: string }) => React.ReactNode;
+  backImage?: (props: { tintColor: ColorValue }) => React.ReactNode;
   /**
    * Label text for the button. Usually the title of the previous screen.
    * By default, this is only shown on iOS.

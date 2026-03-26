@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
+import { ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
 import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
@@ -27,9 +27,7 @@ export type StackScreenTitleProps = {
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
     fontWeight?: Exclude<TextStyle['fontWeight'], number>;
-    // TODO(@ubax): This should be ColorValue, but react-navigation types
-    // currently only accept string for color props. In RN v8 we can change this to ColorValue.
-    color?: string;
+    color?: ColorValue;
     textAlign?: 'left' | 'center';
   }>;
   /**
@@ -41,9 +39,7 @@ export type StackScreenTitleProps = {
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
     fontWeight?: Exclude<TextStyle['fontWeight'], number>;
-    // TODO(@ubax): This should be ColorValue, but react-navigation types
-    // currently only accept string for color props. In RN v8 we can change this to ColorValue.
-    color?: string;
+    color?: ColorValue;
   }>;
   /**
    * Enables large title mode.
