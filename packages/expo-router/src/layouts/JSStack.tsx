@@ -3,9 +3,12 @@
 import React, { ComponentProps } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
-import { createStackNavigator } from '../react-navigation/stack';
 import { ParamListBase, StackNavigationState } from '../react-navigation/native';
-import { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
+import {
+  createStackNavigator,
+  StackNavigationEventMap,
+  StackNavigationOptions,
+} from '../react-navigation/stack';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
