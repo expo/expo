@@ -83,7 +83,7 @@ const NativeToolbarMenu = (props) => {
     return (<AnimatedItemContainer_1.AnimatedItemContainer visible={!props.hidden}>
       <jetpack_compose_1.DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
         <jetpack_compose_1.DropdownMenu.Trigger>
-          <jetpack_compose_1.IconButton onClick={() => setExpanded(true)} enabled={!props.disabled}>
+          <jetpack_compose_1.IconButton onClick={() => setExpanded(true)} enabled={!props.disabled} modifiers={[(0, modifiers_1.background)(backgroundColor)]}>
             <jetpack_compose_1.Icon source={props.source} tintColor={tintColor} size={24}/>
           </jetpack_compose_1.IconButton>
         </jetpack_compose_1.DropdownMenu.Trigger>
