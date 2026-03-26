@@ -136,7 +136,7 @@ function runNumberOptimizedBenchmark(): BenchmarkResult {
   }
 
   let bridgeTime = 0;
-  {
+  if (BridgeModule) {
     const start = performance.now();
     let num = 0;
     for (let i = 0; i < runs; i++) {
