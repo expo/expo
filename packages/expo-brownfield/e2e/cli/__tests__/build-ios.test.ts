@@ -92,9 +92,9 @@ describe('build:ios command', () => {
 
     /**
      * Command: npx expo-brownfield build:ios
-     * Expected behavior: The CLI should validate and ask for prebuild
+     * Expected behavior: The CLI should fail if prebuild is cancelled
      */
-    it('should validate and ask for prebuild', async () => {
+    it('should fail if prebuild is cancelled', async () => {
       // The command fails, because `expo-brownfield` is not added to app.json
       // But the prebuild should succeed
       const { exitCode, stdout, stderr } = await executeCommandAsync(
@@ -106,6 +106,29 @@ describe('build:ios command', () => {
       expect(exitCode).not.toBe(0);
       expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
       expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(ERROR.MISSING_PREBUILD());
+    });
+
+    /**
+     * Command: npx expo-brownfield build:ios
+     * Expected behavior: The CLI should validate and ask for prebuild
+     */
+    it('should validate and ask for prebuild', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', `yes | node ${CLI_PATH} build:ios`],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(`Could not find brownfield iOS scheme`);
+
+      // The android directory should be created and not empty
+      await expectPrebuild(TEMP_DIR, 'ios');
     });
   });
 
@@ -114,7 +137,7 @@ describe('build:ios command', () => {
    */
   describe('with prebuild', () => {
     beforeAll(async () => {
-      TEMP_DIR_PREBUILD = await createTempProject('buildiospb', true);
+      TEMP_DIR_PREBUILD = await createTempProject('buildiospb', true, true);
     }, 600000);
 
     afterAll(async () => {
