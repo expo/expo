@@ -2,23 +2,32 @@
 
 @preconcurrency import ExpoModulesCore
 
-private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
+internal let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
 nonisolated(unsafe) internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
+nonisolated(unsafe) internal var urlSessionFactory: ((_ delegateProxy: URLSessionSessionDelegateProxy) -> URLSession)?
+nonisolated(unsafe) internal weak var currentFetchModule: ExpoFetchModule?
+
+func requestURLSessionRecreation() {
+  fetchRequestQueue.async {
+    currentFetchModule?.recreateURLSession()
+  }
+}
 
 public final class ExpoFetchModule: Module {
-  private lazy var urlSession = createURLSession()
+  private var urlSession: URLSession?
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
 
   public required init(appContext: AppContext) {
     urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: fetchRequestQueue)
     super.init(appContext: appContext)
+    currentFetchModule = self
   }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoFetchModule")
 
     OnDestroy {
-      urlSession.invalidateAndCancel()
+      urlSession?.invalidateAndCancel()
     }
 
     // swiftlint:disable:next closure_body_length
@@ -78,8 +87,8 @@ public final class ExpoFetchModule: Module {
 
       AsyncFunction("start") { (request: NativeRequest, url: URL, requestInit: NativeRequestInit, requestBody: Data?, promise: Promise) in
         request.start(
-          urlSession: urlSession,
-          urlSessionDelegate: urlSessionDelegate,
+          urlSession: self.getOrCreateURLSession(),
+          urlSessionDelegate: self.urlSessionDelegate,
           url: url,
           requestInit: requestInit,
           requestBody: requestBody
@@ -99,7 +108,25 @@ public final class ExpoFetchModule: Module {
     }
   }
 
+  private func getOrCreateURLSession() -> URLSession {
+    if let session = urlSession {
+      return session
+    }
+    let session = createURLSession()
+    urlSession = session
+    return session
+  }
+
+  internal func recreateURLSession() {
+    urlSession?.invalidateAndCancel()
+    urlSession = nil
+  }
+
   private func createURLSession() -> URLSession {
+    if let urlSessionFactory {
+      return urlSessionFactory(urlSessionDelegate)
+    }
+
     let config: URLSessionConfiguration
     if let urlSessionConfigurationProvider, let concreteConfig = urlSessionConfigurationProvider() {
       config = concreteConfig
