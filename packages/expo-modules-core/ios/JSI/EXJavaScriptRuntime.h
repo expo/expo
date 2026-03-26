@@ -123,6 +123,21 @@ NS_SWIFT_NAME(JavaScriptRuntime)
                                           argsCount:(NSInteger)argsCount
                                               block:(nonnull JSAsyncFunctionBlock)block;
 
+/**
+ Creates an optimized asynchronous host function with type encoding for primitive types.
+ Arguments are extracted directly from JSI values on the JS thread, then the block is
+ invoked on a background queue via NSInvocation. The result resolves a JS Promise.
+ \param name The function name
+ \param typeEncoding Objective-C type encoding string (e.g., "d@?dd" for (Double, Double) -> Double)
+ \param argsCount Number of arguments
+ \param body The Swift closure to execute
+ \return A JavaScript function represented as a `JavaScriptObject`.
+ */
+- (nonnull EXJavaScriptObject *)createAsyncFunction:(nonnull NSString *)name
+                                        typeEncoding:(nonnull NSString *)typeEncoding
+                                           argsCount:(NSInteger)argsCount
+                                                body:(nonnull id)body NS_REFINED_FOR_SWIFT;
+
 #pragma mark - Classes
 
 /**

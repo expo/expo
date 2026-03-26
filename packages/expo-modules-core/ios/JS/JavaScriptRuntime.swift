@@ -78,6 +78,15 @@ public extension JavaScriptRuntime {
   }
 
   /**
+   Creates an optimized asynchronous function that uses type encoding to bypass JavaScriptValue boxing
+   for primitive types (Double, Int, String, Bool). The block is dispatched to a background queue
+   and the result is returned as a JS Promise.
+   */
+  func createAsyncFunction(_ name: String, typeEncoding: String, argsCount: Int, body: AnyObject) -> JavaScriptObject {
+    return __createAsyncFunction(name, typeEncoding: typeEncoding, argsCount: argsCount, body: body)
+  }
+
+  /**
    Schedules a block to be executed with granted synchronized access to the JS runtime.
    */
   func schedule(priority: SchedulerPriority = .normal, @_implicitSelfCapture _ closure: @JavaScriptActor @escaping () -> Void) {

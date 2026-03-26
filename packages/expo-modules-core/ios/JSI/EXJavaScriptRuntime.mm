@@ -165,6 +165,106 @@
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
 }
 
+- (nonnull EXJavaScriptObject *)createAsyncFunction:(nonnull NSString *)name
+                                        typeEncoding:(nonnull NSString *)typeEncoding
+                                           argsCount:(NSInteger)argsCount
+                                                body:(nonnull id)block
+{
+  jsi::PropNameID propNameId = jsi::PropNameID::forAscii(*_runtime, [name UTF8String], [name length]);
+  std::weak_ptr<react::CallInvoker> weakCallInvoker = _jsCallInvoker;
+
+  // Create method signature from type encoding
+  NSMethodSignature *signature = [NSMethodSignature signatureWithObjCTypes:[typeEncoding UTF8String]];
+  if (!signature) {
+    @throw [NSException exceptionWithName:@"InvalidTypeEncoding"
+                                   reason:[NSString stringWithFormat:@"Invalid type encoding: %@", typeEncoding]
+                                 userInfo:nil];
+  }
+
+  // Pre-parse argument and return types at registration time
+  std::string argTypes(argsCount, '\0');
+  for (NSInteger i = 0; i < argsCount; i++) {
+    argTypes[i] = [signature getArgumentTypeAtIndex:i + 1][0];
+  }
+  char returnType = [signature methodReturnType][0];
+
+  jsi::HostFunctionType function = [weakCallInvoker, block, signature, argTypes, returnType, self](
+    jsi::Runtime &runtime, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+
+    auto callInvoker = weakCallInvoker.lock();
+    if (!callInvoker) {
+      throw jsi::JSError(runtime, "Calling async functions is not supported when the call invoker is unavailable");
+    }
+
+    // Create NSInvocation and set arguments on JS thread using direct JSI value extraction.
+    // Unlike the sync path, we can't cache the invocation since async calls can overlap.
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    [invocation setTarget:block];
+
+    for (NSUInteger i = 0; i < count; i++) {
+      setInvocationArgument(invocation, i + 1, argTypes[i], runtime, args[i]);
+    }
+    // Retain arguments so strings survive the cross-thread dispatch
+    [invocation retainArguments];
+
+    auto promiseSetup = [callInvoker, invocation, returnType](jsi::Runtime &runtime, std::shared_ptr<Promise> promise) {
+      expo::callPromiseSetupWithBlock(runtime, callInvoker, promise, ^(RCTPromiseResolveBlock resolver, RCTPromiseRejectBlock rejecter) {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+          @try {
+            [invocation invoke];
+
+            switch (returnType) {
+              case 'v': // void
+                resolver(nil);
+                break;
+              case 'd': // double
+              case 'f': { // float
+                double ret;
+                [invocation getReturnValue:&ret];
+                resolver(@(ret));
+                break;
+              }
+              case 'q': // long long
+              case 'l': // long
+              case 'i': // int
+              case 's': // short
+              case 'c': { // char
+                long long ret;
+                [invocation getReturnValue:&ret];
+                resolver(@(ret));
+                break;
+              }
+              case 'B': { // bool
+                bool ret;
+                [invocation getReturnValue:&ret];
+                resolver(@(ret));
+                break;
+              }
+              case '@': { // object (NSString*, etc.)
+                __unsafe_unretained NSString *ret = nil;
+                [invocation getReturnValue:&ret];
+                resolver(ret);
+                break;
+              }
+              default:
+                rejecter(@"ERR_UNKNOWN", [NSString stringWithFormat:@"Unsupported return type: %c", returnType], nil);
+                break;
+            }
+          } @catch (NSException *exception) {
+            NSString *code = exception.userInfo[@"code"] ?: @"ERR_UNKNOWN";
+            NSString *message = exception.userInfo[@"message"] ?: exception.reason;
+            rejecter(code, message, nil);
+          }
+        });
+      });
+    };
+    return createPromiseAsJSIValue(runtime, promiseSetup);
+  };
+
+  std::shared_ptr<jsi::Object> fnPtr = std::make_shared<jsi::Object>(jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function));
+  return [[EXJavaScriptObject alloc] initWith:fnPtr runtime:self];
+}
+
 #pragma mark - Classes
 
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype

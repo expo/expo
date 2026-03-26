@@ -1,8 +1,9 @@
-/// An attached macro that generates an optimized synchronous function descriptor.
+/// An attached macro that generates an optimized function descriptor.
 /// Creates a peer function that returns `OptimizedFunctionDescriptor`, for use with
-/// the `Function("name", descriptor)` overload in ModuleDefinition result builders.
+/// the `Function("name", descriptor)` or `AsyncFunction("name", descriptor)` overloads
+/// in ModuleDefinition result builders.
 ///
-/// Usage:
+/// Usage (synchronous):
 ///
 ///     @OptimizedFunction
 ///     private func addNumbers(a: Double, b: Double) -> Double {
@@ -11,6 +12,16 @@
 ///
 ///     // In definition():
 ///     Function("addNumbers", addNumbers())
+///
+/// Usage (asynchronous):
+///
+///     @OptimizedFunction
+///     private func computeValue(x: Double) -> Double {
+///         return expensiveComputation(x)
+///     }
+///
+///     // In definition():
+///     AsyncFunction("computeValue", computeValue())
 ///
 /// You can also provide an explicit peer name if the Swift function name differs:
 ///

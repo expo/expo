@@ -9,7 +9,13 @@ type BenchmarkResult = {
   bridgeTime: number;
 };
 
+type AsyncBenchmarkResult = {
+  expoTime: number;
+  expoOptimizedTime: number;
+};
+
 const runs = 100_000;
+const asyncRuns = 10_000;
 
 function runVoidBenchmark(): BenchmarkResult {
   let expoTime = 0;
@@ -235,6 +241,40 @@ function runArrayBenchmark(): BenchmarkResult {
   return { expoTime, turboTime, bridgeTime };
 }
 
+async function runAsyncNumberBenchmark(): Promise<AsyncBenchmarkResult> {
+  // Warmup
+  await ExpoModule.addNumbersAsync(0, 1);
+  await ExpoModule.addNumbersAsyncOptimized(0, 1);
+
+  let expoTime = 0;
+  {
+    const start = performance.now();
+    for (let i = 0; i < asyncRuns; i++) {
+      await ExpoModule.addNumbersAsync(i, 5);
+    }
+    const end = performance.now();
+    expoTime = end - start;
+    console.log(
+      `ExpoModule took ${expoTime.toFixed(2)}ms to run addNumbersAsync(...) ${asyncRuns}x!`
+    );
+  }
+
+  let expoOptimizedTime = 0;
+  {
+    const start = performance.now();
+    for (let i = 0; i < asyncRuns; i++) {
+      await ExpoModule.addNumbersAsyncOptimized(i, 5);
+    }
+    const end = performance.now();
+    expoOptimizedTime = end - start;
+    console.log(
+      `ExpoModule took ${expoOptimizedTime.toFixed(2)}ms to run addNumbersAsyncOptimized(...) ${asyncRuns}x!`
+    );
+  }
+
+  return { expoTime, expoOptimizedTime };
+}
+
 function BenchmarkResultContainer(props: { functionName: string; result: BenchmarkResult | null }) {
   const { theme } = useTheme();
   const { functionName, result } = props;
@@ -246,7 +286,7 @@ function BenchmarkResultContainer(props: { functionName: string; result: Benchma
   return (
     <View style={styles.benchmarkContainer}>
       <Text style={[styles.testHeader, { color: theme.text.default }]}>
-        Calling `{functionName}` 100.000 times
+        Calling `{functionName}` {runs.toLocaleString()} times
       </Text>
       <View style={styles.testResult}>
         <Text style={[styles.testResultText, { color: theme.text.default }]}>
@@ -263,6 +303,36 @@ function BenchmarkResultContainer(props: { functionName: string; result: Benchma
   );
 }
 
+function AsyncBenchmarkResultContainer(props: {
+  functionName: string;
+  result: AsyncBenchmarkResult | null;
+}) {
+  const { theme } = useTheme();
+  const { functionName, result } = props;
+
+  const expoTime = result?.expoTime ? result.expoTime.toFixed(2) + 'ms' : 'null';
+  const expoOptimizedTime = result?.expoOptimizedTime
+    ? result.expoOptimizedTime.toFixed(2) + 'ms'
+    : 'null';
+
+  return (
+    <View style={styles.benchmarkContainer}>
+      <Text style={[styles.testHeader, { color: theme.text.default }]}>
+        Calling `{functionName}` {asyncRuns.toLocaleString()} times
+      </Text>
+      <View style={styles.testResult}>
+        <Text style={[styles.testResultText, { color: theme.text.default }]}>
+          AsyncFunction took: <Text style={styles.testResultTime}>{expoTime}</Text>
+        </Text>
+        <Text style={[styles.testResultText, { color: theme.text.default }]}>
+          AsyncFunction (optimized) took:{' '}
+          <Text style={styles.testResultTime}>{expoOptimizedTime}</Text>
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 export default function ModulesBenchmarksScreen() {
   const { theme } = useTheme();
 
@@ -271,13 +341,15 @@ export default function ModulesBenchmarksScreen() {
   const [numberOptimizedTimes, setNumberOptimizedTimes] = useState<BenchmarkResult | null>(null);
   const [stringTimes, setStringTimes] = useState<BenchmarkResult | null>(null);
   const [arrayTimes, setArrayTimes] = useState<BenchmarkResult | null>(null);
+  const [asyncNumberTimes, setAsyncNumberTimes] = useState<AsyncBenchmarkResult | null>(null);
 
-  const startBenchmarks = useCallback(() => {
+  const startBenchmarks = useCallback(async () => {
     setVoidTimes(runVoidBenchmark());
     setNumberTimes(runNumberBenchmark());
     setNumberOptimizedTimes(runNumberOptimizedBenchmark());
     setStringTimes(runStringsBenchmark());
     setArrayTimes(runArrayBenchmark());
+    setAsyncNumberTimes(await runAsyncNumberBenchmark());
   }, []);
 
   return (
@@ -291,6 +363,10 @@ export default function ModulesBenchmarksScreen() {
         />
         <BenchmarkResultContainer functionName="addStrings" result={stringTimes} />
         <BenchmarkResultContainer functionName="foldArray" result={arrayTimes} />
+        <AsyncBenchmarkResultContainer
+          functionName="addNumbersAsync"
+          result={asyncNumberTimes}
+        />
 
         <Button title="Start" color={theme.text.link} onPress={startBenchmarks} />
       </ScrollView>
