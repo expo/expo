@@ -3,7 +3,6 @@
 import React, { ComponentProps } from 'react';
 import { Pressable, Platform } from 'react-native';
 
-import { tabRouterOverride } from './TabRouter';
 import { withLayoutContext } from './withLayoutContext';
 import { Link } from '../link/Link';
 import {
@@ -73,7 +72,7 @@ const ExpoTabs = withLayoutContext<
  */
 const Tabs = Object.assign(
   (props: ComponentProps<typeof ExpoTabs>) => {
-    return <ExpoTabs {...props} UNSTABLE_router={tabRouterOverride} />;
+    return <ExpoTabs {...props} />;
   },
   {
     Screen: ExpoTabs.Screen,
