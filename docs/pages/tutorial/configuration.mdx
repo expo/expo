@@ -30,7 +30,8 @@ Inside **app/\_layout.tsx**:
 1. Import `StatusBar` from `expo-status-bar`.
 2. Group the `StatusBar` and existing `Stack` components with [React's Fragment component](https://react.dev/reference/react/Fragment).
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 /* @tutinfo */
@@ -41,11 +42,12 @@ export default function RootLayout() {
   return (
     /* @tutinfo Group the `StatusBar` and existing `Stack` components with React's Fragment component. */
     <>
-    /* @end */
+      /* @end */
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
-      /* @tutinfo */<StatusBar style="light" />
+      /* @tutinfo */
+      <StatusBar style="light" />
     </>
     /* @end */
   );

@@ -156,13 +156,15 @@ To work around this limitation, the library employs one of the following strateg
 
 Here's an example to illustrate a case in which the library will use [`withMyPlugin`, `withAnonymous`] as plugin properties for fingerprint hashing:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```js app.config.js
 const { withInfoPlist } = require('expo/config-plugins');
 
-const withMyPlugin = (config) => {
-  return withInfoPlist(config, (config) => {
-    config.modResults.NSLocationWhenInUseUsageDescription = 'Allow $(PRODUCT_NAME) to use your location';
+const withMyPlugin = config => {
+  return withInfoPlist(config, config => {
+    config.modResults.NSLocationWhenInUseUsageDescription =
+      'Allow $(PRODUCT_NAME) to use your location';
     return config;
   });
 };
@@ -170,7 +172,7 @@ const withMyPlugin = (config) => {
 export default ({ config }) => {
   config.plugins ||= [];
   config.plugins.push(withMyPlugin);
-  config.plugins.push((config) => config);
+  config.plugins.push(config => config);
   return config;
 };
 ```
@@ -197,12 +199,12 @@ const withMyPlugin = config => {
 module.exports = withMyPlugin;
 ```
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```json app.json
 {
   "expo": {
-    /* @hide ... */ /* @end */
-    "plugins": "./plugins/withMyPlugin"
+    /* @hide ... */ /* @end */ "plugins": "./plugins/withMyPlugin"
   }
 }
 ```

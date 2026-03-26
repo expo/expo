@@ -79,7 +79,8 @@ To use the Image component in **app/(tabs)/index.tsx** file:
 1. Import `Image` from the `expo-image` library.
 2. Create a `PlaceholderImage` variable to use **assets/images/background-image.png** file as the `source` prop on the `Image` component.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx|collapseHeight=380
 import { View, StyleSheet } from 'react-native';
 /* @tutinfo Import the <CODE>Image</CODE> component. */ import { Image } from 'expo-image'; /* @end */
@@ -91,7 +92,8 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo Wrap the <CODE>Image</CODE> component inside a container. Also, add the image component to display the placeholder image. */
+      /* @tutinfo Wrap the <CODE>Image</CODE> component inside a container. Also, add the image
+      component to display the placeholder image. */
       <View style={styles.imageContainer}>
         <Image source={PlaceholderImage} style={styles.image} />
       </View>
@@ -132,7 +134,8 @@ Let's divide the code into multiple files as we add more components to this scre
 1. Create a top-level **components** directory, and inside it, create the **ImageViewer.tsx** file.
 2. Move the code to display the image in this file along with the `image` styles.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx components/ImageViewer.tsx|collapseHeight=280
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
@@ -158,11 +161,12 @@ const styles = StyleSheet.create({
 
 Import `ImageViewer` and use it in the **app/(tabs)/index.tsx**:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx|collapseHeight=320
 import { StyleSheet, View } from 'react-native';
 
-/* @tutinfo */import ImageViewer from '@/components/ImageViewer'; /* @end */
+/* @tutinfo */ import ImageViewer from '@/components/ImageViewer'; /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -206,7 +210,8 @@ React Native includes a few different components for handling touch events, but 
 
 In the design, there are two buttons we need to create. Each has a different style and label. Let's start by creating a reusable component for these buttons. Create a **Button.tsx** file inside the **components** directory with the following code:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx components/Button.tsx|collapseHeight=280
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 
@@ -250,14 +255,15 @@ const styles = StyleSheet.create({
 
 The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls `alert()` on its `onPress` prop. Let's import this component into **app/(tabs)/index.tsx** file and add styles for the `<View>` that encapsulates these buttons:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 
-/* @tutinfo */import Button from '@/components/Button'; /* @end */
+/* @tutinfo */ import Button from '@/components/Button'; /* @end */
 import ImageViewer from '@/components/ImageViewer';
 
-const PlaceholderImage = require("@/assets/images/background-image.png");
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   return (
@@ -265,7 +271,8 @@ export default function Index() {
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
-      /* @tutinfo Use the reusable <CODE>Button</CODE> component to create two buttons and encapsulate them inside a <CODE>View</CODE> component. */
+      /* @tutinfo Use the reusable <CODE>Button</CODE> component to create two buttons and
+      encapsulate them inside a <CODE>View</CODE> component. */
       <View style={styles.footerContainer}>
         <Button label="Choose a photo" />
         <Button label="Use this photo" />
@@ -314,21 +321,25 @@ The "Choose a photo" button requires different styling than the "Use this photo"
 
 To load and display the icon on the button, let's use `FontAwesome` from the library. Modify **components/Button.tsx** to add the following code snippet:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx components/Button.tsx
 import { StyleSheet, View, Pressable, Text } from 'react-native';
-/* @tutinfo Import FontAwesome. */import FontAwesome from '@expo/vector-icons/FontAwesome';/* @end */
+/* @tutinfo Import FontAwesome. */ import FontAwesome from '@expo/vector-icons/FontAwesome'; /* @end */
 
 type Props = {
   label: string;
-  /* @tutinfo Add theme prop. */theme?: 'primary';/* @end */
+  /* @tutinfo Add theme prop. */ theme?: 'primary'; /* @end */
 };
 
-export default function Button({ label, /* @tutinfo The prop <CODEtheme</CODE> to detect the button variant. */theme/* @end */ }: Props) {
+export default function Button({
+  label,
+  /* @tutinfo The prop <CODEtheme</CODE> to detect the button variant. */ theme /* @end */,
+}: Props) {
   /* @tutinfo Conditionally render the primary themed button. */
   if (theme === 'primary') {
-  /* @end */
-  /* @tutinfo */
+    /* @end */
+    /* @tutinfo */
     return (
       <View
         style={[
@@ -343,8 +354,8 @@ export default function Button({ label, /* @tutinfo The prop <CODEtheme</CODE> t
         </Pressable>
       </View>
     );
-  /* @end */
-  /* @tutinfo */
+    /* @end */
+    /* @tutinfo */
   }
   /* @end */
 
@@ -394,7 +405,8 @@ Let's learn what the above code does:
 
 Now, modify the **app/(tabs)/index.tsx** file to use the `theme="primary"` prop on the first button.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 

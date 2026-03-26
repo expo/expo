@@ -144,14 +144,20 @@ Let's modify **app/index.tsx** screen:
 3. Replace the default value of `<Text>` with "Home screen".
 4. Add a `styles.text.color` property to `<Text>` with the value of `#fff` (white) to change the text color.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/index.tsx|collapseHeight=340
-import { Text, View, /* @tutinfo Import <CODE>StyleSheet</CODE> to define styles. */ StyleSheet/* @end */ } from 'react-native';
+import {
+  Text,
+  View,
+  /* @tutinfo Import <CODE>StyleSheet</CODE> to define styles. */ StyleSheet /* @end */,
+} from 'react-native';
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo This used to say "Edit app/index.tsx to edit this screen". Now it says, "Home screen". */
+      /* @tutinfo This used to say "Edit app/index.tsx to edit this screen". Now it says, "Home
+      screen". */
       <Text style={styles.text}>Home screen</Text>
       /* @end */
     </View>

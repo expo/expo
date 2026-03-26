@@ -66,7 +66,8 @@ export default {
 
 In **app.config.js**, add an environment variable called `IS_DEV` to switch the `android.package` and `ios.bundleIdentifier` for each variant based on the variable:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```js app.config.js
 const IS_DEV = process.env.APP_VARIANT === 'development';
 
@@ -80,7 +81,7 @@ export default {
   },
   android: {
     package: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
-  }
+  },
 };
 ```
 

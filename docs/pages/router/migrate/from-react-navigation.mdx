@@ -104,7 +104,8 @@ Layout the structure of your app by creating files according to the [application
 
 Replace navigators with directories, for example:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```jsx React Navigation
 function HomeTabs() {
   return (
@@ -125,14 +126,14 @@ function App() {
           // ...linking configuration
         }
         /* @end */
-      }
-    >
+      }>
       <Stack.Navigator>
         /* @info Standard screens can be moved to files. */
         <Stack.Screen name="Settings" component={Settings} />
         /* @end */
         <Stack.Screen name="Profile" component={Profile} />
-        /* @info A screen that exports a navigator should be converted to a directory with a layout route. */
+        /* @info A screen that exports a navigator should be converted to a directory with a layout
+        route. */
         <Stack.Screen
           name="Home"
           component={HomeTabs}
@@ -140,7 +141,7 @@ function App() {
             title: 'Home Screen',
           }}
         />
-          /* @end */
+        /* @end */
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -395,7 +396,8 @@ All of the `children` of a `<Navigator />` component will be rendered as-is.
 
 Custom layouts have an internal context that is ignored when using the `<Slot />` component without a `<Navigator />` component wrapping it.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```jsx
 import { View } from 'react-native';
 import { TabRouter } from '@react-navigation/native';
@@ -404,14 +406,15 @@ import { Navigator, usePathname, Slot, Link } from 'expo-router';
 
 export default function App() {
   return (
-    /* @info */<Navigator router={TabRouter}>/* @end */
+    /* @info */ <Navigator router={TabRouter}>
+      /* @end */
       <Header />
       <Slot />
     </Navigator>
   );
 }
 
-function Header() {;
+function Header() {
   const pathname = usePathname();
 
   return (
@@ -419,7 +422,11 @@ function Header() {;
       <Link href="/">Home</Link>
       <Link
         href="/profile"
-        style={/* @info Use <code>pathname</code> to determine if the link is active. */[pathname === '/profile' && { color: 'blue' }]/* @end */}>
+        style={
+          /* @info Use <code>pathname</code> to determine if the link is active. */ [
+            pathname === '/profile' && { color: 'blue' },
+          ] /* @end */
+        }>
         Profile
       </Link>
       <Link href="/settings">Settings</Link>
@@ -461,24 +468,27 @@ You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#r
 
 In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `@react-navigation/native`. The object specified in the `reset` action replaces the existing navigation state with the new one.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/screen.tsx
-import { useNavigation } from 'expo-router'
-import { CommonActions } from '@react-navigation/native'
+import { useNavigation } from 'expo-router';
+import { CommonActions } from '@react-navigation/native';
 
 export default function Screen() {
   const navigation = useNavigation();
 
   const handleResetAction = () => {
-    navigation.dispatch(CommonActions.reset({
-      routes: [{key: "(tabs)", name: "(tabs)"}]
-    }))
-  }
+    navigation.dispatch(
+      CommonActions.reset({
+        routes: [{ key: '(tabs)', name: '(tabs)' }],
+      })
+    );
+  };
 
   return (
     <>
       {/* ...rest of the code */}
-      <Button title='Reset' onPress={handleResetAction} />
+      <Button title="Reset" onPress={handleResetAction} />
     </>
   );
 }

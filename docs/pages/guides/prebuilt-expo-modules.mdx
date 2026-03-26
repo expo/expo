@@ -36,16 +36,15 @@ For example, after creating a project with SDK 53's default template, and runnin
 
 You can opt out of prebuilt modules. This might be required when you are modifying the module source code yourself. In this scenario, you can configure the Expo Autolinking configuration by adding `buildFromSource` to the **package.json** file:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```json package.json
 {
   "name": "your-app-name",
   "expo": {
     "autolinking": {
       "android": {
-        "buildFromSource": [
-          ".*"
-        ]
+        "buildFromSource": [".*"]
       }
     }
   }
@@ -56,18 +55,15 @@ You can opt out of prebuilt modules. This might be required when you are modifyi
 
 You can also opt out of specific modules while keeping others prebuilt by specifying individual package names instead of the wildcard `".*"`:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```json package.json
 {
   "name": "your-app-name",
   "expo": {
     "autolinking": {
       "android": {
-        "buildFromSource": [
-          "expo-camera",
-          "expo-web-browser",
-          "expo-linking",
-        ]
+        "buildFromSource": ["expo-camera", "expo-web-browser", "expo-linking"]
       }
     }
   }

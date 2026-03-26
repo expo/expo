@@ -45,7 +45,8 @@ export default function DynamicLayout({ segment }) {
 
 To enable the **array syntax**, specify the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) for each group using `unstable_settings` object in the dynamic layout:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/(home,search)/_layout.tsx
 export const unstable_settings = {
   initialRouteName: 'home',
@@ -55,7 +56,8 @@ export const unstable_settings = {
 };
 
 export default function DynamicLayout({ segment }) {
-  /* @hide  ... */ /* @end */
+  /* @hide  ... */
+  /* @end */
 }
 ```
 

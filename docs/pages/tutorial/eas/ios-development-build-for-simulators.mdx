@@ -28,12 +28,14 @@ Development builds for iOS Simulators are generated in the **.app** format which
 
 In **eas.json**, add a new build profile called `ios-simulator` with the property [`ios.simulator`](/eas/json/#simulator) property. Set its value `true`:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```json eas.json
 {
   "build": {
     "development": {
-      /* @hide ... */ /* @end */
+      /* @hide ... */
+      /* @end */
     },
     /* @info The <CODE>simulator</CODE> property is required for iOS Simulator builds. */
     "ios-simulator": {

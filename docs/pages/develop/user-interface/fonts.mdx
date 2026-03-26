@@ -283,7 +283,8 @@ After embedding the font with the config plugin, create a [new development build
 
 On Android, you can use the font file name. For example, `Inter_900Black`. On iOS, use the font and its weight name ([PostScript name](#what-is-postscript-name-of-a-font)). The example below demonstrates how to use [`Platform`](https://reactnative.dev/docs/platform-specific-code#platform-module) to select the correct font family name for each platform:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx
 import { Platform } from 'react-native';
 
@@ -298,7 +299,7 @@ import { Platform } from 'react-native';
     /* @end */
   }}>
   Inter Black
-</Text>
+</Text>;
 ```
 
 </Step>

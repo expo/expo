@@ -31,6 +31,7 @@
     "out",
     "public",
     "pages/versions/latest",
-    "next-env.d.ts"
+    "next-env.d.ts",
+    "pages/router/reference/url-parameters.mdx"
   ]
 }

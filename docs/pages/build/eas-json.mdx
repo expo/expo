@@ -180,7 +180,8 @@ A resource class is the virtual machine resources configuration (CPU cores, RAM 
 
 For more details on resources provided to each class, see [`android.resourceClass`](/eas/json/#resourceclass-1) and [`ios.resourceClass`](/eas/json/#resourceclass-2) properties. To run your build on a worker of a specific resource class, configure this property in your build profile:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```json eas.json
 {
   "build": {
@@ -190,7 +191,7 @@ For more details on resources provided to each class, see [`android.resourceClas
       },
       "ios": {
         "resourceClass": "large"
-      },
+      }
     }
     /* @hide ... */ /* @end */
   }
@@ -210,7 +211,8 @@ If you are building an app with Expo, EAS Build will pick the appropriate image 
 
 #### Schema
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```json eas.json
 {
   "cli": {

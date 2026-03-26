@@ -73,7 +73,8 @@ export default function Layout() {
 
 You can use the `Link` component to navigate to the modal screen from the **index.tsx** file.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/index.tsx|collapseHeight=350
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
@@ -82,7 +83,8 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Text>Home screen</Text>
-      /* @info Use the <CODE>Link</CODE> component to navigate to the modal screen. The <CODE>href</CODE> prop is the route name of the modal screen. */
+      /* @info Use the <CODE>Link</CODE> component to navigate to the modal screen. The{' '}
+      <CODE>href</CODE> prop is the route name of the modal screen. */
       <Link href="/modal" style={styles.link}>
         Open modal
       </Link>
@@ -134,9 +136,13 @@ A modal loses its previous context when it is the current screen in the navigato
 - On iOS, the modal slides from the bottom of the current screen. To dismiss it, swipe it down from the top.
 - On web, the modal is presented as a separate route, and the dismiss behavior has to be provided manually using [`router.canGoBack()`](/router/basics/navigation/). Here's an example of how to dismiss the modal:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/modal.tsx
-import { Link, /* @info Import the <CODE>router</CODE> object which is used to navigate imperatively. */ router /* @end */} from 'expo-router';
+import {
+  Link,
+  /* @info Import the <CODE>router</CODE> object which is used to navigate imperatively. */ router /* @end */,
+} from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function Modal() {
@@ -147,7 +153,8 @@ export default function Modal() {
   return (
     <View style={styles.container}>
       <Text>Modal screen</Text>
-      /* @info On web, use <CODE>../</CODE> as a simple way to navigate to the root. This is not analogous to <CODE>goBack</CODE>.*/
+      /* @info On web, use <CODE>../</CODE> as a simple way to navigate to the root. This is not
+      analogous to <CODE>goBack</CODE>.*/
       {isPresented && <Link href="../">Dismiss modal</Link>}
       /* @end */
     </View>
@@ -167,7 +174,8 @@ const styles = StyleSheet.create({
 
 By default on iOS, the modal has a dark background which hides the status bar. To change the status bar appearance, you can use the `Platform` API to check if the current platform is iOS and then use the [`StatusBar`](/versions/latest/sdk/status-bar/) component to change the appearance inside the **modal.tsx** file.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/modal.tsx|collapseHeight=250
 import { StyleSheet, Text, View, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -176,7 +184,8 @@ export default function Modal() {
   return (
     <View style={styles.container}>
       <Text>Modal screen</Text>
-      /* @info Use <CODE>Platform.OS</CODE> to check if the current platform is iOS and then use <CODE>StatusBar</CODE> component to change the appearance. */
+      /* @info Use <CODE>Platform.OS</CODE> to check if the current platform is iOS and then use{' '}
+      <CODE>StatusBar</CODE> component to change the appearance. */
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
       /* @end */
     </View>

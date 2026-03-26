@@ -340,7 +340,8 @@ You can optionally pass a positive number to dismiss up to that specified number
 
 Dismiss is different from `back` as it targets the closest stack and not the current navigator. If you have nested navigators, calling `dismiss` will take you back multiple screens.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/settings.tsx
 import { Button, View } from 'react-native';
 /* @info Import <CODE>useRouter</CODE> from Expo Router. */
@@ -354,7 +355,7 @@ export default function Settings() {
 
   const handleDismiss = (count: number) => {
     /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back. */
-    router.dismiss(count)
+    router.dismiss(count);
     /* @end */
   };
 
@@ -376,7 +377,8 @@ Dismisses screens in the current `<Stack />` until the specified `Href` is reach
 
 For example, consider the history of `/one`, `/two`, `/three` routes, where `/three` is the current route. The action `router.dismissTo('/one')` will cause the history to go back twice, while `router.dismissTo('/four')` will `push` the history forward to the `/four` route.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/settings.tsx
 import { Button, View, Text } from 'react-native';
 /* @info Import <CODE>useRouter</CODE> from Expo Router. */
@@ -390,7 +392,7 @@ export default function Settings() {
 
   const handleDismissAll = () => {
     /* @info In the handler method, call <CODE>router.dismissTo</CODE> to go back to a specific route. */
-    router.dismissTo('/')
+    router.dismissTo('/');
     /* @end */
   };
 
@@ -410,7 +412,8 @@ To return to the first screen in the closest stack. This is similar to [`popToTo
 
 For example, the `home` route is the first screen, and the `settings` is the last. To go from `settings` to `home` route you'll have to go back to `details`. However, using the `dismissAll` action, you can go from `settings` to `home` and dismiss any screen in between.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/settings.tsx
 import { Button, View, Text } from 'react-native';
 /* @info Import <CODE>useRouter</CODE> from Expo Router. */
@@ -424,7 +427,7 @@ export default function Settings() {
 
   const handleDismissAll = () => {
     /* @info In the handler method, call <CODE>router.dismissAll</CODE> to go back to the first screen in a stack. */
-    router.dismissAll()
+    router.dismissAll();
     /* @end */
   };
 
@@ -442,7 +445,8 @@ export default function Settings() {
 
 To check if it is possible to dismiss the current screen. Returns `true` if the router is within a stack with more than one screen in the stack's history.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/settings.tsx|collapseHeight=410
 import { Button, View } from 'react-native';
 /* @info Import <CODE>useRouter</CODE> from Expo Router. */
@@ -458,7 +462,7 @@ export default function Settings() {
     /* @info Check if we can dismiss. */
     if (router.canDismiss()) {
       /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back to. */
-      router.dismiss(count)
+      router.dismiss(count);
       /* @end */
     }
     /* @end */
@@ -505,7 +509,8 @@ export const JsStack = withLayoutContext<
 
 After defining the `JsStack` component, you can use it in your app:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx src/app/_layout.tsx
 import { JsStack } from '../layouts/js-stack';
 

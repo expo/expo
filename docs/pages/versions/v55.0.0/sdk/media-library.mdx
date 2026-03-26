@@ -128,7 +128,8 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 <SnackInline label='Fetching albums and displaying assets' dependencies={['expo-media-library']}>
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```jsx
 import { useState, useEffect } from 'react';
 import { Button, Text, ScrollView, StyleSheet, Image, View, Platform } from 'react-native';
@@ -151,9 +152,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button onPress={getAlbums} title="Get albums" />
-      <ScrollView>
-        {albums && albums.map((album) => <AlbumEntry album={album} />)}
-      </ScrollView>
+      <ScrollView>{albums && albums.map(album => <AlbumEntry album={album} />)}</ScrollView>
     </View>
   );
 }
@@ -175,9 +174,8 @@ function AlbumEntry({ album }) {
         {album.title} - {album.assetCount ?? 'no'} assets
       </Text>
       <View style={styles.albumAssetsContainer}>
-        {assets && assets.map((asset) => (
-          <Image source={{ uri: asset.uri }} width={50} height={50} />
-        ))}
+        {assets &&
+          assets.map(asset => <Image source={{ uri: asset.uri }} width={50} height={50} />)}
       </View>
     </View>
   );
@@ -201,7 +199,7 @@ const styles = StyleSheet.create({
   },
 });
 /* @end */
-````
+```
 
 </SnackInline>
 

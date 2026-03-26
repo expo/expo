@@ -354,12 +354,13 @@ Defined to describe a reusable function that can be used in a build config. All 
 
 The `[function_name]` is the name of a function that you define to identify it in the `build.steps`. For example, you can define a function with the name `greetings`:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```yaml
 functions:
   # @info #
   greetings:
-  # @end #
+    # @end #
     name: Say Hi!
 ```
 
@@ -383,7 +384,8 @@ Input values are provided to a function.
 
 The name of the input value. It is used as an identifier to access the input value such as in bash command interpolation.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```yaml
 functions:
   greetings:
@@ -391,7 +393,7 @@ functions:
     inputs:
       # @info #
       - name: name
-      # @end #
+        # @end #
         default_value: Hello world
     command: echo "${ inputs.name }!"
 ```

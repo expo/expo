@@ -33,7 +33,8 @@ In **app/(tabs)/index.tsx**:
 2. Update the `pickImageAsync()` function to set the value of `showAppOptions` to `true` after the user picks an image.
 3. Update the button with no theme by adding an `onPress` prop with the following value.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -72,18 +73,21 @@ export default function Index() {
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
-      /* @tutinfo Based on the value of <CODE>showAppOptions</CODE>, the buttons will be displayed. Also, move the existing buttons in the conditional operator block. */
+      /* @tutinfo Based on the value of <CODE>showAppOptions</CODE>, the buttons will be displayed.
+      Also, move the existing buttons in the conditional operator block. */
       {showAppOptions ? (
         <View />
-      /* @end */
       ) : (
+        /* @end */
         <View style={styles.footerContainer}>
           <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
           /* @tutinfo Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
           /* @end */
         </View>
-      /* @tutinfo */)}/* @end */
+        /* @tutinfo */
+      )}
+      /* @end */
     </View>
   );
 }
@@ -108,7 +112,8 @@ In the above snippet, we're rendering the `Button` component based on the value 
 
 Now, we can remove the `alert` on the `Button` component and update the `onPress` prop when rendering the second button in the **components/Button.tsx**:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx components/Button.tsx
 <Pressable style={styles.button} /* @tutinfo Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/ onPress={onPress}/* @end */>
 ```
@@ -213,7 +218,8 @@ Inside **app/(tabs)/index.tsx**:
 1. Import the `CircleButton` and `IconButton` components to display them.
 2. Add three placeholder functions for these buttons. The `onReset()` function invokes when the user presses the reset button, causing the image picker button to appear again. We'll add the functionality for the other two functions later.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -275,8 +281,8 @@ export default function Index() {
             <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
           </View>
         </View>
-        /* @end */
       ) : (
+        /* @end */
         <View style={styles.footerContainer}>
           <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
@@ -332,7 +338,8 @@ The modal allows the user to choose an emoji from a list of available emoji. Cre
 - `onClose`: a function to close the modal.
 - `children`: used later to display a list of emoji.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx components/EmojiPicker.tsx|collapseHeight=430
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
 import { PropsWithChildren } from 'react';
@@ -346,17 +353,17 @@ type Props = PropsWithChildren<{
 export default function EmojiPicker({ isVisible, children, onClose }: Props) {
   return (
     <View>
-    <Modal animationType="slide" transparent={true} visible={isVisible}>
-      <View style={styles.modalContent}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Choose a sticker</Text>
-          <Pressable onPress={onClose}>
-            <MaterialIcons name="close" color="#fff" size={22} />
-          </Pressable>
+      <Modal animationType="slide" transparent={true} visible={isVisible}>
+        <View style={styles.modalContent}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Choose a sticker</Text>
+            <Pressable onPress={onClose}>
+              <MaterialIcons name="close" color="#fff" size={22} />
+            </Pressable>
+          </View>
+          {children}
         </View>
-        {children}
-      </View>
-    </Modal>
+      </Modal>
     </View>
   );
 }
@@ -404,7 +411,8 @@ Now, let's modify the **app/(tabs)/index.tsx**:
 4. Create the `onModalClose()` function to update the `isModalVisible` state variable.
 5. Place the `<EmojiPicker>` component at the bottom of the `Index` component.
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -479,7 +487,8 @@ export default function Index() {
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
         </View>
       )}
-      /* @tutinfo Render the <CODE>EmojiPicker</CODE> component at the bottom of the <CODE>Index</CODE> component. */
+      /* @tutinfo Render the <CODE>EmojiPicker</CODE> component at the bottom of the{' '}
+      <CODE>Index</CODE> component. */
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         {/* Emoji list component will go here */}
       </EmojiPicker>
@@ -530,7 +539,8 @@ Let's add a horizontal list of emoji in the modal's content. We'll use the [`<Fl
 
 Create a **EmojiList.tsx** file inside the **components** directory and add the following code:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx components/EmojiList.tsx
 import { useState } from 'react';
 import { ImageSourcePropType, StyleSheet, FlatList, Platform, Pressable } from 'react-native';
@@ -543,12 +553,12 @@ type Props = {
 
 export default function EmojiList({ onSelect, onCloseModal }: Props) {
   const [emoji] = useState<ImageSourcePropType[]>([
-    require("../assets/images/emoji1.png"),
-    require("../assets/images/emoji2.png"),
-    require("../assets/images/emoji3.png"),
-    require("../assets/images/emoji4.png"),
-    require("../assets/images/emoji5.png"),
-    require("../assets/images/emoji6.png"),
+    require('../assets/images/emoji1.png'),
+    require('../assets/images/emoji2.png'),
+    require('../assets/images/emoji3.png'),
+    require('../assets/images/emoji4.png'),
+    require('../assets/images/emoji5.png'),
+    require('../assets/images/emoji6.png'),
   ]);
 
   return (
@@ -595,7 +605,8 @@ Let's learn what the above code does:
 
 Now, update the **app/(tabs)/index.tsx** to import the `<EmojiList>` component and replace the comments inside the `<EmojiPicker>` component with the following code snippet:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -671,7 +682,8 @@ export default function Index() {
         </View>
       )}
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
-        /* @tutinfo Render the <CODE>EmojiList</CODE> component inside the <CODE>EmojiPicker</CODE> component. */
+        /* @tutinfo Render the <CODE>EmojiList</CODE> component inside the <CODE>EmojiPicker</CODE>{' '}
+        component. */
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
         /* @end */
       </EmojiPicker>
@@ -746,7 +758,8 @@ This component receives two props:
 
 Import this component in the **app/(tabs)/index.tsx** file and update the `Index` component to display the emoji sticker on the image. We'll check if the `pickedEmoji` state is not `undefined`:
 
-{/* prettier-ignore */}
+{/* oxfmt-ignore */}
+
 ```tsx app/(tabs)/index.tsx
 import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -758,7 +771,7 @@ import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
-/* @tutinfo Import the <CODE>EmojiSticker</CODE> component. */import EmojiSticker from '@/components/EmojiSticker';/* @end */
+/* @tutinfo Import the <CODE>EmojiSticker</CODE> component. */ import EmojiSticker from '@/components/EmojiSticker'; /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -767,7 +780,6 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
-
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
