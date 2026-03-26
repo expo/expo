@@ -21,7 +21,7 @@ try {
   TabBarIndicator = tabViewModule.TabBarIndicator;
 } catch (e) {
   throw new Error(
-    "Install the 'react-native-tab-view' package and its peer dependencies to use the MaterialTopTabs."
+    "Install the 'react-native-tab-view' package and its peer dependencies to use the Expo Router's TopTabs."
   );
 }
 

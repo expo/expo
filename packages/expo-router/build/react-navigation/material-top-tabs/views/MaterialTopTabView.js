@@ -12,7 +12,7 @@ try {
     TabView = tabViewModule.TabView;
 }
 catch (e) {
-    throw new Error("Install the 'react-native-tab-view' package and its peer dependencies to use the MaterialTopTabs.");
+    throw new Error("Install the 'react-native-tab-view' package and its peer dependencies to use the Expo Router's TopTabs.");
 }
 const renderTabBarDefault = (props) => <MaterialTopTabBar_1.MaterialTopTabBar {...props}/>;
 function MaterialTopTabView({ tabBar = renderTabBarDefault, state, navigation, descriptors, ...rest }) {

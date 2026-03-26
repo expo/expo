@@ -18,7 +18,7 @@ try {
     TabBarIndicator = tabViewModule.TabBarIndicator;
 }
 catch (e) {
-    throw new Error("Install the 'react-native-tab-view' package and its peer dependencies to use the MaterialTopTabs.");
+    throw new Error("Install the 'react-native-tab-view' package and its peer dependencies to use the Expo Router's TopTabs.");
 }
 const renderLabelDefault = ({ color, labelText, style, allowFontScaling }) => {
     return (<elements_1.Text style={[{ color }, styles.label, style]} allowFontScaling={allowFontScaling}>
