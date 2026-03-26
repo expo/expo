@@ -937,20 +937,25 @@ export async function withMetroMultiPlatformAsync(
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
+  // Forcefully add our own dependent modules that we'll always need
+  watchFolders.push(
+    ...[config.resolver.emptyModulePath, metroOriginalModuleSystem, ...getReactNativePolyfills()]
+      .map((targetPath) => (fs.existsSync(targetPath) ? path.dirname(targetPath) : null))
+      .filter((targetPath) => targetPath != null)
+  );
+
   // This is used for running Expo CLI in development against projects outside the monorepo.
   // NOTE(@kitten): If `projectRoot` is used without `serverRoot` being available this can mistrigger for user monorepos!
   if (!isDirectoryIn(__dirname, serverRoot ?? projectRoot)) {
-    const reactNativePolyfills: string[] = require('react-native/rn-get-polyfills')();
     watchFolders.push(
       ...resolveWatchFolders('react-native', { deep: false }),
       ...resolveWatchFolders('expo', { deep: true }),
       ...resolveWatchFolders('@expo/metro', { deep: true }),
       ...resolveWatchFolders('@expo/metro-runtime', { deep: true }),
-      ...[config.resolver.emptyModulePath, metroOriginalModuleSystem, ...reactNativePolyfills]
-        .map((targetPath) => (fs.existsSync(targetPath) ? path.dirname(targetPath) : null))
-        .filter((targetPath) => targetPath != null)
     );
   }
+
+  console.log('watchFolders', watchFolders);
 
   let tsconfig: null | TsConfigPaths = null;
 
@@ -992,4 +997,12 @@ export async function withMetroMultiPlatformAsync(
 
 function isDirectoryIn(targetPath: string, rootPath: string) {
   return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
+}
+
+function getReactNativePolyfills(): readonly string[] {
+  try {
+    return require('react-native/rn-get-polyfills')();
+  } catch {
+    return [];
+  }
 }

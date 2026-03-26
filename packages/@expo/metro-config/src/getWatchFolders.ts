@@ -62,6 +62,55 @@ export function resolveAllWorkspacePackageJsonPaths(workspaceProjectRoot: string
 }
 
 /**
+ * Recursively traverse a `node_modules` directory, resolving symlinks to collect
+ * the real paths of linked packages. This produces a leaner watch list for
+ * installations with isolated dependencies (e.g. pnpm) by only including
+ * packages that are actually depended on, rather than every workspace package.
+ *
+ * Returns `null` when no symlinks are found (non-isolated installation).
+ */
+function collectSymlinkedPackageDirs(nodeModulesDir: string) {
+  const resolvedPaths = new Set<string>();
+  const visited = new Set<string>();
+  let hasSymlinks = false;
+
+  function traverse(dir: string) {
+    if (visited.has(dir)) return;
+    visited.add(dir);
+
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.name[0] === '.') continue;
+
+        const targetPath = path.join(dir, entry.name);
+        if (entry.name[0] === '@' && entry.isDirectory()) {
+          traverse(targetPath);
+        } else if (entry.isSymbolicLink()) {
+          hasSymlinks = true;
+          try {
+            const resolvedPath = fs.realpathSync(targetPath);
+            let resolvedNodeModules = path.dirname(resolvedPath);
+            if (path.basename(resolvedNodeModules)[0] === '@') {
+              resolvedNodeModules = path.dirname(resolvedNodeModules);
+            }
+            resolvedPaths.add(resolvedNodeModules);
+            traverse(path.join(resolvedPath, 'node_modules'));
+          } catch {
+            continue;
+          }
+        }
+      }
+    } catch {
+      return;
+    }
+  }
+
+  traverse(nodeModulesDir);
+  return hasSymlinks ? [...resolvedPaths] : null;
+}
+
+/**
  * @param projectRoot file path to app's project root
  * @returns list of node module paths to watch in Metro bundler, ex: `['/Users/me/app/node_modules/', '/Users/me/app/apps/my-app/', '/Users/me/app/packages/my-package/']`
  */
@@ -73,17 +122,25 @@ export function getWatchFolders(projectRoot: string): string[] {
     return [];
   }
 
+  // Check if node_modules uses symlinks (isolated dependency installations).
+  // If so, only watch the packages that are actually depended on.
+  const symlinks = collectSymlinkedPackageDirs(path.join(resolvedProjectRoot, 'node_modules'));
+  if (symlinks) {
+    const rootSymlinks = collectSymlinkedPackageDirs(path.join(workspaceRoot, 'node_modules'));
+    if (rootSymlinks) {
+      symlinks.push(...rootSymlinks);
+    }
+    return symlinks;
+  }
+
   const packages = resolveAllWorkspacePackageJsonPaths(workspaceRoot);
   if (!packages?.length) {
     return [];
   }
 
-  return uniqueItems([
+  const packagePaths = new Set(packages.map((pkg) => path.dirname(pkg)));
+  return [
     path.join(workspaceRoot, 'node_modules'),
-    ...packages.map((pkg) => path.dirname(pkg)),
-  ]);
-}
-
-function uniqueItems(items: string[]): string[] {
-  return [...new Set(items)];
+    ...packagePaths,
+  ];
 }
