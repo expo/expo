@@ -1,8 +1,8 @@
 import { expect, jest, test } from '@jest/globals';
 import { render, type RenderAPI } from '@testing-library/react-native';
 
+import { useLinking } from '../../../fork/useLinking';
 import { createNavigationContainerRef, type ParamListBase } from '../../core';
-import { useLinking } from '../useLinking';
 
 test('throws if multiple instances of useLinking are used', () => {
   const ref = createNavigationContainerRef<ParamListBase>();

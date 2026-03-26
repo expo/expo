@@ -52,6 +52,8 @@
     "js-tabs.d.ts",
     "js-stack.js",
     "js-stack.d.ts",
+    "js-top-tabs.js",
+    "js-top-tabs.d.ts",
     "tabs.js",
     "tabs.d.ts",
     "ui.js",

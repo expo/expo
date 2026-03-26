@@ -53,6 +53,7 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'expo-router': {
     'expect/build/matchers': 'ignore-dev', // TODO: Unsure how to replace safely. Dep/Peer won't work. Globals and `@jest/globals` unclear
+    'react-native-tab-view': 'ignore-dev', // TODO: Should be a peer dep, but it's only used in the MaterialTopTabs which is gated behind a try/catch require, so it's not inherently dangerous
   },
 
   '@expo/image-utils': {
