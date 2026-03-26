@@ -23,19 +23,21 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
         (variant === 'uikit' && sidebar && horizontal
             ? (0, color_1.Color)(colors.primary)?.isDark()
                 ? 'white'
-                : ((0, color_1.Color)(colors.primary)?.darken(0.71).string() ?? colors.primary)
-            : colors.primary);
-    const inactiveTintColor = customInactiveTintColor === undefined
-        ? variant === 'material'
-            ? ((0, color_1.Color)(colors.text)?.alpha(0.68).string() ?? 'rgba(0, 0, 0, 0.68)')
-            : ((0, color_1.Color)(colors.text)?.alpha(0.5).string() ?? 'rgba(0, 0, 0, 0.5)')
-        : customInactiveTintColor;
+                : (0, color_1.Color)(colors.primary)?.darken(0.71).string()
+            : undefined) ??
+        colors.primary;
+    const inactiveTintColor = customInactiveTintColor ??
+        (variant === 'material'
+            ? (0, color_1.Color)(colors.text)?.alpha(0.68).string()
+            : (0, color_1.Color)(colors.text)?.alpha(0.5).string()) ??
+        colors.text;
     const activeBackgroundColor = customActiveBackgroundColor ??
         (variant === 'material'
-            ? ((0, color_1.Color)(activeTintColor)?.alpha(0.12).string() ?? 'rgba(0, 0, 0, 0.12)')
+            ? (0, color_1.Color)(activeTintColor)?.alpha(0.12).string()
             : sidebar && horizontal
                 ? colors.primary
-                : 'transparent');
+                : 'transparent') ??
+        'transparent';
     const { options } = descriptor;
     const labelString = (0, elements_1.getLabel)({
         label: typeof options.tabBarLabel === 'string' ? options.tabBarLabel : undefined,

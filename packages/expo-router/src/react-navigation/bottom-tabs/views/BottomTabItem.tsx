@@ -177,23 +177,25 @@ export function BottomTabItem({
     (variant === 'uikit' && sidebar && horizontal
       ? Color(colors.primary)?.isDark()
         ? 'white'
-        : (Color(colors.primary)?.darken(0.71).string() ?? colors.primary)
-      : colors.primary);
+        : Color(colors.primary)?.darken(0.71).string()
+      : undefined) ??
+    colors.primary;
 
   const inactiveTintColor: ColorValue =
-    customInactiveTintColor === undefined
-      ? variant === 'material'
-        ? (Color(colors.text)?.alpha(0.68).string() ?? 'rgba(0, 0, 0, 0.68)')
-        : (Color(colors.text)?.alpha(0.5).string() ?? 'rgba(0, 0, 0, 0.5)')
-      : customInactiveTintColor;
+    customInactiveTintColor ??
+    (variant === 'material'
+      ? Color(colors.text)?.alpha(0.68).string()
+      : Color(colors.text)?.alpha(0.5).string()) ??
+    colors.text;
 
   const activeBackgroundColor: ColorValue =
     customActiveBackgroundColor ??
     (variant === 'material'
-      ? (Color(activeTintColor)?.alpha(0.12).string() ?? 'rgba(0, 0, 0, 0.12)')
+      ? Color(activeTintColor)?.alpha(0.12).string()
       : sidebar && horizontal
         ? colors.primary
-        : 'transparent');
+        : 'transparent') ??
+    'transparent';
 
   const { options } = descriptor;
   const labelString = getLabel(

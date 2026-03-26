@@ -49,11 +49,9 @@ function DrawerItem(props) {
     const { borderRadius = 56 } = react_native_1.StyleSheet.flatten(style || {});
     const color = focused
         ? activeTintColor
-        : (inactiveTintColor ?? (0, color_1.Color)(colors.text)?.alpha(0.68).string() ?? 'rgba(0, 0, 0, 0.68)');
+        : (inactiveTintColor ?? (0, color_1.Color)(colors.text)?.alpha(0.68).string() ?? colors.text);
     const backgroundColor = focused
-        ? (activeBackgroundColor ??
-            (0, color_1.Color)(activeTintColor)?.alpha(0.12).string() ??
-            'rgba(0, 0, 0, 0.12)')
+        ? (activeBackgroundColor ?? (0, color_1.Color)(activeTintColor)?.alpha(0.12).string() ?? 'transparent')
         : inactiveBackgroundColor;
     const iconNode = icon ? icon({ size: 24, focused, color }) : null;
     return (<react_native_1.View collapsable={false} {...rest} style={[styles.container, { borderRadius, backgroundColor }, style]}>

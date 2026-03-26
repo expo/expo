@@ -39,17 +39,17 @@ export function MaterialTopTabBar({
   descriptors,
   ...rest
 }: MaterialTopTabBarProps) {
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();
 
   const focusedOptions = descriptors[state.routes[state.index].key].options;
 
-  const activeColor: ColorValue = focusedOptions.tabBarActiveTintColor ?? colors.text;
+  const activeColor: ColorValue = focusedOptions.tabBarActiveTintColor ?? colors.primary;
   const inactiveColor: ColorValue =
     focusedOptions.tabBarInactiveTintColor ??
     Color(activeColor)?.alpha(0.5).string() ??
-    (dark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)');
+    colors.text;
 
   const tabBarOptions = Object.fromEntries(
     state.routes.map((route: any) => {

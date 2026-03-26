@@ -114,11 +114,9 @@ export function DrawerItem(props: Props) {
   const { borderRadius = 56 } = StyleSheet.flatten(style || {});
   const color: ColorValue = focused
     ? activeTintColor
-    : (inactiveTintColor ?? Color(colors.text)?.alpha(0.68).string() ?? 'rgba(0, 0, 0, 0.68)');
+    : (inactiveTintColor ?? Color(colors.text)?.alpha(0.68).string() ?? colors.text);
   const backgroundColor: ColorValue = focused
-    ? (activeBackgroundColor ??
-      Color(activeTintColor)?.alpha(0.12).string() ??
-      'rgba(0, 0, 0, 0.12)')
+    ? (activeBackgroundColor ?? Color(activeTintColor)?.alpha(0.12).string() ?? 'transparent')
     : inactiveBackgroundColor;
 
   const iconNode = icon ? icon({ size: 24, focused, color }) : null;

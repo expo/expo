@@ -23,14 +23,14 @@ const renderLabelDefault = ({ color, labelText, style, allowFontScaling }) => {
     </elements_1.Text>);
 };
 function MaterialTopTabBar({ state, navigation, descriptors, ...rest }) {
-    const { colors, dark } = (0, native_1.useTheme)();
+    const { colors } = (0, native_1.useTheme)();
     const { direction } = (0, native_1.useLocale)();
     const { buildHref } = (0, native_1.useLinkBuilder)();
     const focusedOptions = descriptors[state.routes[state.index].key].options;
-    const activeColor = focusedOptions.tabBarActiveTintColor ?? colors.text;
+    const activeColor = focusedOptions.tabBarActiveTintColor ?? colors.primary;
     const inactiveColor = focusedOptions.tabBarInactiveTintColor ??
         (0, color_1.Color)(activeColor)?.alpha(0.5).string() ??
-        (dark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)');
+        colors.text;
     const tabBarOptions = Object.fromEntries(state.routes.map((route) => {
         const { options } = descriptors[route.key];
         const { title, tabBarLabel, tabBarButtonTestID, tabBarAccessibilityLabel, tabBarBadge, tabBarShowIcon, tabBarShowLabel, tabBarIcon, tabBarAllowFontScaling, tabBarLabelStyle, } = options;
