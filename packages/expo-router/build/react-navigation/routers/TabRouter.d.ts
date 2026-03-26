@@ -1,4 +1,4 @@
-import type { DefaultRouterOptions, NavigationState, ParamListBase, Router } from './types';
+import type { CommonNavigationAction, DefaultRouterOptions, NavigationState, ParamListBase, Router } from './types';
 export type TabActionType = {
     type: 'JUMP_TO';
     payload: {
@@ -57,5 +57,5 @@ export declare const TabActions: {
         };
     };
 };
-export declare function TabRouter({ initialRouteName, backBehavior }: TabRouterOptions): Router<TabNavigationState<ParamListBase>, import("./CommonActions").Action | TabActionType>;
+export declare function TabRouter(args: TabRouterOptions): Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction>;
 //# sourceMappingURL=TabRouter.d.ts.map

@@ -91,7 +91,9 @@ const changeIndex = (state, index, backBehavior, initialRouteName) => {
         history,
     };
 };
-function TabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
+// TODO(@ubax): unify the logic into single router instead of BaseTabRouter and override
+// TODO(@ubax): add REPLACE action to CommonAction type and handle it in all routers
+function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
     const router = {
         ...BaseRouter_1.BaseRouter,
         type: 'tab',
@@ -308,5 +310,43 @@ function TabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
         actionCreators: exports.TabActions,
     };
     return router;
+}
+function TabRouter(args) {
+    const base = BaseTabRouter(args);
+    return {
+        ...base,
+        getStateForAction: (state, action, options) => {
+            if (action.target && action.target !== state.key) {
+                return null;
+            }
+            if (action.type === 'REPLACE') {
+                const replaceAction = action;
+                // Generate the state as if we were using JUMP_TO
+                let nextState = base.getStateForAction(state, {
+                    ...replaceAction,
+                    type: 'JUMP_TO',
+                }, options);
+                if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
+                    return null;
+                }
+                // If the state is valid and we didn't JUMP_TO a single history state,
+                // then remove the previous state.
+                if (nextState.index !== 0) {
+                    const previousIndex = nextState.index - 1;
+                    nextState = {
+                        ...nextState,
+                        key: `${nextState.key}-replace`,
+                        // Omit the previous history entry that we are replacing
+                        history: [
+                            ...nextState.history.slice(0, previousIndex),
+                            ...nextState.history.splice(nextState.index),
+                        ],
+                    };
+                }
+                return nextState;
+            }
+            return base.getStateForAction(state, action, options);
+        },
+    };
 }
 //# sourceMappingURL=TabRouter.js.map
