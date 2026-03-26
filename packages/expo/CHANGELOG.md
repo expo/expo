@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Decouple web entry files from `react-native-web` by adding web-specific forks for `registerRootComponent`, `AppRegistry`, `AppEntryNotFound`, and `DevLoadingView`. ([#31981](https://github.com/expo/expo/pull/31981) by [@EvanBacon](https://github.com/EvanBacon))
+- Decouple web entry files from `react-native-web` by adding web-specific forks for `registerRootComponent`, `AppRegistry`, `AppEntryNotFound`, and `DevLoadingView`. ([#44298](https://github.com/expo/expo/pull/44298) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Remove `RCTHostRuntimeDelegate` usage now that it's merged into `RCTHostDelegate`. ([#43838](https://github.com/expo/expo/pull/43838) by [@zoontek](https://github.com/zoontek))
 
 ### ⚠️ Notices
