@@ -3,6 +3,7 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import expo.modules.devmenu.helpers.preferences
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
@@ -54,6 +55,15 @@ class DevMenuDefaultPreferences(
 ) : DevMenuPreferences {
   private val sharedPreferences = application.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
 
+  private val fabDefault: Boolean = try {
+    val ai = application.packageManager.getApplicationInfo(
+      application.packageName, PackageManager.GET_META_DATA
+    )
+    ai.metaData?.getString("EXDevMenuShowFloatingActionButton")?.toBoolean() ?: true
+  } catch (_: Exception) {
+    true
+  }
+
   private val listeners = mutableListOf<() -> Unit>()
 
   // The preference manager does not currently store a strong reference to the listener.
@@ -89,5 +99,5 @@ class DevMenuDefaultPreferences(
     by preferences(sharedPreferences, false)
 
   override var showFab: Boolean
-    by preferences(sharedPreferences, true)
+    by preferences(sharedPreferences, fabDefault)
 }
