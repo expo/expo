@@ -1,0 +1,176 @@
+diff --git a/node_modules/react-native-keyboard-controller/ios/KeyboardControllerModule.mm b/node_modules/react-native-keyboard-controller/ios/KeyboardControllerModule.mm
+index 60ca396..49f1482 100644
+--- a/node_modules/react-native-keyboard-controller/ios/KeyboardControllerModule.mm
++++ b/node_modules/react-native-keyboard-controller/ios/KeyboardControllerModule.mm
+@@ -18,8 +18,10 @@
+ 
+ #if __has_include("react_native_keyboard_controller-Swift.h")
+ #import "react_native_keyboard_controller-Swift.h"
+-#else
++#elif __has_include(<react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>)
+ #import <react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>
++#else
++@import KeyboardController_swift;
+ #endif
+ 
+ #import <React/RCTEventDispatcherProtocol.h>
+diff --git a/node_modules/react-native-keyboard-controller/ios/extensions/UIResponder.swift b/node_modules/react-native-keyboard-controller/ios/extensions/UIResponder.swift
+index 205a5fb..cdd1c8d 100644
+--- a/node_modules/react-native-keyboard-controller/ios/extensions/UIResponder.swift
++++ b/node_modules/react-native-keyboard-controller/ios/extensions/UIResponder.swift
+@@ -19,7 +19,7 @@ public extension UIResponder {
+ 
+ public extension Optional where Wrapped == UIResponder {
+   var reactViewTag: NSNumber {
+-    #if KEYBOARD_CONTROLLER_NEW_ARCH_ENABLED
++    #if RCT_NEW_ARCH_ENABLED
+       return ((self as? UIView)?.superview?.tag ?? -1) as NSNumber
+     #else
+       return (self as? UIView)?.superview?.reactTag ?? -1
+@@ -29,7 +29,7 @@ public extension Optional where Wrapped == UIResponder {
+   var nativeID: String? {
+     guard let superview = (self as? UIView)?.superview else { return nil }
+ 
+-    #if KEYBOARD_CONTROLLER_NEW_ARCH_ENABLED
++    #if RCT_NEW_ARCH_ENABLED
+       return superview.safeValue(forKey: "nativeId") as? String
+     #else
+       return superview.nativeID
+diff --git a/node_modules/react-native-keyboard-controller/ios/extensions/UIScrollView.swift b/node_modules/react-native-keyboard-controller/ios/extensions/UIScrollView.swift
+index 7bdd04c..77d509b 100644
+--- a/node_modules/react-native-keyboard-controller/ios/extensions/UIScrollView.swift
++++ b/node_modules/react-native-keyboard-controller/ios/extensions/UIScrollView.swift
+@@ -11,7 +11,7 @@ import UIKit
+ 
+ public extension UIScrollView {
+   var reactViewTag: NSNumber {
+-    #if KEYBOARD_CONTROLLER_NEW_ARCH_ENABLED
++    #if RCT_NEW_ARCH_ENABLED
+       return (superview?.tag ?? -1) as NSNumber
+     #else
+       return superview?.reactTag ?? -1
+diff --git a/node_modules/react-native-keyboard-controller/ios/views/KeyboardBackgroundViewManager.mm b/node_modules/react-native-keyboard-controller/ios/views/KeyboardBackgroundViewManager.mm
+index d407214..6de598b 100644
+--- a/node_modules/react-native-keyboard-controller/ios/views/KeyboardBackgroundViewManager.mm
++++ b/node_modules/react-native-keyboard-controller/ios/views/KeyboardBackgroundViewManager.mm
+@@ -9,8 +9,10 @@
+ 
+ #if __has_include("react_native_keyboard_controller-Swift.h")
+ #import "react_native_keyboard_controller-Swift.h"
+-#else
++#elif __has_include(<react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>)
+ #import <react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>
++#else
++@import KeyboardController_swift;
+ #endif
+ 
+ #ifdef RCT_NEW_ARCH_ENABLED
+@@ -19,7 +21,7 @@
+ #import <react/renderer/components/RNKC/RCTComponentViewHelpers.h>
+ #import <react/renderer/components/RNKC/RNKCKeyboardBackgroundViewComponentDescriptor.h>
+ 
+-#import "RCTFabricComponentsPlugins.h"
++#import <React/RCTFabricComponentsPlugins.h>
+ #endif
+ 
+ #import <React/RCTView.h>
+diff --git a/node_modules/react-native-keyboard-controller/ios/views/KeyboardControllerView.mm b/node_modules/react-native-keyboard-controller/ios/views/KeyboardControllerView.mm
+index 51b3e32..7582aad 100644
+--- a/node_modules/react-native-keyboard-controller/ios/views/KeyboardControllerView.mm
++++ b/node_modules/react-native-keyboard-controller/ios/views/KeyboardControllerView.mm
+@@ -16,8 +16,10 @@
+ 
+ #if __has_include("react_native_keyboard_controller-Swift.h")
+ #import "react_native_keyboard_controller-Swift.h"
+-#else
++#elif __has_include(<react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>)
+ #import <react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>
++#else
++@import KeyboardController_swift;
+ #endif
+ 
+ #import <react/renderer/components/RNKC/EventEmitters.h>
+@@ -26,7 +28,7 @@
+ #import <react/renderer/components/RNKC/RNKCKeyboardControllerViewComponentDescriptor.h>
+ 
+ #import "KeyboardControllerModule-Header.h"
+-#import "RCTFabricComponentsPlugins.h"
++#import <React/RCTFabricComponentsPlugins.h>
+ 
+ using namespace facebook::react;
+ 
+diff --git a/node_modules/react-native-keyboard-controller/ios/views/KeyboardExtenderManager.mm b/node_modules/react-native-keyboard-controller/ios/views/KeyboardExtenderManager.mm
+index 18a504c..2c8c233 100644
+--- a/node_modules/react-native-keyboard-controller/ios/views/KeyboardExtenderManager.mm
++++ b/node_modules/react-native-keyboard-controller/ios/views/KeyboardExtenderManager.mm
+@@ -9,8 +9,10 @@
+ 
+ #if __has_include("react_native_keyboard_controller-Swift.h")
+ #import "react_native_keyboard_controller-Swift.h"
+-#else
++#elif __has_include(<react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>)
+ #import <react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>
++#else
++@import KeyboardController_swift;
+ #endif
+ 
+ #ifdef RCT_NEW_ARCH_ENABLED
+@@ -21,7 +23,7 @@
+ #import <react/renderer/components/RNKC/RCTComponentViewHelpers.h>
+ #import <react/renderer/components/RNKC/RNKCKeyboardExtenderComponentDescriptor.h>
+ 
+-#import "RCTFabricComponentsPlugins.h"
++#import <React/RCTFabricComponentsPlugins.h>
+ #endif
+ 
+ #import <React/RCTTouchHandler.h>
+diff --git a/node_modules/react-native-keyboard-controller/ios/views/KeyboardGestureAreaManager.mm b/node_modules/react-native-keyboard-controller/ios/views/KeyboardGestureAreaManager.mm
+index e582d3c..92bd2f6 100644
+--- a/node_modules/react-native-keyboard-controller/ios/views/KeyboardGestureAreaManager.mm
++++ b/node_modules/react-native-keyboard-controller/ios/views/KeyboardGestureAreaManager.mm
+@@ -9,8 +9,10 @@
+ 
+ #if __has_include("react_native_keyboard_controller-Swift.h")
+ #import "react_native_keyboard_controller-Swift.h"
+-#else
++#elif __has_include(<react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>)
+ #import <react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>
++#else
++@import KeyboardController_swift;
+ #endif
+ 
+ #ifdef RCT_NEW_ARCH_ENABLED
+@@ -19,7 +21,7 @@
+ #import <react/renderer/components/RNKC/RCTComponentViewHelpers.h>
+ #import <react/renderer/components/RNKC/RNKCKeyboardGestureAreaComponentDescriptor.h>
+ 
+-#import "RCTFabricComponentsPlugins.h"
++#import <React/RCTFabricComponentsPlugins.h>
+ #endif
+ 
+ #import <UIKit/UIKit.h>
+diff --git a/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm b/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
+index 7388dee..ca22b8d 100644
+--- a/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
++++ b/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
+@@ -9,8 +9,10 @@
+ 
+ #if __has_include("react_native_keyboard_controller-Swift.h")
+ #import "react_native_keyboard_controller-Swift.h"
+-#else
++#elif __has_include(<react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>)
+ #import <react_native_keyboard_controller/react_native_keyboard_controller-Swift.h>
++#else
++@import KeyboardController_swift;
+ #endif
+ 
+ #ifdef RCT_NEW_ARCH_ENABLED
+@@ -21,7 +23,7 @@
+ #import <react/renderer/components/RNKC/RCTComponentViewHelpers.h>
+ #import <react/renderer/components/RNKC/RNKCOverKeyboardViewComponentDescriptor.h>
+ 
+-#import "RCTFabricComponentsPlugins.h"
++#import <React/RCTFabricComponentsPlugins.h>
+ #endif
+ 
+ #import <React/RCTTouchHandler.h>

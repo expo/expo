@@ -1,0 +1,70 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoMediaLibrary",
+      "podName": "ExpoMediaLibrary",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoMediaLibrary_ios_objc",
+          "moduleName": "ExpoMediaLibrary",
+          "path": "ios",
+          "pattern": "**/*.m",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit",
+            "Photos",
+            "PhotosUI"
+          ],
+          "includeDirectories": [
+            "."
+          ],
+          "exclude": [
+            "Tests/**"
+          ]
+        },
+        {
+          "type": "swift",
+          "name": "ExpoMediaLibrary",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoMediaLibrary_ios_objc"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit",
+            "Photos",
+            "PhotosUI"
+          ],
+          "exclude": [
+            "Tests/**"
+          ],
+          "resources": [
+            { "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }
+          ]
+        }
+      ]
+    }
+  ]
+}

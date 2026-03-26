@@ -1,0 +1,586 @@
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import { glob } from 'glob';
+import ora from 'ora';
+import path from 'path';
+
+import logger from '../Logger';
+import { getListOfPackagesAsync, getPackageByName, Package } from '../Packages';
+import {
+  discoverExternalPackagesAsync,
+  ExternalPackage,
+  getExternalPackageByName,
+  isExternalPackage,
+  SPMPackageSource,
+} from './ExternalPackage';
+import { SPMProduct } from './SPMConfig.types';
+import { resolvePackagePath } from './resolvePackage';
+
+let _forceNonInteractive = false;
+
+export function isNonInteractive(): boolean {
+  return _forceNonInteractive || process.env.CI != null || process.stdout.isTTY === false;
+}
+
+export function setForceNonInteractive(value: boolean): void {
+  _forceNonInteractive = value;
+}
+
+/**
+ * Async-context-local log prefix for spinner output.
+ *
+ * During parallel builds, each package's async context carries its own prefix
+ * so that interleaved output lines are attributed correctly — even though
+ * Node.js is single-threaded, cooperative scheduling between `await` points
+ * means a simple global variable would be overwritten by other packages.
+ *
+ * Use `runWithLogPrefix(prefix, fn)` to set the prefix for all code running
+ * inside `fn`, including nested async calls.
+ */
+import { AsyncLocalStorage } from 'async_hooks';
+
+const _logPrefixStorage = new AsyncLocalStorage<string>();
+
+/**
+ * Runs `fn` with the given log prefix active for all code (including nested
+ * async calls) inside the callback.  Spinners created without an explicit
+ * `pkg` argument will use this prefix automatically.
+ */
+export function runWithLogPrefix<T>(prefix: string, fn: () => T): T {
+  return _logPrefixStorage.run(prefix, fn);
+}
+
+export function getActiveLogPrefix(): string | null {
+  return _logPrefixStorage.getStore() ?? null;
+}
+
+/**
+ * Checks if file content has changed between source and destination.
+ * Uses fast checks first (existence, size, mtime), then falls back to content comparison.
+ * Returns true if destination doesn't exist or content differs.
+ */
+export function hasFileContentChanged(sourcePath: string, destPath: string): boolean {
+  if (!fs.existsSync(destPath)) {
+    return true;
+  }
+
+  const sourceStat = fs.statSync(sourcePath);
+  const destStat = fs.statSync(destPath);
+
+  // Different size = different content (fast check)
+  if (sourceStat.size !== destStat.size) {
+    return true;
+  }
+
+  // Same mtime = same content (fast check for previously synced files)
+  if (sourceStat.mtimeMs === destStat.mtimeMs) {
+    return false;
+  }
+
+  // Same size but different mtime - need to compare content
+  // Use streaming comparison for large files, buffer comparison for small files
+  const SMALL_FILE_THRESHOLD = 64 * 1024; // 64KB
+
+  if (sourceStat.size <= SMALL_FILE_THRESHOLD) {
+    // Small file - read both into memory and compare
+    const srcBuf = fs.readFileSync(sourcePath);
+    const destBuf = fs.readFileSync(destPath);
+    return !srcBuf.equals(destBuf);
+  }
+
+  // Large file - compare in chunks to avoid memory issues
+  const CHUNK_SIZE = 64 * 1024;
+  const srcFd = fs.openSync(sourcePath, 'r');
+  const destFd = fs.openSync(destPath, 'r');
+
+  try {
+    const srcBuf = Buffer.alloc(CHUNK_SIZE);
+    const destBuf = Buffer.alloc(CHUNK_SIZE);
+    let position = 0;
+
+    while (position < sourceStat.size) {
+      const srcRead = fs.readSync(srcFd, srcBuf, 0, CHUNK_SIZE, position);
+      const destRead = fs.readSync(destFd, destBuf, 0, CHUNK_SIZE, position);
+
+      if (srcRead !== destRead) {
+        return true;
+      }
+
+      // Compare only the bytes that were read
+      for (let i = 0; i < srcRead; i++) {
+        if (srcBuf[i] !== destBuf[i]) {
+          return true;
+        }
+      }
+
+      position += srcRead;
+    }
+
+    return false;
+  } finally {
+    fs.closeSync(srcFd);
+    fs.closeSync(destFd);
+  }
+}
+
+/**
+ * Discovers all Expo packages that have spm.config.json files.
+ * @returns Array of Packages that have SPM configuration
+ */
+export const discoverPackagesWithSPMConfigAsync = async (): Promise<Package[]> => {
+  const allPackages = await getListOfPackagesAsync();
+  return allPackages.filter((pkg) => pkg.hasSwiftPMConfiguration());
+};
+
+/**
+ * Discovers all packages (both Expo and external) that have spm.config.json files.
+ * @returns Array of SPMPackageSource (Package or ExternalPackage) with SPM configuration
+ */
+export const discoverAllSPMPackagesAsync = async (): Promise<SPMPackageSource[]> => {
+  const [expoPackages, externalPackages] = await Promise.all([
+    discoverPackagesWithSPMConfigAsync(),
+    discoverExternalPackagesAsync(),
+  ]);
+
+  return [...expoPackages, ...externalPackages];
+};
+
+/**
+ * Builds a map from CocoaPods pod name to SPM dependency string
+ * (e.g., "UMAppLoader" -> "unimodules-app-loader/UMAppLoader").
+ *
+ * Scans all monorepo and external packages that have spm.config.json
+ * and maps each product's `podName` to "packageName/productName".
+ */
+export const buildPodNameMapAsync = async (): Promise<Map<string, string>> => {
+  const podMap = new Map<string, string>();
+  const allPackages = await discoverAllSPMPackagesAsync();
+
+  for (const pkg of allPackages) {
+    const config = pkg.getSwiftPMConfiguration();
+    for (const product of config.products) {
+      if (product.podName) {
+        podMap.set(product.podName, `${pkg.packageName}/${product.name}`);
+      }
+    }
+  }
+
+  return podMap;
+};
+
+/**
+ * Validation error for podName mismatch
+ */
+export interface PodNameValidationError {
+  packageName: string;
+  productName: string;
+  declaredPodName: string;
+  expectedPodspecPath: string;
+  actualPodspecs: string[];
+}
+
+/**
+ * Validates that the podName in spm.config.json matches an actual .podspec file.
+ *
+ * For Expo packages: checks in both package root and ios/ subdirectory
+ * For external packages: checks in node_modules/<package-name>/
+ *
+ * @param pkg The package to validate
+ * @returns Array of validation errors (empty if all valid)
+ */
+export const validatePodNamesAsync = async (
+  pkg: SPMPackageSource
+): Promise<PodNameValidationError[]> => {
+  const errors: PodNameValidationError[] = [];
+  const config = pkg.getSwiftPMConfiguration();
+
+  for (const product of config.products) {
+    const podName = product.podName;
+    if (!podName) {
+      // podName is required by schema, but be defensive
+      continue;
+    }
+
+    let searchPath: string;
+    let podspecPattern: string;
+
+    if (isExternalPackage(pkg)) {
+      // External packages: podspec is in node_modules/<package-name>/
+      searchPath = pkg.path;
+      podspecPattern = `${podName}.podspec`;
+    } else {
+      // Expo packages: podspec could be in root or ios/ subdirectory
+      searchPath = pkg.path;
+      podspecPattern = `{${podName}.podspec,ios/${podName}.podspec}`;
+    }
+
+    // Look for matching podspec
+    const foundPodspecs = await glob(podspecPattern, {
+      cwd: searchPath,
+      absolute: false,
+    });
+
+    if (foundPodspecs.length === 0) {
+      // Find all podspecs in the package to help debug
+      const allPodspecs = await glob(
+        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec}',
+        {
+          cwd: searchPath,
+          absolute: false,
+        }
+      );
+
+      errors.push({
+        packageName: pkg.packageName,
+        productName: product.name,
+        declaredPodName: podName,
+        expectedPodspecPath: path.join(searchPath, `${podName}.podspec`),
+        actualPodspecs: allPodspecs,
+      });
+    }
+  }
+
+  return errors;
+};
+
+/**
+ * Validates podNames for all packages and logs/throws on errors.
+ *
+ * @param packages Packages to validate
+ * @param throwOnError If true, throws an error when validation fails
+ * @returns All validation errors found
+ */
+export const validateAllPodNamesAsync = async (
+  packages: SPMPackageSource[],
+  throwOnError: boolean = true
+): Promise<PodNameValidationError[]> => {
+  const allErrors: PodNameValidationError[] = [];
+
+  for (const pkg of packages) {
+    const errors = await validatePodNamesAsync(pkg);
+    allErrors.push(...errors);
+  }
+
+  if (allErrors.length > 0) {
+    logger.error(
+      chalk.red(`\n⚠️  podName validation failed for ${allErrors.length} product(s):\n`)
+    );
+
+    for (const error of allErrors) {
+      logger.error(
+        `  ${chalk.red('✗')} ${chalk.cyan(error.packageName)}/${chalk.yellow(error.productName)}: ` +
+          `podName "${chalk.red(error.declaredPodName)}" does not match any .podspec file`
+      );
+      if (error.actualPodspecs.length > 0) {
+        logger.error(`    Found podspecs: ${chalk.gray(error.actualPodspecs.join(', '))}`);
+      } else {
+        logger.error(`    No .podspec files found in package`);
+      }
+    }
+
+    if (throwOnError) {
+      throw new Error(
+        `podName validation failed. Ensure each product's podName matches the actual .podspec filename.`
+      );
+    }
+  }
+
+  return allErrors;
+};
+
+/**
+ * Verifies that all requested packages (Expo or external) exist and have spm-config.json files.
+ * If no package names are provided, discovers all packages with spm.config.json.
+ * @param packageNames Names of packages to verify (if empty, discovers all SPM packages)
+ * @param includeExternal Whether to include external packages in discovery (default: true)
+ * @returns Parsed SPMPackageSources that were verified
+ */
+export const verifyAllPackagesAsync = async (
+  packageNames: string[],
+  includeExternal: boolean = true
+): Promise<SPMPackageSource[]> => {
+  // If no package names provided, discover all packages with spm.config.json
+  if (packageNames.length === 0) {
+    const packages = includeExternal
+      ? await discoverAllSPMPackagesAsync()
+      : await discoverPackagesWithSPMConfigAsync();
+
+    if (packages.length === 0) {
+      throw new Error('No packages with spm.config.json found.');
+    }
+
+    const expoPackages = packages.filter((p) => p instanceof Package);
+    const externalPackages = packages.filter((p) => p instanceof ExternalPackage);
+
+    logger.info(`Discovered ${chalk.cyan(packages.length)} packages with spm.config.json:`);
+    if (expoPackages.length > 0) {
+      logger.info(
+        `  Expo packages (${expoPackages.length}): ${chalk.green(expoPackages.map((p) => p.packageName).join(', '))}`
+      );
+    }
+    if (externalPackages.length > 0) {
+      logger.info(
+        `  External packages (${externalPackages.length}): ${chalk.blue(externalPackages.map((p) => p.packageName).join(', '))}`
+      );
+    }
+
+    return packages;
+  }
+
+  // Look up each package by name
+  return Promise.all(
+    packageNames.map(async (name) => {
+      // First check if it's an Expo package
+      const expoPkg = getPackageByName(name);
+      if (expoPkg) {
+        if (!expoPkg.hasSwiftPMConfiguration()) {
+          throw new Error(`Package ${chalk.gray(name)} does not have a spm.config.json file.`);
+        }
+        return expoPkg;
+      }
+
+      // Then check if it's an external package
+      const externalPkg = getExternalPackageByName(name);
+      if (externalPkg) {
+        return externalPkg;
+      }
+
+      throw new Error(
+        `Package not found: ${chalk.red(name)}. ` +
+          `Make sure it exists in packages/ or has a config in packages/external/.`
+      );
+    })
+  );
+};
+
+/**
+ * Tries to resolve versions for React Native and Hermes.
+ * @param options Options containing optional versions if none is found.
+ * @returns Resolved versions for React Native and Hermes
+ */
+export const getVersionsInfoAsync = async (options: {
+  reactNativeVersion?: string;
+  hermesVersion?: string;
+}): Promise<{
+  reactNativeVersion: string;
+  hermesVersion: string;
+}> => {
+  const rootPackageJson = await fs.readJSON(
+    path.join(__dirname, '../../../apps/bare-expo/package.json')
+  );
+
+  const resolveReactNativePath = () => resolvePackagePath('react-native');
+
+  const readHermesTag = async (reactNativePath: string) => {
+    const hermesTagPath = path.join(reactNativePath, 'sdks', '.hermesversion');
+    if (!(await fs.exists(hermesTagPath))) {
+      throw new Error('[Hermes] .hermesversion does not exist.');
+    }
+    const data = (await fs.readFile(hermesTagPath, 'utf8')).trim();
+    if (!data) {
+      throw new Error('[Hermes] .hermesversion file is empty.');
+    }
+    return data;
+  };
+
+  const readHermesV1Tag = async (reactNativePath: string) => {
+    const hermesV1TagPath = path.join(reactNativePath, 'sdks', '.hermesv1version');
+    if (!(await fs.exists(hermesV1TagPath))) {
+      throw new Error('[Hermes] .hermesv1version does not exist.');
+    }
+    const data = (await fs.readFile(hermesV1TagPath, 'utf8')).trim();
+    if (!data) {
+      throw new Error('[Hermes] .hermesv1version file is empty.');
+    }
+    return data;
+  };
+
+  const readHermesVersionProperties = async (reactNativePath: string) => {
+    const versionPropertiesPath = path.join(
+      reactNativePath,
+      'sdks/hermes-engine/version.properties'
+    );
+    if (!(await fs.exists(versionPropertiesPath))) {
+      throw new Error('version.properties does not exist.');
+    }
+    const content = await fs.readFile(versionPropertiesPath, 'utf8');
+    const properties: Record<string, string> = {};
+    content.split('\n').forEach((line) => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, value] = trimmed.split('=');
+        if (key && value) {
+          properties[key.trim()] = value.trim();
+        }
+      }
+    });
+    return properties;
+  };
+
+  const resolveHermesVersionAsync = async (): Promise<string> => {
+    const reactNativePath = resolveReactNativePath();
+    const properties = await readHermesVersionProperties(reactNativePath);
+
+    let classicTag: string | null = null;
+    let v1Tag: string | null = null;
+
+    try {
+      classicTag = await readHermesTag(reactNativePath);
+    } catch (error) {
+      logger.warn(`Could not read .hermesversion: ${String((error as Error).message || error)}`);
+    }
+
+    try {
+      v1Tag = await readHermesV1Tag(reactNativePath);
+    } catch (error) {
+      logger.warn(`Could not read .hermesv1version: ${String((error as Error).message || error)}`);
+    }
+
+    const normalizeHermesVersion = (value: string) =>
+      value
+        .replace(/^hermes-?/i, '')
+        .replace(/^v/i, '')
+        .trim();
+
+    const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED === '1';
+    const version = isHermesV1Enabled
+      ? properties.HERMES_V1_VERSION_NAME
+      : properties.HERMES_VERSION_NAME;
+    const tag = isHermesV1Enabled ? v1Tag : classicTag;
+
+    if (!version) {
+      throw new Error(
+        'Hermes version could not be resolved from version.properties. ' +
+          'Provide --hermes-version explicitly.'
+      );
+    }
+
+    return normalizeHermesVersion(tag ?? version);
+  };
+
+  const reactNativeVersion =
+    options.reactNativeVersion || rootPackageJson.dependencies?.['react-native'] || 'nightly';
+
+  const hermesVersion = options.hermesVersion ?? (await resolveHermesVersionAsync());
+
+  return {
+    reactNativeVersion,
+    hermesVersion,
+  };
+};
+
+/**
+ * Verifies that provided local tarball paths exist if they are set in the option arguments
+ * @param options Options containing optional tarball paths
+ */
+export const verifyLocalTarballPathsIfSetAsync = async (options: {
+  reactNativeTarballPath?: string;
+  hermesTarballPath?: string;
+  reactNativeDependenciesTarballPath?: string;
+}): Promise<void> => {
+  if (options.reactNativeTarballPath && !(await fs.exists(options.reactNativeTarballPath))) {
+    throw new Error(
+      `React Native tarball path does not exist: ${chalk.gray(options.reactNativeTarballPath)}`
+    );
+  }
+  if (options.hermesTarballPath && !(await fs.exists(options.hermesTarballPath))) {
+    throw new Error(`Hermes tarball path does not exist: ${chalk.gray(options.hermesTarballPath)}`);
+  }
+  if (
+    options.reactNativeDependenciesTarballPath &&
+    !(await fs.exists(options.reactNativeDependenciesTarballPath))
+  ) {
+    throw new Error(
+      `React Native Dependencies tarball path does not exist: ${chalk.gray(
+        options.reactNativeDependenciesTarballPath
+      )}`
+    );
+  }
+};
+
+const Prefix = '  ';
+const getPackageAndProductPrefix = (
+  colorizer: (...text: unknown[]) => string,
+  pkg?: SPMPackageSource,
+  product?: SPMProduct
+) => {
+  return pkg
+    ? `[${colorizer(pkg.packageName)}${product ? '/' + colorizer(product.name) : ''}] `
+    : '';
+};
+
+export const createAsyncSpinner = (
+  initialText: string,
+  pkg?: SPMPackageSource,
+  product?: SPMProduct
+) => {
+  // When no pkg is provided but an async-local prefix is active (parallel builds),
+  // use it so every log line is attributed to a package.
+  const activePrefix = getActiveLogPrefix();
+  const effectivePrefix = (colorizer: (...text: unknown[]) => string) => {
+    if (pkg) {
+      return getPackageAndProductPrefix(colorizer, pkg, product);
+    }
+    if (activePrefix) {
+      return `[${colorizer(activePrefix)}] `;
+    }
+    return '';
+  };
+
+  if (isNonInteractive()) {
+    return {
+      succeed: (text?: string) => {
+        logger.log(
+          `${Prefix} ${chalk.green('✔')} ${effectivePrefix(chalk.green)}${text ?? ''}`
+        );
+      },
+      fail: (text?: string) => {
+        logger.log(
+          `${Prefix} ${chalk.red('✖')} ${effectivePrefix(chalk.red)}${text ?? ''}`
+        );
+      },
+      warn: (text?: string) => {
+        logger.log(
+          `${Prefix} ${chalk.yellow('⚠')} ${effectivePrefix(chalk.yellow)}${text ?? ''}`
+        );
+      },
+      info: (text?: string) => {
+        logger.log(
+          `${Prefix} ${chalk.blue('ℹ')} ${effectivePrefix(chalk.green)}${text ?? ''}`
+        );
+      },
+    };
+  }
+  const spinnerPrefix = pkg
+    ? `[${chalk.green(pkg.packageName)}] `
+    : activePrefix
+      ? `[${chalk.green(activePrefix)}] `
+      : '';
+  const spinner = ora({
+    prefixText: Prefix,
+    text: spinnerPrefix + initialText,
+  }).start();
+  return {
+    succeed: (text?: string) =>
+      spinner.succeed(effectivePrefix(chalk.green) + (text ?? '')),
+    fail: (text?: string) =>
+      spinner.fail(effectivePrefix(chalk.red) + (text ?? '')),
+    warn: (text?: string) =>
+      spinner.warn(effectivePrefix(chalk.yellow) + (text ?? '')),
+    info: (text: string) =>
+      (spinner.text = effectivePrefix(chalk.green) + text),
+  };
+};
+
+export type AsyncSpinner = ReturnType<typeof createAsyncSpinner>;
+
+/**
+ * Error that also fails the spinner when thrown.
+ */
+export class SpinnerError extends Error {
+  constructor(message: string, spinner: AsyncSpinner) {
+    super(message);
+    this.name = message;
+    spinner.fail(message);
+  }
+}
