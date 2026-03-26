@@ -364,6 +364,35 @@ public final class FileSystemModule: Module {
         return try? directory.size
       }
     }
+
+    Function("openAsArchive") { (source: FileSystemFile) in
+      guard source.exists else {
+        throw ZipSourceNotFoundException(source.url.absoluteString)
+      }
+      return ZipArchiveObject(sourceFile: source)
+    }
+
+    Class(ZipArchiveObject.self) {
+      Function("list") { archive in
+        try archive.list()
+      }
+
+      AsyncFunction("extractEntry") { (archive: ZipArchiveObject, entryName: String, destination: FileSystemPath) in
+        try archive.extractEntry(entryName: entryName, destination: destination)
+      }
+
+      Function("extractEntrySync") { (archive: ZipArchiveObject, entryName: String, destination: FileSystemPath) in
+        try archive.extractEntry(entryName: entryName, destination: destination)
+      }
+
+      Function("asFile") { archive in
+        archive.asFile()
+      }
+
+      Function("close") { archive in
+        archive.close()
+      }
+    }
   }
 
   private func getAppleSharedContainers() -> [String: String] {
