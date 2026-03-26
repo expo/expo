@@ -13,14 +13,32 @@ const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const PLAYBACK_SERVICE_NAME = 'expo.modules.audio.service.AudioControlsService';
 const RECORDING_SERVICE_NAME = 'expo.modules.audio.service.AudioRecordingService';
 
-const withAudio: ConfigPlugin<
-  {
-    microphonePermission?: string | false;
-    recordAudioAndroid?: boolean;
-    enableBackgroundRecording?: boolean;
-    enableBackgroundPlayback?: boolean;
-  } | void
-> = (
+export type Props = {
+  /**
+   * A string to set the `NSMicrophoneUsageDescription` permission message, or `false` to disable.
+   * @default "Allow $(PRODUCT_NAME) to access your microphone"
+   * @platform ios
+   */
+  microphonePermission?: string | false;
+  /**
+   * Whether to enable the `RECORD_AUDIO` permission on Android.
+   * @default true
+   * @platform android
+   */
+  recordAudioAndroid?: boolean;
+  /**
+   * Whether to enable background audio recording.
+   * @default false
+   */
+  enableBackgroundRecording?: boolean;
+  /**
+   * Whether to enable background audio playback.
+   * @default true
+   */
+  enableBackgroundPlayback?: boolean;
+};
+
+const withAudio: ConfigPlugin<Props | void> = (
   config,
   {
     microphonePermission,

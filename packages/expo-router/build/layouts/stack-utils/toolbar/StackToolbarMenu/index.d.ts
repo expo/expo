@@ -30,6 +30,7 @@ export type { StackToolbarMenuProps, NativeToolbarMenuProps, StackToolbarMenuAct
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarMenu: React.FC<StackToolbarMenuProps>;
@@ -57,6 +58,7 @@ export declare function convertStackToolbarMenuPropsToRNHeaderItem(props: StackT
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps>;

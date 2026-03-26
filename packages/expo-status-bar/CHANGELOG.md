@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - Added config plugin for Android and iOS status bar configuration. ([#43968](https://github.com/expo/expo/pull/43968) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes

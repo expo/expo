@@ -8,13 +8,13 @@ import {
 
 const pkg = require('../../package.json');
 
-interface Props {
+export interface Props {
   customBuildFlags?: string;
   enableFTS?: boolean;
   useSQLCipher?: boolean;
   useLibSQL?: boolean;
   withSQLiteVecExtension?: boolean;
-  android: {
+  android?: {
     customBuildFlags?: string;
     enableFTS?: boolean;
     useSQLCipher?: boolean;
@@ -22,7 +22,7 @@ interface Props {
     useSQLiteVec?: boolean;
     withSQLiteVecExtension?: boolean;
   };
-  ios: {
+  ios?: {
     customBuildFlags?: string;
     enableFTS?: boolean;
     useSQLCipher?: boolean;

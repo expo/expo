@@ -2,7 +2,9 @@ import { ExpoConfig } from 'expo/config';
 import { AndroidConfig, ConfigPlugin, InfoPlist } from 'expo/config-plugins';
 type StatusBarStyle = 'light' | 'dark';
 export type Props = {
+    /** Determines whether the status bar starts hidden. */
     hidden?: boolean;
+    /** Determines which style the status bar starts with. */
     style?: StatusBarStyle;
 };
 export declare const resolveAndroidLegacyProps: (config: Pick<ExpoConfig, "androidStatusBar">) => Props;
