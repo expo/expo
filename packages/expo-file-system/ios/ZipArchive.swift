@@ -38,7 +38,7 @@ internal final class ZipArchiveObject: SharedObject {
         .map { $0 * 1000 }
       record.compressionMethod = entry.type == .directory
         ? nil
-        : (entry.compressedSize == entry.uncompressedSize ? "none" : "deflate")
+        : (entry.isCompressed ? "deflate" : "none")
       return record
     }
   }
