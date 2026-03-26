@@ -66,15 +66,19 @@ function resampleSingle(
           //hermite filter
           weight = 2 * w * w * w - 3 * w * w + 1;
           const xPosition = 4 * (xx + yy * widthSource);
-          //alpha
+          // @ts-ignore alpha
           gx_a += weight * data[xPosition + 3];
           weightsAlpha += weight;
-          //colors
+          // @ts-ignore colors
           if (data[xPosition + 3] < 255) {
+            // @ts-ignore
             weight = (weight * data[xPosition + 3]) / 250;
           }
+          // @ts-ignore
           gx_r += weight * data[xPosition];
+          // @ts-ignore
           gx_g += weight * data[xPosition + 1];
+          // @ts-ignore
           gx_b += weight * data[xPosition + 2];
           weights += weight;
         }

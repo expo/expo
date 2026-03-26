@@ -38,7 +38,7 @@ export function validateActions(actions: Action[]): void {
       );
     }
     const actionType = actionKeys[0];
-    if (!supportedActionTypes.includes(actionType)) {
+    if (actionType != null && !supportedActionTypes.includes(actionType)) {
       throw new TypeError(`Unsupported action type: ${actionType}`);
     }
 
