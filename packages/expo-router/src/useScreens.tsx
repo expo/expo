@@ -12,7 +12,14 @@ import {
 import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import React, { useEffect, useMemo } from 'react';
 
-import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
+import {
+  LoadedRoute,
+  LocalRouteParamsContext,
+  Route,
+  RouteNode,
+  sortRoutesWithInitial,
+  useRouteNode,
+} from './Route';
 import { getPathFromState } from './fork/getPathFromState';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
@@ -161,6 +168,23 @@ export function useSortedScreens(
   useOnlyUserDefinedScreens: boolean = false
 ): React.ReactNode[] {
   const node = useRouteNode();
+  const parentParams = React.use(LocalRouteParamsContext);
+
+  // Extract only the dynamic segment params from the parent route.
+  // This ensures that child routes (e.g. tabs) nested inside a dynamic segment
+  // like [id] inherit the parent's dynamic params (e.g. { id: 'test' }).
+  const dynamicParentParams = React.useMemo(() => {
+    if (!node?.dynamic || !parentParams) return undefined;
+    const params: Record<string, string | undefined> = {};
+    let hasParams = false;
+    for (const d of node.dynamic) {
+      if (d.name in parentParams) {
+        params[d.name] = parentParams[d.name];
+        hasParams = true;
+      }
+    }
+    return hasParams ? params : undefined;
+  }, [node?.dynamic, parentParams]);
 
   const nodeChildren = node?.children ?? [];
   const children = useOnlyUserDefinedScreens
@@ -175,9 +199,15 @@ export function useSortedScreens(
       sorted
         .filter((item) => !protectedScreens.has(item.route.route))
         .map((value) => {
-          return routeToScreen(value.route, value.props);
+          const props = dynamicParentParams
+            ? {
+                ...value.props,
+                initialParams: { ...dynamicParentParams, ...value.props.initialParams },
+              }
+            : value.props;
+          return routeToScreen(value.route, props);
         }),
-    [sorted, protectedScreens]
+    [sorted, protectedScreens, dynamicParentParams]
   );
 }
 
