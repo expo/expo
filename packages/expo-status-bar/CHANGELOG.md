@@ -14,6 +14,7 @@
 
 ### 💡 Others
 
+- Moved `setStatusBarStyle` and `setStatusBarHidden` to `StatusBar.setStyle` and `StatusBar.setHidden` static methods. The old named exports are still available but deprecated. ([#44172](https://github.com/expo/expo/pull/44172) by [@zoontek](https://github.com/zoontek))
 - Removed `react-native-is-edge-to-edge` dependency. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.4 — 2026-02-25
