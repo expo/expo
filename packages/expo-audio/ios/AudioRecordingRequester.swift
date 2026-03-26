@@ -1,5 +1,5 @@
 import ExpoModulesCore
-import React
+internal import React
 
 private let selector = ["request", "Record", "Permission", ":"]
 
