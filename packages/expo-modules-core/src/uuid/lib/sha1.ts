@@ -71,7 +71,7 @@ function sha1(bytes: number[] | string) {
       const T = (ROTL(a!, 5) + f(s, b!, c!, d!) + e! + K[s]! + W[t]) >>> 0;
       e = d;
       d = c;
-      c = ROTL(b, 30) >>> 0;
+      c = ROTL(b!, 30) >>> 0;
       b = a;
       a = T;
     }
