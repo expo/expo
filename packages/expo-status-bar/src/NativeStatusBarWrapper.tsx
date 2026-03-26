@@ -9,8 +9,7 @@ import {
 import { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
 
 /**
- * A component that allows you to configure your status bar without directly calling imperative
- * methods like `setBarStyle`.
+ * A component that allows you to configure your status bar declaratively.
  *
  * You will likely have multiple `StatusBar` components mounted in the same app at the same time.
  * For example, if you have multiple screens in your app, you may end up using one per screen.
@@ -40,9 +39,13 @@ export function StatusBar({ style, hideTransitionAnimation, animated, hidden }: 
  * @param style The color of the status bar text.
  * @param animated If the transition should be animated.
  */
-export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
+StatusBar.setStyle = (style: StatusBarStyle, animated?: boolean): void =>
   NativeStatusBar.setBarStyle(styleToBarStyle(style), animated);
-}
+
+/**
+ * @deprecated Use `StatusBar.setStyle` instead. This will be removed in a future release.
+ */
+export const setStatusBarStyle = StatusBar.setStyle;
 
 // @needsAudit
 /**
@@ -50,9 +53,13 @@ export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
  * @param hidden If the status bar should be hidden.
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
  */
-export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimation) {
+StatusBar.setHidden = (hidden: boolean, animation?: StatusBarAnimation): void =>
   NativeStatusBar.setHidden(hidden, animation);
-}
+
+/**
+ * @deprecated Use `StatusBar.setHidden` instead. This will be removed in a future release.
+ */
+export const setStatusBarHidden = StatusBar.setHidden;
 
 function styleToBarStyle(
   style: StatusBarStyle = 'auto',

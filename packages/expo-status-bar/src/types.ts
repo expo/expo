@@ -16,7 +16,7 @@ export type StatusBarProps = {
 
   /**
    * If the transition between status bar property changes should be
-   * animated. Supported for `backgroundColor`, `barStyle` and `hidden`.
+   * animated. Supported for `style` and `hidden`.
    */
   animated?: boolean;
 
