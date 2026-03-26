@@ -88,20 +88,32 @@ const StackToolbar = (props) => {
     return <StackToolbarHeader {...props} key={props.placement}/>;
 };
 exports.StackToolbar = StackToolbar;
-const StackToolbarBottom = ({ children, disableImePadding }) => {
+const StackToolbarBottom = ({ children, disableImePadding, tintColor, backgroundColor, }) => {
+    const colors = (0, react_1.useMemo)(() => ({ tintColor, backgroundColor }), [tintColor, backgroundColor]);
     return (<context_1.ToolbarPlacementContext.Provider value="bottom">
-      <NativeMenuContext_1.NativeMenuContext value>
-        <native_1.RouterToolbarHost withImePadding={!disableImePadding}>{children}</native_1.RouterToolbarHost>
-      </NativeMenuContext_1.NativeMenuContext>
+      <context_1.ToolbarColorContext.Provider value={colors}>
+        <NativeMenuContext_1.NativeMenuContext value>
+          <native_1.RouterToolbarHost withImePadding={!disableImePadding} backgroundColor={backgroundColor}>
+            {children}
+          </native_1.RouterToolbarHost>
+        </NativeMenuContext_1.NativeMenuContext>
+      </context_1.ToolbarColorContext.Provider>
     </context_1.ToolbarPlacementContext.Provider>);
 };
-const StackToolbarHeader = ({ children, placement, asChild, disableImePadding, }) => {
+const StackToolbarHeader = ({ children, placement, asChild, disableImePadding, tintColor, backgroundColor, }) => {
     if (placement !== 'left' && placement !== 'right') {
         throw new Error(`Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`);
     }
     const options = (0, react_1.useMemo)(() => appendStackToolbarPropsToOptions({}, 
     // satisfies ensures every prop is listed here
-    { children, placement, asChild, disableImePadding }), [children, placement, asChild, disableImePadding]);
+    {
+        children,
+        placement,
+        asChild,
+        disableImePadding,
+        tintColor,
+        backgroundColor,
+    }), [children, placement, asChild, disableImePadding, tintColor, backgroundColor]);
     (0, composition_options_1.useCompositionOption)(options);
     return null;
 };
@@ -111,23 +123,28 @@ function appendStackToolbarPropsToOptions(options, props) {
         // Bottom toolbar doesn't modify navigation options
         return options;
     }
+    const colors = {
+        tintColor: props.tintColor,
+        backgroundColor: props.backgroundColor,
+    };
     if (asChild) {
+        const wrappedChildren = (<context_1.ToolbarColorContext.Provider value={colors}>{children}</context_1.ToolbarColorContext.Provider>);
         if (placement === 'left') {
             return {
                 ...options,
                 headerShown: true,
-                headerLeft: () => children,
+                headerLeft: () => wrappedChildren,
             };
         }
         else {
             return {
                 ...options,
                 headerShown: true,
-                headerRight: () => children,
+                headerRight: () => wrappedChildren,
             };
         }
     }
-    return { ...options, ...((0, processHeaderItemsForPlatform_1.processHeaderItemsForPlatform)(children, placement) ?? {}) };
+    return { ...options, ...((0, processHeaderItemsForPlatform_1.processHeaderItemsForPlatform)(children, placement, colors) ?? {}) };
 }
 exports.StackToolbar.Button = StackToolbarButton_1.StackToolbarButton;
 exports.StackToolbar.Menu = StackToolbarMenu_1.StackToolbarMenu;
