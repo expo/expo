@@ -53,7 +53,10 @@
     "unicorn/throw-new-error": "warn",
 
     // ── Batch C: React + Next.js rules ──────────────────────────────
-    "react/jsx-key": ["error", { "checkFragmentShorthand": true, "checkKeyMustBeforeSpread": true, "warnOnDuplicates": true }],
+    "react/jsx-key": [
+      "error",
+      { "checkFragmentShorthand": true, "checkKeyMustBeforeSpread": true, "warnOnDuplicates": true }
+    ],
     "react/no-unknown-property": ["error", { "ignore": ["css", "mask-type"] }],
     "react/jsx-no-duplicate-props": "error",
     "react/jsx-no-undef": "error",
@@ -186,16 +189,25 @@
 
         // ── Batch D: Non-type-aware TypeScript rules ─────────────────
         "@typescript-eslint/array-type": ["warn", { "default": "array" }],
-        "@typescript-eslint/ban-ts-comment": ["warn", {
-          "minimumDescriptionLength": 3,
-          "ts-check": false,
-          "ts-expect-error": "allow-with-description",
-          "ts-ignore": true,
-          "ts-nocheck": true
-        }],
-        "@typescript-eslint/consistent-type-assertions": ["warn", { "assertionStyle": "as", "objectLiteralTypeAssertions": "allow" }],
+        "@typescript-eslint/ban-ts-comment": [
+          "warn",
+          {
+            "minimumDescriptionLength": 3,
+            "ts-check": false,
+            "ts-expect-error": "allow-with-description",
+            "ts-ignore": true,
+            "ts-nocheck": true
+          }
+        ],
+        "@typescript-eslint/consistent-type-assertions": [
+          "warn",
+          { "assertionStyle": "as", "objectLiteralTypeAssertions": "allow" }
+        ],
         "@typescript-eslint/no-confusing-non-null-assertion": "warn",
-        "@typescript-eslint/no-empty-object-type": ["warn", { "allowInterfaces": "with-single-extends" }],
+        "@typescript-eslint/no-empty-object-type": [
+          "warn",
+          { "allowInterfaces": "with-single-extends" }
+        ],
         "@typescript-eslint/no-extra-non-null-assertion": "warn",
         "@typescript-eslint/no-restricted-types": "warn",
         "@typescript-eslint/no-wrapper-object-types": "warn",
@@ -208,12 +220,18 @@
         "@typescript-eslint/return-await": ["error", "always"],
         "@typescript-eslint/no-unnecessary-type-assertion": "warn",
         "@typescript-eslint/prefer-includes": "warn",
-        "@typescript-eslint/prefer-nullish-coalescing": ["warn", { "ignoreConditionalTests": true, "ignoreMixedLogicalExpressions": true }],
+        "@typescript-eslint/prefer-nullish-coalescing": [
+          "warn",
+          { "ignoreConditionalTests": true, "ignoreMixedLogicalExpressions": true }
+        ],
 
         // ── Batch 1.5b: TS rules from universe configs ───────────────
         "@typescript-eslint/no-dupe-class-members": "warn",
         "@typescript-eslint/no-unused-expressions": "warn",
-        "@typescript-eslint/no-unused-vars": ["warn", { "vars": "all", "args": "none", "ignoreRestSiblings": true, "caughtErrors": "all" }],
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          { "vars": "all", "args": "none", "ignoreRestSiblings": true, "caughtErrors": "all" }
+        ],
         "@typescript-eslint/no-useless-constructor": "warn",
         "@typescript-eslint/no-confusing-void-expression": "warn",
         "@typescript-eslint/no-for-in-array": "warn",

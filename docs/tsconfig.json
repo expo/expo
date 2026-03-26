@@ -1,16 +1,10 @@
 {
   "compilerOptions": {
     "paths": {
-      "~/*": [
-        "./*"
-      ]
+      "~/*": ["./*"]
     },
     "target": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -32,12 +26,7 @@
       "user-agent-data-types"
     ]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "public/static/constants"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "public/static/constants"],
   "exclude": [
     "node_modules",
     "public/static/code",

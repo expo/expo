@@ -2461,6 +2461,139 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@oxfmt/binding-android-arm-eabi@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-android-arm-eabi@npm:0.42.0"
+  conditions: os=android & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-android-arm64@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-android-arm64@npm:0.42.0"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-darwin-arm64@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-darwin-arm64@npm:0.42.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-darwin-x64@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-darwin-x64@npm:0.42.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-freebsd-x64@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-freebsd-x64@npm:0.42.0"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-arm-gnueabihf@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-arm-gnueabihf@npm:0.42.0"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-arm-musleabihf@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-arm-musleabihf@npm:0.42.0"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-arm64-gnu@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-arm64-gnu@npm:0.42.0"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-arm64-musl@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-arm64-musl@npm:0.42.0"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-ppc64-gnu@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-ppc64-gnu@npm:0.42.0"
+  conditions: os=linux & cpu=ppc64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-riscv64-gnu@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-riscv64-gnu@npm:0.42.0"
+  conditions: os=linux & cpu=riscv64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-riscv64-musl@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-riscv64-musl@npm:0.42.0"
+  conditions: os=linux & cpu=riscv64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-s390x-gnu@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-s390x-gnu@npm:0.42.0"
+  conditions: os=linux & cpu=s390x & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-x64-gnu@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-x64-gnu@npm:0.42.0"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-linux-x64-musl@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-linux-x64-musl@npm:0.42.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-openharmony-arm64@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-openharmony-arm64@npm:0.42.0"
+  conditions: os=openharmony & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-win32-arm64-msvc@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-win32-arm64-msvc@npm:0.42.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-win32-ia32-msvc@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-win32-ia32-msvc@npm:0.42.0"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@oxfmt/binding-win32-x64-msvc@npm:0.42.0":
+  version: 0.42.0
+  resolution: "@oxfmt/binding-win32-x64-msvc@npm:0.42.0"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@oxlint-tsgolint/darwin-arm64@npm:0.17.4":
   version: 0.17.4
   resolution: "@oxlint-tsgolint/darwin-arm64@npm:0.17.4"
@@ -8309,12 +8442,11 @@ __metadata:
     next: "patch:next@npm%3A16.1.6#~/.yarn/patches/next-npm-16.1.6-9fac11317e.patch"
     next-router-mock: "npm:^0.9.13"
     nprogress: "npm:0.2.0"
+    oxfmt: "npm:^0.42.0"
     oxlint: "npm:^1.57.0"
     oxlint-tsgolint: "npm:^0.17.4"
     path-browserify: "npm:^1.0.1"
     postcss: "npm:^8.5.6"
-    prettier: "npm:^3.8.1"
-    prettier-plugin-tailwindcss: "npm:^0.7.2"
     prism-react-renderer: "npm:^2.4.1"
     prismjs: "npm:^1.30.0"
     prop-types: "npm:^15.8.1"
@@ -12606,6 +12738,75 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oxfmt@npm:^0.42.0":
+  version: 0.42.0
+  resolution: "oxfmt@npm:0.42.0"
+  dependencies:
+    "@oxfmt/binding-android-arm-eabi": "npm:0.42.0"
+    "@oxfmt/binding-android-arm64": "npm:0.42.0"
+    "@oxfmt/binding-darwin-arm64": "npm:0.42.0"
+    "@oxfmt/binding-darwin-x64": "npm:0.42.0"
+    "@oxfmt/binding-freebsd-x64": "npm:0.42.0"
+    "@oxfmt/binding-linux-arm-gnueabihf": "npm:0.42.0"
+    "@oxfmt/binding-linux-arm-musleabihf": "npm:0.42.0"
+    "@oxfmt/binding-linux-arm64-gnu": "npm:0.42.0"
+    "@oxfmt/binding-linux-arm64-musl": "npm:0.42.0"
+    "@oxfmt/binding-linux-ppc64-gnu": "npm:0.42.0"
+    "@oxfmt/binding-linux-riscv64-gnu": "npm:0.42.0"
+    "@oxfmt/binding-linux-riscv64-musl": "npm:0.42.0"
+    "@oxfmt/binding-linux-s390x-gnu": "npm:0.42.0"
+    "@oxfmt/binding-linux-x64-gnu": "npm:0.42.0"
+    "@oxfmt/binding-linux-x64-musl": "npm:0.42.0"
+    "@oxfmt/binding-openharmony-arm64": "npm:0.42.0"
+    "@oxfmt/binding-win32-arm64-msvc": "npm:0.42.0"
+    "@oxfmt/binding-win32-ia32-msvc": "npm:0.42.0"
+    "@oxfmt/binding-win32-x64-msvc": "npm:0.42.0"
+    tinypool: "npm:2.1.0"
+  dependenciesMeta:
+    "@oxfmt/binding-android-arm-eabi":
+      optional: true
+    "@oxfmt/binding-android-arm64":
+      optional: true
+    "@oxfmt/binding-darwin-arm64":
+      optional: true
+    "@oxfmt/binding-darwin-x64":
+      optional: true
+    "@oxfmt/binding-freebsd-x64":
+      optional: true
+    "@oxfmt/binding-linux-arm-gnueabihf":
+      optional: true
+    "@oxfmt/binding-linux-arm-musleabihf":
+      optional: true
+    "@oxfmt/binding-linux-arm64-gnu":
+      optional: true
+    "@oxfmt/binding-linux-arm64-musl":
+      optional: true
+    "@oxfmt/binding-linux-ppc64-gnu":
+      optional: true
+    "@oxfmt/binding-linux-riscv64-gnu":
+      optional: true
+    "@oxfmt/binding-linux-riscv64-musl":
+      optional: true
+    "@oxfmt/binding-linux-s390x-gnu":
+      optional: true
+    "@oxfmt/binding-linux-x64-gnu":
+      optional: true
+    "@oxfmt/binding-linux-x64-musl":
+      optional: true
+    "@oxfmt/binding-openharmony-arm64":
+      optional: true
+    "@oxfmt/binding-win32-arm64-msvc":
+      optional: true
+    "@oxfmt/binding-win32-ia32-msvc":
+      optional: true
+    "@oxfmt/binding-win32-x64-msvc":
+      optional: true
+  bin:
+    oxfmt: bin/oxfmt
+  checksum: 10c0/0fe0e0d1f2330b66a3e3df2dfeb013493831d7312a9c66f51a2a0814dfb2468f9d6cfd3a58d763dfd4a004db14baa157ada9645205b350af799c665f67d271d5
+  languageName: node
+  linkType: hard
+
 "oxlint-tsgolint@npm:^0.17.4":
   version: 0.17.4
   resolution: "oxlint-tsgolint@npm:0.17.4"
@@ -13105,73 +13306,6 @@ __metadata:
   dependencies:
     fast-diff: "npm:^1.1.2"
   checksum: 10c0/81e0027d731b7b3697ccd2129470ed9913ecb111e4ec175a12f0fcfab0096516373bf0af2fef132af50cafb0a905b74ff57996d615f59512bb9ac7378fcc64ab
-  languageName: node
-  linkType: hard
-
-"prettier-plugin-tailwindcss@npm:^0.7.2":
-  version: 0.7.2
-  resolution: "prettier-plugin-tailwindcss@npm:0.7.2"
-  peerDependencies:
-    "@ianvs/prettier-plugin-sort-imports": "*"
-    "@prettier/plugin-hermes": "*"
-    "@prettier/plugin-oxc": "*"
-    "@prettier/plugin-pug": "*"
-    "@shopify/prettier-plugin-liquid": "*"
-    "@trivago/prettier-plugin-sort-imports": "*"
-    "@zackad/prettier-plugin-twig": "*"
-    prettier: ^3.0
-    prettier-plugin-astro: "*"
-    prettier-plugin-css-order: "*"
-    prettier-plugin-jsdoc: "*"
-    prettier-plugin-marko: "*"
-    prettier-plugin-multiline-arrays: "*"
-    prettier-plugin-organize-attributes: "*"
-    prettier-plugin-organize-imports: "*"
-    prettier-plugin-sort-imports: "*"
-    prettier-plugin-svelte: "*"
-  peerDependenciesMeta:
-    "@ianvs/prettier-plugin-sort-imports":
-      optional: true
-    "@prettier/plugin-hermes":
-      optional: true
-    "@prettier/plugin-oxc":
-      optional: true
-    "@prettier/plugin-pug":
-      optional: true
-    "@shopify/prettier-plugin-liquid":
-      optional: true
-    "@trivago/prettier-plugin-sort-imports":
-      optional: true
-    "@zackad/prettier-plugin-twig":
-      optional: true
-    prettier-plugin-astro:
-      optional: true
-    prettier-plugin-css-order:
-      optional: true
-    prettier-plugin-jsdoc:
-      optional: true
-    prettier-plugin-marko:
-      optional: true
-    prettier-plugin-multiline-arrays:
-      optional: true
-    prettier-plugin-organize-attributes:
-      optional: true
-    prettier-plugin-organize-imports:
-      optional: true
-    prettier-plugin-sort-imports:
-      optional: true
-    prettier-plugin-svelte:
-      optional: true
-  checksum: 10c0/072fb79be58ba6b9743eb4b85be7da06f7d719764e293fdaf6515f15b21af2d22ab0e6476c636c69983949e42c4382e9566b17e3b123a2df6cf5100336729f3c
-  languageName: node
-  linkType: hard
-
-"prettier@npm:^3.8.1":
-  version: 3.8.1
-  resolution: "prettier@npm:3.8.1"
-  bin:
-    prettier: bin/prettier.cjs
-  checksum: 10c0/33169b594009e48f570471271be7eac7cdcf88a209eed39ac3b8d6d78984039bfa9132f82b7e6ba3b06711f3bfe0222a62a1bfb87c43f50c25a83df1b78a2c42
   languageName: node
   linkType: hard
 
@@ -15192,6 +15326,13 @@ __metadata:
     fdir: "npm:^6.5.0"
     picomatch: "npm:^4.0.3"
   checksum: 10c0/869c31490d0d88eedb8305d178d4c75e7463e820df5a9b9d388291daf93e8b1eb5de1dad1c1e139767e4269fe75f3b10d5009b2cc14db96ff98986920a186844
+  languageName: node
+  linkType: hard
+
+"tinypool@npm:2.1.0":
+  version: 2.1.0
+  resolution: "tinypool@npm:2.1.0"
+  checksum: 10c0/9fb1c760558c6264e0f4cfde96a63b12450b43f1730fbe6274aa24ddbdf488745c08924d0dea7a1303b47d555416a6415f2113898c69b6ecf731e75ac95238a5
   languageName: node
   linkType: hard
 

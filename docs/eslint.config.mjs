@@ -1,5 +1,4 @@
 import nextPlugin from '@next/eslint-plugin-next';
-import { defineConfig, globalIgnores } from 'eslint/config';
 import universeNodeConfig from 'eslint-config-universe/flat/node.js';
 import universeTypescriptAnalysisConfig from 'eslint-config-universe/flat/shared/typescript-analysis.js';
 import universeWebConfig from 'eslint-config-universe/flat/web.js';
@@ -8,6 +7,7 @@ import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
 import testingLibrary from 'eslint-plugin-testing-library';
 import unicorn from 'eslint-plugin-unicorn'; // eslint-disable-line
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 const CLASS_NAME_PREFIXES = ['container', 'icon', 'text'];
 
@@ -20,25 +20,10 @@ const TAILWIND_SETTINGS = {
 };
 
 const CORE_RULES = {
-  'prettier/prettier': 'error',
+  'prettier/prettier': 'off', // migrated to oxfmt
   'no-void': 'off', // migrated to oxlint
   'no-return-await': 'off',
-  'import/order': [
-    'error',
-    {
-      groups: [['external', 'builtin'], 'internal', ['parent', 'sibling']],
-      'newlines-between': 'always',
-      alphabetize: {
-        order: 'asc',
-      },
-      pathGroups: [
-        {
-          pattern: '~/**',
-          group: 'internal',
-        },
-      ],
-    },
-  ],
+  'import/order': 'off', // migrated to oxfmt sortImports
   curly: 'off', // migrated to oxlint
   eqeqeq: 'off', // migrated to oxlint
   'import/no-cycle': 'off', // migrated to oxlint
@@ -179,6 +164,8 @@ export default defineConfig([
       'n/handle-callback-err': 'off',
       'n/no-new-require': 'off',
       'n/no-path-concat': 'off',
+      'import/order': 'off', // migrated to oxfmt sortImports
+      'prettier/prettier': 'off', // migrated to oxfmt
     },
   },
 

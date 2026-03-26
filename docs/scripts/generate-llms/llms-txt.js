@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 
-import { generateCrossLinksSection } from './shared.js';
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
+import { generateCrossLinksSection } from './shared.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
