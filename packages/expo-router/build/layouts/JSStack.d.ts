@@ -108,9 +108,6 @@ declare const JSStack: React.ForwardRefExoticComponent<Omit<Omit<import("../reac
 /**
  * Renders a JavaScript-based stack navigator.
  *
- * Unlike the default `Stack` which uses native navigation primitives,
- * this stack is fully implemented in JavaScript using animated transitions.
- *
  * @hideType
  */
 declare const Stack: ((props: ComponentProps<typeof JSStack>) => React.JSX.Element) & {
