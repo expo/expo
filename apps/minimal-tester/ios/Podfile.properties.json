@@ -1,9 +1,9 @@
 {
   "expo.jsEngine": "hermes",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+  "expo.inlineModules.watchedDirectories": "[]",
   "ios.forceStaticLinking": "[]",
   "apple.privacyManifestAggregationEnabled": "true",
   "ios.buildReactNativeFromSource": "true",
-  "ios.useFrameworks": "static",
-  "ios.brownfieldTargetName": "minimaltesterbrownfield"
+  "ios.useFrameworks": "static"
 }
