@@ -36,6 +36,12 @@ export type PluginConfigOptions = {
      * @deprecated use the `launchMode` property instead
      */
     launchModeExperimental?: 'most-recent' | 'launcher';
+    /**
+     * Whether to show the tools button by default.
+     *
+     * @default true
+     */
+    toolsButton?: boolean;
 };
 /**
  * @ignore

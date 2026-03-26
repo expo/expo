@@ -26,6 +26,8 @@ public class DevMenuPreferences: Module {
    and applying some preferences to static classes like interceptors.
    */
   static func setup() {
+    let fabDefault = Bundle.main.object(forInfoDictionaryKey: showFloatingActionButtonKey) as? Bool
+
     #if os(tvOS)
     UserDefaults.standard.register(defaults: [
       motionGestureEnabledKey: false,
@@ -33,7 +35,7 @@ public class DevMenuPreferences: Module {
       keyCommandsEnabledKey: true,
       showsAtLaunchKey: false,
       isOnboardingFinishedKey: true,
-      showFloatingActionButtonKey: false
+      showFloatingActionButtonKey: fabDefault ?? false
     ])
     #else
     UserDefaults.standard.register(defaults: [
@@ -42,7 +44,7 @@ public class DevMenuPreferences: Module {
       keyCommandsEnabledKey: true,
       showsAtLaunchKey: false,
       isOnboardingFinishedKey: false,
-      showFloatingActionButtonKey: true
+      showFloatingActionButtonKey: fabDefault ?? true
     ])
     #endif
 
