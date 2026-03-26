@@ -66,6 +66,7 @@ public final class ImageView: ExpoView {
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
+        lastReloadSignature = nil
         sdImageView.image = nil
       }
     }
@@ -80,6 +81,11 @@ public final class ImageView: ExpoView {
   var symbolSize: Double?
 
   var useAppleWebpCodec: Bool = true
+
+  /**
+   Keep the last resolved loading signature to skip redundant `reload` calls.
+   */
+  var lastReloadSignature: String?
 
   /**
    Tracks whether the current image is an SF Symbol for animation control.
@@ -107,8 +113,11 @@ public final class ImageView: ExpoView {
 
   public override var bounds: CGRect {
     didSet {
-      // Reload the image when the bounds size has changed and is not empty.
-      if oldValue.size != bounds.size && bounds.size != .zero {
+      // Avoid reload storms due to sub-pixel size jitter in recycling lists.
+      let widthDelta = abs(oldValue.size.width - bounds.size.width)
+      let heightDelta = abs(oldValue.size.height - bounds.size.height)
+      let hasMeaningfulSizeChange = widthDelta > 0.5 || heightDelta > 0.5
+      if hasMeaningfulSizeChange && bounds.size != .zero {
         reload()
       }
     }
@@ -154,8 +163,14 @@ public final class ImageView: ExpoView {
     }
     guard let source = bestSource else {
       displayPlaceholderIfNecessary()
+      lastReloadSignature = nil
       return
     }
+    let reloadSignature = createReloadSignature(for: source)
+    if !force && reloadSignature == lastReloadSignature {
+      return
+    }
+    lastReloadSignature = reloadSignature
 
     // Track if this is an SF Symbol source for animation handling
     isSFSymbolSource = source.isSFSymbol
@@ -210,6 +225,24 @@ public final class ImageView: ExpoView {
     )
   }
 
+  private func createReloadSignature(for source: ImageSource) -> String {
+    let uri = source.uri?.absoluteString ?? ""
+    let sourceSize = source.size.map { "\($0.width)x\($0.height)" } ?? "-"
+    let frameSize = "\(frame.size.width)x\(frame.size.height)"
+    let tint = imageTintColor?.description ?? "-"
+    return [
+      uri,
+      sourceSize,
+      frameSize,
+      "\(contentFit)",
+      cachePolicy.rawValue,
+      enforceEarlyResizing ? "1" : "0",
+      useAppleWebpCodec ? "1" : "0",
+      tint,
+      "\(blurRadius)"
+    ].joined(separator: "|")
+  }
+
   // MARK: - Loading
 
   private func imageLoadProgress(_ receivedSize: Int, _ expectedSize: Int, _ imageUrl: URL?) {
@@ -239,6 +272,7 @@ public final class ImageView: ExpoView {
     _ imageUrl: URL?
   ) {
     if let error = error {
+      lastReloadSignature = nil
       let code = (error as NSError).code
 
       // SDWebImage throws an error when loading operation is canceled (interrupted) by another load request.
@@ -249,6 +283,7 @@ public final class ImageView: ExpoView {
       return
     }
     guard finished else {
+      lastReloadSignature = nil
       log.debug("Loading the image has been canceled")
       return
     }
