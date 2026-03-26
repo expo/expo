@@ -12,25 +12,41 @@ function bytesToUuid(buf: number[], offset?: number) {
   const bth = byteToHex;
   // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
   return [
+    // @ts-ignore
     bth[buf[i++]],
+    // @ts-ignore
     bth[buf[i++]],
+    // @ts-ignore
     bth[buf[i++]],
-    bth[buf[i++]],
-    '-',
-    bth[buf[i++]],
-    bth[buf[i++]],
-    '-',
-    bth[buf[i++]],
+    // @ts-ignore
     bth[buf[i++]],
     '-',
+    // @ts-ignore
     bth[buf[i++]],
+    // @ts-ignore
     bth[buf[i++]],
     '-',
+    // @ts-ignore
     bth[buf[i++]],
+    // @ts-ignore
     bth[buf[i++]],
+    '-',
+    // @ts-ignore
     bth[buf[i++]],
+    // @ts-ignore
     bth[buf[i++]],
+    '-',
+    // @ts-ignore
     bth[buf[i++]],
+    // @ts-ignore
+    bth[buf[i++]],
+    // @ts-ignore
+    bth[buf[i++]],
+    // @ts-ignore
+    bth[buf[i++]],
+    // @ts-ignore
+    bth[buf[i++]],
+    // @ts-ignore
     bth[buf[i++]],
   ].join('');
 }
