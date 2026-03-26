@@ -252,6 +252,63 @@ describe('processHeaderItemsForPlatform', () => {
     expect(screen.getAllByTestId('IconButton')).toHaveLength(2);
   });
 
+  it('passes callback props tintColor and backgroundColor to ToolbarColorContext', () => {
+    let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
+    const ColorCapture = () => {
+      const colors = React.useContext(ToolbarColorContext);
+      capturedColors = colors;
+      return null;
+    };
+
+    const result = processHeaderItemsForPlatform(<ColorCapture />, 'left')!;
+    const HeaderLeft = result.headerLeft!;
+    render(
+      <HeaderLeft tintColor="callback-tint" backgroundColor="callback-bg" canGoBack={false} />
+    );
+
+    expect(capturedColors.tintColor).toBe('callback-tint');
+    expect(capturedColors.backgroundColor).toBe('callback-bg');
+  });
+
+  it('explicit colors take precedence over callback props', () => {
+    let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
+    const ColorCapture = () => {
+      const colors = React.useContext(ToolbarColorContext);
+      capturedColors = colors;
+      return null;
+    };
+
+    const result = processHeaderItemsForPlatform(<ColorCapture />, 'right', {
+      tintColor: 'explicit-tint',
+      backgroundColor: 'explicit-bg',
+    })!;
+    const HeaderRight = result.headerRight!;
+    render(
+      <HeaderRight tintColor="callback-tint" backgroundColor="callback-bg" canGoBack={false} />
+    );
+
+    expect(capturedColors.tintColor).toBe('explicit-tint');
+    expect(capturedColors.backgroundColor).toBe('explicit-bg');
+  });
+
+  it('merges explicit colors with callback props', () => {
+    let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
+    const ColorCapture = () => {
+      const colors = React.useContext(ToolbarColorContext);
+      capturedColors = colors;
+      return null;
+    };
+
+    const result = processHeaderItemsForPlatform(<ColorCapture />, 'left', {
+      tintColor: 'explicit-tint',
+    })!;
+    const HeaderLeft = result.headerLeft!;
+    render(<HeaderLeft backgroundColor="callback-bg" canGoBack={false} />);
+
+    expect(capturedColors.tintColor).toBe('explicit-tint');
+    expect(capturedColors.backgroundColor).toBe('callback-bg');
+  });
+
   it('provides ToolbarColorContext with passed colors', () => {
     let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
     const ColorCapture = () => {

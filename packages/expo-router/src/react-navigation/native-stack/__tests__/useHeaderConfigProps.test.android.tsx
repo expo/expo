@@ -140,6 +140,44 @@ describe('backButtonInCustomView', () => {
   });
 });
 
+// ─── headerLeft / headerRight receive backgroundColor ────────────────────────────
+
+describe('headerLeft and headerRight receive backgroundColor', () => {
+  test('headerLeft receives default backgroundColor (colors.card)', () => {
+    const headerLeft = jest.fn(() => <View />);
+    renderHook(() => useHeaderConfigProps(defaultProps({ headerLeft })));
+    expect(headerLeft).toHaveBeenCalledWith(
+      expect.objectContaining({ backgroundColor: DEFAULT_COLORS.card })
+    );
+  });
+
+  test('headerRight receives default backgroundColor (colors.card)', () => {
+    const headerRight = jest.fn(() => <View />);
+    renderHook(() => useHeaderConfigProps(defaultProps({ headerRight })));
+    expect(headerRight).toHaveBeenCalledWith(
+      expect.objectContaining({ backgroundColor: DEFAULT_COLORS.card })
+    );
+  });
+
+  test('custom headerStyle.backgroundColor flows to headerLeft and headerRight', () => {
+    const headerLeft = jest.fn(() => <View />);
+    const headerRight = jest.fn(() => <View />);
+    renderHook(() =>
+      useHeaderConfigProps(
+        defaultProps({
+          headerLeft,
+          headerRight,
+          headerStyle: { backgroundColor: 'purple' },
+        })
+      )
+    );
+    expect(headerLeft).toHaveBeenCalledWith(expect.objectContaining({ backgroundColor: 'purple' }));
+    expect(headerRight).toHaveBeenCalledWith(
+      expect.objectContaining({ backgroundColor: 'purple' })
+    );
+  });
+});
+
 // ─── children rendering (Android) ───────────────────────────────────────────────
 
 describe('children rendering', () => {

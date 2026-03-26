@@ -128,6 +128,10 @@ export type NativeStackHeaderItemProps = {
    * Whether it's possible to navigate back in stack.
    */
   canGoBack?: boolean;
+  /**
+   * Header background color
+   */
+  backgroundColor?: ColorValue;
 };
 
 export type NativeStackHeaderBackProps = NativeStackHeaderItemProps & {
