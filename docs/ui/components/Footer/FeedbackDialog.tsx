@@ -4,8 +4,8 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
 
-import { InlineHelp } from 'ui/components/InlineHelp';
 import { Input, Textarea } from '~/ui/components/Form';
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import { CALLOUT, LABEL, RawH2 } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';

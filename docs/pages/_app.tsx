@@ -68,7 +68,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <StructuredData id="website" data={websiteSchema} />
-      {/* eslint-disable-next-line react/no-unknown-property */}
+      {/* oxlint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
         html,
         body,

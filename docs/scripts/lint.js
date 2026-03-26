@@ -56,13 +56,41 @@ function runEslint() {
   return { status, stderr };
 }
 
-// Run tsc and eslint in parallel.
+/** Run oxlint and capture all output. Returns a promise with { status, output }. */
+function runOxlint() {
+  return new Promise(resolve => {
+    const chunks = [];
+    const proc = spawn('oxlint', [process.cwd(), '--type-aware'], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: true,
+    });
+    proc.stdout.on('data', d => chunks.push(d));
+    proc.stderr.on('data', d => chunks.push(d));
+    proc.on('close', status => {
+      resolve({ status, output: Buffer.concat(chunks).toString() });
+    });
+  });
+}
+
+// Run tsc, oxlint, and eslint in parallel.
 const tscPromise = runTsc();
+const oxlintPromise = runOxlint();
 const eslintResult = runEslint();
 const tscResult = await tscPromise;
+const oxlintResult = await oxlintPromise;
 
 // Report results.
 let failed = false;
+
+if (oxlintResult.status !== 0) {
+  console.error('\n\x1b[1;31moxlint failed:\x1b[0m');
+  if (oxlintResult.output) {
+    console.error(oxlintResult.output);
+  }
+  failed = true;
+} else {
+  console.log('\x1b[32m✓ oxlint\x1b[0m');
+}
 
 if (tscResult.status !== 0) {
   console.error('\n\x1b[1;31mtsc failed:\x1b[0m');
