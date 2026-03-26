@@ -26,6 +26,46 @@ jest.mock('react-native-pager-view', () => {
   };
 });
 
+jest.mock(
+  'react-native-tab-view',
+  () => {
+    const React = require('react');
+    const { View, Text, Pressable } = require('react-native');
+
+    return {
+      TabView: ({ navigationState, renderScene, renderTabBar }: any) => {
+        return (
+          <View>
+            {renderTabBar({
+              navigationState,
+              options: {},
+            })}
+            {renderScene({
+              route: navigationState.routes[navigationState.index],
+              position: { interpolate: () => 0 },
+            })}
+          </View>
+        );
+      },
+      TabBar: ({ navigationState, onTabPress, options }: any) => {
+        return (
+          <View>
+            {navigationState.routes.map((route: any) => (
+              <Pressable
+                key={route.key}
+                onPress={() => onTabPress({ route, preventDefault: () => {} })}>
+                <Text>{options?.[route.key]?.labelText ?? route.name}</Text>
+              </Pressable>
+            ))}
+          </View>
+        );
+      },
+      TabBarIndicator: () => null,
+    };
+  },
+  { virtual: true }
+);
+
 test('renders a material top tab navigator with screens', async () => {
   const Test = ({ route, navigation }: MaterialTopTabScreenProps<TopTabParamList>) => (
     <View>
