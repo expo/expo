@@ -1,0 +1,202 @@
+diff --git a/src/Watcher.js b/src/Watcher.js
+index 40202fde055cab40ba8f6e01fcfc86a88665c4e3..713d65341c327513067644b9e77b1f2683538bdb 100644
+--- a/src/Watcher.js
++++ b/src/Watcher.js
+@@ -83,6 +83,7 @@ class Watcher extends _events.default {
+       previousState: options.previousState,
+       rootDir: options.rootDir,
+       roots: options.roots,
++      skipStat: true,
+     };
+     const retry = (error) => {
+       if (crawl === _watchman.default) {
+diff --git a/src/crawlers/node/index.js b/src/crawlers/node/index.js
+index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..51bd69e079fdc7c60ecc776ed0d0dc1b882a0e2d 100644
+--- a/src/crawlers/node/index.js
++++ b/src/crawlers/node/index.js
+@@ -9,7 +9,7 @@ var _hasNativeFindSupport = _interopRequireDefault(
+   require("./hasNativeFindSupport"),
+ );
+ var _child_process = require("child_process");
+-var fs = _interopRequireWildcard(require("graceful-fs"));
++var fs = require("fs");
+ var _os = require("os");
+ var path = _interopRequireWildcard(require("path"));
+ function _getRequireWildcardCache(e) {
+@@ -39,6 +39,81 @@ function _interopRequireDefault(e) {
+   return e && e.__esModule ? e : { default: e };
+ }
+ const debug = require("debug")("Metro:NodeCrawler");
++
++/**
++ * Crawl the filesystem using readdir with Dirent entries, without calling
++ * lstat on each file. Produces FileMetadata with null mtime and zero size.
++ * Symlinks are detected via Dirent.isSymbolicLink().
++ */
++function findWithoutStat(
++  roots,
++  extensions,
++  ignore,
++  includeSymlinks,
++  rootDir,
++  console,
++  callback,
++) {
++  const result = new Map();
++  let activeCalls = 0;
++  const pathUtils = new _RootPathUtils.RootPathUtils(rootDir);
++  const exts = new Set(extensions);
++
++  function search(directory, dirNormal) {
++    activeCalls++;
++    fs.readdir(directory, {withFileTypes: true}, (err, entries) => {
++      activeCalls--;
++      if (err) {
++        console.warn(
++          `Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`,
++        );
++      } else {
++        for (let idx = 0, len = entries.length; idx < len; idx++) {
++          const entry = entries[idx];
++          const name = entry.name.toString();
++          const file = directory + path.sep + name;
++
++          if (ignore(file)) {
++            continue;
++          } else if (!includeSymlinks && entry.isSymbolicLink()) {
++            continue;
++          }
++
++          const fileNormal = dirNormal === '' ? name : dirNormal + path.sep + name;
++          if (entry.isDirectory()) {
++            search(file, fileNormal);
++            continue;
++          }
++
++          const isSymlink = entry.isSymbolicLink();
++          const ext = path.extname(name).substr(1);
++          if (isSymlink || exts.has(ext)) {
++            result.set(fileNormal, [
++              null,
++              0,
++              0,
++              '',
++              null,
++              isSymlink ? 1 : 0,
++              null,
++            ]);
++          }
++        }
++      }
++
++      if (activeCalls === 0) {
++        callback(result);
++      }
++    });
++  }
++
++  if (roots.length > 0) {
++    roots.forEach(root => search(root, pathUtils.absoluteToNormal(root)));
++  } else {
++    callback(result);
++  }
++}
++
+ function find(
+   roots,
+   extensions,
+@@ -181,14 +256,16 @@ async function nodeCrawl(options) {
+     perfLogger,
+     roots,
+     abortSignal,
++    skipStat,
+   } = options;
+   abortSignal?.throwIfAborted();
+   perfLogger?.point("nodeCrawl_start");
+   const useNativeFind =
++    !skipStat &&
+     !forceNodeFilesystemAPI &&
+     (0, _os.platform)() !== "win32" &&
+     (await (0, _hasNativeFindSupport.default)());
+-  debug("Using system find: %s", useNativeFind);
++  debug('Using system find: %s, skipStat: %s', useNativeFind, !!skipStat);
+   return new Promise((resolve, reject) => {
+     const callback = (fileData) => {
+       const difference = previousState.fileSystem.getDifference(fileData);
+@@ -200,7 +277,17 @@ async function nodeCrawl(options) {
+       }
+       resolve(difference);
+     };
+-    if (useNativeFind) {
++    if (skipStat) {
++      findWithoutStat(
++        roots,
++        extensions,
++        ignore,
++        includeSymlinks,
++        rootDir,
++        console,
++        callback,
++      );
++    } else if (useNativeFind) {
+       findNative(
+         roots,
+         extensions,
+diff --git a/src/flow-types.d.ts b/src/flow-types.d.ts
+index c8e344a77e04640b687e6f4d3e5d4e75de20fa1d..f57a2d814a8b6da768e718543ad629af91623e4c 100644
+--- a/src/flow-types.d.ts
++++ b/src/flow-types.d.ts
+@@ -122,6 +122,7 @@ export interface CrawlerOptions {
+   rootDir: string;
+   roots: ReadonlyArray<string>;
+   onStatus: (status: WatcherStatus) => void;
++  skipStat?: boolean;
+ }
+ 
+ export type WatcherStatus =
+diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
+index 35d85514984821711f6ba9268715de553cc0836b..68bc16c995276e7c58f9ea9aaebc38aa307eadca 100644
+--- a/src/lib/TreeFS.js
++++ b/src/lib/TreeFS.js
+@@ -8,6 +8,7 @@ var _constants = _interopRequireDefault(require("../constants"));
+ var _RootPathUtils = require("./RootPathUtils");
+ var _invariant = _interopRequireDefault(require("invariant"));
+ var _path = _interopRequireDefault(require("path"));
++var fs = require("fs");
+ function _interopRequireDefault(e) {
+   return e && e.__esModule ? e : { default: e };
+ }
+@@ -74,6 +75,33 @@ class TreeFS {
+         if (isRegularFile(newMetadata) !== isRegularFile(metadata)) {
+           continue;
+         }
++        
++        // lazy-stat from statless crawler found for comparison
++        if (!newMetadata[_constants.default.MTIME]) {
++          const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
++          try {
++            const stat = fs.lstatSync(absolutePath);
++            newMetadata[_constants.default.MTIME] = stat.mtime.getTime();
++            newMetadata[_constants.default.SIZE] = stat.size;
++          } catch {
++            files.delete(canonicalPath);
++            changedFiles.delete(canonicalPath);
++            removedFiles.add(canonicalPath);
++            continue;
++          }
++          // read symlink target now so it's available immediately
++          if (newMetadata[H.SYMLINK] === 1) {
++            try {
++              newMetadata[H.SYMLINK] = fs.readlinkSync(absolutePath);
++            } catch {
++              files.delete(canonicalPath);
++              changedFiles.delete(canonicalPath);
++              removedFiles.add(canonicalPath);
++              continue;
++            }
++          }
++        }
++
+         if (
+           newMetadata[_constants.default.MTIME] != null &&
+           newMetadata[_constants.default.MTIME] != 0 &&
