@@ -6,9 +6,9 @@
   "types": "build/withBuildProperties.d.ts",
   "exports": {
     ".": "./build/withBuildProperties.js",
-    "./package.json": "./package.json",
+    "./plugin": "./build/index.js",
     "./app.plugin.js": "./app.plugin.js",
-    "./plugin": "./build/index.js"
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "expo-module build",
