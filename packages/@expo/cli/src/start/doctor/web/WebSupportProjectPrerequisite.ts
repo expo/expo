@@ -6,6 +6,7 @@ import {
   ProjectConfig,
 } from '@expo/config';
 import chalk from 'chalk';
+import resolveFrom from 'resolve-from';
 
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
@@ -53,12 +54,11 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   async _ensureWebDependenciesInstalledAsync({ exp }: { exp: ExpoConfig }): Promise<boolean> {
     const requiredPackages: ResolvedPackage[] = [
       { file: 'react-dom/package.json', pkg: 'react-dom' },
-    ];
-    if (!env.EXPO_NO_REACT_NATIVE_WEB) {
+      // react-native-web is recommended but not required to start a web project.
       // use react-native-web/package.json to skip node module cache issues when the user installs
       // the package and attempts to resolve the module in the same process.
-      requiredPackages.push({ file: 'react-native-web/package.json', pkg: 'react-native-web' });
-    }
+      { file: 'react-native-web/package.json', pkg: 'react-native-web' },
+    ];
 
     const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     // Only include webpack-config if bundler is webpack.
@@ -71,14 +71,6 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
           dev: true,
         }
       );
-    } else if (bundler === 'metro') {
-      // NOTE(@kitten): We used to require `@expo/metro-runtime` here but part of what we required from
-      // it has moved out of that package (async-require). Hence, this isn't needed anymore, and if
-      // a user has `expo-router`, this is fulfilled anyway.
-      /*requiredPackages.push({
-        file: '@expo/metro-runtime/package.json',
-        pkg: '@expo/metro-runtime',
-      });*/
     }
 
     try {
@@ -94,6 +86,16 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     } catch (error) {
       // Reset the cached check so we can re-run the check if the user re-runs the command by pressing 'w' in the Terminal UI.
       this.resetAssertion();
+
+      // react-native-web is optional — if it's the only missing package, warn instead of blocking.
+      const hasReactDom = !!resolveFrom.silent(this.projectRoot, 'react-dom/package.json');
+      if (hasReactDom) {
+        Log.warn(
+          chalk`{bold react-native-web} is not installed. Some React Native components may not work on web without it. Install it with: {bold npx expo install react-native-web}`
+        );
+        return false;
+      }
+
       throw error;
     }
   }
