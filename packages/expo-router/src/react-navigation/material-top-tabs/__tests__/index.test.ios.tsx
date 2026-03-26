@@ -16,8 +16,8 @@ jest.mock('react-native-pager-view', () => {
   const React = require('react');
   const { View } = require('react-native');
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   return class ViewPager extends React.Component<React.PropsWithChildren<{}>> {
-    // eslint-disable-next-line @eslint-react/no-unused-class-component-members
     setPage() {}
 
     render() {

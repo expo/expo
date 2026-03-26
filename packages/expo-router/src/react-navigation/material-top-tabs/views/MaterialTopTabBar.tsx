@@ -1,5 +1,6 @@
 import Color from 'color';
 import { StyleSheet } from 'react-native';
+
 import { Text } from '../../elements';
 import {
   type ParamListBase,
@@ -8,7 +9,6 @@ import {
   useLocale,
   useTheme,
 } from '../../native';
-
 import type { MaterialTopTabBarProps } from '../types';
 
 // import { TabBar, TabBarIndicator } from 'react-native-tab-view';

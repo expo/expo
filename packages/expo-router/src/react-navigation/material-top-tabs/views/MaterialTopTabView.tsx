@@ -6,15 +6,14 @@ import {
   useLocale,
   useTheme,
 } from '../../native';
-
 import type {
   MaterialTopTabBarProps,
   MaterialTopTabDescriptorMap,
   MaterialTopTabNavigationConfig,
   MaterialTopTabNavigationHelpers,
 } from '../types';
-import { TabAnimationContext } from '../utils/TabAnimationContext';
 import { MaterialTopTabBar } from './MaterialTopTabBar';
+import { TabAnimationContext } from '../utils/TabAnimationContext';
 
 // import { TabView } from 'react-native-tab-view';
 let TabView: any;
@@ -54,9 +53,9 @@ export function MaterialTopTabView({
   }: any) => {
     return tabBar({
       ...rest,
-      state: state,
-      navigation: navigation,
-      descriptors: descriptors,
+      state,
+      navigation,
+      descriptors,
     });
   };
 

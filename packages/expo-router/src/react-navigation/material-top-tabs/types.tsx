@@ -6,6 +6,7 @@ import type {
   TextStyle,
   ViewStyle,
 } from 'react-native';
+
 import type {
   DefaultNavigatorOptions,
   Descriptor,

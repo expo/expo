@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MaterialTopTabView = MaterialTopTabView;
 const native_1 = require("../../native");
-const TabAnimationContext_1 = require("../utils/TabAnimationContext");
 const MaterialTopTabBar_1 = require("./MaterialTopTabBar");
+const TabAnimationContext_1 = require("../utils/TabAnimationContext");
 // import { TabView } from 'react-native-tab-view';
 let TabView;
 try {
@@ -24,9 +24,9 @@ function MaterialTopTabView({ tabBar = renderTabBarDefault, state, navigation, d
     ...rest }) => {
         return tabBar({
             ...rest,
-            state: state,
-            navigation: navigation,
-            descriptors: descriptors,
+            state,
+            navigation,
+            descriptors,
         });
     };
     const focusedOptions = descriptors[state.routes[state.index].key].options;
