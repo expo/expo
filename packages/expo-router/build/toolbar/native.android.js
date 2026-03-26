@@ -18,7 +18,13 @@ function RouterToolbarHost(props) {
     return (<react_native_1.View style={[react_native_1.StyleSheet.absoluteFill]} pointerEvents="box-none">
       <jetpack_compose_1.Host style={styles.host}>
         <jetpack_compose_1.Box modifiers={modifiers} contentAlignment="bottomCenter">
-          <jetpack_compose_1.HorizontalFloatingToolbar modifiers={[(0, modifiers_1.height)(64)]}>
+          <jetpack_compose_1.HorizontalFloatingToolbar 
+    // TODO: use toolbarContainerColor
+    // TODO: expose toolbarContainerColor from expo-ui
+    modifiers={[
+            (0, modifiers_1.height)(64),
+            ...(props.backgroundColor ? [(0, modifiers_1.background)(props.backgroundColor)] : []),
+        ]}>
             {props.children}
           </jetpack_compose_1.HorizontalFloatingToolbar>
         </jetpack_compose_1.Box>

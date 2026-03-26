@@ -254,7 +254,7 @@ export default function ToolbarScreen() {
         </View>
       </ScrollView>
 
-      <Stack.Toolbar>
+      <Stack.Toolbar backgroundColor="red" tintColor="blue">
         {/* Flexible spacer at the start */}
         <Stack.Toolbar.Spacer />
 

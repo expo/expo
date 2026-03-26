@@ -1,6 +1,6 @@
+import { createMemoryHistory } from '../../../fork/createMemoryHistory';
 import type { NavigationState } from '../../core';
 import { window as stubWindow } from '../__stubs__/window';
-import { createMemoryHistory } from '../createMemoryHistory';
 
 const originalDescriptors: Record<string, PropertyDescriptor | undefined> = {};
 

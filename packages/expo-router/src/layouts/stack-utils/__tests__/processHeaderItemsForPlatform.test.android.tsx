@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react-native';
 import React from 'react';
 
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
-import { ToolbarPlacementContext } from '../toolbar/context';
+import { ToolbarColorContext, ToolbarPlacementContext } from '../toolbar/context';
 import { processHeaderItemsForPlatform } from '../toolbar/processHeaderItemsForPlatform';
 
 jest.mock('@expo/ui/jetpack-compose', () => {
@@ -250,5 +250,159 @@ describe('processHeaderItemsForPlatform', () => {
     render(<HeaderRight canGoBack={false} />);
 
     expect(screen.getAllByTestId('IconButton')).toHaveLength(2);
+  });
+
+  it('provides ToolbarColorContext with passed colors', () => {
+    let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
+    const ColorCapture = () => {
+      const colors = React.useContext(ToolbarColorContext);
+      capturedColors = colors;
+      return null;
+    };
+
+    const result = processHeaderItemsForPlatform(<ColorCapture />, 'left', {
+      tintColor: 'red',
+      backgroundColor: 'blue',
+    })!;
+    const HeaderLeft = result.headerLeft!;
+    render(<HeaderLeft canGoBack={false} />);
+
+    expect(capturedColors.tintColor).toBe('red');
+    expect(capturedColors.backgroundColor).toBe('blue');
+  });
+
+  it('provides empty ToolbarColorContext when no colors passed', () => {
+    let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {
+      tintColor: 'sentinel',
+    };
+    const ColorCapture = () => {
+      const colors = React.useContext(ToolbarColorContext);
+      capturedColors = colors;
+      return null;
+    };
+
+    const result = processHeaderItemsForPlatform(<ColorCapture />, 'right')!;
+    const HeaderRight = result.headerRight!;
+    render(<HeaderRight canGoBack={false} />);
+
+    expect(capturedColors.tintColor).toBeUndefined();
+    expect(capturedColors.backgroundColor).toBeUndefined();
+  });
+
+  it('button uses context tintColor when no prop tintColor is set', () => {
+    const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
+    const { Icon } = jest.requireMock(
+      '@expo/ui/jetpack-compose'
+    ) as typeof import('@expo/ui/jetpack-compose');
+    const MockedIcon = Icon as jest.MockedFunction<typeof Icon>;
+
+    const result = processHeaderItemsForPlatform(
+      <NativeToolbarButton source={{ uri: 'test-icon' }} onPress={() => {}} />,
+      'left',
+      { tintColor: 'custom-tint' }
+    )!;
+
+    const HeaderLeft = result.headerLeft!;
+    render(<HeaderLeft canGoBack={false} />);
+
+    expect(MockedIcon).toHaveBeenCalledWith(
+      expect.objectContaining({ tintColor: 'custom-tint' }),
+      undefined
+    );
+  });
+
+  it('button prop tintColor takes precedence over context tintColor', () => {
+    const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
+    const { Icon } = jest.requireMock(
+      '@expo/ui/jetpack-compose'
+    ) as typeof import('@expo/ui/jetpack-compose');
+    const MockedIcon = Icon as jest.MockedFunction<typeof Icon>;
+
+    const result = processHeaderItemsForPlatform(
+      <NativeToolbarButton
+        source={{ uri: 'test-icon' }}
+        onPress={() => {}}
+        tintColor="prop-tint"
+      />,
+      'left',
+      { tintColor: 'context-tint' }
+    )!;
+
+    const HeaderLeft = result.headerLeft!;
+    render(<HeaderLeft canGoBack={false} />);
+
+    expect(MockedIcon).toHaveBeenCalledWith(
+      expect.objectContaining({ tintColor: 'prop-tint' }),
+      undefined
+    );
+  });
+
+  it('button falls back to default tintColor when no prop or context', () => {
+    const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
+    const { Icon } = jest.requireMock(
+      '@expo/ui/jetpack-compose'
+    ) as typeof import('@expo/ui/jetpack-compose');
+    const MockedIcon = Icon as jest.MockedFunction<typeof Icon>;
+
+    const result = processHeaderItemsForPlatform(
+      <NativeToolbarButton source={{ uri: 'test-icon' }} onPress={() => {}} />,
+      'left'
+    )!;
+
+    const HeaderLeft = result.headerLeft!;
+    render(<HeaderLeft canGoBack={false} />);
+
+    expect(MockedIcon).toHaveBeenCalledWith(
+      expect.objectContaining({ tintColor: 'dynamic:onSurface' }),
+      undefined
+    );
+  });
+
+  it('menu uses context backgroundColor for dropdown', () => {
+    const { NativeToolbarMenu } = require('../toolbar/StackToolbarMenu/native');
+    const { DropdownMenu } = jest.requireMock(
+      '@expo/ui/jetpack-compose'
+    ) as typeof import('@expo/ui/jetpack-compose');
+    const MockedDropdownMenu = DropdownMenu as jest.MockedFunction<typeof DropdownMenu>;
+
+    const result = processHeaderItemsForPlatform(
+      <NativeToolbarMenu source={{ uri: 'test-icon' }}>
+        <></>
+      </NativeToolbarMenu>,
+      'right',
+      { backgroundColor: 'custom-bg' }
+    )!;
+
+    const HeaderRight = result.headerRight!;
+    render(<HeaderRight canGoBack={false} />);
+
+    expect(MockedDropdownMenu).toHaveBeenCalledWith(
+      expect.objectContaining({ color: 'custom-bg' }),
+      undefined
+    );
+  });
+
+  it('menu uses context tintColor for icon', () => {
+    const { NativeToolbarMenu } = require('../toolbar/StackToolbarMenu/native');
+    const { Icon } = jest.requireMock(
+      '@expo/ui/jetpack-compose'
+    ) as typeof import('@expo/ui/jetpack-compose');
+    const MockedIcon = Icon as jest.MockedFunction<typeof Icon>;
+
+    const result = processHeaderItemsForPlatform(
+      <NativeToolbarMenu source={{ uri: 'test-icon' }}>
+        <></>
+      </NativeToolbarMenu>,
+      'right',
+      { tintColor: 'custom-tint' }
+    )!;
+
+    const HeaderRight = result.headerRight!;
+    render(<HeaderRight canGoBack={false} />);
+
+    expect(MockedIcon).toHaveBeenCalledWith(
+      expect.objectContaining({ tintColor: 'custom-tint' }),
+      undefined
+    );
   });
 });
