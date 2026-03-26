@@ -1,5 +1,4 @@
 import * as devLoadingViewEmitter from '../../devLoadingViewEmitter';
-
 import { fetchThenEvalAsync } from '../fetchThenEval';
 import HMRClient from '../hmr';
 import { loadBundleAsync } from '../loadBundle';

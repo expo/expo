@@ -1,5 +1,4 @@
 import * as devLoadingViewEmitter from '../devLoadingViewEmitter';
-
 import { HMRMetroBuildError } from './buildErrors';
 import { getFullBundlerUrl as getFullBundlerUrlHelper } from './getFullBundlerUrl';
 
