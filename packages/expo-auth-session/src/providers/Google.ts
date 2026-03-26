@@ -234,10 +234,10 @@ export function useAuthRequest(
     const output = config.extraParams ? { ...config.extraParams } : {};
 
     if (config.language) {
-      output.hl = output.language;
+      output.hl = config.language;
     }
     if (config.loginHint) {
-      output.login_hint = output.loginHint;
+      output.login_hint = config.loginHint;
     }
     if (config.selectAccount) {
       output.prompt = Prompt.SelectAccount;
@@ -281,7 +281,7 @@ export function useAuthRequest(
         clientSecret: config.clientSecret,
         redirectUri,
         scopes: config.scopes,
-        code: result.params.code,
+        code: result.params.code ?? '',
         extraParams: {
           code_verifier: request?.codeVerifier || '',
         },
