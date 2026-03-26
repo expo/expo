@@ -179,6 +179,7 @@ export default function Route() {
 Any search parameters will continue to be returned as individual strings:
 
 {/* oxfmt-ignore */}
+
 ```tsx src/app/[...everything].tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
@@ -316,10 +317,6 @@ export default function User() {
 }
 ```
 
-{/* oxfmt-ignore */}
-{/*
-TODO: REMOVE COMMENT WHEN https://github.com/expo/expo/pull/30268 IS PUBLISHED
-
 ## Array support
 
 URL parameters that are present multiple times will be grouped together as an array.
@@ -334,13 +331,12 @@ export default function Route() {
 }
 ```
 
-\*/}
-
 ## Hash support
 
 The URL [hash](https://developer.mozilla.org/en-US/docs/Web/API/URL/hash) is a string that follows the `#` symbol in a URL. It is commonly used on websites to link to a specific section of a page, but it can also be used to store data. Expo Router treats the hash as a special search parameter using the name `#`. It can be accessed and modified using the same hooks and APIs from [search parameters](#local-versus-global-search-parameters).
 
 {/* oxfmt-ignore */}
+
 ```tsx src/app/hash.tsx
 import { Text } from 'react-native';
 import { router, useLocalSearchParams, Link } from 'expo-router';
