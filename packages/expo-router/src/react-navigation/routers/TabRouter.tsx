@@ -495,6 +495,9 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
   return router;
 }
 
+/**
+ * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
 export function TabRouter(
   args: TabRouterOptions
 ): Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction> {

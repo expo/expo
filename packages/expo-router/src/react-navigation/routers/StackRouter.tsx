@@ -157,6 +157,9 @@ export const StackActions = {
   },
 };
 
+/**
+ * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
 export function StackRouter(options: StackRouterOptions) {
   const router: Router<
     StackNavigationState<ParamListBase>,

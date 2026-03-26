@@ -119,5 +119,8 @@ export declare const StackActions: {
         };
     };
 };
+/**
+ * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
 export declare function StackRouter(options: StackRouterOptions): Router<StackNavigationState<ParamListBase>, import("./CommonActions").Action | StackActionType>;
 //# sourceMappingURL=StackRouter.d.ts.map

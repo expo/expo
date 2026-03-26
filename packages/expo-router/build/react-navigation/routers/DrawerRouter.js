@@ -16,6 +16,9 @@ exports.DrawerActions = {
         return { type: 'TOGGLE_DRAWER' };
     },
 };
+/**
+ * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
+ */
 function DrawerRouter({ defaultStatus = 'closed', ...rest }) {
     const router = (0, TabRouter_1.TabRouter)(rest);
     const isDrawerInHistory = (state) => Boolean(state.history?.some((it) => it.type === 'drawer'));
