@@ -1,4 +1,4 @@
-import { ColorValue, type StyleProp, type TextStyle } from 'react-native';
+import { type ColorValue, type StyleProp, type TextStyle } from 'react-native';
 type Props = {
     color?: ColorValue;
     size?: number;

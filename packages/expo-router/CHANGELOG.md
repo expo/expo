@@ -15,7 +15,7 @@
 - Export JS navigators via `/js-tabs` and `/js-stack`. ([#44266](https://github.com/expo/expo/pull/44266) by [@jakex7](https://github.com/jakex7))
 - [android] add support for header toolbar ([#44052](https://github.com/expo/expo/pull/44052) by [@Ubax](https://github.com/Ubax))
 - Copy material top tabs as `/js-top-tabs`. ([#44268](https://github.com/expo/expo/pull/44268) by [@jakex7](https://github.com/jakex7))
-- Support `ColorValue`.
+- Support `ColorValue`. ([#44301](https://github.com/expo/expo/pull/44301) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

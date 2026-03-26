@@ -1,4 +1,5 @@
 import { PlatformColor } from 'react-native';
+
 import { Color } from '../color';
 
 describe(Color, () => {
