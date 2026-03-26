@@ -23,11 +23,14 @@ function codePointsToString(codePoints: number[]): string {
   let s = '';
   for (let i = 0; i < codePoints.length; ++i) {
     let cp = codePoints[i];
-    if (cp <= 0xffff) {
-      s += String.fromCharCode(cp);
-    } else {
-      cp -= 0x10000;
-      s += String.fromCharCode((cp >> 10) + 0xd800, (cp & 0x3ff) + 0xdc00);
+
+    if (cp != null) {
+      if (cp <= 0xffff) {
+        s += String.fromCharCode(cp);
+      } else {
+        cp -= 0x10000;
+        s += String.fromCharCode((cp >> 10) + 0xd800, (cp & 0x3ff) + 0xdc00);
+      }
     }
   }
   return s;
@@ -134,10 +137,7 @@ const LABEL_ENCODING_MAP: { [key: string]: Encoding } = {};
 
 function getEncoding(label: string): Encoding | null {
   label = label.trim().toLowerCase();
-  if (label in LABEL_ENCODING_MAP) {
-    return LABEL_ENCODING_MAP[label];
-  }
-  return null;
+  return LABEL_ENCODING_MAP[label] ?? null;
 }
 
 /** [Encodings table](https://encoding.spec.whatwg.org/encodings.json) (Incomplete as we only need TextDecoder utf8 in Expo RSC. A more complete implementation should be added to Hermes as native code.) */
@@ -366,9 +366,7 @@ export class TextDecoder {
     // encoding's decoder, set stream to a new stream, and unset the
     // BOM seen flag.
     if (!this._doNotFlush) {
-      this._decoder = DECODERS[this._encoding!.name]({
-        fatal: this.fatal,
-      });
+      this._decoder = DECODERS[this._encoding!.name]?.({ fatal: this.fatal }) ?? null;
       this._BOMseen = false;
     }
 
