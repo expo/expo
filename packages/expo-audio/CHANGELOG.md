@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Sync lock-screen metadata onto the active `MediaItem` so title and artwork show on Always-On Display, not only in the media notification. ([#44166](https://github.com/expo/expo/issues/44166))
 - [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Improve looping support. ([#43600](https://github.com/expo/expo/pull/43600) by [@alanjhughes](https://github.com/alanjhughes))
 

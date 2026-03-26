@@ -9,11 +9,16 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.CommandButton
@@ -32,6 +37,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.lang.ref.WeakReference
 import java.net.URL
 
@@ -100,6 +106,62 @@ class AudioControlsService : MediaSessionService() {
         )
       }
     }
+  }
+
+  /**
+   * The media style notification reads [currentMetadata] for the expanded notification, but Always-On
+   * Display and some lock-screen surfaces use [androidx.media3.common.MediaMetadata] on the active
+   * [androidx.media3.common.MediaItem]. Without syncing, the title can be missing on AOD (#44166).
+   */
+  private fun applySessionMetadataToActiveMediaItem() {
+    val player = currentPlayer ?: return
+    val run = Runnable { applySessionMetadataToActiveMediaItemOnMainThread(player) }
+    if (Looper.myLooper() == Looper.getMainLooper()) {
+      run.run()
+    } else {
+      Handler(Looper.getMainLooper()).post(run)
+    }
+  }
+
+  private fun applySessionMetadataToActiveMediaItemOnMainThread(player: AudioPlayer) {
+    val playerRef = player.ref
+    if (playerRef.mediaItemCount == 0) {
+      return
+    }
+    val index = playerRef.currentMediaItemIndex
+    if (index < 0 || index >= playerRef.mediaItemCount) {
+      return
+    }
+    val current = playerRef.getMediaItemAt(index) ?: return
+    val metadata = currentMetadata
+    val existing = current.mediaMetadata
+
+    val metaBuilder = MediaMetadata.Builder()
+    metaBuilder.setTitle(metadata?.title ?: existing.title)
+    metaBuilder.setArtist(metadata?.artist ?: existing.artist)
+    metaBuilder.setAlbumTitle(metadata?.albumTitle ?: existing.albumTitle)
+
+    when {
+      currentArtwork != null -> {
+        val stream = ByteArrayOutputStream()
+        currentArtwork!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        metaBuilder.setArtworkData(stream.toByteArray(), MediaMetadata.PICTURE_TYPE_FRONT_COVER)
+      }
+      metadata?.artworkUrl != null -> {
+        metaBuilder.setArtworkUri(Uri.parse(metadata.artworkUrl.toString()))
+      }
+      existing.artworkData != null -> {
+        metaBuilder.setArtworkData(existing.artworkData!!, existing.artworkDataType)
+      }
+      existing.artworkUri != null -> {
+        metaBuilder.setArtworkUri(existing.artworkUri)
+      }
+    }
+
+    val newItem = current.buildUpon()
+      .setMediaMetadata(metaBuilder.build())
+      .build()
+    playerRef.replaceMediaItem(index, newItem)
   }
 
   private fun buildContentIntent(): PendingIntent? {
@@ -223,6 +285,7 @@ class AudioControlsService : MediaSessionService() {
       loadArtworkFromUrl(it) { bitmap ->
         currentArtwork = bitmap
         postOrStartForegroundNotification(startInForeground = false)
+        applySessionMetadataToActiveMediaItem()
       }
     }
     player?.isActiveForLockScreen = true
@@ -251,6 +314,7 @@ class AudioControlsService : MediaSessionService() {
 
         // Initial update now that session exists
         postOrStartForegroundNotification(startInForeground = false)
+        applySessionMetadataToActiveMediaItem()
       }
     } else {
       clearSessionInternal()
@@ -266,8 +330,12 @@ class AudioControlsService : MediaSessionService() {
       loadArtworkFromUrl(it) { bitmap ->
         currentArtwork = bitmap
         postOrStartForegroundNotification(startInForeground = false)
+        applySessionMetadataToActiveMediaItem()
       }
-    } ?: postOrStartForegroundNotification(startInForeground = false)
+    } ?: run {
+      postOrStartForegroundNotification(startInForeground = false)
+      applySessionMetadataToActiveMediaItem()
+    }
   }
 
   private fun clearSessionInternal() {
@@ -312,11 +380,13 @@ class AudioControlsService : MediaSessionService() {
         loadArtworkFromUrl(it) { bitmap ->
           currentArtwork = bitmap
           postOrStartForegroundNotification(startInForeground = false)
+          applySessionMetadataToActiveMediaItem()
         }
       }
 
       updateSessionCustomLayout(player.ref.isPlaying)
       postOrStartForegroundNotification(startInForeground = false)
+      applySessionMetadataToActiveMediaItem()
     } else {
       setActivePlayerInternal(player, metadata, options)
     }
@@ -378,6 +448,14 @@ class AudioControlsService : MediaSessionService() {
       }
 
       override fun onPlaybackStateChanged(playbackState: Int) {
+        if (playbackState == Player.STATE_READY) {
+          applySessionMetadataToActiveMediaItem()
+        }
+        postOrStartForegroundNotification(startInForeground = false)
+      }
+
+      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        applySessionMetadataToActiveMediaItem()
         postOrStartForegroundNotification(startInForeground = false)
       }
     }
