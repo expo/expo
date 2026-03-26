@@ -360,11 +360,16 @@ export const Dependencies = {
    * Output is centralized under: packages/precompile/.build/<pkg>/output/
    * @param pkg Package
    */
-  cleanXCFrameworksFolderAsync: async (pkg: SPMPackageSource): Promise<void> => {
-    const outputPath = path.join(pkg.buildPath, 'output');
+  cleanXCFrameworksFolderAsync: async (
+    pkg: SPMPackageSource,
+    flavor: BuildFlavor
+  ): Promise<void> => {
+    const outputPath = path.join(pkg.buildPath, 'output', flavor.toLowerCase());
 
     if (fs.existsSync(outputPath)) {
-      logger.info(`🧹 Cleaning output folder for package ${chalk.green(pkg.packageName)}...`);
+      logger.info(
+        `🧹 Cleaning output folder for package ${chalk.green(pkg.packageName)}/${flavor}...`
+      );
       await fs.remove(outputPath);
     }
   },

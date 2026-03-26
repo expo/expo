@@ -21,7 +21,9 @@ export const cleanPackageStep: Step<PrebuildContext> = {
 
   async run(ctx) {
     const pkg = ctx.currentPackage!;
-    await Dependencies.cleanXCFrameworksFolderAsync(pkg);
+    for (const flavor of ctx.request.buildFlavors) {
+      await Dependencies.cleanXCFrameworksFolderAsync(pkg, flavor);
+    }
     await Dependencies.cleanGeneratedFolderAsync(pkg);
   },
 };
