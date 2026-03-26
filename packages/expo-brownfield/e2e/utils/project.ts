@@ -33,8 +33,8 @@ export const createTempProject = async (
   try {
     await createProjectWithTemplate(TEMP_DIR, projectName(suffix));
     await installPackage(projectRoot);
+    await addPlugin(projectRoot);
     if (prebuild) {
-      await addPlugin(projectRoot);
       await prebuildProject(projectRoot, undefined, install);
     }
   } catch (error) {
@@ -81,7 +81,7 @@ export const addPlugin = async (
     ...appConfig.expo.android,
     ...android,
   };
-  
+
   appConfig.expo.experiments.autolinkingModuleResolution = true;
 
   await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
@@ -119,7 +119,7 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
 
   let tarballs = await glob('*.tgz', { cwd: templatePath });
   if (tarballs.length === 0) {
-    await executeCommandAsync(templatePath, 'npm', ['pack', '--json']);
+    await executeCommandAsync(templatePath, 'pnpm', ['pack', '--json']);
     tarballs = await glob('*.tgz', { cwd: templatePath });
     if (tarballs.length === 0) {
       throw new Error(`No tarballs found in template directory: ${templatePath}`);
@@ -130,7 +130,7 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     projectName,
     '--template',
     path.join(templatePath, tarballs[0]),
-    '--no-install'
+    '--no-install',
   ]);
 };
 
@@ -138,18 +138,24 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
  * Install `expo-brownfield` package from a tarball
  */
 const installPackage = async (projectRoot: string) => {
-  const packageJsonPath = path.join(projectRoot, 'package.json');
-  const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
   const packageRoot = path.join(__dirname, '../../');
+  let tarballs = await glob('*.tgz', { cwd: packageRoot });
+  if (tarballs.length === 0) {
+    await executeCommandAsync(packageRoot, 'pnpm', ['pack', '--json']);
+    tarballs = await glob('*.tgz', { cwd: packageRoot });
+    if (tarballs.length === 0) {
+      throw new Error(`No tarballs found in package directory: ${packageRoot}`);
+    }
+  }
 
-  packageJson.resolutions ??= {};
-  packageJson.dependencies ??= {};
+  const packageTarball = tarballs[0];
+  const packageTarballPath = path.join(packageRoot, packageTarball);
+  await fs.promises.cp(packageTarballPath, path.join(projectRoot, packageTarball), {
+    recursive: true,
+    force: true,
+  });
 
-  packageJson.resolutions['expo-brownfield'] = path.relative(projectRoot, packageRoot);
-  packageJson.dependencies['expo-brownfield'] = '*';
-
-  // Use --legacy-peer-deps for better stability
-  await spawnAsync('pnpm', ['install'], {
+  await spawnAsync('pnpm', ['add', `./${packageTarball}`], {
     cwd: projectRoot,
     stdio: 'pipe',
   });
