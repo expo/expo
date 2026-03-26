@@ -134,6 +134,18 @@ public:
 
   jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
 
+  /**
+   * Gets the class name of a SharedObject from the main runtime's registry.
+   * Used by the worklet runtime to resolve SharedObject proxies.
+   */
+  std::string getSharedObjectClassName(int objectId);
+
+  /**
+   * Builds prototype decorators for a SharedObject class.
+   * Returns a JSDecoratorsBridgingObject with property getters/setters populated.
+   */
+  jni::local_ref<jobject> buildWorkletClassDecorators(int objectId);
+
   void prepareForDeallocation() noexcept;
 
   [[nodiscard]] bool wasDeallocated() const noexcept;

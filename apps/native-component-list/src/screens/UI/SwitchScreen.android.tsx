@@ -19,6 +19,7 @@ import {
   Shapes,
 } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
+import { runOnUI } from 'react-native-worklets';
 
 export default function SwitchScreen() {
   const [checked, setChecked] = React.useState<boolean>(true);
@@ -38,6 +39,16 @@ export default function SwitchScreen() {
             </Row>
             <Button onClick={() => (state.isOn = !state.isOn)}>
               <ComposeText>Toggle from JS</ComposeText>
+            </Button>
+            <Button
+              onClick={() => {
+                runOnUI(() => {
+                  'worklet';
+                  console.log('Toggling from worklet, state.isOn:', state.isOn);
+                  state.isOn = !state.isOn;
+                })();
+              }}>
+              <ComposeText>Toggle from Worklet</ComposeText>
             </Button>
           </Column>
         </Card>

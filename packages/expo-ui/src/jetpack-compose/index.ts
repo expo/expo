@@ -1,4 +1,5 @@
 import './MaterialSymbolsAssetsTransformer.fx';
+import './State/index.fx';
 
 export * from './AlertDialog';
 export { BasicAlertDialog, type BasicAlertDialogProps } from './BasicAlertDialog';

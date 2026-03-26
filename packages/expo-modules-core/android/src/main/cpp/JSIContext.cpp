@@ -236,6 +236,31 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::getJavascriptClass(
   return method(javaPart_, std::move(native));
 }
 
+std::string JSIContext::getSharedObjectClassName(int objectId) {
+  if (javaPart_ == nullptr) {
+    return "";
+  }
+
+  const static auto method = expo::JSIContext::javaClassLocal()
+    ->getMethod<jni::local_ref<jni::JString>(int)>(
+      "getSharedObjectClassName"
+    );
+  auto result = method(javaPart_, objectId);
+  return result ? result->toStdString() : "";
+}
+
+jni::local_ref<jobject> JSIContext::buildWorkletClassDecorators(int objectId) {
+  if (javaPart_ == nullptr) {
+    return nullptr;
+  }
+
+  const static auto method = expo::JSIContext::javaClassLocal()
+    ->getMethod<jni::local_ref<jobject>(int)>(
+      "buildWorkletClassDecorators"
+    );
+  return method(javaPart_, objectId);
+}
+
 void JSIContext::prepareForDeallocation() noexcept {
   jsRegistry.reset();
   if (runtimeHolder) {

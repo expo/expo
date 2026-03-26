@@ -3,6 +3,7 @@ package expo.modules.kotlin.jni
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
@@ -126,6 +127,57 @@ class JSIContext @DoNotStrip internal constructor(
       ?.classRegistry
       ?.toJavaScriptObject(native)
   }
+
+  // region Worklet SharedObject resolution
+
+  /**
+   * Returns the class name for a SharedObject by looking it up in the main runtime's registry.
+   * Called from C++ when resolving SharedObjects in the worklet runtime.
+   */
+  @Suppress("unused")
+  @DoNotStrip
+  fun getSharedObjectClassName(objectId: Int): String? {
+    val workletRuntime = runtimeHolder.get() ?: return null
+    val appContext = workletRuntime.appContext ?: return null
+    val mainRuntime = appContext.runtime
+    val nativeObject = mainRuntime.sharedObjectRegistry
+      .toNativeObjectOrNull(SharedObjectId(objectId)) ?: return null
+    return nativeObject.javaClass.simpleName
+  }
+
+  /**
+   * Builds a [JSDecoratorsBridgingObject] with property getters/setters for the SharedObject's class.
+   * The decorators can then be applied to a prototype in the worklet runtime.
+   */
+  @Suppress("unused")
+  @DoNotStrip
+  fun buildWorkletClassDecorators(objectId: Int): Any? {
+    val workletRuntime = runtimeHolder.get() ?: return null
+    val appContext = workletRuntime.appContext ?: return null
+    val mainRuntime = appContext.runtime
+    val nativeObject = mainRuntime.sharedObjectRegistry
+      .toNativeObjectOrNull(SharedObjectId(objectId)) ?: return null
+    val className = nativeObject.javaClass.simpleName
+
+    val classDef = appContext.registry.registry.values
+      .flatMap { it.definition.classData }
+      .find { it.name == className }
+
+    if (classDef == null) {
+      android.util.Log.e("JSIContext", "buildWorkletClassDecorators: class '$className' not found in registry")
+      return null
+    }
+
+    android.util.Log.d("JSIContext", "buildWorkletClassDecorators: found class '$className' with ${classDef.objectDefinition.properties.size} properties: ${classDef.objectDefinition.properties.keys}")
+
+    val decorator = JSDecoratorsBridgingObject(workletRuntime.deallocator)
+    decorator.apply {
+      classDef.objectDefinition.exportProperties(appContext)
+    }
+    return decorator
+  }
+
+  // endregion
 
   @Throws(Throwable::class)
   protected fun finalize() {

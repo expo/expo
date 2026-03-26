@@ -3870,7 +3870,7 @@ SPEC CHECKSUMS:
   EXUpdates: a0f980531cbcf45906b2489febd4e11a5895f332
   EXUpdatesInterface: 3c788339bbd554f6e04696a61cc16e33c7156811
   FBLazyVector: a2650ac3702400e3bbdad8dcd385c9c5dce22d37
-  hermes-engine: 77c04b3ea13f9e3ef0da710c41bb69da853e9911
+  hermes-engine: 74803aee94336f2c3be0634e7e71569da4da9e5a
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3888,7 +3888,7 @@ SPEC CHECKSUMS:
   React: aa109dc0a057583f3ce0c190295d58d6f820cea4
   React-callinvoker: 1fea1250fa3063099299506b0c902b1b4e26f4a3
   React-Core: 1617d21688707f28dc37e28eaa1116e5f2da863e
-  React-Core-prebuilt: 8b8161d8d5808dfe58dfa20467ccc57c6107587c
+  React-Core-prebuilt: 6d264eb447c10a05a38f848493e50b1d9ceda898
   React-CoreModules: 865af194dd2ad104a4425d3697458cc630e94d28
   React-cxxreact: f753ef86236c3ab398398315f3910a1751068e55
   React-debug: a8c18f79ee9a2915719c0dcb69299916df218d62
@@ -3958,7 +3958,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 7ae52692e6cd791153592b52e84ea7de9669b489
   ReactCodegen: 778750fff190324384fa579c2e01381216f16c62
   ReactCommon: fa05a61d038ccdd03e63e647c828448f97831ecd
-  ReactNativeDependencies: d77c415a9bf174a89152868dba10a943d6d932e4
+  ReactNativeDependencies: f072f4a72eedd6562dd3cf5585217cd971590698
   RNCAsyncStorage: 2ad919e88b8bc2cd80e8697ce66d04d006743283
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
   RNCPicker: d74667bdfc08ed389a2a277d95b8faf2349290a9
