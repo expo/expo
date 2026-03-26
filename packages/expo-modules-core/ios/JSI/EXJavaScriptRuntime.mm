@@ -10,8 +10,6 @@
 #import <hermes/hermes.h>
 #import <ReactCommon/SchedulerPriority.h>
 
-#include <string>
-
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;

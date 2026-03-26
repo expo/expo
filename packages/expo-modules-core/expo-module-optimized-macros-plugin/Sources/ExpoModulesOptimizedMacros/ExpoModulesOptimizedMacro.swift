@@ -78,7 +78,6 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
         providingPeersOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        // Ensure this is attached to a function
         guard let funcDecl = declaration.as(FunctionDeclSyntax.self) else {
             throw MacroExpansionErrorMessage("@OptimizedFunction can only be attached to function declarations")
         }
@@ -94,210 +93,71 @@ public struct OptimizedFunctionAttachedMacro: PeerMacro {
             functionName = funcDecl.name.text
         }
 
-        // Extract parameter types and names from the function signature
         var paramTypes: [String] = []
-
         for param in funcDecl.signature.parameterClause.parameters {
-            let type = param.type
-            paramTypes.append(type.trimmedDescription)
+            paramTypes.append(param.type.trimmedDescription)
         }
 
-        // Extract return type
-        let returnType: String
-        if let returnClause = funcDecl.signature.returnClause {
-            returnType = returnClause.type.trimmedDescription
-        } else {
-            // No return type means Void
-            returnType = "Void"
-        }
-
-        // Check if function throws
+        let returnType = funcDecl.signature.returnClause?.type.trimmedDescription ?? "Void"
         let functionThrows = funcDecl.signature.effectSpecifiers?.throwsClause?.throwsSpecifier != nil
-
-        // Generate type encoding
         let typeEncoding = try generateTypeEncoding(returnType: returnType, paramTypes: paramTypes)
-
-        // Get the implementation function name
         let implFuncName = funcDecl.name.text
+        let blockParamTypes = paramTypes.joined(separator: ", ")
+        let argNames = (0..<paramTypes.count).map { "arg\($0)" }.joined(separator: ", ")
 
-        // Generate the peer function name (same as the exported name)
-        let peerFuncName = functionName
-
-        // Generate the peer function
         let peerFunc: DeclSyntax
 
         if functionThrows {
-            // For throwing functions, we need to wrap in a closure that converts Swift errors to NSException
-            // First capture the implementation function as a closure (which captures self), then wrap it
-            let blockParamTypes = paramTypes.joined(separator: ", ")
-            let implParamNames = (0..<paramTypes.count).map { "arg\($0)" }.joined(separator: ", ")
-            let implParamList = (0..<paramTypes.count).map { "arg\($0)" }.joined(separator: ", ")
-            let hasParams = paramTypes.count > 0
+            let isVoid = returnType == "Void" || returnType == "()"
+            let implType = paramTypes.isEmpty ? "() throws -> \(returnType)" : "(\(blockParamTypes)) throws -> \(returnType)"
+            let wrapperType = paramTypes.isEmpty ? "@convention(block) () -> \(returnType)" : "@convention(block) (\(blockParamTypes)) -> \(returnType)"
+            let closureArgs = paramTypes.isEmpty ? "" : " \(argNames) in"
+            let implCall = paramTypes.isEmpty ? "impl()" : "impl(\(argNames))"
+            let tryExpr = isVoid ? "try \(implCall)" : "return try \(implCall)"
+            let unreachable = isVoid ? "" : "\n            fatalError(\"Unreachable\")"
 
-            if returnType == "Void" || returnType == "()" {
-                if hasParams {
-                    peerFunc = """
-                    private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
-                        let impl: (\(raw: blockParamTypes)) throws -> \(raw: returnType) = \(raw: implFuncName)
-                        let wrapper: @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType) = { \(raw: implParamNames) in
-                            do {
-                                try impl(\(raw: implParamList))
-                            } catch {
-                                let nsError: NSError
-                                if let expoError = error as? Exception {
-                                    nsError = NSError(domain: "dev.expo.modules", code: 0, userInfo: [
-                                        "name": expoError.name,
-                                        "code": expoError.code,
-                                        "message": expoError.debugDescription,
-                                    ])
-                                } else {
-                                    nsError = error as NSError
-                                }
-                                let exception = NSException(
-                                    name: NSExceptionName(nsError.userInfo["name"] as? String ?? "SwiftError"),
-                                    reason: nsError.userInfo["message"] as? String ?? nsError.localizedDescription,
-                                    userInfo: nsError.userInfo
-                                )
-                                exception.raise()
-                            }
+            peerFunc = """
+            private func \(raw: functionName)() -> OptimizedFunctionDescriptor {
+                let impl: \(raw: implType) = \(raw: implFuncName)
+                let wrapper: \(raw: wrapperType) = {\(raw: closureArgs)
+                    do {
+                        \(raw: tryExpr)
+                    } catch {
+                        let nsError: NSError
+                        if let expoError = error as? Exception {
+                            nsError = NSError(domain: "dev.expo.modules", code: 0, userInfo: [
+                                "name": expoError.name,
+                                "code": expoError.code,
+                                "message": expoError.debugDescription,
+                            ])
+                        } else {
+                            nsError = error as NSError
                         }
-                        return _createOptimizedFunctionDescriptor(
-                            typeEncoding: "\(raw: typeEncoding)",
-                            argsCount: \(raw: String(paramTypes.count)),
-                            block: wrapper as AnyObject
+                        let exception = NSException(
+                            name: NSExceptionName(nsError.userInfo["name"] as? String ?? "SwiftError"),
+                            reason: nsError.userInfo["message"] as? String ?? nsError.localizedDescription,
+                            userInfo: nsError.userInfo
                         )
+                        exception.raise()\(raw: unreachable)
                     }
-                    """
-                } else {
-                    peerFunc = """
-                    private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
-                        let impl: () throws -> \(raw: returnType) = \(raw: implFuncName)
-                        let wrapper: @convention(block) () -> \(raw: returnType) = {
-                            do {
-                                try impl()
-                            } catch {
-                                let nsError: NSError
-                                if let expoError = error as? Exception {
-                                    nsError = NSError(domain: "dev.expo.modules", code: 0, userInfo: [
-                                        "name": expoError.name,
-                                        "code": expoError.code,
-                                        "message": expoError.debugDescription,
-                                    ])
-                                } else {
-                                    nsError = error as NSError
-                                }
-                                let exception = NSException(
-                                    name: NSExceptionName(nsError.userInfo["name"] as? String ?? "SwiftError"),
-                                    reason: nsError.userInfo["message"] as? String ?? nsError.localizedDescription,
-                                    userInfo: nsError.userInfo
-                                )
-                                exception.raise()
-                            }
-                        }
-                        return _createOptimizedFunctionDescriptor(
-                            typeEncoding: "\(raw: typeEncoding)",
-                            argsCount: \(raw: String(paramTypes.count)),
-                            block: wrapper as AnyObject
-                        )
-                    }
-                    """
                 }
-            } else {
-                if hasParams {
-                    peerFunc = """
-                    private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
-                        let impl: (\(raw: blockParamTypes)) throws -> \(raw: returnType) = \(raw: implFuncName)
-                        let wrapper: @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType) = { \(raw: implParamNames) in
-                            do {
-                                return try impl(\(raw: implParamList))
-                            } catch {
-                                let nsError: NSError
-                                if let expoError = error as? Exception {
-                                    nsError = NSError(domain: "dev.expo.modules", code: 0, userInfo: [
-                                        "name": expoError.name,
-                                        "code": expoError.code,
-                                        "message": expoError.debugDescription,
-                                    ])
-                                } else {
-                                    nsError = error as NSError
-                                }
-                                let exception = NSException(
-                                    name: NSExceptionName(nsError.userInfo["name"] as? String ?? "SwiftError"),
-                                    reason: nsError.userInfo["message"] as? String ?? nsError.localizedDescription,
-                                    userInfo: nsError.userInfo
-                                )
-                                exception.raise()
-                                fatalError("Unreachable")
-                            }
-                        }
-                        return _createOptimizedFunctionDescriptor(
-                            typeEncoding: "\(raw: typeEncoding)",
-                            argsCount: \(raw: String(paramTypes.count)),
-                            block: wrapper as AnyObject
-                        )
-                    }
-                    """
-                } else {
-                    peerFunc = """
-                    private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
-                        let impl: () throws -> \(raw: returnType) = \(raw: implFuncName)
-                        let wrapper: @convention(block) () -> \(raw: returnType) = {
-                            do {
-                                return try impl()
-                            } catch {
-                                let nsError: NSError
-                                if let expoError = error as? Exception {
-                                    nsError = NSError(domain: "dev.expo.modules", code: 0, userInfo: [
-                                        "name": expoError.name,
-                                        "code": expoError.code,
-                                        "message": expoError.debugDescription,
-                                    ])
-                                } else {
-                                    nsError = error as NSError
-                                }
-                                let exception = NSException(
-                                    name: NSExceptionName(nsError.userInfo["name"] as? String ?? "SwiftError"),
-                                    reason: nsError.userInfo["message"] as? String ?? nsError.localizedDescription,
-                                    userInfo: nsError.userInfo
-                                )
-                                exception.raise()
-                                fatalError("Unreachable")
-                            }
-                        }
-                        return _createOptimizedFunctionDescriptor(
-                            typeEncoding: "\(raw: typeEncoding)",
-                            argsCount: \(raw: String(paramTypes.count)),
-                            block: wrapper as AnyObject
-                        )
-                    }
-                    """
-                }
+                return _createOptimizedFunctionDescriptor(
+                    typeEncoding: "\(raw: typeEncoding)",
+                    argsCount: \(raw: String(paramTypes.count)),
+                    block: wrapper as AnyObject
+                )
             }
+            """
         } else {
-            // Non-throwing functions work as before
-            let blockParamTypes = paramTypes.joined(separator: ", ")
-
-            if returnType == "Void" || returnType == "()" {
-                peerFunc = """
-                private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
-                    return _createOptimizedFunctionDescriptor(
-                        typeEncoding: "\(raw: typeEncoding)",
-                        argsCount: \(raw: String(paramTypes.count)),
-                        block: (\(raw: implFuncName) as @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType)) as AnyObject
-                    )
-                }
-                """
-            } else {
-                peerFunc = """
-                private func \(raw: peerFuncName)() -> OptimizedFunctionDescriptor {
-                    return _createOptimizedFunctionDescriptor(
-                        typeEncoding: "\(raw: typeEncoding)",
-                        argsCount: \(raw: String(paramTypes.count)),
-                        block: (\(raw: implFuncName) as @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType)) as AnyObject
-                    )
-                }
-                """
+            peerFunc = """
+            private func \(raw: functionName)() -> OptimizedFunctionDescriptor {
+                return _createOptimizedFunctionDescriptor(
+                    typeEncoding: "\(raw: typeEncoding)",
+                    argsCount: \(raw: String(paramTypes.count)),
+                    block: (\(raw: implFuncName) as @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType)) as AnyObject
+                )
             }
+            """
         }
 
         return [peerFunc]

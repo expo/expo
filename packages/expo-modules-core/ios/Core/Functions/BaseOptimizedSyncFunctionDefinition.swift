@@ -2,7 +2,7 @@
 
 /**
  Base class for optimized synchronous function definitions.
- This is used by the `#OptimizedFunction` macro to generate subclasses with specific type signatures.
+ This is used by the `@OptimizedFunction` macro to generate subclasses with specific type signatures.
  */
 open class BaseOptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unchecked Sendable {
   public let name: String
