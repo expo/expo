@@ -3,6 +3,8 @@ import { NativeSyntheticEvent, type ColorValue } from 'react-native';
 
 import { type ModifierConfig } from '../../types';
 import { ExpoUIModule } from '../ExpoUIModule';
+import { getStateId } from '../State';
+import { type ToggleState } from './state';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
@@ -29,9 +31,15 @@ export type SwitchColors = {
 
 export type SwitchProps = {
   /**
+   * An observable state object that drives the switch.
+   * Create one with `useToggleState()`. When provided, `value` and
+   * `onCheckedChange` are ignored -- the state object is the source of truth.
+   */
+  state?: ToggleState;
+  /**
    * Indicates whether the switch is checked.
    */
-  value: boolean;
+  value?: boolean;
   /**
    * Whether the switch is enabled.
    * @default true
@@ -56,7 +64,8 @@ export type SwitchProps = {
   children?: React.ReactNode;
 };
 
-type NativeSwitchProps = Omit<SwitchProps, 'onCheckedChange' | 'children'> & {
+type NativeSwitchProps = Omit<SwitchProps, 'onCheckedChange' | 'children' | 'state'> & {
+  state?: number;
   children?: React.ReactNode;
   onCheckedChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
 };
@@ -89,11 +98,12 @@ export function SwitchThumbContent(props: ThumbContentProps) {
 }
 
 function transformSwitchProps(props: SwitchProps): Omit<NativeSwitchProps, 'children'> {
-  const { modifiers, children, onCheckedChange, ...restProps } = props;
+  const { modifiers, children, onCheckedChange, state, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    state: getStateId(state),
     onCheckedChange: ({ nativeEvent: { value } }) => {
       onCheckedChange?.(value);
     },
@@ -111,3 +121,4 @@ SwitchComponent.ThumbContent = SwitchThumbContent;
 SwitchComponent.DefaultIconSize = ExpoUIModule.SwitchDefaultIconSize;
 
 export { SwitchComponent as Switch };
+export { ToggleState, useToggleState } from './state';

@@ -1,9 +1,12 @@
 import {
   Host,
   Switch,
+  useToggleState,
+  Button,
   Box,
   Text as ComposeText,
   Column,
+  Row,
   Card,
   LazyColumn,
 } from '@expo/ui/jetpack-compose';
@@ -19,9 +22,25 @@ import * as React from 'react';
 
 export default function SwitchScreen() {
   const [checked, setChecked] = React.useState<boolean>(true);
+  const state = useToggleState(false);
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Shared State</ComposeText>
+            <ComposeText>
+              Two switches sharing the same ToggleState. Toggling one updates the other.
+            </ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 12 }}>
+              <Switch state={state} />
+              <Switch state={state} />
+            </Row>
+            <Button onClick={() => (state.isOn = !state.isOn)}>
+              <ComposeText>Toggle from JS</ComposeText>
+            </Button>
+          </Column>
+        </Card>
         <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>Default</ComposeText>

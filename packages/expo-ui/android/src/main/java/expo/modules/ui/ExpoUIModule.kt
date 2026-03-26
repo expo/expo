@@ -29,6 +29,7 @@ import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
 import expo.modules.ui.menu.ItemPressedEvent
+import expo.modules.ui.state.ToggleState
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
@@ -47,6 +48,18 @@ class ExpoUIModule : Module() {
       okHttpClient?.connectionPool?.evictAll()
       okHttpClient?.cache?.close()
       okHttpClient = null
+    }
+
+    // MARK: - Observable State Classes
+
+    Class(ToggleState::class) {
+      Constructor { initialValue: Boolean ->
+        ToggleState().apply { isOn = initialValue }
+      }
+
+      Property("isOn")
+        .get { state: ToggleState -> state.isOn }
+        .set { state: ToggleState, value: Boolean -> state.isOn = value }
     }
 
     //region Views use expo-modules-core DSL for uncommon features

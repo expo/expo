@@ -1,5 +1,6 @@
 import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
+import { type ToggleState } from './state';
 /**
  * Colors for switch core elements.
  */
@@ -23,9 +24,15 @@ export type SwitchColors = {
 };
 export type SwitchProps = {
     /**
+     * An observable state object that drives the switch.
+     * Create one with `useToggleState()`. When provided, `value` and
+     * `onCheckedChange` are ignored -- the state object is the source of truth.
+     */
+    state?: ToggleState;
+    /**
      * Indicates whether the switch is checked.
      */
-    value: boolean;
+    value?: boolean;
     /**
      * Whether the switch is enabled.
      * @default true
@@ -66,4 +73,5 @@ declare namespace SwitchComponent {
     var DefaultIconSize: any;
 }
 export { SwitchComponent as Switch };
+export { ToggleState, useToggleState } from './state';
 //# sourceMappingURL=index.d.ts.map
