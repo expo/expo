@@ -4,6 +4,7 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
+import ora from 'ora';
 import path from 'path';
 
 import { EXPO_DIR } from '../Constants';
@@ -150,7 +151,42 @@ async function updateBundledNativeModules(newVersion: string): Promise<void> {
 }
 
 /**
- * Finds all apps with an ios directory containing a Podfile and runs `bunx pod-install` in them.
+ * Runs `pod install` in the given directory. If it fails with a message suggesting
+ * `pod update <dep>`, it automatically runs `pod update <deps> --no-repo-update`,
+ * accumulating dependencies across retries.
+ */
+async function podInstallAsync(cwd: string): Promise<void> {
+  const depsToUpdate = new Set<string>();
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    try {
+      if (depsToUpdate.size > 0) {
+        await spawnAsync('pod', ['update', ...depsToUpdate, '--no-repo-update'], { cwd });
+      } else {
+        await spawnAsync('pod', ['install'], { cwd });
+      }
+      return;
+    } catch (error: any) {
+      const output = [error.stdout, error.stderr, error.message].filter(Boolean).join('\n');
+      const match = output.match(
+        /run ['"`]pod update ([\w\-_\d/]+)( --no-repo-update)?['"`] to apply changes/
+      );
+      if (!match) {
+        throw error;
+      }
+      const dep = match[1];
+      if (depsToUpdate.has(dep)) {
+        // Already tried updating this dep — bail to avoid infinite loop
+        throw error;
+      }
+      depsToUpdate.add(dep);
+    }
+  }
+}
+
+/**
+ * Finds all apps with an ios directory containing a Podfile and runs `pod install` in them.
  */
 async function installPodsInApps(): Promise<void> {
   const podfiles = await glob('**/ios/Podfile', {
@@ -164,13 +200,19 @@ async function installPodsInApps(): Promise<void> {
 
   logger.info(`\nInstalling pods in ${appDirs.length} apps...\n`);
 
-  for (const appDir of appDirs) {
-    const relativePath = path.relative(EXPO_DIR, appDir);
-    logger.log(`  Installing pods in ${chalk.cyan(relativePath)}...`);
-    try {
-      await spawnAsync('bunx', ['pod-install'], { cwd: appDir, stdio: 'inherit' });
-    } catch (error: any) {
-      logger.warn(`  Failed to install pods in ${relativePath}: ${error.message}`);
-    }
-  }
+  await Promise.all(
+    appDirs.map(async (appDir) => {
+      const relativePath = path.relative(EXPO_DIR, appDir);
+      const spinner = ora({
+        text: `Installing pods in ${chalk.cyan(relativePath)}`,
+        indent: 2,
+      }).start();
+      try {
+        await podInstallAsync(path.join(appDir, 'ios'));
+        spinner.succeed(`Installed pods in ${chalk.cyan(relativePath)}`);
+      } catch (error: any) {
+        spinner.fail(`Failed to install pods in ${relativePath}: ${error.message}`);
+      }
+    })
+  );
 }
