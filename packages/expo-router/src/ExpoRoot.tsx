@@ -1,7 +1,7 @@
 'use client';
 
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
-import { StatusBar, useColorScheme, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
@@ -22,7 +22,6 @@ import {
 } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import { RequireContext } from './types';
-import { canOverrideStatusBarBehavior } from './utils/statusbar';
 import { parseUrlUsingCustomBase } from './utils/url';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
@@ -75,8 +74,6 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
               <SafeAreaProvider
                 // SSR support
                 initialMetrics={INITIAL_METRICS}>
-                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-                {canOverrideStatusBarBehavior && <AutoStatusBar />}
                 {children}
               </SafeAreaProvider>
             </LinkPreviewContextProvider>
@@ -87,10 +84,6 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
   );
 
   return <ContextNavigator {...props} wrapper={wrapper} />;
-}
-
-function AutoStatusBar() {
-  return <StatusBar barStyle={useColorScheme() === 'light' ? 'dark-content' : 'light-content'} />;
 }
 
 const initialUrl =

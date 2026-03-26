@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed `setStatusBarBackgroundColor`, `setStatusBarNetworkActivityIndicatorVisible`, `setStatusBarTranslucent` functions and `backgroundColor`, `networkActivityIndicatorVisible`, `translucent` props from `StatusBarProps`. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
+
 ### 🎉 New features
 
 - Added config plugin for Android and iOS status bar configuration. ([#43968](https://github.com/expo/expo/pull/43968) by [@zoontek](https://github.com/zoontek))
@@ -11,6 +13,8 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Removed `react-native-is-edge-to-edge` dependency. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.4 — 2026-02-25
 
