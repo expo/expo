@@ -54,12 +54,13 @@ function computeMenuLabelAndTitle(children, title) {
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarMenu = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement !== 'bottom') {
-        // For placement other than bottom, this component will not render, and should be
+    if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
+        // On ios, for placement other than bottom, this component will not render, and should be
         // converted to RN header item using convertStackToolbarMenuPropsToRNHeaderItem.
         // So if we reach here, it means we're not inside a toolbar or something else is wrong.
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
@@ -189,11 +190,12 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarMenuAction = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement !== 'bottom') {
+    if (process.env.EXPO_OS === 'ios' && placement !== 'bottom') {
         throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
