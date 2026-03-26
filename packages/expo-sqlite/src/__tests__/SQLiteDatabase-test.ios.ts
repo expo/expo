@@ -91,9 +91,9 @@ describe('Database', () => {
     )) {
       results.push(row);
     }
-    expect(results[0].intValue).toBe(789);
-    expect(results[1].intValue).toBe(456);
-    expect(results[2].intValue).toBe(123);
+    expect(results[0]?.intValue).toBe(789);
+    expect(results[1]?.intValue).toBe(456);
+    expect(results[2]?.intValue).toBe(123);
   });
 
   it('getEachAsync should finalize from early iterator return', async () => {
@@ -110,7 +110,7 @@ describe('Database', () => {
     )) {
       break;
     }
-    const mockStatement = await mockPrepareAsync.mock.results[0].value;
+    const mockStatement = await mockPrepareAsync.mock.results[0]?.value;
     expect(mockStatement.nativeStatement.finalizeAsync).toHaveBeenCalled();
   });
 

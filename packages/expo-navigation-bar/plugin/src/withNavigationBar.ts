@@ -213,21 +213,24 @@ export function applyEnforceNavigationBarContrast(
     return config;
   }
   const mainTheme = style[mainThemeIndex];
-  const enforceIndex = mainTheme.item.findIndex(
-    ({ $ }) => $.name === 'android:enforceNavigationBarContrast'
-  );
-  if (enforceIndex !== -1) {
-    style[mainThemeIndex].item[enforceIndex] = enforceNavigationBarContrastItem;
-    return config;
-  }
 
-  config.modResults.resources.style = [
-    {
-      $: style[mainThemeIndex].$,
-      item: [enforceNavigationBarContrastItem, ...mainTheme.item],
-    },
-    ...style.filter(({ $ }) => $.name !== 'AppTheme'),
-  ];
+  if (mainTheme != null) {
+    const enforceIndex = mainTheme.item.findIndex(
+      ({ $ }) => $.name === 'android:enforceNavigationBarContrast'
+    );
+    if (enforceIndex !== -1) {
+      mainTheme.item[enforceIndex] = enforceNavigationBarContrastItem;
+      return config;
+    }
+
+    config.modResults.resources.style = [
+      {
+        $: mainTheme.$,
+        item: [enforceNavigationBarContrastItem, ...mainTheme.item],
+      },
+      ...style.filter(({ $ }) => $.name !== 'AppTheme'),
+    ];
+  }
 
   return config;
 }
