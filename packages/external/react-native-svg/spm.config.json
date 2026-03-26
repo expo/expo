@@ -71,7 +71,7 @@
                     ],
                     "includeDirectories": [ ".", "../.build/codegen/build/generated/ios/ReactCodegen" ],
                     "linkedFrameworks": [ "Foundation", "UIKit", "CoreGraphics", "QuartzCore", "CoreText", "CoreImage", "Metal" ],
-                    "compilerFlags": [ "-include", "Foundation/Foundation.h" ],
+                    "compilerFlags": [ "-include", "Foundation/Foundation.h", "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}" ],
                     "resources": [
                         { "path": "apple/Filters/MetalCI/*.iphoneos.metallib", "rule": "copy" }
                     ]
