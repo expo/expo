@@ -103,8 +103,11 @@ internal struct ZipOperations {
         throw UnableToUnzipException("entry '\(entry.path)' is outside of the target directory (zip slip)")
       }
 
-      if !options.overwrite && FileManager.default.fileExists(atPath: entryDestURL.path) {
-        continue
+      if FileManager.default.fileExists(atPath: entryDestURL.path) {
+        if !options.overwrite {
+          continue
+        }
+        try FileManager.default.removeItem(at: entryDestURL)
       }
 
       _ = try archive.extract(entry, to: entryDestURL, skipCRC32: false)
