@@ -9,7 +9,7 @@ export interface IOSSplashConfig {
   imageWidth?: number;
   image?: string;
   // tabletImage: string | null;
-  backgroundColor: string;
+  backgroundColor?: string;
   enableFullScreenImage_legacy?: boolean;
   resizeMode: NonNullable<ExpoConfigIosSplash['resizeMode']>;
   tabletImage?: string;

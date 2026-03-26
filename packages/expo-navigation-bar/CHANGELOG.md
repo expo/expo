@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - Add `style` and `hidden` properties to config plugin, replacing `barStyle` and `visibility`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes

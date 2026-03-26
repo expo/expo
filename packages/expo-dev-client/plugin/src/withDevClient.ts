@@ -2,7 +2,7 @@ import type { ExpoConfig } from 'expo/config';
 import { createRunOncePlugin } from 'expo/config-plugins';
 // @ts-expect-error missing types
 import withDevLauncher from 'expo-dev-launcher/app.plugin';
-import type { PluginConfigType } from 'expo-dev-launcher/plugin/build/pluginConfig';
+import type { PluginConfigType } from 'expo-dev-launcher/plugin';
 // @ts-expect-error missing types
 import withDevMenu from 'expo-dev-menu/app.plugin';
 
@@ -11,7 +11,11 @@ import { withGeneratedIosScheme } from './withGeneratedIosScheme';
 
 const pkg = require('../../package.json');
 
-type DevClientPluginConfigType = PluginConfigType & {
+export type DevClientPluginConfigType = PluginConfigType & {
+  /**
+   * Whether to register a custom URL scheme to open a project.
+   * @default true
+   */
   addGeneratedScheme?: boolean;
 };
 

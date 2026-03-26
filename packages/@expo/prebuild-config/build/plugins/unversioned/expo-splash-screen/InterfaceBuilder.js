@@ -81,7 +81,7 @@ function getAbsoluteConstraints(childId, parentId, legacy = false) {
 function applyImageToSplashScreenXML(xml, {
   imageName,
   contentMode,
-  backgroundColor,
+  backgroundColor = '#ffffff',
   enableFullScreenImage,
   imageWidth = 100
 }) {

@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
 - [android] Handle edge-to-edge display in crop activity. ([#44208](https://github.com/expo/expo/pull/44208) by [@zoontek](https://github.com/zoontek))

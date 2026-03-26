@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
 - Fixed `NumberFormatException` crash on Android when calendar/event IDs exceed `Integer.MAX_VALUE`. ([#43344](https://github.com/expo/expo/pull/43344) by [@olivier-bouillet](https://github.com/olivier-bouillet))
@@ -53,7 +55,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS] Added support for all‑day reminders ([#39028](https://github.com/expo/expo/pull/39028)) by [@dominik-miskovic](https://github.com/dominik-miskovic)
-- [next] Implement `ExpoCalendar@next`  ([#39108](https://github.com/expo/expo/pull/39108) by [@kosmydel](https://github.com/kosmydel) and [@arturgesiarz](https://github.com/arturgesiarz))
+- [next] Implement `ExpoCalendar@next` ([#39108](https://github.com/expo/expo/pull/39108) by [@kosmydel](https://github.com/kosmydel) and [@arturgesiarz](https://github.com/arturgesiarz))
 
 ### 🐛 Bug fixes
 
