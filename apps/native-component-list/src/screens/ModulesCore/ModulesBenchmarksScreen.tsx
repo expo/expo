@@ -363,10 +363,7 @@ export default function ModulesBenchmarksScreen() {
         />
         <BenchmarkResultContainer functionName="addStrings" result={stringTimes} />
         <BenchmarkResultContainer functionName="foldArray" result={arrayTimes} />
-        <AsyncBenchmarkResultContainer
-          functionName="addNumbersAsync"
-          result={asyncNumberTimes}
-        />
+        <AsyncBenchmarkResultContainer functionName="addNumbersAsync" result={asyncNumberTimes} />
 
         <Button title="Start" color={theme.text.link} onPress={startBenchmarks} />
       </ScrollView>
