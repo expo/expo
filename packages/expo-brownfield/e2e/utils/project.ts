@@ -134,26 +134,54 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
   ]);
 };
 
+const listWorkspaces = async (): Promise<Record<string, string>> => {
+  const { stdout } = await spawnAsync('pnpm', ['list', '--depth=-1', '-r', '--json'], {
+    cwd: path.join(__dirname, '../../'),
+  });
+  const workspaces: { name: string; path: string; }[] = JSON.parse(stdout);
+  return workspaces.reduce((acc, entry) => {
+    acc[entry.name] = entry.path;
+    return acc;
+  }, {});
+};
+
 /**
  * Install `expo-brownfield` package from a tarball
  */
 const installPackage = async (projectRoot: string) => {
   const packageJsonPath = path.join(projectRoot, 'package.json');
   const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
-  const packageRoot = path.join(__dirname, '../../');
 
   packageJson.resolutions ??= {};
   packageJson.dependencies ??= {};
 
-  packageJson.resolutions['expo-brownfield'] = path.relative(projectRoot, packageRoot);
+  const packageRoot = path.join(__dirname, '../../');
+  packageJson.resolutions['expo-brownfield'] = `link:${path.relative(projectRoot, packageRoot)}`;
   packageJson.dependencies['expo-brownfield'] = '*';
 
-  // Use --legacy-peer-deps for better stability
+  // NOTE(@kitten): Forcefully links all monorepo packages
+  // The tests will still pass without this in this case for expo-brownfield, but linking
+  // ensures the prebuild logic is tested too and this installs faster
+  const workspaces = await listWorkspaces();
+  for (const name in packageJson.dependencies) {
+    if (workspaces[name]) {
+      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      packageJson.dependencies[name] = '*';
+    }
+  }
+  for (const name in packageJson.devDependencies) {
+    if (workspaces[name]) {
+      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      packageJson.dependencies[name] = '*';
+    }
+  }
+
+  await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
   await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,
     stdio: 'pipe',
   });
-
 };
 
 /**
