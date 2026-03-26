@@ -15,6 +15,7 @@ import type {
 import { MaterialTopTabBar } from './MaterialTopTabBar';
 import { TabAnimationContext } from '../utils/TabAnimationContext';
 
+// Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabView } from 'react-native-tab-view';
 let TabView: any;
 try {

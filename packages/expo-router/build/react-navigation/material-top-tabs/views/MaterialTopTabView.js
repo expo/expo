@@ -4,6 +4,7 @@ exports.MaterialTopTabView = MaterialTopTabView;
 const native_1 = require("../../native");
 const MaterialTopTabBar_1 = require("./MaterialTopTabBar");
 const TabAnimationContext_1 = require("../utils/TabAnimationContext");
+// Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabView } from 'react-native-tab-view';
 let TabView;
 try {

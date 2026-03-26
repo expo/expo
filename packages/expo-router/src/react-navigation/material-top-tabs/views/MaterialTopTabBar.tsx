@@ -11,6 +11,7 @@ import {
 } from '../../native';
 import type { MaterialTopTabBarProps } from '../types';
 
+// Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabBar, TabBarIndicator } from 'react-native-tab-view';
 let TabBar: any;
 let TabBarIndicator: any;

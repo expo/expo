@@ -8,6 +8,7 @@ const color_1 = __importDefault(require("color"));
 const react_native_1 = require("react-native");
 const elements_1 = require("../../elements");
 const native_1 = require("../../native");
+// Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabBar, TabBarIndicator } from 'react-native-tab-view';
 let TabBar;
 let TabBarIndicator;
