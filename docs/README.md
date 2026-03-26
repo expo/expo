@@ -87,10 +87,10 @@ The docs are written with Next.js and TypeScript. If you need to make code chang
 yarn watch
 ```
 
-When you are done, you should run `prettier` to format your code. Also, don't forget to run tests and linter before committing your changes.
+When you are done, you should run `oxfmt` to format your code. Also, don't forget to run tests and linter before committing your changes.
 
 ```sh
-yarn prettier
+yarn format
 yarn test
 yarn lint
 ```
@@ -546,11 +546,11 @@ This pattern is used for some of the pages where we manually update the modifica
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 
-### Prettier
+### Formatting (oxfmt)
 
-Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
+Please commit any sizeable diffs that are the result of formatting separately to make reviews as easy as possible.
 
-If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
+If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct. The highlighting annotation will sometimes swallow newlines.
 
 ### Use Step for procedural guides
 
