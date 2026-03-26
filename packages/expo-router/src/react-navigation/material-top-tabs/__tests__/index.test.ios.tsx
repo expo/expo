@@ -3,8 +3,8 @@ import { fireEvent, render } from '@testing-library/react-native';
 import * as React from 'react';
 import { Button, View } from 'react-native';
 
+import { NavigationContainer } from '../../../fork/NavigationContainer';
 import { Text } from '../../elements';
-import { NavigationContainer } from '../../native';
 import { createMaterialTopTabNavigator, type MaterialTopTabScreenProps } from '../index';
 
 type TopTabParamList = {
