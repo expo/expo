@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { type DownloadOptions, type PathInfo } from './ExpoFileSystem.types';
+import { type DownloadOptions, type PathInfo, type ZipOptions, type UnzipOptions } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -67,6 +67,10 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     arrayBuffer(): Promise<ArrayBuffer>;
     stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     slice(start?: number, end?: number, contentType?: string): Blob;
+    zip(destination: File | Directory, options?: ZipOptions): Promise<File>;
+    zipSync(destination: File | Directory, options?: ZipOptions): File;
+    unzip(destination: Directory, options?: UnzipOptions): Promise<Directory>;
+    unzipSync(destination: Directory, options?: UnzipOptions): Directory;
 }
 /**
  * Represents a directory on the filesystem.
@@ -105,5 +109,7 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
     get name(): string;
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
+    zip(destination: File | Directory, options?: ZipOptions): Promise<File>;
+    zipSync(destination: File | Directory, options?: ZipOptions): File;
 }
 //# sourceMappingURL=FileSystem.d.ts.map
