@@ -33,10 +33,10 @@ export function assertArgs(schema: arg.Spec, argv?: string[]): arg.Result<arg.Sp
   return assertWithOptionsArgs(schema, { argv });
 }
 
-export function assertWithOptionsArgs(
-  schema: arg.Spec,
+export function assertWithOptionsArgs<T extends arg.Spec>(
+  schema: T,
   options: arg.Options
-): arg.Result<arg.Spec> {
+): arg.Result<T> {
   try {
     return arg(schema, options);
   } catch (error: any) {
