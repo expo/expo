@@ -33,8 +33,8 @@ export const createTempProject = async (
   try {
     await createProjectWithTemplate(TEMP_DIR, projectName(suffix));
     await installPackage(projectRoot);
+    await addPlugin(projectRoot);
     if (prebuild) {
-      await addPlugin(projectRoot);
       await prebuildProject(projectRoot, undefined, install);
     }
   } catch (error) {
@@ -81,7 +81,7 @@ export const addPlugin = async (
     ...appConfig.expo.android,
     ...android,
   };
-  
+
   appConfig.expo.experiments.autolinkingModuleResolution = true;
 
   await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
@@ -119,7 +119,7 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
 
   let tarballs = await glob('*.tgz', { cwd: templatePath });
   if (tarballs.length === 0) {
-    await executeCommandAsync(templatePath, 'npm', ['pack', '--json']);
+    await executeCommandAsync(templatePath, 'pnpm', ['pack', '--json']);
     tarballs = await glob('*.tgz', { cwd: templatePath });
     if (tarballs.length === 0) {
       throw new Error(`No tarballs found in template directory: ${templatePath}`);
@@ -130,7 +130,7 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     projectName,
     '--template',
     path.join(templatePath, tarballs[0]),
-    '--no-install'
+    '--no-install',
   ]);
 };
 
@@ -153,6 +153,7 @@ const installPackage = async (projectRoot: string) => {
     cwd: projectRoot,
     stdio: 'pipe',
   });
+
 };
 
 /**
