@@ -29,68 +29,9 @@
     "**/*.{md,mdx}"
   ],
   "rules": {
-    // ── Batch A: Core JS rules ──────────────────────────────────────
     "curly": "warn",
     "eqeqeq": ["error", "always", { "null": "ignore" }],
     "no-void": ["warn", { "allowAsStatement": true }],
-
-    // ── Batch B: Unicorn rules ──────────────────────────────────────
-    // unicorn/better-regex: stays in ESLint (no oxlint support)
-    // unicorn/prevent-abbreviations: stays in ESLint (no oxlint support)
-    "unicorn/consistent-date-clone": "warn",
-    "unicorn/explicit-length-check": "warn",
-    "unicorn/new-for-builtins": "warn",
-    "unicorn/no-useless-spread": "warn",
-    "unicorn/no-unnecessary-array-splice-count": "warn",
-    "unicorn/prefer-array-some": "warn",
-    "unicorn/prefer-at": "warn",
-    "unicorn/prefer-date-now": "warn",
-    "unicorn/prefer-set-has": "warn",
-    "unicorn/prefer-includes": "warn",
-    "unicorn/prefer-regexp-test": "warn",
-    "unicorn/prefer-node-protocol": "warn",
-    "unicorn/prefer-string-slice": "warn",
-    "unicorn/throw-new-error": "warn",
-
-    // ── Batch C: React + Next.js rules ──────────────────────────────
-    "react/jsx-key": [
-      "error",
-      { "checkFragmentShorthand": true, "checkKeyMustBeforeSpread": true, "warnOnDuplicates": true }
-    ],
-    "react/no-unknown-property": ["error", { "ignore": ["css", "mask-type"] }],
-    "react/jsx-no-duplicate-props": "error",
-    "react/jsx-no-undef": "error",
-    "react/no-direct-mutation-state": "warn",
-    "@next/next/google-font-display": "warn",
-    "@next/next/google-font-preconnect": "warn",
-    "@next/next/next-script-for-ga": "warn",
-    "@next/next/no-async-client-component": "warn",
-    "@next/next/no-before-interactive-script-outside-document": "warn",
-    "@next/next/no-css-tags": "warn",
-    "@next/next/no-head-element": "warn",
-    "@next/next/no-html-link-for-pages": "error",
-    "@next/next/no-img-element": "off",
-    "@next/next/no-page-custom-font": "warn",
-    "@next/next/no-styled-jsx-in-document": "warn",
-    "@next/next/no-sync-scripts": "error",
-    "@next/next/no-title-in-document-head": "warn",
-    "@next/next/no-typos": "warn",
-    "@next/next/no-unwanted-polyfillio": "warn",
-    "@next/next/inline-script-id": "error",
-    "@next/next/no-assign-module-variable": "error",
-    "@next/next/no-document-import-in-page": "error",
-    "@next/next/no-duplicate-head": "error",
-    "@next/next/no-head-import-in-document": "error",
-    "@next/next/no-script-component-in-head": "error",
-
-    // ── Batch E: Import rules ───────────────────────────────────────
-    "import/no-duplicates": "error",
-    "import/default": "error",
-    "import/namespace": ["error", { "allowComputed": true }],
-    "import/first": "warn",
-    "import/no-cycle": "error",
-
-    // ── Batch 1.5a: Core JS rules from eslint-config-universe ─────
     "constructor-super": "warn",
     "no-array-constructor": "warn",
     "no-caller": "warn",
@@ -161,11 +102,29 @@
     "valid-typeof": "warn",
     "yoda": "warn",
 
-    // ── Batch 1.5a: Import rules from universe configs ──────────────
-    "import/no-named-as-default": "warn",
-    "import/no-named-as-default-member": "warn",
+    "unicorn/consistent-date-clone": "warn",
+    "unicorn/explicit-length-check": "warn",
+    "unicorn/new-for-builtins": "warn",
+    "unicorn/no-useless-spread": "warn",
+    "unicorn/no-unnecessary-array-splice-count": "warn",
+    "unicorn/prefer-array-some": "warn",
+    "unicorn/prefer-at": "warn",
+    "unicorn/prefer-date-now": "warn",
+    "unicorn/prefer-set-has": "warn",
+    "unicorn/prefer-includes": "warn",
+    "unicorn/prefer-regexp-test": "warn",
+    "unicorn/prefer-node-protocol": "warn",
+    "unicorn/prefer-string-slice": "warn",
+    "unicorn/throw-new-error": "warn",
 
-    // ── React (extra from migrate tool / universe configs) ──────────
+    "react/jsx-key": [
+      "error",
+      { "checkFragmentShorthand": true, "checkKeyMustBeforeSpread": true, "warnOnDuplicates": true }
+    ],
+    "react/no-unknown-property": ["error", { "ignore": ["css", "mask-type"] }],
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-undef": "error",
+    "react/no-direct-mutation-state": "warn",
     "react/jsx-boolean-value": "warn",
     "react/jsx-curly-brace-presence": "warn",
     "react/jsx-fragments": "warn",
@@ -175,7 +134,36 @@
     "react/self-closing-comp": "warn",
     "react-hooks/rules-of-hooks": "error",
 
-    // ── Batch 1.5a: Node rules from universe configs ──────────────
+    "@next/next/google-font-display": "warn",
+    "@next/next/google-font-preconnect": "warn",
+    "@next/next/next-script-for-ga": "warn",
+    "@next/next/no-async-client-component": "warn",
+    "@next/next/no-before-interactive-script-outside-document": "warn",
+    "@next/next/no-css-tags": "warn",
+    "@next/next/no-head-element": "warn",
+    "@next/next/no-html-link-for-pages": "error",
+    "@next/next/no-img-element": "off",
+    "@next/next/no-page-custom-font": "warn",
+    "@next/next/no-styled-jsx-in-document": "warn",
+    "@next/next/no-sync-scripts": "error",
+    "@next/next/no-title-in-document-head": "warn",
+    "@next/next/no-typos": "warn",
+    "@next/next/no-unwanted-polyfillio": "warn",
+    "@next/next/inline-script-id": "error",
+    "@next/next/no-assign-module-variable": "error",
+    "@next/next/no-document-import-in-page": "error",
+    "@next/next/no-duplicate-head": "error",
+    "@next/next/no-head-import-in-document": "error",
+    "@next/next/no-script-component-in-head": "error",
+
+    "import/no-duplicates": "error",
+    "import/default": "error",
+    "import/namespace": ["error", { "allowComputed": true }],
+    "import/first": "warn",
+    "import/no-cycle": "error",
+    "import/no-named-as-default": "warn",
+    "import/no-named-as-default-member": "warn",
+
     "node/handle-callback-err": "warn",
     "node/no-new-require": "warn",
     "node/no-path-concat": "warn"
@@ -184,10 +172,7 @@
     {
       "files": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],
       "rules": {
-        // ── Batch A (TS-only) ─────────────────────────────────────────
         "no-console": ["warn", { "allow": ["warn", "error"] }],
-
-        // ── Batch D: Non-type-aware TypeScript rules ─────────────────
         "@typescript-eslint/array-type": ["warn", { "default": "array" }],
         "@typescript-eslint/ban-ts-comment": [
           "warn",
@@ -212,8 +197,6 @@
         "@typescript-eslint/no-restricted-types": "warn",
         "@typescript-eslint/no-wrapper-object-types": "warn",
         "@typescript-eslint/prefer-as-const": "warn",
-
-        // ── Batch G: Type-aware rules (requires --type-aware flag) ─────
         "@typescript-eslint/await-thenable": "error",
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": false }],
@@ -224,8 +207,6 @@
           "warn",
           { "ignoreConditionalTests": true, "ignoreMixedLogicalExpressions": true }
         ],
-
-        // ── Batch 1.5b: TS rules from universe configs ───────────────
         "@typescript-eslint/no-dupe-class-members": "warn",
         "@typescript-eslint/no-unused-expressions": "warn",
         "@typescript-eslint/no-unused-vars": [

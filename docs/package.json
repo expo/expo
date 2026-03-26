@@ -108,7 +108,6 @@
     "axios": "^1.12.2",
     "cheerio": "^1.2.0",
     "eslint": "^9.39.2",
-    "eslint-config-next": "^16.1.6",
     "eslint-config-universe": "^15.0.3",
     "eslint-plugin-better-tailwindcss": "^4.0.0",
     "eslint-plugin-lodash": "^8.0.0",
