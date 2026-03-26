@@ -365,14 +365,14 @@ public final class FileSystemModule: Module {
       }
     }
 
-    Function("openAsArchive") { (source: FileSystemFile) in
-      guard source.exists else {
-        throw ZipSourceNotFoundException(source.url.absoluteString)
-      }
-      return ZipArchiveObject(sourceFile: source)
-    }
-
     Class(ZipArchiveObject.self) {
+      Constructor { (source: FileSystemFile) in
+        guard source.exists else {
+          throw ZipSourceNotFoundException(source.url.absoluteString)
+        }
+        return ZipArchiveObject(sourceFile: source)
+      }
+
       Function("list") { archive in
         try archive.list()
       }

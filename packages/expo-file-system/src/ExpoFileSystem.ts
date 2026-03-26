@@ -52,7 +52,6 @@ declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
     options?: UnzipOptions
   ): Directory;
   ZipArchive: typeof ZipArchive;
-  openAsArchive(source: File): ZipArchive;
   totalDiskSpace: number;
   availableDiskSpace: number;
   documentDirectory: string;

@@ -602,6 +602,11 @@ export type DirectoryInfo = {
 };
 export declare class ZipArchive {
     /**
+     * Opens a zip archive for reading.
+     * @param source The zip archive `File` to open.
+     */
+    constructor(source: File);
+    /**
      * Lists all entries in the archive with metadata.
      */
     list(): ZipEntry[];

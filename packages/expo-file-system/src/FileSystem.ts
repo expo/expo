@@ -168,9 +168,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   openAsArchive(): ZipArchive {
-    const native = ExpoFileSystem.openAsArchive(this);
-    Object.setPrototypeOf(native, ZipArchive.prototype);
-    return native as unknown as ZipArchive;
+    return new ZipArchive(this);
   }
 }
 

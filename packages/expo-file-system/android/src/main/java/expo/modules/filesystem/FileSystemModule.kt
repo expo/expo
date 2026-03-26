@@ -361,14 +361,14 @@ class FileSystemModule : Module() {
       }
     }
 
-    Function("openAsArchive") { source: FileSystemFile ->
-      if (!source.file.exists()) {
-        throw ZipSourceNotFoundException(source.file.uri.toString())
-      }
-      ZipArchive(source)
-    }
-
     Class(ZipArchive::class) {
+      Constructor { source: FileSystemFile ->
+        if (!source.file.exists()) {
+          throw ZipSourceNotFoundException(source.file.uri.toString())
+        }
+        ZipArchive(source)
+      }
+
       Function("list") { archive: ZipArchive ->
         archive.list()
       }
