@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { PrimitiveBaseProps } from '../layout';
 export interface RNHostProps extends PrimitiveBaseProps {
     /**
@@ -16,7 +16,7 @@ export interface RNHostProps extends PrimitiveBaseProps {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 }
 export declare function RNHostView(props: RNHostProps): React.JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import React from 'react';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { PrimitiveBaseProps } from '../layout';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -20,7 +20,7 @@ export interface RNHostProps extends PrimitiveBaseProps {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 }
 
 type NativeRNHostProps = RNHostProps;
