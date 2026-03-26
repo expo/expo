@@ -55,6 +55,9 @@ fun FunctionalComposableScope.BadgeContent(props: BadgeProps) {
  * (and thus circular with CornerFull shape), the content width must be
  * `height - totalHorizontalPadding`. For wide content (e.g. "999+"), the natural
  * width is used, producing a pill shape.
+ *
+ * This is a workaround for Compose Badge becoming oval at font scales > 1.0.
+ * @see: https://issuetracker.google.com/issues/365493087
  */
 private fun Modifier.ensureBadgeContentCircular() = layout { measurable, constraints ->
   val placeable = measurable.measure(constraints)
