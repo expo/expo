@@ -2,7 +2,7 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-03-18T10:06:27.557Z"
+    "fetchedAt": "2026-03-25T20:39:13.112Z"
   },
   "totalSkills": 11,
   "skills": [
@@ -48,7 +48,7 @@
     },
     {
       "name": "native-data-fetching",
-      "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders (useLoaderData).",
+      "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders (`useLoaderData`).",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/native-data-fetching/SKILL.md"
     },
     {
