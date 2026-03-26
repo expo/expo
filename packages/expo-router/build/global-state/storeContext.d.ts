@@ -1,7 +1,7 @@
 export declare const StoreContext: import("react").Context<{
     shouldShowTutorial(): boolean;
     readonly state: import("./router-store").ReactNavigationState | undefined;
-    readonly navigationRef: import("../react-navigation/core").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+    readonly navigationRef: import("..").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
     getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: import("./router-store").StoreRedirects[];
@@ -40,7 +40,7 @@ export declare const StoreContext: import("react").Context<{
 export declare const useExpoRouterStore: () => {
     shouldShowTutorial(): boolean;
     readonly state: import("./router-store").ReactNavigationState | undefined;
-    readonly navigationRef: import("../react-navigation/core").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+    readonly navigationRef: import("..").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
     getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: import("./router-store").StoreRedirects[];

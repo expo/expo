@@ -311,6 +311,9 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
     };
     return router;
 }
+/**
+ * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
 function TabRouter(args) {
     const base = BaseTabRouter(args);
     return {

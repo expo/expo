@@ -57,5 +57,8 @@ export declare const TabActions: {
         };
     };
 };
+/**
+ * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
 export declare function TabRouter(args: TabRouterOptions): Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction>;
 //# sourceMappingURL=TabRouter.d.ts.map

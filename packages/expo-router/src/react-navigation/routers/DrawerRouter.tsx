@@ -71,6 +71,9 @@ export const DrawerActions = {
   },
 };
 
+/**
+ * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
+ */
 export function DrawerRouter({
   defaultStatus = 'closed',
   ...rest
