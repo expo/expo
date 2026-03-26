@@ -130,6 +130,22 @@ public final class FileSystemModule: Module {
       return output
     }
 
+    AsyncFunction("zip") { (sources: [FileSystemPath], destination: FileSystemPath, options: ZipOptions?) in
+      return try ZipOperations.zip(sources: sources, destination: destination, options: options ?? ZipOptions())
+    }
+
+    Function("zipSync") { (sources: [FileSystemPath], destination: FileSystemPath, options: ZipOptions?) in
+      return try ZipOperations.zip(sources: sources, destination: destination, options: options ?? ZipOptions())
+    }
+
+    AsyncFunction("unzip") { (source: FileSystemFile, destination: FileSystemDirectory, options: UnzipOptions?) in
+      return try ZipOperations.unzip(source: source, destination: destination, options: options ?? UnzipOptions())
+    }
+
+    Function("unzipSync") { (source: FileSystemFile, destination: FileSystemDirectory, options: UnzipOptions?) in
+      return try ZipOperations.unzip(source: source, destination: destination, options: options ?? UnzipOptions())
+    }
+
     // swiftlint:disable:next closure_body_length
     Class(FileSystemFile.self) {
       Constructor { (url: URL) in
