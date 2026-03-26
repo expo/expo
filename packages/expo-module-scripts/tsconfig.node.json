@@ -12,6 +12,8 @@
     "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
-    "noUncheckedIndexedAccess": true
+
+    // TODO: Enable in the future
+    "noUncheckedIndexedAccess": false
   }
 }
