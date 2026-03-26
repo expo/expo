@@ -11,6 +11,7 @@ import {
   type ZipOptions,
   type UnzipOptions,
 } from './ExpoFileSystem.types';
+import { ZipArchive } from './ZipArchive';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -164,6 +165,12 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   unzipSync(destination: Directory, options?: UnzipOptions): Directory {
     const result = ExpoFileSystem.unzipSync(this, destination, options);
     return new Directory(result.uri);
+  }
+
+  openAsArchive(): ZipArchive {
+    const native = ExpoFileSystem.openAsArchive(this);
+    Object.setPrototypeOf(native, ZipArchive.prototype);
+    return native as unknown as ZipArchive;
   }
 }
 

@@ -23,8 +23,16 @@ export {
   type ZipOptions,
   type UnzipOptions,
   CompressionLevel,
+  type ZipEntry,
 } from './ExpoFileSystem.types';
 
-export { zip, zipSync, unzip, unzipSync } from './ZipOperations';
+export { ZipArchive } from './ZipArchive';
+
+export {
+  zip,
+  zipSync,
+  unzip,
+  unzipSync,
+} from './ZipOperations';
 
 export * from './legacyWarnings';
