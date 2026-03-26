@@ -233,7 +233,7 @@ export class Asset {
     // Possibly a Base64-encoded URI
     let type = '';
     if (uri.indexOf(';base64') > -1) {
-      type = uri.split(';')[0].split('/')[1];
+      type = uri.split(';')[0]?.split('/')[1] ?? '';
     } else {
       const extension = AssetUris.getFileExtension(uri);
       type = extension.startsWith('.') ? extension.substring(1) : extension;
