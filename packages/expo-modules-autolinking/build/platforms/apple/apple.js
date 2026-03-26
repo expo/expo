@@ -82,6 +82,14 @@ async function generateModulesProviderAsync(modules, targetPath, entitlementPath
     const entitlements = await parseEntitlementsAsync(entitlementPath);
     const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements, params);
     const parentPath = path_1.default.dirname(targetPath);
+    // Avoid writing the file if the content hasn't changed to prevent unnecessary recompilation.
+    try {
+        const existingContent = await fs_1.default.promises.readFile(targetPath, 'utf8');
+        if (existingContent === generatedFileContent) {
+            return;
+        }
+    }
+    catch { }
     await fs_1.default.promises.mkdir(parentPath, { recursive: true });
     await fs_1.default.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }

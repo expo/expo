@@ -18,6 +18,7 @@
 ### 💡 Others
 
 - Add `package.json:exports` with no-op reexport paths ([#44002](https://github.com/expo/expo/pull/44002) by [@kitten](https://github.com/kitten), [@hassankhan](https://github.com/hassankhan))
+- [iOS] Add early escape in generateModulesProviderAsync to avoid touching files that hasn't changed
 
 ## 55.0.8 — 2026-02-25
 
