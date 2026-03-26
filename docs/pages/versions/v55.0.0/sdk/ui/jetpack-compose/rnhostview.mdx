@@ -165,6 +165,53 @@ function Example() {
 }
 ```
 
+### Flexible React Native content in a bottom sheet
+
+Use `RNHostView` without `matchContents` to let the React Native view fill the remaining space inside the sheet. Combine with a `height` modifier on the parent `Column` to control the sheet size.
+
+```tsx RNHostView flex in ModalBottomSheet
+import { useRef, useState } from 'react';
+import { Text as RNText, View } from 'react-native';
+import { Host, ModalBottomSheet, Button, Column, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import { height, padding } from '@expo/ui/jetpack-compose/modifiers';
+
+function Example() {
+  const [visible, setVisible] = useState(false);
+  const sheetRef = useRef<ModalBottomSheetRef>(null);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Flex Content Sheet</Text>
+      </Button>
+      {visible && (
+        <ModalBottomSheet
+          ref={sheetRef}
+          onDismissRequest={() => setVisible(false)}
+          skipPartiallyExpanded>
+          <Column modifiers={[height(400), padding(16, 16, 16, 16)]}>
+            <RNHostView>
+              <View style={{ flex: 1, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+                <RNText
+                  style={{
+                    color: 'white',
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    padding: 16,
+                  }}>
+                  React Native Content (flex: 1)
+                </RNText>
+              </View>
+            </RNHostView>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
