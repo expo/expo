@@ -64,10 +64,10 @@ const currentValues: {
   hidden: undefined,
 };
 
-function setResolvedStyle(style: ResolvedBarStyle) {
+function setResolvedStyle(style: NonNullable<ResolvedBarStyle>) {
   if (style !== currentValues.style) {
     currentValues.style = style;
-    ExpoNavigationBar.setStyle(style ?? 'light');
+    ExpoNavigationBar.setStyle(style);
   }
 }
 
@@ -86,10 +86,12 @@ function updateEntriesStack() {
 
   updateImmediate = setImmediate(() => {
     const mergedEntries = mergeEntriesStack(entriesStack);
+    const resolvedStyle = resolveStyle(mergedEntries.style);
     const { hidden } = mergedEntries;
 
-    setResolvedStyle(resolveStyle(mergedEntries.style));
-
+    if (resolvedStyle != null) {
+      setResolvedStyle(resolvedStyle);
+    }
     if (hidden != null) {
       setHidden(hidden);
     }
@@ -157,7 +159,7 @@ export function NavigationBar({ style, hidden }: NavigationBarProps) {
 NavigationBar.setStyle = (style: NavigationBarStyle): void => {
   const resolvedStyle = resolveStyle(style);
 
-  if (typeof resolvedStyle === 'string') {
+  if (resolvedStyle != null) {
     setResolvedStyle(resolvedStyle);
   }
 };

@@ -17,15 +17,10 @@ function resolveStyle(style) {
 }
 // Merges the entries stack
 function mergeEntriesStack(entriesStack) {
-    return entriesStack.reduce((prev, cur) => {
-        for (const prop in cur) {
-            if (cur[prop] != null) {
-                // @ts-expect-error
-                prev[prop] = cur[prop];
-            }
-        }
-        return prev;
-    }, {
+    return entriesStack.reduce((prev, cur) => ({
+        style: cur.style ?? prev.style,
+        hidden: cur.hidden ?? prev.hidden,
+    }), {
         style: undefined,
         hidden: undefined,
     });
@@ -45,7 +40,7 @@ const currentValues = {
 function setResolvedStyle(style) {
     if (style !== currentValues.style) {
         currentValues.style = style;
-        ExpoNavigationBar.setStyle(style ?? 'light');
+        ExpoNavigationBar.setStyle(style);
     }
 }
 function setHidden(hidden) {
@@ -61,8 +56,11 @@ function updateEntriesStack() {
     }
     updateImmediate = setImmediate(() => {
         const mergedEntries = mergeEntriesStack(entriesStack);
+        const resolvedStyle = resolveStyle(mergedEntries.style);
         const { hidden } = mergedEntries;
-        setResolvedStyle(resolveStyle(mergedEntries.style));
+        if (resolvedStyle != null) {
+            setResolvedStyle(resolvedStyle);
+        }
         if (hidden != null) {
             setHidden(hidden);
         }
@@ -117,7 +115,7 @@ export function NavigationBar({ style, hidden }) {
 }
 NavigationBar.setStyle = (style) => {
     const resolvedStyle = resolveStyle(style);
-    if (typeof resolvedStyle === 'string') {
+    if (resolvedStyle != null) {
         setResolvedStyle(resolvedStyle);
     }
 };
