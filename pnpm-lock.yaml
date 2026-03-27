@@ -4589,6 +4589,12 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
 
+  packages/expo-modules-jsi:
+    dependencies:
+      react-native:
+        specifier: 0.85.0-rc.5
+        version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+
   packages/expo-modules-test-core:
     dependencies:
       '@types/node':
