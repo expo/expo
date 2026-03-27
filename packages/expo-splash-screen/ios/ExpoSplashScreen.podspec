@@ -16,11 +16,9 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  # Swift/Objective-C compatibility
+  s.source_files = "**/*.swift"
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule',
+    'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
-
-  s.source_files = "**/*.swift"
 end

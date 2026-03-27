@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getConfiguration = getConfiguration;
 exports.getSwiftModuleNames = getSwiftModuleNames;
 exports.resolveModuleAsync = resolveModuleAsync;
 exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
@@ -14,6 +15,9 @@ const path_1 = __importDefault(require("path"));
 const utils_1 = require("../../utils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
+function getConfiguration(options) {
+    return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
+}
 const indent = '  ';
 /** Find all *.podspec files in top-level directories */
 async function findPodspecFiles(revision) {
