@@ -3,7 +3,6 @@ import fs from 'fs';
 import path from 'path';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
-import { getIosInlineModulesClassNames } from '../../inlineModules/iosInlineModules';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
