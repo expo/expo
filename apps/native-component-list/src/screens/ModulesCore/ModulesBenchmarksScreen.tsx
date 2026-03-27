@@ -61,16 +61,14 @@ function runVoidBenchmark(): BenchmarkResult {
 function runNumberBenchmark(): BenchmarkResult {
   let expoTime = 0;
   {
-    ExpoModule.addNumbers(0, 1);
-
+    const result = ExpoModule.addNumbers(0, 1);
+    if (result !== 1) {
+      throw new Error('ExpoModule.addNumbers() returned an incorrect result!');
+    }
     const start = performance.now();
     let num = 0;
     for (let i = 0; i < runs; i++) {
-      const result = ExpoModule.addNumbers(num, 5);
-      if (result !== num + 5) {
-        throw new Error('ExpoModule.addNumbers() returned an incorrect result!');
-      }
-      num = result;
+      num = ExpoModule.addNumbers(num, 5);
     }
     const end = performance.now();
     expoTime = end - start;
@@ -109,16 +107,15 @@ function runNumberBenchmark(): BenchmarkResult {
 function runNumberOptimizedBenchmark(): BenchmarkResult {
   let expoTime = 0;
   {
-    ExpoModule.addNumbersOptimized(0, 1);
+    const result = ExpoModule.addNumbersOptimized(0, 1);
+    if (result !== 1) {
+      throw new Error('ExpoModule.addNumbersOptimized() returned an incorrect result!');
+    }
 
     const start = performance.now();
     let num = 0;
     for (let i = 0; i < runs; i++) {
-      const result = ExpoModule.addNumbersOptimized(num, 5);
-      if (result !== num + 5) {
-        throw new Error('ExpoModule.addNumbersOptimized() returned an incorrect result!');
-      }
-      num = result;
+      num = ExpoModule.addNumbersOptimized(num, 5);
     }
     const end = performance.now();
     expoTime = end - start;
@@ -159,14 +156,14 @@ function runNumberOptimizedBenchmark(): BenchmarkResult {
 function runStringsBenchmark(): BenchmarkResult {
   let expoTime = 0;
   {
-    ExpoModule.addStrings('hello', 'world');
+    const result = ExpoModule.addStrings('hello', 'world');
+    if (result !== 'hello world') {
+      throw new Error('ExpoModule.addStrings() returned an incorrect result!');
+    }
 
     const start = performance.now();
     for (let i = 0; i < runs; i++) {
-      const result = ExpoModule.addStrings('hello ', 'world');
-      if (result !== 'hello world') {
-        throw new Error('ExpoModule.addStrings() returned an incorrect result!');
-      }
+      ExpoModule.addStrings('hello ', 'world');
     }
     const end = performance.now();
     expoTime = end - start;
