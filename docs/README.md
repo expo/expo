@@ -87,13 +87,14 @@ The docs are written with Next.js and TypeScript. If you need to make code chang
 yarn watch
 ```
 
-When you are done, you should run `oxfmt` to format your code. Also, don't forget to run tests and linter before committing your changes.
+When you are done, don't forget to run tests and linter before committing your changes.
 
 ```sh
-yarn format
 yarn test
 yarn lint
 ```
+
+To auto-fix formatting issues, run `oxfmt --write .` directly.
 
 ### Prose linter
 
@@ -549,6 +550,39 @@ modificationDate: April 8th, 2024
 This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](/docs/pages/build-reference/infrastructure.mdx).
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
+
+### Lint pipeline (`yarn lint`)
+
+The lint pipeline runs four tools via `scripts/lint.js`:
+
+```
+yarn lint
+  |
+  |-- 1. oxfmt --check (fail-fast)
+  |      Formatting check for JS/TS/JSON/CSS/MDX files
+  |      If formatting fails, exits immediately
+  |
+  |-- 2. (parallel)
+  |      |-- oxlint --type-aware
+  |      |     188 rules: JS/TS linting, Tailwind (native plugin), testing-library
+  |      |     Config: .oxlintrc.json
+  |      |
+  |      |-- tsc --noEmit
+  |      |     Type checking
+  |      |
+  |      |-- eslint
+  |            27 ESLint-only rules + MDX linting (unused imports, undefined components)
+  |            Config: eslint.config.mjs
+```
+
+| Tool       | What it covers                                         | Config              |
+| ---------- | ------------------------------------------------------ | ------------------- |
+| **oxfmt**  | Formatting (replaces Prettier)                         | `.oxfmtrc.json`     |
+| **oxlint** | JS/TS linting, Tailwind classes, testing-library rules | `.oxlintrc.json`    |
+| **tsc**    | TypeScript type checking                               | `tsconfig.json`     |
+| **ESLint** | Rules with no oxlint equivalent + MDX linting          | `eslint.config.mjs` |
+
+oxlint handles the majority of lint rules (188 rules). ESLint handles rules that have no oxlint equivalent (`naming-convention`, `better-regex`, `prevent-abbreviations`, `lodash/import-scope`, `no-restricted-properties`) and all MDX file linting via `eslint-plugin-mdx`.
 
 ### Formatting (oxfmt)
 
