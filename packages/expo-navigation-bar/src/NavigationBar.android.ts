@@ -10,14 +10,14 @@ import type {
   NavigationBarVisibilityEvent,
 } from './NavigationBar.types';
 
-type ResolvedBarStyle = 'light' | 'dark' | undefined;
+type ResolvedBarStyle = 'light' | 'dark';
 
 function isLightColorScheme() {
   const colorScheme = Appearance?.getColorScheme() ?? 'light';
   return colorScheme === 'light';
 }
 
-function resolveStyle(style: NavigationBarStyle | undefined): ResolvedBarStyle {
+function resolveStyle(style: NavigationBarStyle | undefined): ResolvedBarStyle | undefined {
   switch (style) {
     case 'auto':
       return isLightColorScheme() ? 'dark' : 'light';
@@ -57,14 +57,14 @@ let updateImmediate: number | null = null;
 
 // The current merged values from the entries stack
 const currentValues: {
-  style: ResolvedBarStyle;
+  style: ResolvedBarStyle | undefined;
   hidden: boolean | undefined;
 } = {
   style: undefined,
   hidden: undefined,
 };
 
-function setResolvedStyle(style: NonNullable<ResolvedBarStyle>) {
+function setResolvedStyle(style: ResolvedBarStyle) {
   if (style !== currentValues.style) {
     currentValues.style = style;
     ExpoNavigationBar.setStyle(style);
