@@ -256,7 +256,7 @@ export default function AudioPlayerScreen() {
       title: 'My Audio Title',
       artist: 'Artist Name',
       albumTitle: 'Album Name',
-      artworkUrl: 'https://example.com/artwork.jpg', // optional
+      artworkUrl: 'https://example.com/artwork.jpg', // Remote HTTP/HTTPS URL only
     });
 
     // Start playback - this will continue in the background
@@ -281,6 +281,8 @@ export default function AudioPlayerScreen() {
 <PlatformTags platforms={['android']} />
 
 > **Note**: On Android, you have to enable the lock screen controls with [`setActiveForLockScreen`](#setactiveforlockscreenactive-metadata-options) for sustained background playback. Otherwise, the audio will stop after approximately 3 minutes of background playback (OS limitation). Ensure to appropriately [configure the config plugin](#configuration-in-app-config).
+
+> **Note**: The `artworkUrl` field in `AudioMetadata` must be a **remote HTTP or HTTPS URL** (for example, `'https://example.com/artwork.jpg'`). Local assets resolved via `require()` or `Image.resolveAssetSource()` are not supported on Android release builds and may cause the lock screen media player to not appear. Use a remotely hosted image for artwork.
 
 - A media notification appears in the notification drawer with playback controls
 - Audio continues playing indefinitely in the background
