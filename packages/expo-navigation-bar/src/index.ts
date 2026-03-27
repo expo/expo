@@ -1,2 +1,14 @@
-export * from './NavigationBar';
-export * from './NavigationBar.types';
+export {
+  NavigationBar,
+  setStyle,
+  addVisibilityListener,
+  setVisibilityAsync,
+  getVisibilityAsync,
+  useVisibility,
+} from './NavigationBar';
+export {
+  NavigationBarVisibility,
+  NavigationBarVisibilityEvent,
+  NavigationBarStyle,
+  NavigationBarProps,
+} from './NavigationBar.types';

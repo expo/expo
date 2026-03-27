@@ -1,4 +1,4 @@
-import * as NavigationBar from 'expo-navigation-bar';
+import { NavigationBar, NavigationBarStyle } from 'expo-navigation-bar';
 import * as React from 'react';
 import { Platform, ScrollView, Text } from 'react-native';
 
@@ -28,20 +28,25 @@ NavigationBarScreen.navigationOptions = {
 };
 
 function VisibilityExample() {
-  const visibility = NavigationBar.useVisibility();
-  const nextVisibility = visibility === 'visible' ? 'hidden' : 'visible';
+  const [hidden, setHidden] = React.useState(false);
+
+  React.useEffect(() => {
+    return () => NavigationBar.setHidden(false);
+  }, []);
+
   return (
     <Button
-      title={`Toggle Visibility: ${nextVisibility}`}
+      title={`Toggle hidden: ${!hidden}`}
       onPress={() => {
-        NavigationBar.setVisibilityAsync(nextVisibility);
+        NavigationBar.setHidden(!hidden);
+        setHidden(!hidden);
       }}
     />
   );
 }
 
 function ButtonStyleExample() {
-  const [style, setStyle] = React.useState<NavigationBar.NavigationBarStyle>('light');
+  const [style, setStyle] = React.useState<NavigationBarStyle>('light');
   const nextStyle = style === 'light' ? 'dark' : 'light';
   return (
     <Button
