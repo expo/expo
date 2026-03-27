@@ -169,12 +169,8 @@ describe('runPackagesInParallel', () => {
   });
 
   it('handles empty package list', async () => {
-    const results = await runPackagesInParallel(
-      [],
-      new Map(),
-      4,
-      new AbortController(),
-      async () => successResult('never')
+    const results = await runPackagesInParallel([], new Map(), 4, new AbortController(), async () =>
+      successResult('never')
     );
     assert.deepEqual(results, []);
   });

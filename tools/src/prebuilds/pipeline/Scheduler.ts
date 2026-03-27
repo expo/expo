@@ -16,10 +16,7 @@ export interface PackageResult {
   stopRun: boolean;
 }
 
-type ExecutePackageFn = (
-  pkg: SPMPackageSource,
-  signal: AbortSignal
-) => Promise<PackageResult>;
+type ExecutePackageFn = (pkg: SPMPackageSource, signal: AbortSignal) => Promise<PackageResult>;
 
 /**
  * Runs packages in parallel, respecting the dependency DAG and concurrency limit.
@@ -82,11 +79,7 @@ export async function runPackagesInParallel(
 
   while (readyQueue.length > 0 || running.size > 0) {
     // Launch ready packages up to concurrency limit (unless aborted)
-    while (
-      readyQueue.length > 0 &&
-      running.size < concurrency &&
-      !abortController.signal.aborted
-    ) {
+    while (readyQueue.length > 0 && running.size < concurrency && !abortController.signal.aborted) {
       const pkg = readyQueue.shift()!;
       const promise = executePackage(pkg, abortController.signal).then((result) => ({
         name: pkg.packageName,

@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'async_hooks';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
@@ -16,16 +17,6 @@ import {
 import { SPMProduct } from './SPMConfig.types';
 import { resolvePackagePath } from './resolvePackage';
 
-let _forceNonInteractive = false;
-
-export function isNonInteractive(): boolean {
-  return _forceNonInteractive || process.env.CI != null || process.stdout.isTTY === false;
-}
-
-export function setForceNonInteractive(value: boolean): void {
-  _forceNonInteractive = value;
-}
-
 /**
  * Async-context-local log prefix for spinner output.
  *
@@ -37,7 +28,16 @@ export function setForceNonInteractive(value: boolean): void {
  * Use `runWithLogPrefix(prefix, fn)` to set the prefix for all code running
  * inside `fn`, including nested async calls.
  */
-import { AsyncLocalStorage } from 'async_hooks';
+
+let _forceNonInteractive = false;
+
+export function isNonInteractive(): boolean {
+  return _forceNonInteractive || process.env.CI != null || process.stdout.isTTY === false;
+}
+
+export function setForceNonInteractive(value: boolean): void {
+  _forceNonInteractive = value;
+}
 
 const _logPrefixStorage = new AsyncLocalStorage<string>();
 
@@ -530,24 +530,16 @@ export const createAsyncSpinner = (
   if (isNonInteractive()) {
     return {
       succeed: (text?: string) => {
-        logger.log(
-          `${Prefix} ${chalk.green('✔')} ${effectivePrefix(chalk.green)}${text ?? ''}`
-        );
+        logger.log(`${Prefix} ${chalk.green('✔')} ${effectivePrefix(chalk.green)}${text ?? ''}`);
       },
       fail: (text?: string) => {
-        logger.log(
-          `${Prefix} ${chalk.red('✖')} ${effectivePrefix(chalk.red)}${text ?? ''}`
-        );
+        logger.log(`${Prefix} ${chalk.red('✖')} ${effectivePrefix(chalk.red)}${text ?? ''}`);
       },
       warn: (text?: string) => {
-        logger.log(
-          `${Prefix} ${chalk.yellow('⚠')} ${effectivePrefix(chalk.yellow)}${text ?? ''}`
-        );
+        logger.log(`${Prefix} ${chalk.yellow('⚠')} ${effectivePrefix(chalk.yellow)}${text ?? ''}`);
       },
       info: (text?: string) => {
-        logger.log(
-          `${Prefix} ${chalk.blue('ℹ')} ${effectivePrefix(chalk.green)}${text ?? ''}`
-        );
+        logger.log(`${Prefix} ${chalk.blue('ℹ')} ${effectivePrefix(chalk.green)}${text ?? ''}`);
       },
     };
   }
@@ -561,14 +553,10 @@ export const createAsyncSpinner = (
     text: spinnerPrefix + initialText,
   }).start();
   return {
-    succeed: (text?: string) =>
-      spinner.succeed(effectivePrefix(chalk.green) + (text ?? '')),
-    fail: (text?: string) =>
-      spinner.fail(effectivePrefix(chalk.red) + (text ?? '')),
-    warn: (text?: string) =>
-      spinner.warn(effectivePrefix(chalk.yellow) + (text ?? '')),
-    info: (text: string) =>
-      (spinner.text = effectivePrefix(chalk.green) + text),
+    succeed: (text?: string) => spinner.succeed(effectivePrefix(chalk.green) + (text ?? '')),
+    fail: (text?: string) => spinner.fail(effectivePrefix(chalk.red) + (text ?? '')),
+    warn: (text?: string) => spinner.warn(effectivePrefix(chalk.yellow) + (text ?? '')),
+    info: (text: string) => (spinner.text = effectivePrefix(chalk.green) + text),
   };
 };
 

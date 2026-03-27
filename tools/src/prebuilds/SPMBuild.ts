@@ -6,7 +6,12 @@ import path from 'path';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
-import { BuildPlatform, ProductPlatform, SPMPackageDependencyConfig, SPMProduct } from './SPMConfig.types';
+import {
+  BuildPlatform,
+  ProductPlatform,
+  SPMPackageDependencyConfig,
+  SPMProduct,
+} from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { createAsyncSpinner } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
@@ -542,7 +547,12 @@ async function patchCheckoutWithSharedDeps(
     content = content.replace(pkgPattern, `.package(path: "${relativePath}")`);
 
     // Binary targets don't expose C headers automatically — collect -I flags
-    const headersDir = path.join(xcframeworkPath, 'ios-arm64', `${productName}.framework`, 'Headers');
+    const headersDir = path.join(
+      xcframeworkPath,
+      'ios-arm64',
+      `${productName}.framework`,
+      'Headers'
+    );
     if (await fs.pathExists(headersDir)) {
       headerSearchFlags.push(`"-I", "${headersDir}"`);
     }
@@ -552,10 +562,7 @@ async function patchCheckoutWithSharedDeps(
   if (headerSearchFlags.length > 0) {
     const flagsStr = `.unsafeFlags([${headerSearchFlags.join(', ')}])`;
     if (content.includes('cSettings:')) {
-      content = content.replace(
-        /cSettings:\s*\[/,
-        `cSettings: [\n                ${flagsStr},`
-      );
+      content = content.replace(/cSettings:\s*\[/, `cSettings: [\n                ${flagsStr},`);
     } else {
       // Add cSettings before the closing `)` of the main .target
       content = content.replace(
@@ -591,7 +598,9 @@ async function enrichFrameworkWithHeaders(
   // Find the `.target(` block that contains `name: "<productName>"` by matching
   // from `.target(` through to `publicHeadersPath` or the closing `)`.
   const targetBlockMatch = checkoutPkgSwift.match(
-    new RegExp(`\\.target\\(\\s*\\n[\\s\\S]*?name:\\s*"${productName}"[\\s\\S]*?(?=\\.target\\(|\\.testTarget\\(|\\.binaryTarget\\(|\\]\\s*[\\n\\r])`)
+    new RegExp(
+      `\\.target\\(\\s*\\n[\\s\\S]*?name:\\s*"${productName}"[\\s\\S]*?(?=\\.target\\(|\\.testTarget\\(|\\.binaryTarget\\(|\\]\\s*[\\n\\r])`
+    )
   );
   const targetBlock = targetBlockMatch ? targetBlockMatch[0] : '';
   const targetPathMatch = targetBlock.match(/\bpath:\s*"([^"]+)"/);
@@ -600,9 +609,7 @@ async function enrichFrameworkWithHeaders(
 
   const headersCandidates = [
     // Explicit publicHeadersPath relative to target path
-    ...(publicHeadersMatch
-      ? [path.join(checkoutDir, targetPath, publicHeadersMatch[1])]
-      : []),
+    ...(publicHeadersMatch ? [path.join(checkoutDir, targetPath, publicHeadersMatch[1])] : []),
     // Default SPM conventions
     path.join(checkoutDir, productName, 'include', productName),
     path.join(checkoutDir, productName, 'include'),
@@ -618,16 +625,30 @@ async function enrichFrameworkWithHeaders(
     // Copy .h files preserving subdirectory structure (e.g., avif/avif.h).
     // Use -L to follow symlinks (some packages symlink umbrella headers from other dirs).
     // --include='*/' keeps subdirectories, --include='*.h' keeps headers, --exclude='*' drops the rest.
-    execSync(`rsync -aL --include='*/' --include='*.h' --exclude='*' "${headersDir}/" "${destHeaders}/"`, { stdio: 'pipe' });
+    execSync(
+      `rsync -aL --include='*/' --include='*.h' --exclude='*' "${headersDir}/" "${destHeaders}/"`,
+      { stdio: 'pipe' }
+    );
   }
 
   // 2. Copy the generated module map
   const modulemapPaths = [
-    path.join(derivedDataPath, 'Build', 'Intermediates.noindex',
-      `GeneratedModuleMaps-${buildFolderPrefix}`, `${productName}.modulemap`),
-    path.join(derivedDataPath, 'Build', 'Intermediates.noindex',
-      `${productName}.build`, `${buildType}-${buildFolderPrefix}`,
-      `${productName}.build`, `${productName}.modulemap`),
+    path.join(
+      derivedDataPath,
+      'Build',
+      'Intermediates.noindex',
+      `GeneratedModuleMaps-${buildFolderPrefix}`,
+      `${productName}.modulemap`
+    ),
+    path.join(
+      derivedDataPath,
+      'Build',
+      'Intermediates.noindex',
+      `${productName}.build`,
+      `${buildType}-${buildFolderPrefix}`,
+      `${productName}.build`,
+      `${productName}.modulemap`
+    ),
   ];
   const modulemapPath = await findFirstExisting(modulemapPaths);
   if (modulemapPath) {
@@ -642,10 +663,7 @@ async function enrichFrameworkWithHeaders(
 
     // The xcodebuild-generated modulemap uses `module X` but inside a .framework
     // bundle it must be `framework module X` so Clang resolves headers from Headers/.
-    modulemapContent = modulemapContent.replace(
-      /^module /m,
-      'framework module '
-    );
+    modulemapContent = modulemapContent.replace(/^module /m, 'framework module ');
 
     if (modulemapContent.includes('umbrella header')) {
       // Single umbrella header — rewrite to just the filename
@@ -671,32 +689,41 @@ async function enrichFrameworkWithHeaders(
       }
     } else {
       // Directory-based umbrella — rewrite to point to the framework's Headers/ dir
-      modulemapContent = modulemapContent.replace(
-        /umbrella "[^"]+"/,
-        'umbrella "Headers"'
-      );
+      modulemapContent = modulemapContent.replace(/umbrella "[^"]+"/, 'umbrella "Headers"');
     }
     await fs.writeFile(path.join(destModules, 'module.modulemap'), modulemapContent, 'utf-8');
   }
 
   // 3. Copy Swift module interfaces if they exist (for Swift packages)
-  const swiftmoduleDir = path.join(derivedDataPath, 'Build', 'Intermediates.noindex',
-    `${productName}.build`, `${buildType}-${buildFolderPrefix}`,
-    `${productName}.build`, 'Objects-normal');
+  const swiftmoduleDir = path.join(
+    derivedDataPath,
+    'Build',
+    'Intermediates.noindex',
+    `${productName}.build`,
+    `${buildType}-${buildFolderPrefix}`,
+    `${productName}.build`,
+    'Objects-normal'
+  );
   if (await fs.pathExists(swiftmoduleDir)) {
     for (const arch of await fs.readdir(swiftmoduleDir)) {
       const swiftinterface = path.join(swiftmoduleDir, arch, `${productName}.swiftinterface`);
       if (await fs.pathExists(swiftinterface)) {
         const destSwiftmodule = path.join(frameworkPath, 'Modules', `${productName}.swiftmodule`);
         await fs.mkdirp(destSwiftmodule);
-        await fs.copy(swiftinterface, path.join(destSwiftmodule, `${arch}-apple-ios.swiftinterface`));
+        await fs.copy(
+          swiftinterface,
+          path.join(destSwiftmodule, `${arch}-apple-ios.swiftinterface`)
+        );
       }
     }
   }
 }
 
 /** Recursively searches a directory for an xcframework with the given product name. */
-export async function findXCFrameworkInDir(dir: string, productName: string): Promise<string | null> {
+export async function findXCFrameworkInDir(
+  dir: string,
+  productName: string
+): Promise<string | null> {
   const target = `${productName}.xcframework`;
   const entries = await fs.readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
@@ -811,9 +838,7 @@ export async function buildSharedSPMDependencyAsync(
 
   // Check if already built
   if (Frameworks.hasSharedSPMDepFramework(productName, buildType)) {
-    logger.info(
-      `⏭️  Shared SPM dep ${chalk.cyan(productName)} already exists for ${buildType}`
-    );
+    logger.info(`⏭️  Shared SPM dep ${chalk.cyan(productName)} already exists for ${buildType}`);
     return;
   }
 
@@ -841,7 +866,7 @@ export async function buildSharedSPMDependencyAsync(
   const packageSwiftContent = generateStandaloneSPMPackageSwift(dep);
   const packageSwiftPath = path.join(buildDir, 'Package.swift');
 
-  const existingPackageSwift = await fs.pathExists(packageSwiftPath)
+  const existingPackageSwift = (await fs.pathExists(packageSwiftPath))
     ? await fs.readFile(packageSwiftPath, 'utf-8')
     : null;
   const needsResolve = existingPackageSwift !== packageSwiftContent;
@@ -870,7 +895,7 @@ export async function buildSharedSPMDependencyAsync(
   if (!(await fs.pathExists(checkoutSource))) {
     throw new Error(
       `Checkout not found for ${productName} at ${checkoutSource}. ` +
-      `Available: ${(await fs.readdir(checkoutsDir)).join(', ')}`
+        `Available: ${(await fs.readdir(checkoutsDir)).join(', ')}`
     );
   }
 
@@ -888,12 +913,16 @@ export async function buildSharedSPMDependencyAsync(
         await fs.mkdirp(path.dirname(destPath));
         await fs.remove(destPath);
         execSync(`rsync -a "${xcframeworkPath}/" "${destPath}/"`, { stdio: 'pipe' });
-        logger.info(`✅ Copied binary SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`);
+        logger.info(
+          `✅ Copied binary SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`
+        );
         // Keep buildDir for caching — resolved artifacts persist for reuse
         return;
       }
     }
-    logger.warn(`⚠️  ${productName} has .binaryTarget but xcframework not found in artifacts, falling back to build`);
+    logger.warn(
+      `⚠️  ${productName} has .binaryTarget but xcframework not found in artifacts, falling back to build`
+    );
   }
 
   // Copy checkout to a clean location so xcodebuild can resolve its own dependencies.
@@ -961,11 +990,16 @@ export async function buildSharedSPMDependencyAsync(
 
   for (const platform of platforms) {
     const args = [
-      '-scheme', productName,
-      '-destination', `generic/platform=${platform}`,
-      '-derivedDataPath', derivedDataPath,
-      '-clonedSourcePackagesDirPath', sharedSourcePackages,
-      '-configuration', buildType,
+      '-scheme',
+      productName,
+      '-destination',
+      `generic/platform=${platform}`,
+      '-derivedDataPath',
+      derivedDataPath,
+      '-clonedSourcePackagesDirPath',
+      sharedSourcePackages,
+      '-configuration',
+      buildType,
       'SKIP_INSTALL=NO',
       'BUILD_LIBRARY_FOR_DISTRIBUTION=YES',
       ...(buildType === 'Release'
@@ -1006,9 +1040,7 @@ export async function buildSharedSPMDependencyAsync(
     ];
 
     const frameworkPath = await findFirstExisting(candidatePaths);
-    const dsymPath = await findFirstExisting(
-      candidatePaths.map((p) => `${p}.dSYM`)
-    );
+    const dsymPath = await findFirstExisting(candidatePaths.map((p) => `${p}.dSYM`));
 
     if (frameworkPath) {
       // SPM's PackageFrameworks/ output doesn't include Headers/ or Modules/ —
@@ -1053,7 +1085,7 @@ export async function buildSharedSPMDependencyAsync(
 
       logger.warn(
         `⚠️  Framework not found for ${productName} at platform ${platform}. Checked:\n` +
-        candidatePaths.map((p) => `      ${p}`).join('\n')
+          candidatePaths.map((p) => `      ${p}`).join('\n')
       );
     }
   }
@@ -1071,9 +1103,7 @@ export async function buildSharedSPMDependencyAsync(
   );
 
   if (code !== 0) {
-    throw new Error(
-      `Failed to compose xcframework for ${productName}:\n${composeError}`
-    );
+    throw new Error(`Failed to compose xcframework for ${productName}:\n${composeError}`);
   }
 
   // Keep the build directory for caching — resolved checkouts persist so
@@ -1081,5 +1111,7 @@ export async function buildSharedSPMDependencyAsync(
   // Only DerivedData is cleaned since it's large and not reusable across builds.
   await fs.remove(derivedDataPath);
 
-  logger.info(`✅ Built shared SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`);
+  logger.info(
+    `✅ Built shared SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`
+  );
 }

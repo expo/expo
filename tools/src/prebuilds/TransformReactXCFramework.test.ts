@@ -38,21 +38,30 @@ describe('isVFSGenerated', () => {
 
   it('returns false when template exists but no version stamp file', () => {
     fs.writeFileSync(path.join(outputPath, 'React-VFS-template.yaml'), 'content');
-    fs.writeFileSync(path.join(rnSourcePath, 'package.json'), JSON.stringify({ version: '0.77.0' }));
+    fs.writeFileSync(
+      path.join(rnSourcePath, 'package.json'),
+      JSON.stringify({ version: '0.77.0' })
+    );
     assert.equal(isVFSGenerated(outputPath, rnSourcePath), false);
   });
 
   it('returns true when version stamp matches current RN version', () => {
     fs.writeFileSync(path.join(outputPath, 'React-VFS-template.yaml'), 'content');
     VersionStamp.write(outputPath, { reactNativeVersion: '0.77.0' }, '.vfs-version-stamp');
-    fs.writeFileSync(path.join(rnSourcePath, 'package.json'), JSON.stringify({ version: '0.77.0' }));
+    fs.writeFileSync(
+      path.join(rnSourcePath, 'package.json'),
+      JSON.stringify({ version: '0.77.0' })
+    );
     assert.equal(isVFSGenerated(outputPath, rnSourcePath), true);
   });
 
   it('returns false when version stamp does not match current RN version', () => {
     fs.writeFileSync(path.join(outputPath, 'React-VFS-template.yaml'), 'content');
     VersionStamp.write(outputPath, { reactNativeVersion: '0.76.0' }, '.vfs-version-stamp');
-    fs.writeFileSync(path.join(rnSourcePath, 'package.json'), JSON.stringify({ version: '0.77.0' }));
+    fs.writeFileSync(
+      path.join(rnSourcePath, 'package.json'),
+      JSON.stringify({ version: '0.77.0' })
+    );
     assert.equal(isVFSGenerated(outputPath, rnSourcePath), false);
   });
 });
