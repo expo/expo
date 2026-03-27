@@ -34,6 +34,7 @@ import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTrans
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { resolveWatchFolders } from '../../../utils/resolveWatchFolders';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
@@ -940,9 +941,23 @@ export async function withMetroMultiPlatformAsync(
   // This is used for running Expo CLI in development against projects outside the monorepo.
   // NOTE(@kitten): If `projectRoot` is used without `serverRoot` being available this can mistrigger for user monorepos!
   if (!isDirectoryIn(__dirname, serverRoot ?? projectRoot)) {
-    const reactNativePolyfills: string[] = require('react-native/rn-get-polyfills')();
+    let reactNativePolyfills: string[] = [];
+
+    // Support web-only `expo start`
+    if (exp.platforms?.includes('ios') || exp.platforms?.includes('android')) {
+      try {
+        reactNativePolyfills = require('react-native/rn-get-polyfills')();
+        watchFolders.push(...resolveWatchFolders('react-native', { deep: false }));
+      } catch (error) {
+        // If the project targets native platforms, react-native is required.
+        throw new CommandError(
+          'REACT_NATIVE_NOT_FOUND',
+          'Failed to resolve react-native. Make sure it is installed in the project dependencies. Remove native platforms from the Expo config if you do not intend to target native platforms.'
+        );
+      }
+    }
+
     watchFolders.push(
-      ...resolveWatchFolders('react-native', { deep: false }),
       ...resolveWatchFolders('expo', { deep: true }),
       ...resolveWatchFolders('@expo/metro', { deep: true }),
       ...resolveWatchFolders('@expo/metro-runtime', { deep: true }),

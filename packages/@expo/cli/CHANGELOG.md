@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Allow `expo start`, `expo export`, and `expo config` to work without `react-native` installed for web-only projects. ([#44294](https://github.com/expo/expo/pull/44294) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass optional name to metro require for async modules. ([#44224](https://github.com/expo/expo/pull/44224) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

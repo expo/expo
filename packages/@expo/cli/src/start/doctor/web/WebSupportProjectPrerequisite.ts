@@ -3,6 +3,7 @@ import {
   ExpoConfig,
   getConfig,
   getProjectConfigDescriptionWithPaths,
+  PackageJSONConfig,
   ProjectConfig,
 } from '@expo/config';
 import chalk from 'chalk';
@@ -29,7 +30,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     const result = await this._shouldSetupWebSupportAsync();
 
     // Ensure web packages are installed
-    await this._ensureWebDependenciesInstalledAsync({ exp: result.exp });
+    await this._ensureWebDependenciesInstalledAsync({ exp: result.exp, pkg: result.pkg });
   }
 
   /** Exposed for testing. */
@@ -50,7 +51,13 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   }
 
   /** Exposed for testing. */
-  async _ensureWebDependenciesInstalledAsync({ exp }: { exp: ExpoConfig }): Promise<boolean> {
+  async _ensureWebDependenciesInstalledAsync({
+    exp,
+    pkg,
+  }: {
+    exp: ExpoConfig;
+    pkg: PackageJSONConfig;
+  }): Promise<boolean> {
     const requiredPackages: ResolvedPackage[] = [
       { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
