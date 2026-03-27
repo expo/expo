@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fixed sync worker result length encoding for `SharedArrayBuffer` results in `WorkerChannel`, preventing truncated JSON deserialization errors. ([#44148](https://github.com/expo/expo/pull/44148) by [@silto](https://github.com/silto))
+
 ### 💡 Others
 
 - Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))
