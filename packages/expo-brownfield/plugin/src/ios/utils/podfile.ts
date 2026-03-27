@@ -40,7 +40,12 @@ export const addNewPodsTarget = (podfile: string, targetName: string): string =>
 export const addPrebuiltSettings = (podfile: string): string => {
   const prebuiltSettingsLines = getPrebuiltSettingsLines();
   let podFileLines = podfile.split('\n');
-  if (podFileLines.find((line) => prebuiltSettingsLines[4] != null && line.includes(prebuiltSettingsLines[4].trim()))) {
+
+  if (
+    podFileLines.find(
+      (line) => prebuiltSettingsLines[4] != null && line.includes(prebuiltSettingsLines[4].trim())
+    )
+  ) {
     console.info('Prebuilt settings are already added. Skipping...');
     return podfile;
   }
