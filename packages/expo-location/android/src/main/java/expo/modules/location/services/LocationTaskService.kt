@@ -98,11 +98,17 @@ class LocationTaskService : Service() {
       if (ai.metaData?.containsKey(META_DATA_FOREGROUND_SERVICE_ICON_KEY) == true) {
         ai.metaData.getInt(META_DATA_FOREGROUND_SERVICE_ICON_KEY)
       } else {
-        applicationInfo.icon
+        // Fall back to the standard notification_icon drawable (configured via app.json
+        // notification.icon, used by expo-notifications). The previous fallback —
+        // applicationInfo.icon — is the full-color launcher icon, which Android renders
+        // as a solid white square in notifications (small icons must be monochrome).
+        mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
+          .takeIf { it != 0 } ?: applicationInfo.icon
       }
     } catch (e: Exception) {
       android.util.Log.e("expo-location", "Could not fetch default notification icon.", e)
-      applicationInfo.icon
+      mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
+        .takeIf { it != 0 } ?: applicationInfo.icon
     }
 
     return builder.setCategory(Notification.CATEGORY_SERVICE)
