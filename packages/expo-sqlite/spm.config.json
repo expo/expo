@@ -18,7 +18,7 @@
           "type": "cpp",
           "name": "ExpoSQLite_c",
           "moduleName": "ExpoSQLite",
-          "path": "ios",
+          "path": "vendor/sqlite3",
           "pattern": "**/*.{cpp,c}",
           "headerPattern": "**/*.h",
           "dependencies": [
@@ -39,10 +39,6 @@
             "-DSQLITE_ENABLE_FTS4=1",
             "-DSQLITE_ENABLE_FTS3_PARENTHESIS=1",
             "-DSQLITE_ENABLE_FTS5=1"
-          ],
-          "exclude": [
-            "libsql/**",
-            "libsql.xcframework/**"
           ]
         },
         {
