@@ -1,4 +1,8 @@
-import type { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
+import type {
+  EventSubscription,
+  PermissionHookOptions,
+  PermissionResponse,
+} from 'expo-modules-core';
 import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
@@ -6,6 +10,7 @@ import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
 import type { GranularPermission } from './types/GranularPermission';
 import { MediaSubtype } from './types/MediaSubtype';
 import type { MediaTypeFilter } from './types/MediaTypeFilter';
+import type { MediaLibraryAssetsChangeEvent } from './MediaLibraryNext.types';
 
 export * from './MediaLibraryNext.types';
 
@@ -147,4 +152,25 @@ export type { PermissionHookOptions };
  */
 export async function presentPermissionsPicker(mediaTypes?: MediaTypeFilter[]): Promise<void> {
   return await ExpoMediaLibraryNext.presentPermissionsPicker(mediaTypes);
+}
+
+/**
+ * Subscribes for updates in user's media library.
+ * @param listener A callback that is fired when any assets have been inserted or deleted from the
+ * library. On Android it's invoked with an empty object. On iOS it's invoked with
+ * [`MediaLibraryAssetsChangeEvent`](#medialibraryassetschangeevent) object.
+ * @return An [`EventSubscription`](#eventsubscription) object that you can call `remove()` on when
+ * you would like to unsubscribe the listener.
+ */
+export function addListener(
+  listener: (event: MediaLibraryAssetsChangeEvent) => void
+): EventSubscription {
+  return ExpoMediaLibraryNext.addListener('mediaLibraryDidChange', listener);
+}
+
+/**
+ * Removes all listeners.
+ */
+export function removeAllListeners(): void {
+  ExpoMediaLibraryNext.removeAllListeners('mediaLibraryDidChange');
 }

@@ -2,7 +2,9 @@ package expo.modules.medialibrary.next
 
 import android.net.Uri
 import android.os.Build
+import androidx.core.os.bundleOf
 import expo.modules.kotlin.Promise
+import expo.modules.medialibrary.LIBRARY_DID_CHANGE_EVENT
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
@@ -25,11 +27,21 @@ import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import expo.modules.medialibrary.next.permissions.enums.GranularPermission
 import expo.modules.medialibrary.next.records.AssetField
+import expo.modules.medialibrary.next.observers.MediaStoreObserverManager
 import expo.modules.medialibrary.next.records.SortDescriptor
 
 class MediaLibraryNextModule : Module() {
   private val context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  private val observerManager by lazy {
+    MediaStoreObserverManager(context.contentResolver) {
+      sendEvent(
+        LIBRARY_DID_CHANGE_EVENT,
+        bundleOf("hasIncrementalChanges" to false)
+      )
+    }
+  }
 
   private val systemPermissionsDelegate by lazy {
     SystemPermissionsDelegate(appContext)
@@ -69,6 +81,16 @@ class MediaLibraryNextModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoMediaLibraryNext")
+
+    Events(LIBRARY_DID_CHANGE_EVENT)
+
+    OnStartObserving {
+      observerManager.startObserving()
+    }
+
+    OnStopObserving {
+      observerManager.stopObserving()
+    }
 
     Class(Asset::class) {
       Constructor { contentUri: Uri ->

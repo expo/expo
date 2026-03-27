@@ -6,6 +6,10 @@ import {
   Query,
   MediaType,
   AssetField,
+  addListener,
+  removeAllListeners,
+  MediaLibraryAssetsChangeEvent,
+  addEstablishListener,
 } from 'expo-media-library/next';
 import { Platform } from 'react-native';
 
@@ -855,6 +859,66 @@ export async function test(t) {
       }
       t.expect(numberOfKeys).toBeGreaterThan(0);
       t.expect(exif).toBeDefined();
+    });
+  });
+
+  t.describe('Listeners', () => {
+    const WAIT_TIME = 2000;
+
+    function timeoutWrapper(fn: () => void, time: number) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          fn();
+          resolve(null);
+        }, time);
+      });
+    }
+
+    t.it('addListener is called when asset is created', async () => {
+      const spy = t.jasmine.createSpy('addAsset spy', () => {});
+      const subscription = addListener(spy);
+      const asset = await Asset.create(pngFile.localUri);
+
+      t.expect(asset).not.toBeNull();
+      await timeoutWrapper(() => t.expect(spy).toHaveBeenCalled(), WAIT_TIME);
+
+      subscription.remove();
+      assetsContainer.push(asset);
+    });
+
+    t.it('removed listener is not called', async () => {
+      const spy = t.jasmine.createSpy('remove spy', () => {});
+      const subscription = addListener(spy);
+      subscription.remove();
+      const asset = await Asset.create(pngFile.localUri);
+
+      t.expect(asset).not.toBeNull();
+      await timeoutWrapper(() => t.expect(spy).not.toHaveBeenCalled(), WAIT_TIME);
+
+      assetsContainer.push(asset);
+    });
+
+    t.it('addListener is called when asset is deleted', async () => {
+      const spy = t.jasmine.createSpy('deleteAsset spy', () => {});
+      const asset = await Asset.create(pngFile.localUri);
+      const subscription = addListener(spy);
+
+      t.expect(asset).not.toBeNull();
+      await Asset.delete([asset]);
+      await timeoutWrapper(() => t.expect(spy).toHaveBeenCalled(), WAIT_TIME);
+      subscription.remove();
+    });
+
+    t.it('removeAllListeners stops all listeners', async () => {
+      const spy = t.jasmine.createSpy('removeAll spy', () => {});
+      addListener(spy);
+      removeAllListeners();
+
+      const asset = await Asset.create(pngFile.localUri);
+      t.expect(asset).not.toBeNull();
+      await timeoutWrapper(() => t.expect(spy).not.toHaveBeenCalled(), WAIT_TIME);
+
+      assetsContainer.push(asset);
     });
   });
 
