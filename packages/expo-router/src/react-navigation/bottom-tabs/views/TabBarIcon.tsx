@@ -1,5 +1,6 @@
 import React from 'react';
-import { type StyleProp, StyleSheet, type TextStyle, View, type ViewStyle } from 'react-native';
+import type { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Badge } from '../../elements';
 import type { Route } from '../../native';
@@ -12,9 +13,9 @@ type Props = {
   badgeStyle?: StyleProp<TextStyle>;
   activeOpacity: number;
   inactiveOpacity: number;
-  activeTintColor: string;
-  inactiveTintColor: string;
-  renderIcon: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
+  activeTintColor: ColorValue;
+  inactiveTintColor: ColorValue;
+  renderIcon: (props: { focused: boolean; color: ColorValue; size: number }) => React.ReactNode;
   allowFontScaling?: boolean;
   style: StyleProp<ViewStyle>;
 };

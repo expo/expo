@@ -2,6 +2,7 @@
 import * as React from 'react';
 import {
   Animated,
+  type ColorValue,
   Easing,
   type GestureResponderEvent,
   Platform,
@@ -14,7 +15,7 @@ import {
 import { useTheme } from '../native';
 
 type HoverEffectProps = {
-  color?: string;
+  color?: ColorValue;
   hoverOpacity?: number;
   activeOpacity?: number;
 };
@@ -22,7 +23,7 @@ type HoverEffectProps = {
 export type Props = Omit<PressableProps, 'style' | 'onPress'> & {
   ref?: React.Ref<React.ComponentRef<typeof AnimatedPressable>>;
   href?: string;
-  pressColor?: string;
+  pressColor?: ColorValue;
   pressOpacity?: number;
   hoverEffect?: HoverEffectProps;
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;

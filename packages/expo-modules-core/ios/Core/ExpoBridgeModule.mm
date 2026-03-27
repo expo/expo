@@ -1,9 +1,11 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#import <ReactCommon/RCTTurboModule.h>
-#import <ExpoModulesCore/ExpoBridgeModule.h>
+#import <ExpoModulesCore/EXAppContextFactoryRegistry.h>
+#import <ExpoModulesCore/EXAppContextProtocol.h>
+#import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/EXRuntime.h>
-#import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/ExpoBridgeModule.h>
+#import <ReactCommon/RCTTurboModule.h>
 
 @implementation ExpoBridgeModule
 
@@ -14,12 +16,14 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 - (instancetype)init
 {
   if (self = [super init]) {
-    _appContext = [[EXAppContext alloc] init];
+    // Use registry to create AppContext - Swift factory registers itself at
+    // load time
+    _appContext = (EXAppContext *)[EXAppContextFactoryRegistry createAppContext];
   }
   return self;
 }
 
-- (instancetype)initWithAppContext:(EXAppContext *) appContext
+- (instancetype)initWithAppContext:(EXAppContext *)appContext
 {
   if (self = [super init]) {
     _appContext = appContext;
@@ -45,6 +49,9 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   }
   EXRuntime *runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge];
 
+  // Cast to protocol to access properties without importing Swift.h
+  id<EXAppContextProtocol> ctx = (id<EXAppContextProtocol>)_appContext;
+
   if (!runtime) {
     NSLog(@"Unable to get the JSI runtime from the bridge instance, make sure to use ExpoReactNativeFactory for newer bridgeless integration");
     return;
@@ -56,9 +63,12 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   if (![[runtime global] hasProperty:@"expo"]) {
     NSLog(@"Expo is being initialized from the deprecated ExpoBridgeModule, make sure to migrate to ExpoReactNativeFactory in your project");
 
-    _appContext.reactBridge = _bridge;
-    _appContext._runtime = runtime;
-    [_appContext registerNativeModules];
+    // Set reactBridge directly on _appContext since it's not part of the
+    // protocol (reactBridge is internal to expo-modules-core). Cast to id to
+    // avoid forward declaration issue.
+    [(id)_appContext setValue:_bridge forKey:@"reactBridge"];
+    ctx._runtime = runtime;
+    [ctx registerNativeModules];
   }
 }
 
@@ -68,8 +78,10 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 - (void)legacyProxyDidSetBridge:(nonnull EXNativeModulesProxy *)moduleProxy
            legacyModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
 {
-  _appContext.legacyModulesProxy = moduleProxy;
-  _appContext.legacyModuleRegistry = moduleRegistry;
+  // Cast to protocol to access properties without importing Swift.h
+  id<EXAppContextProtocol> ctx = (id<EXAppContextProtocol>)_appContext;
+  ctx.legacyModulesProxy = moduleProxy;
+  ctx.legacyModuleRegistry = moduleRegistry;
 }
 
 /**
@@ -78,8 +90,11 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
  */
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installModules)
 {
-  if (_bridge && !_appContext._runtime) {
-    // If `setBridge:` was called but the runtime was not found, we try again here.
+  // Cast to protocol to access properties without importing Swift.h
+  id<EXAppContextProtocol> ctx = (id<EXAppContextProtocol>)_appContext;
+  if (_bridge && !ctx._runtime) {
+    // If `setBridge:` was called but the runtime was not found, we try again
+    // here.
     [self maybeSetupAppContext];
   }
   return nil;

@@ -1,6 +1,6 @@
-import Color from 'color';
-import { StyleSheet } from 'react-native';
+import { ColorValue, StyleSheet } from 'react-native';
 
+import { Color } from '../../../utils/color';
 import { Text } from '../../elements';
 import {
   type ParamListBase,
@@ -45,9 +45,11 @@ export function MaterialTopTabBar({
 
   const focusedOptions = descriptors[state.routes[state.index].key].options;
 
-  const activeColor = focusedOptions.tabBarActiveTintColor ?? colors.text;
-  const inactiveColor =
-    focusedOptions.tabBarInactiveTintColor ?? Color(activeColor).alpha(0.5).rgb().string();
+  const activeColor: ColorValue = focusedOptions.tabBarActiveTintColor ?? colors.primary;
+  const inactiveColor: ColorValue =
+    focusedOptions.tabBarInactiveTintColor ??
+    Color(activeColor)?.alpha(0.5).string() ??
+    colors.text;
 
   const tabBarOptions = Object.fromEntries(
     state.routes.map((route: any) => {

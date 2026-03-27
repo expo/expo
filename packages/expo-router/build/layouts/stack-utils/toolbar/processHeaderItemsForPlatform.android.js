@@ -15,7 +15,7 @@ function processHeaderItemsForPlatform(children, placement, colors) {
     if (placement !== 'left' && placement !== 'right') {
         return null;
     }
-    const headerContent = () => (<HeaderToolbarHostBase placement={placement} colors={colors}>
+    const headerContent = (props) => (<HeaderToolbarHostBase placement={placement} colors={colors} headerProps={props}>
       {children}
     </HeaderToolbarHostBase>);
     if (placement === 'left') {
@@ -29,9 +29,16 @@ function processHeaderItemsForPlatform(children, placement, colors) {
         headerRight: headerContent,
     };
 }
-const EMPTY_COLORS = {};
-function HeaderToolbarHostBase({ children, placement, colors, }) {
-    const stableColors = (0, react_1.useMemo)(() => colors ?? EMPTY_COLORS, [colors?.backgroundColor, colors?.tintColor]);
+function HeaderToolbarHostBase({ children, placement, colors, headerProps, }) {
+    const stableColors = (0, react_1.useMemo)(() => ({
+        tintColor: colors?.tintColor ?? headerProps?.tintColor,
+        backgroundColor: colors?.backgroundColor ?? headerProps?.backgroundColor,
+    }), [
+        colors?.backgroundColor,
+        colors?.tintColor,
+        headerProps?.tintColor,
+        headerProps?.backgroundColor,
+    ]);
     return (<context_1.ToolbarPlacementContext.Provider value={placement}>
       <context_1.ToolbarColorContext.Provider value={stableColors}>
         <NativeMenuContext_1.NativeMenuContext value>

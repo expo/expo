@@ -290,8 +290,8 @@ export class AudioRecorderWeb
     }
     this.analyser.getFloatTimeDomainData(this.analyserBuffer);
     let sumSquares = 0;
-    for (let i = 0; i < this.analyserBuffer.length; i++) {
-      sumSquares += this.analyserBuffer[i] * this.analyserBuffer[i];
+    for (const sample of this.analyserBuffer) {
+      sumSquares += sample * sample;
     }
     const rms = Math.sqrt(sumSquares / this.analyserBuffer.length);
     if (rms === 0) {

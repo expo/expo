@@ -33,14 +33,11 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Badge = Badge;
-const color_1 = __importDefault(require("color"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const color_1 = require("../../utils/color");
 const native_1 = require("../native");
 const useNativeDriver = react_native_1.Platform.OS !== 'web';
 function Badge({ children, style, visible = true, size = 18, ...rest }) {
@@ -72,7 +69,7 @@ function Badge({ children, style, visible = true, size = 18, ...rest }) {
     }
     // @ts-expect-error: backgroundColor definitely exists
     const { backgroundColor = colors.notification, ...restStyle } = react_native_1.StyleSheet.flatten(style) || {};
-    const textColor = (0, color_1.default)(backgroundColor).isLight() ? 'black' : 'white';
+    const textColor = (0, color_1.Color)(backgroundColor)?.isLight() ? 'black' : 'white';
     const borderRadius = size / 2;
     const fontSize = Math.floor((size * 3) / 4);
     return (<react_native_1.Animated.Text numberOfLines={1} style={[

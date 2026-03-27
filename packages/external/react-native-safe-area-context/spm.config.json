@@ -1,0 +1,93 @@
+{
+    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "RNCSafeAreaContext",
+            "podName": "react-native-safe-area-context",
+            "codegenName": "safeareacontext",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes"
+            ],
+            "targets": [
+                {
+                    "type": "cpp",
+                    "name": "RNCSafeAreaContext_codegen_components",
+                    "moduleName": "safeareacontext",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/safeareacontext",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": ["../../../.."]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNCSafeAreaContext_codegen_modules",
+                    "moduleName": "safeareacontext",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/safeareacontext",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [".."]
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNCSafeAreaContext_common_cpp",
+                    "moduleName": "safeareacontext",
+                    "path": "common/cpp/react/renderer/components/safeareacontext",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNCSafeAreaContext_codegen_components"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../../../../../../.build/codegen/build/generated/ios/ReactCodegen"
+                    ],
+                    "fileMapping": [
+                        {
+                            "from": "safeareacontext",
+                            "to": "react/renderer/components/safeareacontext",
+                            "type": "symlink"
+                        }
+                    ]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNCSafeAreaContext",
+                    "path": "ios",
+                    "pattern": "**/*.{m,mm}",
+                    "headerPattern": "**/*.h",
+                    "exclude": ["RNSafeAreaContext.xcodeproj/**"],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNCSafeAreaContext_codegen_components",
+                        "RNCSafeAreaContext_codegen_modules",
+                        "RNCSafeAreaContext_common_cpp"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../.build/codegen/build/generated/ios/ReactCodegen",
+                        "../common/cpp"
+                    ],
+                    "linkedFrameworks": ["Foundation", "UIKit", "CoreGraphics"],
+                    "compilerFlags": ["-include", "Foundation/Foundation.h", "-Wno-c++11-narrowing"]
+                }
+            ]
+        }
+    ]
+}

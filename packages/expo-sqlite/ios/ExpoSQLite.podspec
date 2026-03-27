@@ -63,12 +63,12 @@ Pod::Spec.new do |s|
   end
 
   # Swift/Objective-C compatibility
+  s.static_framework = true
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS' => '$(inherited) ' + sqlite_cflags,
     'OTHER_SWIFT_FLAGS' => '$(inherited) ' + swift_flags,
   }
-
   s.source_files = "**/*.{c,h,m,swift}"
 
   vendored_frameworks = []

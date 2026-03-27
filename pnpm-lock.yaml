@@ -5773,6 +5773,9 @@ importers:
       '@expo/swiftlint':
         specifier: ^0.57.1
         version: 0.57.1
+      '@expo/xcpretty':
+        specifier: ^4.4.0
+        version: 4.4.1
       '@linear/sdk':
         specifier: ^2.6.0
         version: 2.6.0(encoding@0.1.13)

@@ -145,18 +145,26 @@ function parseClosureTypes(structureObject) {
 // Used for functions,async functions, all of shape Identifier(name, closure or function)
 function findNamedDefinitionsOfType(type, moduleDefinition, file) {
     const definitionsOfType = moduleDefinition.filter((md) => md['key.name'] === type);
-    return definitionsOfType.map((d) => {
+    return definitionsOfType.reduce((acc, d) => {
         const definitionParams = d['key.substructure'];
+        if (definitionParams[0] == null) {
+            return acc;
+        }
         const name = getIdentifierFromOffsetObject(definitionParams[0], file);
         let types = null;
+        if (definitionParams[1] == null) {
+            acc.push({ name, types });
+            return acc;
+        }
         if (hasSubstructure(definitionParams[1])) {
             types = parseClosureTypes(definitionParams[1]);
         }
         else {
             types = getTypeFromOffsetObject(definitionParams[1], file);
         }
-        return { name, types };
-    });
+        acc.push({ name, types });
+        return acc;
+    }, []);
 }
 // Used for events
 function findGroupedDefinitionsOfType(type, moduleDefinition, file) {
@@ -172,11 +180,12 @@ function findAndParseNestedClassesOfType(moduleDefinition, file, type) {
     return definitionsOfType
         .map((df) => {
         const nestedModuleDefinition = df['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0]?.['key.substructure'];
-        if (!nestedModuleDefinition) {
+        const nameStructure = df['key.substructure']?.[0];
+        if (!nestedModuleDefinition || !nameStructure) {
             console.warn('Could not parse definition');
             return null;
         }
-        const name = getIdentifierFromOffsetObject(df['key.substructure']?.[0], file).replace('.self', '');
+        const name = getIdentifierFromOffsetObject(nameStructure, file).replace('.self', '');
         // let's drop nested view field and classes (are null anyways)
         const { views: _, classes: _2, ...definition } = parseModuleDefinition(nestedModuleDefinition, file);
         return { ...definition, name };
@@ -195,14 +204,17 @@ function omitParamsFromClosureArguments(definitions, paramsToOmit) {
 // Some blocks have additional modifiers like runOnQueue – we may need to do additional traversing to get to the function definition
 function parseBlockModifiers(structureObject) {
     if (structureObject['key.name']?.includes('runOnQueue')) {
-        return structureObject['key.substructure'][0];
+        const structure = structureObject['key.substructure'][0];
+        if (structure != null) {
+            return structure;
+        }
     }
     return structureObject;
 }
 function parseModuleDefinition(moduleDefinition, file) {
     const preparedModuleDefinition = moduleDefinition.map(parseBlockModifiers);
     const parsedDefinition = {
-        name: findNamedDefinitionsOfType('Name', preparedModuleDefinition, file)?.[0]?.name,
+        name: findNamedDefinitionsOfType('Name', preparedModuleDefinition, file)[0]?.name ?? '',
         functions: findNamedDefinitionsOfType('Function', preparedModuleDefinition, file),
         asyncFunctions: omitParamsFromClosureArguments(findNamedDefinitionsOfType('AsyncFunction', preparedModuleDefinition, file), ['promise']),
         events: findGroupedDefinitionsOfType('Events', preparedModuleDefinition, file),

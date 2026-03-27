@@ -6,6 +6,8 @@
 # React Native Core headers in their public headers, which causes issues when
 # building them as dynamic frameworks with modular headers enabled.
 
+require_relative '../precompiled_modules'
+
 module Pod
   class Podfile
     public
@@ -23,12 +25,24 @@ module Pod
     private
 
     _original_run_podfile_pre_install_hooks = instance_method(:run_podfile_pre_install_hooks)
+    _original_perform_post_install_actions = instance_method(:perform_post_install_actions)
 
     public
+
+    define_method(:perform_post_install_actions) do
+      # Call original implementation first
+      _original_perform_post_install_actions.bind(self).()
+
+      # Run all precompiled module post-install configuration
+      Expo::PrecompiledModules.perform_post_install(self)
+    end
 
     define_method(:run_podfile_pre_install_hooks) do
       # Call original implementation first
       _original_run_podfile_pre_install_hooks.bind(self).()
+
+      # Disable use_frameworks! for pods that can't be built as frameworks
+      Expo::PrecompiledModules.perform_pre_install(self)
 
       return unless should_disable_use_frameworks_for_core_expo_pods?()
 

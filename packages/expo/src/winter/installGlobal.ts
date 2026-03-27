@@ -82,7 +82,7 @@ export function installGlobal<T extends object>(name: string, getValue: () => T)
   const object = typeof global !== 'undefined' ? global : globalThis;
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
   if (__DEV__ && descriptor) {
-    const backupName = `original${name[0].toUpperCase()}${name.slice(1)}`;
+    const backupName = `original${name[0] ?? ''.toUpperCase()}${name.slice(1)}`;
     Object.defineProperty(object, backupName, descriptor);
   }
 

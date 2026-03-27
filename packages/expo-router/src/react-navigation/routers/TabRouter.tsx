@@ -11,6 +11,7 @@ import type {
   Route,
   Router,
 } from './types';
+import type { StackActionType } from '../core';
 
 export type TabActionType = {
   type: 'JUMP_TO';
@@ -181,7 +182,9 @@ const changeIndex = (
   };
 };
 
-export function TabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRouterOptions) {
+// TODO(@ubax): unify the logic into single router instead of BaseTabRouter and override
+// TODO(@ubax): add REPLACE action to CommonAction type and handle it in all routers
+function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRouterOptions) {
   const router: Router<
     TabNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
@@ -490,4 +493,58 @@ export function TabRouter({ initialRouteName, backBehavior = 'firstRoute' }: Tab
   };
 
   return router;
+}
+
+/**
+ * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export function TabRouter(
+  args: TabRouterOptions
+): Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction> {
+  const base = BaseTabRouter(args);
+  return {
+    ...base,
+    getStateForAction: (state, action, options) => {
+      if (action.target && action.target !== state.key) {
+        return null;
+      }
+
+      if ((action.type as string) === 'REPLACE') {
+        const replaceAction = action as unknown as Extract<StackActionType, { type: 'REPLACE' }>;
+        // Generate the state as if we were using JUMP_TO
+        let nextState = base.getStateForAction(
+          state,
+          {
+            ...replaceAction,
+            type: 'JUMP_TO',
+          },
+          options
+        );
+
+        if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
+          return null;
+        }
+
+        // If the state is valid and we didn't JUMP_TO a single history state,
+        // then remove the previous state.
+        if (nextState.index !== 0) {
+          const previousIndex = nextState.index - 1;
+
+          nextState = {
+            ...nextState,
+            key: `${nextState.key}-replace`,
+            // Omit the previous history entry that we are replacing
+            history: [
+              ...nextState.history.slice(0, previousIndex),
+              ...nextState.history.splice(nextState.index),
+            ],
+          };
+        }
+
+        return nextState;
+      }
+
+      return base.getStateForAction(state, action, options);
+    },
+  };
 }

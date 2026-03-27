@@ -91,7 +91,7 @@ function calculatePseudoAngle(
     return [correctedStartPoint, correctedEndPoint];
   };
 
-  const [start, end] = getControlPoints();
+  const [start = [0, 0], end = [0, 0]] = getControlPoints();
   start[0] *= width;
   end[0] *= width;
   start[1] *= height;
