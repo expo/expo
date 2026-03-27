@@ -55,7 +55,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/expo-module-optimized-macros-plugin": "~0.0.5",
+    "@expo/expo-module-optimized-macros-plugin": "~0.0.6",
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
