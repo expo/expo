@@ -588,8 +588,10 @@ function collectOutputReferences(modules: Iterable<Module>, key: string): string
       [...modules]
         .map((module) => {
           return module.output.map((output) => {
-            if (key in output.data && typeof output.data[key] === 'string') {
-              return output.data[key];
+            // TODO: This is a mess. This needs to be properly typed
+            const data = output.data as any;
+            if (key in data && typeof data[key] === 'string') {
+              return data[key];
             }
             return undefined;
           });

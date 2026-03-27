@@ -427,7 +427,9 @@ function getLoaderPaths(dependencies: ReadOnlyDependencies) {
   const loaderPaths = new Set<string>();
   for (const module of dependencies.values()) {
     for (const output of module.output) {
-      if ('loaderReference' in output.data && typeof output.data.loaderReference === 'string') {
+      // TODO: Module type should be upcast
+      const data = output.data as any;
+      if ('loaderReference' in data && typeof data.loaderReference === 'string') {
         loaderPaths.add(module.path);
       }
     }
