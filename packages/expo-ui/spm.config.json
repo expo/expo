@@ -1,0 +1,56 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoUI",
+      "podName": "ExpoUI",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoUI_ios_objc",
+          "moduleName": "ExpoUI",
+          "path": "ios",
+          "pattern": "**/*.{m,mm}",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies"
+          ],
+          "linkedFrameworks": [
+            "Foundation"
+          ],
+          "includeDirectories": [
+            "."
+          ]
+        },
+        {
+          "type": "swift",
+          "name": "ExpoUI",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoUI_ios_objc"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ]
+        }
+      ]
+    }
+  ]
+}

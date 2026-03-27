@@ -1,0 +1,85 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoSQLite",
+      "podName": "ExpoSQLite",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
+        {
+          "type": "cpp",
+          "name": "ExpoSQLite_c",
+          "moduleName": "ExpoSQLite",
+          "path": "ios",
+          "pattern": "**/*.{cpp,c}",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React"
+          ],
+          "includeDirectories": [
+            "."
+          ],
+          "compilerFlags": [
+            "-DHAVE_USLEEP=1",
+            "-DSQLITE_ENABLE_LOCKING_STYLE=0",
+            "-DSQLITE_ENABLE_BYTECODE_VTAB=1",
+            "-DSQLITE_TEMP_STORE=2",
+            "-DSQLITE_ENABLE_SESSION=1",
+            "-DSQLITE_ENABLE_PREUPDATE_HOOK=1",
+            "-DSQLITE_ENABLE_MATH_FUNCTIONS=1",
+            "-DSQLITE_ENABLE_FTS4=1",
+            "-DSQLITE_ENABLE_FTS3_PARENTHESIS=1",
+            "-DSQLITE_ENABLE_FTS5=1"
+          ],
+          "exclude": [
+            "libsql/**",
+            "libsql.xcframework/**"
+          ]
+        },
+        {
+          "type": "swift",
+          "name": "ExpoSQLite",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoSQLite_c"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ],
+          "exclude": [
+            "libsql/**",
+            "libsql.xcframework/**",
+            "SQLiteModuleLibSQL.swift"
+          ],
+          "compilerFlags": [
+            "-DHAVE_USLEEP=1",
+            "-DSQLITE_ENABLE_LOCKING_STYLE=0",
+            "-DSQLITE_ENABLE_BYTECODE_VTAB=1",
+            "-DSQLITE_TEMP_STORE=2",
+            "-DSQLITE_ENABLE_SESSION=1",
+            "-DSQLITE_ENABLE_PREUPDATE_HOOK=1",
+            "-DSQLITE_ENABLE_MATH_FUNCTIONS=1",
+            "-DSQLITE_ENABLE_FTS4=1",
+            "-DSQLITE_ENABLE_FTS3_PARENTHESIS=1",
+            "-DSQLITE_ENABLE_FTS5=1"
+          ]
+        }
+      ]
+    }
+  ]
+}
