@@ -17,11 +17,11 @@ const eslintArgs = [
   ...scriptArgs,
 ];
 
-/** Run tsc --noEmit and capture all output. Returns a promise with { status, output }. */
-function runTsc() {
+/** Run a command asynchronously, capturing all output. */
+function runAsync(cmd, args) {
   return new Promise(resolve => {
     const chunks = [];
-    const proc = spawn('tsc', ['--noEmit', '--pretty'], {
+    const proc = spawn(cmd, args, {
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: true,
     });
@@ -42,7 +42,7 @@ function runEslint() {
 
   // If ESLint fails with a fatal error, the cache may be stale. Clear it and retry once.
   if (status === 2) {
-    console.error('ESLint exited with fatal error — clearing cache and retrying...');
+    console.error('ESLint exited with fatal error, clearing cache and retrying...');
     try {
       unlinkSync(CACHE_LOCATION);
     } catch {}
@@ -56,59 +56,31 @@ function runEslint() {
   return { status, stderr };
 }
 
-/** Run oxlint and capture all output. Returns a promise with { status, output }. */
-function runOxlint() {
-  return new Promise(resolve => {
-    const chunks = [];
-    const proc = spawn('oxlint', [process.cwd(), '--type-aware'], {
-      stdio: ['ignore', 'pipe', 'pipe'],
-      shell: true,
-    });
-    proc.stdout.on('data', d => chunks.push(d));
-    proc.stderr.on('data', d => chunks.push(d));
-    proc.on('close', status => {
-      resolve({ status, output: Buffer.concat(chunks).toString() });
-    });
-  });
-}
-
-/** Run oxfmt --check and capture all output. Returns a promise with { status, output }. */
-function runOxfmt() {
-  return new Promise(resolve => {
-    const chunks = [];
-    const proc = spawn('oxfmt', ['--check', process.cwd(), '**/*.mdx'], {
-      stdio: ['ignore', 'pipe', 'pipe'],
-      shell: true,
-    });
-    proc.stdout.on('data', d => chunks.push(d));
-    proc.stderr.on('data', d => chunks.push(d));
-    proc.on('close', status => {
-      resolve({ status, output: Buffer.concat(chunks).toString() });
-    });
-  });
-}
-
-// Run oxfmt, tsc, oxlint, and eslint in parallel.
-const oxfmtPromise = runOxfmt();
-const tscPromise = runTsc();
-const oxlintPromise = runOxlint();
-const eslintResult = runEslint();
-const oxfmtResult = await oxfmtPromise;
-const tscResult = await tscPromise;
-const oxlintResult = await oxlintPromise;
-
-// Report results.
-let failed = false;
+// Step 1: Run oxfmt first (fastest, ~3s). Fail fast if formatting is broken.
+const oxfmtResult = await runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
 
 if (oxfmtResult.status !== 0) {
-  console.error('\n\x1b[1;31moxfmt failed:\x1b[0m');
+  console.error('\x1b[1;31moxfmt failed:\x1b[0m');
   if (oxfmtResult.output) {
     console.error(oxfmtResult.output);
   }
-  failed = true;
-} else {
-  console.log('\x1b[32m✓ oxfmt\x1b[0m');
+  process.exit(1);
 }
+
+console.log('\x1b[32m✓ oxfmt\x1b[0m');
+if (oxfmtResult.output) {
+  console.log(oxfmtResult.output);
+}
+
+// Step 2: Run oxlint, tsc, and eslint in parallel.
+const oxlintPromise = runAsync('oxlint', [process.cwd(), '--type-aware']);
+const tscPromise = runAsync('tsc', ['--noEmit', '--pretty']);
+const eslintResult = runEslint();
+const oxlintResult = await oxlintPromise;
+const tscResult = await tscPromise;
+
+// Report results.
+let failed = false;
 
 if (oxlintResult.status !== 0) {
   console.error('\n\x1b[1;31moxlint failed:\x1b[0m');
@@ -118,6 +90,9 @@ if (oxlintResult.status !== 0) {
   failed = true;
 } else {
   console.log('\x1b[32m✓ oxlint\x1b[0m');
+  if (oxlintResult.output) {
+    console.log(oxlintResult.output);
+  }
 }
 
 if (tscResult.status !== 0) {

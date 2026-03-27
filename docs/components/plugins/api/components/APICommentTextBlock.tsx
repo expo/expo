@@ -43,7 +43,7 @@ export const APICommentTextBlock = ({
   emptyCommentFallback,
 }: Props) => {
   const content = comment?.summary ? getCommentContent(comment.summary) : undefined;
-  const hasContent = Boolean(content?.length) || Boolean(afterContent);
+  const hasContent = (content?.length ?? 0) > 0 || Boolean(afterContent);
 
   const paramTags = hasContent ? getParamTags(content) : undefined;
   const parsedContent = (

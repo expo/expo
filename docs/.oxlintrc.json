@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["import", "react", "unicorn", "typescript", "nextjs", "node"],
+  "plugins": ["import", "react", "unicorn", "typescript", "nextjs", "node", "oxc"],
+  "jsPlugins": ["eslint-plugin-better-tailwindcss", "eslint-plugin-testing-library"],
   "categories": {
     "correctness": "off"
   },
@@ -166,7 +167,21 @@
 
     "node/handle-callback-err": "warn",
     "node/no-new-require": "warn",
-    "node/no-path-concat": "warn"
+    "node/no-path-concat": "warn",
+
+    "oxc/bad-array-method-on-arguments": "warn",
+    "oxc/bad-char-at-comparison": "warn",
+    "oxc/bad-comparison-sequence": "warn",
+    "oxc/bad-min-max-func": "warn",
+    "oxc/bad-object-literal-comparison": "warn",
+    "oxc/bad-replace-all-arg": "warn",
+    "oxc/const-comparisons": "warn",
+    "oxc/double-comparisons": "warn",
+    "oxc/erasing-op": "warn",
+    "oxc/missing-throw": "warn",
+    "oxc/number-arg-out-of-range": "warn",
+    "oxc/only-used-in-recursion": "warn",
+    "oxc/uninvoked-array-callback": "warn"
   },
   "overrides": [
     {
@@ -217,8 +232,64 @@
         "@typescript-eslint/no-confusing-void-expression": "warn",
         "@typescript-eslint/no-for-in-array": "warn",
         "@typescript-eslint/only-throw-error": "warn",
-        "@typescript-eslint/no-redeclare": "warn"
+        "@typescript-eslint/no-redeclare": "warn",
+        "better-tailwindcss/enforce-consistent-class-order": "off",
+        "better-tailwindcss/enforce-consistent-line-wrapping": "off",
+        "better-tailwindcss/enforce-shorthand-classes": "error",
+        "better-tailwindcss/no-unknown-classes": [
+          "error",
+          {
+            "ignore": [
+              "diff-.+",
+              "react-player",
+              "dark-theme",
+              "dialog-.+",
+              "terminal-snippet",
+              "table-wrapper",
+              "tutorial-code-annotation",
+              "max-sm:.+",
+              "max-medium:.+",
+              "max-md-gutters:.+",
+              "\\[table_&\\]:.+",
+              "\\[table_&\\]"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["**/*-test.[jt]s?(x)"],
+      "rules": {
+        "testing-library/await-async-events": ["error", { "eventModule": "userEvent" }],
+        "testing-library/await-async-queries": "error",
+        "testing-library/await-async-utils": "error",
+        "testing-library/no-await-sync-events": ["error", { "eventModules": ["fire-event"] }],
+        "testing-library/no-await-sync-queries": "error",
+        "testing-library/no-container": "error",
+        "testing-library/no-debugging-utils": "warn",
+        "testing-library/no-dom-import": ["error", "react"],
+        "testing-library/no-global-regexp-flag-in-query": "error",
+        "testing-library/no-manual-cleanup": "error",
+        "testing-library/no-node-access": "error",
+        "testing-library/no-promise-in-fire-event": "error",
+        "testing-library/no-render-in-lifecycle": "error",
+        "testing-library/no-unnecessary-act": "error",
+        "testing-library/no-wait-for-multiple-assertions": "error",
+        "testing-library/no-wait-for-side-effects": "error",
+        "testing-library/no-wait-for-snapshot": "error",
+        "testing-library/prefer-find-by": "error",
+        "testing-library/prefer-presence-queries": "error",
+        "testing-library/prefer-query-by-disappearance": "error",
+        "testing-library/prefer-screen-queries": "error",
+        "testing-library/render-result-naming-convention": "error"
       }
     }
-  ]
+  ],
+  "settings": {
+    "better-tailwindcss": {
+      "entryPoint": "styles/global.css",
+      "callees": ["mergeClasses"],
+      "attributes": ["^(container|icon|text)?(c|C)lass(Name)?$"]
+    }
+  }
 }

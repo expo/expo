@@ -4,19 +4,10 @@ import universeWebConfig from 'eslint-config-universe/flat/web.js';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
+import oxlint from 'eslint-plugin-oxlint';
 import testingLibrary from 'eslint-plugin-testing-library';
 import unicorn from 'eslint-plugin-unicorn';
 import { defineConfig, globalIgnores } from 'eslint/config';
-
-const CLASS_NAME_PREFIXES = ['container', 'icon', 'text'];
-
-const CLASS_NAME_PATTERN = '(c|C)lass(Name)?$';
-
-const TAILWIND_SETTINGS = {
-  entryPoint: 'styles/global.css',
-  callees: ['mergeClasses'],
-  attributes: [`^(${CLASS_NAME_PREFIXES.join('|')})?${CLASS_NAME_PATTERN}`],
-};
 
 // Rules that are still active in ESLint (not migrated to oxlint or oxfmt)
 const ACTIVE_RULES = {
@@ -37,138 +28,25 @@ const ACTIVE_RULES = {
   ],
 };
 
-// Rules migrated to oxlint/oxfmt that must be explicitly turned off
-// because eslint-config-universe re-enables them
-const MIGRATED_RULES = {
+// Rules not auto-detected by eslint-plugin-oxlint:
+// - oxfmt handles these (not in .oxlintrc.json)
+// - type-aware TS rules (eslint-plugin-oxlint doesn't read type-aware overrides)
+// - @next/next/no-img-element (set to 'off' in oxlint, so the plugin skips it)
+const MIGRATED_RULES_MANUAL = {
   'prettier/prettier': 'off',
   'import/order': 'off',
-  'import/no-cycle': 'off',
-  'import/no-duplicates': 'off',
-  'import/default': 'off',
-  'import/namespace': 'off',
-  'import/first': 'off',
-  'import/no-named-as-default': 'off',
-  'import/no-named-as-default-member': 'off',
-  curly: 'off',
-  eqeqeq: 'off',
-  'no-void': 'off',
-  'no-console': 'off',
-  'constructor-super': 'off',
-  'no-array-constructor': 'off',
-  'no-caller': 'off',
-  'no-case-declarations': 'off',
-  'no-compare-neg-zero': 'off',
-  'no-cond-assign': 'off',
-  'no-const-assign': 'off',
-  'no-constant-condition': 'off',
-  'no-debugger': 'off',
-  'no-delete-var': 'off',
-  'no-dupe-class-members': 'off',
-  'no-dupe-keys': 'off',
-  'no-duplicate-case': 'off',
-  'no-empty-character-class': 'off',
-  'no-empty-pattern': 'off',
-  'no-eval': 'off',
-  'no-ex-assign': 'off',
-  'no-extend-native': 'off',
-  'no-extra-bind': 'off',
-  'no-extra-boolean-cast': 'off',
-  'no-fallthrough': 'off',
-  'no-func-assign': 'off',
-  'no-global-assign': 'off',
-  'no-inner-declarations': 'off',
-  'no-invalid-regexp': 'off',
-  'no-irregular-whitespace': 'off',
-  'no-iterator': 'off',
-  'no-label-var': 'off',
-  'no-labels': 'off',
-  'no-lone-blocks': 'off',
-  'no-multi-assign': 'off',
-  'no-new': 'off',
-  'no-new-func': 'off',
-  'no-object-constructor': 'off',
-  'no-new-native-nonconstructor': 'off',
-  'no-obj-calls': 'off',
-  'no-proto': 'off',
-  'no-return-assign': 'off',
-  'no-script-url': 'off',
-  'no-self-assign': 'off',
-  'no-self-compare': 'off',
-  'no-sequences': 'off',
-  'no-shadow-restricted-names': 'off',
-  'no-sparse-arrays': 'off',
-  'no-this-before-super': 'off',
-  'no-throw-literal': 'off',
-  'no-unneeded-ternary': 'off',
-  'no-unsafe-negation': 'off',
-  'no-unused-expressions': 'off',
-  'no-unused-labels': 'off',
-  'no-unused-vars': 'off',
-  'no-useless-computed-key': 'off',
-  'no-useless-concat': 'off',
-  'no-useless-constructor': 'off',
-  'no-useless-escape': 'off',
-  'no-useless-rename': 'off',
-  'no-useless-return': 'off',
-  'no-var': 'off',
-  'no-with': 'off',
-  'prefer-const': 'off',
   'prefer-promise-reject-errors': 'off',
-  'prefer-rest-params': 'off',
-  'prefer-spread': 'off',
-  radix: 'off',
-  'unicode-bom': 'off',
-  'use-isnan': 'off',
-  'valid-typeof': 'off',
-  yoda: 'off',
-  'n/handle-callback-err': 'off',
-  'n/no-new-require': 'off',
-  'n/no-path-concat': 'off',
-  // TypeScript rules migrated to oxlint
   '@typescript-eslint/await-thenable': 'off',
-  '@typescript-eslint/ban-ts-comment': 'off',
-  '@typescript-eslint/no-confusing-non-null-assertion': 'off',
   '@typescript-eslint/no-confusing-void-expression': 'off',
-  '@typescript-eslint/no-dupe-class-members': 'off',
-  '@typescript-eslint/no-extra-non-null-assertion': 'off',
   '@typescript-eslint/no-floating-promises': 'off',
   '@typescript-eslint/no-for-in-array': 'off',
   '@typescript-eslint/no-misused-promises': 'off',
-  '@typescript-eslint/no-restricted-types': 'off',
   '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-  '@typescript-eslint/no-unused-expressions': 'off',
-  '@typescript-eslint/no-unused-vars': 'off',
-  '@typescript-eslint/no-useless-constructor': 'off',
   '@typescript-eslint/only-throw-error': 'off',
-  '@typescript-eslint/prefer-as-const': 'off',
   '@typescript-eslint/prefer-includes': 'off',
   '@typescript-eslint/prefer-nullish-coalescing': 'off',
   '@typescript-eslint/return-await': 'off',
-  // Next.js rules migrated to oxlint
-  '@next/next/google-font-display': 'off',
-  '@next/next/google-font-preconnect': 'off',
-  '@next/next/next-script-for-ga': 'off',
-  '@next/next/no-async-client-component': 'off',
-  '@next/next/no-before-interactive-script-outside-document': 'off',
-  '@next/next/no-css-tags': 'off',
-  '@next/next/no-head-element': 'off',
-  '@next/next/no-html-link-for-pages': 'off',
   '@next/next/no-img-element': 'off',
-  '@next/next/no-page-custom-font': 'off',
-  '@next/next/no-styled-jsx-in-document': 'off',
-  '@next/next/no-sync-scripts': 'off',
-  '@next/next/no-title-in-document-head': 'off',
-  '@next/next/no-typos': 'off',
-  '@next/next/no-unwanted-polyfillio': 'off',
-  '@next/next/inline-script-id': 'off',
-  '@next/next/no-assign-module-variable': 'off',
-  '@next/next/no-document-import-in-page': 'off',
-  '@next/next/no-duplicate-head': 'off',
-  '@next/next/no-head-import-in-document': 'off',
-  '@next/next/no-script-component-in-head': 'off',
-  // React rules migrated to oxlint
-  'react/no-unknown-property': 'off',
-  'react/jsx-key': 'off',
 };
 
 export default defineConfig([
@@ -193,9 +71,12 @@ export default defineConfig([
   universeNodeConfig,
   universeTypescriptAnalysisConfig,
 
-  // Disable all rules migrated to oxlint/oxfmt (universe configs re-enable these)
+  // Auto-disable ESLint rules that oxlint handles (reads .oxlintrc.json)
+  ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
+
+  // Manual overrides for rules the auto plugin misses
   {
-    rules: MIGRATED_RULES,
+    rules: MIGRATED_RULES_MANUAL,
   },
 
   // Overrides needed to make flat config rules work
@@ -220,9 +101,6 @@ export default defineConfig([
       'better-tailwindcss': betterTailwindcss,
       lodash,
       unicorn,
-    },
-    settings: {
-      'better-tailwindcss': TAILWIND_SETTINGS,
     },
     rules: {
       ...ACTIVE_RULES,
@@ -267,28 +145,11 @@ export default defineConfig([
       '@typescript-eslint/prefer-string-starts-ends-with': 'warn',
       'react/no-this-in-sfc': 'off',
       'react/no-unescaped-entities': 'off',
+      // Migrated to oxlint jsPlugins
       'better-tailwindcss/enforce-consistent-class-order': 'off',
       'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
-      'better-tailwindcss/enforce-shorthand-classes': 'error',
-      'better-tailwindcss/no-unknown-classes': [
-        'error',
-        {
-          ignore: [
-            'diff-.+',
-            'react-player',
-            'dark-theme',
-            'dialog-.+',
-            'terminal-snippet',
-            'table-wrapper',
-            'tutorial-code-annotation',
-            'max-sm:.+',
-            'max-medium:.+',
-            'max-md-gutters:.+',
-            '\\[table_&\\]:.+',
-            '\\[table_&\\]',
-          ],
-        },
-      ],
+      'better-tailwindcss/enforce-shorthand-classes': 'off',
+      'better-tailwindcss/no-unknown-classes': 'off',
       'no-restricted-properties': [
         'warn',
         {
@@ -320,7 +181,12 @@ export default defineConfig([
     extends: [universeNodeConfig],
     rules: {
       ...ACTIVE_RULES,
-      ...MIGRATED_RULES,
+      ...MIGRATED_RULES_MANUAL,
+      ...Object.fromEntries(
+        oxlint
+          .buildFromOxlintConfigFile('./.oxlintrc.json')
+          .flatMap(c => Object.entries(c.rules || {}))
+      ),
     },
   },
 
@@ -340,9 +206,12 @@ export default defineConfig([
     },
   },
 
-  // Test files configuration
+  // Test files configuration (testing-library rules migrated to oxlint jsPlugins)
   {
     files: ['**/*-test.[jt]s?(x)'],
-    ...testingLibrary.configs['flat/react'],
+    plugins: testingLibrary.configs['flat/react'].plugins,
+    rules: Object.fromEntries(
+      Object.keys(testingLibrary.configs['flat/react'].rules).map(rule => [rule, 'off'])
+    ),
   },
 ]);

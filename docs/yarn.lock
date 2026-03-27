@@ -7811,6 +7811,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-oxlint@npm:^1.57.0":
+  version: 1.57.0
+  resolution: "eslint-plugin-oxlint@npm:1.57.0"
+  dependencies:
+    jsonc-parser: "npm:^3.3.1"
+  peerDependencies:
+    oxlint: ~1.57.0
+  checksum: 10c0/a438d81f17e54b95e31d2a712286c10ff5639dc77cd2a92ae9504a29a0611e60dd32dc4ed5c85054f4886da1f71b2dffc9768f21f69f8feea9c1202d45fae970
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-prettier@npm:^5.2.6":
   version: 5.2.6
   resolution: "eslint-plugin-prettier@npm:5.2.6"
@@ -8269,6 +8280,7 @@ __metadata:
     eslint-plugin-better-tailwindcss: "npm:^4.0.0"
     eslint-plugin-lodash: "npm:^8.0.0"
     eslint-plugin-mdx: "npm:^3.6.2"
+    eslint-plugin-oxlint: "npm:^1.57.0"
     eslint-plugin-testing-library: "npm:^7.13.4"
     eslint-plugin-unicorn: "npm:^62.0.0"
     framer-motion: "npm:^12.38.0"
@@ -10561,6 +10573,13 @@ __metadata:
   bin:
     json5: lib/cli.js
   checksum: 10c0/5a04eed94810fa55c5ea138b2f7a5c12b97c3750bc63d11e511dcecbfef758003861522a070c2272764ee0f4e3e323862f386945aeb5b85b87ee43f084ba586c
+  languageName: node
+  linkType: hard
+
+"jsonc-parser@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "jsonc-parser@npm:3.3.1"
+  checksum: 10c0/269c3ae0a0e4f907a914bf334306c384aabb9929bd8c99f909275ebd5c2d3bc70b9bcd119ad794f339dec9f24b6a4ee9cd5a8ab2e6435e730ad4075388fc2ab6
   languageName: node
   linkType: hard
 

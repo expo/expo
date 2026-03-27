@@ -112,6 +112,7 @@
     "eslint-plugin-better-tailwindcss": "^4.0.0",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-mdx": "^3.6.2",
+    "eslint-plugin-oxlint": "^1.57.0",
     "eslint-plugin-testing-library": "^7.13.4",
     "eslint-plugin-unicorn": "^62.0.0",
     "fs-extra": "^11.3.4",
