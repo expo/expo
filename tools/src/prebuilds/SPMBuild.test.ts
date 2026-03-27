@@ -5,11 +5,11 @@
  *  - findFirstExisting
  *  - findXCFrameworkInDir
  */
+import fs from 'fs-extra';
 import assert from 'node:assert/strict';
 import { describe, it, before, after } from 'node:test';
-import fs from 'fs-extra';
-import path from 'path';
 import os from 'os';
+import path from 'path';
 
 import {
   derivePackageName,
@@ -31,10 +31,7 @@ describe('derivePackageName', () => {
   });
 
   it('works without .git suffix', () => {
-    assert.equal(
-      derivePackageName('https://github.com/airbnb/lottie-spm'),
-      'lottie-spm'
-    );
+    assert.equal(derivePackageName('https://github.com/airbnb/lottie-spm'), 'lottie-spm');
   });
 
   it('handles scoped / deeply nested URLs', () => {
@@ -63,10 +60,7 @@ describe('formatVersionRequirement', () => {
   });
 
   it('formats revision version', () => {
-    assert.equal(
-      formatVersionRequirement({ revision: 'abc123' }),
-      'revision: "abc123"'
-    );
+    assert.equal(formatVersionRequirement({ revision: 'abc123' }), 'revision: "abc123"');
   });
 
   it('throws for invalid version', () => {
@@ -139,18 +133,12 @@ describe('findXCFrameworkInDir', () => {
 
   it('finds an xcframework nested in subdirectories', async () => {
     const result = await findXCFrameworkInDir(tmpDir, 'Lottie');
-    assert.equal(
-      result,
-      path.join(tmpDir, 'lottie-spm', 'Lottie', 'Lottie.xcframework')
-    );
+    assert.equal(result, path.join(tmpDir, 'lottie-spm', 'Lottie', 'Lottie.xcframework'));
   });
 
   it('finds a different xcframework', async () => {
     const result = await findXCFrameworkInDir(tmpDir, 'Other');
-    assert.equal(
-      result,
-      path.join(tmpDir, 'other-pkg', 'Other', 'Other.xcframework')
-    );
+    assert.equal(result, path.join(tmpDir, 'other-pkg', 'Other', 'Other.xcframework'));
   });
 
   it('returns null when xcframework does not exist', async () => {

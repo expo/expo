@@ -389,9 +389,7 @@ export interface SharedSPMDependency {
  * Dependencies are deduplicated by productName — the first encountered version wins.
  * Also tracks which packages use each dependency.
  */
-export function collectSharedSPMDependencies(
-  packages: SPMPackageSource[]
-): SharedSPMDependency[] {
+export function collectSharedSPMDependencies(packages: SPMPackageSource[]): SharedSPMDependency[] {
   const seen = new Map<string, SharedSPMDependency>();
 
   for (const pkg of packages) {
@@ -445,9 +443,7 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
       `📦 Found ${shared.length} shared SPM ${shared.length === 1 ? 'dependency' : 'dependencies'}:`
     );
     for (const { dep, usedBy } of shared) {
-      logger.info(
-        `   ${chalk.cyan(dep.productName)} ← ${usedBy.join(', ')}`
-      );
+      logger.info(`   ${chalk.cyan(dep.productName)} ← ${usedBy.join(', ')}`);
     }
 
     // When --clean is passed, wipe shared SPM dep build dirs and xcframeworks
