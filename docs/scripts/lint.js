@@ -71,7 +71,12 @@ if (oxfmtResult.output) {
   console.log(oxfmtResult.output);
 }
 
-const oxlintPromise = runAsync('oxlint', [process.cwd(), '--type-aware']);
+const isCI = process.env.CI === 'true';
+const oxlintArgs = [process.cwd(), '--type-aware'];
+if (isCI) {
+  oxlintArgs.push('--format=github');
+}
+const oxlintPromise = runAsync('oxlint', oxlintArgs);
 const tscPromise = runAsync('tsc', ['--noEmit', '--pretty']);
 const eslintResult = runEslint();
 const oxlintResult = await oxlintPromise;
