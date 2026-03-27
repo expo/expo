@@ -34,15 +34,10 @@ function mergeEntriesStack(entriesStack: NavigationBarProps[]) {
     style: NavigationBarStyle | undefined;
     hidden: boolean | undefined;
   }>(
-    (prev, cur) => {
-      for (const prop in cur) {
-        if (cur[prop as keyof NavigationBarProps] != null) {
-          // @ts-expect-error
-          prev[prop] = cur[prop];
-        }
-      }
-      return prev;
-    },
+    (prev, cur) => ({
+      style: cur.style ?? prev.style,
+      hidden: cur.hidden ?? prev.hidden,
+    }),
     {
       style: undefined,
       hidden: undefined,
