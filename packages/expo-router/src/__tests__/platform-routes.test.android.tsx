@@ -18,6 +18,8 @@ it(`should only load android and native routes`, () => {
         './(app)/page3.android.ts': () => null,
         './(app)/page4.ts': () => null,
         './(app)/page4.ios.ts': () => null,
+        './(app)/page5.ts': () => null,
+        './(app)/page5.tv.ts': () => null,
       }),
       { internal_stripLoadRoute: true, platform: Platform.OS, skipGenerated: true }
     )
@@ -63,6 +65,14 @@ it(`should only load android and native routes`, () => {
         route: '(app)/page4',
         type: 'route',
       },
+      {
+        children: [],
+        contextKey: './(app)/page5.ts',
+        dynamic: null,
+        entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page5.ts'],
+        route: '(app)/page5',
+        type: 'route',
+      },
     ],
     contextKey: 'expo-router/build/views/Navigator.js',
     dynamic: null,
@@ -104,6 +114,44 @@ it(`should work with layout routes`, () => {
         initialRouteName: undefined,
         route: '(app)',
         type: 'layout',
+      },
+    ],
+    contextKey: 'expo-router/build/views/Navigator.js',
+    dynamic: null,
+    generated: true,
+    route: '',
+    type: 'layout',
+  });
+});
+
+it(`should resolve tv routes over android routes when platform is 'tv'`, () => {
+  expect(
+    getRoutes(
+      inMemoryContext({
+        './(app)/index': () => null,
+        './(app)/page.ts': () => null,
+        './(app)/page.android.ts': () => null,
+        './(app)/page.tv.ts': () => null,
+      }),
+      { internal_stripLoadRoute: true, platform: 'tv', skipGenerated: true }
+    )
+  ).toEqual({
+    children: [
+      {
+        children: [],
+        contextKey: './(app)/index.js',
+        dynamic: null,
+        entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+        route: '(app)/index',
+        type: 'route',
+      },
+      {
+        children: [],
+        contextKey: './(app)/page.tv.ts',
+        dynamic: null,
+        entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.tv.ts'],
+        route: '(app)/page',
+        type: 'route',
       },
     ],
     contextKey: 'expo-router/build/views/Navigator.js',

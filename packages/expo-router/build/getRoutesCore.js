@@ -5,7 +5,7 @@ exports.extrapolateGroups = extrapolateGroups;
 exports.generateDynamic = generateDynamic;
 const matchers_1 = require("./matchers");
 const url_1 = require("./utils/url");
-const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
+const validPlatforms = new Set(['android', 'ios', 'native', 'tv', 'web']);
 /**
  * Given a Metro context module, return an array of nested routes.
  *
