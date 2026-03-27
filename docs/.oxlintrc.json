@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["import", "react", "unicorn", "typescript", "nextjs", "node", "oxc"],
-  "jsPlugins": ["oxlint-tailwindcss", "eslint-plugin-testing-library"],
+  "jsPlugins": ["eslint-plugin-testing-library"],
   "categories": {
     "correctness": "off"
   },
@@ -201,26 +201,6 @@
     "oxc/number-arg-out-of-range": "warn",
     "oxc/only-used-in-recursion": "warn",
     "oxc/uninvoked-array-callback": "warn",
-    "tailwindcss/enforce-canonical": "off",
-    "tailwindcss/enforce-shorthand": "error",
-    "tailwindcss/no-unknown-classes": [
-      "error",
-      {
-        "allowlist": [
-          "diff-.+",
-          "react-player",
-          "dark-theme",
-          "dialog-.+",
-          "terminal-snippet",
-          "table-wrapper",
-          "tutorial-code-annotation"
-        ],
-        "ignorePrefixes": ["max-sm:", "max-medium:", "max-md-gutters:", "[table_&]:"]
-      }
-    ],
-    "tailwindcss/no-conflicting-classes": "error",
-    "tailwindcss/no-duplicate-classes": "warn",
-    "tailwindcss/no-unnecessary-whitespace": "warn",
     "@typescript-eslint/array-type": [
       "warn",
       {

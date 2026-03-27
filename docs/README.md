@@ -564,25 +564,25 @@ yarn lint
   |
   |-- 2. (parallel)
   |      |-- oxlint --type-aware
-  |      |     188 rules: JS/TS linting, Tailwind (native plugin), testing-library
+  |      |     183 rules: JS/TS linting, testing-library
   |      |     Config: .oxlintrc.json
   |      |
   |      |-- tsc --noEmit
   |      |     Type checking
   |      |
   |      |-- eslint
-  |            27 ESLint-only rules + MDX linting (unused imports, undefined components)
+  |            Tailwind classes, MDX linting, ESLint-only rules
   |            Config: eslint.config.mjs
 ```
 
-| Tool       | What it covers                                         | Config              |
-| ---------- | ------------------------------------------------------ | ------------------- |
-| **oxfmt**  | Formatting (replaces Prettier)                         | `.oxfmtrc.json`     |
-| **oxlint** | JS/TS linting, Tailwind classes, testing-library rules | `.oxlintrc.json`    |
-| **tsc**    | TypeScript type checking                               | `tsconfig.json`     |
-| **ESLint** | Rules with no oxlint equivalent + MDX linting          | `eslint.config.mjs` |
+| Tool       | What it covers                                                 | Config              |
+| ---------- | -------------------------------------------------------------- | ------------------- |
+| **oxfmt**  | Formatting (replaces Prettier)                                 | `.oxfmtrc.json`     |
+| **oxlint** | JS/TS linting, testing-library rules                           | `.oxlintrc.json`    |
+| **tsc**    | TypeScript type checking                                       | `tsconfig.json`     |
+| **ESLint** | Tailwind classes, MDX linting, rules with no oxlint equivalent | `eslint.config.mjs` |
 
-oxlint handles the majority of lint rules (188 rules). ESLint handles rules that have no oxlint equivalent (`naming-convention`, `better-regex`, `prevent-abbreviations`, `lodash/import-scope`, `no-restricted-properties`) and all MDX file linting via `eslint-plugin-mdx`.
+oxlint handles the majority of lint rules (183 rules). ESLint handles Tailwind class linting (`eslint-plugin-better-tailwindcss`), MDX linting (`eslint-plugin-mdx`), and rules that have no oxlint equivalent (`naming-convention`, `better-regex`, `prevent-abbreviations`, `lodash/import-scope`, `no-restricted-properties`).
 
 ### Formatting (oxfmt)
 
