@@ -40,19 +40,14 @@ jobs:
       - name: Add bin to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: 'yarn'
 
       - name: Install node modules
-        run: pnpm install --frozen-lockfile
+        run: yarn install --frozen-lockfile
 
       - name: Prebuild XCFrameworks (${{ matrix.flavor }})
         env:
