@@ -48,6 +48,32 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
     throw new Error(`Headers directory not found in xcframework: ${headersDir}`);
   }
 
+  // RN 0.85+ ships React-VFS-template.yaml inside the xcframework with fully nested headers.
+  // When present, use it directly instead of generating our own.
+  const bundledTemplatePath = path.join(xcframeworkPath, 'React-VFS-template.yaml');
+  if (fs.existsSync(bundledTemplatePath)) {
+    logger.info('  Using bundled React-VFS-template.yaml from xcframework (RN 0.85+)');
+
+    // Copy bundled template to expected location (where resolveVFSOverlayTemplate reads it)
+    fs.copyFileSync(bundledTemplatePath, path.join(outputPath, 'React-VFS-template.yaml'));
+
+    // Clean up stale staging directory (no longer needed with bundled nested headers)
+    const stagingDir = path.join(outputPath, 'React-extra-headers');
+    if (fs.existsSync(stagingDir)) {
+      fs.removeSync(stagingDir);
+      logger.info('  Removed stale React-extra-headers/ directory');
+    }
+
+    // Write version stamp for cache invalidation
+    const rnVersion = JSON.parse(
+      fs.readFileSync(path.join(reactNativePath, 'package.json'), 'utf8')
+    ).version;
+    VersionStamp.write(outputPath, { reactNativeVersion: rnVersion }, VFS_STAMP_FILENAME);
+
+    logger.info('  VFS overlay setup complete (using bundled template).');
+    return;
+  }
+
   logger.info('  Collecting header mappings from podspecs...');
   const headerMappings = getHeaderFilesFromPodspecs(reactNativePath);
 
