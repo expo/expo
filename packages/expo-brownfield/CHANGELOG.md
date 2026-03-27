@@ -17,6 +17,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Initialize React host before creating RN view ([#44120](https://github.com/expo/expo/issues/44120)) ([#44312](https://github.com/expo/expo/pull/44312) by [@vj2303](https://github.com/vj2303))
+
 ### 💡 Others
 
 - [test] add maestro e2e tests for dev menu ([#43421](https://github.com/expo/expo/pull/43421) by [@pmleczek](https://github.com/pmleczek))
