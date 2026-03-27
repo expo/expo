@@ -108,8 +108,8 @@ describe(SQLiteStatement, () => {
     const result = await statement.executeForRawResultAsync<TestEntity>([200]);
     const allRows = await result.getAllAsync();
     expect(allRows.length).toBe(2);
-    expect(allRows[0][2]).toBe(456);
-    expect(allRows[1][2]).toBe(789);
+    expect(allRows[0]?.[2]).toBe(456);
+    expect(allRows[1]?.[2]).toBe(789);
     await statement.finalizeAsync();
   });
 
