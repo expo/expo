@@ -1,9 +1,9 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import SDWebImage
-import SDWebImageAVIFCoder
-import SDWebImageSVGCoder
+internal import SDWebImage
+internal import SDWebImageAVIFCoder
+internal import SDWebImageSVGCoder
 
 public final class ImageModule: Module {
   lazy var prefetcher = SDWebImagePrefetcher.shared

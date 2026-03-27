@@ -1,7 +1,15 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+// When building as part of ExpoModulesCore or ExpoModulesJSI modules (either SPM or xcframework),
+// we use typedefs instead of importing React headers to avoid header search path issues.
+// The actual React types are still available at runtime through linking.
+#if __building_module(ExpoModulesCore)
+typedef void (^RCTPromiseResolveBlock)(id result);
+typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
+#else
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCallInvoker.h>
+#endif
 
 #import <Foundation/Foundation.h>
 #import <ExpoModulesJSI/EXJavaScriptValue.h>
