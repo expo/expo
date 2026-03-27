@@ -56,33 +56,36 @@ function runEslint() {
   return { status, stderr };
 }
 
-const oxfmtResult = await runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
-
-if (oxfmtResult.status !== 0) {
-  console.error('\x1b[1;31moxfmt failed:\x1b[0m');
-  if (oxfmtResult.output) {
-    console.error(oxfmtResult.output);
-  }
-  process.exit(1);
-}
-
-console.log('\x1b[32m✓ oxfmt\x1b[0m');
-if (oxfmtResult.output) {
-  console.log(oxfmtResult.output);
-}
-
+// Run all tools in parallel.
 const isCI = process.env.CI === 'true';
 const oxlintArgs = [process.cwd(), '--type-aware'];
 if (isCI) {
   oxlintArgs.push('--format=github');
 }
+
+const oxfmtPromise = runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
 const oxlintPromise = runAsync('oxlint', oxlintArgs);
 const tscPromise = runAsync('tsc', ['--noEmit', '--pretty']);
 const eslintResult = runEslint();
+const oxfmtResult = await oxfmtPromise;
 const oxlintResult = await oxlintPromise;
 const tscResult = await tscPromise;
 
+// Report results.
 let failed = false;
+
+if (oxfmtResult.status !== 0) {
+  console.error('\n\x1b[1;31moxfmt failed:\x1b[0m');
+  if (oxfmtResult.output) {
+    console.error(oxfmtResult.output);
+  }
+  failed = true;
+} else {
+  console.log('\x1b[32m✓ oxfmt\x1b[0m');
+  if (oxfmtResult.output) {
+    console.log(oxfmtResult.output);
+  }
+}
 
 if (oxlintResult.status !== 0) {
   console.error('\n\x1b[1;31moxlint failed:\x1b[0m');
