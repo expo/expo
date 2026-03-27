@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Pass optional name to metro require for async modules. ([#44224](https://github.com/expo/expo/pull/44224) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.9 — 2026-03-27
+
+### 🎉 New features
+
+- Pass optional name to metro require for async modules. ([#44224](https://github.com/expo/expo/pull/44224) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 55.0.8 — 2026-03-18
 

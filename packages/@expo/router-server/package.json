@@ -34,7 +34,7 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/metro-runtime": "^55.0.6",
+    "@expo/metro-runtime": "^55.0.7",
     "react": "*",
     "react-dom": "*",
     "expo": "*",

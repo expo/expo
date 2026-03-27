@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [android] Add `clickCoordinates` to `onCircleClick` callback. ([#43835](https://github.com/expo/expo/pull/43835) by [@nishan](https://github.com/intergalacticspacehighway))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.12 — 2026-03-27
+
+### 🎉 New features
+
+- [android] Add `clickCoordinates` to `onCircleClick` callback. ([#43835](https://github.com/expo/expo/pull/43835) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 55.0.11 — 2026-03-17
 

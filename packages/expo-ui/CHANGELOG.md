@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.6 — 2026-03-27
+
+### 🛠 Breaking changes
+
 - [android] Refactored `PullToRefreshBox` indicator props: replaced `loadingIndicatorModifiers` with nested `indicator` prop containing `color`, `containerColor`, and `modifiers`. Added `contentAlignment` prop. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `Divider` into `HorizontalDivider` and `VerticalDivider` matching native Compose components. Added `thickness` and `color` props. ([#44035](https://github.com/expo/expo/pull/44035) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `AlertDialog` API to native Compose: replaced string props (`title`, `text`, `confirmButtonText`, `dismissButtonText`) with slot sub-components (`AlertDialog.Title`, `AlertDialog.Text`, `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`). Removed `visible` prop (use conditional rendering), `onConfirmPressed`/`onDismissPressed` (renamed to `onDismissRequest`), and `confirmButtonColors`/`dismissButtonColors` (replaced with dialog-level `colors`). ([#43997](https://github.com/expo/expo/pull/43997) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -11,10 +21,6 @@
 ### 🎉 New features
 
 - [android] add `imePadding` modifier ([#43652](https://github.com/expo/expo/pull/43652) by [@Ubax](https://github.com/Ubax))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 55.0.5 — 2026-03-19
 
