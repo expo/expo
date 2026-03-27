@@ -68,7 +68,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
         target="_blank"
       >
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           Install Referrer API

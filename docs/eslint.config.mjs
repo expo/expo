@@ -1,11 +1,9 @@
 import universeNodeConfig from 'eslint-config-universe/flat/node.js';
 import universeTypescriptAnalysisConfig from 'eslint-config-universe/flat/shared/typescript-analysis.js';
 import universeWebConfig from 'eslint-config-universe/flat/web.js';
-import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
 import oxlint from 'eslint-plugin-oxlint';
-import testingLibrary from 'eslint-plugin-testing-library';
 import unicorn from 'eslint-plugin-unicorn';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
@@ -72,7 +70,10 @@ export default defineConfig([
   universeTypescriptAnalysisConfig,
 
   // Auto-disable ESLint rules that oxlint handles (reads .oxlintrc.json)
-  ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
+  // Filter out MDX ignore since ESLint still needs to lint MDX via eslint-plugin-mdx
+  ...oxlint
+    .buildFromOxlintConfigFile('./.oxlintrc.json')
+    .map(c => (c.ignores ? { ...c, ignores: c.ignores.filter(p => p !== '**/*.{md,mdx}') } : c)),
 
   // Manual overrides for rules the auto plugin misses
   {
@@ -98,7 +99,6 @@ export default defineConfig([
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
     plugins: {
-      'better-tailwindcss': betterTailwindcss,
       lodash,
       unicorn,
     },
@@ -145,11 +145,6 @@ export default defineConfig([
       '@typescript-eslint/prefer-string-starts-ends-with': 'warn',
       'react/no-this-in-sfc': 'off',
       'react/no-unescaped-entities': 'off',
-      // Migrated to oxlint jsPlugins
-      'better-tailwindcss/enforce-consistent-class-order': 'off',
-      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
-      'better-tailwindcss/enforce-shorthand-classes': 'off',
-      'better-tailwindcss/no-unknown-classes': 'off',
       'no-restricted-properties': [
         'warn',
         {
@@ -185,7 +180,7 @@ export default defineConfig([
       ...Object.fromEntries(
         oxlint
           .buildFromOxlintConfigFile('./.oxlintrc.json')
-          .flatMap(c => Object.entries(c.rules || {}))
+          .flatMap(c => Object.entries(c.rules ?? {}))
       ),
     },
   },
@@ -193,25 +188,18 @@ export default defineConfig([
   // MDX configuration
   {
     ...mdx.flat,
+    files: ['**/*.mdx'],
     languageOptions: {
       ...mdx.flat.languageOptions,
       parserOptions: { extensions: ['.js', '.md', '.mdx'] },
     },
     rules: {
       ...mdx.flat.rules,
+      'no-unused-vars': ['warn', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
       'no-unused-expressions': 'off',
       'no-useless-escape': 'off',
       'no-irregular-whitespace': 'off',
       'react/self-closing-comp': 'off',
     },
-  },
-
-  // Test files configuration (testing-library rules migrated to oxlint jsPlugins)
-  {
-    files: ['**/*-test.[jt]s?(x)'],
-    plugins: testingLibrary.configs['flat/react'].plugins,
-    rules: Object.fromEntries(
-      Object.keys(testingLibrary.configs['flat/react'].rules).map(rule => [rule, 'off'])
-    ),
   },
 ]);

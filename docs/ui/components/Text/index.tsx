@@ -196,7 +196,10 @@ export const RawH5 = createTextComponent(
   )
 );
 
-export const P = createTextComponent(TextElement.P, 'font-normal text-base [&_strong]:break-words');
+export const P = createTextComponent(
+  TextElement.P,
+  'font-normal text-base [&_strong]:wrap-break-word'
+);
 export const CODE = createTextComponent(
   TextElement.CODE,
   mergeClasses(

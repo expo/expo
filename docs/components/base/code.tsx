@@ -92,7 +92,7 @@ export function Code({ className, children, title }: CodeProps) {
   }
 
   const commonClasses = mergeClasses(
-    wordWrap && 'break-words! whitespace-pre-wrap!',
+    wordWrap && 'wrap-break-word! whitespace-pre-wrap!',
     showExpand && !isExpanded && `[&::-webkit-scrollbar-track]:bg-default! overflow-y-hidden!`
   );
 

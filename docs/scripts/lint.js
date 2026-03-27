@@ -56,7 +56,6 @@ function runEslint() {
   return { status, stderr };
 }
 
-// Step 1: Run oxfmt first (fastest, ~3s). Fail fast if formatting is broken.
 const oxfmtResult = await runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
 
 if (oxfmtResult.status !== 0) {
@@ -72,14 +71,12 @@ if (oxfmtResult.output) {
   console.log(oxfmtResult.output);
 }
 
-// Step 2: Run oxlint, tsc, and eslint in parallel.
 const oxlintPromise = runAsync('oxlint', [process.cwd(), '--type-aware']);
 const tscPromise = runAsync('tsc', ['--noEmit', '--pretty']);
 const eslintResult = runEslint();
 const oxlintResult = await oxlintPromise;
 const tscResult = await tscPromise;
 
-// Report results.
 let failed = false;
 
 if (oxlintResult.status !== 0) {
