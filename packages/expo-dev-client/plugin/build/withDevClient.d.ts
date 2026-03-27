@@ -1,4 +1,4 @@
-import type { PluginConfigType } from 'expo-dev-launcher/plugin';
+import type { PluginConfigType } from 'expo-dev-launcher/plugin/build/pluginConfig';
 export type DevClientPluginConfigType = PluginConfigType & {
     /**
      * Whether to register a custom URL scheme to open a project.
