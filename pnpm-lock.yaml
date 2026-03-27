@@ -4566,9 +4566,9 @@ importers:
 
   packages/expo-modules-core:
     dependencies:
-      '@expo/expo-module-optimized-macros-plugin':
-        specifier: ~0.0.6
-        version: 0.0.6
+      '@expo/expo-modules-macros-plugin':
+        specifier: ~0.0.7
+        version: 0.0.7
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
@@ -6968,8 +6968,8 @@ packages:
   '@expo/devcert@1.2.1':
     resolution: {integrity: sha512-qC4eaxmKMTmJC2ahwyui6ud8f3W60Ss7pMkpBq40Hu3zyiAaugPXnZ24145U7K36qO9UHdZUVxsCvIpz2RYYCA==}
 
-  '@expo/expo-module-optimized-macros-plugin@0.0.6':
-    resolution: {integrity: sha512-yV+K0QyULieJ2sTbxnraMX6+2SbRw5xXmYinmksinptW6Hw/PQReaOAo+PW6z8K999N8QgQyXhBPCyMbEzqktA==}
+  '@expo/expo-modules-macros-plugin@0.0.7':
+    resolution: {integrity: sha512-PPgH9LjbArypVY0f0suCXq4uzBZLs2PxF34N9lSqyuPuG7X65sAeqkFOOwsV/iL7RnA2OPOTdN6fBUKvUoylVg==}
 
   '@expo/json-file@8.3.3':
     resolution: {integrity: sha512-eZ5dld9AD0PrVRiIWpRkm5aIoWBw3kAyd8VkuWEy92sEthBKDDDHAnK2a0dw0Eil6j7rK7lS/Qaq/Zzngv2h5A==}
@@ -16754,7 +16754,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@expo/expo-module-optimized-macros-plugin@0.0.6': {}
+  '@expo/expo-modules-macros-plugin@0.0.7': {}
 
   '@expo/json-file@8.3.3':
     dependencies:
