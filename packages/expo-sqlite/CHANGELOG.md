@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `SQLiteProvider` to allow rerendering of `children` while preserving the database connection. ([#44135](https://github.com/expo/expo/pull/44135))
+  
 ### 💡 Others
 
 - Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))

@@ -27,7 +27,8 @@ export const SQLiteProvider = memo(function SQLiteProvider({ children, onError, 
     prevProps.directory === nextProps.directory &&
     prevProps.onInit === nextProps.onInit &&
     prevProps.onError === nextProps.onError &&
-    prevProps.useSuspense === nextProps.useSuspense);
+    prevProps.useSuspense === nextProps.useSuspense &&
+    prevProps.children === nextProps.children);
 /**
  * A global hook for accessing the SQLite database across components.
  * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.
@@ -69,9 +70,13 @@ function SQLiteProviderSuspense({ databaseName, directory, options, assetSource,
     return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
 }
 function SQLiteProviderNonSuspense({ databaseName, directory, options, assetSource, children, onInit, onError, }) {
+    const optionsRef = useRef(undefined);
     const databaseRef = useRef(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    if (deepEqual(optionsRef.current, options) === false) {
+        optionsRef.current = options;
+    }
     useEffect(() => {
         async function setup() {
             try {
@@ -104,7 +109,7 @@ function SQLiteProviderNonSuspense({ databaseName, directory, options, assetSour
             databaseRef.current = null;
             setLoading(true);
         };
-    }, [databaseName, directory, options, onInit]);
+    }, [databaseName, directory, optionsRef.current, onInit]);
     if (error != null) {
         const handler = onError ??
             ((e) => {
@@ -121,7 +126,7 @@ function getDatabaseAsync({ databaseName, directory, options, assetSource, onIni
     if (databaseInstance?.promise != null &&
         databaseInstance?.databaseName === databaseName &&
         databaseInstance?.directory === directory &&
-        databaseInstance?.options === options &&
+        deepEqual(databaseInstance?.options, options) &&
         databaseInstance?.onInit === onInit) {
         return databaseInstance.promise;
     }
