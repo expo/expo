@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Added `NavigationBar` component with `style` and `hidden` props, `NavigationBar.setStyle` and `NavigationBar.setHidden` imperative methods, using a stack-based merging approach similar to `StatusBar`. ([#44327](https://github.com/expo/expo/pull/44327) by [@zoontek](https://github.com/zoontek))
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - Add `style` and `hidden` properties to config plugin, replacing `barStyle` and `visibility`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
 
@@ -15,6 +16,7 @@
 
 ### 💡 Others
 
+- Deprecated `setVisibilityAsync`, `getVisibilityAsync`, `useVisibility`, `addVisibilityListener`, and top-level `setStyle` in favor of the `NavigationBar` component and its static methods. ([#44327](https://github.com/expo/expo/pull/44327) by [@zoontek](https://github.com/zoontek))
 - Removed `react-native-is-edge-to-edge` dependency. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
 - Deprecated `barStyle` and `visibility` config plugin properties in favor of `style` and `hidden`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
 
