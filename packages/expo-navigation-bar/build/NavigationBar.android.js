@@ -45,13 +45,13 @@ const currentValues = {
 function setResolvedStyle(style) {
     if (style !== currentValues.style) {
         currentValues.style = style;
-        ExpoNavigationBar.setButtonStyleAsync(style ?? 'light');
+        ExpoNavigationBar.setStyle(style ?? 'light');
     }
 }
 function setHidden(hidden) {
     if (hidden !== currentValues.hidden) {
         currentValues.hidden = hidden;
-        ExpoNavigationBar.setVisibilityAsync(hidden ? 'hidden' : 'visible');
+        ExpoNavigationBar.setHidden(hidden);
     }
 }
 // Updates the native navigation bar with the entries from the stack
@@ -127,7 +127,7 @@ export function addVisibilityListener(listener) {
     return ExpoNavigationBar.addListener('ExpoNavigationBar.didChange', listener);
 }
 export async function setVisibilityAsync(visibility) {
-    await ExpoNavigationBar.setVisibilityAsync(visibility);
+    await ExpoNavigationBar.setHidden(visibility === 'hidden');
 }
 export async function getVisibilityAsync() {
     return ExpoNavigationBar.getVisibilityAsync();

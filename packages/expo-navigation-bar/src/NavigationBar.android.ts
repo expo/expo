@@ -72,14 +72,14 @@ const currentValues: {
 function setResolvedStyle(style: ResolvedBarStyle) {
   if (style !== currentValues.style) {
     currentValues.style = style;
-    ExpoNavigationBar.setButtonStyleAsync(style ?? 'light');
+    ExpoNavigationBar.setStyle(style ?? 'light');
   }
 }
 
 function setHidden(hidden: boolean) {
   if (hidden !== currentValues.hidden) {
     currentValues.hidden = hidden;
-    ExpoNavigationBar.setVisibilityAsync(hidden ? 'hidden' : 'visible');
+    ExpoNavigationBar.setHidden(hidden);
   }
 }
 
@@ -178,7 +178,7 @@ export function addVisibilityListener(
 }
 
 export async function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void> {
-  await ExpoNavigationBar.setVisibilityAsync(visibility);
+  await ExpoNavigationBar.setHidden(visibility === 'hidden');
 }
 
 export async function getVisibilityAsync(): Promise<NavigationBarVisibility> {
