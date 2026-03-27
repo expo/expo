@@ -12,7 +12,6 @@ packages/@*/*/plugin/build/** -diff linguist-generated eol=lf
 packages/@*/*/cli/build/** -diff linguist-generated eol=lf
 packages/@*/*/utils/build/** -diff linguist-generated eol=lf
 packages/@*/*/scripts/build/** -diff linguist-generated eol=lf
-packages/expo-module-optimized-macros-plugin/apple/dist/ExpoModulesOptimizedMacros-tool -diff linguist-generated eol=lf
 
 ios/vendored/** linguist-vendored
 ios/versioned/** linguist-vendored
