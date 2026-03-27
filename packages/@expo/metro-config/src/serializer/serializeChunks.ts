@@ -618,7 +618,7 @@ function gatherChunks(
   settings: ChunkSettings,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
-  options: SerializerOptions<MixedOutput>,
+  options: SerializerOptions,
   isAsync: boolean = false,
   isEntry: boolean = false
 ): Set<Chunk> {
@@ -716,7 +716,7 @@ function removeEntryDepsFromAsyncChunks(entryChunk: Chunk, chunks: Set<Chunk>): 
 function extractCommonChunk(
   chunks: Set<Chunk>,
   graph: ReadOnlyGraph,
-  options: SerializerOptions<MixedOutput>
+  options: SerializerOptions
 ): Chunk | undefined {
   const toCompare = [...chunks.values()];
 
@@ -777,7 +777,7 @@ function createRuntimeChunk(
   entryChunk: Chunk,
   chunks: Set<Chunk>,
   graph: ReadOnlyGraph,
-  options: SerializerOptions<MixedOutput>
+  options: SerializerOptions
 ): void {
   const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
 

@@ -133,7 +133,7 @@ export function createDefaultExportCustomSerializer(
     entryPoint: string,
     preModules: readonly Module<MixedOutput>[],
     graph: ReadOnlyGraph<MixedOutput>,
-    inputOptions: SerializerOptions<MixedOutput>
+    inputOptions: SerializerOptions
   ): Promise<string | { code: string; map: string }> => {
     // NOTE(@kitten): My guess is that this was supposed to always be disabled for `node` since we set `hot: true` manually for it
     const isPossiblyDev =
@@ -147,7 +147,7 @@ export function createDefaultExportCustomSerializer(
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
-    const options: SerializerOptions<MixedOutput> = {
+    const options: SerializerOptions = {
       ...inputOptions,
       createModuleId: (moduleId, ...props) => {
         if (props.length > 0) {
