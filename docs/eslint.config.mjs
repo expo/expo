@@ -40,7 +40,6 @@ const ACTIVE_RULES = {
 const MIGRATED_RULES_MANUAL = {
   'prettier/prettier': 'off',
   'import/order': 'off',
-  'import/named': 'off',
   'prefer-promise-reject-errors': 'off',
   '@typescript-eslint/await-thenable': 'off',
   '@typescript-eslint/no-confusing-void-expression': 'off',

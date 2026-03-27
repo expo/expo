@@ -107,6 +107,7 @@
     "cheerio": "^1.2.0",
     "eslint": "^9.39.2",
     "eslint-config-universe": "^15.0.3",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-better-tailwindcss": "^4.3.2",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-mdx": "^3.6.2",
