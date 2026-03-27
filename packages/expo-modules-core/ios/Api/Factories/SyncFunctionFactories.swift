@@ -5,8 +5,8 @@
 public func Function(
   _ name: String,
   _ descriptor: OptimizedFunctionDescriptor
-) -> BaseOptimizedSyncFunctionDefinition {
-  return BaseOptimizedSyncFunctionDefinition(
+) -> OptimizedSyncFunctionDefinition {
+  return OptimizedSyncFunctionDefinition(
     name: name,
     typeEncoding: descriptor.typeEncoding,
     argsCount: descriptor.argsCount,

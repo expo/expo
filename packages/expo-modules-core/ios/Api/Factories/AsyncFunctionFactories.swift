@@ -5,8 +5,8 @@
 public func AsyncFunction(
   _ name: String,
   _ descriptor: OptimizedFunctionDescriptor
-) -> BaseOptimizedAsyncFunctionDefinition {
-  return BaseOptimizedAsyncFunctionDefinition(
+) -> OptimizedAsyncFunctionDefinition {
+  return OptimizedAsyncFunctionDefinition(
     name: name,
     typeEncoding: descriptor.typeEncoding,
     argsCount: descriptor.argsCount,
