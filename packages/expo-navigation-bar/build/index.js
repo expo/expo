@@ -1,2 +1,3 @@
-export { NavigationBar, setStyle, addVisibilityListener, setVisibilityAsync, getVisibilityAsync, useVisibility, } from './NavigationBar';
+export * from './NavigationBar';
+export * from './NavigationBar.types';
 //# sourceMappingURL=index.js.map
