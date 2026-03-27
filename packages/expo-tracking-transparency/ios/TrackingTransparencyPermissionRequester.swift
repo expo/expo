@@ -2,6 +2,7 @@
 
 import AppTrackingTransparency
 import ExpoModulesCore
+internal import React
 
 public class TrackingTransparencyPermissionRequester: NSObject, EXPermissionsRequester {
   static public func permissionType() -> String {

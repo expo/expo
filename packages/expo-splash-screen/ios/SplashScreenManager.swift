@@ -1,17 +1,17 @@
-import React
-import UIKit
 import ExpoModulesCore
+internal import React
+import UIKit
 
-public class SplashScreenManager: NSObject, RCTReloadListener {
-  @objc public static let shared = SplashScreenManager()
+class SplashScreenManager: NSObject, RCTReloadListener {
+  @objc static let shared = SplashScreenManager()
   private var loadingView: UIView?
   private var rootView: UIView?
   private var options = SplashScreenOptions()
-  public var preventAutoHideCalled = false
+  var preventAutoHideCalled = false
 
   private override init() {}
 
-  public func initWith(_ rootView: UIView) {
+  func initWith(_ rootView: UIView) {
     if RCTRunningInAppExtension() {
       return
     }
@@ -79,7 +79,7 @@ public class SplashScreenManager: NSObject, RCTReloadListener {
     }
   }
 
-  public func didReceiveReloadCommand() {
+  func didReceiveReloadCommand() {
     showSplashScreen()
   }
 

@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import React
+internal import React
 import Foundation
 
 private let WORKLET_RUNTIME_KEY = "_WORKLET_RUNTIME"

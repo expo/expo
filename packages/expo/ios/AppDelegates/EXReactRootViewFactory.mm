@@ -2,16 +2,8 @@
 
 #import <Expo/EXReactRootViewFactory.h>
 #import <Expo/RCTAppDelegateUmbrella.h>
-#import <Expo/Swift.h>
 #import <React/RCTDevMenu.h>
-
-// When `use_frameworks!` is used, the generated Swift header is inside ExpoModulesCore module.
-// Otherwise, it's available only locally with double-quoted imports.
-#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
-#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
-#else
-#import "ExpoModulesCore-Swift.h"
-#endif
+#import <ExpoModulesCore/EXReactDelegateProtocol.h>
 
 @interface RCTRootViewFactory ()
 
@@ -38,7 +30,7 @@
           devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self.reactDelegate != nil) {
-    return [self.reactDelegate createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+    return [((id<EXReactDelegateProtocol>)self.reactDelegate) createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
   }
   return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions devMenuConfiguration:devMenuConfiguration];
 }
@@ -75,7 +67,7 @@
 
 - (NSURL *)bundleURL
 {
-  return [self.reactDelegate bundleURL] ?: [super bundleURL];
+  return [((id<EXReactDelegateProtocol>)self.reactDelegate) bundleURL] ?: [super bundleURL];
 }
 
 @end

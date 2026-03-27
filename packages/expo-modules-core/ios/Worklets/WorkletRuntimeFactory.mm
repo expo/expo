@@ -11,7 +11,7 @@
 
 @implementation WorkletRuntimeFactory
 
-+ (nonnull EXWorkletRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(nullable void *)pointer
++ (nonnull EXWorkletRuntime *)createWorkletRuntime:(nonnull id<EXAppContextProtocol>)appContext fromPointer:(nullable void *)pointer
 {
 #if WORKLETS_ENABLED
   jsi::Runtime* jsRuntime = reinterpret_cast<jsi::Runtime *>(pointer);
