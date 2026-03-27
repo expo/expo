@@ -63,6 +63,8 @@ export const prepareCanaries = new Task<TaskArgs>(
     const currentBranch = await Git.getCurrentBranchNameAsync();
     if (await shouldUseCanaryTag(currentBranch)) {
       options.tag = 'canary';
+    } else {
+      options.tag = null;
     }
   }
 );
