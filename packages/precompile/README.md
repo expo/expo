@@ -13,8 +13,8 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 │                           BUILD TIME (CI/Release)                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   spm.config.json  ──►  SPMPackage.ts  ──►  Package.swift  ──►  xcodebuild │
-│                         (generates)         (SPM manifest)      (compiles)  │
+│   spm.config.json  ──►  SPMGenerator.ts  ──►  Package.swift  ──►  xcodebuild│
+│                         (generates)          (SPM manifest)      (compiles) │
 │                                                    │                        │
 │                                                    ▼                        │
 │                                   packages/precompile/.build/<pkg>/output/  │
@@ -29,22 +29,29 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 │                        INSTALL TIME (pod install)                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   autolinking_manager.rb  ──►  has_prebuilt_xcframework?()                 │
+│   autolinking_manager.rb  ──►  pod_registration_options()                  │
 │   (registers pods)              │                                           │
-│                                 ├─► YES: register with :podspec            │
+│                                 ├─► prebuilt: register with :podspec       │
 │                                 │   (CocoaPods respects spec.source)       │
-│                                 └─► NO:  register with :path              │
+│                                 └─► source:   register with :path          │
 │                                     (compile from source as usual)          │
 │                                                                             │
-│   Podspec inline:  try_link_with_prebuilt_xcframework(spec)                │
+│   sandbox.rb hook:  patch_spec_for_prebuilt(spec)  [auto-patching]        │
 │     - Sets spec.source = {:http => "file:///...tar.gz", :flatten => false} │
 │     - Sets spec.vendored_frameworks                                        │
-│     - Sets spec.prepare_command (copies flavor tarballs to artifacts/)     │
+│     - Strips bundled SPM dependencies                                      │
 │     - Adds script phases for build-time switching                          │
+│                                                                             │
+│   Post-install:  perform_post_install(installer)                           │
+│     - ensure_artifacts (copies flavor tarballs to Pods/<Pod>/artifacts/)   │
+│     - configure_header_search_paths                                        │
+│     - configure_codegen_for_prebuilt_modules                               │
+│     - stub_bundled_pod_targets                                             │
+│     - configure_use_frameworks (if use_frameworks! active)                 │
 │                                                                             │
 │   Result in Pods/<PodName>/:                                               │
 │     <Product>.xcframework/            (extracted by CocoaPods)             │
-│     artifacts/<Product>-debug.tar.gz  (copied by prepare_command)          │
+│     artifacts/<Product>-debug.tar.gz  (copied by ensure_artifacts)        │
 │     artifacts/<Product>-release.tar.gz                                     │
 │     artifacts/.last_build_configuration                                    │
 │                                                                             │
@@ -68,17 +75,24 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 
 ### Key Components
 
-| Component                    | Location                                         | Purpose                                          |
-| ---------------------------- | ------------------------------------------------ | ------------------------------------------------ |
-| `spm.config.json`            | Package root                                     | Defines SPM targets, sources, dependencies       |
-| `SPMPackage.ts`              | `tools/src/prebuilds/`                           | Generates Package.swift from config              |
-| `Package.ts`                 | `tools/src/prebuilds/`                           | Expo package discovery and metadata              |
-| `ExternalPackage.ts`         | `tools/src/prebuilds/`                           | External (npm) package support                   |
-| `precompiled_modules.rb`     | `packages/expo-modules-autolinking/scripts/ios/` | Pod install: source/vendored_frameworks/scripts  |
-| `autolinking_manager.rb`     | Same directory                                   | Pod registration: :podspec vs :path switching    |
-| `PackagesConfig.rb`          | Same directory                                   | Singleton delegate to PrecompiledModules         |
-| `replace-xcframework.js`     | Same directory                                   | Build-time debug/release xcframework switching   |
-| `resolve-dsym-sourcemaps.js` | Same directory                                   | Build-time dSYM source path remapping for lldb   |
+| Component                    | Location                                         | Purpose                                                     |
+| ---------------------------- | ------------------------------------------------ | ----------------------------------------------------------- |
+| `spm.config.json`            | Package root                                     | Defines SPM targets, sources, dependencies                  |
+| `SPMGenerator.ts`            | `tools/src/prebuilds/`                           | Generates staged source layout and Package.swift             |
+| `SPMPackage.ts`              | `tools/src/prebuilds/`                           | Generates flat Package.swift from SPM config                 |
+| `SPMBuild.ts`                | `tools/src/prebuilds/`                           | Invokes xcodebuild to build package targets                  |
+| `Frameworks.ts`              | `tools/src/prebuilds/`                           | Composes and post-processes XCFramework outputs              |
+| `Verifier.ts`                | `tools/src/prebuilds/`                           | Validates built XCFrameworks with slice-level diagnostics    |
+| `Dependencies.ts`            | `tools/src/prebuilds/`                           | Resolves and caches build dependencies (React, Hermes, RN)  |
+| `ExternalPackage.ts`         | `tools/src/prebuilds/`                           | External (npm) package support                               |
+| `pipeline/`                  | `tools/src/prebuilds/pipeline/`                  | Pipeline orchestration, scheduling, and step execution       |
+| `precompiled_modules.rb`     | `packages/expo-modules-autolinking/scripts/ios/` | Pod install: spec patching, linking, post-install hooks      |
+| `autolinking_manager.rb`     | Same directory                                   | Pod registration: :podspec vs :path switching                |
+| `packages_config.rb`         | Same directory                                   | Singleton delegate to PrecompiledModules                     |
+| `cocoapods/sandbox.rb`       | Same directory                                   | Auto-patches podspecs on-the-fly during pod install          |
+| `cocoapods/installer.rb`     | Same directory                                   | Hooks into CocoaPods pre/post-install for precompiled config |
+| `replace-xcframework.js`     | Same directory                                   | Build-time debug/release xcframework switching               |
+| `resolve-dsym-sourcemaps.js` | Same directory                                   | Build-time dSYM source path remapping for lldb               |
 
 ### Supported Expo Modules
 
@@ -112,6 +126,7 @@ Each of these has an `spm.config.json` in its package root:
 | `expo-glass-effect` | `ExpoGlassEffect` |
 | `expo-haptics` | `ExpoHaptics` |
 | `expo-image` | `ExpoImage` |
+| `expo-image-manipulator` | `ExpoImageManipulator` |
 | `expo-image-picker` | `ExpoImagePicker` |
 | `expo-json-utils` | `EXJSONUtils` |
 | `expo-keep-awake` | `ExpoKeepAwake` |
@@ -151,21 +166,33 @@ Each of these has an `spm.config.json` in its package root:
 | `expo-widgets` | `ExpoWidgets` |
 | `unimodules-app-loader` | `UMAppLoader` |
 
-For supported external (third-party) packages, see [`packages/external/README.md`](../../packages/external/README.md#supported-external-packages).
+### Supported External (Third-Party) Packages
+
+| Package | Product Name |
+|---------|-------------|
+| `@react-native-async-storage/async-storage` | `RNCAsyncStorage` |
+| `@shopify/react-native-skia` | `RNSkia` |
+| `react-native-reanimated` | `RNReanimated` |
+| `react-native-safe-area-context` | `RNCSafeAreaContext` |
+| `react-native-screens` | `RNScreens` |
+| `react-native-svg` | `RNSVG` |
+| `react-native-worklets` | `RNWorklets` |
+
+For more details, see [`packages/external/README.md`](../../packages/external/README.md#supported-external-packages).
 
 ## Adding SPM Prebuild Support to Expo Packages
 
 ### Eligibility Requirements
 
-✅ **Required:**
+**Required:**
 
 - iOS-compatible package with a `.podspec` file
 - Uses `expo-modules-core` (ExpoModulesCore dependency)
 - Only depends on supported external dependencies
 
-❌ **Do NOT add SPM support if:**
+**Do NOT add SPM support if:**
 
-- Package has complex third-party native dependencies
+- Package has complex third-party native dependencies not already supported
 - Package doesn't use expo-modules-core
 - Package requires custom build scripts or preprocessing
 
@@ -177,6 +204,8 @@ For supported external (third-party) packages, see [`packages/external/README.md
 | `React`                             | React Native framework with headers    |
 | `ReactNativeDependencies`           | React Native core dependencies         |
 | `expo-modules-core/ExpoModulesCore` | Expo modules core (for other packages) |
+
+Third-party SPM packages can also be declared as dependencies via the `spmPackages` field (e.g., Lottie).
 
 ---
 
@@ -282,23 +311,11 @@ Create `packages/<package-name>/spm.config.json`:
 }
 ```
 
-### Step 3: Modify the Podspec
+### Step 3: Podspec (Usually No Changes Needed)
 
-Update `ios/PackageName.podspec`:
+Most podspecs are **auto-patched** at pod install time by `sandbox.rb`. The system intercepts `store_podspec` and applies `patch_spec_for_prebuilt` on-the-fly — no manual podspec changes required.
 
-**Before:**
-
-```ruby
-Pod::Spec.new do |s|
-  # ... metadata ...
-  s.dependency 'ExpoModulesCore'
-  s.static_framework = true
-  s.source_files = "**/*.{h,m,swift}"
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
-end
-```
-
-**After:**
+The only exception is `expo-modules-core`, which uses the inline pattern:
 
 ```ruby
 Pod::Spec.new do |s|
@@ -387,11 +404,45 @@ et prebuild --local-react-native-tarball "/path/to/{flavor}/React.xcframework.ta
 
 ## spm.config.json Schema Reference
 
+### Product Options Reference
+
+| Option                 | Type   | Description                                                                                     |
+| ---------------------- | ------ | ----------------------------------------------------------------------------------------------- |
+| `name`                 | string | Product/XCFramework name (required)                                                             |
+| `podName`              | string | CocoaPods pod name from podspec (required)                                                      |
+| `codegenName`          | string | Codegen module name from `codegenConfig.name` in package.json (optional, for Fabric components) |
+| `platforms`            | array  | SPM platforms, e.g., `["iOS(.v15)"]`. Supported: `iOS(.v15)`, `macOS(.v11)`, `tvOS(.v15)`, `macCatalyst(.v15)`, `iOS(.v15_1)`, `tvOS(.v15_1)` |
+| `externalDependencies` | array  | External package dependencies (React, Hermes, other expo packages)                              |
+| `spmPackages`          | array  | Third-party SPM package dependencies (see below)                                                |
+| `swiftLanguageVersions`| array  | Swift language versions supported                                                               |
+| `textualHeaders`       | array  | Glob patterns for headers marked as textual in the module map                                   |
+| `excludeFromUmbrella`  | array  | Glob patterns for headers excluded from the umbrella header                                     |
+| `targets`              | array  | Build targets for this product (required)                                                       |
+
+### SPM Package Dependencies
+
+For third-party SPM packages (e.g., Lottie), use the `spmPackages` field:
+
+```json
+{
+  "spmPackages": [
+    {
+      "url": "https://github.com/airbnb/lottie-spm.git",
+      "productName": "Lottie",
+      "packageName": "lottie-spm",
+      "version": { "exact": "4.5.0" }
+    }
+  ]
+}
+```
+
+Version specifiers: `{ "exact": "4.5.0" }`, `{ "from": "4.0.0" }`, `{ "branch": "main" }`, `{ "revision": "abc123" }`.
+
 ### Target Options Reference
 
 | Option               | Type            | Description                                        |
 | -------------------- | --------------- | -------------------------------------------------- |
-| `type`               | string          | `swift`, `objc`, or `cpp`                          |
+| `type`               | string          | `swift`, `objc`, `cpp`, or `framework`             |
 | `name`               | string          | Target name (required)                             |
 | `moduleName`         | string          | Module name for headers (defaults to product name) |
 | `path`               | string          | Source path relative to package root               |
@@ -400,19 +451,53 @@ et prebuild --local-react-native-tarball "/path/to/{flavor}/React.xcframework.ta
 | `exclude`            | array           | Paths to exclude from sources                      |
 | `dependencies`       | array           | Target dependencies                                |
 | `linkedFrameworks`   | array           | System frameworks to link                          |
-| `includeDirectories` | array           | Header search paths (objc/cpp only)                |
-| `compilerFlags`      | array or object | Compiler flags (array for all builds, or object with `common`/`debug`/`release` keys). See [`packages/external/README.md` — Compiler Flags](../../packages/external/README.md#compiler-flags) for details |
+| `includeDirectories` | array           | Header search paths (objc/cpp only, default: `["include"]`) |
+| `compilerFlags`      | array or object | Compiler flags (see below)                         |
+| `linkerFlags`        | array           | Linker flags passed to the target                  |
+| `resources`          | array           | Resource files to include (objects with `path` and optional `rule`: `"process"` or `"copy"`) |
+| `fileMapping`        | array           | File mapping rules (objects with `from`, `to`, `type`) |
+| `moduleMapContent`   | string          | Custom module map content                          |
+| `publicHeaders`      | boolean         | Whether headers are public (default: `true`)       |
+| `vfsOverlayPath`     | string          | Path to VFS overlay file (framework targets only)  |
 
-### Product Options Reference
+#### Framework Target Type
 
-| Option                 | Type   | Description                                                                                     |
-| ---------------------- | ------ | ----------------------------------------------------------------------------------------------- |
-| `name`                 | string | Product/XCFramework name (required)                                                             |
-| `podName`              | string | CocoaPods pod name from podspec (required)                                                      |
-| `codegenName`          | string | Codegen module name from `codegenConfig.name` in package.json (optional, for Fabric components) |
-| `platforms`            | array  | SPM platforms, e.g., `["iOS(.v15)"]`                                                            |
-| `externalDependencies` | array  | External package dependencies (React, Hermes, etc.)                                             |
-| `targets`              | array  | Build targets for this product                                                                  |
+The `framework` type references a pre-built binary XCFramework rather than source code:
+
+```json
+{
+  "type": "framework",
+  "name": "SomeFramework",
+  "path": "path/to/SomeFramework.xcframework",
+  "linkedFrameworks": ["Foundation"]
+}
+```
+
+#### Compiler Flags
+
+Compiler flags support multiple forms:
+
+```json
+// Simple array - applied to all builds
+"compilerFlags": ["-DFOO=1"]
+
+// Structured by build type
+"compilerFlags": {
+  "common": ["-DFOO=1"],
+  "debug": ["-DDEBUG"],
+  "release": ["-DRELEASE"]
+}
+
+// Per-language within variant
+"compilerFlags": {
+  "common": { "c": ["-std=c11"], "cxx": ["-std=c++17"] },
+  "debug": { "c": [...], "cxx": [...] }
+}
+```
+
+Supported variable substitutions in flags: `${REACT_NATIVE_MINOR_VERSION}`, `${PACKAGE_VERSION}`.
+
+See [`packages/external/README.md` — Compiler Flags](../../packages/external/README.md#compiler-flags) for more details.
 
 ---
 
@@ -459,32 +544,61 @@ See `packages/expo-modules-core/spm.config.json` for a complete example of a com
 
 ## Ruby Integration (CocoaPods)
 
-### How precompiled_modules.rb Works
+### How It Works
 
-The Ruby code in `packages/expo-modules-autolinking/scripts/ios/` handles all CocoaPods integration:
+The Ruby code in `packages/expo-modules-autolinking/scripts/ios/` handles all CocoaPods integration. There are two main integration paths:
 
-1. **Detection**: `enabled?` checks `EXPO_USE_PRECOMPILED_MODULES=1`
-2. **Availability**: `has_prebuilt_xcframework?(pod_name)` checks if a tarball exists in build output
-3. **Linking**: `try_link_with_prebuilt_xcframework(spec)` sets `spec.source`, `vendored_frameworks`, `prepare_command`, and script phases
-4. **External pods**: `get_external_prebuilt_pods(project_dir)` discovers 3rd-party pods with prebuilt xcframeworks
-5. **Cache management**: `clear_cocoapods_cache` removes stale CocoaPods cache entries
-6. **Header Paths**: `configure_header_search_paths(installer)` ensures ExpoModulesJSI headers are found
-7. **Codegen Exclusion**: `configure_codegen_for_prebuilt_modules(installer)` excludes prebuilt modules from ReactCodegen
+#### Auto-Patching (most packages)
+
+`cocoapods/sandbox.rb` overrides `Sandbox#store_podspec` to intercept podspecs at install time:
+
+1. Calls `patch_spec_for_prebuilt(spec)` — converts the spec to use vendored xcframeworks, strips source-build attributes and bundled dependencies
+2. Calls `stub_bundled_pod(spec)` — converts implementation files to header-only patterns for pods bundled inside prebuilt xcframeworks
+
+This means **most podspecs don't need manual modification** to support precompiled modules.
+
+#### Inline Patching (expo-modules-core only)
+
+`ExpoModulesCore.podspec` calls `try_link_with_prebuilt_xcframework(spec)` directly, which sets `spec.source`, `vendored_frameworks`, `prepare_command`, and script phases inline.
+
+### Key Functions
+
+| Function | Purpose |
+| -------- | ------- |
+| `enabled?` | Checks `EXPO_USE_PRECOMPILED_MODULES=1` |
+| `has_prebuilt_xcframework?(pod_name)` | Checks if a tarball exists in build output |
+| `build_from_source?(pod_name)` | Checks if pod is configured for source builds via regex patterns |
+| `pod_registration_options(...)` | Returns `:podspec` options for prebuilt pods, `:path` for source |
+| `register_external_pods(...)` | Registers 3rd-party prebuilt pods BEFORE RN CLI's `use_native_modules!` |
+| `patch_spec_for_prebuilt(spec)` | Auto-patches specs on-the-fly (called from sandbox.rb) |
+| `try_link_with_prebuilt_xcframework(spec)` | Inline spec patching (used by ExpoModulesCore) |
+| `perform_pre_install(installer)` | Downgrades `USE_FRAMEWORKS` for incompatible pods |
+| `perform_post_install(installer)` | Runs all post-install configuration steps |
+| `ensure_artifacts(installer)` | Copies flavor tarballs into `Pods/<Pod>/artifacts/` |
+| `configure_header_search_paths(installer)` | Ensures ExpoModulesJSI headers are found |
+| `configure_codegen_for_prebuilt_modules(installer)` | Excludes prebuilt modules from ReactCodegen |
+| `stub_bundled_pod_targets(installer)` | Removes implementation sources from bundled pod compile phases |
+| `configure_use_frameworks(installer)` | Patches modulemaps and injects flags for `use_frameworks!` builds |
+| `disable_swift_interface_verification(installer)` | Adds `SWIFT_EMIT_MODULE_INTERFACE = NO` when prebuilt React active |
+| `clear_cocoapods_cache` | Removes stale CocoaPods cache entries for prebuilt pods |
 
 ### Pod Registration Flow
 
 `autolinking_manager.rb` controls how pods are registered in the Podfile:
 
-- **Internal Expo pods**: `has_prebuilt_xcframework?` → `:podspec` (CocoaPods respects `spec.source`) or `:path` (compile from source)
-- **External 3rd-party pods**: Registered with `:podspec` in `use_expo_modules!` BEFORE RN CLI's `use_native_modules!` runs. RN CLI skips already-registered pods, so the `:podspec` registration takes precedence.
-- **Podspec inline call**: `try_link_with_prebuilt_xcframework(spec)` sets `spec.source = {:http => "file:///...tar.gz", :flatten => false}`. CocoaPods downloads and extracts the tarball into `Pods/<PodName>/`.
+- **Internal Expo pods**: `pod_registration_options()` checks `has_prebuilt_xcframework?` → returns `:podspec` (prebuilt) or `:path` (source)
+- **External 3rd-party pods**: `register_external_pods()` registers with `:podspec` BEFORE RN CLI's `use_native_modules!` runs. RN CLI skips already-registered pods, so the `:podspec` registration takes precedence.
+- **Bundled dependencies**: SPM dependencies bundled inside prebuilt xcframeworks are stubbed (headers only) to avoid duplicate symbols.
 
 ### Environment Variables
 
-| Variable                      | Values             | Description                            |
-| ----------------------------- | ------------------ | -------------------------------------- |
-| `EXPO_USE_PRECOMPILED_MODULES`| `0`, `1`           | Enable/disable precompiled modules     |
-| `EXPO_PRECOMPILED_FLAVOR`     | `debug`, `release` | Which XCFramework flavor to use        |
+| Variable                       | Values             | Description                                    |
+| ------------------------------ | ------------------ | ---------------------------------------------- |
+| `EXPO_USE_PRECOMPILED_MODULES` | `0`, `1`           | Enable/disable precompiled modules             |
+| `EXPO_PRECOMPILED_MODULES_PATH`| path               | Custom base directory for prebuilt XCFrameworks (replaces `packages/precompile/.build/`). Structure: `<pkg>/output/<flavor>/xcframeworks/<Product>.tar.gz` |
+| `EXPO_PRECOMPILED_FLAVOR`      | `debug`, `release` | Which XCFramework flavor to use (default: debug) |
+| `USE_FRAMEWORKS`               | `dynamic`, `static`| CocoaPods framework linking mode               |
+| `RCT_USE_PREBUILT_RNCORE`      | `1`                | Indicates prebuilt React.xcframework is active  |
 
 ---
 
@@ -521,7 +635,7 @@ Pods/<PodName>/
 │   └── ios-arm64_x86_64-simulator/
 │       ├── <ProductName>.framework/
 │       └── dSYMs/
-└── artifacts/                        # Copied by prepare_command
+└── artifacts/                        # Copied by ensure_artifacts (post-install)
     ├── <ProductName>-debug.tar.gz
     ├── <ProductName>-release.tar.gz
     └── .last_build_configuration     # Tracks current flavor for incremental builds
@@ -539,12 +653,25 @@ Cleaning is simple: `rm -rf Pods` removes all precompiled state. Next `pod insta
 et prebuild [options] <package-names...>
 ```
 
-### Key Options
+### All Options
 
-| Flag                                  | Description                                                               |
-| ------------------------------------- | ------------------------------------------------------------------------- |
-| `-f, --flavor <flavor>`               | `Debug` or `Release` (default: both)                                      |
-| `--local-react-native-tarball <path>` | Path to React Native XCFramework tarball. Supports `{flavor}` placeholder |
+| Flag                                          | Description                                                               |
+| --------------------------------------------- | ------------------------------------------------------------------------- |
+| `-f, --flavor <flavor>`                       | `Debug` or `Release` (default: both)                                      |
+| `-p, --platform <platform>`                   | `iOS`, `macOS`, `tvOS`, or `watchOS` (default: all defined in package)   |
+| `-n, --product <name>`                        | Build single product if package has multiple                              |
+| `-v, --verbose`                               | Enable verbose output (full build logs instead of spinners)               |
+| `--local-react-native-tarball <path>`         | Path to React Native XCFramework tarball. Supports `{flavor}` placeholder |
+| `--local-hermes-tarball <path>`               | Path to Hermes XCFramework tarball. Supports `{flavor}` placeholder       |
+| `--local-react-native-deps-tarball <path>`    | Path to React Native Dependencies tarball. Supports `{flavor}` placeholder|
+| `--react-native-version <version>`            | React Native version (auto-detected from bare-expo if not set)            |
+| `--hermes-version <version>`                  | Hermes version                                                            |
+| `--include-external`                          | Include external (third-party) packages from `packages/external/`        |
+| `-s, --sign <identity>`                       | Code signing identity to sign XCFrameworks                                |
+| `--no-timestamp`                              | Disable secure timestamp when signing                                     |
+| `-j, --concurrency <number>`                  | Max packages to build in parallel (default: CPU cores / 3)               |
+| `--clean`                                     | Clean package outputs before building                                     |
+| `--clean-cache`                               | Clear entire dependency cache                                             |
 
 ### Pipeline Steps (all run by default)
 
@@ -555,6 +682,27 @@ et prebuild [options] <package-names...>
 | `--skip-build`     | Skip building with xcodebuild |
 | `--skip-compose`   | Skip creating XCFrameworks    |
 | `--skip-verify`    | Skip validating frameworks    |
+
+### Pipeline Structure
+
+The pipeline has 3 scope levels with a nested loop structure:
+
+```
+Run-scope steps (once per invocation)
+  ├── prepare:inputs    — discover/validate packages, resolve versions
+  ├── prepare:cache     — clean cache (if --clean-cache)
+  └── prepare:shared-spm-deps — build shared SPM dependencies
+      │
+      └── Parallel package execution (respecting dependency DAG)
+          │
+          ├── Package-scope: clean:package (if --clean)
+          │
+          └── For each flavor × product:
+              ├── generate   — codegen + staged source layout + Package.swift
+              ├── build      — xcodebuild
+              ├── compose    — create .xcframework bundle
+              └── verify     — validate headers, modules, typecheck, codesign
+```
 
 ---
 
@@ -586,4 +734,4 @@ SPM doesn't allow two files with the same name. Use `*.swift` (non-recursive) or
 
 - **ObjC + ExpoModulesCore**: Packages with ObjC code that imports `<ExpoModulesCore/...>` headers may fail with "non-modular header" errors due to ExpoModulesCore's transitive React Native header dependencies.
 - **Category-only ObjC**: Pure ObjC packages that only define categories have no linkable symbols for dynamic frameworks.
-- **Podspec pattern**: Always use `Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)` pattern. Source compilation settings go inside the `if (!...)` block.
+- **Inline podspec pattern**: Only needed for `expo-modules-core`. All other packages are auto-patched by `sandbox.rb` during pod install.
