@@ -56,7 +56,6 @@ jobs:
 
       - name: Prebuild XCFrameworks (${{ matrix.flavor }})
         env:
-          EXPO_ROOT_DIR: ${{ github.workspace }}
           INPUT_PACKAGES: ${{ github.event.inputs.packages }}
           INPUT_INCLUDE_EXTERNAL: ${{ github.event.inputs.include-external }}
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
