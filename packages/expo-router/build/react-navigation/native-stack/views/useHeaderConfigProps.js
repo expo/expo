@@ -163,6 +163,7 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
     const headerLeftElement = headerLeft?.({
         tintColor,
         canGoBack,
+        backgroundColor: headerBackgroundColor,
         label: headerBackTitle ?? headerBack?.title,
         // `href` is only applicable to web
         href: undefined,
@@ -170,6 +171,7 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
     const headerRightElement = headerRight?.({
         tintColor,
         canGoBack,
+        backgroundColor: headerBackgroundColor,
     });
     const headerTitleElement = typeof headerTitle === 'function'
         ? headerTitle({

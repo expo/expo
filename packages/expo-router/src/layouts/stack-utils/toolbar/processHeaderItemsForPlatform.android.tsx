@@ -9,7 +9,10 @@ import {
   type ToolbarPlacement,
 } from './context';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
-import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
+import type {
+  NativeStackHeaderItemProps,
+  NativeStackNavigationOptions,
+} from '../../../react-navigation/native-stack';
 
 /**
  * On Android, renders toolbar children as native Compose components inside `headerLeft`/`headerRight`.
@@ -25,8 +28,8 @@ export function processHeaderItemsForPlatform(
     return null;
   }
 
-  const headerContent = () => (
-    <HeaderToolbarHostBase placement={placement} colors={colors}>
+  const headerContent = (props: NativeStackHeaderItemProps) => (
+    <HeaderToolbarHostBase placement={placement} colors={colors} headerProps={props}>
       {children}
     </HeaderToolbarHostBase>
   );
@@ -43,20 +46,29 @@ export function processHeaderItemsForPlatform(
     headerRight: headerContent,
   };
 }
-const EMPTY_COLORS: ToolbarColors = {};
 
 function HeaderToolbarHostBase({
   children,
   placement,
   colors,
+  headerProps,
 }: {
   children: ReactNode;
   placement: ToolbarPlacement;
   colors?: ToolbarColors;
+  headerProps?: NativeStackHeaderItemProps;
 }) {
   const stableColors = useMemo(
-    () => colors ?? EMPTY_COLORS,
-    [colors?.backgroundColor, colors?.tintColor]
+    () => ({
+      tintColor: colors?.tintColor ?? headerProps?.tintColor,
+      backgroundColor: colors?.backgroundColor ?? headerProps?.backgroundColor,
+    }),
+    [
+      colors?.backgroundColor,
+      colors?.tintColor,
+      headerProps?.tintColor,
+      headerProps?.backgroundColor,
+    ]
   );
 
   return (
