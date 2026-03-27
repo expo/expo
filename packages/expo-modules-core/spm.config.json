@@ -86,8 +86,7 @@
           "headerPattern": "**/*.h",
           "exclude": [
             "JSI/**",
-            "Tests/**",
-            "Worklets/**"
+            "Tests/**"
           ],
           "dependencies": [
             "Hermes",
@@ -121,8 +120,7 @@
             "JSI/**",
             "Tests/**",
             "BridgeModule/**",
-            "Views/**",
-            "Worklets/**"
+            "Views/**"
           ],
           "dependencies": [
             "Hermes",
