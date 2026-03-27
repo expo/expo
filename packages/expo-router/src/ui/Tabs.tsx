@@ -1,13 +1,4 @@
 import {
-  DefaultNavigatorOptions,
-  LinkingContext,
-  ParamListBase,
-  TabActionHelpers,
-  TabNavigationState,
-  TabRouterOptions,
-  useNavigationBuilder,
-} from '@react-navigation/native';
-import {
   Children,
   ComponentProps,
   Fragment,
@@ -35,6 +26,15 @@ import { useComponent } from './useComponent';
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
 import { resolveHref } from '../link/href';
+import {
+  DefaultNavigatorOptions,
+  LinkingContext,
+  ParamListBase,
+  TabActionHelpers,
+  TabNavigationState,
+  TabRouterOptions,
+  useNavigationBuilder,
+} from '../react-navigation/native';
 import { shouldLinkExternally } from '../utils/url';
 import { NavigatorContext, NavigatorContextValue } from '../views/Navigator';
 

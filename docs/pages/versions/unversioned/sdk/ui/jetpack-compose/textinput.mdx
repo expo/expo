@@ -51,6 +51,27 @@ export default function MultilineTextInputExample() {
 }
 ```
 
+### Text input with label
+
+```tsx LabelTextInputExample.tsx
+import { useState } from 'react';
+import { Host, TextInput, Text } from '@expo/ui/jetpack-compose';
+
+export default function LabelTextInputExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextInput defaultValue={value} onChangeText={setValue}>
+        <TextInput.Label>
+          <Text>Username</Text>
+        </TextInput.Label>
+      </TextInput>
+    </Host>
+  );
+}
+```
+
 ### Outlined text input
 
 ```tsx OutlinedTextInputExample.tsx

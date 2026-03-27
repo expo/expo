@@ -40,6 +40,12 @@ export type PluginConfigOptions = {
    * @deprecated use the `launchMode` property instead
    */
   launchModeExperimental?: 'most-recent' | 'launcher';
+  /**
+   * Whether to show the tools button by default.
+   *
+   * @default true
+   */
+  toolsButton?: boolean;
 };
 
 const schema: JSONSchema<PluginConfigType> = {
@@ -56,6 +62,10 @@ const schema: JSONSchema<PluginConfigType> = {
       enum: ['most-recent', 'launcher'],
       nullable: true,
     },
+    toolsButton: {
+      type: 'boolean',
+      nullable: true,
+    },
     android: {
       type: 'object',
       properties: {
@@ -67,6 +77,10 @@ const schema: JSONSchema<PluginConfigType> = {
         launchModeExperimental: {
           type: 'string',
           enum: ['most-recent', 'launcher'],
+          nullable: true,
+        },
+        toolsButton: {
+          type: 'boolean',
           nullable: true,
         },
       },
@@ -83,6 +97,10 @@ const schema: JSONSchema<PluginConfigType> = {
         launchModeExperimental: {
           type: 'string',
           enum: ['most-recent', 'launcher'],
+          nullable: true,
+        },
+        toolsButton: {
+          type: 'boolean',
           nullable: true,
         },
       },

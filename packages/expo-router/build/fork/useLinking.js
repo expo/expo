@@ -39,7 +39,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.series = void 0;
 exports.useLinking = useLinking;
 exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
-const native_1 = require("@react-navigation/native");
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
 const createMemoryHistory_1 = require("./createMemoryHistory");
@@ -47,6 +46,7 @@ const getPathFromState_1 = require("./getPathFromState");
 const serverLocationContext_1 = require("../global-state/serverLocationContext");
 const storeContext_1 = require("../global-state/storeContext");
 const utils_1 = require("../global-state/utils");
+const native_1 = require("../react-navigation/native");
 /**
  * Find the matching navigation state that changed between 2 navigation states
  * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state

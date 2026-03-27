@@ -12,21 +12,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 
+enum class TextInputViewVariant(val value: String) : Enumerable {
+  FILLED("filled"),
+  OUTLINED("outlined"),
+}
+
 data class TextInputProps(
   val defaultValue: MutableState<String> = mutableStateOf(""),
   val placeholder: MutableState<String> = mutableStateOf(""),
-  val variant: MutableState<String> = mutableStateOf("filled"),
+  val variant: MutableState<TextInputViewVariant> = mutableStateOf(TextInputViewVariant.FILLED),
   val multiline: MutableState<Boolean> = mutableStateOf(false),
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
-  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
+  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList()),
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -85,9 +91,13 @@ class TextInputView(context: Context, appContext: AppContext) :
       autoCorrectEnabled = props.autocorrection.value,
       capitalization = props.autoCapitalize.value.autoCapitalize()
     )
+    val labelSlotView = findChildSlotView(this@TextInputView, "label")
+    val label: (@Composable () -> Unit)? = labelSlotView?.let {
+      { with(ComposableScope()) { with(it) { Content() } } }
+    }
     val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
 
-    if (props.variant.value == "outlined") {
+    if (props.variant.value == TextInputViewVariant.OUTLINED) {
       OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -95,6 +105,7 @@ class TextInputView(context: Context, appContext: AppContext) :
         maxLines = maxLines,
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,
+        label = label,
         modifier = modifier
       )
     } else {
@@ -105,6 +116,7 @@ class TextInputView(context: Context, appContext: AppContext) :
         maxLines = maxLines,
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,
+        label = label,
         modifier = modifier
       )
     }

@@ -98,6 +98,73 @@ export default function StyledTextExample() {
 }
 ```
 
+### Nested text
+
+Nest `<Text>` components to apply inline styles to parts of a sentence. Child spans inherit styles from their parent. For example, a bold parent with an italic child renders the child as bold and italic.
+
+```tsx NestedTextExample.tsx
+import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function NestedTextExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        {/* Bold parent, italic child inherits bold */}
+        <Text style={{ fontWeight: 'bold' }}>
+          Hello <Text style={{ fontStyle: 'italic' }}>world</Text>!
+        </Text>
+
+        {/* Mixed inline styles */}
+        <Text style={{ fontSize: 16 }}>
+          Normal, <Text style={{ fontStyle: 'italic' }}>italic</Text>,{' '}
+          <Text style={{ fontWeight: 'bold' }}>bold</Text>, and{' '}
+          <Text style={{ textDecoration: 'underline' }}>underlined</Text>
+        </Text>
+
+        {/* Color and background overrides per span */}
+        <Text style={{ fontSize: 18 }}>
+          Click{' '}
+          <Text color="#007AFF" style={{ fontWeight: 'bold' }}>
+            here
+          </Text>{' '}
+          or <Text style={{ background: '#FFEB3B' }}>highlighted</Text>
+        </Text>
+
+        {/* Deep nesting — styles accumulate */}
+        <Text style={{ fontWeight: 'bold' }}>
+          Bold{' '}
+          <Text style={{ fontStyle: 'italic' }}>
+            bold+italic <Text style={{ textDecoration: 'underline' }}>bold+italic+underline</Text>
+          </Text>
+        </Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Custom fonts
+
+Use fonts loaded via [`expo-font`](/versions/latest/sdk/font/) by passing the font family name to `style.fontFamily`.
+
+```tsx CustomFontExample.tsx
+import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function CustomFontExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        <Text style={{ fontFamily: 'serif', fontSize: 16 }}>System serif font</Text>
+        <Text style={{ fontFamily: 'monospace', fontSize: 16 }}>System monospace font</Text>
+        <Text style={{ fontFamily: 'Inter-Bold', fontSize: 16 }}>Custom Inter Bold font</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

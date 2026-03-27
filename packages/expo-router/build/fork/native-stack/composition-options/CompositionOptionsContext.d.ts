@@ -1,5 +1,5 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import type { CompositionContextValue, CompositionRegistry } from './types';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 /** @internal */
 export declare const CompositionContext: import("react").Context<CompositionContextValue | null>;
 type RegistryAction = {

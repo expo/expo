@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const withAppleAuthIOS_1 = require("./withAppleAuthIOS");
-const pkg = require('expo-apple-authentication/package.json');
+const pkg = require('../../package.json');
 const withAppleAuth = (config) => {
     config = (0, withAppleAuthIOS_1.withAppleAuthIOS)(config);
     return config;

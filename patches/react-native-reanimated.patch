@@ -1,0 +1,54 @@
+diff --git a/RNReanimated.podspec b/RNReanimated.podspec
+index dba0fade52284fc18da1c64dba495f3a7228c14d..4f96cedfcccb4a2a59793d2d246e126fec1300cf 100644
+--- a/RNReanimated.podspec
++++ b/RNReanimated.podspec
+@@ -61,6 +61,7 @@ Pod::Spec.new do |s|
+       '"$(PODS_ROOT)/Headers/Private/React-Core"',
+       '"$(PODS_ROOT)/Headers/Private/Yoga"',
+       '"$(PODS_ROOT)/Headers/Public/RNWorklets"',
++      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsitooling/JSITooling.framework/Headers"',
+     ].join(' '),
+     "FRAMEWORK_SEARCH_PATHS" => '"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes"',
+     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+@@ -91,6 +92,7 @@ Pod::Spec.new do |s|
+   install_modules_dependencies(s)
+ 
+   s.dependency 'React-jsi'
++  s.dependency 'React-jsitooling'
+   using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+   if using_hermes && !$config[:is_tvos_target]
+     s.dependency 'React-hermes'
+diff --git a/android/build.gradle b/android/build.gradle
+index 86bace765ea9aaa87018206132cdd2ca253bdc61..917d58f8e56cffb51ec7d7ff2990bd10751e3801 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -49,10 +49,11 @@ def resolveReactNativeWorkletsDirectory() {
+     }
+ 
+     // Fallback to node resolver for custom directory structures like monorepos.
++    def reanimatedDir = projectDir.parentFile.path
+     def reactNativeWorkletsPackage = file(
+         providers.exec {
+             workingDir(rootDir)
+-            commandLine("node", "--print", "require.resolve('react-native-worklets/package.json')")
++            commandLine("node", "--print", "require.resolve('react-native-worklets/package.json', { paths: ['${reanimatedDir}', '${rootDir}'] })")
+         }.standardOutput.asText.get().trim()
+     )
+     if (reactNativeWorkletsPackage.exists()) {
+diff --git a/scripts/reanimated_utils.rb b/scripts/reanimated_utils.rb
+index cf1b5edeeff5f69c63e92bac996a1eec675ecb06..2113430ad3118d7a25e644265cbbc8c0adf2d851 100644
+--- a/scripts/reanimated_utils.rb
++++ b/scripts/reanimated_utils.rb
+@@ -55,8 +55,10 @@ def find_config()
+   react_native_reanimated_dir_relative = Pathname.new(react_native_reanimated_dir_absolute).relative_path_from(pods_root).to_s
+   result[:dynamic_frameworks_reanimated_dir] = react_native_reanimated_dir_relative
+ 
+-  react_native_worklets_node_modules_dir = File.join(File.dirname(`cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native-worklets/package.json')"`), '..')
+-  react_native_worklets_dir_absolute = File.join(react_native_worklets_node_modules_dir, 'react-native-worklets')
++  installation_root = Pod::Config.instance.installation_root.to_s
++  react_native_worklets_dir_absolute = File.dirname(
++    `cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native-worklets/package.json', { paths: ['#{react_native_reanimated_dir_absolute}', '#{installation_root}'] })"`
++  )
+   react_native_worklets_dir_relative = Pathname.new(react_native_worklets_dir_absolute).relative_path_from(pods_root).to_s
+   result[:dynamic_frameworks_worklets_dir] = react_native_worklets_dir_relative
+ 

@@ -15,8 +15,8 @@
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
-    "watch": "yarn run --watch --preserveWatchOutput",
-    "prepublishOnly": "yarn run clean && yarn run build"
+    "watch": "pnpm run --watch --preserveWatchOutput",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schemer#readme",
   "repository": {
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@types/probe-image-size": "^7.2.4",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

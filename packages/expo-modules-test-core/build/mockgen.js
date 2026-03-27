@@ -286,7 +286,7 @@ function getPrefix() {
 function generatePropTypesForDefinition(definition) {
     return typescript_1.default.factory.createTypeAliasDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], 'ViewProps', undefined, typescript_1.default.factory.createTypeLiteralNode([
         ...definition.props.map((p) => {
-            const propType = mapSwiftTypeToTsType(p.types.parameters[0].typename);
+            const propType = mapSwiftTypeToTsType(p.types.parameters[0]?.typename ?? '');
             return typescript_1.default.factory.createPropertySignature(undefined, p.name, undefined, propType);
         }),
         ...definition.events.map((e) => {

@@ -1,5 +1,4 @@
-import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
-
+import type { ParamListBase, StackNavigationState } from '../../../../react-navigation/native';
 import type { NativeStackDescriptorMap } from '../../descriptors-context';
 import { mergeOptions } from '../mergeOptions';
 import type { CompositionRegistry } from '../types';

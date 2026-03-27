@@ -16,25 +16,30 @@ export default function requireContext(
   regularExpression = /\.[tj]sx?$/,
   files: Record<string, unknown> = {}
 ) {
-  function readDirectory(directory: string) {
-    fs.readdirSync(directory).forEach((file: string) => {
-      const fullPath = path.resolve(directory, file);
-      const relativePath = `./${path.relative(base, fullPath).split(path.sep).join('/')}`;
+  const baseTarget = path.resolve(base);
 
-      if (fs.statSync(fullPath).isDirectory()) {
-        if (scanSubDirectories) readDirectory(fullPath);
-
-        return;
+  function readDirectory(directory: string = '') {
+    const target = path.resolve(baseTarget, directory);
+    const entries = fs.readdirSync(target, { withFileTypes: true });
+    for (const entry of entries) {
+      const relativePath = directory ? path.join(directory, entry.name) : entry.name;
+      if (entry.isDirectory()) {
+        if (entry.name === 'node_modules') {
+          continue;
+        } else if (scanSubDirectories) {
+          readDirectory(relativePath);
+        }
+      } else if (entry.isFile()) {
+        const posixPath = `./${relativePath.split(path.sep).join('/')}`;
+        if (regularExpression.test(posixPath)) {
+          files[posixPath] = true;
+        }
       }
-
-      if (!regularExpression.test(relativePath)) return;
-
-      files[relativePath] = true;
-    });
+    }
   }
 
-  if (fs.existsSync(base)) {
-    readDirectory(base);
+  if (fs.existsSync(baseTarget)) {
+    readDirectory();
   }
 
   const context: RequireContextPonyFill = Object.assign(

@@ -11,7 +11,7 @@ import {
 import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 
-const pkg = require('expo-location/package.json');
+const pkg = require('../../package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
@@ -138,17 +138,51 @@ function removeForegroundServiceIconImageFiles(projectRoot: string) {
   });
 }
 
-const withLocation: ConfigPlugin<
-  {
-    locationAlwaysAndWhenInUsePermission?: string | false;
-    locationAlwaysPermission?: string | false;
-    locationWhenInUsePermission?: string | false;
-    isIosBackgroundLocationEnabled?: boolean;
-    isAndroidBackgroundLocationEnabled?: boolean;
-    isAndroidForegroundServiceEnabled?: boolean;
-    androidForegroundServiceIcon?: string;
-  } | void
-> = (
+export type Props = {
+  /**
+   * A string to set the `NSLocationAlwaysAndWhenInUseUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to use your location"
+   * @platform ios
+   */
+  locationAlwaysAndWhenInUsePermission?: string | false;
+  /**
+   * A string to set the `NSLocationAlwaysUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to use your location"
+   * @platform ios
+   */
+  locationAlwaysPermission?: string | false;
+  /**
+   * A string to set the `NSLocationWhenInUseUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to use your location"
+   * @platform ios
+   */
+  locationWhenInUsePermission?: string | false;
+  /**
+   * Whether to enable location in `UIBackgroundModes`.
+   * @default false
+   * @platform ios
+   */
+  isIosBackgroundLocationEnabled?: boolean;
+  /**
+   * Whether to enable the `ACCESS_BACKGROUND_LOCATION` permission.
+   * @default false
+   * @platform android
+   */
+  isAndroidBackgroundLocationEnabled?: boolean;
+  /**
+   * Whether to enable the `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_LOCATION` permissions.
+   * @default false
+   * @platform android
+   */
+  isAndroidForegroundServiceEnabled?: boolean;
+  /**
+   * Local path to an image for the foreground service icon. Should be a 96x96 all-white PNG with transparency.
+   * @platform android
+   */
+  androidForegroundServiceIcon?: string;
+};
+
+const withLocation: ConfigPlugin<Props | void> = (
   config,
   {
     locationAlwaysAndWhenInUsePermission,

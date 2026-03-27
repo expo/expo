@@ -1,25 +1,30 @@
 import { ExpoConfig } from 'expo/config';
 import { AndroidConfig, ConfigPlugin, ExportedConfigWithProps } from 'expo/config-plugins';
-import { NavigationBarBehavior, NavigationBarButtonStyle, NavigationBarPosition, NavigationBarVisibility } from 'expo-navigation-bar';
+import { NavigationBarVisibility } from '../..';
 export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
 type AndroidNavigationBar = NonNullable<ExpoConfig['androidNavigationBar']>;
 type NavigationBarStyle = 'light' | 'dark';
 export type Props = {
+    /**
+     * Whether the OS should keep the navigation bar translucent for contrast.
+     * @default true
+     * @platform android
+     */
     enforceContrast?: boolean;
+    /**
+     * Whether the navigation bar starts hidden.
+     * @platform android
+     */
     hidden?: boolean;
+    /**
+     * Which style the navigation bar starts with. Accepts `light` and `dark`.
+     * @platform android
+     */
     style?: NavigationBarStyle;
     /** @deprecated */
-    barStyle?: NavigationBarButtonStyle | null;
+    barStyle?: NavigationBarStyle | null;
     /** @deprecated */
     visibility?: NavigationBarVisibility;
-    /** @deprecated */
-    backgroundColor?: string | null;
-    /** @deprecated */
-    behavior?: NavigationBarBehavior;
-    /** @deprecated */
-    borderColor?: string;
-    /** @deprecated */
-    position?: NavigationBarPosition;
 };
 type ResolvedProps = {
     enforceContrast?: boolean;

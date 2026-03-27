@@ -2,7 +2,7 @@ import type {
   NavigationState,
   ParamListBase,
   StackNavigationState,
-} from '@react-navigation/native';
+} from '../react-navigation/native';
 
 export function isRoutePreloadedInStack(
   navigationState: NavigationState | undefined,

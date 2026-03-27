@@ -21,7 +21,7 @@ const logs: LogBoxLog[] = [
  * Empty App skeleton used as a workaround to prebuilt the Expo LogBox DOM Component.
  * (DOM Components are build during `expo export:embed`)
  *
- * Also used for the DOM Component UI preview via `yarn start`.
+ * Also used for the DOM Component UI preview via `pnpm start`.
  */
 export default function App() {
   const [showSandboxWarning, setSandboxWarningVisibility] = React.useState(true);

@@ -7,7 +7,7 @@ function addShareIntoEntitlements(existingEntitlements, shareIntoEntitlements) {
         return existingEntitlements;
     }
     for (const key of Object.keys(shareIntoEntitlements)) {
-        const itemsToAdd = shareIntoEntitlements[key];
+        const itemsToAdd = shareIntoEntitlements[key] ?? [];
         const existingValue = existingEntitlements[key] ?? [];
         if (!Array.isArray(existingValue)) {
             // Users should never see this error, if you encounter it during development you most likely need to write parsing for the provided type below.

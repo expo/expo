@@ -1,3 +1,5 @@
+import { vol } from 'memfs';
+
 import { withMetroServer } from './utils';
 import { openInEditorAsync } from '../../../../../utils/editor';
 import { createMetroMiddleware } from '../createMetroMiddleware';
@@ -5,6 +7,10 @@ import { createMetroMiddleware } from '../createMetroMiddleware';
 jest.mock('../../../../../utils/editor');
 
 describe(createMetroMiddleware, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
   const { metro, server, projectRoot } = withMetroServer();
 
   it('responds to a bundle request with compression', async () => {
@@ -70,19 +76,38 @@ describe(createMetroMiddleware, () => {
     await expect(response.text()).resolves.toBe('packager-status:running');
   });
 
-  it('responds to /open-stack-frame requests', async () => {
-    // Avoid opening the fake file
-    jest.mocked(openInEditorAsync).mockResolvedValue(true);
+  describe('/open-stack-frame', () => {
+    it('rejects calls to /open-stack-frame outside of server root', async () => {
+      vol.fromJSON({ '/other/test-file.ts': '' });
 
-    const response = await server.fetch('/open-stack-frame', {
-      method: 'POST',
-      body: JSON.stringify({ file: 'test-file.ts', lineNumber: 1337 }),
+      // Avoid opening the fake file
+      jest.mocked(openInEditorAsync).mockResolvedValue(true);
+
+      const response = await server.fetch('/open-stack-frame', {
+        method: 'POST',
+        body: JSON.stringify({ file: '/other/test-file.ts', lineNumber: 1337 }),
+      });
+
+      expect(response.status).toBe(400);
+      expect(openInEditorAsync).not.toHaveBeenCalled();
     });
 
-    // Ensure the request is successful
-    expect(response.status).toBe(200);
-    // Ensure the open in editor was called
-    expect(openInEditorAsync).toHaveBeenCalledWith('test-file.ts', 1337);
+    it('responds to /open-stack-frame requests', async () => {
+      vol.fromJSON({ '/project/test-file.ts': '' });
+
+      // Avoid opening the fake file
+      jest.mocked(openInEditorAsync).mockResolvedValue(true);
+
+      const response = await server.fetch('/open-stack-frame', {
+        method: 'POST',
+        body: JSON.stringify({ file: '/project/test-file.ts', lineNumber: 1337 }),
+      });
+
+      // Ensure the request is successful
+      expect(response.status).toBe(200);
+      // Ensure the open in editor was called
+      expect(openInEditorAsync).toHaveBeenCalledWith('/project/test-file.ts', 1337);
+    });
   });
 
   describe('websockets', () => {

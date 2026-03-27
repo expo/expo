@@ -1,12 +1,5 @@
 'use client';
 
-import {
-  NavigationContainerRefWithCurrent,
-  NavigationState,
-  PartialState,
-  useNavigationContainerRef,
-  useStateForPath,
-} from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { ComponentType, Fragment, useEffect, useSyncExternalStore } from 'react';
 import { Platform } from 'react-native';
@@ -24,6 +17,13 @@ import { RequireContext, type Href } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { type LinkToOptions } from './routing';
 import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
+import {
+  NavigationContainerRefWithCurrent,
+  NavigationState,
+  PartialState,
+  useNavigationContainerRef,
+  useStateForPath,
+} from '../react-navigation/native';
 import { shouldLinkExternally } from '../utils/url';
 import * as SplashScreen from '../views/Splash';
 

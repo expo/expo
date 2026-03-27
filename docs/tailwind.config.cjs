@@ -4,6 +4,14 @@ const merge = require('lodash/merge');
 function getExpoTheme(extend = {}, plugins = [], themeOverrides = {}) {
   const customizedTheme = Object.assign({}, expoTheme);
   customizedTheme.theme = Object.assign({}, merge(expoTheme.theme, themeOverrides));
+  // Shallow-replace fontSize and heading to prevent the styleguide's fontWeight
+  // values from bleeding into the docs' typography scale via deep merge.
+  if (themeOverrides.fontSize) {
+    customizedTheme.theme.fontSize = themeOverrides.fontSize;
+  }
+  if (themeOverrides.heading) {
+    customizedTheme.theme.heading = themeOverrides.heading;
+  }
   customizedTheme.theme.extend = Object.assign({}, merge(customizedTheme.theme.extend, extend));
   customizedTheme.plugins = [...expoTheme.plugins, ...plugins];
   return customizedTheme;

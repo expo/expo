@@ -33,13 +33,13 @@
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
-    "watch": "yarn run build --watch",
-    "prepublishOnly": "yarn run clean && yarn run build:prod"
+    "watch": "pnpm run build --watch",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
-    "@expo/config": "~55.0.8",
-    "@expo/json-file": "^10.0.12",
-    "@expo/package-manager": "^1.10.3",
+    "@expo/config": "workspace:*",
+    "@expo/json-file": "workspace:*",
+    "@expo/package-manager": "workspace:*",
     "@expo/spawn-async": "^1.7.2",
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
@@ -51,7 +51,7 @@
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "^55.0.2",
+    "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "nock": "^14.0.10",

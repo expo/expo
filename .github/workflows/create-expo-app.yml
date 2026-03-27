@@ -6,12 +6,12 @@ on:
     paths:
       - .github/workflows/create-expo-app.yml
       - packages/create-expo/**
-      - yarn.lock
+      - pnpm-lock.yaml
   pull_request:
     paths:
       - .github/workflows/create-expo-app.yml
       - packages/create-expo/**
-      - yarn.lock
+      - pnpm-lock.yaml
   schedule:
     - cron: 0 14 * * *
 
@@ -35,9 +35,9 @@ jobs:
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 9.x
+          version: 10
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
@@ -47,16 +47,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
+          cache: 'pnpm'
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
       - name: 🛠 Build create-expo
-        run: yarn run prepublishOnly
+        run: pnpm run prepublishOnly
         working-directory: packages/create-expo
       - name: E2E Test create-expo
-        run: yarn test:e2e
+        run: pnpm test:e2e
         working-directory: packages/create-expo

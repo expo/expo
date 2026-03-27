@@ -1,17 +1,5 @@
 'use client';
 
-import type { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
-import {
-  useStateForPath,
-  type EventConsumer,
-  type EventMapBase,
-  type NavigationProp,
-  type NavigationState,
-  type ParamListBase,
-  type RouteProp,
-  type ScreenListeners,
-} from '@react-navigation/native';
-import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import React, { useEffect, useMemo } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
@@ -28,6 +16,18 @@ import {
   removeParams,
 } from './navigationParams';
 import { Screen } from './primitives';
+import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
+import {
+  useStateForPath,
+  type EventConsumer,
+  type EventMapBase,
+  type NavigationProp,
+  type NavigationState,
+  type ParamListBase,
+  type RouteProp,
+  type ScreenListeners,
+} from './react-navigation/native';
+import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import { SuspenseFallback } from './views/SuspenseFallback';

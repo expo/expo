@@ -3,7 +3,6 @@ import resolveFrom from 'resolve-from';
 
 import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
-import { Log } from '../../../log';
 import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
 import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
@@ -11,10 +10,6 @@ import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export const DOM_COMPONENTS_BUNDLE_DIR = 'www.bundle';
-
-const warnUnstable = memoize(() =>
-  Log.warn('Using experimental DOM Components API. Production exports may not work as expected.')
-);
 
 const checkWebViewInstalled = memoize((projectRoot: string) => {
   const webViewInstalled =
@@ -58,7 +53,6 @@ export function createDomComponentsMiddleware(
     }
 
     checkWebViewInstalled(projectRoot);
-    warnUnstable();
 
     // Generate a unique entry file for the webview.
     const generatedEntry = toPosixPath(file.startsWith('file://') ? fileURLToFilePath(file) : file);
