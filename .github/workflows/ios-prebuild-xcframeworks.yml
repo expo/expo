@@ -86,3 +86,4 @@ jobs:
           path: packages/precompile/.build/*/output/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
           if-no-files-found: error
           retention-days: 14
+          include-hidden-files: true
