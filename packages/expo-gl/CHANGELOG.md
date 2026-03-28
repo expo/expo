@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Added ETC compressed texture support for the `compressedTexImage2D` and `compressedTexSubImage2D` WebGL methods. ([#35022](https://github.com/expo/expo/pull/35022) by [@hmallen99](https://github.com/hmallen99))
+
 ### 🐛 Bug fixes
 
 - Make `msaaSamples` and `enableExperimentalWorkletSupport` optional in `GLViewProps` to align TypeScript types with their runtime `defaultProps` values. ([#43767](https://github.com/expo/expo/pull/43767) by [@jcarlosroldan](https://github.com/jcarlosroldan))
