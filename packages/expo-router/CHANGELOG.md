@@ -41,6 +41,7 @@
 - remove use-sync-external-store dependency ([#44221](https://github.com/expo/expo/pull/44221) by [@Ubax](https://github.com/Ubax))
 - remove react-navigation/bottom-tabs/unstable ([#44220](https://github.com/expo/expo/pull/44220) by [@Ubax](https://github.com/Ubax))
 - use React 19 syntax in src/react-navigation ([#44225](https://github.com/expo/expo/pull/44225) by [@Ubax](https://github.com/Ubax))
+- Remove router fallback error to support different layouts ([#44341](https://github.com/expo/expo/pull/44341) by [@JavanPoirier](https://github.com/JavanPoirier))
 
 ## 55.0.2 — 2026-02-25
 

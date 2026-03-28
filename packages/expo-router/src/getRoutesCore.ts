@@ -950,15 +950,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
 }
 
 function getMostSpecific(routes: RouteNode[]) {
-  const route = routes[routes.length - 1];
-
-  if (!routes[0]) {
-    throw new Error(
-      `The file ${route.contextKey} does not have a fallback sibling file without a platform extension.`
-    );
-  }
-
-  // This works even tho routes is holey array (e.g it might have index 0 and 2 but not 1)
+  // This works even though routes is a sparse array (e.g it might have index 0 and 2 but not 1)
   // `.length` includes the holes in its count
   return routes[routes.length - 1];
 }
