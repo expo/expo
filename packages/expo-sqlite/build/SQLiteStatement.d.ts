@@ -8,9 +8,16 @@ type ValuesOf<T extends object> = T[keyof T][];
 export declare class SQLiteStatement {
     private readonly nativeDatabase;
     private readonly nativeStatement;
+    private readonly _mutex;
     constructor(nativeDatabase: NativeDatabase, nativeStatement: NativeStatement);
     /**
      * Run the prepared statement and return the [`SQLiteExecuteAsyncResult`](#sqliteexecuteasyncresult) instance.
+     *
+     * > **Note:** Async results are eagerly materialized — all rows are read into memory during this call.
+     * > This ensures correctness when the same prepared statement is reused by concurrent async callers.
+     * > For very large result sets where lazy streaming is needed, use a dedicated (non-shared) statement
+     * > or the synchronous API.
+     *
      * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
      */
     executeAsync<T>(params: SQLiteBindParams): Promise<SQLiteExecuteAsyncResult<T>>;
@@ -138,7 +145,9 @@ export interface SQLiteExecuteAsyncResult<T> extends AsyncIterableIterator<T> {
      */
     getAllAsync(): Promise<T[]>;
     /**
-     * Reset the prepared statement cursor. This will call the [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) C function under the hood.
+     * Reset the result cursor. For async results (which are eagerly materialized), this resets the
+     * iterator position so rows can be re-read from memory. For sync results, this calls
+     * [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) under the hood.
      */
     resetAsync(): Promise<void>;
 }

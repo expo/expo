@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix overlapping async consumers of a shared `PreparedStatement` mixing cursor state by eagerly materializing result rows during `executeAsync`. ([#44345](https://github.com/expo/expo/pull/44345) by [@jmalmo](https://github.com/jmalmo))
 - Add explicit secure context error for `web/wa-sqlite/AccessHandlePoolVFS.js` ([#40605](https://github.com/expo/expo/pull/40605) by [@BDav24](https://github.com/BDav24))
 
 ### 💡 Others

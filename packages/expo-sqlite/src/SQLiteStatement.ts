@@ -16,9 +16,34 @@ export { SQLiteBindParams, SQLiteBindValue, SQLiteRunResult, SQLiteVariadicBindP
 type ValuesOf<T extends object> = T[keyof T][];
 
 /**
+ * A lightweight async mutex that serializes access to a native prepared statement
+ * during the brief window between runAsync() and getAllAsync() in executeAsync().
+ * This prevents another caller's runAsync() from resetting the cursor before
+ * the first caller finishes draining rows.
+ */
+class StatementMutex {
+  private _queue: Promise<void> = Promise.resolve();
+
+  /**
+   * Run `fn` exclusively — subsequent calls wait for prior ones to finish.
+   * The lock is held only for the duration of `fn`, not for result consumption.
+   */
+  run<T>(fn: () => Promise<T>): Promise<T> {
+    const prev = this._queue;
+    let resolve: () => void;
+    this._queue = new Promise<void>((r) => {
+      resolve = r;
+    });
+    return prev.then(fn).finally(() => resolve!());
+  }
+}
+
+/**
  * A prepared statement returned by [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource) or [`SQLiteDatabase.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
  */
 export class SQLiteStatement {
+  private readonly _mutex = new StatementMutex();
+
   constructor(
     private readonly nativeDatabase: NativeDatabase,
     private readonly nativeStatement: NativeStatement
@@ -28,6 +53,12 @@ export class SQLiteStatement {
 
   /**
    * Run the prepared statement and return the [`SQLiteExecuteAsyncResult`](#sqliteexecuteasyncresult) instance.
+   *
+   * > **Note:** Async results are eagerly materialized — all rows are read into memory during this call.
+   * > This ensures correctness when the same prepared statement is reused by concurrent async callers.
+   * > For very large result sets where lazy streaming is needed, use a dedicated (non-shared) statement
+   * > or the synchronous API.
+   *
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
   public executeAsync<T>(params: SQLiteBindParams): Promise<SQLiteExecuteAsyncResult<T>>;
@@ -36,9 +67,22 @@ export class SQLiteStatement {
    */
   public executeAsync<T>(...params: SQLiteVariadicBindParams): Promise<SQLiteExecuteAsyncResult<T>>;
   public async executeAsync<T>(...params: unknown[]): Promise<SQLiteExecuteAsyncResult<T>> {
-    const { lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(
-      this.nativeDatabase,
-      ...normalizeParams(...params)
+    // Mutex ensures runAsync + getAllAsync execute atomically — no other caller
+    // can reset the native cursor between first-row capture and row drain.
+    // The mutex is released before the result object is returned, so result
+    // consumption (getFirstAsync, getAllAsync, iterator) is never blocked.
+    const { lastInsertRowId, changes, firstRowValues, remainingRows } = await this._mutex.run(
+      async () => {
+        const result = await this.nativeStatement.runAsync(
+          this.nativeDatabase,
+          ...normalizeParams(...params)
+        );
+        let remaining: SQLiteColumnValues[] = [];
+        if (result.firstRowValues != null && result.firstRowValues.length > 0) {
+          remaining = await this.nativeStatement.getAllAsync(this.nativeDatabase);
+        }
+        return { ...result, remainingRows: remaining };
+      }
     );
     return createSQLiteExecuteAsyncResult<T>(
       this.nativeDatabase,
@@ -48,7 +92,8 @@ export class SQLiteStatement {
         rawResult: false,
         lastInsertRowId,
         changes,
-      }
+      },
+      remainingRows
     );
   }
 
@@ -68,9 +113,18 @@ export class SQLiteStatement {
   public async executeForRawResultAsync<T extends object>(
     ...params: unknown[]
   ): Promise<SQLiteExecuteAsyncResult<ValuesOf<T>>> {
-    const { lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(
-      this.nativeDatabase,
-      ...normalizeParams(...params)
+    const { lastInsertRowId, changes, firstRowValues, remainingRows } = await this._mutex.run(
+      async () => {
+        const result = await this.nativeStatement.runAsync(
+          this.nativeDatabase,
+          ...normalizeParams(...params)
+        );
+        let remaining: SQLiteColumnValues[] = [];
+        if (result.firstRowValues != null && result.firstRowValues.length > 0) {
+          remaining = await this.nativeStatement.getAllAsync(this.nativeDatabase);
+        }
+        return { ...result, remainingRows: remaining };
+      }
     );
     return createSQLiteExecuteAsyncResult<ValuesOf<T>>(
       this.nativeDatabase,
@@ -80,7 +134,8 @@ export class SQLiteStatement {
         rawResult: true,
         lastInsertRowId,
         changes,
-      }
+      },
+      remainingRows
     );
   }
 
@@ -257,7 +312,9 @@ export interface SQLiteExecuteAsyncResult<T> extends AsyncIterableIterator<T> {
   getAllAsync(): Promise<T[]>;
 
   /**
-   * Reset the prepared statement cursor. This will call the [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) C function under the hood.
+   * Reset the result cursor. For async results (which are eagerly materialized), this resets the
+   * iterator position so rows can be re-read from memory. For sync results, this calls
+   * [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) under the hood.
    */
   resetAsync(): Promise<void>;
 }
@@ -354,13 +411,15 @@ async function createSQLiteExecuteAsyncResult<T>(
   database: SQLiteAnyDatabase,
   statement: NativeStatement,
   firstRowValues: SQLiteColumnValues | null,
-  options: SQLiteExecuteResultOptions
+  options: SQLiteExecuteResultOptions,
+  remainingRows?: SQLiteColumnValues[]
 ): Promise<SQLiteExecuteAsyncResult<T>> {
   const instance = new SQLiteExecuteAsyncResultImpl<T>(
     database,
     statement,
     firstRowValues ? processNativeRow(firstRowValues) : null,
-    options
+    options,
+    remainingRows ? processNativeRows(remainingRows) : undefined
   );
   const generator = instance.generatorAsync();
   Object.defineProperties(generator, {
@@ -444,13 +503,30 @@ function createSQLiteExecuteSyncResult<T>(
 class SQLiteExecuteAsyncResultImpl<T> {
   private columnNames: string[] | null = null;
   private isStepCalled = false;
+  /**
+   * All result rows, eagerly materialized during executeAsync() to prevent
+   * cursor corruption when a shared PreparedStatement is reused concurrently.
+   * When set, the result object is fully detached from the native cursor.
+   */
+  private readonly allRows: SQLiteColumnValues[] | undefined;
+  private iteratorIndex = 0;
 
   constructor(
     private readonly database: SQLiteAnyDatabase,
     private readonly statement: NativeStatement,
     private firstRowValues: SQLiteColumnValues | null,
-    public readonly options: SQLiteExecuteResultOptions
-  ) {}
+    public readonly options: SQLiteExecuteResultOptions,
+    remainingRows?: SQLiteColumnValues[]
+  ) {
+    // Build the complete row array: first row + remaining rows
+    if (remainingRows != null) {
+      if (firstRowValues != null && firstRowValues.length > 0) {
+        this.allRows = [firstRowValues, ...remainingRows];
+      } else {
+        this.allRows = [];
+      }
+    }
+  }
 
   async getFirstAsync(): Promise<T | null> {
     if (this.isStepCalled) {
@@ -460,6 +536,13 @@ class SQLiteExecuteAsyncResultImpl<T> {
     }
     this.isStepCalled = true;
     const columnNames = await this.getColumnNamesAsync();
+    // Use pre-materialized rows if available
+    if (this.allRows != null) {
+      return this.allRows.length > 0
+        ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, this.allRows[0]!)
+        : null;
+    }
+    // Legacy path: no materialized rows (sync callers, etc.)
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues != null) {
       return composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
@@ -477,9 +560,16 @@ class SQLiteExecuteAsyncResultImpl<T> {
       );
     }
     this.isStepCalled = true;
+    // Use pre-materialized rows if available
+    if (this.allRows != null) {
+      const columnNames = await this.getColumnNamesAsync();
+      return composeRowsIfNeeded<T>(this.options.rawResult, columnNames, this.allRows);
+    }
+    // Legacy path: no materialized rows
     const firstRowValues = this.popFirstRowValues();
     if (firstRowValues == null) {
-      // If the first row is empty, this SQL query may be a write operation. We should not call `statement.getAllAsync()` to write again.
+      // If the first row is empty, this SQL query may be a write operation.
+      // We should not call statement.getAllAsync() to re-execute.
       return [];
     }
     const columnNames = await this.getColumnNamesAsync();
@@ -497,24 +587,43 @@ class SQLiteExecuteAsyncResultImpl<T> {
   async *generatorAsync(): AsyncIterableIterator<T> {
     this.isStepCalled = true;
     const columnNames = await this.getColumnNamesAsync();
-    const firstRowValues = this.popFirstRowValues();
-    if (firstRowValues != null) {
-      yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
-    }
-
-    let result;
-    do {
-      result = await this.statement.stepAsync(this.database);
-      if (result != null) {
-        yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(result));
+    // Use pre-materialized rows if available — fully detached from native cursor
+    if (this.allRows != null) {
+      while (this.iteratorIndex < this.allRows.length) {
+        yield composeRowIfNeeded<T>(
+          this.options.rawResult,
+          columnNames,
+          this.allRows[this.iteratorIndex++]!
+        );
       }
-    } while (result != null);
+    } else {
+      // Legacy path: no materialized rows
+      const firstRowValues = this.popFirstRowValues();
+      if (firstRowValues != null) {
+        yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
+      }
+      let result;
+      do {
+        result = await this.statement.stepAsync(this.database);
+        if (result != null) {
+          yield composeRowIfNeeded<T>(
+            this.options.rawResult,
+            columnNames,
+            processNativeRow(result)
+          );
+        }
+      } while (result != null);
+    }
   }
 
-  resetAsync(): Promise<void> {
-    const result = this.statement.resetAsync(this.database);
+  async resetAsync(): Promise<void> {
+    if (this.allRows == null) {
+      // Legacy path: reset the native cursor for non-materialized results
+      await this.statement.resetAsync(this.database);
+    }
+    // For materialized results, only reset JS-side state — no native cursor access
     this.isStepCalled = false;
-    return result;
+    this.iteratorIndex = 0;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {
