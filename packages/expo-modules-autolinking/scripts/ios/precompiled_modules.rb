@@ -1006,9 +1006,15 @@ module Expo
 
         @pod_lookup_map = {}
         repo_root = find_repo_root
-        return @pod_lookup_map unless repo_root
 
-        scan_spm_configs(repo_root)
+        if repo_root
+          scan_spm_configs(repo_root)
+        elsif custom_modules_path
+          # Standalone project with EXPO_PRECOMPILED_MODULES_PATH:
+          # discover spm.config.json from node_modules instead of packages/
+          project_root = File.dirname(Dir.pwd) # Dir.pwd is ios/ during pod install
+          scan_node_modules_configs(project_root)
+        end
 
         @pod_lookup_map
       end
@@ -1030,6 +1036,23 @@ module Expo
         # External packages: packages/external/@scope/*/spm.config.json (scoped)
         Dir.glob(File.join(repo_root, 'packages', 'external', '@*', '*', 'spm.config.json')).each do |config_path|
           process_spm_config(config_path, :external, repo_root)
+        end
+      end
+
+      # Scans node_modules for spm.config.json files in standalone projects.
+      # Used when EXPO_PRECOMPILED_MODULES_PATH is set but no monorepo root is found.
+      def scan_node_modules_configs(project_root)
+        node_modules = File.join(project_root, 'node_modules')
+        return unless File.directory?(node_modules)
+
+        # Non-scoped: node_modules/*/spm.config.json
+        Dir.glob(File.join(node_modules, '*', 'spm.config.json')).each do |config_path|
+          process_spm_config(config_path, :internal, project_root)
+        end
+
+        # Scoped: node_modules/@scope/*/spm.config.json
+        Dir.glob(File.join(node_modules, '@*', '*', 'spm.config.json')).each do |config_path|
+          process_spm_config(config_path, :internal, project_root)
         end
       end
 
