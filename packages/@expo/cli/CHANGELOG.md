@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fall back to name-based `.MainActivity` lookup when no runnable activity with `MAIN`/`LAUNCHER` intent filters exists in the manifest. ([#43702](https://github.com/expo/expo/pull/43702) by [@hwhh](https://github.com/hwhh))
+
 ### 💡 Others
 
 ## 0.24.24 — 2026-01-31
