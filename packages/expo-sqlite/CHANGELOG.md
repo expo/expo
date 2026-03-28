@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `deleteDatabaseSync` not removing WAL and SHM sidecar files on iOS and Android. ([#43442](https://github.com/expo/expo/pull/43442) by [@jmalmo](https://github.com/jmalmo))
+
 ### 💡 Others
 
 - Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))

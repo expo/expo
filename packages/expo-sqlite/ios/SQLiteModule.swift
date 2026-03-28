@@ -526,6 +526,15 @@ public final class SQLiteModule: Module {
     } catch {
       throw DeleteDatabaseFileException(path)
     }
+
+    // Also remove WAL and SHM sidecar files if they exist.
+    // SQLite in WAL mode creates these alongside the main database file.
+    for suffix in ["-wal", "-shm"] {
+      let sidecarPath = path + suffix
+      if FileManager.default.fileExists(atPath: sidecarPath) {
+        try? FileManager.default.removeItem(atPath: sidecarPath)
+      }
+    }
   }
 
   private func backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) throws {
