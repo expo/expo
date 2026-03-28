@@ -36,8 +36,8 @@ export class ZipArchive extends NativeZipArchive {
   }
 
   asFile(): InstanceType<typeof ExpoFileSystem.FileSystemFile> {
-    // Access the underlying file URL from the native object and create a File
-    return super.asFile();
+    const result = super.asFile();
+    return new File(result.uri);
   }
 
   close(): void {

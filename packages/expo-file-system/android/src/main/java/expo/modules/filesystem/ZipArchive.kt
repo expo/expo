@@ -4,7 +4,6 @@ import android.net.Uri
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.BufferedOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.util.zip.ZipFile as JavaZipFile
 import java.util.zip.ZipEntry as JavaZipEntry
 
@@ -12,12 +11,11 @@ private const val BUFFER_SIZE = 64 * 1024
 
 internal class ZipArchive(private val sourceFile: FileSystemFile) : SharedObject() {
   private var zipFile: JavaZipFile? = null
+  private var temporaryArchiveFile: File? = null
 
   private fun getZipFile(): JavaZipFile {
     return zipFile ?: run {
-      val path = sourceFile.file.uri.path
-        ?: throw UnableToUnzipException("cannot resolve path for ${sourceFile.file.uri}")
-      JavaZipFile(path).also { zipFile = it }
+      JavaZipFile(resolveArchivePath()).also { zipFile = it }
     }
   }
 
@@ -50,15 +48,13 @@ internal class ZipArchive(private val sourceFile: FileSystemFile) : SharedObject
 
     val destFile = resolveEntryDestination(destination, entry.name)
 
-    destFile.parentFile?.mkdirs()
-
     zip.getInputStream(entry).use { input ->
-      BufferedOutputStream(FileOutputStream(destFile), BUFFER_SIZE).use { output ->
+      BufferedOutputStream(destFile.file.outputStream(append = false), BUFFER_SIZE).use { output ->
         input.copyTo(output, BUFFER_SIZE)
       }
     }
 
-    return FileSystemFile(Uri.fromFile(destFile))
+    return destFile
   }
 
   fun asFile(): FileSystemFile {
@@ -68,14 +64,62 @@ internal class ZipArchive(private val sourceFile: FileSystemFile) : SharedObject
   fun close() {
     zipFile?.close()
     zipFile = null
+    temporaryArchiveFile?.delete()
+    temporaryArchiveFile = null
   }
 
-  private fun resolveEntryDestination(destination: FileSystemPath, entryName: String): File {
+  private fun resolveArchivePath(): File {
+    if (!sourceFile.uri.isContentUri) {
+      val path = sourceFile.file.uri.path
+        ?: throw UnableToUnzipException("cannot resolve path for ${sourceFile.file.uri}")
+      return File(path)
+    }
+
+    return temporaryArchiveFile ?: run {
+      val cacheDir = appContext?.reactContext?.cacheDir
+        ?: throw MissingAppContextException()
+      val tempFile = File.createTempFile("expo-fs-archive-", ".zip", cacheDir)
+      sourceFile.file.inputStream().use { input ->
+        tempFile.outputStream().use { output ->
+          input.copyTo(output, BUFFER_SIZE)
+        }
+      }
+      tempFile.also { temporaryArchiveFile = it }
+    }
+  }
+
+  private fun resolveEntryDestination(
+    destination: FileSystemPath,
+    entryName: String
+  ): FileSystemFile {
     return if (destination is FileSystemDirectory) {
       val fileName = entryName.split("/").last()
-      File(destination.file.uri.path!!, fileName)
+      if (destination.uri.isContentUri) {
+        val existing = destination.file.listFilesAsUnified().firstOrNull { it.fileName == fileName }
+        if (existing != null) {
+          if (existing.isDirectory() && !existing.deleteRecursively()) {
+            throw UnableToUnzipException("failed to overwrite destination '${existing.uri}'")
+          }
+          if (!existing.isDirectory()) {
+            return FileSystemFile(existing.uri)
+          }
+        }
+        val created = destination.file.createFile("application/octet-stream", fileName)
+          ?: throw UnableToUnzipException("failed to create destination '$fileName'")
+        FileSystemFile(created.uri)
+      } else {
+        val localFile = File(destination.file.uri.path!!, fileName)
+        localFile.parentFile?.mkdirs()
+        FileSystemFile(Uri.fromFile(localFile))
+      }
     } else {
-      File(destination.file.uri.path!!)
+      if (!destination.uri.isContentUri) {
+        val localFile = File(destination.file.uri.path!!)
+        localFile.parentFile?.mkdirs()
+      } else if (!destination.file.exists()) {
+        throw UnableToUnzipException("destination file does not exist: ${destination.file.uri}")
+      }
+      destination as FileSystemFile
     }
   }
 }

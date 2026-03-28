@@ -94,6 +94,15 @@ describe('expo-file-system new API', () => {
     expect(file.name).toBe('test.txt');
     expect(file.extension).toBe('.txt');
   });
+
+  it('ZipArchive.asFile returns the JS File wrapper', () => {
+    const file = new File(Paths.cache, 'archive.zip');
+    const archive = file.openAsArchive();
+    const archiveFile = archive.asFile();
+
+    expect(archiveFile).toBeInstanceOf(File);
+    expect(archiveFile.uri).toBe(file.uri);
+  });
 });
 
 describe('expo-file-system/legacy mock', () => {
