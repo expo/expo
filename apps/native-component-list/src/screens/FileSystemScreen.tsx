@@ -1,7 +1,16 @@
 import Checkbox from 'expo-checkbox';
 import * as Contacts from 'expo-contacts';
-import { File, Directory, Paths, FileMode, zip, unzip, CompressionLevel } from 'expo-file-system';
-import type { DownloadProgress, FileHandle } from 'expo-file-system';
+import {
+  File,
+  Directory,
+  Paths,
+  FileMode,
+  zip,
+  unzip,
+  CompressionLevel,
+  ZipArchive,
+} from 'expo-file-system';
+import type { DownloadProgress, ZipEntry, FileHandle } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as MediaLibrary from 'expo-media-library';
 import React, { useEffect, useRef, useState } from 'react';
@@ -1126,6 +1135,182 @@ function ZipSection({
             match: file.textSync() === unzippedFile.textSync(),
           };
         })}
+      />
+
+      <HeadingText>ZipArchive</HeadingText>
+      <Text style={styles.note}>
+        Opens a zip as an archive for listing entries and selective extraction.
+      </Text>
+
+      <SimpleActionDemo
+        title="openAsArchive → list entries"
+        action={async () => {
+          if (!zipResult) throw new Error('No archive created yet. Zip something first.');
+          const archive = new File(zipResult).openAsArchive();
+          try {
+            const entries = archive.list();
+            return entries.map((e: ZipEntry) => ({
+              name: e.name,
+              isDir: e.isDirectory,
+              size: e.size,
+              compressed: e.compressedSize,
+              method: e.compressionMethod,
+              lastModified: e.lastModified?.toISOString(),
+            }));
+          } finally {
+            archive.close();
+          }
+        }}
+      />
+
+      <SimpleActionDemo
+        title="openAsArchive from current file"
+        action={withCurrentFile(async (file) => {
+          // First zip the current file so we have something to open
+          const zipFile = await file.zip(new File(Paths.cache, 'archive_inspect.zip'), {
+            overwrite: true,
+          });
+          setZipResult(zipFile.uri);
+          const archive = zipFile.openAsArchive();
+          try {
+            const entries = archive.list();
+            return {
+              archiveUri: zipFile.uri,
+              entryCount: entries.length,
+              entries: entries.map((e: ZipEntry) => e.name),
+            };
+          } finally {
+            archive.close();
+          }
+        })}
+      />
+
+      <SimpleActionDemo
+        title="Extract single entry (async)"
+        action={async () => {
+          if (!zipResult) throw new Error('No archive created yet. Zip something first.');
+          const archive = new File(zipResult).openAsArchive();
+          try {
+            const entries = archive.list();
+            const fileEntry = entries.find((e: ZipEntry) => !e.isDirectory);
+            if (!fileEntry) throw new Error('No file entries found in archive.');
+
+            const dest = new Directory(Paths.cache, 'extracted');
+            if (dest.exists) dest.delete();
+            dest.create();
+
+            const extracted = await archive.extractEntry(fileEntry.name, dest);
+            return {
+              entryName: fileEntry.name,
+              extractedUri: extracted.uri,
+              exists: extracted.exists,
+            };
+          } finally {
+            archive.close();
+          }
+        }}
+      />
+
+      <SimpleActionDemo
+        title="Extract single entry (sync)"
+        action={async () => {
+          if (!zipResult) throw new Error('No archive created yet. Zip something first.');
+          const archive = new File(zipResult).openAsArchive();
+          try {
+            const entries = archive.list();
+            const fileEntry = entries.find((e: ZipEntry) => !e.isDirectory);
+            if (!fileEntry) throw new Error('No file entries found in archive.');
+
+            const dest = new File(Paths.cache, 'extracted_sync_file');
+            if (dest.exists) dest.delete();
+
+            const extracted = archive.extractEntrySync(fileEntry.name, dest);
+            return {
+              entryName: fileEntry.name,
+              extractedUri: extracted.uri,
+              exists: extracted.exists,
+            };
+          } finally {
+            archive.close();
+          }
+        }}
+      />
+
+      <SimpleActionDemo
+        title="ZipArchive.asFile()"
+        action={async () => {
+          if (!zipResult) throw new Error('No archive created yet. Zip something first.');
+          const archive = new File(zipResult).openAsArchive();
+          try {
+            const file = archive.asFile();
+            return { uri: file.uri, size: file.size, exists: file.exists };
+          } finally {
+            archive.close();
+          }
+        }}
+      />
+
+      <SimpleActionDemo
+        title="ZipArchive with new ZipArchive(file)"
+        action={async () => {
+          if (!zipResult) throw new Error('No archive created yet. Zip something first.');
+          const archive = new ZipArchive(new File(zipResult));
+          try {
+            const entries = archive.list();
+            return {
+              constructedDirectly: true,
+              entryCount: entries.length,
+              entries: entries.map((e: ZipEntry) => e.name),
+            };
+          } finally {
+            archive.close();
+          }
+        }}
+      />
+
+      <SimpleActionDemo
+        title="Zip test dir → list → extract all entries"
+        action={async () => {
+          // Create a test directory with content
+          const dir = new Directory(Paths.cache, 'zip_archive_test');
+          if (dir.exists) dir.delete();
+          dir.create();
+          new File(dir, 'alpha.txt').write('Alpha content');
+          new File(dir, 'beta.txt').write('Beta content');
+          const sub = dir.createDirectory('gamma');
+          new File(sub, 'delta.txt').write('Delta nested');
+
+          // Zip it
+          const zipFile = await dir.zip(new File(Paths.cache, 'archive_test.zip'), {
+            overwrite: true,
+          });
+          setZipResult(zipFile.uri);
+
+          // Open and extract each file entry
+          const archive = zipFile.openAsArchive();
+          const extractDir = new Directory(Paths.cache, 'archive_extracted');
+          if (extractDir.exists) extractDir.delete();
+          extractDir.create();
+
+          try {
+            const entries = archive.list();
+            const extracted: string[] = [];
+            for (const entry of entries) {
+              if (!entry.isDirectory) {
+                const f = await archive.extractEntry(entry.name, extractDir);
+                extracted.push(f.uri.split('/').filter(Boolean).pop()!);
+              }
+            }
+            return {
+              totalEntries: entries.length,
+              fileEntries: entries.filter((e: ZipEntry) => !e.isDirectory).length,
+              dirEntries: entries.filter((e: ZipEntry) => e.isDirectory).length,
+              extracted,
+            };
+          } finally {
+            archive.close();
+          }
+        }}
       />
     </>
   );
