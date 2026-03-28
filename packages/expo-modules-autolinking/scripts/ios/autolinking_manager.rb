@@ -186,7 +186,8 @@ module Expo
           return JSON.parse(stdout)
         rescue => error
           raise "Couldn't parse JSON coming from `expo-modules-autolinking` command:\n#{error}\n" \
-                "stdout (first 500 chars): #{stdout[0..500]}\n" \
+                "Command: #{resolve_command_args.join(' ')}\n" \
+                "stdout: #{stdout.strip}\n" \
                 "stderr: #{stderr.strip}"
         end
       end
