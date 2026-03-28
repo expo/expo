@@ -1,21 +1,36 @@
 package expo.modules.filesystem
 
 import android.net.Uri
+import android.provider.DocumentsContract
+import androidx.documentfile.provider.DocumentFile
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import java.util.zip.ZipInputStream
 import java.util.zip.ZipFile as JavaZipFile
 
 class ZipOperationsTest {
 
   private val context = InstrumentationRegistry.getInstrumentation().targetContext
+  private val resolver = context.contentResolver
 
   private fun getTestDir() = File(context.cacheDir, "zip_test_${System.currentTimeMillis()}").apply {
     deleteRecursively()
     mkdirs()
+  }
+
+  private fun getSAFRootDir(): DocumentFile {
+    val safRootUri = DocumentsContract.buildTreeDocumentUri(
+      TestStorageProvider.AUTHORITY,
+      TestStorageProvider.ROOT_DOC_ID
+    )
+    return DocumentFile.fromTreeUri(context, safRootUri)!!.apply {
+      listFiles().forEach { it.delete() }
+    }
   }
 
   private fun File.toUri(): Uri = Uri.parse(this.toURI().toString())
@@ -181,5 +196,74 @@ class ZipOperationsTest {
       createFileSystemFile(destFile),
       ZipOptions()
     )
+  }
+
+  @Test
+  fun testZip_ToSafDirectoryDestination() {
+    val testDir = getTestDir()
+    val safRootDir = getSAFRootDir()
+    val sourceDir = File(testDir, "src").apply {
+      mkdirs()
+      File(this, "hello.txt").writeText("Hello SAF zip")
+    }
+
+    val result = ZipOperations.zip(
+      listOf(createFileSystemDirectory(sourceDir)),
+      FileSystemDirectory(safRootDir.uri),
+      ZipOptions(includeRootDirectory = false)
+    )
+
+    val archiveDoc = safRootDir.findFile("src.zip")
+    assertNotNull("Archive should be created inside SAF destination", archiveDoc)
+    assertEquals(archiveDoc!!.uri, result.uri)
+
+    resolver.openInputStream(archiveDoc.uri)?.use { input ->
+      ZipInputStream(input).use { zipInput ->
+        val firstEntry = zipInput.nextEntry
+        assertNotNull("Zip should contain at least one entry", firstEntry)
+        assertEquals("hello.txt", firstEntry!!.name)
+        assertEquals("Hello SAF zip", zipInput.bufferedReader().readText())
+      }
+    }
+  }
+
+  @Test
+  fun testUnzip_FromSafFile_ToSafDirectory() {
+    val testDir = getTestDir()
+    val safRootDir = getSAFRootDir()
+
+    val sourceDir = File(testDir, "src").apply {
+      mkdirs()
+      File(this, "data.txt").writeText("saf unzip content")
+    }
+    val localZip = File(testDir, "archive.zip")
+    ZipOperations.zip(
+      listOf(createFileSystemDirectory(sourceDir)),
+      createFileSystemFile(localZip),
+      ZipOptions(includeRootDirectory = false)
+    )
+
+    val safZipFile = safRootDir.createFile("application/zip", "archive.zip")
+    assertNotNull("Failed to create SAF archive file", safZipFile)
+    resolver.openOutputStream(safZipFile!!.uri)?.use { output ->
+      localZip.inputStream().use { input ->
+        input.copyTo(output)
+      }
+    }
+
+    val outputDir = safRootDir.createDirectory("output")
+    assertNotNull("Failed to create SAF output directory", outputDir)
+
+    val result = ZipOperations.unzip(
+      FileSystemFile(safZipFile.uri),
+      FileSystemDirectory(outputDir!!.uri),
+      UnzipOptions()
+    )
+
+    val extractedFile = outputDir.findFile("data.txt")
+    assertNotNull("File should be extracted into SAF directory", extractedFile)
+    val content = resolver.openInputStream(extractedFile!!.uri)?.bufferedReader()?.readText()
+    assertEquals("saf unzip content", content)
+    assertEquals(outputDir.uri, result.uri)
   }
 }

@@ -5,7 +5,6 @@ import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
@@ -30,21 +29,11 @@ internal object ZipOperations {
       }
     }
 
-    // Resolve destination path
-    val destFile = resolveZipDestination(destination, sources.first())
+    val destinationFile = resolveZipDestination(destination, sources.first(), options.overwrite)
 
-    // Handle overwrite
-    if (destFile.exists()) {
-      if (!options.overwrite) {
-        throw DestinationAlreadyExistsException()
-      }
-      destFile.delete()
-    }
-
-    // Ensure parent directory exists
-    destFile.parentFile?.mkdirs()
-
-    ZipOutputStream(BufferedOutputStream(FileOutputStream(destFile), BUFFER_SIZE)).use { zos ->
+    ZipOutputStream(
+      BufferedOutputStream(destinationFile.file.outputStream(append = false), BUFFER_SIZE)
+    ).use { zos ->
       zos.setLevel(options.compressionLevel.value)
 
       for (source in sources) {
@@ -57,7 +46,7 @@ internal object ZipOperations {
       }
     }
 
-    return FileSystemFile(Uri.fromFile(destFile))
+    return destinationFile
   }
 
   fun unzip(
@@ -69,43 +58,35 @@ internal object ZipOperations {
       throw ZipSourceNotFoundException(source.file.uri.toString())
     }
 
-    var destDir = File(destination.file.uri.path!!)
-
-    if (options.createContainingDirectory) {
-      val archiveName = source.file.fileName?.removeSuffix(".zip") ?: "archive"
-      destDir = File(destDir, archiveName)
-    }
-
-    if (!destDir.exists()) {
-      destDir.mkdirs()
-    }
+    val destDir = resolveUnzipDestination(destination, source, options)
 
     // Use ZipInputStream for universal compatibility (works with SAF URIs too)
     source.file.inputStream().use { rawInput ->
       ZipInputStream(BufferedInputStream(rawInput, BUFFER_SIZE)).use { zis ->
         var entry = zis.nextEntry
         while (entry != null) {
-          val outputFile = File(destDir, entry.name)
+          val pathSegments = normalizeEntryPath(entry.name)
 
-          // Zip slip protection
-          if (!outputFile.canonicalPath.startsWith(destDir.canonicalPath + File.separator) &&
-            outputFile.canonicalPath != destDir.canonicalPath) {
-            throw UnableToUnzipException("entry '${entry.name}' is outside of the target directory (zip slip)")
-          }
+          if (pathSegments.isNotEmpty()) {
+            if (entry.isDirectory) {
+              ensureDirectoryAtPath(destDir.file, pathSegments, options.overwrite)
+            } else {
+              val parentDirectory = ensureDirectoryAtPath(
+                destDir.file,
+                pathSegments.dropLast(1),
+                options.overwrite
+              )
+              val targetFile = resolveFileTarget(
+                parentDirectory,
+                pathSegments.last(),
+                options.overwrite
+              )
 
-          if (entry.isDirectory) {
-            outputFile.mkdirs()
-          } else {
-            outputFile.parentFile?.mkdirs()
-
-            if (outputFile.exists() && !options.overwrite) {
-              zis.closeEntry()
-              entry = zis.nextEntry
-              continue
-            }
-
-            FileOutputStream(outputFile).use { fos ->
-              zis.copyTo(fos, BUFFER_SIZE)
+              if (targetFile.shouldWrite) {
+                targetFile.file.outputStream(append = false).use { output ->
+                  zis.copyTo(output, BUFFER_SIZE)
+                }
+              }
             }
           }
           zis.closeEntry()
@@ -114,20 +95,110 @@ internal object ZipOperations {
       }
     }
 
-    return FileSystemDirectory(Uri.fromFile(destDir))
+    return destDir
   }
 
   private fun resolveZipDestination(
     destination: FileSystemPath,
-    firstSource: FileSystemPath
-  ): File {
+    firstSource: FileSystemPath,
+    overwrite: Boolean
+  ): FileSystemFile {
     return if (destination is FileSystemDirectory) {
       val sourceName = firstSource.file.fileName ?: "archive"
       val zipName = if (sourceName.endsWith(".zip")) sourceName else "$sourceName.zip"
-      File(destination.file.uri.path!!, zipName)
+      resolveZipDestinationInDirectory(destination, zipName, overwrite)
     } else {
-      File(destination.file.uri.path!!)
+      prepareZipFileDestination(destination as FileSystemFile, overwrite)
     }
+  }
+
+  private fun resolveZipDestinationInDirectory(
+    destination: FileSystemDirectory,
+    zipName: String,
+    overwrite: Boolean
+  ): FileSystemFile {
+    val destinationDir = destination.file
+    val existing = findChild(destinationDir, zipName)
+
+    if (existing != null) {
+      if (!overwrite) {
+        throw DestinationAlreadyExistsException()
+      }
+      if (!existing.deleteRecursively()) {
+        throw UnableToZipException("failed to overwrite destination '${existing.uri}'")
+      }
+    }
+
+    return if (destinationDir.uri.isContentUri) {
+      val created = destinationDir.createFile("application/zip", zipName)
+        ?: throw UnableToZipException("failed to create destination '$zipName'")
+      FileSystemFile(created.uri)
+    } else {
+      val directoryFile = File(destinationDir.uri.path!!)
+      if (!directoryFile.exists()) {
+        directoryFile.mkdirs()
+      }
+      FileSystemFile(Uri.fromFile(File(directoryFile, zipName)))
+    }
+  }
+
+  private fun prepareZipFileDestination(
+    destination: FileSystemFile,
+    overwrite: Boolean
+  ): FileSystemFile {
+    if (!destination.uri.isContentUri) {
+      val destinationFile = File(destination.file.uri.path!!)
+      if (destinationFile.exists()) {
+        if (!overwrite) {
+          throw DestinationAlreadyExistsException()
+        }
+        if (!destinationFile.delete()) {
+          throw UnableToZipException("failed to overwrite destination '${destination.file.uri}'")
+        }
+      }
+      destinationFile.parentFile?.mkdirs()
+      return destination
+    }
+
+    if (!destination.file.exists()) {
+      throw UnableToZipException("destination file does not exist: ${destination.file.uri}")
+    }
+    if (!overwrite) {
+      throw DestinationAlreadyExistsException()
+    }
+    return destination
+  }
+
+  private fun resolveUnzipDestination(
+    destination: FileSystemDirectory,
+    source: FileSystemFile,
+    options: UnzipOptions
+  ): FileSystemDirectory {
+    if (!destination.uri.isContentUri) {
+      var destDir = File(destination.file.uri.path!!)
+
+      if (options.createContainingDirectory) {
+        val archiveName = source.file.fileName?.removeSuffix(".zip") ?: "archive"
+        destDir = File(destDir, archiveName)
+      }
+
+      if (!destDir.exists()) {
+        destDir.mkdirs()
+      }
+
+      return FileSystemDirectory(Uri.fromFile(destDir))
+    }
+
+    if (!destination.file.exists()) {
+      throw UnableToUnzipException("destination directory does not exist: ${destination.file.uri}")
+    }
+    if (!options.createContainingDirectory) {
+      return destination
+    }
+
+    val archiveName = source.file.fileName?.removeSuffix(".zip") ?: "archive"
+    val containingDirectory = ensureDirectory(destination.file, archiveName, options.overwrite)
+    return FileSystemDirectory(containingDirectory.uri)
   }
 
   private fun addDirectoryToZip(
@@ -178,4 +249,86 @@ internal object ZipOperations {
       target.fileName ?: ""
     }
   }
+
+  private fun normalizeEntryPath(entryName: String): List<String> {
+    val normalized = entryName.replace('\\', '/')
+    val segments = normalized.split('/').filter { it.isNotEmpty() }
+
+    if (normalized.startsWith("/") ||
+      segments.any { it == "." || it == ".." } ||
+      (segments.firstOrNull()?.contains(':') == true)) {
+      throw UnableToUnzipException("entry '$entryName' is outside of the target directory (zip slip)")
+    }
+
+    return segments
+  }
+
+  private fun ensureDirectoryAtPath(
+    root: UnifiedFileInterface,
+    pathSegments: List<String>,
+    overwrite: Boolean
+  ): UnifiedFileInterface {
+    var current = root
+
+    for (segment in pathSegments) {
+      current = ensureDirectory(current, segment, overwrite)
+    }
+
+    return current
+  }
+
+  private fun ensureDirectory(
+    parent: UnifiedFileInterface,
+    name: String,
+    overwrite: Boolean
+  ): UnifiedFileInterface {
+    val existing = findChild(parent, name)
+    if (existing != null) {
+      if (existing.isDirectory()) {
+        return existing
+      }
+      if (!overwrite) {
+        throw UnableToUnzipException("entry path '$name' conflicts with an existing file")
+      }
+      if (!existing.deleteRecursively()) {
+        throw UnableToUnzipException("failed to overwrite existing file at '${existing.uri}'")
+      }
+    }
+
+    return parent.createDirectory(name)
+      ?: throw UnableToUnzipException("failed to create directory '$name'")
+  }
+
+  private fun resolveFileTarget(
+    parent: UnifiedFileInterface,
+    name: String,
+    overwrite: Boolean
+  ): ResolvedFileTarget {
+    val existing = findChild(parent, name)
+    if (existing != null) {
+      if (existing.isDirectory()) {
+        if (!overwrite) {
+          throw UnableToUnzipException("entry path '$name' conflicts with an existing directory")
+        }
+        if (!existing.deleteRecursively()) {
+          throw UnableToUnzipException("failed to overwrite existing directory at '${existing.uri}'")
+        }
+      } else {
+        return ResolvedFileTarget(existing, shouldWrite = overwrite)
+      }
+    }
+
+    val created = parent.createFile("application/octet-stream", name)
+      ?: throw UnableToUnzipException("failed to create file '$name'")
+    return ResolvedFileTarget(created, shouldWrite = true)
+  }
+
+  private fun findChild(parent: UnifiedFileInterface, name: String): UnifiedFileInterface? {
+    return parent.listFilesAsUnified().firstOrNull { it.fileName == name }
+  }
+
+  private data class ResolvedFileTarget(
+    val file: UnifiedFileInterface,
+    val shouldWrite: Boolean
+  )
 }

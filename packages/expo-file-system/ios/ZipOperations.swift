@@ -99,7 +99,7 @@ internal struct ZipOperations {
       let entryDestURL = destURL.appendingPathComponent(entry.path)
 
       // Zip slip protection
-      guard entryDestURL.standardized.path.hasPrefix(destURL.standardized.path) else {
+      guard isContained(entryDestURL, in: destURL) else {
         throw UnableToUnzipException("entry '\(entry.path)' is outside of the target directory (zip slip)")
       }
 
@@ -143,7 +143,7 @@ internal struct ZipOperations {
     let enumerator = FileManager.default.enumerator(
       at: directoryURL,
       includingPropertiesForKeys: [.isDirectoryKey],
-      options: [.skipsHiddenFiles]
+      options: []
     )
 
     // If including root directory, add the directory entry itself
@@ -162,5 +162,12 @@ internal struct ZipOperations {
         compressionMethod: compression
       )
     }
+  }
+
+  private static func isContained(_ candidateURL: URL, in directoryURL: URL) -> Bool {
+    let directoryPath = directoryURL.standardizedFileURL.path
+    let candidatePath = candidateURL.standardizedFileURL.path
+
+    return candidatePath == directoryPath || candidatePath.hasPrefix(directoryPath + "/")
   }
 }

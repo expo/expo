@@ -27,6 +27,8 @@ export type ZipOptions = {
     includeRootDirectory?: boolean;
     /**
      * The compression level to use.
+     * On iOS, `CompressionLevel.None` disables compression and all other values use standard deflate,
+     * because ZIPFoundation does not expose granular compression levels.
      * @default CompressionLevel.Default
      */
     compressionLevel?: CompressionLevel;
