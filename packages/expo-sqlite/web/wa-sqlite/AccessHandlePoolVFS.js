@@ -217,6 +217,9 @@ export class AccessHandlePoolVFS extends FacadeVFS {
 
   async isReady() {
     if (!this.#directoryHandle) {
+      if (!navigator.storage) {
+        throw new Error('navigator.storage not available (not supported by your browser or context is not secure)');
+      }
       // All files are stored in a single directory.
       let handle = await navigator.storage.getDirectory();
       for (const d of this.#directoryPath.split('/')) {
