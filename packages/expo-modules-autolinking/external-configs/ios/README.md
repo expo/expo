@@ -6,13 +6,13 @@ This document explains how to add support for third-party React Native packages 
 
 When a user asks you to add SPM prebuild support for an external package, you need to:
 
-1. Create an `spm.config.json` file in `packages/external/<package-name>/`
+1. Create an `spm.config.json` file in `packages/expo-modules-autolinking/external-configs/ios/<package-name>/`
 2. Potentially create a patch file if the package source needs modifications
 3. Ensure the codegen module is properly excluded from ReactCodegen
 
 ## Supported External Packages
 
-Configs live in `packages/external/<package-name>/spm.config.json`:
+Configs live in `packages/expo-modules-autolinking/external-configs/ios/<package-name>/spm.config.json`:
 
 | Package | Product Name |
 |---------|-------------|
@@ -29,11 +29,11 @@ Configs live in `packages/external/<package-name>/spm.config.json`:
 
 ## Key Concepts
 
-> For dependency cache details (location, env vars, clean flags), see [`packages/precompile/README.md` — Dependency Cache](../precompile/README.md#dependency-cache).
+> For dependency cache details (location, env vars, clean flags), see [`packages/precompile/README.md` — Dependency Cache](../../../precompile/README.md#dependency-cache).
 
 ### Source Resolution
 
-- **Config location**: `packages/external/<package-name>/spm.config.json`
+- **Config location**: `packages/expo-modules-autolinking/external-configs/ios/<package-name>/spm.config.json`
 - **Source location**: `node_modules/<package-name>/` (resolved at build time)
 - **Output location**: `packages/precompile/.build/<package-name>/output/<flavor>/xcframeworks/`
 
@@ -91,7 +91,7 @@ Every config uses the `products` format with a `$schema` reference:
 
 ```json
 {
-    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "$schema": "../../../../../tools/src/prebuilds/schemas/spm.config.schema.json",
     "products": [
         {
             "name": "ProductName",
@@ -234,7 +234,7 @@ No Swift, no custom C++ shadow nodes — just codegen + ObjC/ObjC++ sources:
 
 ```json
 {
-    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "$schema": "../../../../../tools/src/prebuilds/schemas/spm.config.schema.json",
     "products": [
         {
             "name": "RNGestureHandler",
@@ -295,7 +295,7 @@ Adds a `_common_cpp` target for custom shadow node implementations in `common/cp
 
 ```json
 {
-    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "$schema": "../../../../../tools/src/prebuilds/schemas/spm.config.schema.json",
     "products": [
         {
             "name": "RNSVG",
@@ -364,7 +364,7 @@ Splits Swift and ObjC into separate targets, plus an SPM remote dependency:
 
 ```json
 {
-    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "$schema": "../../../../../tools/src/prebuilds/schemas/spm.config.schema.json",
     "products": [
         {
             "name": "LottieReactNative",
@@ -486,8 +486,8 @@ npx patch-package <package-name>
 
 Before completing your work, verify:
 
-- [ ] `spm.config.json` exists at `packages/external/<package-name>/spm.config.json`
-- [ ] `$schema` field points to `"../../../tools/src/prebuilds/schemas/spm.config.schema.json"`
+- [ ] `spm.config.json` exists at `packages/expo-modules-autolinking/external-configs/ios/<package-name>/spm.config.json`
+- [ ] `$schema` field points to `"../../../../../tools/src/prebuilds/schemas/spm.config.schema.json"`
 - [ ] Product `podName` matches `s.name` from the podspec
 - [ ] Product `codegenName` matches `codegenConfig.name` from package.json (if applicable)
 - [ ] All codegen targets have `moduleName` matching the codegenName

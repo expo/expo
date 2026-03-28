@@ -108,7 +108,7 @@ const _packageVersionCache: Record<string, string> = {};
 
 /**
  * Resolves the package version from the package.json in the given path.
- * @param pkgPath Path to the package (e.g., /workspace/packages/external/react-native-worklets)
+ * @param pkgPath Path to the package (e.g., /workspace/external-configs/ios/react-native-worklets)
  * @returns The version string from package.json
  * @throws if the version cannot be resolved
  */

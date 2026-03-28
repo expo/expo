@@ -347,7 +347,7 @@ export const verifyAllPackagesAsync = async (
 
       throw new Error(
         `Package not found: ${chalk.red(name)}. ` +
-          `Make sure it exists in packages/ or has a config in packages/external/.`
+          `Make sure it exists in packages/ or has a config in external-configs/ios/.`
       );
     })
   );

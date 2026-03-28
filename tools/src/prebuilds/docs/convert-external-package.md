@@ -4,7 +4,7 @@ You are converting an external React Native package to support prebuilt XCFramew
 
 ## Rules
 
-- ONLY create/edit these files: `packages/external/<PACKAGE>/spm.config.json`, the podspec in `node_modules/`, and source files in `node_modules/` that need header fixes.
+- ONLY create/edit these files: `packages/expo-modules-autolinking/external-configs/ios/<PACKAGE>/spm.config.json`, the podspec in `node_modules/`, and source files in `node_modules/` that need header fixes.
 - NEVER create patch files manually. Run `npx patch-package <PACKAGE>` to generate them.
 - NEVER build or test the output. Do NOT run `et prebuild-packages` or `pod install`.
 - Keep output minimal — short CLI-style status messages only.
@@ -61,7 +61,7 @@ end
 
 ### 4. Create spm.config.json
 
-Write `packages/external/<PACKAGE>/spm.config.json`.
+Write `packages/expo-modules-autolinking/external-configs/ios/<PACKAGE>/spm.config.json`.
 
 **Schema path**: `"$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json"`
 
@@ -91,8 +91,8 @@ STOP here. Do not proceed further.
 ## Reference: Existing Converted Packages
 
 Study these for target structure patterns:
-- `packages/external/react-native-gesture-handler/spm.config.json` — ObjC-only with codegen
-- `packages/external/react-native-svg/spm.config.json` — ObjC + custom C++ shadow nodes
-- `packages/external/lottie-react-native/spm.config.json` — Mixed Swift + ObjC + SPM dependency
-- `packages/external/react-native-screens/spm.config.json` — Mixed Swift + ObjC + C++ + codegen
-- `packages/external/react-native-safe-area-context/spm.config.json` — ObjC + C++ + codegen
+- `packages/expo-modules-autolinking/external-configs/ios/react-native-gesture-handler/spm.config.json` — ObjC-only with codegen
+- `packages/expo-modules-autolinking/external-configs/ios/react-native-svg/spm.config.json` — ObjC + custom C++ shadow nodes
+- `packages/expo-modules-autolinking/external-configs/ios/lottie-react-native/spm.config.json` — Mixed Swift + ObjC + SPM dependency
+- `packages/expo-modules-autolinking/external-configs/ios/react-native-screens/spm.config.json` — Mixed Swift + ObjC + C++ + codegen
+- `packages/expo-modules-autolinking/external-configs/ios/react-native-safe-area-context/spm.config.json` — ObjC + C++ + codegen
