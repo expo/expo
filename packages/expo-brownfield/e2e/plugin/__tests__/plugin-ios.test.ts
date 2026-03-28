@@ -57,7 +57,7 @@ describe('plugin for ios', () => {
    */
   it('modifies the podfile properties', async () => {
     validatePodfileProperties(TEMP_DIR, {
-      'ios.useFrameworks': 'static',
+      'ios.buildReactNativeFromSource': 'false',
     });
   });
 
