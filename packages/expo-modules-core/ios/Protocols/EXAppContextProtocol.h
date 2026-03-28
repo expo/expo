@@ -5,7 +5,6 @@
 @class EXJavaScriptObject;
 @class EXModuleRegistry;
 @class EXModulesProxyConfig;
-@class EXNativeModulesProxy;
 @class EXRuntime;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -25,11 +24,6 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
  The legacy module registry with modules written in the old-fashioned way.
  */
 @property(nonatomic, weak, nullable) EXModuleRegistry *legacyModuleRegistry;
-
-/**
- The legacy modules proxy.
- */
-@property(nonatomic, weak, nullable) EXNativeModulesProxy *legacyModulesProxy;
 
 /**
  Underlying JSI runtime of the running app.
@@ -69,19 +63,6 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
             withArgs:(nonnull NSArray *)args
              resolve:(nonnull EXPromiseResolveBlock)resolve
               reject:(nonnull EXPromiseRejectBlock)reject;
-
-/**
- Returns the expo modules config for the native modules proxy.
- */
-@property(nonatomic, readonly, nonnull) EXModulesProxyConfig *expoModulesConfig;
-
-#pragma mark - View Management
-
-/**
- Returns view modules wrapped by the base ViewModuleWrapper class.
- Returns NSArray of objects (ViewModuleWrapper instances).
- */
-- (nonnull NSArray *)getViewManagers;
 
 #pragma mark - Native Module Registration
 
