@@ -998,7 +998,7 @@ module Expo
       # Builds and caches a map from pod names to package information.
       # Scans all spm.config.json files in:
       #   - packages/*/spm.config.json (internal Expo packages)
-      #   - packages/external/*/spm.config.json (external packages)
+      #   - external-configs/ios/*/spm.config.json (3rd-party packages, bundled with autolinking)
       #
       # @return [Hash] Map of podName -> { type:, npm_package:, podspec_dir:, build_output_dir:, ... }
       def pod_lookup_map
@@ -1020,23 +1020,15 @@ module Expo
       end
 
       # Scans all spm.config.json files and populates @pod_lookup_map.
+      # Used in monorepo context where find_repo_root succeeds.
       def scan_spm_configs(repo_root)
-        # Internal packages: packages/*/spm.config.json
+        # Internal Expo packages: packages/*/spm.config.json
         Dir.glob(File.join(repo_root, 'packages', '*', 'spm.config.json')).each do |config_path|
-          next if config_path.include?('/external/')
           process_spm_config(config_path, :internal, repo_root)
         end
 
-        # External packages: packages/external/*/spm.config.json (non-scoped)
-        Dir.glob(File.join(repo_root, 'packages', 'external', '*', 'spm.config.json')).each do |config_path|
-          next if config_path.include?('/@')
-          process_spm_config(config_path, :external, repo_root)
-        end
-
-        # External packages: packages/external/@scope/*/spm.config.json (scoped)
-        Dir.glob(File.join(repo_root, 'packages', 'external', '@*', '*', 'spm.config.json')).each do |config_path|
-          process_spm_config(config_path, :external, repo_root)
-        end
+        # External 3rd-party packages: bundled in external-configs/ios/
+        scan_external_configs(repo_root)
       end
 
       # Scans node_modules for spm.config.json files in standalone projects.
@@ -1045,15 +1037,91 @@ module Expo
         node_modules = File.join(project_root, 'node_modules')
         return unless File.directory?(node_modules)
 
-        # Non-scoped: node_modules/*/spm.config.json
+        # Internal Expo packages: node_modules/*/spm.config.json
         Dir.glob(File.join(node_modules, '*', 'spm.config.json')).each do |config_path|
           process_spm_config(config_path, :internal, project_root)
         end
 
-        # Scoped: node_modules/@scope/*/spm.config.json
+        # Internal Expo scoped packages: node_modules/@scope/*/spm.config.json
         Dir.glob(File.join(node_modules, '@*', '*', 'spm.config.json')).each do |config_path|
           process_spm_config(config_path, :internal, project_root)
         end
+
+        # External 3rd-party packages: bundled in external-configs/ios/
+        scan_external_configs(project_root)
+      end
+
+      # Scans spm.config.json files from external-configs/ios/ for 3rd-party packages
+      # (e.g. react-native-screens, react-native-svg) that don't ship their own spm.config.json.
+      # Shared by both monorepo and standalone project paths.
+      #
+      # @param effective_root [String] The project or repo root used to locate node_modules
+      def scan_external_configs(effective_root)
+        external_configs_dir = File.join(__dir__, '..', '..', 'external-configs', 'ios')
+        return unless File.directory?(external_configs_dir)
+
+        node_modules = File.join(effective_root, 'node_modules')
+
+        # Non-scoped: external-configs/ios/*/spm.config.json
+        Dir.glob(File.join(external_configs_dir, '*', 'spm.config.json')).each do |config_path|
+          npm_package = File.basename(File.dirname(config_path))
+          process_external_config(config_path, npm_package, node_modules, effective_root)
+        end
+
+        # Scoped: external-configs/ios/@scope/*/spm.config.json
+        Dir.glob(File.join(external_configs_dir, '@*', '*', 'spm.config.json')).each do |config_path|
+          rel = config_path.sub("#{external_configs_dir}/", '')
+          npm_package = File.dirname(rel) # e.g. "@shopify/react-native-skia"
+          process_external_config(config_path, npm_package, node_modules, effective_root)
+        end
+      end
+
+      # Processes a single external spm.config.json for a 3rd-party package.
+      def process_external_config(config_path, npm_package, node_modules, effective_root)
+        config = JSON.parse(File.read(config_path))
+        products = config['products'] || []
+        package_root = File.join(node_modules, npm_package)
+
+        # Only process if the package is actually installed
+        return unless File.directory?(package_root)
+
+        # Prefer codegenConfig.name from the installed package.json
+        installed_codegen_name = nil
+        pkg_json_path = File.join(package_root, 'package.json')
+        if File.exist?(pkg_json_path)
+          installed_codegen_name = JSON.parse(File.read(pkg_json_path)).dig('codegenConfig', 'name')
+        end
+
+        base_dir = custom_modules_path || File.join(effective_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR)
+
+        products.each do |product|
+          pod_name = product['podName']
+          next unless pod_name
+
+          product_name = product['name'] || pod_name
+          codegen_name = installed_codegen_name || product['codegenName']
+          build_output_dir = File.join(base_dir, npm_package, 'output')
+
+          targets = (product['targets'] || [])
+            .select { |t| t['type'] != 'framework' && !t['path']&.start_with?('.build/') }
+            .map { |t| { name: t['name'], path: t['path'] } }
+
+          spm_dependency_frameworks = (product['spmPackages'] || []).map { |pkg| pkg['productName'] }.compact
+
+          @pod_lookup_map[pod_name] = {
+            type: :external,
+            npm_package: npm_package,
+            package_root: package_root,
+            podspec_dir: package_root,
+            build_output_dir: build_output_dir,
+            codegen_name: codegen_name,
+            product_name: product_name,
+            targets: targets,
+            spm_dependency_frameworks: spm_dependency_frameworks
+          }
+        end
+      rescue JSON::ParserError, StandardError => e
+        Pod::UI.warn "[Expo-precompiled] Failed to read external config at #{config_path}: #{e.message}"
       end
 
       # Processes a single spm.config.json file and adds entries to @pod_lookup_map.

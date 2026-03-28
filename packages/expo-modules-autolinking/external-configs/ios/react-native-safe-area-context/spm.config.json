@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "$schema": "../../../../../tools/src/prebuilds/schemas/spm.config.schema.json",
     "products": [
         {
             "name": "RNCSafeAreaContext",

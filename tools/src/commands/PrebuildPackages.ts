@@ -74,7 +74,7 @@ export default (program: Command) => {
     )
     .option(
       '--include-external',
-      'Include external (third-party) packages from packages/external/ in discovery and building.',
+      'Include external (third-party) packages from external-configs/ios/ in discovery and building.',
       false
     )
     .option(
