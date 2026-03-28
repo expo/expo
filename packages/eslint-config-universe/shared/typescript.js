@@ -51,7 +51,13 @@ module.exports = {
 
         'no-useless-constructor': 'off',
         '@typescript-eslint/no-useless-constructor': 'warn',
-
+        '@typescript-eslint/consistent-type-imports': [
+          'warn',
+          {
+            disallowTypeAnnotations: false,
+            fixStyle: 'inline-type-imports',
+          },
+        ],
         // The typescript-eslint FAQ recommends turning off "no-undef" in favor of letting tsc check for
         // undefined variables, including types
         'no-undef': 'off',
