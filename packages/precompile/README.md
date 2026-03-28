@@ -178,7 +178,7 @@ Each of these has an `spm.config.json` in its package root:
 | `react-native-svg` | `RNSVG` |
 | `react-native-worklets` | `RNWorklets` |
 
-For more details, see [`packages/external/README.md`](../../packages/external/README.md#supported-external-packages).
+For more details, see [`packages/expo-modules-autolinking/external-configs/ios/README.md`](../../packages/expo-modules-autolinking/external-configs/ios/README.md#supported-external-packages).
 
 ## Adding SPM Prebuild Support to Expo Packages
 
@@ -497,7 +497,7 @@ Compiler flags support multiple forms:
 
 Supported variable substitutions in flags: `${REACT_NATIVE_MINOR_VERSION}`, `${PACKAGE_VERSION}`.
 
-See [`packages/external/README.md` — Compiler Flags](../../packages/external/README.md#compiler-flags) for more details.
+See [`packages/expo-modules-autolinking/external-configs/ios/README.md` — Compiler Flags](../../packages/expo-modules-autolinking/external-configs/ios/README.md#compiler-flags) for more details.
 
 ---
 
@@ -666,7 +666,7 @@ et prebuild [options] <package-names...>
 | `--local-react-native-deps-tarball <path>`    | Path to React Native Dependencies tarball. Supports `{flavor}` placeholder|
 | `--react-native-version <version>`            | React Native version (auto-detected from bare-expo if not set)            |
 | `--hermes-version <version>`                  | Hermes version                                                            |
-| `--include-external`                          | Include external (third-party) packages from `packages/external/`        |
+| `--include-external`                          | Include external (third-party) packages from `external-configs/ios/`        |
 | `-s, --sign <identity>`                       | Code signing identity to sign XCFrameworks                                |
 | `--no-timestamp`                              | Disable secure timestamp when signing                                     |
 | `-j, --concurrency <number>`                  | Max packages to build in parallel (default: CPU cores / 3)               |

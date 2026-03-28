@@ -23,7 +23,7 @@ export function getPackagesDir(): string {
 }
 
 export function getExternalPackagesDir(): string {
-  return path.join(getPackagesDir(), 'external');
+  return path.join(getPackagesDir(), 'expo-modules-autolinking', 'external-configs', 'ios');
 }
 
 export function getPrecompileDir(): string {
