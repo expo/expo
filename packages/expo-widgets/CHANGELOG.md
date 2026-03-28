@@ -19,6 +19,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `getLiveActivityUrl` reading URL from shared storage so Dynamic Island tap navigates to the deep link URL. ([#44346](https://github.com/expo/expo/pull/44346) by [@prenansb](https://github.com/prenansb))
 - Fix `ExpoWidgets.bundle` not copied to widget extension when `use_frameworks` is active. ([#44065](https://github.com/expo/expo/pull/44065) by [@marvwhere](https://github.com/marvwhere))
 - Add missing project root to `watchFolders` in `metro.config.js` ([#43449](https://github.com/expo/expo/pull/43449) by [@kitten](https://github.com/kitten))
 - [plugin] Fix reading undefined when config is not provided. ([#43568](https://github.com/expo/expo/pull/43568) by [@jakex7](https://github.com/jakex7))
