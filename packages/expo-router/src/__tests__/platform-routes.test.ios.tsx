@@ -113,3 +113,123 @@ it(`should work with layout routes`, () => {
     type: 'layout',
   });
 });
+
+describe(`platform extension fallbacks from different directories`, () => {
+  it('allows a platform-specific route in a group without a sibling fallback', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './login.tsx': () => null,
+          './(tabs)/_layout.tsx': () => null,
+          './(tabs)/login.native.tsx': () => null,
+        }),
+        { internal_stripLoadRoute: true, platform: Platform.OS, skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './login.tsx',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './login.tsx'],
+          route: 'login',
+          type: 'route',
+        },
+        {
+          children: [
+            {
+              children: [],
+              contextKey: './(tabs)/login.native.tsx',
+              dynamic: null,
+              entryPoints: [
+                'expo-router/build/views/Navigator.js',
+                './(tabs)/_layout.tsx',
+                './(tabs)/login.native.tsx',
+              ],
+              route: 'login',
+              type: 'route',
+            },
+          ],
+          contextKey: './(tabs)/_layout.tsx',
+          dynamic: null,
+          initialRouteName: undefined,
+          route: '(tabs)',
+          type: 'layout',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
+
+  it('allows a platform-only layout without a sibling fallback', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(tabs)/_layout.ios.tsx': () => null,
+          './(tabs)/home.tsx': () => null,
+        }),
+        { internal_stripLoadRoute: true, platform: Platform.OS, skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [
+            {
+              children: [],
+              contextKey: './(tabs)/home.tsx',
+              dynamic: null,
+              entryPoints: [
+                'expo-router/build/views/Navigator.js',
+                './(tabs)/_layout.ios.tsx',
+                './(tabs)/home.tsx',
+              ],
+              route: 'home',
+              type: 'route',
+            },
+          ],
+          contextKey: './(tabs)/_layout.ios.tsx',
+          dynamic: null,
+          initialRouteName: undefined,
+          route: '(tabs)',
+          type: 'layout',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
+
+  it('allows a platform-only page without a sibling fallback', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './folder/page.ios.tsx': () => null,
+        }),
+        { internal_stripLoadRoute: true, platform: Platform.OS, skipGenerated: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './folder/page.ios.tsx',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './folder/page.ios.tsx'],
+          route: 'folder/page',
+          type: 'route',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
+});

@@ -15,7 +15,9 @@ There are two ways to use platform-specific extensions:
 
 ### Within src/app directory
 
-Metro bundler's platform-specific extensions (for example, **.android.tsx**, **.ios.tsx**, **.native.tsx**, or **.web.tsx**) are supported in the **src/app** directory only if a **non-platform version** also exists. This ensures that routes are universal across platforms for deep linking.
+Metro bundler's platform-specific extensions (for example, **.android.tsx**, **.ios.tsx**, **.native.tsx**, or **.web.tsx**) are supported in the **src/app** directory. When a platform-specific file has a **non-platform version** alongside it, the non-platform version acts as a fallback for platforms that don't have their own extension.
+
+Platform-specific files can also exist **without** a non-platform fallback in the same directory. This creates a **platform-only route** that is only available on the matching platform. This is useful for placing routes in different navigators or route groups per platform.
 
 Consider the following project structure:
 
@@ -34,6 +36,48 @@ In the above file structure:
 - **\_layout.web.tsx** file is used as a layout on the web and **\_layout.tsx** is used on all other platforms.
 - **index.tsx** file is used as the home page for all platforms.
 - **about.web.tsx** file is used as the about page for the web, and the **about.tsx** file is used on all other platforms.
+
+#### Platform-only routes in different navigators
+
+You can place a platform-specific route in a different part of the file tree without requiring a sibling fallback. This is useful when you want different navigation structures per platform.
+
+For example, you may want to present a **settings** screen inside a tab navigator on native while showing it as a modal on web:
+
+<FileTree
+  files={[
+    'src/app/_layout.tsx',
+    'src/app/(modals)/settings.tsx',
+    'src/app/(tabs)/_layout.tsx',
+    'src/app/(tabs)/settings.native.tsx',
+    'src/app/(tabs)/home.tsx',
+  ]}
+/>
+
+In the above file structure:
+
+- On **web**, the **/settings** route renders **(modals)/settings.tsx** as a modal (or however the root layout presents that group).
+- On **native** (iOS and Android), the **(tabs)/settings** route renders **settings.native.tsx** inside the tab navigator, giving it a native tab bar experience.
+- **(tabs)/settings.native.tsx** does not need a non-platform sibling **(tabs)/settings.tsx** — it is treated as a **platform-only route** and is simply excluded from the route tree on platforms that don't match.
+
+The same pattern works for any combination of navigators. For example, a login screen at the root on web but inside tabs on native:
+
+<FileTree
+  files={[
+    'src/app/login.tsx',
+    'src/app/(tabs)/_layout.tsx',
+    'src/app/(tabs)/login.native.tsx',
+    'src/app/(tabs)/home.tsx',
+  ]}
+/>
+
+#### Consequences and considerations
+
+When a platform-specific route file has **no same-directory fallback**, it is treated as a route that only exists on the matching platform. This has the following implications:
+
+- **Route does not exist on other platforms.** A file like `(tabs)/settings.native.tsx` without a sibling `(tabs)/settings.tsx` will not produce a `(tabs)/settings` route on web. Navigating to that path on web will result in an unmatched route (404). This is intentional — the route is only meant for the platforms that match the extension.
+- **Deep linking.** Universal deep links that point to a platform-only route will only resolve on the matching platforms. If you need a given URL to work on every platform, provide a non-platform fallback file in the same directory, or place the route at a path that exists universally.
+- **No cross-directory fallback check.** Expo Router does not perform a tree-wide search for a fallback at a different path. For example, having `(modals)/settings.tsx` does not count as a fallback for `(tabs)/settings.native.tsx` — they are separate routes at separate paths. The fallback check is strictly about sibling files in the same directory.
+- **Layout files.** Platform-only layouts (for example, `_layout.web.tsx` without `_layout.tsx`) work the same way. On platforms that don't match, the layout will not exist, which means its child routes will be hoisted to the parent or become inaccessible depending on the route tree structure.
 
 ### Outside src/app directory
 
