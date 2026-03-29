@@ -146,7 +146,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         ...config,
         skipGenerated: true,
         ignoreEntryPoints: true,
-        platform: react_native_1.Platform.OS,
+        platform: react_native_1.Platform.isTV ? 'tv' : react_native_1.Platform.OS,
         preserveRedirectAndRewrites: true,
     });
     const redirects = [config?.redirects, config?.rewrites]
