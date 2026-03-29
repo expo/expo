@@ -122,7 +122,8 @@
             "Tests/**",
             "BridgeModule/**",
             "Views/**",
-            "Worklets/**"
+            "Worklets/**",
+            "Core/ExpoModulesMacros.swift"
           ],
           "dependencies": [
             "Hermes",
