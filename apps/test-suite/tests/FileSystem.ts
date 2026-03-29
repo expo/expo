@@ -34,7 +34,7 @@ export async function test({ describe, expect, it, ...t }) {
             new File(Paths.document, '..', 'file.txt').textSync();
           }).toThrow();
           expect(() => {
-            new File(Paths.document, '..', 'file.txt').copy(new File(Paths.document, 'file.txt'));
+            new File(Paths.document, '..', 'file.txt').copySync(new File(Paths.document, 'file.txt'));
           }).toThrow();
         });
       });
@@ -611,7 +611,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'file.txt');
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        expect(() => src.copy(dstFolder)).toThrow();
+        expect(() => src.copySync(dstFolder)).toThrow();
       });
 
       it('Copies it to a folder', () => {
@@ -619,7 +619,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Hello world');
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        src.copy(dstFolder);
+        src.copySync(dstFolder);
         expect(src.exists).toBe(true);
         expect(src.textSync()).toBe('Hello world');
         const dst = new File(testDirectory, '/destination/file.txt');
@@ -631,14 +631,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'file.txt');
         file.write('Hello world');
         const folder = new Directory(testDirectory, 'destination');
-        expect(() => file.copy(folder)).toThrow();
+        expect(() => file.copySync(folder)).toThrow();
       });
 
       it('Copies it to a file', () => {
         const src = new File(testDirectory, 'file.txt');
         src.write('Hello world');
         const dst = new File(testDirectory, 'file2.txt');
-        src.copy(dst);
+        src.copySync(dst);
         expect(dst.exists).toBe(true);
         expect(dst.textSync()).toBe('Hello world');
         expect(src.exists).toBe(true);
@@ -655,7 +655,7 @@ export async function test({ describe, expect, it, ...t }) {
           dst.delete();
         } catch {}
         src.write('Hello world');
-        src.copy(dst);
+        src.copySync(dst);
         expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
         expect(dst.exists).toBe(true);
         expect(dst.md5).toBe(src.md5);
@@ -666,7 +666,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('source');
         const dst = new File(testDirectory, 'dst.txt');
         dst.write('destination');
-        expect(() => src.copy(dst)).toThrow();
+        expect(() => src.copySync(dst)).toThrow();
       });
 
       it('overwrites destination file when overwrite is true', () => {
@@ -674,7 +674,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('source');
         const dst = new File(testDirectory, 'dst.txt');
         dst.write('destination');
-        src.copy(dst, { overwrite: true });
+        src.copySync(dst, { overwrite: true });
         expect(dst.textSync()).toBe('source');
         expect(src.exists).toBe(true);
       });
@@ -686,7 +686,7 @@ export async function test({ describe, expect, it, ...t }) {
         dstFolder.create();
         const existing = new File(dstFolder, 'file.txt');
         existing.write('old content');
-        src.copy(dstFolder, { overwrite: true });
+        src.copySync(dstFolder, { overwrite: true });
         expect(new File(dstFolder, 'file.txt').textSync()).toBe('new content');
       });
     });
@@ -697,7 +697,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.create();
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        src.copy(dstFolder);
+        src.copySync(dstFolder);
         expect(src.exists).toBe(true);
         expect(new Directory(testDirectory, 'destination/directory').exists).toBe(true);
       });
@@ -706,14 +706,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new Directory(testDirectory, 'directory/');
         file.create();
         const folder = new Directory(testDirectory, 'some/nonexistent/directory/');
-        expect(() => file.copy(folder)).toThrow();
+        expect(() => file.copySync(folder)).toThrow();
       });
 
       it('Creates a copy of the directory if only the bottom level destination directory does not exist', () => {
         const file = new Directory(testDirectory, 'source/');
         file.create();
         const destination = new Directory(testDirectory, 'newDestination/');
-        file.copy(destination);
+        file.copySync(destination);
         expect(destination.uri).toBe(testDirectory + 'newDestination/');
         expect(file.uri).toBe(testDirectory + 'source/');
       });
@@ -724,7 +724,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.create();
         const dst = new File(testDirectory, 'file2.txt');
         dst.create();
-        expect(() => src.copy(dst)).toThrow();
+        expect(() => src.copySync(dst)).toThrow();
       });
 
       it('overwrites destination directory when overwrite is true', () => {
@@ -736,7 +736,7 @@ export async function test({ describe, expect, it, ...t }) {
         dst.create();
         new File(dst, 'old.txt').write('old content');
 
-        src.copy(dst, { overwrite: true });
+        src.copySync(dst, { overwrite: true });
         expect(dst.exists).toBe(true);
       });
     });
@@ -746,7 +746,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'file.txt');
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        expect(() => src.move(dstFolder)).toThrow();
+        expect(() => src.moveSync(dstFolder)).toThrow();
       });
 
       it('moves it to a folder', () => {
@@ -754,7 +754,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Hello world');
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        src.move(dstFolder);
+        src.moveSync(dstFolder);
         expect(src.exists).toBe(true);
         const dst = new File(testDirectory, '/destination/file.txt');
         expect(src.uri).toBe(dst.uri);
@@ -766,14 +766,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'file.txt');
         file.write('Hello world');
         const folder = new Directory(testDirectory, 'destination');
-        expect(() => file.move(folder)).toThrow();
+        expect(() => file.moveSync(folder)).toThrow();
       });
 
       it('moves it to a file', () => {
         const src = new File(testDirectory, 'file.txt');
         src.write('Hello world');
         const dst = new File(testDirectory, 'file2.txt');
-        src.move(dst);
+        src.moveSync(dst);
         expect(dst.exists).toBe(true);
         expect(dst.textSync()).toBe('Hello world');
         expect(src.exists).toBe(true);
@@ -785,7 +785,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('source');
         const dst = new File(testDirectory, 'dst.txt');
         dst.write('destination');
-        expect(() => src.move(dst)).toThrow();
+        expect(() => src.moveSync(dst)).toThrow();
       });
 
       it('overwrites destination file when overwrite is true', () => {
@@ -793,7 +793,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('source');
         const dst = new File(testDirectory, 'dst.txt');
         dst.write('destination');
-        src.move(dst, { overwrite: true });
+        src.moveSync(dst, { overwrite: true });
         expect(dst.textSync()).toBe('source');
         expect(src.uri).toBe(dst.uri);
       });
@@ -804,7 +804,7 @@ export async function test({ describe, expect, it, ...t }) {
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
         new File(dstFolder, 'file.txt').write('old content');
-        src.move(dstFolder, { overwrite: true });
+        src.moveSync(dstFolder, { overwrite: true });
         expect(new File(dstFolder, 'file.txt').textSync()).toBe('new content');
         expect(src.uri).toBe(new File(dstFolder, 'file.txt').uri);
       });
@@ -896,7 +896,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.create();
         const dstFolder = new Directory(testDirectory, 'destination/');
         dstFolder.create();
-        src.move(dstFolder);
+        src.moveSync(dstFolder);
         expect(src.exists).toBe(true);
         const dst = new Directory(testDirectory, 'destination/directory/');
         expect(src.uri).toBe(dst.uri);
@@ -907,14 +907,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'file.txt');
         file.write('Hello world');
         const folder = new Directory(testDirectory, 'some/nonexistent/directory/');
-        expect(() => file.move(folder)).toThrow();
+        expect(() => file.moveSync(folder)).toThrow();
       });
 
       it('Renames the directory if only the bottom level destination directory does not exist', () => {
         const file = new Directory(testDirectory, 'source/');
         file.create();
         const folder = new Directory(testDirectory, 'newDestination/');
-        file.move(folder);
+        file.moveSync(folder);
         expect(file.uri).toBe(testDirectory + 'newDestination/');
       });
 
@@ -924,7 +924,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.create();
         const dst = new File(testDirectory, 'file2.txt');
         dst.create();
-        expect(() => src.move(dst)).toThrow();
+        expect(() => src.moveSync(dst)).toThrow();
       });
 
       it('overwrites destination directory when overwrite is true', () => {
@@ -938,7 +938,7 @@ export async function test({ describe, expect, it, ...t }) {
         dst.create();
         new File(dst, 'old.txt').write('old content');
 
-        src.move(dstFolder, { overwrite: true });
+        src.moveSync(dstFolder, { overwrite: true });
         expect(src.exists).toBe(true);
         expect(src.uri).toBe(dst.uri);
         expect(new File(dst, 'file.txt').textSync()).toBe('from source');
@@ -996,7 +996,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test content');
 
             const dstDir = safDirectory.createDirectory('targetDir');
-            srcFile.copy(dstDir);
+            srcFile.copySync(dstDir);
 
             // Look for the file inside the destination directory
             const copiedFile = dstDir.list().find((item) => item.name === 'source.txt') as File;
@@ -1010,7 +1010,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test content');
 
             const dstFile = new File(localDirectory, 'dest.txt');
-            srcFile.copy(dstFile);
+            srcFile.copySync(dstFile);
 
             expect(srcFile.exists).toBe(true);
             expect(dstFile.exists).toBe(true);
@@ -1021,7 +1021,7 @@ export async function test({ describe, expect, it, ...t }) {
             const srcFile = safDirectory.createFile('source.txt', 'text/plain');
             srcFile.write('test content');
 
-            srcFile.copy(localDirectory);
+            srcFile.copySync(localDirectory);
 
             const copiedFile = new File(localDirectory, 'source.txt');
             expect(copiedFile.exists).toBe(true);
@@ -1036,7 +1036,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('nested content');
 
             const dstDir = safDirectory.createDirectory('destDir');
-            srcDir.copy(dstDir);
+            srcDir.copySync(dstDir);
 
             // Find the copied directory inside destDir
             const copiedDir = dstDir.list().find((item) => item.name === 'sourceDir') as Directory;
@@ -1053,7 +1053,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('nested content');
 
             // Destination directory must exist for directory copy
-            srcDir.copy(localDirectory);
+            srcDir.copySync(localDirectory);
 
             const copiedDir = new Directory(localDirectory, 'sourceDir2');
             expect(copiedDir.exists).toBe(true);
@@ -1070,7 +1070,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test content');
 
             const dstDir = safDirectory.createDirectory('localToSafDir');
-            srcFile.copy(dstDir);
+            srcFile.copySync(dstDir);
 
             const copiedFile = dstDir.list().find((item) => item.name === 'localfile.txt') as File;
             expect(copiedFile).toBeDefined();
@@ -1084,7 +1084,7 @@ export async function test({ describe, expect, it, ...t }) {
             const srcFile = new File(srcDir, 'nested.txt');
             srcFile.write('nested content');
 
-            srcDir.copy(safDirectory);
+            srcDir.copySync(safDirectory);
 
             const copiedDir = safDirectory
               .list()
@@ -1102,7 +1102,7 @@ export async function test({ describe, expect, it, ...t }) {
             const assetFile = new File(Paths.bundle, 'expo-root.pem');
             const dstFile = new File(localDirectory, 'asset-copy.txt');
 
-            assetFile.copy(dstFile);
+            assetFile.copySync(dstFile);
 
             expect(dstFile.exists).toBe(true);
             expect(dstFile.size).toBe(assetFile.size);
@@ -1113,7 +1113,7 @@ export async function test({ describe, expect, it, ...t }) {
             const localDir2 = new Directory(localDirectory, 'assetCopyDest');
             localDir2.create();
 
-            assetFile.copy(localDir2);
+            assetFile.copySync(localDir2);
 
             const copiedFile = new File(localDir2, 'expo-root.pem');
             expect(copiedFile.exists).toBe(true);
@@ -1124,7 +1124,7 @@ export async function test({ describe, expect, it, ...t }) {
             const assetFile = new File(Paths.bundle, 'expo-root.pem');
             const dstDir = safDirectory.createDirectory('assetsSaf');
 
-            assetFile.copy(dstDir);
+            assetFile.copySync(dstDir);
 
             const copiedFile = dstDir.list().find((item) => item.name === 'expo-root.pem') as File;
             expect(copiedFile).toBeDefined();
@@ -1139,7 +1139,7 @@ export async function test({ describe, expect, it, ...t }) {
             const originalUri = srcFile.uri;
 
             const dstDir = safDirectory.createDirectory('moveTargetDir');
-            srcFile.move(dstDir);
+            srcFile.moveSync(dstDir);
 
             expect(srcFile.exists).toBe(true);
             expect(srcFile.textSync()).toBe('test content');
@@ -1157,7 +1157,7 @@ export async function test({ describe, expect, it, ...t }) {
             const originalUri = srcFile.uri;
 
             const dstFile = new File(localDirectory, 'dest.txt');
-            srcFile.move(dstFile);
+            srcFile.moveSync(dstFile);
 
             expect(srcFile.uri).toBe(dstFile.uri);
             expect(dstFile.exists).toBe(true);
@@ -1170,7 +1170,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test content');
             const originalUri = srcFile.uri;
 
-            srcFile.move(localDirectory);
+            srcFile.moveSync(localDirectory);
 
             const movedFile = new File(localDirectory, 'source.txt');
             expect(movedFile.exists).toBe(true);
@@ -1188,7 +1188,7 @@ export async function test({ describe, expect, it, ...t }) {
             const originalUri = srcDir.uri;
 
             const dstDir = safDirectory.createDirectory('moveDestDir');
-            srcDir.move(dstDir);
+            srcDir.moveSync(dstDir);
 
             expect(srcDir.exists).toBe(true);
             expect(new Directory(originalUri).exists).toBe(false);
@@ -1206,7 +1206,7 @@ export async function test({ describe, expect, it, ...t }) {
             const localDest = new Directory(localDirectory, 'safMoveTarget');
             localDest.create();
 
-            srcDir.move(localDest);
+            srcDir.moveSync(localDest);
 
             expect(srcDir.exists).toBe(true);
             expect(new Directory(originalUri).exists).toBe(false);
@@ -1223,7 +1223,7 @@ export async function test({ describe, expect, it, ...t }) {
             const originalUri = srcFile.uri;
 
             const dstDir = safDirectory.createDirectory('localMoveTarget');
-            srcFile.move(dstDir);
+            srcFile.moveSync(dstDir);
 
             expect(srcFile.exists).toBe(true);
             expect(srcFile.textSync()).toBe('test content');
@@ -1244,7 +1244,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('nested content');
             const originalUri = srcDir.uri;
 
-            srcDir.move(safDirectory);
+            srcDir.moveSync(safDirectory);
 
             expect(srcDir.exists).toBe(true);
             expect(new Directory(originalUri).exists).toBe(false);
@@ -1260,7 +1260,7 @@ export async function test({ describe, expect, it, ...t }) {
             const assetFile = new File(Paths.bundle, 'expo-root.pem');
             const dstFile = new File(localDirectory, 'dest.txt');
 
-            expect(() => assetFile.move(dstFile)).toThrow();
+            expect(() => assetFile.moveSync(dstFile)).toThrow();
           });
 
           it('throws when copying directory to file', () => {
@@ -1268,7 +1268,7 @@ export async function test({ describe, expect, it, ...t }) {
             const dstFile = new File(localDirectory, 'file.txt');
             dstFile.create();
 
-            expect(() => srcDir.copy(dstFile)).toThrow();
+            expect(() => srcDir.copySync(dstFile)).toThrow();
           });
 
           it('throws when moving directory to file', () => {
@@ -1276,7 +1276,7 @@ export async function test({ describe, expect, it, ...t }) {
             const dstFile = new File(localDirectory, 'file.txt');
             dstFile.create();
 
-            expect(() => srcDir.move(dstFile)).toThrow();
+            expect(() => srcDir.moveSync(dstFile)).toThrow();
           });
 
           it('throws when destination directory does not exist (file copy)', () => {
@@ -1284,7 +1284,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test');
             const nonExistentDir = new Directory(localDirectory, 'nonexistent');
 
-            expect(() => srcFile.copy(nonExistentDir)).toThrow();
+            expect(() => srcFile.copySync(nonExistentDir)).toThrow();
           });
 
           it('throws when destination directory does not exist (file move)', () => {
@@ -1292,7 +1292,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test');
             const nonExistentDir = new Directory(localDirectory, 'nonexistent');
 
-            expect(() => srcFile.move(nonExistentDir)).toThrow();
+            expect(() => srcFile.moveSync(nonExistentDir)).toThrow();
           });
         });
       });
