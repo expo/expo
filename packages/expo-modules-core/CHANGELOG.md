@@ -36,6 +36,7 @@
 - [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added broader colors support to convertibles. ([#44041](https://github.com/expo/expo/pull/44041) by [@kudo](https://github.com/kudo))
 - [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
+- [iOS] Remove legacy `EXNativeModulesProxy` ([#42672](https://github.com/expo/expo/pull/42672) by [@tsapeta](https://github.com/tsapeta))
 
 ## 55.0.12 — 2026-02-25
 
