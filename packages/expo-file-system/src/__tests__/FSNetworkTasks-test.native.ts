@@ -100,6 +100,24 @@ describe('UploadTask', () => {
     task.cancel();
     expect(task.state).toBe('error');
   });
+
+  it('cancel() keeps the task in cancelled state after the upload promise rejects', async () => {
+    let rejectUpload!: (reason: Error) => void;
+    jest.spyOn(ExpoFileSystem.FileSystemUploadTask.prototype, 'start').mockImplementation(
+      () =>
+        new Promise((_, reject) => {
+          rejectUpload = reject;
+        })
+    );
+
+    const task = new UploadTask(file, url);
+    const uploadPromise = task.uploadAsync();
+    task.cancel();
+    rejectUpload(new Error('upload cancelled natively'));
+
+    await expect(uploadPromise).rejects.toThrow('upload cancelled natively');
+    expect(task.state).toBe('cancelled');
+  });
 });
 
 describe('DownloadTask', () => {
@@ -214,6 +232,24 @@ describe('DownloadTask', () => {
     expect(task.state).toBe('completed');
     task.cancel();
     expect(task.state).toBe('completed');
+  });
+
+  it('cancel() keeps the task in cancelled state after the download promise rejects', async () => {
+    let rejectDownload!: (reason: Error) => void;
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockImplementation(
+      () =>
+        new Promise((_, reject) => {
+          rejectDownload = reject;
+        })
+    );
+
+    const task = new DownloadTask(url, destination);
+    const downloadPromise = task.downloadAsync();
+    task.cancel();
+    rejectDownload(new Error('download cancelled natively'));
+
+    await expect(downloadPromise).rejects.toThrow('download cancelled natively');
+    expect(task.state).toBe('cancelled');
   });
 });
 
