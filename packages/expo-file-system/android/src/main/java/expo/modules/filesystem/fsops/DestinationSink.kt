@@ -48,10 +48,9 @@ sealed class DestinationSink(val spec: DestinationSpec) {
             }
           }
         }
-        // Non-local sources (SAF, ContentProvider, Asset): keep sequential.
-        // SAF ContentResolver operations are provider-dependent and may not be
-        // thread-safe for parallel reads. Parallel non-local source copies can
-        // be explored in a future follow-up after testing with common providers.
+        // Non-local sources (SAF, ContentProvider, Asset) should stay sequential.
+        // SAF ContentResolver operations are provider-dependent and may not be thread-safe
+        // for parallel reads.
         source.isDirectory() -> {
           target.mkdir()
           copyDirectoryViaStream(source, target)
@@ -73,10 +72,6 @@ sealed class DestinationSink(val spec: DestinationSpec) {
         } else {
           target
         }
-        // SAF ContentResolver operations are provider-dependent and may not be
-        // thread-safe. Parallel copies could cause issues with some document
-        // providers. Use sequential copy for SAF; consider parallelism in a
-        // future follow-up after testing with common providers.
         copyDirectoryViaStream(source, actualDest)
         return actualDest.uri
       } else {

@@ -99,8 +99,6 @@ sealed class CopyMoveStrategy(
       // Fast path: atomic rename (same filesystem)
       if (file.renameTo(resolved.target)) return resolved.target.uri
 
-      // NIO fallback: Files.move handles cross-filesystem moves internally
-      // (copy+delete under the hood, but lets the JVM pick the optimal strategy)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         return runCatching {
           moveFileNio(file.toPath(), resolved.target.toPath())

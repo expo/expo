@@ -92,9 +92,8 @@ internal suspend fun copyDirectoryParallel(
           ?: throw Exceptions.IllegalStateException("Failed to create directory: $childName")
         walk(child, childDest) // Sequential — preserves parent-before-child ordering
       } else {
-        // Acquire before launching so traversal itself backpressures when the
-        // concurrency limit is reached. This keeps active work, queued jobs,
-        // and pre-created destination files bounded.
+        // Acquire before launching so traversal itself backpressures when the concurrency limit
+        // is reached. This keeps active work, queued jobs, and pre-created destination files bounded.
         semaphore.acquire()
         var launched = false
         try {
