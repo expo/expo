@@ -30,27 +30,6 @@ internal fun copyFileViaStream(
 }
 
 /**
- * Repeatedly transfers bytes until [size] is reached or the transfer stops
- * making progress.
- *
- * Returns `true` only when all bytes were transferred.
- */
-internal inline fun copyChannelContents(
-  size: Long,
-  transferTo: (position: Long, count: Long) -> Long
-): Boolean {
-  var position = 0L
-  while (position < size) {
-    val transferred = transferTo(position, size - position)
-    if (transferred <= 0L) {
-      return false
-    }
-    position += transferred
-  }
-  return true
-}
-
-/**
  * Attempt to copy a file using FileChannel.transferTo() for zero-copy.
  * Returns true if the channel-based copy succeeded, false if either side
  * doesn't support file descriptors (caller should fall back to streams).
@@ -71,18 +50,35 @@ internal fun copyFileViaChannel(
       dstPfd.use { dst ->
         FileInputStream(src.fileDescriptor).channel.use { inCh ->
           FileOutputStream(dst.fileDescriptor).channel.use { outCh ->
-            if (!copyChannelContents(inCh.size()) { position, count ->
-                inCh.transferTo(position, count, outCh)
-              }
-            ) {
-              return false
+            copyChannelContents(inCh.size()) { position, count ->
+              inCh.transferTo(position, count, outCh)
             }
           }
         }
       }
     }
-    true
   }.getOrElse { false }
+}
+
+/**
+ * Repeatedly transfers bytes until [size] is reached or the transfer stops
+ * making progress.
+ *
+ * Returns `true` only when all bytes were transferred.
+ */
+private inline fun copyChannelContents(
+  size: Long,
+  transferTo: (position: Long, count: Long) -> Long
+): Boolean {
+  var position = 0L
+  while (position < size) {
+    val transferred = transferTo(position, size - position)
+    if (transferred <= 0L) {
+      return false
+    }
+    position += transferred
+  }
+  return true
 }
 
 /**
