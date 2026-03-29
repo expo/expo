@@ -20,6 +20,12 @@ onFlowStart:
     condition: ${maestro.copiedText == "false"}
     label: Assert isUpdatePending is false
 - copyTextFrom:
+    label: Copy text from nativeInterface state type
+    id: nativeInterfaceState.downloadTimeMs
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert download time is null
+- copyTextFrom:
     label: Copy text from isUpdateAvailable
     id: state.isUpdateAvailable
 - assertTrue:
@@ -132,6 +138,12 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "downloadCompleteWithUpdate"}
     label: Assert state is "downloadCompleteWithUpdate"
+- copyTextFrom:
+    label: Copy text from nativeInterface state type
+    id: nativeInterfaceState.downloadTimeMs
+- assertTrue:
+    condition: ${maestro.copiedText != "null"}
+    label: Assert download time is not null
 - copyTextFrom:
     label: Copy text from nativeInterface availableUpdateID
     id: nativeInterfaceState.availableUpdateID
