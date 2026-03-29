@@ -1,5 +1,10 @@
 package expo.modules.filesystem
 
+import android.net.Uri
+import androidx.core.net.toUri
+import expo.modules.filesystem.unifiedfile.JavaFile
+import expo.modules.filesystem.unifiedfile.SAFDocumentFile
+import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -12,10 +17,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.BufferedInputStream
-import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.RandomAccessFile
 import java.net.URI
+import java.net.URLConnection
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
@@ -44,13 +50,15 @@ class FileSystemDownloadTask : SharedObject() {
 
   @Volatile private var isPausing = false
   @Volatile private var isCancelling = false
-  private var destinationFile: File? = null
+  private var destinationFile: UnifiedFileInterface? = null
+  @Volatile private var bytesWritten = 0L
   private var lastProgressTime: Long = 0
   private val progressThrottleInterval: Long = 100 // 100ms
 
   suspend fun start(url: URI, to: FileSystemPath, options: DownloadTaskOptions?): String? {
     isPausing = false
     isCancelling = false
+    bytesWritten = 0L
 
     val destination = determineDestination(to, url)
     destinationFile = destination
@@ -70,7 +78,7 @@ class FileSystemDownloadTask : SharedObject() {
   fun pause(): Map<String, String> {
     isPausing = true
     call?.cancel()
-    val resumeData = (destinationFile?.length() ?: 0L).toString()
+    val resumeData = bytesWritten.toString()
     return mapOf("resumeData" to resumeData)
   }
 
@@ -83,6 +91,7 @@ class FileSystemDownloadTask : SharedObject() {
     } catch (e: NumberFormatException) {
       throw InvalidResumeDataException()
     }
+    bytesWritten = offset
     val destination = determineDestination(to, url)
     destinationFile = destination
 
@@ -113,7 +122,7 @@ class FileSystemDownloadTask : SharedObject() {
 
   private suspend fun downloadToFile(
     request: Request,
-    destination: File,
+    destination: UnifiedFileInterface,
     isResume: Boolean,
     offset: Long
   ): String? = withContext(Dispatchers.IO) {
@@ -160,50 +169,43 @@ class FileSystemDownloadTask : SharedObject() {
               val isPartial = resp.code == 206
               val effectiveOffset = if (isResume && isPartial) offset else 0L
 
-              val totalBytes = if (isPartial) {
-                // Partial content: total is offset + remaining content length
-                offset + (responseBody.contentLength())
-              } else {
-                responseBody.contentLength()
+              val contentLength = responseBody.contentLength()
+              val totalBytes = when {
+                isPartial && contentLength >= 0 -> offset + contentLength
+                isPartial -> -1L
+                else -> contentLength
               }
 
-              val input = BufferedInputStream(responseBody.byteStream())
-              destination.parentFile?.mkdirs()
+              prepareDestinationForWrite(destination, isResume && isPartial, effectiveOffset)
 
-              // For resume: truncate file to offset to discard any extra bytes
-              // written after pause, then append from there
-              if (isResume && isPartial) {
-                java.io.RandomAccessFile(destination, "rw").use { raf ->
-                  raf.setLength(effectiveOffset)
+              BufferedInputStream(responseBody.byteStream()).use { input ->
+                destination.outputStream(isResume && isPartial).use { output ->
+                  val buffer = ByteArray(8192)
+                  var bytesRead: Int
+                  var totalBytesWritten = effectiveOffset
+                  bytesWritten = totalBytesWritten
+
+                  while (input.read(buffer).also { bytesRead = it } != -1) {
+                    if (isPausing) {
+                      safeResume(null)
+                      return
+                    }
+
+                    output.write(buffer, 0, bytesRead)
+                    totalBytesWritten += bytesRead
+                    bytesWritten = totalBytesWritten
+
+                    emitProgress(totalBytesWritten, totalBytes)
+                  }
                 }
               }
-              val output = FileOutputStream(destination, isResume && isPartial)
-
-              val buffer = ByteArray(8192)
-              var bytesRead: Int
-              var totalBytesWritten = effectiveOffset // Start from offset if truly resuming
-
-              while (input.read(buffer).also { bytesRead = it } != -1) {
-                if (isPausing) {
-                  // Paused during download — streams are closed by response.use {}
-                  output.close()
-                  safeResume(null)
-                  return
-                }
-
-                output.write(buffer, 0, bytesRead)
-                totalBytesWritten += bytesRead
-
-                emitProgress(totalBytesWritten, totalBytes)
-              }
-
-              output.close()
 
               // Reset throttle to guarantee final progress fires
               lastProgressTime = 0
-              emitProgress(totalBytesWritten, totalBytesWritten)
+              bytesWritten = destination.length()
+              emitProgress(bytesWritten, bytesWritten)
 
-              safeResume(android.net.Uri.fromFile(destination).toString())
+              safeResume(destination.uri.toString())
             } catch (e: IOException) {
               if (isPausing) {
                 safeResume(null)
@@ -227,18 +229,69 @@ class FileSystemDownloadTask : SharedObject() {
     }
   }
 
-  private fun determineDestination(to: FileSystemPath, url: URI): File {
+  private fun determineDestination(to: FileSystemPath, url: URI): UnifiedFileInterface {
     return when (to) {
       is FileSystemDirectory -> {
-        // If destination is a directory, use filename from URL
-        val filename = url.path.substringAfterLast('/')
-        File(to.uri.path!!, filename)
+        val filename = filenameFromUrl(url)
+        when (val directory = to.file) {
+          is SAFDocumentFile -> {
+            directory.findFile(filename)
+              ?: directory.createFile(
+                URLConnection.guessContentTypeFromName(filename) ?: "application/octet-stream",
+                filename
+              )
+              ?: throw UnableToDownloadException("Unable to create destination file")
+          }
+          is JavaFile -> JavaFile(java.io.File(directory, filename).toUri())
+          else -> throw UnableToDownloadException("Invalid destination directory type")
+        }
       }
       is FileSystemFile -> {
-        File(to.uri.path!!)
+        to.file
       }
       else -> throw UnableToDownloadException("Invalid destination type")
     }
+  }
+
+  private fun prepareDestinationForWrite(
+    destination: UnifiedFileInterface,
+    append: Boolean,
+    offset: Long
+  ) {
+    when (destination) {
+      is JavaFile -> {
+        destination.parentFile?.let { parent ->
+          if (parent is JavaFile) {
+            parent.mkdirs()
+          }
+        }
+        if (append) {
+          RandomAccessFile(destination, "rw").use { raf ->
+            raf.setLength(offset)
+          }
+        } else {
+          FileOutputStream(destination, false).use { }
+        }
+      }
+      else -> {
+        if (append && destination.length() != offset) {
+          throw UnableToDownloadException(
+            "Cannot resume download: destination length does not match resume data"
+          )
+        }
+        if (!append) {
+          destination.outputStream(false).use { }
+        }
+      }
+    }
+  }
+
+  private fun filenameFromUrl(url: URI): String {
+    val path = url.path.orEmpty()
+    val filename = path.substringAfterLast('/').ifBlank {
+      Uri.parse(url.toString()).lastPathSegment.orEmpty()
+    }
+    return filename.ifBlank { "download" }
   }
 
   private fun emitProgress(bytesWritten: Long, totalBytes: Long) {

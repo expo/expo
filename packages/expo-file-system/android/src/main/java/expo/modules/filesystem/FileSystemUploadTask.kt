@@ -73,12 +73,13 @@ class FileSystemUploadTask : SharedObject() {
   }
 
   private var call: Call? = null
-  private var cancelled = false
+  @Volatile private var cancelled = false
   private var lastProgressTime: Long = 0
   private val progressThrottleInterval: Long = 100 // 100ms
 
   suspend fun start(url: String, file: FileSystemFile, options: UploadTaskOptions): UploadTaskResult {
     val unifiedFile = file.file
+    cancelled = false
 
     if (!unifiedFile.exists()) {
       throw UnableToUploadException("File does not exist")
@@ -178,16 +179,16 @@ class FileSystemUploadTask : SharedObject() {
     val mimeType = options.mimeType ?: file.type ?: URLConnection.guessContentTypeFromName(fileName)
       ?: "application/octet-stream"
 
-    // Add file part with progress tracking
+    // Add file part to the multipart body. Progress is tracked on the whole request body
+    // so that totals include boundaries and form fields as well.
     val fieldName = options.fieldName ?: fileName
     val fileBody = file.asRequestBody(mimeType)
-    val countingFileBody = CountingRequestBody(fileBody) { bytesWritten, totalBytes ->
+    bodyBuilder.addFormDataPart(fieldName, fileName, fileBody)
+
+    val multipartBody = bodyBuilder.build()
+    return CountingRequestBody(multipartBody) { bytesWritten, totalBytes ->
       emitProgress(bytesWritten, totalBytes)
     }
-
-    bodyBuilder.addFormDataPart(fieldName, fileName, countingFileBody)
-
-    return bodyBuilder.build()
   }
 
   private fun emitProgress(bytesWritten: Long, totalBytes: Long) {
