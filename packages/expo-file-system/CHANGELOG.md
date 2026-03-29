@@ -4,8 +4,8 @@
 
 ### 🛠 Breaking changes
 
-- `copy()` and `move()` methods of `File` and `Directory` are now asynchronous and return a Promise. Use `copySync()` and `moveSync()` for synchronous behavior. (by [@barthap](https://github.com/barthap))
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- `copy()` and `move()` methods of `File` and `Directory` are now asynchronous and return a Promise. Use `copySync()` and `moveSync()` for synchronous behavior. ([#44359](https://github.com/expo/expo/pull/44359) by [@barthap](https://github.com/barthap))
 
 ### 🎉 New features
 

@@ -34,7 +34,9 @@ export async function test({ describe, expect, it, ...t }) {
             new File(Paths.document, '..', 'file.txt').textSync();
           }).toThrow();
           expect(() => {
-            new File(Paths.document, '..', 'file.txt').copySync(new File(Paths.document, 'file.txt'));
+            new File(Paths.document, '..', 'file.txt').copySync(
+              new File(Paths.document, 'file.txt')
+            );
           }).toThrow();
         });
       });
