@@ -36,6 +36,7 @@ class FileSystemUploadTask: SharedObject {
   private var session: URLSession?
   private var uploadTask: URLSessionUploadTask?
   private var delegate: UploadTaskDelegate?
+  private var sourceAccess: FileSystemScopedAccess?
   private var cancelled = false
   private var tempFileURL: URL?
   private var lastProgressTime: TimeInterval = 0
@@ -58,6 +59,8 @@ class FileSystemUploadTask: SharedObject {
         promise.reject(UnableToUploadException("Failed to create URLSession"))
         return
       }
+
+      sourceAccess = try makeScopedAccess(for: file, permission: .read)
 
       // Build the request
       var request = URLRequest(url: url)
@@ -85,19 +88,19 @@ class FileSystemUploadTask: SharedObject {
       uploadTask?.resume()
     } catch {
       promise.reject(UnableToUploadException(error.localizedDescription))
+      cleanup(invalidateSession: true)
     }
   }
 
   func cancel() {
     cancelled = true
     uploadTask?.cancel()
-    cleanup()
+    cleanup(invalidateSession: true)
   }
 
   override func sharedObjectWillRelease() {
     uploadTask?.cancel()
-    session?.invalidateAndCancel()
-    cleanup()
+    cleanup(invalidateSession: true)
   }
 
   fileprivate func emitProgress(bytesSent: Int64, totalBytes: Int64) {
@@ -113,10 +116,13 @@ class FileSystemUploadTask: SharedObject {
     }
   }
 
-  private func cleanup() {
+  fileprivate func cleanup(invalidateSession: Bool = false) {
     delegate = nil
     uploadTask = nil
-    session?.invalidateAndCancel()
+    sourceAccess = nil
+    if invalidateSession {
+      session?.invalidateAndCancel()
+    }
     session = nil
     if let tempFileURL = tempFileURL {
       try? FileManager.default.removeItem(at: tempFileURL)
@@ -142,6 +148,12 @@ class FileSystemUploadTask: SharedObject {
 
     // Use UUID-based filename to avoid collision on concurrent uploads of same-named files
     let tempURL = try createLocalUrl(from: sourceUrl, uniqueName: UUID().uuidString)
+    var completed = false
+    defer {
+      if !completed {
+        try? FileManager.default.removeItem(at: tempURL)
+      }
+    }
 
     guard let output = OutputStream(url: tempURL, append: false) else {
       throw UploadFailedToAccessCacheException()
@@ -188,6 +200,7 @@ class FileSystemUploadTask: SharedObject {
     let closingData = Array(closing.utf8)
     output.write(closingData, maxLength: closingData.count)
 
+    completed = true
     return tempURL
   }
 
@@ -242,6 +255,7 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
 
       // Invalidate session to break retain cycle (delegate → session → delegate)
       session.finishTasksAndInvalidate()
+      sharedObject?.cleanup()
       return
     }
 
@@ -250,6 +264,7 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
 
       // Invalidate session to break retain cycle (delegate → session → delegate)
       session.finishTasksAndInvalidate()
+      sharedObject?.cleanup()
       return
     }
 
@@ -270,5 +285,6 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
 
     // Invalidate session to break retain cycle (delegate → session → delegate)
     session.finishTasksAndInvalidate()
+    sharedObject?.cleanup()
   }
 }

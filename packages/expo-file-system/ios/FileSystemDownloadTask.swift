@@ -18,11 +18,18 @@ class FileSystemDownloadTask: SharedObject {
   private var session: URLSession?
   private var dataTask: URLSessionDataTask?
   private var delegate: DownloadTaskDelegate?
+  private var destinationAccess: FileSystemScopedAccess?
   var isPausing = false
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
 
+    do {
+      destinationAccess = try makeScopedAccess(for: to, permission: .write)
+    } catch {
+      promise.reject(error)
+      return
+    }
     let destinationUrl = resolveDestinationUrl(to: to, url: url)
 
     // Remove existing file for a fresh start
@@ -75,6 +82,12 @@ class FileSystemDownloadTask: SharedObject {
       return
     }
 
+    do {
+      destinationAccess = try makeScopedAccess(for: to, permission: .write)
+    } catch {
+      promise.reject(error)
+      return
+    }
     let destinationUrl = resolveDestinationUrl(to: to, url: url)
 
     delegate = DownloadTaskDelegate(sharedObject: self, destinationUrl: destinationUrl, offset: offset, promise: promise)
@@ -99,19 +112,21 @@ class FileSystemDownloadTask: SharedObject {
   func cancel() {
     isPausing = false
     dataTask?.cancel()
-    cleanup()
+    cleanup(invalidateSession: true)
   }
 
   override func sharedObjectWillRelease() {
     dataTask?.cancel()
-    session?.invalidateAndCancel()
-    cleanup()
+    cleanup(invalidateSession: true)
   }
 
-  private func cleanup() {
+  fileprivate func cleanup(invalidateSession: Bool = false) {
     delegate = nil
     dataTask = nil
-    session?.invalidateAndCancel()
+    destinationAccess = nil
+    if invalidateSession {
+      session?.invalidateAndCancel()
+    }
     session = nil
   }
 
@@ -175,6 +190,7 @@ class DownloadTaskDelegate: NSObject, URLSessionDataDelegate {
     } else {
       // Fresh download or server ignored Range header (200 instead of 206) — truncate and restart
       totalBytesWritten = 0
+      try? FileManager.default.removeItem(at: destinationUrl)
       FileManager.default.createFile(atPath: destinationUrl.path, contents: nil)
       fileHandle = try? FileHandle(forWritingTo: destinationUrl)
     }
@@ -246,5 +262,6 @@ class DownloadTaskDelegate: NSObject, URLSessionDataDelegate {
 
     // Invalidate session to break retain cycle
     session.finishTasksAndInvalidate()
+    sharedObject?.cleanup()
   }
 }
