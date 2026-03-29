@@ -1009,9 +1009,10 @@ module Expo
 
         if repo_root
           scan_spm_configs(repo_root)
-        elsif custom_modules_path
-          # Standalone project with EXPO_PRECOMPILED_MODULES_PATH:
-          # discover spm.config.json from node_modules instead of packages/
+        else
+          # Standalone project: discover spm.config.json from node_modules instead of packages/.
+          # Prebuilds are resolved from EXPO_PRECOMPILED_MODULES_PATH if set,
+          # otherwise from prebuilds/ bundled inside each package directory.
           project_root = File.dirname(Dir.pwd) # Dir.pwd is ios/ during pod install
           scan_node_modules_configs(project_root)
         end
@@ -1102,6 +1103,12 @@ module Expo
           codegen_name = installed_codegen_name || product['codegenName']
           build_output_dir = File.join(base_dir, npm_package, 'output')
 
+          # Fallback: check for prebuilds bundled inside the package directory (shipped in npm)
+          bundled_output_dir = File.join(package_root, 'prebuilds', 'output')
+          if !File.directory?(build_output_dir) && File.directory?(bundled_output_dir)
+            build_output_dir = bundled_output_dir
+          end
+
           targets = (product['targets'] || [])
             .select { |t| t['type'] != 'framework' && !t['path']&.start_with?('.build/') }
             .map { |t| { name: t['name'], path: t['path'] } }
@@ -1163,6 +1170,13 @@ module Expo
         codegen_name = resolve_codegen_name(product, pod_name, npm_package, type, repo_root)
         base_dir = custom_modules_path || File.join(repo_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR)
         build_output_dir = File.join(base_dir, npm_package, 'output')
+
+        # Fallback: check for prebuilds bundled inside the package directory (shipped in npm)
+        bundled_output_dir = File.join(package_dir, 'prebuilds', 'output')
+        if !File.directory?(build_output_dir) && File.directory?(bundled_output_dir)
+          build_output_dir = bundled_output_dir
+        end
+
         package_root, podspec_dir = resolve_package_paths(pod_name, package_dir, npm_package, type, repo_root)
 
         targets = (product['targets'] || [])

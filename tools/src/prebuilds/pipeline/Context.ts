@@ -20,7 +20,7 @@ import type { UnitError, UnitStatus } from './Types';
 
 export type PrebuildCliOptions = {
   reactNativeVersion?: string;
-  hermesVersion: string;
+  hermesVersion?: string;
   clean: boolean;
   cleanCache: boolean;
   flavor?: BuildFlavor;
@@ -66,7 +66,7 @@ export interface PrebuildRequest {
     readonly reactNativeDependencies?: string;
   };
   readonly reactNativeVersionOverride?: string;
-  readonly hermesVersionOverride: string;
+  readonly hermesVersionOverride?: string;
   readonly concurrency: number;
 }
 

@@ -19,6 +19,7 @@ import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addTemplateTarball } from './addTemplateTarball';
+import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
 const { cyan } = chalk;
@@ -99,7 +100,7 @@ export const cleanWorkingTree = new Task<TaskArgs>(
         await Git.cleanAsync({
           recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'packages/**/local-maven-repo/**', 'templates/**/*.tgz'],
+          paths: ['packages/**/*.tgz', 'packages/**/local-maven-repo/**', 'packages/**/prebuilds/**', 'templates/**/*.tgz'],
         });
       },
       'Cleaned up the working tree'
@@ -125,6 +126,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateAndroidProjects,
       publishAndroidArtifacts,
       addTemplateTarball,
+      bundleIOSPrebuilds,
       packPackageToTarball,
       publishPackages,
       cleanWorkingTree,
