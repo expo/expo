@@ -11,7 +11,7 @@ import { PackagesGraphNode } from '../packages-graph';
 export type CommandOptions = {
   packageNames: string[];
   prerelease: boolean | string;
-  tag: string | null;
+  tag: string;
   retry: boolean;
   commitMessage: string;
   skipRepoChecks: boolean;

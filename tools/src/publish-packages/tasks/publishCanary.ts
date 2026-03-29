@@ -64,7 +64,7 @@ export const prepareCanaries = new Task<TaskArgs>(
     if (await shouldUseCanaryTag(currentBranch)) {
       options.tag = 'canary';
     } else {
-      options.tag = null;
+      options.tag = `canary-sdk-${currentSdkMajor}`;
     }
   }
 );

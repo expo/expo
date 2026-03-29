@@ -48,7 +48,7 @@ export const publishPackages = new Task<TaskArgs>(
 
       logger.log(
         '  ',
-        `${green(pkg.packageName)} version ${cyan(releaseVersion)}${options.tag ? ` as ${yellow(options.tag)}` : ''}`
+        `${green(pkg.packageName)} version ${cyan(releaseVersion)} as ${yellow(options.tag)}`
       );
 
       // If there is a tarball already built, use it instead of packing it again
