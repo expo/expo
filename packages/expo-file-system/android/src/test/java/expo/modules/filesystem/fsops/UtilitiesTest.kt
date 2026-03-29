@@ -9,10 +9,10 @@ class UtilitiesTest {
   fun copyChannelContents_stopsWhenTransferMakesNoProgress() {
     var calls = 0
 
-    val result = copyChannelContents(4_096L) { _, _ ->
+    val result = copyChannelContents(4096L) { _, _ ->
       calls += 1
       when (calls) {
-        1 -> 2_048L
+        1 -> 2048L
         else -> 0L
       }
     }
@@ -23,7 +23,7 @@ class UtilitiesTest {
 
   @Test
   fun copyChannelContents_supportsLargeSizes() {
-    val size = Int.MAX_VALUE.toLong() + 8_192L
+    val size = Int.MAX_VALUE.toLong() + 8192L
     var calls = 0
 
     val result = copyChannelContents(size) { _, remaining ->

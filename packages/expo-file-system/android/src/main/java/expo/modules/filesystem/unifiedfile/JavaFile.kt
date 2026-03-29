@@ -81,9 +81,10 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
   override fun openFileDescriptor(mode: String): ParcelFileDescriptor? = runCatching {
     val pfdMode = when (mode) {
       "r" -> ParcelFileDescriptor.MODE_READ_ONLY
-      "w" -> ParcelFileDescriptor.MODE_WRITE_ONLY or
-        ParcelFileDescriptor.MODE_CREATE or
-        ParcelFileDescriptor.MODE_TRUNCATE
+      "w" ->
+        ParcelFileDescriptor.MODE_WRITE_ONLY or
+          ParcelFileDescriptor.MODE_CREATE or
+          ParcelFileDescriptor.MODE_TRUNCATE
       else -> return null
     }
     ParcelFileDescriptor.open(this, pfdMode)

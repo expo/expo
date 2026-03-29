@@ -35,7 +35,7 @@ internal fun copyFileViaStream(
  *
  * Returns `true` only when all bytes were transferred.
  */
-internal fun copyChannelContents(
+internal inline fun copyChannelContents(
   size: Long,
   transferTo: (position: Long, count: Long) -> Long
 ): Boolean {
@@ -61,16 +61,20 @@ internal fun copyFileViaChannel(
 ): Boolean {
   val srcPfd = source.openFileDescriptor("r") ?: return false
   val dstPfd = dest.openFileDescriptor("w")
-    ?: run { srcPfd.close(); return false }
+    ?: run {
+      srcPfd.close()
+      return false
+    }
 
-  return try {
+  return runCatching {
     srcPfd.use { src ->
       dstPfd.use { dst ->
         FileInputStream(src.fileDescriptor).channel.use { inCh ->
           FileOutputStream(dst.fileDescriptor).channel.use { outCh ->
             if (!copyChannelContents(inCh.size()) { position, count ->
                 inCh.transferTo(position, count, outCh)
-              }) {
+              }
+            ) {
               return false
             }
           }
@@ -78,9 +82,7 @@ internal fun copyFileViaChannel(
       }
     }
     true
-  } catch (_: Exception) {
-    false
-  }
+  }.getOrElse { false }
 }
 
 /**
