@@ -6,7 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 
 /**
  * Copy file contents via streams.
@@ -93,11 +92,25 @@ internal suspend fun copyDirectoryParallel(
           ?: throw Exceptions.IllegalStateException("Failed to create directory: $childName")
         walk(child, childDest) // Sequential — preserves parent-before-child ordering
       } else {
-        val childDest = dst.createFile(child.type ?: "*/*", childName)
-          ?: throw Exceptions.IllegalStateException("Failed to create file: $childName")
-        launch(Dispatchers.IO) {
-          semaphore.withPermit {
-            copyFile(child, childDest)
+        // Acquire before launching so traversal itself backpressures when the
+        // concurrency limit is reached. This keeps active work, queued jobs,
+        // and pre-created destination files bounded.
+        semaphore.acquire()
+        var launched = false
+        try {
+          val childDest = dst.createFile(child.type ?: "*/*", childName)
+            ?: throw Exceptions.IllegalStateException("Failed to create file: $childName")
+          launch(Dispatchers.IO) {
+            try {
+              copyFile(child, childDest)
+            } finally {
+              semaphore.release()
+            }
+          }
+          launched = true
+        } finally {
+          if (!launched) {
+            semaphore.release()
           }
         }
       }
