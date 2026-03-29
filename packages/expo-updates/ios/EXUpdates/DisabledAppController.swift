@@ -5,6 +5,7 @@ import EXUpdatesInterface
 
 internal class DisabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscription {
   func remove() {}
+  func getContext() -> Any? { return nil }
 }
 
 /**
