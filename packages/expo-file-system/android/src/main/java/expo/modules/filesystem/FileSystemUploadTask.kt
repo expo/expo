@@ -73,6 +73,7 @@ class FileSystemUploadTask : SharedObject() {
   }
 
   private var call: Call? = null
+
   @Volatile private var cancelled = false
   private var lastProgressTime: Long = 0
   private val progressThrottleInterval: Long = 100 // 100ms
@@ -85,16 +86,17 @@ class FileSystemUploadTask : SharedObject() {
       throw UnableToUploadException("File does not exist")
     }
 
-    // Build request body
     val requestBody = when (options.uploadType) {
-      UploadType.MULTIPART -> createMultipartBody(unifiedFile, options)
+      UploadType.MULTIPART -> CountingRequestBody(
+        createMultipartRequestBody(unifiedFile, options)
+      ) { bytesWritten, totalBytes ->
+        emitProgress(bytesWritten, totalBytes)
+      }
       UploadType.BINARY_CONTENT -> createBinaryBody(unifiedFile)
     }
 
-    // Build request
     val requestBuilder = Request.Builder().url(url)
 
-    // Add headers
     options.headers?.forEach { (key, value) ->
       requestBuilder.addHeader(key, value)
     }
@@ -166,31 +168,6 @@ class FileSystemUploadTask : SharedObject() {
     }
   }
 
-  private fun createMultipartBody(file: UnifiedFileInterface, options: UploadTaskOptions): RequestBody {
-    val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
-
-    // Add form parameters
-    options.parameters?.forEach { (key, value) ->
-      bodyBuilder.addFormDataPart(key, value)
-    }
-
-    // Determine MIME type
-    val fileName = file.fileName ?: "upload"
-    val mimeType = options.mimeType ?: file.type ?: URLConnection.guessContentTypeFromName(fileName)
-      ?: "application/octet-stream"
-
-    // Add file part to the multipart body. Progress is tracked on the whole request body
-    // so that totals include boundaries and form fields as well.
-    val fieldName = options.fieldName ?: fileName
-    val fileBody = file.asRequestBody(mimeType)
-    bodyBuilder.addFormDataPart(fieldName, fileName, fileBody)
-
-    val multipartBody = bodyBuilder.build()
-    return CountingRequestBody(multipartBody) { bytesWritten, totalBytes ->
-      emitProgress(bytesWritten, totalBytes)
-    }
-  }
-
   private fun emitProgress(bytesWritten: Long, totalBytes: Long) {
     val currentTime = System.currentTimeMillis()
     val shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval || bytesWritten == totalBytes
@@ -206,6 +183,29 @@ class FileSystemUploadTask : SharedObject() {
       )
     }
   }
+}
+
+fun createMultipartRequestBody(
+  file: UnifiedFileInterface,
+  options: UploadTaskOptions
+): RequestBody {
+  val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
+
+  options.parameters?.forEach { (key, value) ->
+    bodyBuilder.addFormDataPart(key, value)
+  }
+
+  val fileName = file.fileName ?: "upload"
+  val mimeType = options.mimeType ?: file.type ?: URLConnection.guessContentTypeFromName(fileName)
+    ?: "application/octet-stream"
+
+  // Add file part to the multipart body. Progress is tracked on the whole request body
+  // so that totals include boundaries and form fields as well.
+  val fieldName = options.fieldName ?: fileName
+  val fileBody = file.asRequestBody(mimeType)
+  bodyBuilder.addFormDataPart(fieldName, fileName, fileBody)
+
+  return bodyBuilder.build()
 }
 
 /**

@@ -49,8 +49,10 @@ class FileSystemDownloadTask : SharedObject() {
   private var call: Call? = null
 
   @Volatile private var isPausing = false
+
   @Volatile private var isCancelling = false
   private var destinationFile: UnifiedFileInterface? = null
+
   @Volatile private var bytesWritten = 0L
   private var lastProgressTime: Long = 0
   private val progressThrottleInterval: Long = 100 // 100ms
@@ -65,7 +67,6 @@ class FileSystemDownloadTask : SharedObject() {
 
     val requestBuilder = Request.Builder().url(url.toString())
 
-    // Add headers
     options?.headers?.forEach { (key, value) ->
       requestBuilder.addHeader(key, value)
     }
@@ -99,8 +100,6 @@ class FileSystemDownloadTask : SharedObject() {
 
     // Add Range header for resuming
     requestBuilder.addHeader("Range", "bytes=$offset-")
-
-    // Add other headers
     options?.headers?.forEach { (key, value) ->
       requestBuilder.addHeader(key, value)
     }
@@ -170,11 +169,7 @@ class FileSystemDownloadTask : SharedObject() {
               val effectiveOffset = if (isResume && isPartial) offset else 0L
 
               val contentLength = responseBody.contentLength()
-              val totalBytes = when {
-                isPartial && contentLength >= 0 -> offset + contentLength
-                isPartial -> -1L
-                else -> contentLength
-              }
+              val totalBytes = calculateDownloadTotalBytes(resp.code, contentLength, effectiveOffset)
 
               prepareDestinationForWrite(destination, isResume && isPartial, effectiveOffset)
 
@@ -230,27 +225,7 @@ class FileSystemDownloadTask : SharedObject() {
   }
 
   private fun determineDestination(to: FileSystemPath, url: URI): UnifiedFileInterface {
-    return when (to) {
-      is FileSystemDirectory -> {
-        val filename = filenameFromUrl(url)
-        when (val directory = to.file) {
-          is SAFDocumentFile -> {
-            directory.findFile(filename)
-              ?: directory.createFile(
-                URLConnection.guessContentTypeFromName(filename) ?: "application/octet-stream",
-                filename
-              )
-              ?: throw UnableToDownloadException("Unable to create destination file")
-          }
-          is JavaFile -> JavaFile(java.io.File(directory, filename).toUri())
-          else -> throw UnableToDownloadException("Invalid destination directory type")
-        }
-      }
-      is FileSystemFile -> {
-        to.file
-      }
-      else -> throw UnableToDownloadException("Invalid destination type")
-    }
+    return resolveDownloadDestination(to, url)
   }
 
   private fun prepareDestinationForWrite(
@@ -286,14 +261,6 @@ class FileSystemDownloadTask : SharedObject() {
     }
   }
 
-  private fun filenameFromUrl(url: URI): String {
-    val path = url.path.orEmpty()
-    val filename = path.substringAfterLast('/').ifBlank {
-      Uri.parse(url.toString()).lastPathSegment.orEmpty()
-    }
-    return filename.ifBlank { "download" }
-  }
-
   private fun emitProgress(bytesWritten: Long, totalBytes: Long) {
     val currentTime = System.currentTimeMillis()
     val shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval || bytesWritten == totalBytes
@@ -308,5 +275,49 @@ class FileSystemDownloadTask : SharedObject() {
         )
       )
     }
+  }
+}
+
+fun filenameFromUrl(url: URI): String {
+  val path = url.path.orEmpty()
+  val filename = path.substringAfterLast('/').ifBlank {
+    Uri.parse(url.toString()).lastPathSegment.orEmpty()
+  }
+  return filename.ifBlank { "download" }
+}
+
+fun calculateDownloadTotalBytes(
+  responseCode: Int,
+  contentLength: Long,
+  effectiveOffset: Long
+): Long {
+  return when {
+    responseCode == 206 && contentLength >= 0 -> effectiveOffset + contentLength
+    responseCode == 206 -> -1L
+    else -> contentLength
+  }
+}
+
+fun resolveDownloadDestination(to: FileSystemPath, url: URI): UnifiedFileInterface {
+  return when (to) {
+    is FileSystemDirectory -> {
+      val filename = filenameFromUrl(url)
+      when (val directory = to.file) {
+        is SAFDocumentFile -> {
+          directory.findFile(filename)
+            ?: directory.createFile(
+              URLConnection.guessContentTypeFromName(filename) ?: "application/octet-stream",
+              filename
+            )
+            ?: throw UnableToDownloadException("Unable to create destination file")
+        }
+        is JavaFile -> JavaFile(java.io.File(directory, filename).toUri())
+        else -> throw UnableToDownloadException("Invalid destination directory type")
+      }
+    }
+    is FileSystemFile -> {
+      to.file
+    }
+    else -> throw UnableToDownloadException("Invalid destination type")
   }
 }

@@ -1,13 +1,6 @@
 import Checkbox from 'expo-checkbox';
 import * as Contacts from 'expo-contacts';
-import {
-  File,
-  Directory,
-  Paths,
-  FileMode,
-  UploadType,
-  DownloadTask,
-} from 'expo-file-system';
+import { File, Directory, Paths, FileMode, UploadType, DownloadTask } from 'expo-file-system';
 import type {
   FileHandle,
   UploadProgress,

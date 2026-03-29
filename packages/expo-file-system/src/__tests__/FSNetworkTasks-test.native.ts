@@ -1,3 +1,4 @@
+import ExpoFileSystem from '../ExpoFileSystem';
 import {
   File,
   Directory,
@@ -6,8 +7,6 @@ import {
   DownloadTask,
   type DownloadPauseState,
 } from '../index';
-
-import ExpoFileSystem from '../ExpoFileSystem';
 
 describe('UploadTask', () => {
   let file: File;

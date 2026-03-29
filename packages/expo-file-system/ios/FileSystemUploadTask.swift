@@ -46,10 +46,8 @@ class FileSystemUploadTask: SharedObject {
     let sourceUrl = file.url
 
     do {
-      // Create the delegate
       delegate = UploadTaskDelegate(sharedObject: self, promise: promise)
 
-      // Create the session
       let configuration = URLSessionConfiguration.default
       configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
       configuration.urlCache = nil
@@ -62,7 +60,6 @@ class FileSystemUploadTask: SharedObject {
 
       sourceAccess = try makeScopedAccess(for: file, permission: .read)
 
-      // Build the request
       var request = URLRequest(url: url)
       request.httpMethod = options.httpMethod
 
@@ -72,7 +69,6 @@ class FileSystemUploadTask: SharedObject {
         }
       }
 
-      // Create upload task based on upload type
       if options.uploadType == .multipart {
         let boundaryString = UUID().uuidString
         let bodyFileURL = try createMultipartBody(boundary: boundaryString, sourceUrl: sourceUrl, options: options)
@@ -81,7 +77,7 @@ class FileSystemUploadTask: SharedObject {
         tempFileURL = bodyFileURL
 
         uploadTask = session.uploadTask(with: request, fromFile: bodyFileURL)
-      } else { // Binary content
+      } else {
         uploadTask = session.uploadTask(with: request, fromFile: sourceUrl)
       }
 
@@ -245,6 +241,12 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
     }
     settled = true
 
+    defer {
+      // Invalidate session to break retain cycle (delegate → session → delegate)
+      session.finishTasksAndInvalidate()
+      sharedObject?.cleanup()
+    }
+
     if let error = error {
       let nsError = error as NSError
       if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
@@ -252,19 +254,11 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
       } else {
         promise.reject(UnableToUploadException(error.localizedDescription))
       }
-
-      // Invalidate session to break retain cycle (delegate → session → delegate)
-      session.finishTasksAndInvalidate()
-      sharedObject?.cleanup()
       return
     }
 
     guard let httpResponse = task.response as? HTTPURLResponse else {
       promise.reject(UnableToUploadException("No HTTP response received"))
-
-      // Invalidate session to break retain cycle (delegate → session → delegate)
-      session.finishTasksAndInvalidate()
-      sharedObject?.cleanup()
       return
     }
 
@@ -282,9 +276,5 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
     ]
 
     promise.resolve(result)
-
-    // Invalidate session to break retain cycle (delegate → session → delegate)
-    session.finishTasksAndInvalidate()
-    sharedObject?.cleanup()
   }
 }
