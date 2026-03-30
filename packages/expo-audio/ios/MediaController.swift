@@ -55,7 +55,7 @@ class MediaController {
   private func applyPlaybackInfo(_ info: inout [String: Any], for player: AudioPlayer) {
     info[MPMediaItemPropertyPlaybackDuration] = player.duration
     info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
-    info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 1.0
+    info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 0.0
     info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
   }
 
@@ -154,6 +154,7 @@ class MediaController {
       }
 
       player.play(at: Float(player.currentRate > 0 ? player.currentRate : 1.0))
+      self?.updateNowPlayingInfo(for: player)
       return .success
     }
 
@@ -163,6 +164,7 @@ class MediaController {
       }
 
       player.ref.pause()
+      self?.updateNowPlayingInfo(for: player)
       return .success
     }
 
@@ -176,6 +178,7 @@ class MediaController {
       } else {
         player.play(at: Float(player.currentRate > 0 ? player.currentRate : 1.0))
       }
+      self?.updateNowPlayingInfo(for: player)
       return .success
     }
 
