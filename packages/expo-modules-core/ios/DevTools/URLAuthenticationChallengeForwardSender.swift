@@ -3,7 +3,7 @@
 /**
  A helper class to forward URLAuthenticationChallenge completion handler to URLAuthenticationChallengeSender
  */
-internal final class URLAuthenticationChallengeForwardSender: NSObject, URLAuthenticationChallengeSender {
+internal final class URLAuthenticationChallengeForwardSender: NSObject, URLAuthenticationChallengeSender, @unchecked Sendable {
   let completionHandler: (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
 
   init(completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {

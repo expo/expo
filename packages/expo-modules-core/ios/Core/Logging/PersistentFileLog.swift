@@ -2,7 +2,7 @@
 
 import Foundation
 
-public typealias PersistentFileLogFilter = (String) -> Bool
+public typealias PersistentFileLogFilter = @Sendable (String) -> Bool
 public typealias PersistentFileLogCompletionHandler = (Error?) -> Void
 
 /**
