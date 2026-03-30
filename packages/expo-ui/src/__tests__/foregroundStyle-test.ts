@@ -1,6 +1,9 @@
 import type { ColorValue } from 'react-native';
 
-globalThis.__DEV__ = false;
+Object.defineProperty(globalThis, '__DEV__', {
+  value: false,
+  configurable: true,
+});
 
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => ({})),
