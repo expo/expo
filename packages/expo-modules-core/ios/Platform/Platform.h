@@ -18,6 +18,9 @@
 @compatibility_alias UIWindow NSWindow;
 @compatibility_alias UIHostingController NSHostingController;
 @compatibility_alias UIImage NSImage;
+#if __building_module(ExpoModulesCore)
+@compatibility_alias UIViewController NSViewController;
+#endif
 
 #ifndef UIApplication
 @compatibility_alias UIApplication NSApplication;
