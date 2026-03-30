@@ -1,4 +1,3 @@
-import Debug from 'debug';
 import { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
@@ -11,8 +10,6 @@ import {
 } from 'expo/config-plugins';
 
 import { NavigationBarVisibility } from '../..';
-
-const debug = Debug('expo:system-navigation-bar:plugin');
 
 const pkg = require('../../package.json');
 
@@ -52,9 +49,6 @@ type ResolvedProps = {
   style?: NavigationBarStyle;
   visible?: AndroidNavigationBar['visible'];
 };
-
-const EDGE_TO_EDGE_DEPRECATION_MESSAGE =
-  'property is deprecated due to Android 15 edge-to-edge enforcement and will be removed from Expo SDK';
 
 // strings.xml keys, this should not change.
 const VISIBILITY_KEY = 'expo_navigation_bar_visibility';
@@ -131,8 +125,6 @@ const withNavigationBar: ConfigPlugin<Props | void> = (config, _props) => {
   const props = resolveProps(config, _props);
 
   config = withAndroidNavigationBarExpoGoManifest(config, props);
-
-  debug('Props:', props);
 
   // TODO: Add this to expo/config-plugins
   // Elevate props to a static value on extra so Expo Go can read it.
