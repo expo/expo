@@ -274,6 +274,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./SurfaceScreen'));
     },
   },
+  {
+    name: 'Tooltip component',
+    route: 'ui/tooltip',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TooltipScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

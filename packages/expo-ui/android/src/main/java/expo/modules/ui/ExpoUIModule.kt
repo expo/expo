@@ -430,6 +430,20 @@ class ExpoUIModule : Module() {
       AnimatedVisibilityContent(props)
     }
 
+    // Class-based views so TooltipBoxView can detect them by type via findChildOfType
+    View(PlainTooltipView::class)
+    View(RichTooltipView::class)
+
+    View(TooltipBoxView::class) {
+      Events("onDismissRequest")
+      AsyncFunction("show") Coroutine { view: TooltipBoxView ->
+        view.show()
+      }
+      AsyncFunction("dismiss") Coroutine { view: TooltipBoxView ->
+        view.dismiss()
+      }
+    }
+
     ExpoUIView("RadioButtonView", events = {
       Events("onButtonPressed")
     }) { props: RadioButtonProps ->
