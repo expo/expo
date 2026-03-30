@@ -162,11 +162,43 @@ index ec21a55e797f272d5c326420482c0682b9350293..b78d4bc8cdad22166feb3d473ce98cf4
                });
          this._startupPerfLogger?.point("constructFileSystem_end");
          const plugins = this.#plugins;
+diff --git a/src/lib/RootPathUtils.js b/src/lib/RootPathUtils.js
+index 78a4a45428e5896d72ca764e788a79a6531e24cb..2d1f58a0b2529f0b346125ff3829f67632e9e526 100644
+--- a/src/lib/RootPathUtils.js
++++ b/src/lib/RootPathUtils.js
+@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true,
+ });
+ exports.RootPathUtils = void 0;
++exports.pathsToPattern = pathsToPattern;
+ var _invariant = _interopRequireDefault(require("invariant"));
+ var path = _interopRequireWildcard(require("path"));
+ function _getRequireWildcardCache(e) {
+@@ -236,3 +237,19 @@ class RootPathUtils {
+   }
+ }
+ exports.RootPathUtils = RootPathUtils;
++function pathsToPattern(paths, pathUtils) {
++  if (paths.length === 0) {
++    return /(?!)/;
++  }
++  const pathsPatterns = paths.map((input) => {
++    let pattern = pathUtils.absoluteToNormal(input);
++    if (pattern === "") {
++      return `(?!\\.\\.(?:\\${path.sep}|$))`;
++    }
++    if (!pattern.endsWith(path.sep)) {
++      pattern += path.sep;
++    }
++    return pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g, "\\$&");
++  });
++  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
++}
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3ad266625d 100644
+index 35d85514984821711f6ba9268715de553cc0836b..8a2e2f9300858d34feb711a5cf491973d80e9de4 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
-@@ -19,14 +19,20 @@ function isRegularFile(node) {
+@@ -19,14 +19,21 @@ function isRegularFile(node) {
  }
  class TreeFS {
    #cachedNormalSymlinkTargets = new WeakMap();
@@ -176,19 +208,20 @@ index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3a
    #pathUtils;
    #processFile;
 -  constructor({ rootDir, files, processFile }) {
-+  #roots;
++  #rootPattern;
 +  constructor({ rootDir, files, processFile, fallbackFilesystem, roots }) {
      this.#rootDir = rootDir;
      this.#pathUtils = new _RootPathUtils.RootPathUtils(rootDir);
      this.#processFile = processFile;
 +    this.#fallbackFilesystem = fallbackFilesystem ?? null;
-+    this.#roots = (roots ?? []).map((root) =>
-+      this.#pathUtils.absoluteToNormal(root),
++    this.#rootPattern = (0, _RootPathUtils.pathsToPattern)(
++      roots ?? [],
++      this.#pathUtils,
 +    );
      if (files != null) {
        this.bulkAddOrModify(files);
      }
-@@ -34,10 +40,12 @@ class TreeFS {
+@@ -34,10 +41,12 @@ class TreeFS {
    getSerializableSnapshot() {
      return this._cloneTree(this.#rootNode);
    }
@@ -202,7 +235,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3a
      });
      tfs.#rootNode = fileSystemData;
      return tfs;
-@@ -364,17 +372,36 @@ class TreeFS {
+@@ -364,17 +373,36 @@ class TreeFS {
        }
        if (segmentNode == null) {
          if (opts.makeDirectories !== true && segmentName !== "..") {
@@ -249,7 +282,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3a
          }
        }
        if (
-@@ -716,6 +743,16 @@ class TreeFS {
+@@ -716,6 +744,16 @@ class TreeFS {
    ) {
      const pathSep = opts.alwaysYieldPosix ? "/" : _path.default.sep;
      const prefixWithSep = pathPrefix === "" ? pathPrefix : pathPrefix + pathSep;
@@ -266,7 +299,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3a
      for (const [name, node] of this.#directoryNodeIterator(
        iterationRootNode,
        iterationRootParentNode,
-@@ -762,6 +799,17 @@ class TreeFS {
+@@ -762,6 +800,17 @@ class TreeFS {
            }
          }
        } else if (opts.recursive) {
@@ -284,7 +317,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3a
          yield* this._pathIterator(
            node,
            iterationRootParentNode,
-@@ -780,7 +828,15 @@ class TreeFS {
+@@ -780,7 +829,15 @@ class TreeFS {
      if (cachedResult != null) {
        return cachedResult;
      }
@@ -301,22 +334,10 @@ index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3a
      (0, _invariant.default)(
        typeof literalSymlinkTarget === "string",
        "Expected symlink target to be populated.",
-@@ -831,5 +887,64 @@ class TreeFS {
+@@ -831,5 +888,52 @@ class TreeFS {
      }
      return clone;
    }
-+  #isInsideRoots(normalPath) {
-+    for (const root of this.#roots) {
-+      if (
-+        normalPath === root ||
-+        normalPath.startsWith(root + _path.default.sep) ||
-+        root.startsWith(normalPath + _path.default.sep)
-+      ) {
-+        return true;
-+      }
-+    }
-+    return false;
-+  }
 +  #populateFromFilesystem(parentNode, segmentName, parentCanonicalPath) {
 +    const fallback = this.#fallbackFilesystem;
 +    if (fallback == null) {
@@ -326,7 +347,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3a
 +      parentCanonicalPath === ""
 +        ? segmentName
 +        : parentCanonicalPath + _path.default.sep + segmentName;
-+    if (this.#isInsideRoots(childCanonicalPath)) {
++    if (this.#rootPattern.test(childCanonicalPath)) {
 +      return null;
 +    }
 +    const parentAbsolute =
@@ -350,7 +371,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..6a8d544cac53d130aa2babe2dd33ea3a
 +    if (fallback == null) {
 +      return;
 +    }
-+    if (this.#isInsideRoots(canonicalPath)) {
++    if (this.#rootPattern.test(canonicalPath)) {
 +      return;
 +    }
 +    const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
