@@ -128,10 +128,7 @@ const oxfmtResult = await oxfmtPromise;
 const oxlintResult = await oxlintPromise;
 const tscResult = await tscPromise;
 
-/**
- * GitHub Actions annotations need repo-root-relative paths, but lint tools run
- * from a subdirectory. Rebase annotation file paths so they resolve correctly.
- */
+/** Rebase annotation file paths from cwd-relative to repo-root-relative for GitHub Actions. */
 const workingDir = basename(process.cwd());
 
 function rebaseAnnotationPaths(output) {
