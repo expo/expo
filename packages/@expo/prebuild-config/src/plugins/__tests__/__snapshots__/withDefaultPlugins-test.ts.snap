@@ -316,17 +316,6 @@ exports[`built-in plugins compiles mods 1`] = `
     "userInterfaceStyle": "light",
     "versionCode": 6,
   },
-  "androidNavigationBar": {
-    "backgroundColor": "#ff0000",
-    "barStyle": "dark-content",
-    "visible": "sticky-immersive",
-  },
-  "androidStatusBar": {
-    "backgroundColor": "#000FFF",
-    "barStyle": "light-content",
-    "hidden": false,
-    "translucent": true,
-  },
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
   "developmentClient": {
@@ -1044,12 +1033,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
-                      "name": "android:statusBarColor",
-                    },
-                    "_": "@android:color/transparent",
-                  },
-                  {
-                    "$": {
                       "name": "android:windowBackground",
                     },
                     "_": "@color/activityBackground",
@@ -1457,17 +1440,6 @@ exports[`built-in plugins introspects mods 1`] = `
     },
     "userInterfaceStyle": "light",
     "versionCode": 6,
-  },
-  "androidNavigationBar": {
-    "backgroundColor": "#ff0000",
-    "barStyle": "dark-content",
-    "visible": "sticky-immersive",
-  },
-  "androidStatusBar": {
-    "backgroundColor": "#000FFF",
-    "barStyle": "light-content",
-    "hidden": false,
-    "translucent": true,
   },
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
@@ -1939,12 +1911,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
-                      "name": "android:statusBarColor",
-                    },
-                    "_": "@android:color/transparent",
-                  },
-                  {
-                    "$": {
                       "name": "android:windowBackground",
                     },
                     "_": "@color/activityBackground",
@@ -2345,17 +2311,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     },
     "userInterfaceStyle": "light",
     "versionCode": 6,
-  },
-  "androidNavigationBar": {
-    "backgroundColor": "#ff0000",
-    "barStyle": "dark-content",
-    "visible": "sticky-immersive",
-  },
-  "androidStatusBar": {
-    "backgroundColor": "#000FFF",
-    "barStyle": "light-content",
-    "hidden": false,
-    "translucent": true,
   },
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
