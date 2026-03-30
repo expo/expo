@@ -1,9 +1,9 @@
 diff --git a/src/crawlers/node/fallback.js b/src/crawlers/node/fallback.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..3a081156966d47b11b2230f8f596dd368b9755f8
+index 0000000000000000000000000000000000000000..0bae89a4e9a1d4158c0f4a88460fd5e202478369
 --- /dev/null
 +++ b/src/crawlers/node/fallback.js
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,110 @@
 +"use strict";
 +
 +Object.defineProperty(exports, "__esModule", {
@@ -41,7 +41,44 @@ index 0000000000000000000000000000000000000000..3a081156966d47b11b2230f8f596dd36
 +}
 +function createFallbackFilesystem(opts) {
 +  const { extensions, ignore, includeSymlinks } = opts;
++  function readdir(absolutePath) {
++    let dirEntries;
++    try {
++      dirEntries = fs.readdirSync(absolutePath, {
++        withFileTypes: true,
++      });
++    } catch {
++      return null;
++    }
++    const result = new Map();
++    for (const entry of dirEntries) {
++      const name = entry.name.toString();
++      const childPath = path.join(absolutePath, name);
++      if (ignore(childPath)) {
++        continue;
++      }
++      if (entry.isDirectory()) {
++        result.set(name, new Map());
++      } else if (entry.isSymbolicLink()) {
++        if (!includeSymlinks) {
++          continue;
++        }
++        try {
++          const target = fs.readlinkSync(childPath);
++          result.set(name, [0, 0, 0, "", null, target, null]);
++        } catch {}
++      } else if (entry.isFile()) {
++        const ext = path.extname(name).slice(1);
++        if (!extensions.includes(ext)) {
++          continue;
++        }
++        result.set(name, [0, 0, 0, "", null, 0, null]);
++      }
++    }
++    return result;
++  }
 +  return {
++    readdir,
 +    lookup(absolutePath) {
 +      if (ignore(absolutePath)) {
 +        return null;
@@ -53,7 +90,7 @@ index 0000000000000000000000000000000000000000..3a081156966d47b11b2230f8f596dd36
 +        return null;
 +      }
 +      if (stat.isDirectory()) {
-+        return "d";
++        return readdir(absolutePath);
 +      }
 +      if (stat.isSymbolicLink()) {
 +        if (!includeSymlinks) {
@@ -74,42 +111,6 @@ index 0000000000000000000000000000000000000000..3a081156966d47b11b2230f8f596dd36
 +        return [stat.mtime.getTime(), stat.size, 0, "", null, 0, null];
 +      }
 +      return null;
-+    },
-+    readdir(absolutePath) {
-+      let dirEntries;
-+      try {
-+        dirEntries = fs.readdirSync(absolutePath, {
-+          withFileTypes: true,
-+        });
-+      } catch {
-+        return null;
-+      }
-+      const result = new Map();
-+      for (const entry of dirEntries) {
-+        const name = entry.name.toString();
-+        const childPath = path.join(absolutePath, name);
-+        if (ignore(childPath)) {
-+          continue;
-+        }
-+        if (entry.isDirectory()) {
-+          result.set(name, "d");
-+        } else if (entry.isSymbolicLink()) {
-+          if (!includeSymlinks) {
-+            continue;
-+          }
-+          try {
-+            const target = fs.readlinkSync(childPath);
-+            result.set(name, [0, 0, 0, "", null, target, null]);
-+          } catch {}
-+        } else if (entry.isFile()) {
-+          const ext = path.extname(name).slice(1);
-+          if (!extensions.includes(ext)) {
-+            continue;
-+          }
-+          result.set(name, [0, 0, 0, "", null, 0, null]);
-+        }
-+      }
-+      return result;
 +    },
 +  };
 +}
@@ -195,7 +196,7 @@ index 78a4a45428e5896d72ca764e788a79a6531e24cb..2d1f58a0b2529f0b346125ff3829f676
 +  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
 +}
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..8a2e2f9300858d34feb711a5cf491973d80e9de4 100644
+index 35d85514984821711f6ba9268715de553cc0836b..9bbedb15b6f5652f735b507acd824f2be6b0bd19 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
 @@ -19,14 +19,21 @@ function isRegularFile(node) {
@@ -334,7 +335,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..8a2e2f9300858d34feb711a5cf491973
      (0, _invariant.default)(
        typeof literalSymlinkTarget === "string",
        "Expected symlink target to be populated.",
-@@ -831,5 +888,52 @@ class TreeFS {
+@@ -831,5 +888,46 @@ class TreeFS {
      }
      return clone;
    }
@@ -353,15 +354,9 @@ index 35d85514984821711f6ba9268715de553cc0836b..8a2e2f9300858d34feb711a5cf491973
 +    const parentAbsolute =
 +      this.#pathUtils.normalToAbsolute(parentCanonicalPath);
 +    const absolutePath = _path.default.join(parentAbsolute, segmentName);
-+    const result = fallback.lookup(absolutePath);
-+    if (result == null) {
++    const node = fallback.lookup(absolutePath);
++    if (node == null) {
 +      return null;
-+    }
-+    let node;
-+    if (result === "d") {
-+      node = new Map();
-+    } else {
-+      node = result;
 +    }
 +    parentNode.set(segmentName, node);
 +    return node;
@@ -381,7 +376,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..8a2e2f9300858d34feb711a5cf491973
 +    }
 +    for (const [name, entry] of entries) {
 +      if (!dirNode.has(name)) {
-+        dirNode.set(name, entry === "d" ? new Map() : entry);
++        dirNode.set(name, entry);
 +      }
 +    }
 +  }
