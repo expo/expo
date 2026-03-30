@@ -1,5 +1,6 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { unlinkSync } from 'node:fs';
+import { basename } from 'node:path';
 
 const scriptArgs = process.argv.slice(2);
 const CACHE_LOCATION = '.eslintcache';
@@ -127,6 +128,19 @@ const oxfmtResult = await oxfmtPromise;
 const oxlintResult = await oxlintPromise;
 const tscResult = await tscPromise;
 
+/**
+ * GitHub Actions annotations need repo-root-relative paths, but lint tools run
+ * from a subdirectory. Rebase annotation file paths so they resolve correctly.
+ */
+const workingDir = basename(process.cwd());
+
+function rebaseAnnotationPaths(output) {
+  if (!isCI) {
+    return output;
+  }
+  return output.replace(/::(warning|error) file=([^,]+)/g, `::$1 file=${workingDir}/$2`);
+}
+
 // Report results.
 let failed = false;
 
@@ -146,13 +160,13 @@ if (oxfmtResult.status !== 0) {
 if (oxlintResult.status !== 0) {
   console.error('\n\x1b[1;31moxlint failed:\x1b[0m');
   if (oxlintResult.output) {
-    console.error(oxlintResult.output);
+    console.error(rebaseAnnotationPaths(oxlintResult.output));
   }
   failed = true;
 } else {
   console.log('\x1b[32m✓ oxlint\x1b[0m');
   if (oxlintResult.output) {
-    console.log(oxlintResult.output);
+    console.log(rebaseAnnotationPaths(oxlintResult.output));
   }
 }
 
