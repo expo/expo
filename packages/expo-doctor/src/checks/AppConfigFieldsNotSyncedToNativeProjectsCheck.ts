@@ -18,8 +18,6 @@ const appConfigFieldsToSyncWithNative = [
   'backgroundColor',
   'primaryColor',
   'notification',
-  'androidStatusBar',
-  'androidNavigationBar',
   'locales',
 ];
 

@@ -14,8 +14,6 @@ function ensurePWAOrientation(orientation) {
     return undefined;
 }
 const RESTRICTED_MANIFEST_FIELDS = [
-    'androidNavigationBar',
-    'androidStatusBar',
     'privacy',
     // Remove iOS and Android.
     'ios',
