@@ -31,26 +31,15 @@ export default function BasicAlertDialogExample() {
       <Button onClick={() => setVisible(true)}>
         <Text>Show Alert</Text>
       </Button>
-      {visible && (
-        <AlertDialog onDismissRequest={() => setVisible(false)}>
-          <AlertDialog.Title>
-            <Text>Confirm Action</Text>
-          </AlertDialog.Title>
-          <AlertDialog.Text>
-            <Text>Are you sure you want to proceed?</Text>
-          </AlertDialog.Text>
-          <AlertDialog.ConfirmButton>
-            <TextButton onClick={() => setVisible(false)}>
-              <Text>Confirm</Text>
-            </TextButton>
-          </AlertDialog.ConfirmButton>
-          <AlertDialog.DismissButton>
-            <TextButton onClick={() => setVisible(false)}>
-              <Text>Cancel</Text>
-            </TextButton>
-          </AlertDialog.DismissButton>
-        </AlertDialog>
-      )}
+      <AlertDialog
+        visible={visible}
+        title="Confirm Action"
+        dismissButtonText="Cancel"
+        confirmButtonText="Confirm"
+        text="Are you sure you want to proceed?"
+        onConfirmPressed={() => setVisible(false)}
+        onDismissPressed={() => setVisible(false)}
+      />
     </Host>
   );
 }
