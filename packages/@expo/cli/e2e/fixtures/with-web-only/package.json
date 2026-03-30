@@ -4,6 +4,7 @@
   "dependencies": {
     "expo": "^55 || ^55.0.0-0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-native-web": "~0.21.0"
   }
 }
