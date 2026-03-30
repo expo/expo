@@ -100,7 +100,12 @@ export const cleanWorkingTree = new Task<TaskArgs>(
         await Git.cleanAsync({
           recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'packages/**/local-maven-repo/**', 'packages/**/prebuilds/**', 'templates/**/*.tgz'],
+          paths: [
+            'packages/**/*.tgz',
+            'packages/**/local-maven-repo/**',
+            'packages/**/prebuilds/**',
+            'templates/**/*.tgz',
+          ],
         });
       },
       'Cleaned up the working tree'

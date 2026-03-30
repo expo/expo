@@ -3,10 +3,10 @@ import path from 'path';
 
 import { loadRequestedParcels } from './loadRequestedParcels';
 import { PACKAGES_DIR } from '../../Constants';
-import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
+import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
 import { Parcel, TaskArgs } from '../types';
 
 /**
