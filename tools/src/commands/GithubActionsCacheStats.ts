@@ -63,7 +63,6 @@ async function actionAsync(options: Options) {
     data = sortCacheData(data, options.sort);
     displayResults(data, options);
     printSummary(data, options.highlightOnce);
-    process.exit(0);
   } catch (error: any) {
     console.error(chalk.red('\nError:'), error.message);
     process.exit(1);
@@ -189,9 +188,9 @@ function sortCacheData(data: ProcessedCache[], sortType?: SortType): ProcessedCa
       case 'size':
         return b.sizeBytes - a.sizeBytes;
       case 'created':
-        return b.createdAt.localeCompare(a.createdAt);
+        return b.rawCreatedAt.getTime() - a.rawCreatedAt.getTime();
       case 'accessed':
-        return b.lastAccessed.localeCompare(a.lastAccessed);
+        return b.rawLastAccessed.getTime() - a.rawLastAccessed.getTime();
       default:
         return a.key.localeCompare(b.key);
     }
