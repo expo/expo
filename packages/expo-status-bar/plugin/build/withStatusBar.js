@@ -23,23 +23,14 @@ function resolveProps(props) {
         return resolvedProps;
     }
 }
-const setAndroidStatusBarStyles = (styles, { style }) => {
-    styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
-        // Adding means the buttons will be darker to account for a light background color.
-        // `setStyle('dark')` should do the same thing.
-        add: style != null,
-        parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
-        name: 'android:windowLightStatusBar',
-        value: String(style === 'dark'),
-    });
-    styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
-        add: true,
-        parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
-        name: 'android:statusBarColor',
-        value: '@android:color/transparent',
-    });
-    return styles;
-};
+const setAndroidStatusBarStyles = (styles, { style }) => config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
+    // Adding means the buttons will be darker to account for a light background color.
+    // `setStyle('dark')` should do the same thing.
+    add: style != null,
+    parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
+    name: 'android:windowLightStatusBar',
+    value: String(style === 'dark'),
+});
 exports.setAndroidStatusBarStyles = setAndroidStatusBarStyles;
 const withAndroidStatusBarStyles = (config, props) => {
     return (0, config_plugins_1.withAndroidStyles)(config, (config) => {

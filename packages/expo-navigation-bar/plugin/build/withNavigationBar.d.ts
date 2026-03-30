@@ -26,7 +26,7 @@ export type Props = {
 };
 export declare function resolveProps(props: Props | undefined): Props | undefined;
 export declare function setStrings(strings: AndroidConfig.Resources.ResourceXML, { hidden }: Props): AndroidConfig.Resources.ResourceXML;
-export declare function setNavigationBarStyles({ style }: Props, styles: AndroidConfig.Resources.ResourceXML): AndroidConfig.Resources.ResourceXML;
+export declare const setNavigationBarStyles: ({ style }: Props, styles: AndroidConfig.Resources.ResourceXML) => AndroidConfig.Resources.ResourceXML;
 export declare function applyEnforceNavigationBarContrast(config: ResourceXMLConfig, enforceNavigationBarContrast: boolean): ResourceXMLConfig;
 declare const _default: ConfigPlugin<Props | undefined>;
 export default _default;

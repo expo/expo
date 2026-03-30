@@ -123,11 +123,11 @@ const withNavigationBarStyles: ConfigPlugin<Props> = (config, props) => {
   });
 };
 
-export function setNavigationBarStyles(
+export const setNavigationBarStyles = (
   { style }: Props,
   styles: AndroidConfig.Resources.ResourceXML
-): AndroidConfig.Resources.ResourceXML {
-  styles = AndroidConfig.Styles.assignStylesValue(styles, {
+): AndroidConfig.Resources.ResourceXML =>
+  AndroidConfig.Styles.assignStylesValue(styles, {
     // Adding means the buttons will be darker to account for a light background color.
     // `setStyle('dark')` should do the same thing.
     add: style != null,
@@ -135,16 +135,6 @@ export function setNavigationBarStyles(
     name: 'android:windowLightNavigationBar',
     value: String(style === 'dark'),
   });
-
-  styles = AndroidConfig.Styles.assignStylesValue(styles, {
-    add: true,
-    parent: AndroidConfig.Styles.getAppThemeGroup(),
-    name: 'android:navigationBarColor',
-    value: '@android:color/transparent',
-  });
-
-  return styles;
-}
 
 export function applyEnforceNavigationBarContrast(
   config: ResourceXMLConfig,

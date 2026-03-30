@@ -47,8 +47,8 @@ export function resolveProps(props: Props | undefined): Props | undefined {
 export const setAndroidStatusBarStyles = (
   styles: AndroidConfig.Resources.ResourceXML,
   { style }: Props
-): AndroidConfig.Resources.ResourceXML => {
-  styles = AndroidConfig.Styles.assignStylesValue(styles, {
+): AndroidConfig.Resources.ResourceXML =>
+  AndroidConfig.Styles.assignStylesValue(styles, {
     // Adding means the buttons will be darker to account for a light background color.
     // `setStyle('dark')` should do the same thing.
     add: style != null,
@@ -56,16 +56,6 @@ export const setAndroidStatusBarStyles = (
     name: 'android:windowLightStatusBar',
     value: String(style === 'dark'),
   });
-
-  styles = AndroidConfig.Styles.assignStylesValue(styles, {
-    add: true,
-    parent: AndroidConfig.Styles.getAppThemeGroup(),
-    name: 'android:statusBarColor',
-    value: '@android:color/transparent',
-  });
-
-  return styles;
-};
 
 const withAndroidStatusBarStyles: ConfigPlugin<Props> = (config, props) => {
   return withAndroidStyles(config, (config) => {

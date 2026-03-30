@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.setNavigationBarStyles = void 0;
 exports.resolveProps = resolveProps;
 exports.setStrings = setStrings;
-exports.setNavigationBarStyles = setNavigationBarStyles;
 exports.applyEnforceNavigationBarContrast = applyEnforceNavigationBarContrast;
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('../../package.json');
@@ -59,27 +59,19 @@ function setStrings(strings, { hidden }) {
 }
 const withNavigationBarStyles = (config, props) => {
     return (0, config_plugins_1.withAndroidStyles)(config, (config) => {
-        config.modResults = setNavigationBarStyles(props, config.modResults);
+        config.modResults = (0, exports.setNavigationBarStyles)(props, config.modResults);
         return applyEnforceNavigationBarContrast(config, props.enforceContrast !== false);
     });
 };
-function setNavigationBarStyles({ style }, styles) {
-    styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
-        // Adding means the buttons will be darker to account for a light background color.
-        // `setStyle('dark')` should do the same thing.
-        add: style != null,
-        parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
-        name: 'android:windowLightNavigationBar',
-        value: String(style === 'dark'),
-    });
-    styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
-        add: true,
-        parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
-        name: 'android:navigationBarColor',
-        value: '@android:color/transparent',
-    });
-    return styles;
-}
+const setNavigationBarStyles = ({ style }, styles) => config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
+    // Adding means the buttons will be darker to account for a light background color.
+    // `setStyle('dark')` should do the same thing.
+    add: style != null,
+    parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
+    name: 'android:windowLightNavigationBar',
+    value: String(style === 'dark'),
+});
+exports.setNavigationBarStyles = setNavigationBarStyles;
 function applyEnforceNavigationBarContrast(config, enforceNavigationBarContrast) {
     const enforceNavigationBarContrastItem = {
         _: enforceNavigationBarContrast ? 'true' : 'false',
