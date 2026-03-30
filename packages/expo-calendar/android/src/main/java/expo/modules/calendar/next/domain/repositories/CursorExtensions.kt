@@ -14,12 +14,8 @@ internal fun Cursor.getOptionalLong(columnName: String): Long? {
   return getLong(index)
 }
 
-internal fun Cursor.getOptionalInt(columnName: String): Int? {
+internal fun Cursor.getOptionalInt(columnName: String): Int {
   val index = getColumnIndexOrThrow(columnName)
-  // Given that getInt() will return 0 for null values:
-  if (isNull(index)) {
-    return null
-  }
   return getInt(index)
 }
 
