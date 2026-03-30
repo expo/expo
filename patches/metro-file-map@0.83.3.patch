@@ -196,7 +196,7 @@ index 78a4a45428e5896d72ca764e788a79a6531e24cb..2d1f58a0b2529f0b346125ff3829f676
 +  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
 +}
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..9bbedb15b6f5652f735b507acd824f2be6b0bd19 100644
+index 35d85514984821711f6ba9268715de553cc0836b..d22b2bd3003adaea4826a1d82409a58e8dadf8e9 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
 @@ -19,14 +19,21 @@ function isRegularFile(node) {
@@ -293,7 +293,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..9bbedb15b6f5652f735b507acd824f2b
 +      const rootCanonical =
 +        pathPrefix === ""
 +          ? canonicalRoot
-+          : _path.default.join(canonicalRoot, pathPrefix);
++          : canonicalRoot + _path.default.sep + pathPrefix;
 +      this.#populateDirFromFilesystem(iterationRootNode, rootCanonical);
 +    }
 +
@@ -353,7 +353,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..9bbedb15b6f5652f735b507acd824f2b
 +    }
 +    const parentAbsolute =
 +      this.#pathUtils.normalToAbsolute(parentCanonicalPath);
-+    const absolutePath = _path.default.join(parentAbsolute, segmentName);
++    const absolutePath = parentAbsolute + _path.default.sep + segmentName;
 +    const node = fallback.lookup(absolutePath);
 +    if (node == null) {
 +      return null;
