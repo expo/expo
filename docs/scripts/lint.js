@@ -84,7 +84,10 @@ function getChangedFiles(extensions) {
   );
 
   const extPattern = new RegExp(`\\.(${extensions.join('|')})$`);
-  return stdout.trim().split('\n').filter(f => f && extPattern.test(f));
+  return stdout
+    .trim()
+    .split('\n')
+    .filter(f => f && extPattern.test(f));
 }
 
 // Run all tools in parallel.
@@ -110,7 +113,11 @@ let oxlintPromise;
 if (changedFiles !== null && changedFiles.length === 0) {
   oxlintPromise = Promise.resolve({ status: 0, output: 'No lintable files changed.' });
 } else if (changedFiles !== null) {
-  oxlintPromise = runAsync('oxlint', [...changedFiles, '--type-aware', ...(isCI ? ['--format=github'] : [])]);
+  oxlintPromise = runAsync('oxlint', [
+    ...changedFiles,
+    '--type-aware',
+    ...(isCI ? ['--format=github'] : []),
+  ]);
 } else {
   oxlintPromise = runAsync('oxlint', oxlintArgs);
 }
