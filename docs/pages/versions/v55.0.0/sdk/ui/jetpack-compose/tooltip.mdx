@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer.android.com/develop/ui/compose/components/tooltip) API. `TooltipBox` wraps anchor content and displays a tooltip. The tooltip content is provided via the `TooltipBox.Tooltip` component, which accepts either a [`PlainTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-plain) or [`RichTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-rich). Tooltips can be triggered by long-press or shown programmatically via ref.
+Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer.android.com/develop/ui/compose/components/tooltip) API. `TooltipBox` wraps anchor content and displays a tooltip. The tooltip content is provided via the `TooltipBox.Tooltip` component, which accepts either a [`PlainTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-plain) or [`RichTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-rich). Tooltips can be triggered by long-press or shown programmatically via `ref`.
 
 ## Installation
 
@@ -109,7 +109,7 @@ export default function RichTooltipActionExample() {
 
 ### Programmatic show and dismiss
 
-Use a ref to imperatively `show()` or `dismiss()` the tooltip without requiring a long-press.
+Use a `ref` to imperatively `show()` or `dismiss()` the tooltip without requiring a long-press.
 
 ```tsx ProgrammaticTooltipExample.tsx
 import { useRef } from 'react';
