@@ -22,7 +22,6 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
@@ -81,8 +80,6 @@ data class TooltipBoxViewProps(
 class TooltipBoxView(context: Context, appContext: AppContext) :
   ExpoComposeView<TooltipBoxViewProps>(context, appContext) {
   override val props = TooltipBoxViewProps()
-  internal val onDismissRequest by EventDispatcher<Unit>()
-
   internal var tooltipState: TooltipState? = null
   private var composeScope: CoroutineScope? = null
 
@@ -130,7 +127,6 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
       enableUserInput = props.enableUserInput.value,
       focusable = props.focusable.value,
       hasAction = props.hasAction.value,
-      onDismissRequest = { onDismissRequest(Unit) },
       tooltip = {
         if (plainTooltipView != null) {
           PlainTooltip(

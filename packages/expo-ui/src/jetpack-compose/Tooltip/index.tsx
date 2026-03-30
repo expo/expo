@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import { type Ref } from 'react';
 import { type ColorValue } from 'react-native';
 
-import { type ViewEvent, type ModifierConfig } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type TooltipBoxRef = {
@@ -42,10 +42,6 @@ export type TooltipBoxProps = {
    */
   focusable?: boolean;
   /**
-   * Callback when the tooltip is dismissed.
-   */
-  onDismissRequest?: () => void;
-  /**
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
@@ -56,10 +52,7 @@ export type TooltipBoxProps = {
   children: React.ReactNode;
 };
 
-type NativeTooltipBoxProps = Omit<TooltipBoxProps, 'onDismissRequest'> &
-  ViewEvent<'onDismissRequest', void>;
-
-const TooltipBoxNativeView: React.ComponentType<NativeTooltipBoxProps> = requireNativeView(
+const TooltipBoxNativeView: React.ComponentType<TooltipBoxProps> = requireNativeView(
   'ExpoUI',
   'TooltipBoxView'
 );
@@ -69,8 +62,8 @@ const SlotNativeView: React.ComponentType<{ slotName: string; children: React.Re
 
 function transformProps(
   props: Omit<TooltipBoxProps, 'children'>
-): Omit<NativeTooltipBoxProps, 'children'> {
-  const { modifiers, onDismissRequest, ...restProps } = props;
+): Omit<TooltipBoxProps, 'children'> {
+  const { modifiers, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
@@ -79,7 +72,6 @@ function transformProps(
     hasAction: props.hasAction ?? false,
     enableUserInput: props.enableUserInput ?? true,
     focusable: props.focusable ?? false,
-    onDismissRequest: onDismissRequest ? () => onDismissRequest() : undefined,
   };
 }
 

@@ -435,7 +435,6 @@ class ExpoUIModule : Module() {
     View(RichTooltipView::class)
 
     View(TooltipBoxView::class) {
-      Events("onDismissRequest")
       AsyncFunction("show") Coroutine { view: TooltipBoxView ->
         view.show()
       }
