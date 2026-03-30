@@ -353,6 +353,10 @@ class EnabledUpdatesController(
     }
   }
 
+  internal fun getNativeInterfaceContext(): expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext {
+    return stateMachine.context.nativeInterfaceContext
+  }
+
   override val isEnabled: Boolean = true
 
   companion object {
