@@ -17,7 +17,7 @@ function isLightColorScheme() {
   return colorScheme === 'light';
 }
 
-function resolveStyle(style: NavigationBarStyle | undefined): ResolvedBarStyle | undefined {
+function resolveStyle(style: NavigationBarStyle): ResolvedBarStyle {
   switch (style) {
     case 'auto':
       return isLightColorScheme() ? 'dark' : 'light';
@@ -27,6 +27,12 @@ function resolveStyle(style: NavigationBarStyle | undefined): ResolvedBarStyle |
       return style;
   }
 }
+
+// Matches built-in StatusBar defaultProps
+const defaultProps: Required<NavigationBarProps> = {
+  style: 'light',
+  hidden: false,
+};
 
 // Merges the entries stack
 function mergeEntriesStack(entriesStack: NavigationBarProps[]) {
@@ -64,14 +70,20 @@ const currentValues: {
   hidden: undefined,
 };
 
-function setResolvedStyle(style: ResolvedBarStyle) {
-  if (style !== currentValues.style) {
-    currentValues.style = style;
-    ExpoNavigationBar.setStyle(style);
+export function setStyle(style: NavigationBarStyle) {
+  defaultProps.style = style;
+
+  const resolvedStyle = resolveStyle(style);
+
+  if (resolvedStyle !== currentValues.style) {
+    currentValues.style = resolvedStyle;
+    ExpoNavigationBar.setStyle(resolvedStyle);
   }
 }
 
 function setHidden(hidden: boolean) {
+  defaultProps.hidden = hidden;
+
   if (hidden !== currentValues.hidden) {
     currentValues.hidden = hidden;
     ExpoNavigationBar.setHidden(hidden);
@@ -85,15 +97,18 @@ function updateEntriesStack() {
   }
 
   updateImmediate = setImmediate(() => {
-    const mergedEntries = mergeEntriesStack(entriesStack);
-    const resolvedStyle = resolveStyle(mergedEntries.style);
-    const { hidden } = mergedEntries;
+    if (entriesStack.length === 0) {
+      setStyle(defaultProps.style);
+      setHidden(defaultProps.hidden);
+    } else {
+      const { style, hidden } = mergeEntriesStack(entriesStack);
 
-    if (resolvedStyle != null) {
-      setResolvedStyle(resolvedStyle);
-    }
-    if (hidden != null) {
-      setHidden(hidden);
+      if (style != null) {
+        setStyle(style);
+      }
+      if (hidden != null) {
+        setHidden(hidden);
+      }
     }
   });
 }
@@ -156,16 +171,7 @@ export function NavigationBar({ style, hidden }: NavigationBarProps) {
   return null;
 }
 
-NavigationBar.setStyle = (style: NavigationBarStyle): void => {
-  const resolvedStyle = resolveStyle(style);
-
-  if (resolvedStyle != null) {
-    setResolvedStyle(resolvedStyle);
-  }
-};
-
-export const setStyle = NavigationBar.setStyle;
-
+NavigationBar.setStyle = setStyle;
 NavigationBar.setHidden = setHidden;
 
 export function addVisibilityListener(
