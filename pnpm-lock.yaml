@@ -166,6 +166,9 @@ importers:
       expo-location:
         specifier: workspace:*
         version: link:../../packages/expo-location
+      expo-navigation-bar:
+        specifier: workspace:*
+        version: link:../../packages/expo-navigation-bar
       expo-network-addons:
         specifier: workspace:*
         version: link:../../packages/expo-network-addons
