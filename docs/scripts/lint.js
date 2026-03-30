@@ -56,6 +56,37 @@ function runEslint() {
   return { status, stderr };
 }
 
+/**
+ * On CI, return only files changed in this PR or push (paths relative to cwd).
+ * Returns null for local dev (that is, run for all files).
+ */
+function getChangedFiles(extensions) {
+  if (process.env.CI !== 'true') {
+    return null;
+  }
+
+  let diffArgs;
+  if (process.env.GITHUB_EVENT_NAME === 'pull_request') {
+    const baseRef = process.env.GITHUB_BASE_REF;
+    if (!baseRef) {
+      return null;
+    }
+    spawnSync('git', ['fetch', '--depth=1', 'origin', baseRef], { stdio: 'ignore' });
+    diffArgs = [`origin/${baseRef}`, 'HEAD'];
+  } else {
+    diffArgs = ['HEAD~1', 'HEAD'];
+  }
+
+  const { stdout } = spawnSync(
+    'git',
+    ['diff', '--name-only', '--diff-filter=ACMR', '--relative', ...diffArgs],
+    { encoding: 'utf8' }
+  );
+
+  const extPattern = new RegExp(`\\.(${extensions.join('|')})$`);
+  return stdout.trim().split('\n').filter(f => f && extPattern.test(f));
+}
+
 // Run all tools in parallel.
 const isCI = process.env.CI === 'true';
 const oxlintArgs = [process.cwd(), '--type-aware'];
@@ -63,8 +94,26 @@ if (isCI) {
   oxlintArgs.push('--format=github');
 }
 
-const oxfmtPromise = runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
-const oxlintPromise = runAsync('oxlint', oxlintArgs);
+const lintableExts = ['js', 'cjs', 'ts', 'jsx', 'tsx', 'md', 'mdx'];
+const changedFiles = getChangedFiles(lintableExts);
+
+let oxfmtPromise;
+if (changedFiles !== null && changedFiles.length === 0) {
+  oxfmtPromise = Promise.resolve({ status: 0, output: 'No formattable files changed.' });
+} else if (changedFiles !== null) {
+  oxfmtPromise = runAsync('oxfmt', ['--check', ...changedFiles]);
+} else {
+  oxfmtPromise = runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
+}
+
+let oxlintPromise;
+if (changedFiles !== null && changedFiles.length === 0) {
+  oxlintPromise = Promise.resolve({ status: 0, output: 'No lintable files changed.' });
+} else if (changedFiles !== null) {
+  oxlintPromise = runAsync('oxlint', [...changedFiles, '--type-aware', ...(isCI ? ['--format=github'] : [])]);
+} else {
+  oxlintPromise = runAsync('oxlint', oxlintArgs);
+}
 const tscPromise = runAsync('tsc', ['--noEmit', '--pretty']);
 const eslintResult = runEslint();
 const oxfmtResult = await oxfmtPromise;
