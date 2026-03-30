@@ -36,9 +36,11 @@ class EventRepository(private val contentResolver: ContentResolver) {
       CalendarContract.Events.CONTENT_URI,
       eventInput.toContentValues()
     )
-    val id = uri.lastPathSegment?.toLongOrNull()
-      ?: throw EventNotSavedException("Couldn't decode event ID from inserted content URI")
-    return@withContext id
+    return@withContext runCatching {
+      requireNotNull(uri.lastPathSegment).toLong()
+    }.onFailure { e ->
+      throw EventNotSavedException("Couldn't decode event ID from inserted content URI", cause = e)
+    }.getOrThrow()
   }
 
   suspend fun update(id: EventId, eventUpdate: EventUpdate): Boolean = withContext(Dispatchers.IO) {

@@ -8,6 +8,7 @@ import android.net.Uri
 import android.provider.CalendarContract
 import expo.modules.calendar.exceptions.EventNotSavedException
 import expo.modules.calendar.next.domain.dto.event.EventExceptionInput
+import kotlin.time.Duration.Companion.milliseconds
 import expo.modules.calendar.next.domain.dto.event.EventInput
 import expo.modules.calendar.next.domain.dto.event.EventUpdate
 import expo.modules.calendar.next.domain.model.event.AccessLevel
@@ -387,7 +388,7 @@ class EventRepositoryTest {
     every { contentResolver.insert(capture(uriSlot), capture(valuesSlot)) } returns insertedUri
 
     val eventId = EventId(42L)
-    val instanceStartDate = 1_000_000L
+    val instanceStartDate = 1_000_000L.milliseconds
     val input = EventExceptionInput.Cancellation(instanceStartDate)
 
     // When
@@ -396,7 +397,7 @@ class EventRepositoryTest {
     // Then
     Assert.assertEquals(eventId.value.toString(), uriSlot.captured.lastPathSegment)
     Assert.assertEquals(
-      instanceStartDate,
+      instanceStartDate.inWholeMilliseconds,
       valuesSlot.captured.getAsLong(CalendarContract.Events.ORIGINAL_INSTANCE_TIME).toLong()
     )
     Assert.assertEquals(
@@ -411,7 +412,7 @@ class EventRepositoryTest {
     every { contentResolver.insert(any(), any()) } throws SecurityException()
 
     // When / Then
-    repository.insertException(EventId(42L), EventExceptionInput.Cancellation(1_000_000L))
+    repository.insertException(EventId(42L), EventExceptionInput.Cancellation(1_000_000L.milliseconds))
   }
 
   // endregion
