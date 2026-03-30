@@ -8,8 +8,6 @@ import {
   AssetField,
   addListener,
   removeAllListeners,
-  MediaLibraryAssetsChangeEvent,
-  addEstablishListener,
 } from 'expo-media-library/next';
 import { Platform } from 'react-native';
 
