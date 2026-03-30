@@ -1,3 +1,4 @@
+import { type ColorValue } from 'react-native';
 type ShadowConfig = {
     offset: {
         width: number;
@@ -5,7 +6,7 @@ type ShadowConfig = {
     };
     radius: number;
     opacity: number;
-    color?: string;
+    color?: ColorValue;
 };
 export declare function getShadowStyle({ offset, radius, opacity, color }: ShadowConfig): {
     boxShadow: string;
@@ -19,7 +20,7 @@ export declare function getShadowStyle({ offset, radius, opacity, color }: Shado
         height: number;
     };
     shadowRadius: number;
-    shadowColor: string;
+    shadowColor: ColorValue;
     shadowOpacity: number;
     boxShadow?: undefined;
 };

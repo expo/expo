@@ -123,11 +123,15 @@ export type NativeStackHeaderItemProps = {
   /**
    * Tint color for the header.
    */
-  tintColor?: string;
+  tintColor?: ColorValue;
   /**
    * Whether it's possible to navigate back in stack.
    */
   canGoBack?: boolean;
+  /**
+   * Header background color
+   */
+  backgroundColor?: ColorValue;
 };
 
 export type NativeStackHeaderBackProps = NativeStackHeaderItemProps & {
@@ -231,7 +235,7 @@ export type NativeStackNavigationOptions = {
    * @platform ios
    */
   headerLargeStyle?: StyleProp<{
-    backgroundColor?: string;
+    backgroundColor?: ColorValue;
   }>;
   /**
    * Whether to enable header with large title which collapses to regular header on scroll.
@@ -274,7 +278,7 @@ export type NativeStackNavigationOptions = {
     fontFamily?: string;
     fontSize?: number;
     fontWeight?: string;
-    color?: string;
+    color?: ColorValue;
   }>;
   /**
    * Whether to show the header. The header is shown by default.
@@ -286,7 +290,7 @@ export type NativeStackNavigationOptions = {
    * - backgroundColor
    */
   headerStyle?: StyleProp<{
-    backgroundColor?: string;
+    backgroundColor?: ColorValue;
   }>;
   /**
    * Whether to hide the elevation shadow (Android) or the bottom border (iOS) on the header.
@@ -312,7 +316,7 @@ export type NativeStackNavigationOptions = {
   /**
    * Tint color for the header. Changes the color of back button and title.
    */
-  headerTintColor?: string;
+  headerTintColor?: ColorValue;
   /**
    * Function which returns a React Element to render as the background of the header.
    * This is useful for using backgrounds such as an image, a gradient, blur effect etc.
@@ -367,7 +371,7 @@ export type NativeStackNavigationOptions = {
         /**
          * Tint color for the header.
          */
-        tintColor?: string;
+        tintColor?: ColorValue;
       }) => React.ReactNode);
   /**
    * How to align the the header title.
@@ -385,7 +389,7 @@ export type NativeStackNavigationOptions = {
    */
   headerTitleStyle?: StyleProp<
     Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontWeight'> & {
-      color?: string;
+      color?: ColorValue;
     }
   >;
   /**
@@ -446,7 +450,7 @@ export type NativeStackNavigationOptions = {
    *
    * @platform android
    */
-  navigationBarColor?: string;
+  navigationBarColor?: ColorValue;
   /**
    * Boolean indicating whether the content should be visible behind the navigation bar. Defaults to `false`.
    *
@@ -484,7 +488,7 @@ export type NativeStackNavigationOptions = {
    *
    * @platform android
    */
-  statusBarBackgroundColor?: string;
+  statusBarBackgroundColor?: ColorValue;
   /**
    * Whether the status bar should be hidden on this screen.
    * Requires setting `View controller-based status bar appearance -> YES` in your Info.plist file.

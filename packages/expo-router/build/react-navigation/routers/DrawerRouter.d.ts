@@ -61,5 +61,8 @@ export declare const DrawerActions: {
         };
     };
 };
+/**
+ * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
+ */
 export declare function DrawerRouter({ defaultStatus, ...rest }: DrawerRouterOptions): Router<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction>;
 //# sourceMappingURL=DrawerRouter.d.ts.map

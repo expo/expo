@@ -1,6 +1,7 @@
 import type React from 'react';
 import type {
   Animated,
+  ColorValue,
   PressableAndroidRippleConfig,
   StyleProp,
   TextStyle,
@@ -84,13 +85,13 @@ export type MaterialTopTabNavigationOptions = {
 
   /**
    * Title string of a tab displayed in the tab bar
-   * or a function that given { focused: boolean, color: string } returns a React.Node, to display in tab bar.
+   * or a function that given { focused: boolean, color: ColorValue } returns a React.Node, to display in tab bar.
    *
    * When undefined, scene title is used. Use `tabBarShowLabel` to hide the label.
    */
   tabBarLabel?:
     | string
-    | ((props: { focused: boolean; color: string; children: string }) => React.ReactNode);
+    | ((props: { focused: boolean; color: ColorValue; children: string }) => React.ReactNode);
 
   /**
    * Accessibility label for the tab button. This is read by the screen reader when the user taps the tab.
@@ -109,9 +110,9 @@ export type MaterialTopTabNavigationOptions = {
   tabBarShowLabel?: boolean;
 
   /**
-   * A function that given { focused: boolean, color: string } returns a React.Node to display in the tab bar.
+   * A function that given { focused: boolean, color: ColorValue } returns a React.Node to display in the tab bar.
    */
-  tabBarIcon?: (props: { focused: boolean; color: string }) => React.ReactElement;
+  tabBarIcon?: (props: { focused: boolean; color: ColorValue }) => React.ReactElement;
 
   /**
    * Whether the tab icon should be visible. Defaults to `false`.
@@ -151,17 +152,17 @@ export type MaterialTopTabNavigationOptions = {
   /**
    * Color for the icon and label in the active tab.
    */
-  tabBarActiveTintColor?: string;
+  tabBarActiveTintColor?: ColorValue;
 
   /**
    * Color for the icon and label in the inactive tabs.
    */
-  tabBarInactiveTintColor?: string;
+  tabBarInactiveTintColor?: ColorValue;
 
   /**
    * Color for material ripple (Android >= 5.0 only).
    */
-  tabBarPressColor?: string;
+  tabBarPressColor?: ColorValue;
 
   /**
    * Opacity for pressed tab (iOS and Android < 5.0 only).

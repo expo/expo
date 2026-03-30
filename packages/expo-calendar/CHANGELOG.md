@@ -16,6 +16,9 @@
 
 ### 💡 Others
 
+- [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+- Use `export type` for type-only re-exports to fix TS1205 with `isolatedModules`. ([#44205](https://github.com/expo/expo/pull/44205) by [@hknakn](https://github.com/hknakn))
+
 ## 55.0.8 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

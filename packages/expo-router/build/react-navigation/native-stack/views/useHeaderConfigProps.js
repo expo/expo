@@ -1,15 +1,12 @@
 "use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useHeaderConfigProps = useHeaderConfigProps;
-const color_1 = __importDefault(require("color"));
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const elements_1 = require("../../elements");
 const FontProcessor_1 = require("./FontProcessor");
+const color_1 = require("../../../utils/color");
 const native_1 = require("../../native");
 const processBarButtonItems = (items, colors, fonts) => {
     return items
@@ -60,7 +57,7 @@ const processBarButtonItems = (items, colors, fonts) => {
             }
             if (badge) {
                 const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
-                const badgeTextColor = (0, color_1.default)(badgeBackgroundColor).isLight() ? 'black' : 'white';
+                const badgeTextColor = (0, color_1.Color)(badgeBackgroundColor)?.isLight() ? 'black' : 'white';
                 processedItem = {
                     ...processedItem,
                     badge: {
@@ -166,6 +163,7 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
     const headerLeftElement = headerLeft?.({
         tintColor,
         canGoBack,
+        backgroundColor: headerBackgroundColor,
         label: headerBackTitle ?? headerBack?.title,
         // `href` is only applicable to web
         href: undefined,
@@ -173,6 +171,7 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
     const headerRightElement = headerRight?.({
         tintColor,
         canGoBack,
+        backgroundColor: headerBackgroundColor,
     });
     const headerTitleElement = typeof headerTitle === 'function'
         ? headerTitle({

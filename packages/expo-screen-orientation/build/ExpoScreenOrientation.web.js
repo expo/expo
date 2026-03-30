@@ -101,10 +101,11 @@ class ExpoScreenOrientation extends NativeModule {
     }
     async getOrientationAsync() {
         const webOrientation = screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
-        if (!webOrientation) {
+        const orientation = OrientationWebToAPI[webOrientation];
+        if (!orientation) {
             return Orientation.UNKNOWN;
         }
-        return OrientationWebToAPI[webOrientation];
+        return orientation;
     }
     async lockAsync(orientationLock) {
         const webOrientationLock = OrientationLockAPIToWeb[orientationLock];

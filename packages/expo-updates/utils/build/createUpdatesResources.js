@@ -19,7 +19,8 @@ const findUpProjectRoot_1 = require("./findUpProjectRoot");
     const destinationDir = process.argv[4];
     (0, assert_1.default)(destinationDir, 'Must provide a valid destination directory');
     const createUpdatesResourcesMode = process.argv[5];
-    if (!['all', 'only-fingerprint'].includes(createUpdatesResourcesMode)) {
+    if (createUpdatesResourcesMode == null ||
+        !['all', 'only-fingerprint'].includes(createUpdatesResourcesMode)) {
         throw new Error(`Unsupported createUpdatesResourcesMode: ${createUpdatesResourcesMode}`);
     }
     const entryFileArg = process.argv[6];

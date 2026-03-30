@@ -3,6 +3,8 @@ import type { RouteGroupConfig } from './types';
 
 /**
  * Empty component used for grouping screen configs.
+ *
+ * @deprecated
  */
 export function Group<ParamList extends ParamListBase, ScreenOptions extends object, Navigation>(
   _: RouteGroupConfig<ParamList, ScreenOptions, Navigation>

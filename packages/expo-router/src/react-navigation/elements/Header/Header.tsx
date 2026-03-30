@@ -1,5 +1,4 @@
 'use client';
-import Color from 'color';
 import * as React from 'react';
 import { use } from 'react';
 import {
@@ -24,6 +23,7 @@ import { HeaderSearchBar } from './HeaderSearchBar';
 import { HeaderShownContext } from './HeaderShownContext';
 import { HeaderTitle } from './HeaderTitle';
 import { getDefaultHeaderHeight } from './getDefaultHeaderHeight';
+import { Color } from '../../../utils/color';
 
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;
@@ -312,7 +312,8 @@ export function Header(props: Props) {
               // Allow touch through the header when background color is transparent
               headerTransparent &&
               (backgroundStyle.backgroundColor === 'transparent' ||
-                Color(backgroundStyle.backgroundColor).alpha() === 0)
+                (backgroundStyle.backgroundColor &&
+                  Color(backgroundStyle.backgroundColor)?.alpha() === 0))
                 ? 'none'
                 : 'auto'
             }

@@ -1,11 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MaterialTopTabBar = MaterialTopTabBar;
-const color_1 = __importDefault(require("color"));
 const react_native_1 = require("react-native");
+const color_1 = require("../../../utils/color");
 const elements_1 = require("../../elements");
 const native_1 = require("../../native");
 // Use dynamic import to avoid having direct dependency on react-native-tab-view.
@@ -30,8 +27,10 @@ function MaterialTopTabBar({ state, navigation, descriptors, ...rest }) {
     const { direction } = (0, native_1.useLocale)();
     const { buildHref } = (0, native_1.useLinkBuilder)();
     const focusedOptions = descriptors[state.routes[state.index].key].options;
-    const activeColor = focusedOptions.tabBarActiveTintColor ?? colors.text;
-    const inactiveColor = focusedOptions.tabBarInactiveTintColor ?? (0, color_1.default)(activeColor).alpha(0.5).rgb().string();
+    const activeColor = focusedOptions.tabBarActiveTintColor ?? colors.primary;
+    const inactiveColor = focusedOptions.tabBarInactiveTintColor ??
+        (0, color_1.Color)(activeColor)?.alpha(0.5).string() ??
+        colors.text;
     const tabBarOptions = Object.fromEntries(state.routes.map((route) => {
         const { options } = descriptors[route.key];
         const { title, tabBarLabel, tabBarButtonTestID, tabBarAccessibilityLabel, tabBarBadge, tabBarShowIcon, tabBarShowLabel, tabBarIcon, tabBarAllowFontScaling, tabBarLabelStyle, } = options;

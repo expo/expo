@@ -7,8 +7,10 @@ const Screen_1 = require("./Screen");
  * Higher order component to create a `Navigator` and `Screen` pair.
  * Custom navigators should wrap the navigator component in `createNavigator` before exporting.
  *
- * @param Navigator The navigator component to wrap.
+ * @param Navigator The navigator component. Should be wrapped with `withLayoutContext`.
  * @returns Factory method to create a `Navigator` and `Screen` pair.
+ *
+ * @deprecated This function may be replaced in the future version of expo-router.
  */
 function createNavigatorFactory(Navigator) {
     function createNavigator(config) {
