@@ -6,8 +6,9 @@ export type Props = {
     /** Determines which style the status bar starts with. */
     style?: StatusBarStyle;
 };
+export declare function resolveProps(props: Props | undefined): Props | undefined;
 export declare const setAndroidStatusBarStyles: (styles: AndroidConfig.Resources.ResourceXML, { style }: Props) => AndroidConfig.Resources.ResourceXML;
 export declare const setAndroidStrings: (strings: AndroidConfig.Resources.ResourceXML, { hidden }: Props) => AndroidConfig.Resources.ResourceXML;
 export declare const setIOSStatusBarInfoPlist: (plist: InfoPlist, { hidden, style }?: Props) => InfoPlist;
-declare const _default: ConfigPlugin<void | Props>;
+declare const _default: ConfigPlugin<Props | undefined>;
 export default _default;

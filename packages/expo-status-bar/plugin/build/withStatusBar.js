@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setIOSStatusBarInfoPlist = exports.setAndroidStrings = exports.setAndroidStatusBarStyles = void 0;
+exports.resolveProps = resolveProps;
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('../../package.json');
 // strings.xml keys, this should not change.
@@ -9,6 +10,19 @@ const IOS_BAR_STYLE_MAP = {
     dark: 'UIStatusBarStyleDarkContent',
     light: 'UIStatusBarStyleLightContent',
 };
+function resolveProps(props) {
+    if (props == null) {
+        return;
+    }
+    const { hidden, style } = props;
+    const resolvedProps = {
+        ...(style != null && { style }),
+        ...(hidden != null && { hidden }),
+    };
+    if (Object.keys(resolvedProps).length > 0) {
+        return resolvedProps;
+    }
+}
 const setAndroidStatusBarStyles = (styles, { style }) => {
     styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
         // Adding means the buttons will be darker to account for a light background color.
@@ -66,7 +80,8 @@ const withIOSStatusBarInfoPlist = (config, props) => (0, config_plugins_1.withIn
     config.modResults = (0, exports.setIOSStatusBarInfoPlist)(config.modResults, props);
     return config;
 });
-const withStatusBar = (config, props) => {
+const withStatusBar = (config, _props) => {
+    const props = resolveProps(_props);
     if (props == null) {
         return config;
     }
