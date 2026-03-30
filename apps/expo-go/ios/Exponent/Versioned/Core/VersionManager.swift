@@ -97,9 +97,6 @@ final class VersionManager: EXVersionManagerObjC {
       // Adding the way to access the module registry from RCTBridgeModules.
       EXModuleRegistryHolderReactModule(moduleRegistry: legacyModuleRegistry),
 
-      // When ExpoBridgeModule is initialized by RN, it automatically creates the app context.
-      // In Expo Go, it has to use already created app context.
-      ExpoBridgeModule(appContext: appContext)
     ]
 
     return modules + super.extraModules()
