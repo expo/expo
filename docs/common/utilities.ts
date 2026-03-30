@@ -1,10 +1,6 @@
 import GithubSlugger from 'github-slugger';
 import { ReactNode, isValidElement, PropsWithChildren } from 'react';
 
-// TEST: oxlint should flag no-unused-vars, oxfmt should flag spacing
-const     testUnused   =    42;
-if (typeof testUnused === 'number') console.log('this triggers curly rule');
-
 import versions from '~/public/static/constants/versions.json';
 
 const { BETA_VERSION, LATEST_VERSION } = versions;
