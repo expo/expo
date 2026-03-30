@@ -1,18 +1,14 @@
-import { ModConfig } from '@expo/config-plugins';
-
 import {
   applyEnforceNavigationBarContrast,
-  resolveProps,
   ResourceXMLConfig,
   setStrings,
-  withAndroidNavigationBarExpoGoManifest,
 } from '../withNavigationBar';
 
 const exportedConfigWithPopsCommon = (modName: string = 'styles') => ({
   name: 'test',
   slug: 'test',
   modRequest: {
-    platform: 'android' as keyof ModConfig,
+    platform: 'android' as const,
     modName,
     projectRoot: '/app',
     platformProjectRoot: '/app/android',
@@ -24,80 +20,8 @@ const exportedConfigWithPopsCommon = (modName: string = 'styles') => ({
   },
 });
 
-describe(resolveProps, () => {
-  it(`resolves no legacy props`, () => {
-    expect(resolveProps({})).toStrictEqual({
-      enforceContrast: undefined,
-      hidden: undefined,
-      style: undefined,
-      visible: undefined,
-    });
-  });
-
-  it(`resolves legacy props`, () => {
-    expect(
-      resolveProps({
-        androidNavigationBar: {
-          barStyle: 'light-content',
-        },
-      })
-    ).toStrictEqual({
-      enforceContrast: undefined,
-      hidden: undefined,
-      style: 'light',
-      visible: undefined,
-    });
-  });
-
-  it(`skips legacy props if any config plugin props are provided`, () => {
-    expect(
-      resolveProps(
-        {
-          androidNavigationBar: {
-            barStyle: 'light-content',
-          },
-        },
-        // config plugin props
-        {}
-      )
-    ).toStrictEqual({
-      enforceContrast: undefined,
-      hidden: undefined,
-      style: undefined,
-      visible: undefined,
-    });
-  });
-
-  it(`resolves config plugin props`, () => {
-    expect(
-      resolveProps(
-        {},
-        // config plugin props
-        {
-          style: 'dark',
-          hidden: true,
-        }
-      )
-    ).toStrictEqual({
-      enforceContrast: undefined,
-      hidden: true,
-      style: 'dark',
-      visible: 'leanback',
-    });
-  });
-});
-
 describe(setStrings, () => {
-  function getAllProps() {
-    return resolveProps(
-      {},
-      // config plugin props
-      {
-        style: 'dark',
-        hidden: true,
-      }
-    );
-  }
+  const getAllProps = () => ({ hidden: true, style: 'dark' }) as const;
 
   it(`sets all strings`, () => {
     expect(setStrings({ resources: {} }, getAllProps())).toStrictEqual({
@@ -135,8 +59,9 @@ describe(setStrings, () => {
   it(`unsets string`, () => {
     // Set all strings
     const strings = setStrings({ resources: {} }, getAllProps());
+
     // Unset all strings
-    expect(setStrings(strings, resolveProps({}))).toStrictEqual({
+    expect(setStrings(strings, {})).toStrictEqual({
       resources: {
         string: [],
       },
@@ -154,33 +79,14 @@ describe(setStrings, () => {
         _: 'hidden',
       },
     ]);
-    expect(setStrings(strings, resolveProps({}, { hidden: false })).resources.string).toStrictEqual(
-      [
-        {
-          $: { name: 'expo_navigation_bar_visibility', translatable: 'false' },
-          // Test a redefined value
-          _: 'visible',
-        },
-      ]
-    );
-  });
-});
 
-describe(withAndroidNavigationBarExpoGoManifest, () => {
-  it(`ensures manifest values`, () => {
-    expect(
-      withAndroidNavigationBarExpoGoManifest(
-        { name: '', slug: '' },
-        resolveProps({}, { hidden: true, style: 'dark' })
-      )
-    ).toStrictEqual({
-      name: expect.any(String),
-      slug: expect.any(String),
-      androidNavigationBar: {
-        barStyle: 'dark-content',
-        visible: 'leanback',
+    expect(setStrings(strings, { hidden: false }).resources.string).toStrictEqual([
+      {
+        $: { name: 'expo_navigation_bar_visibility', translatable: 'false' },
+        // Test a redefined value
+        _: 'visible',
       },
-    });
+    ]);
   });
 });
 
@@ -203,8 +109,8 @@ describe('applyEnforceNavigationBarContrast', () => {
     };
 
     const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
-
     const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
+
     expect(appTheme?.item).toContainEqual({
       _: 'true',
       $: {
@@ -212,6 +118,7 @@ describe('applyEnforceNavigationBarContrast', () => {
         'tools:targetApi': '29',
       },
     });
+
     expect(appTheme?.item).toContainEqual({ $: { name: 'android:otherSetting' }, _: 'true' });
     expect(resultConfig.modResults).toMatchInlineSnapshot(`
       {
@@ -263,9 +170,9 @@ describe('applyEnforceNavigationBarContrast', () => {
     };
 
     const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true); // enforce = true
-
     const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
     const targetItem = appTheme?.item?.find((i) => i.$.name === attributeName);
+
     expect(targetItem?._).toBe('true');
     expect(resultConfig.modResults).toMatchInlineSnapshot(`
       {
@@ -317,9 +224,9 @@ describe('applyEnforceNavigationBarContrast', () => {
     };
 
     const resultConfig = applyEnforceNavigationBarContrast(inputConfig, false); // enforce = false
-
     const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
     const targetItem = appTheme?.item?.find((i) => i.$.name === attributeName);
+
     expect(targetItem?._).toBe('false');
     expect(resultConfig.modResults).toMatchInlineSnapshot(`
       {
@@ -366,8 +273,8 @@ describe('applyEnforceNavigationBarContrast', () => {
         },
       },
     };
-    const originalModResults = JSON.parse(JSON.stringify(inputConfig.modResults));
 
+    const originalModResults = JSON.parse(JSON.stringify(inputConfig.modResults));
     const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
 
     expect(resultConfig.modResults).toEqual(originalModResults);
@@ -382,8 +289,8 @@ describe('applyEnforceNavigationBarContrast', () => {
         },
       },
     };
-    const originalModResults = JSON.parse(JSON.stringify(inputConfig.modResults));
 
+    const originalModResults = JSON.parse(JSON.stringify(inputConfig.modResults));
     const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
 
     expect(resultConfig.modResults).toEqual(originalModResults);

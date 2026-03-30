@@ -1,29 +1,4 @@
-import {
-  resolveAndroidLegacyProps,
-  setAndroidStrings,
-  setIOSStatusBarInfoPlist,
-  withStatusBarExpoGoManifest,
-} from '../withStatusBar';
-
-describe(resolveAndroidLegacyProps, () => {
-  it(`resolves no legacy props`, () => {
-    expect(resolveAndroidLegacyProps({})).toStrictEqual({
-      hidden: undefined,
-      style: undefined,
-    });
-  });
-
-  it(`resolves legacy props`, () => {
-    expect(
-      resolveAndroidLegacyProps({
-        androidStatusBar: { hidden: true, barStyle: 'light-content' },
-      })
-    ).toStrictEqual({
-      hidden: true,
-      style: 'light',
-    });
-  });
-});
+import { setAndroidStrings, setIOSStatusBarInfoPlist } from '../withStatusBar';
 
 describe(setIOSStatusBarInfoPlist, () => {
   it(`sets hidden and style`, () => {
@@ -67,62 +42,6 @@ describe(setIOSStatusBarInfoPlist, () => {
     expect(setIOSStatusBarInfoPlist({ CFBundleName: 'MyApp' }, { style: 'dark' })).toStrictEqual({
       CFBundleName: 'MyApp',
       UIStatusBarStyle: 'UIStatusBarStyleDarkContent',
-    });
-  });
-});
-
-describe(withStatusBarExpoGoManifest, () => {
-  it(`ensures manifest values (using plugin props)`, () => {
-    expect(
-      withStatusBarExpoGoManifest(
-        { name: '', slug: '' },
-        {
-          hidden: true,
-          style: 'dark',
-        }
-      )
-    ).toStrictEqual({
-      name: expect.any(String),
-      slug: expect.any(String),
-      androidStatusBar: {
-        barStyle: 'dark-content',
-        hidden: true,
-      },
-      extra: {
-        'expo-status-bar': {
-          hidden: true,
-          style: 'dark',
-        },
-      },
-    });
-  });
-
-  it(`ensures manifest values (using android legacy props)`, () => {
-    expect(
-      withStatusBarExpoGoManifest(
-        {
-          name: '',
-          slug: '',
-          androidStatusBar: {
-            barStyle: 'dark-content',
-            hidden: true,
-          },
-        },
-        undefined
-      )
-    ).toStrictEqual({
-      name: expect.any(String),
-      slug: expect.any(String),
-      androidStatusBar: {
-        barStyle: 'dark-content',
-        hidden: true,
-      },
-      extra: {
-        'expo-status-bar': {
-          hidden: true,
-          style: 'dark',
-        },
-      },
     });
   });
 });
