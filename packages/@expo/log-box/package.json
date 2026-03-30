@@ -12,7 +12,7 @@
     "watch": "run-p watch:lib watch:bundle",
     "watch:lib": "tsc -p tsconfig.lib.json --watch",
     "watch:bundle": "node ./scripts/watch-bundle.mjs",
-    "prepare": "[ -d dist/ExpoLogBox.bundle ] || run-s build:bundle,
+    "prepare": "run-s build:bundle",
     "prepublishOnly": "run-s clean build",
     "build": "run-s build:lib build:bundle",
     "build:lib": "tsc -p tsconfig.lib.json",
