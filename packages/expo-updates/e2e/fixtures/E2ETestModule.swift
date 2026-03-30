@@ -59,6 +59,15 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
       return updatesController?.runtimeVersion
     }
 
+    Function("getDownloadTimeMs") {
+      guard let context = subscription?.getContext() as? UpdatesNativeInterfaceStateContext,
+        let downloadStartTime = context.downloadStartTime,
+        let downloadFinishTime = context.downloadFinishTime else {
+        return nil as Int?
+      }
+      return Int(floor(downloadFinishTime.timeIntervalSince(downloadStartTime) * 1000.0))
+    }
+
     AsyncFunction("readInternalAssetsFolderAsync") { (promise: Promise) in
       guard let assetsFolder = AppController.sharedInstance.updatesDirectory else {
         promise.reject("ERR_UPDATES_E2E_READ", "No updatesDirectory initialized")
