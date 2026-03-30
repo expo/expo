@@ -30,6 +30,7 @@ describe(resolveProps, () => {
 
   it(`resolves props`, () => {
     expect(resolveProps({ style: 'dark' })).toStrictEqual({ style: 'dark' });
+    expect(resolveProps({ hidden: true })).toStrictEqual({ hidden: true });
   });
 
   it(`maps deprecated props, preferring new ones`, () => {
