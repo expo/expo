@@ -121,7 +121,7 @@ export declare const onLongPressGesture: (handler: () => void, minimumDuration?:
 /**
  * Adds an onAppear modifier that calls a function when the view appears.
  * @param handler - Function to call when the view appears.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onlongpressgesture(minimumduration:perform:onpressingchanged:)).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onappear(perform:)).
  */
 export declare const onAppear: (handler: () => void) => ModifierConfig;
 /**
