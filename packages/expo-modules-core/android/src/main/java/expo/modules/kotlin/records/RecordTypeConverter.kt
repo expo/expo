@@ -16,24 +16,29 @@ import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.DynamicAwareTypeConverters
 import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.TypeConverterProvider
+import expo.modules.kotlin.types.TypeConverterProviderImpl
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
+import expo.modules.kotlin.types.descriptors.toTypeDescriptor
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
-import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
+import kotlin.reflect.typeOf
 
 class RecordTypeConverter<T : Record>(
   private val converterProvider: TypeConverterProvider,
-  val type: KType
+  val typeDescriptor: TypeDescriptor
 ) : DynamicAwareTypeConverters<T>() {
   private val objectConstructorFactory = ObjectConstructorFactory()
   private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> by lazy {
-    (type.classifier as KClass<*>)
+    typeDescriptor.kClass
       .memberProperties
       .mapNotNull { property ->
         val fieldAnnotation = property.findAnnotation<Field>() ?: return@mapNotNull null
-        val typeConverter = converterProvider.obtainTypeConverter(property.returnType)
+        val typeConverter = converterProvider.obtainTypeConverter(
+          property.returnType.toTypeDescriptor()
+        )
 
         return@mapNotNull property to PropertyDescriptor(
           typeConverter,
@@ -45,7 +50,7 @@ class RecordTypeConverter<T : Record>(
   }
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): T =
-    exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
+    exceptionDecorator({ cause -> RecordCastException(typeDescriptor, cause) }) {
       val jsMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
       return@exceptionDecorator convertFromReadableMap(jsMap, context, forceConversion)
     }
@@ -69,7 +74,7 @@ class RecordTypeConverter<T : Record>(
   override fun isTrivial(): Boolean = false
 
   private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?, forceConversion: Boolean): T {
-    val kClass = type.classifier as KClass<*>
+    val kClass = typeDescriptor.kClass
     val instance = getObjectConstructor(kClass).construct()
 
     propertyDescriptors
@@ -87,7 +92,7 @@ class RecordTypeConverter<T : Record>(
         jsMap.getDynamic(jsKey).recycle {
           val javaField = property.javaField!!
 
-          val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
+          val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, typeDescriptor, cause) }) {
             descriptor.typeConverter.convert(this, context, forceConversion)
           }
 
@@ -101,7 +106,7 @@ class RecordTypeConverter<T : Record>(
   }
 
   internal fun convertFromMap(map: Map<String, Any?>, context: AppContext? = null, forceConversion: Boolean = false): T {
-    val kClass = type.classifier as KClass<*>
+    val kClass = typeDescriptor.kClass
     val instance = getObjectConstructor(kClass).construct()
 
     propertyDescriptors
@@ -131,7 +136,7 @@ class RecordTypeConverter<T : Record>(
         }
         val javaField = property.javaField!!
 
-        val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
+        val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, typeDescriptor, cause) }) {
           descriptor.typeConverter.convert(value, context, forceConversion)
         }
 
@@ -173,7 +178,7 @@ internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: Recor
 }
 
 inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>): T {
-  val converter = expo.modules.kotlin.types.TypeConverterProviderImpl.obtainTypeConverter(kotlin.reflect.typeOf<T>())
+  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>().toTypeDescriptor())
   @Suppress("UNCHECKED_CAST")
   return recordFromMap(map, converter as RecordTypeConverter<T>)
 }
