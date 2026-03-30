@@ -55,6 +55,7 @@ type ProcessedCache = {
 
 async function actionAsync(options: Options) {
   try {
+    await requireAuthentication();
     const rawCaches = await fetchAllCaches();
     console.log('\n');
     let data = processRawData(rawCaches);
@@ -66,6 +67,14 @@ async function actionAsync(options: Options) {
   } catch (error: any) {
     console.error(chalk.red('\nError:'), error.message);
     process.exit(1);
+  }
+}
+
+async function requireAuthentication() {
+  try {
+    await spawnAsync('gh', ['auth', 'status']);
+  } catch {
+    throw new Error('GitHub CLI is not authenticated. Run gh auth login');
   }
 }
 
@@ -111,7 +120,12 @@ function processRawData(rawCaches: CacheInfo[]): ProcessedCache[] {
   return rawCaches.map((i) => {
     const formattedCreated = i.created_at.replace('T', ' ').substring(0, 16);
     const formattedAccessed = i.last_accessed_at.replace('T', ' ').substring(0, 16);
-    const isOnce = formattedCreated === formattedAccessed;
+
+    const createdTime = new Date(i.created_at).getTime();
+    const accessedTime = new Date(i.last_accessed_at).getTime();
+    // 60s threshold instead of strict equality — accounts for edge cases where
+    // created_at and last_accessed_at differ by a few seconds despite a single access (not observed though)
+    const isOnce = Math.abs(accessedTime - createdTime) < 60 * 1000;
 
     return {
       key: i.key,
