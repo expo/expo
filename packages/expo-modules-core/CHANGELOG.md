@@ -38,6 +38,7 @@
 - [Android] Added broader colors support to convertibles. ([#44041](https://github.com/expo/expo/pull/44041) by [@kudo](https://github.com/kudo))
 - [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
 - [iOS] Remove legacy `EXNativeModulesProxy` ([#42672](https://github.com/expo/expo/pull/42672) by [@tsapeta](https://github.com/tsapeta))
+- Exclude ExpoModulesMacros.swift from SPM prebuild ([#44354](https://github.com/expo/expo/pull/44354) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 55.0.12 — 2026-02-25
 
