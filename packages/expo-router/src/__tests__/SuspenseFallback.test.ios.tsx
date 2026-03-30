@@ -11,95 +11,6 @@ const renderFallback = (route: string, testID = 'custom-fallback') => (
   </View>
 );
 
-it('renders custom `<SuspenseFallback>` when one is available', () => {
-  const pending = new Promise<string>(() => {}); // Promise that never resolves
-
-  function SuspendingRoute() {
-    const value = use(pending);
-    return <Text testID="route-content">{value}</Text>;
-  }
-
-  const CustomFallback = ({ route }: SuspenseFallbackProps) => renderFallback(route);
-
-  renderRouter({
-    index: {
-      default: SuspendingRoute,
-      SuspenseFallback: CustomFallback,
-    },
-  });
-
-  expect(screen.queryByTestId('route-content')).toBeNull();
-  expect(screen.getByTestId('custom-fallback')).toBeOnTheScreen();
-  expect(screen.getByText('Loading ./index.js...')).toBeOnTheScreen();
-});
-
-it('passes the full nested route context key to custom `<SuspenseFallback>`', () => {
-  const pending = new Promise<string>(() => {}); // Promise that never resolves
-
-  function SuspendingRoute() {
-    const value = use(pending);
-    return <Text testID="route-content">{value}</Text>;
-  }
-
-  const CustomFallback = ({ route }: SuspenseFallbackProps) => renderFallback(route);
-
-  renderRouter(
-    {
-      '(app)/_layout': () => <Slot />,
-      '(app)/profile/[id]': {
-        default: SuspendingRoute,
-        SuspenseFallback: CustomFallback,
-      },
-    },
-    { initialUrl: '/profile/123' }
-  );
-
-  expect(screen.queryByTestId('route-content')).toBeNull();
-  expect(screen.getByTestId('custom-fallback')).toBeOnTheScreen();
-  expect(screen.getByText('Loading ./(app)/profile/[id].js...')).toBeOnTheScreen();
-});
-
-it('passes route params to custom `<SuspenseFallback>`', () => {
-  const pending = new Promise<string>(() => {});
-
-  function SuspendingRoute() {
-    const value = use(pending);
-    return <Text testID="route-content">{value}</Text>;
-  }
-
-  const CustomFallback = jest.fn(({ route, params }: SuspenseFallbackProps) => (
-    <View testID="custom-fallback">
-      <Text>
-        Loading {route} with id={params.id}...
-      </Text>
-    </View>
-  ));
-
-  renderRouter(
-    {
-      '(app)/_layout': () => <Slot />,
-      '(app)/profile/[id]': {
-        default: SuspendingRoute,
-        SuspenseFallback: CustomFallback,
-      },
-    },
-    { initialUrl: '/profile/123' }
-  );
-
-  expect(screen.queryByTestId('route-content')).toBeNull();
-  expect(screen.getByTestId('custom-fallback')).toBeOnTheScreen();
-  expect(screen.getByText('Loading ./(app)/profile/[id].js with id=123...')).toBeOnTheScreen();
-  expect(CustomFallback).toHaveBeenCalledWith(
-    {
-      route: './(app)/profile/[id].js',
-      params: {
-        id: '123',
-      },
-    },
-    undefined
-  );
-});
-
 it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', () => {
   const pending = new Promise<string>(() => {});
 
@@ -127,41 +38,6 @@ it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', () => {
   expect(screen.getByTestId('layout-fallback')).toBeOnTheScreen();
   expect(screen.getByText('Loading ./(app)/profile/[id].js...')).toBeOnTheScreen();
   expect(LayoutFallback).toHaveBeenCalledTimes(1);
-});
-
-it('prefers route `<SuspenseFallback>` over inherited layout fallback in sync mode', () => {
-  const pending = new Promise<string>(() => {});
-
-  function SuspendingRoute() {
-    const value = use(pending);
-    return <Text testID="route-content">{value}</Text>;
-  }
-
-  const LayoutFallback = jest.fn(({ route }: SuspenseFallbackProps) =>
-    renderFallback(route, 'layout-fallback')
-  );
-  const RouteFallback = ({ route }: SuspenseFallbackProps) =>
-    renderFallback(route, 'route-fallback');
-
-  renderRouter(
-    {
-      '(app)/_layout': {
-        default: () => <Slot />,
-        SuspenseFallback: LayoutFallback,
-      },
-      '(app)/profile/[id]': {
-        default: SuspendingRoute,
-        SuspenseFallback: RouteFallback,
-      },
-    },
-    { initialUrl: '/profile/123' }
-  );
-
-  expect(screen.queryByTestId('route-content')).toBeNull();
-  expect(screen.getByTestId('route-fallback')).toBeOnTheScreen();
-  expect(screen.queryByTestId('layout-fallback')).toBeNull();
-  expect(LayoutFallback).not.toHaveBeenCalled();
-  expect(screen.getByText('Loading ./(app)/profile/[id].js...')).toBeOnTheScreen();
 });
 
 it('uses the nearest layout `<SuspenseFallback>` in sync mode', () => {
@@ -196,6 +72,47 @@ it('uses the nearest layout `<SuspenseFallback>` in sync mode', () => {
   expect(screen.getByTestId('nested-layout-fallback')).toBeOnTheScreen();
   expect(screen.queryByTestId('root-layout-fallback')).toBeNull();
   expect(screen.getByText('Loading ./(app)/profile/[id].js...')).toBeOnTheScreen();
+});
+
+it('passes route params to layout-level `<SuspenseFallback>`', () => {
+  const pending = new Promise<string>(() => {});
+
+  function SuspendingRoute() {
+    const value = use(pending);
+    return <Text testID="route-content">{value}</Text>;
+  }
+
+  const LayoutFallback = jest.fn(({ route, params }: SuspenseFallbackProps) => (
+    <View testID="layout-fallback">
+      <Text>
+        Loading {route} with id={params.id}...
+      </Text>
+    </View>
+  ));
+
+  renderRouter(
+    {
+      '(app)/_layout': {
+        default: () => <Slot />,
+        SuspenseFallback: LayoutFallback,
+      },
+      '(app)/profile/[id]': SuspendingRoute,
+    },
+    { initialUrl: '/profile/123' }
+  );
+
+  expect(screen.queryByTestId('route-content')).toBeNull();
+  expect(screen.getByTestId('layout-fallback')).toBeOnTheScreen();
+  expect(screen.getByText('Loading ./(app)/profile/[id].js with id=123...')).toBeOnTheScreen();
+  expect(LayoutFallback).toHaveBeenCalledWith(
+    {
+      route: './(app)/profile/[id].js',
+      params: {
+        id: '123',
+      },
+    },
+    undefined
+  );
 });
 
 it('renders default `<SuspenseFallback>` when one is not available', () => {

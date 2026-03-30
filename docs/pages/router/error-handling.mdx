@@ -84,42 +84,47 @@ React Native LogBox needs to be presented less aggressively to develop with erro
 
 ## Loading states with Suspense fallback
 
-Expo Router wraps each route in a [React Suspense](https://react.dev/reference/react/Suspense) boundary. You can export a [`SuspenseFallback`](/versions/unversioned/sdk/router/#suspensefallback) component from any route or layout file to customize the loading UI shown while a component is suspended:
+Expo Router wraps each route in a [React Suspense](https://react.dev/reference/react/Suspense) boundary. You can export a [`SuspenseFallback`](/versions/unversioned/sdk/router/#suspensefallback) component from a layout file to customize the loading UI shown while any child route is suspended:
 
-```tsx src/app/home.tsx
+```tsx src/app/_layout.tsx
 import { ActivityIndicator, View } from 'react-native';
+import { Stack } from 'expo-router';
 
 export function SuspenseFallback() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size="large" />
     </View>
   );
 }
 
-export default function HomePage() { ... }
+export default function RootLayout() {
+  return <Stack />;
+}
 ```
 
-> If a route exports its own [`SuspenseFallback`](/versions/unversioned/sdk/router/#suspensefallback), it overrides the fallback defined in its parent layout. When multiple parent layouts define a fallback, the nearest parent wins.
+> When multiple parent layouts define a fallback, the nearest parent takes precedence.
 
 ### Accessing route parameters
 
 The [`SuspenseFallback`](/versions/unversioned/sdk/router/#suspensefallback) component receives `route` and `params` props. You can use `params` to display context-specific loading states for dynamic routes, for example:
 
-```tsx src/app/profile/[id].tsx
+```tsx src/app/(app)/_layout.tsx
 import { ActivityIndicator, Text, View } from 'react-native';
-import { type SuspenseFallbackProps } from 'expo-router';
+import { Stack, type SuspenseFallbackProps } from 'expo-router';
 
 export function SuspenseFallback({ params }: SuspenseFallbackProps) {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Loading profile {params.id}...</Text>
       <ActivityIndicator size="large" />
     </View>
   );
 }
 
-export default function ProfilePage() { ... }
+export default function AppLayout() {
+  return <Stack />;
+}
 ```
 
 ### Limitations

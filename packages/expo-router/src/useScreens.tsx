@@ -267,7 +267,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
     | React.ComponentType<{ segment?: string }>;
 
-  let UserSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
+  let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
@@ -285,7 +285,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const res = value.loadRoute();
     const result = fromImport(value, res);
     ScreenComponent = result.default!;
-    UserSuspenseFallback = result.SuspenseFallback;
+    LayoutSuspenseFallback = value.type === 'layout' ? result.SuspenseFallback : undefined;
   }
   const WrappedScreenComponent: typeof ScreenComponent = (props: object) => {
     useColorSchemeChangesIfNeeded();
@@ -323,10 +323,10 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
         ? DefaultSuspenseFallback
-        : (UserSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
+        : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
     const providedSuspenseFallback =
       value.type === 'layout'
-        ? (UserSuspenseFallback ?? InheritedSuspenseFallback)
+        ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
     if (isFocused) {
