@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [next] Add getPermissionsAsync ([#44244](https://github.com/expo/expo/pull/44244) by [@Wenszel](https://github.com/Wenszel))
 - [next][iOS] Added support to add or remove assets from Favorites smart album ([#43598](https://github.com/expo/expo/pull/43598) by [@awaisanjumx2](https://github.com/awaisanjumx2))
 - [iOS] Added support to add or remove assets to Favorites smart album ([#43459](https://github.com/expo/expo/pull/43459) by [@awaisanjumx2](https://github.com/awaisanjumx2))
 
