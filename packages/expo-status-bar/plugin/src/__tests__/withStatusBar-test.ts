@@ -1,4 +1,4 @@
-import { setAndroidStrings, setIOSStatusBarInfoPlist } from '../withStatusBar';
+import { resolveProps, setAndroidStrings, setIOSStatusBarInfoPlist } from '../withStatusBar';
 
 describe(setIOSStatusBarInfoPlist, () => {
   it(`sets hidden and style`, () => {
@@ -43,6 +43,18 @@ describe(setIOSStatusBarInfoPlist, () => {
       CFBundleName: 'MyApp',
       UIStatusBarStyle: 'UIStatusBarStyleDarkContent',
     });
+  });
+});
+
+describe(resolveProps, () => {
+  it(`returns undefined for nullish or empty props`, () => {
+    expect(resolveProps(undefined)).toBeUndefined();
+    expect(resolveProps({})).toBeUndefined();
+    expect(resolveProps({ style: null })).toBeUndefined();
+  });
+
+  it(`resolves props`, () => {
+    expect(resolveProps({ style: 'dark' })).toStrictEqual({ style: 'dark' });
   });
 });
 

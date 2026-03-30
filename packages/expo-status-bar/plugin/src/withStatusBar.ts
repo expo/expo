@@ -27,6 +27,23 @@ const IOS_BAR_STYLE_MAP: Record<StatusBarStyle, string> = {
   light: 'UIStatusBarStyleLightContent',
 };
 
+export function resolveProps(props: Props | undefined): Props | undefined {
+  if (props == null) {
+    return;
+  }
+
+  const { hidden, style } = props;
+
+  const resolvedProps: Props = {
+    ...(style != null && { style }),
+    ...(hidden != null && { hidden }),
+  };
+
+  if (Object.keys(resolvedProps).length > 0) {
+    return resolvedProps;
+  }
+}
+
 export const setAndroidStatusBarStyles = (
   styles: AndroidConfig.Resources.ResourceXML,
   { style }: Props
@@ -101,7 +118,9 @@ const withIOSStatusBarInfoPlist: ConfigPlugin<Props> = (config, props) =>
     return config;
   });
 
-const withStatusBar: ConfigPlugin<Props | void> = (config, props) => {
+const withStatusBar: ConfigPlugin<Props | undefined> = (config, _props) => {
+  const props = resolveProps(_props);
+
   if (props == null) {
     return config;
   }

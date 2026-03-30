@@ -1,5 +1,6 @@
 import {
   applyEnforceNavigationBarContrast,
+  resolveProps,
   ResourceXMLConfig,
   setStrings,
 } from '../withNavigationBar';
@@ -18,6 +19,27 @@ const exportedConfigWithPopsCommon = (modName: string = 'styles') => ({
     name: 'test',
     slug: 'test',
   },
+});
+
+describe(resolveProps, () => {
+  it(`returns undefined for nullish or empty props`, () => {
+    expect(resolveProps(undefined)).toBeUndefined();
+    expect(resolveProps({})).toBeUndefined();
+    expect(resolveProps({ style: null })).toBeUndefined();
+  });
+
+  it(`resolves props`, () => {
+    expect(resolveProps({ style: 'dark' })).toStrictEqual({ style: 'dark' });
+  });
+
+  it(`maps deprecated props, preferring new ones`, () => {
+    expect(resolveProps({ barStyle: 'dark' })).toStrictEqual({ style: 'dark' });
+    expect(resolveProps({ visibility: 'hidden' })).toStrictEqual({ hidden: true });
+    expect(resolveProps({ visibility: 'visible' })).toStrictEqual({ hidden: false });
+
+    expect(resolveProps({ style: 'light', barStyle: 'dark' })).toStrictEqual({ style: 'light' });
+    expect(resolveProps({ hidden: false, visibility: 'hidden' })).toStrictEqual({ hidden: false });
+  });
 });
 
 describe(setStrings, () => {

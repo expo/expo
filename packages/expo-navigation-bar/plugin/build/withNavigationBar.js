@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolveProps = resolveProps;
 exports.setStrings = setStrings;
 exports.setNavigationBarStyles = setNavigationBarStyles;
 exports.applyEnforceNavigationBarContrast = applyEnforceNavigationBarContrast;
@@ -7,15 +8,32 @@ const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('../../package.json');
 // strings.xml keys, this should not change.
 const VISIBILITY_KEY = 'expo_navigation_bar_visibility';
-const withNavigationBar = (config, props) => {
+function resolveProps(props) {
     if (props == null) {
-        return config;
+        return;
     }
     if ('barStyle' in props) {
         config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar barStyle', 'Use `style` instead. This will be removed in a future release.');
     }
     if ('visibility' in props) {
         config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar visibility', 'Use `hidden` instead. This will be removed in a future release.');
+    }
+    const { enforceContrast } = props;
+    const style = props.style ?? props.barStyle ?? undefined;
+    const hidden = props.hidden ?? (props.visibility == null ? undefined : props.visibility === 'hidden');
+    const resolvedProps = {
+        ...(enforceContrast != null && { enforceContrast }),
+        ...(style != null && { style }),
+        ...(hidden != null && { hidden }),
+    };
+    if (Object.keys(resolvedProps).length > 0) {
+        return resolvedProps;
+    }
+}
+const withNavigationBar = (config, _props) => {
+    const props = resolveProps(_props);
+    if (props == null) {
+        return config;
     }
     // Elevate props to a static value on extra so Expo Go can read it.
     config.extra ??= {};
