@@ -7,7 +7,6 @@ import * as MediaLibrary from 'expo-media-library';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
-  Button,
   Platform,
   ScrollView,
   StyleSheet,
