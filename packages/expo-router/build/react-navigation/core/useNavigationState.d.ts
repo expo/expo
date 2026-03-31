@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import type { NavigationState, ParamListBase } from '../routers';
 type Selector<ParamList extends ParamListBase, T> = (state: NavigationState<ParamList>) => T;
 /**

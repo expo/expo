@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
 
 import {
@@ -34,7 +36,7 @@ type Props = {
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 
 export function NativeStackView({ state, descriptors, describe }: Props) {
-  const parentHeaderBack = React.useContext(HeaderBackContext);
+  const parentHeaderBack = use(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
 
   const preloadedDescriptors = state.preloadedRoutes.reduce<NativeStackDescriptorMap>(

@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,12 +36,13 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useOnGetState = useOnGetState;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
 const NavigationProvider_1 = require("./NavigationProvider");
 const isArrayEqual_1 = require("./isArrayEqual");
 function useOnGetState({ getState, getStateListeners }) {
-    const { addKeyedListener } = React.useContext(NavigationBuilderContext_1.NavigationBuilderContext);
-    const route = React.useContext(NavigationProvider_1.NavigationRouteContext);
+    const { addKeyedListener } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
+    const route = (0, react_1.use)(NavigationProvider_1.NavigationRouteContext);
     const key = route ? route.key : 'root';
     const getRehydratedState = React.useCallback(() => {
         const state = getState();

@@ -86,6 +86,9 @@ Object.defineProperty(exports, "Label", { enumerable: true, get: function () { r
 Object.defineProperty(exports, "VectorIcon", { enumerable: true, get: function () { return primitives_1.VectorIcon; } });
 var navigationEvents_1 = require("./navigationEvents");
 Object.defineProperty(exports, "unstable_navigationEvents", { enumerable: true, get: function () { return navigationEvents_1.unstable_navigationEvents; } });
+/**
+ * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
+ */
 var Tabs_1 = require("./layouts/Tabs");
 Object.defineProperty(exports, "Tabs", { enumerable: true, get: function () { return Tabs_1.Tabs; } });
 __exportStar(require("./react-navigation"), exports);

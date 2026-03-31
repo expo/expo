@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,12 +36,13 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useFocusedListenersChildrenAdapter = useFocusedListenersChildrenAdapter;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
 /**
  * Hook for passing focus callback to children
  */
 function useFocusedListenersChildrenAdapter({ navigation, focusedListeners }) {
-    const { addListener } = React.useContext(NavigationBuilderContext_1.NavigationBuilderContext);
+    const { addListener } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
     const listener = React.useCallback((callback) => {
         if (navigation.isFocused()) {
             for (const listener of focusedListeners) {

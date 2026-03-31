@@ -3,7 +3,7 @@ type ExpoConfigIosSplash = NonNullable<NonNullable<ExpoConfig['ios']>['splash']>
 export interface IOSSplashConfig {
     imageWidth?: number;
     image?: string;
-    backgroundColor: string;
+    backgroundColor?: string;
     enableFullScreenImage_legacy?: boolean;
     resizeMode: NonNullable<ExpoConfigIosSplash['resizeMode']>;
     tabletImage?: string;

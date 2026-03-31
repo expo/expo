@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -37,15 +38,16 @@ exports.useBuildAction = void 0;
 exports.useBuildHref = useBuildHref;
 exports.useLinkBuilder = useLinkBuilder;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const core_1 = require("../core");
 const LinkingContext_1 = require("./LinkingContext");
 /**
  * Helper to build a href for a screen based on the linking options.
  */
 function useBuildHref() {
-    const navigation = React.useContext(core_1.NavigationHelpersContext);
-    const route = React.useContext(core_1.NavigationRouteContext);
-    const { options } = React.useContext(LinkingContext_1.LinkingContext);
+    const navigation = (0, react_1.use)(core_1.NavigationHelpersContext);
+    const route = (0, react_1.use)(core_1.NavigationRouteContext);
+    const { options } = (0, react_1.use)(LinkingContext_1.LinkingContext);
     const focusedRouteState = (0, core_1.useStateForPath)();
     const getPathFromStateHelper = options?.getPathFromState ?? core_1.getPathFromState;
     const buildHref = React.useCallback((name, params) => {
@@ -106,7 +108,7 @@ function useBuildHref() {
  * Helper to build a navigation action from a href based on the linking options.
  */
 const useBuildAction = () => {
-    const { options } = React.useContext(LinkingContext_1.LinkingContext);
+    const { options } = (0, react_1.use)(LinkingContext_1.LinkingContext);
     const getStateFromPathHelper = options?.getStateFromPath ?? core_1.getStateFromPath;
     const getActionFromStateHelper = options?.getActionFromState ?? core_1.getActionFromState;
     const buildAction = React.useCallback((href) => {

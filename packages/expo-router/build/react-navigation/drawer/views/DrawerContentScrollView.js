@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,13 +36,14 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DrawerContentScrollView = void 0;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const native_1 = require("../../native");
 const DrawerPositionContext_1 = require("../utils/DrawerPositionContext");
 const SPACING = 12;
-function DrawerContentScrollViewInner({ contentContainerStyle, style, children, ...rest }, ref) {
-    const drawerPosition = React.useContext(DrawerPositionContext_1.DrawerPositionContext);
+function DrawerContentScrollViewInner({ ref, contentContainerStyle, style, children, ...rest }) {
+    const drawerPosition = (0, react_1.use)(DrawerPositionContext_1.DrawerPositionContext);
     const insets = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
     const { direction } = (0, native_1.useLocale)();
     const isRight = direction === 'rtl' ? drawerPosition === 'left' : drawerPosition === 'right';
@@ -57,7 +59,7 @@ function DrawerContentScrollViewInner({ contentContainerStyle, style, children, 
       {children}
     </react_native_1.ScrollView>);
 }
-exports.DrawerContentScrollView = React.forwardRef(DrawerContentScrollViewInner);
+exports.DrawerContentScrollView = DrawerContentScrollViewInner;
 const styles = react_native_1.StyleSheet.create({
     container: {
         flex: 1,

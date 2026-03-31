@@ -92,11 +92,7 @@ function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[
 
 const expoResolutions: { [key: string]: string } = {};
 
-function linkExpoDependency(
-  repoRoot: string,
-  projectRoot: string,
-  dependencyName: string
-) {
+function linkExpoDependency(repoRoot: string, projectRoot: string, dependencyName: string) {
   // Pack up the named Expo package into the destination folder
   const dependencyComponents = dependencyName.split('/');
   let dependencyPath: string;
@@ -326,7 +322,7 @@ async function preparePackageJson(
         'form-data': '^4.0.0',
         'resolve-from': '^5.0.0',
         'structured-headers': '^2.0.2',
-        'nullthrows': '^1.1.1',
+        nullthrows: '^1.1.1',
         prettier: '^2.8.1',
         'patch-package': '^8.0.0',
         'ts-node': '~10.9.2',
@@ -371,7 +367,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.84.0-0',
+        glob: "^11.0.0",
+        'react-native': 'npm:react-native-tvos@0.85.0-0rc5',
         '@react-native-tvos/config-tv': '^0.1.5',
       },
       expo: {
@@ -505,7 +502,7 @@ function transformAppJsonForE2E(
       },
       experiments: {
         // NOTE(@kitten): Deduplicate `react` and native module code automatically as we're symlinking modules
-        autolinkingModuleResolution: true
+        autolinkingModuleResolution: true,
       },
       extra: {
         eas: {
@@ -657,7 +654,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
       },
       experiments: {
         // NOTE(@kitten): Deduplicate `react` and native module code automatically as we're symlinking modules
-        autolinkingModuleResolution: true
+        autolinkingModuleResolution: true,
       },
       extra: {
         eas: {

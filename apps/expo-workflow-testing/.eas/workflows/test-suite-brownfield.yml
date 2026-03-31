@@ -18,11 +18,6 @@ concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
   cancel_in_progress: true
 
-defaults:
-  tools:
-    node: 22.14.0
-    yarn: 1.22.22
-
 jobs:
   detect_platform:
     name: Detect platform changes

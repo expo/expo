@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -81,19 +83,17 @@ const getPartialState = (
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
-export const BaseNavigationContainer = React.forwardRef(function BaseNavigationContainer(
-  {
-    initialState,
-    onStateChange,
-    onReady,
-    onUnhandledAction,
-    navigationInChildEnabled = false,
-    theme,
-    children,
-  }: NavigationContainerProps,
-  ref?: React.Ref<NavigationContainerRef<ParamListBase>>
-) {
-  const parent = React.useContext(NavigationStateContext);
+export function BaseNavigationContainer({
+  ref,
+  initialState,
+  onStateChange,
+  onReady,
+  onUnhandledAction,
+  navigationInChildEnabled = false,
+  theme,
+  children,
+}: NavigationContainerProps & { ref?: React.Ref<NavigationContainerRef<ParamListBase>> }) {
+  const parent = use(NavigationStateContext);
   const independent = useNavigationIndependentTree();
 
   if (!parent.isDefault && !independent) {
@@ -425,4 +425,4 @@ export const BaseNavigationContainer = React.forwardRef(function BaseNavigationC
       </NavigationContainerRefContext.Provider>
     </NavigationIndependentTreeContext.Provider>
   );
-});
+}

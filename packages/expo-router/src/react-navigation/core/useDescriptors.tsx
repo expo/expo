@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type {
   NavigationAction,
@@ -107,10 +109,10 @@ export function useDescriptors<
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
-  const theme = React.useContext(ThemeContext);
+  const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
   const { onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates, stackRef } =
-    React.useContext(NavigationBuilderContext);
+    use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({

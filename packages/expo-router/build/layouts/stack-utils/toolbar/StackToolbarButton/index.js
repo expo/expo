@@ -45,6 +45,7 @@ const toolbar_primitives_1 = require("../toolbar-primitives");
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarButton = (props) => {
@@ -65,7 +66,7 @@ const StackToolbarButton = (props) => {
             console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
-    if (placement !== 'bottom') {
+    if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
         throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
     }
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props, true);

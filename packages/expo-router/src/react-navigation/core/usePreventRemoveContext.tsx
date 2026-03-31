@@ -1,9 +1,10 @@
-import * as React from 'react';
+'use client';
+import { use } from 'react';
 
 import { PreventRemoveContext } from './PreventRemoveContext';
 
 export function usePreventRemoveContext() {
-  const value = React.useContext(PreventRemoveContext);
+  const value = use(PreventRemoveContext);
 
   if (value == null) {
     throw new Error(

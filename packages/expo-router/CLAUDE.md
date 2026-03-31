@@ -101,7 +101,10 @@ File-based routing library for React Native and web applications. Built on top o
 ├── server.d.ts                # Re-exports types from `@expo/router-server`
 ├── drawer.js                  # Drawer navigator - import { Drawer } from "expo-router/drawer"
 ├── stack.js                   # Stack navigator - import { Stack } from "expo-router/stack"
-├── tabs.js                    # Tab navigator - import { Tabs } from "expo-router/tabs"
+├── js-stack.js                # JS stack navigator - import { Stack } from "expo-router/js-stack"
+├── tabs.js                    # JS tab navigator (deprecated) - import { Tabs } from "expo-router/tabs"
+├── js-tabs.js                 # JS tab navigator - import { Tabs } from "expo-router/js-tabs"
+├── js-top-tabs.js             # JS top tab navigator - import { TopTabs } from "expo-router/js-top-tabs"
 ├── html.js                    # HTML document wrapper for web - import { Html } from "expo-router/html"
 ├── ui.js                      # Headless UI tabs components - import { Tabs } from "expo-router/ui"
 ├── unstable-native-tabs.js    # Native bottom tabs - import { NativeTabs } from "expo-router/unstable-native-tabs"

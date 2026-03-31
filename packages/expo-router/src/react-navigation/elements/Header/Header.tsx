@@ -1,5 +1,6 @@
-import Color from 'color';
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 import {
   Animated,
   type LayoutChangeEvent,
@@ -22,6 +23,7 @@ import { HeaderSearchBar } from './HeaderSearchBar';
 import { HeaderShownContext } from './HeaderShownContext';
 import { HeaderTitle } from './HeaderTitle';
 import { getDefaultHeaderHeight } from './getDefaultHeaderHeight';
+import { Color } from '../../../utils/color';
 
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;
@@ -76,7 +78,7 @@ export function Header(props: Props) {
   const { colors } = useTheme();
 
   const navigation = useNavigation();
-  const isParentHeaderShown = React.useContext(HeaderShownContext);
+  const isParentHeaderShown = use(HeaderShownContext);
 
   const [searchBarVisible, setSearchBarVisible] = React.useState(false);
   const [titleLayout, setTitleLayout] = React.useState<Layout | undefined>(undefined);
@@ -310,7 +312,8 @@ export function Header(props: Props) {
               // Allow touch through the header when background color is transparent
               headerTransparent &&
               (backgroundStyle.backgroundColor === 'transparent' ||
-                Color(backgroundStyle.backgroundColor).alpha() === 0)
+                (backgroundStyle.backgroundColor &&
+                  Color(backgroundStyle.backgroundColor)?.alpha() === 0))
                 ? 'none'
                 : 'auto'
             }

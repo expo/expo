@@ -1,4 +1,4 @@
-import color from 'color';
+'use client';
 import { Platform, StyleSheet, type TextStyle, View } from 'react-native';
 import {
   type HeaderBarButtonItemMenuAction,
@@ -24,6 +24,7 @@ import type {
   NativeStackNavigationOptions,
 } from '../types';
 import { processFonts } from './FontProcessor';
+import { Color } from '../../../utils/color';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
 
 type Props = NativeStackNavigationOptions & {
@@ -97,7 +98,7 @@ const processBarButtonItems = (
 
         if (badge) {
           const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
-          const badgeTextColor = color(badgeBackgroundColor).isLight() ? 'black' : 'white';
+          const badgeTextColor = Color(badgeBackgroundColor)?.isLight() ? 'black' : 'white';
 
           processedItem = {
             ...processedItem,
@@ -272,6 +273,7 @@ export function useHeaderConfigProps({
   const headerLeftElement = headerLeft?.({
     tintColor,
     canGoBack,
+    backgroundColor: headerBackgroundColor,
     label: headerBackTitle ?? headerBack?.title,
     // `href` is only applicable to web
     href: undefined,
@@ -280,6 +282,7 @@ export function useHeaderConfigProps({
   const headerRightElement = headerRight?.({
     tintColor,
     canGoBack,
+    backgroundColor: headerBackgroundColor,
   });
 
   const headerTitleElement =

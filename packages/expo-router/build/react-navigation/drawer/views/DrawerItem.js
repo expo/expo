@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -32,14 +33,11 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DrawerItem = DrawerItem;
-const color_1 = __importDefault(require("color"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const color_1 = require("../../../utils/color");
 const elements_1 = require("../../elements");
 const native_1 = require("../../native");
 /**
@@ -47,10 +45,14 @@ const native_1 = require("../../native");
  */
 function DrawerItem(props) {
     const { colors, fonts } = (0, native_1.useTheme)();
-    const { href, icon, label, labelStyle, focused = false, allowFontScaling, activeTintColor = colors.primary, inactiveTintColor = (0, color_1.default)(colors.text).alpha(0.68).rgb().string(), activeBackgroundColor = (0, color_1.default)(activeTintColor).alpha(0.12).rgb().string(), inactiveBackgroundColor = 'transparent', style, onPress, pressColor, pressOpacity = 1, testID, accessibilityLabel, ...rest } = props;
+    const { href, icon, label, labelStyle, focused = false, allowFontScaling, activeTintColor = colors.primary, inactiveTintColor, activeBackgroundColor, inactiveBackgroundColor = 'transparent', style, onPress, pressColor, pressOpacity = 1, testID, accessibilityLabel, ...rest } = props;
     const { borderRadius = 56 } = react_native_1.StyleSheet.flatten(style || {});
-    const color = focused ? activeTintColor : inactiveTintColor;
-    const backgroundColor = focused ? activeBackgroundColor : inactiveBackgroundColor;
+    const color = focused
+        ? activeTintColor
+        : (inactiveTintColor ?? (0, color_1.Color)(colors.text)?.alpha(0.68).string() ?? colors.text);
+    const backgroundColor = focused
+        ? (activeBackgroundColor ?? (0, color_1.Color)(activeTintColor)?.alpha(0.12).string() ?? 'transparent')
+        : inactiveBackgroundColor;
     const iconNode = icon ? icon({ size: 24, focused, color }) : null;
     return (<react_native_1.View collapsable={false} {...rest} style={[styles.container, { borderRadius, backgroundColor }, style]}>
       <elements_1.PlatformPressable testID={testID} onPress={onPress} role="button" aria-label={accessibilityLabel} aria-selected={focused} pressColor={pressColor} pressOpacity={pressOpacity} hoverEffect={{ color }} href={href}>

@@ -1,2 +1,0 @@
-export declare const createNativeBottomTabNavigator: typeof import('./createNativeBottomTabNavigator.native').createNativeBottomTabNavigator;
-//# sourceMappingURL=createNativeBottomTabNavigator.d.ts.map

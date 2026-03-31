@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import type { ColorValue } from 'react-native';
 import { Drawer } from 'vaul';
 
 import modalStyles from './modalStyles';
@@ -19,7 +20,7 @@ function ModalStackRouteDrawer({
   options: ExtendedStackNavigationOptions;
   renderScreen: () => React.ReactNode;
   onDismiss: () => void;
-  themeColors: { card: string; background: string };
+  themeColors: { card: ColorValue; background: ColorValue };
   dismissible?: boolean;
 }) {
   const [open, setOpen] = React.useState(true);
@@ -71,7 +72,7 @@ function ModalStackRouteDrawer({
 
   // Using CSS variables so defaults live in CSS and can be overridden via props.
   const modalStyleVars: CSSWithVars = {
-    backgroundColor: themeColors.background,
+    backgroundColor: themeColors.background as string,
   };
 
   if (!isSheet) {

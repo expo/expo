@@ -1,4 +1,5 @@
-import * as React from 'react';
+'use client';
+import { use } from 'react';
 
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
@@ -11,7 +12,7 @@ import { useClientLayoutEffect } from './useClientLayoutEffect';
  * Then we call setState during after the component updates.
  */
 export function useScheduleUpdate(callback: () => void) {
-  const { scheduleUpdate, flushUpdates } = React.useContext(NavigationBuilderContext);
+  const { scheduleUpdate, flushUpdates } = use(NavigationBuilderContext);
 
   // FIXME: This is potentially unsafe
   // However, since we are using sync store, it might be fine

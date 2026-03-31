@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useScrollToTop = useScrollToTop;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const core_1 = require("../core");
 function getScrollableNode(ref) {
     if (ref.current == null) {
@@ -64,7 +66,7 @@ function getScrollableNode(ref) {
     }
 }
 function useScrollToTop(ref) {
-    const navigation = React.useContext(core_1.NavigationContext);
+    const navigation = (0, react_1.use)(core_1.NavigationContext);
     const route = (0, core_1.useRoute)();
     if (navigation === undefined) {
         throw new Error("Couldn't find a navigation object. Is your component inside NavigationContainer?");

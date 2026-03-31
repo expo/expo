@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,13 +36,14 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useOptionsGetters = useOptionsGetters;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
 const NavigationStateContext_1 = require("./NavigationStateContext");
 function useOptionsGetters({ key, options, navigation }) {
     const optionsRef = React.useRef(options);
     const optionsGettersFromChildRef = React.useRef({});
-    const { onOptionsChange } = React.useContext(NavigationBuilderContext_1.NavigationBuilderContext);
-    const { addOptionsGetter: parentAddOptionsGetter } = React.useContext(NavigationStateContext_1.NavigationStateContext);
+    const { onOptionsChange } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
+    const { addOptionsGetter: parentAddOptionsGetter } = (0, react_1.use)(NavigationStateContext_1.NavigationStateContext);
     const optionsChangeListener = React.useCallback(() => {
         const isFocused = navigation?.isFocused() ?? true;
         const hasChildren = Object.keys(optionsGettersFromChildRef.current).length;

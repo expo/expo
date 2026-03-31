@@ -1,3 +1,4 @@
+'use client';
 import { getNamedContext } from '../getNamedContext';
 
 export const HeaderHeightContext = getNamedContext<number | undefined>(

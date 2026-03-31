@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 import { Animated, Platform, StatusBar, StyleSheet, useAnimatedValue, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -173,9 +175,9 @@ const SceneView = ({
   // Modals are fullscreen in landscape only on iPhone
   const isIPhone = Platform.OS === 'ios' && !(Platform.isPad || Platform.isTV);
 
-  const isParentHeaderShown = React.useContext(HeaderShownContext);
-  const parentHeaderHeight = React.useContext(HeaderHeightContext);
-  const parentHeaderBack = React.useContext(HeaderBackContext);
+  const isParentHeaderShown = use(HeaderShownContext);
+  const parentHeaderHeight = use(HeaderHeightContext);
+  const parentHeaderBack = use(HeaderBackContext);
 
   const isLandscape = useFrameSize((frame) => frame.width > frame.height);
 

@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,13 +36,14 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeStackView = NativeStackView;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const elements_1 = require("../../elements");
 const native_1 = require("../../native");
 const useAnimatedHeaderHeight_1 = require("../utils/useAnimatedHeaderHeight");
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 function NativeStackView({ state, descriptors, describe }) {
-    const parentHeaderBack = React.useContext(elements_1.HeaderBackContext);
+    const parentHeaderBack = (0, react_1.use)(elements_1.HeaderBackContext);
     const { buildHref } = (0, native_1.useLinkBuilder)();
     const preloadedDescriptors = state.preloadedRoutes.reduce((acc, route) => {
         acc[route.key] = acc[route.key] || describe(route, true);

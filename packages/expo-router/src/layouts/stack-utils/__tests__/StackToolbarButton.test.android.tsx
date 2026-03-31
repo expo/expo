@@ -2,6 +2,7 @@ import { render } from '@testing-library/react-native';
 
 import { NativeToolbarButton } from '../toolbar/StackToolbarButton/native';
 import type { NativeToolbarButtonProps } from '../toolbar/StackToolbarButton/types';
+import { ToolbarColorContext, type ToolbarColors } from '../toolbar/context';
 
 jest.mock('@expo/ui/jetpack-compose', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -100,6 +101,51 @@ describe('NativeToolbarButton', () => {
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
         tintColor: 'dynamic:onSurface',
+      });
+    });
+  });
+
+  describe('toolbar color context', () => {
+    function renderWithColors(props: NativeToolbarButtonProps, colors: ToolbarColors) {
+      return render(
+        <ToolbarColorContext.Provider value={colors}>
+          <NativeToolbarButton {...props} />
+        </ToolbarColorContext.Provider>
+      );
+    }
+
+    it('uses context tintColor when no prop tintColor', () => {
+      renderWithColors(defaultProps, { tintColor: 'context-tint' });
+
+      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+        tintColor: 'context-tint',
+      });
+    });
+
+    it('prop tintColor takes precedence over context tintColor', () => {
+      renderWithColors({ ...defaultProps, tintColor: 'prop-tint' }, { tintColor: 'context-tint' });
+
+      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+        tintColor: 'prop-tint',
+      });
+    });
+
+    it('falls back to default when no prop or context tintColor', () => {
+      renderWithColors(defaultProps, {});
+
+      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+        tintColor: 'dynamic:onSurface',
+      });
+    });
+
+    it('context tintColor ignored when imageRenderingMode is original', () => {
+      renderWithColors(
+        { ...defaultProps, imageRenderingMode: 'original' },
+        { tintColor: 'context-tint' }
+      );
+
+      expect(MockedIcon.mock.calls[0][0]).toMatchObject({
+        tintColor: undefined,
       });
     });
   });

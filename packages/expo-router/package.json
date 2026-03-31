@@ -48,6 +48,12 @@
     "server.js",
     "stack.d.ts",
     "stack.js",
+    "js-tabs.js",
+    "js-tabs.d.ts",
+    "js-stack.js",
+    "js-stack.d.ts",
+    "js-top-tabs.js",
+    "js-top-tabs.d.ts",
     "tabs.js",
     "tabs.d.ts",
     "ui.js",
@@ -127,7 +133,6 @@
     "@types/react": "~19.2.0",
     "@types/react-dom": "^19.1.7",
     "@types/react-is": "^19.0.0",
-    "@types/use-sync-external-store": "^0.0.6",
     "@types/react-test-renderer": "^19.1.0",
     "@types/node": "^22.14.0",
     "immer": "^10.1.1",
@@ -164,12 +169,10 @@
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
     "react-native-drawer-layout": "^4.2.2",
-    "react-native-is-edge-to-edge": "^1.2.1",
     "react-native-screens": "~4.24.0",
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "shallowequal": "^1.1.0",
-    "use-sync-external-store": "^1.5.0",
     "vaul": "^1.1.2"
   }
 }

@@ -1,6 +1,7 @@
-import Color from 'color';
+'use client';
 import React from 'react';
 import {
+  ColorValue,
   type GestureResponderEvent,
   Platform,
   type StyleProp,
@@ -13,6 +14,7 @@ import {
 import { getLabel, Label, PlatformPressable } from '../../elements';
 import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 import { TabBarIcon } from './TabBarIcon';
+import { Color } from '../../../utils/color';
 import { type Route, useTheme } from '../../native';
 
 type Props = {
@@ -39,14 +41,14 @@ type Props = {
     | string
     | ((props: {
         focused: boolean;
-        color: string;
+        color: ColorValue;
         position: LabelPosition;
         children: string;
       }) => React.ReactNode);
   /**
    * Icon to display for the tab.
    */
-  icon: (props: { focused: boolean; size: number; color: string }) => React.ReactNode;
+  icon: (props: { focused: boolean; size: number; color: ColorValue }) => React.ReactNode;
   /**
    * Text to show in a badge on the tab icon.
    */
@@ -97,19 +99,19 @@ type Props = {
   /**
    * Color for the icon and label when the item is active.
    */
-  activeTintColor?: string;
+  activeTintColor?: ColorValue;
   /**
    * Color for the icon and label when the item is inactive.
    */
-  inactiveTintColor?: string;
+  inactiveTintColor?: ColorValue;
   /**
    * Background color for item when its active.
    */
-  activeBackgroundColor?: string;
+  activeBackgroundColor?: ColorValue;
   /**
    * Background color for item when its inactive.
    */
-  inactiveBackgroundColor?: string;
+  inactiveBackgroundColor?: ColorValue;
   /**
    * Whether to show the label text for the tab.
    */
@@ -170,28 +172,30 @@ export function BottomTabItem({
 }: Props) {
   const { colors, fonts } = useTheme();
 
-  const activeTintColor =
+  const activeTintColor: ColorValue =
     customActiveTintColor ??
     (variant === 'uikit' && sidebar && horizontal
-      ? Color(colors.primary).isDark()
+      ? Color(colors.primary)?.isDark()
         ? 'white'
-        : Color(colors.primary).darken(0.71).string()
-      : colors.primary);
+        : Color(colors.primary)?.darken(0.71).string()
+      : undefined) ??
+    colors.primary;
 
-  const inactiveTintColor =
-    customInactiveTintColor === undefined
-      ? variant === 'material'
-        ? Color(colors.text).alpha(0.68).rgb().string()
-        : Color(colors.text).mix(Color(colors.card), 0.5).hex()
-      : customInactiveTintColor;
+  const inactiveTintColor: ColorValue =
+    customInactiveTintColor ??
+    (variant === 'material'
+      ? Color(colors.text)?.alpha(0.68).string()
+      : Color(colors.text)?.alpha(0.5).string()) ??
+    colors.text;
 
-  const activeBackgroundColor =
+  const activeBackgroundColor: ColorValue =
     customActiveBackgroundColor ??
     (variant === 'material'
-      ? Color(activeTintColor).alpha(0.12).rgb().string()
+      ? Color(activeTintColor)?.alpha(0.12).string()
       : sidebar && horizontal
         ? colors.primary
-        : 'transparent');
+        : 'transparent') ??
+    'transparent';
 
   const { options } = descriptor;
   const labelString = getLabel(

@@ -1,4 +1,5 @@
-import * as React from 'react';
+'use client';
+import { use } from 'react';
 
 import type { ParamListBase } from '../routers';
 import { NavigationRouteContext } from './NavigationProvider';
@@ -10,7 +11,7 @@ import type { RouteProp } from './types';
  * @returns Route prop of the parent screen.
  */
 export function useRoute<T extends RouteProp<ParamListBase>>(): T {
-  const route = React.useContext(NavigationRouteContext);
+  const route = use(NavigationRouteContext);
 
   if (route === undefined) {
     throw new Error(

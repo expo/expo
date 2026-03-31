@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -37,7 +38,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Card = Card;
-const color_1 = __importDefault(require("color"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const useLatestCallback_1 = __importDefault(require("../../../../utils/useLatestCallback"));
@@ -48,6 +48,7 @@ const getInvertedMultiplier_1 = require("../../utils/getInvertedMultiplier");
 const getShadowStyle_1 = require("../../utils/getShadowStyle");
 const GestureHandler_1 = require("../GestureHandler");
 const CardContent_1 = require("./CardContent");
+const color_1 = require("../../../../utils/color");
 const GESTURE_VELOCITY_IMPACT = 0.3;
 const TRUE = 1;
 const FALSE = 0;
@@ -339,7 +340,7 @@ function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImp
         ], { useNativeDriver })
         : undefined, [gesture, gestureDirection, gestureEnabled]);
     const { backgroundColor } = react_native_1.StyleSheet.flatten(contentStyle || {});
-    const isTransparent = typeof backgroundColor === 'string' ? (0, color_1.default)(backgroundColor).alpha() === 0 : false;
+    const isTransparent = typeof backgroundColor === 'string' ? (0, color_1.Color)(backgroundColor)?.alpha() === 0 : false;
     return (<CardAnimationContext_1.CardAnimationContext.Provider value={interpolationProps}>
       {react_native_1.Platform.OS !== 'web' ? (<react_native_1.Animated.View style={{
                 // This is a dummy style that doesn't actually change anything visually.

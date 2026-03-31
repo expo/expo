@@ -8,6 +8,7 @@
     "./app.plugin": "./app.plugin.js",
     "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json",
+    "./plugin": "./plugin/build/index.js",
     ".": {
       "types": "./build/index.d.ts",
       "default": "./src/index.ts"

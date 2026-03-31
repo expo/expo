@@ -88,11 +88,6 @@ function _createTypeScriptConfiguration() {
     compilerOptions: {
       // Explicitly specify "module" so that ts-jest doesn't provide its default
       module: 'esnext',
-      // Explicitly specify all the "node_modules/@types" paths up to the workspace or package root
-      typeRoots: [
-        ..._getDefaultTypeRoots(jestTsConfigDirectory),
-        path.join(__dirname, 'ts-declarations'),
-      ],
     },
   };
 

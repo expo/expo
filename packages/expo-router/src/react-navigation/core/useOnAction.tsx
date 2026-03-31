@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import type {
   NavigationAction,
@@ -52,8 +54,8 @@ export function useOnAction<State extends NavigationState>({
     onRouteFocus: onRouteFocusParent,
     addListener: addListenerParent,
     onDispatchAction,
-  } = React.useContext(NavigationBuilderContext);
-  const navigationInChildEnabled = React.useContext(DeprecatedNavigationInChildContext);
+  } = use(NavigationBuilderContext);
+  const navigationInChildEnabled = use(DeprecatedNavigationInChildContext);
 
   const routerConfigOptionsRef = React.useRef<RouterConfigOptions>(routerConfigOptions);
 
