@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer.android.com/develop/ui/compose/components/tooltip) API. `TooltipBox` wraps anchor content and displays a tooltip. The tooltip content is provided via the `TooltipBox.Tooltip` component, which accepts either a [`PlainTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-plain) or [`RichTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-rich). Tooltips can be triggered by long-press or shown programmatically via `ref`.
+Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer.android.com/develop/ui/compose/components/tooltip) API. `TooltipBox` wraps anchor content and displays a tooltip. The tooltip content is provided via the `TooltipBox.PlainTooltip` or `TooltipBox.RichTooltip` compound components, which match [`PlainTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-plain) and [`RichTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-rich) respectively. Tooltips can be triggered by long-press or shown programmatically via `ref`.
 
 ## Installation
 
@@ -22,17 +22,15 @@ Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer
 Long-press the anchor content to display the tooltip.
 
 ```tsx PlainTooltipExample.tsx
-import { Host, TooltipBox, PlainTooltip, Button, Text } from '@expo/ui/jetpack-compose';
+import { Host, TooltipBox, Button, Text } from '@expo/ui/jetpack-compose';
 
 export default function PlainTooltipExample() {
   return (
     <Host matchContents>
       <TooltipBox>
-        <TooltipBox.Tooltip>
-          <PlainTooltip>
-            <Text>Add to favorites</Text>
-          </PlainTooltip>
-        </TooltipBox.Tooltip>
+        <TooltipBox.PlainTooltip>
+          <Text>Add to favorites</Text>
+        </TooltipBox.PlainTooltip>
         <Button onClick={() => {}}>
           <Text>Favorite</Text>
         </Button>
@@ -44,25 +42,23 @@ export default function PlainTooltipExample() {
 
 ### Rich tooltip with title and body
 
-Use `RichTooltip` with `Title` and `Text` compound component pattern for more detailed contextual information.
+Use `TooltipBox.RichTooltip` with `Title` and `Text` compound component pattern for more detailed contextual information.
 
 ```tsx RichTooltipExample.tsx
-import { Host, TooltipBox, RichTooltip, Button, Text } from '@expo/ui/jetpack-compose';
+import { Host, TooltipBox, Button, Text } from '@expo/ui/jetpack-compose';
 
 export default function RichTooltipExample() {
   return (
     <Host matchContents>
       <TooltipBox>
-        <TooltipBox.Tooltip>
-          <RichTooltip>
-            <RichTooltip.Title>
-              <Text>Camera</Text>
-            </RichTooltip.Title>
-            <RichTooltip.Text>
-              <Text>Take photos and record videos with your device camera.</Text>
-            </RichTooltip.Text>
-          </RichTooltip>
-        </TooltipBox.Tooltip>
+        <TooltipBox.RichTooltip>
+          <TooltipBox.RichTooltip.Title>
+            <Text>Camera</Text>
+          </TooltipBox.RichTooltip.Title>
+          <TooltipBox.RichTooltip.Text>
+            <Text>Take photos and record videos with your device camera.</Text>
+          </TooltipBox.RichTooltip.Text>
+        </TooltipBox.RichTooltip>
         <Button onClick={() => {}}>
           <Text>Open Camera</Text>
         </Button>
@@ -74,30 +70,28 @@ export default function RichTooltipExample() {
 
 ### Rich tooltip with action
 
-Add an interactive action with `RichTooltip.Action`. Use `isPersistent` and `hasAction` so the tooltip stays visible for the user to tap it.
+Add an interactive action with `TooltipBox.RichTooltip.Action`. Use `isPersistent` so the tooltip stays visible for the user to tap it. `hasAction` is automatically derived when an action slot is present.
 
 ```tsx RichTooltipActionExample.tsx
-import { Host, TooltipBox, RichTooltip, Button, TextButton, Text } from '@expo/ui/jetpack-compose';
+import { Host, TooltipBox, Button, TextButton, Text } from '@expo/ui/jetpack-compose';
 
 export default function RichTooltipActionExample() {
   return (
     <Host matchContents>
-      <TooltipBox isPersistent hasAction>
-        <TooltipBox.Tooltip>
-          <RichTooltip>
-            <RichTooltip.Title>
-              <Text>Permissions Required</Text>
-            </RichTooltip.Title>
-            <RichTooltip.Text>
-              <Text>This feature requires camera and microphone access.</Text>
-            </RichTooltip.Text>
-            <RichTooltip.Action>
-              <TextButton onClick={() => {}}>
-                <Text>Learn More</Text>
-              </TextButton>
-            </RichTooltip.Action>
-          </RichTooltip>
-        </TooltipBox.Tooltip>
+      <TooltipBox isPersistent>
+        <TooltipBox.RichTooltip>
+          <TooltipBox.RichTooltip.Title>
+            <Text>Permissions Required</Text>
+          </TooltipBox.RichTooltip.Title>
+          <TooltipBox.RichTooltip.Text>
+            <Text>This feature requires camera and microphone access.</Text>
+          </TooltipBox.RichTooltip.Text>
+          <TooltipBox.RichTooltip.Action>
+            <TextButton onClick={() => {}}>
+              <Text>Learn More</Text>
+            </TextButton>
+          </TooltipBox.RichTooltip.Action>
+        </TooltipBox.RichTooltip>
         <Button onClick={() => {}}>
           <Text>Record Video</Text>
         </Button>
@@ -113,15 +107,7 @@ Use a `ref` to imperatively `show()` or `dismiss()` the tooltip without requirin
 
 ```tsx ProgrammaticTooltipExample.tsx
 import { useRef } from 'react';
-import {
-  Host,
-  TooltipBox,
-  type TooltipBoxRef,
-  PlainTooltip,
-  Button,
-  Text,
-  Row,
-} from '@expo/ui/jetpack-compose';
+import { Host, TooltipBox, type TooltipBoxRef, Button, Text, Row } from '@expo/ui/jetpack-compose';
 
 export default function ProgrammaticTooltipExample() {
   const tooltipRef = useRef<TooltipBoxRef>(null);
@@ -129,11 +115,9 @@ export default function ProgrammaticTooltipExample() {
   return (
     <Host matchContents>
       <TooltipBox ref={tooltipRef} isPersistent>
-        <TooltipBox.Tooltip>
-          <PlainTooltip>
-            <Text>Shown programmatically!</Text>
-          </PlainTooltip>
-        </TooltipBox.Tooltip>
+        <TooltipBox.PlainTooltip>
+          <Text>Shown programmatically!</Text>
+        </TooltipBox.PlainTooltip>
         <Button onClick={() => {}}>
           <Text>Anchor</Text>
         </Button>
@@ -154,7 +138,7 @@ export default function ProgrammaticTooltipExample() {
 ## API
 
 ```tsx
-import { TooltipBox, PlainTooltip, RichTooltip } from '@expo/ui/jetpack-compose';
+import { TooltipBox } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection packageName="expo-ui/jetpack-compose/tooltip" apiName="TooltipBox" />

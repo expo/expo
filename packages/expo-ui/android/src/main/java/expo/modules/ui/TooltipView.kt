@@ -5,7 +5,6 @@ package expo.modules.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.view.ViewGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.RichTooltip
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.core.view.size
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
@@ -70,7 +68,7 @@ class RichTooltipView(context: Context, appContext: AppContext) :
 
 data class TooltipBoxViewProps(
   val isPersistent: MutableState<Boolean> = mutableStateOf(false),
-  val hasAction: MutableState<Boolean> = mutableStateOf(false),
+  val hasAction: MutableState<Boolean?> = mutableStateOf(null),
   val enableUserInput: MutableState<Boolean> = mutableStateOf(true),
   val focusable: MutableState<Boolean> = mutableStateOf(false),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
@@ -91,6 +89,8 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
         state.show()
       }
     } catch (_: CancellationException) {
+      // Can occur if the compose scope is cancelled (view disposed) or if a
+      // competing show/dismiss call cancels this one. Safe to ignore in both cases.
     }
   }
 
@@ -102,6 +102,8 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
         state.dismiss()
       }
     } catch (_: CancellationException) {
+      // Can occur if the compose scope is cancelled (view disposed) or if a
+      // competing show/dismiss call cancels this one. Safe to ignore in both cases.
     }
   }
 
@@ -116,6 +118,9 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
     this@TooltipBoxView.tooltipState = tooltipState
     this@TooltipBoxView.composeScope = scope
 
+    val actionSlotView = richTooltipView?.let { findChildSlotView(it, "action") }
+    val hasAction = props.hasAction.value ?: (actionSlotView != null)
+
     val positionProvider = if (richTooltipView != null) {
       TooltipDefaults.rememberRichTooltipPositionProvider()
     } else {
@@ -126,7 +131,7 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
       positionProvider = positionProvider,
       enableUserInput = props.enableUserInput.value,
       focusable = props.focusable.value,
-      hasAction = props.hasAction.value,
+      hasAction = hasAction,
       tooltip = {
         if (plainTooltipView != null) {
           PlainTooltip(
@@ -141,20 +146,20 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
         } else if (richTooltipView != null) {
           val titleSlotView = findChildSlotView(richTooltipView, "title")
           val textSlotView = findChildSlotView(richTooltipView, "text")
-          val actionSlotView = findChildSlotView(richTooltipView, "action")
+          val defaultColors = TooltipDefaults.richTooltipColors()
 
           RichTooltip(
             title = titleSlotView?.let { { it.renderSlot() } },
             action = actionSlotView?.let { { it.renderSlot() } },
             colors = TooltipDefaults.richTooltipColors(
               containerColor = richTooltipView.props.containerColor.value.composeOrNull
-                ?: TooltipDefaults.richTooltipColors().containerColor,
+                ?: defaultColors.containerColor,
               contentColor = richTooltipView.props.contentColor.value.composeOrNull
-                ?: TooltipDefaults.richTooltipColors().contentColor,
+                ?: defaultColors.contentColor,
               titleContentColor = richTooltipView.props.titleContentColor.value.composeOrNull
-                ?: TooltipDefaults.richTooltipColors().titleContentColor,
+                ?: defaultColors.titleContentColor,
               actionContentColor = richTooltipView.props.actionContentColor.value.composeOrNull
-                ?: TooltipDefaults.richTooltipColors().actionContentColor
+                ?: defaultColors.actionContentColor
             ),
             modifier = ModifierRegistry.applyModifiers(richTooltipView.props.modifiers.value, appContext, this@Content, globalEventDispatcher)
           ) {
@@ -170,12 +175,3 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
   }
 }
 
-// --- Helpers ---
-
-inline fun <reified T> findChildOfType(viewGroup: ViewGroup): T? {
-  for (index in 0..<viewGroup.size) {
-    val child = viewGroup.getChildAt(index)
-    if (child is T) return child
-  }
-  return null
-}

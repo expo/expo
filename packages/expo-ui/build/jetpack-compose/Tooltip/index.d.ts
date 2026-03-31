@@ -23,7 +23,7 @@ export type TooltipBoxProps = {
     isPersistent?: boolean;
     /**
      * Whether the tooltip contains an action. Affects accessibility and dismiss behavior.
-     * @default false
+     * When not specified, this is automatically derived from the presence of a `RichTooltip.Action` slot.
      */
     hasAction?: boolean;
     /**
@@ -41,29 +41,11 @@ export type TooltipBoxProps = {
      */
     modifiers?: ModifierConfig[];
     /**
-     * Children containing a `TooltipBox.Tooltip` slot and the anchor/trigger content.
+     * Children containing a `TooltipBox.PlainTooltip` or `TooltipBox.RichTooltip` slot and the anchor/trigger content.
      * The anchor content triggers the tooltip on long-press.
      */
     children: React.ReactNode;
 };
-/**
- * The tooltip slot of the `TooltipBox`. Pass a `PlainTooltip` or `RichTooltip` as a child.
- */
-declare function TooltipBoxTooltip(props: {
-    children: React.ReactNode;
-}): import("react").JSX.Element;
-/**
- * A container that wraps anchor content and shows a tooltip on long-press.
- * Provide the tooltip content via the `TooltipBox.Tooltip`, containing either
- * a `PlainTooltip` or `RichTooltip`. All other children are the anchor/trigger.
- *
- * Use `ref` to imperatively `show()` or `dismiss()` the tooltip.
- */
-declare function TooltipBoxComponent(props: TooltipBoxProps): import("react").JSX.Element;
-declare namespace TooltipBoxComponent {
-    var Tooltip: typeof TooltipBoxTooltip;
-}
-export { TooltipBoxComponent as TooltipBox };
 export type PlainTooltipProps = {
     containerColor?: ColorValue;
     contentColor?: ColorValue;
@@ -71,10 +53,10 @@ export type PlainTooltipProps = {
     children: React.ReactNode;
 };
 /**
- * A simple tooltip. Place inside `TooltipBox.Tooltip`.
+ * A simple tooltip. Place inside `TooltipBox` as `TooltipBox.PlainTooltip`.
  * Children become the tooltip content.
  */
-export declare function PlainTooltip(props: PlainTooltipProps): import("react").JSX.Element;
+declare function PlainTooltipComponent(props: PlainTooltipProps): import("react").JSX.Element;
 export type RichTooltipProps = {
     containerColor?: ColorValue;
     contentColor?: ColorValue;
@@ -93,8 +75,8 @@ declare function RichTooltipAction(props: {
     children: React.ReactNode;
 }): import("react").JSX.Element;
 /**
- * A detailed tooltip with optional title, body text, and action. Place inside `TooltipBox.Tooltip`.
- * Content is provided via sub-components: `RichTooltip.Title`, `RichTooltip.Text`, `RichTooltip.Action`.
+ * A detailed tooltip with optional title, body text, and action. Place inside `TooltipBox` as `TooltipBox.RichTooltip`.
+ * Content is provided via sub-components: `TooltipBox.RichTooltip.Title`, `TooltipBox.RichTooltip.Text`, `TooltipBox.RichTooltip.Action`.
  */
 declare function RichTooltipComponent(props: RichTooltipProps): import("react").JSX.Element;
 declare namespace RichTooltipComponent {
@@ -102,5 +84,17 @@ declare namespace RichTooltipComponent {
     var Text: typeof RichTooltipText;
     var Action: typeof RichTooltipAction;
 }
-export { RichTooltipComponent as RichTooltip };
+/**
+ * A container that wraps anchor content and shows a tooltip on long-press.
+ * Provide the tooltip content via `TooltipBox.PlainTooltip` or `TooltipBox.RichTooltip`.
+ * All other children are the anchor/trigger.
+ *
+ * Use `ref` to imperatively `show()` or `dismiss()` the tooltip.
+ */
+declare function TooltipBoxComponent(props: TooltipBoxProps): import("react").JSX.Element;
+declare namespace TooltipBoxComponent {
+    var PlainTooltip: typeof PlainTooltipComponent;
+    var RichTooltip: typeof RichTooltipComponent;
+}
+export { TooltipBoxComponent as TooltipBox };
 //# sourceMappingURL=index.d.ts.map

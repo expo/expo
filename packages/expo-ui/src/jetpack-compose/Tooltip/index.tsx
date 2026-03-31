@@ -28,7 +28,7 @@ export type TooltipBoxProps = {
   isPersistent?: boolean;
   /**
    * Whether the tooltip contains an action. Affects accessibility and dismiss behavior.
-   * @default false
+   * When not specified, this is automatically derived from the presence of a `RichTooltip.Action` slot.
    */
   hasAction?: boolean;
   /**
@@ -46,7 +46,7 @@ export type TooltipBoxProps = {
    */
   modifiers?: ModifierConfig[];
   /**
-   * Children containing a `TooltipBox.Tooltip` slot and the anchor/trigger content.
+   * Children containing a `TooltipBox.PlainTooltip` or `TooltipBox.RichTooltip` slot and the anchor/trigger content.
    * The anchor content triggers the tooltip on long-press.
    */
   children: React.ReactNode;
@@ -69,36 +69,12 @@ function transformProps(
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     isPersistent: props.isPersistent ?? false,
-    hasAction: props.hasAction ?? false,
     enableUserInput: props.enableUserInput ?? true,
     focusable: props.focusable ?? false,
   };
 }
 
-/**
- * The tooltip slot of the `TooltipBox`. Pass a `PlainTooltip` or `RichTooltip` as a child.
- */
-function TooltipBoxTooltip(props: { children: React.ReactNode }) {
-  return <SlotNativeView slotName="tooltip">{props.children}</SlotNativeView>;
-}
-
-/**
- * A container that wraps anchor content and shows a tooltip on long-press.
- * Provide the tooltip content via the `TooltipBox.Tooltip`, containing either
- * a `PlainTooltip` or `RichTooltip`. All other children are the anchor/trigger.
- *
- * Use `ref` to imperatively `show()` or `dismiss()` the tooltip.
- */
-function TooltipBoxComponent(props: TooltipBoxProps) {
-  const { children, ...restProps } = props;
-  return <TooltipBoxNativeView {...transformProps(restProps)}>{children}</TooltipBoxNativeView>;
-}
-
-TooltipBoxComponent.Tooltip = TooltipBoxTooltip;
-
-export { TooltipBoxComponent as TooltipBox };
-
-// --- PlainTooltip ---
+// --- PlainTooltip (compound component of TooltipBox) ---
 
 export type PlainTooltipProps = {
   containerColor?: ColorValue;
@@ -113,22 +89,24 @@ const PlainTooltipNativeView: React.ComponentType<PlainTooltipProps> = requireNa
 );
 
 /**
- * A simple tooltip. Place inside `TooltipBox.Tooltip`.
+ * A simple tooltip. Place inside `TooltipBox` as `TooltipBox.PlainTooltip`.
  * Children become the tooltip content.
  */
-export function PlainTooltip(props: PlainTooltipProps) {
+function PlainTooltipComponent(props: PlainTooltipProps) {
   const { children, modifiers, ...restProps } = props;
   return (
-    <PlainTooltipNativeView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}>
-      {children}
-    </PlainTooltipNativeView>
+    <SlotNativeView slotName="tooltip">
+      <PlainTooltipNativeView
+        modifiers={modifiers}
+        {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+        {...restProps}>
+        {children}
+      </PlainTooltipNativeView>
+    </SlotNativeView>
   );
 }
 
-// --- RichTooltip ---
+// --- RichTooltip (compound component of TooltipBox) ---
 
 export type RichTooltipProps = {
   containerColor?: ColorValue;
@@ -157,18 +135,20 @@ function RichTooltipAction(props: { children: React.ReactNode }) {
 }
 
 /**
- * A detailed tooltip with optional title, body text, and action. Place inside `TooltipBox.Tooltip`.
- * Content is provided via sub-components: `RichTooltip.Title`, `RichTooltip.Text`, `RichTooltip.Action`.
+ * A detailed tooltip with optional title, body text, and action. Place inside `TooltipBox` as `TooltipBox.RichTooltip`.
+ * Content is provided via sub-components: `TooltipBox.RichTooltip.Title`, `TooltipBox.RichTooltip.Text`, `TooltipBox.RichTooltip.Action`.
  */
 function RichTooltipComponent(props: RichTooltipProps) {
   const { children, modifiers, ...restProps } = props;
   return (
-    <RichTooltipNativeView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}>
-      {children}
-    </RichTooltipNativeView>
+    <SlotNativeView slotName="tooltip">
+      <RichTooltipNativeView
+        modifiers={modifiers}
+        {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+        {...restProps}>
+        {children}
+      </RichTooltipNativeView>
+    </SlotNativeView>
   );
 }
 
@@ -176,4 +156,21 @@ RichTooltipComponent.Title = RichTooltipTitle;
 RichTooltipComponent.Text = RichTooltipText;
 RichTooltipComponent.Action = RichTooltipAction;
 
-export { RichTooltipComponent as RichTooltip };
+// --- TooltipBox ---
+
+/**
+ * A container that wraps anchor content and shows a tooltip on long-press.
+ * Provide the tooltip content via `TooltipBox.PlainTooltip` or `TooltipBox.RichTooltip`.
+ * All other children are the anchor/trigger.
+ *
+ * Use `ref` to imperatively `show()` or `dismiss()` the tooltip.
+ */
+function TooltipBoxComponent(props: TooltipBoxProps) {
+  const { children, ...restProps } = props;
+  return <TooltipBoxNativeView {...transformProps(restProps)}>{children}</TooltipBoxNativeView>;
+}
+
+TooltipBoxComponent.PlainTooltip = PlainTooltipComponent;
+TooltipBoxComponent.RichTooltip = RichTooltipComponent;
+
+export { TooltipBoxComponent as TooltipBox };

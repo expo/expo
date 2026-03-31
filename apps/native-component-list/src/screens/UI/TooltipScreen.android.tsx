@@ -1,8 +1,6 @@
 import {
   TooltipBox,
   type TooltipBoxRef,
-  PlainTooltip,
-  RichTooltip,
   Button,
   TextButton,
   Host,
@@ -25,11 +23,9 @@ export default function TooltipScreen() {
             <ComposeText>Plain Tooltip</ComposeText>
             <ComposeText>Long-press the button to show a plain tooltip.</ComposeText>
             <TooltipBox>
-              <TooltipBox.Tooltip>
-                <PlainTooltip>
-                  <ComposeText>Add to favorites</ComposeText>
-                </PlainTooltip>
-              </TooltipBox.Tooltip>
+              <TooltipBox.PlainTooltip>
+                <ComposeText>Add to favorites</ComposeText>
+              </TooltipBox.PlainTooltip>
               <Button onClick={() => {}}>
                 <ComposeText>Favorite</ComposeText>
               </Button>
@@ -44,18 +40,16 @@ export default function TooltipScreen() {
               Long-press the button to show a rich tooltip with title and body.
             </ComposeText>
             <TooltipBox>
-              <TooltipBox.Tooltip>
-                <RichTooltip>
-                  <RichTooltip.Title>
-                    <ComposeText>Camera</ComposeText>
-                  </RichTooltip.Title>
-                  <RichTooltip.Text>
-                    <ComposeText>
-                      Take photos and record videos with your device camera.
-                    </ComposeText>
-                  </RichTooltip.Text>
-                </RichTooltip>
-              </TooltipBox.Tooltip>
+              <TooltipBox.RichTooltip>
+                <TooltipBox.RichTooltip.Title>
+                  <ComposeText>Camera</ComposeText>
+                </TooltipBox.RichTooltip.Title>
+                <TooltipBox.RichTooltip.Text>
+                  <ComposeText>
+                    Take photos and record videos with your device camera.
+                  </ComposeText>
+                </TooltipBox.RichTooltip.Text>
+              </TooltipBox.RichTooltip>
               <Button onClick={() => {}}>
                 <ComposeText>Open Camera</ComposeText>
               </Button>
@@ -70,23 +64,21 @@ export default function TooltipScreen() {
               Long-press the button to show a persistent rich tooltip with an action button.
             </ComposeText>
             <TooltipBox isPersistent>
-              <TooltipBox.Tooltip>
-                <RichTooltip>
-                  <RichTooltip.Title>
-                    <ComposeText>Permissions Required</ComposeText>
-                  </RichTooltip.Title>
-                  <RichTooltip.Text>
-                    <ComposeText>
-                      This feature requires camera and microphone access to function properly.
-                    </ComposeText>
-                  </RichTooltip.Text>
-                  <RichTooltip.Action>
-                    <TextButton onClick={() => {}}>
-                      <ComposeText>Learn More</ComposeText>
-                    </TextButton>
-                  </RichTooltip.Action>
-                </RichTooltip>
-              </TooltipBox.Tooltip>
+              <TooltipBox.RichTooltip>
+                <TooltipBox.RichTooltip.Title>
+                  <ComposeText>Permissions Required</ComposeText>
+                </TooltipBox.RichTooltip.Title>
+                <TooltipBox.RichTooltip.Text>
+                  <ComposeText>
+                    This feature requires camera and microphone access to function properly.
+                  </ComposeText>
+                </TooltipBox.RichTooltip.Text>
+                <TooltipBox.RichTooltip.Action>
+                  <TextButton onClick={() => {}}>
+                    <ComposeText>Learn More</ComposeText>
+                  </TextButton>
+                </TooltipBox.RichTooltip.Action>
+              </TooltipBox.RichTooltip>
               <Button onClick={() => {}}>
                 <ComposeText>Record Video</ComposeText>
               </Button>
@@ -98,11 +90,9 @@ export default function TooltipScreen() {
             <ComposeText>Programmatic Show/Dismiss</ComposeText>
             <ComposeText>Use ref methods to control the tooltip imperatively.</ComposeText>
             <TooltipBox ref={tooltipRef} isPersistent>
-              <TooltipBox.Tooltip>
-                <PlainTooltip>
-                  <ComposeText>Shown programmatically!</ComposeText>
-                </PlainTooltip>
-              </TooltipBox.Tooltip>
+              <TooltipBox.PlainTooltip>
+                <ComposeText>Shown programmatically!</ComposeText>
+              </TooltipBox.PlainTooltip>
               <Button onClick={() => {}}>
                 <ComposeText>Anchor</ComposeText>
               </Button>
