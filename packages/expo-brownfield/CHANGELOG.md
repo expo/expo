@@ -19,6 +19,8 @@
 
 ### 🐛 Bug fixes
 
+- fix(expo-brownfield): unwrap native event in addSharedStateListener ([#44401](https://github.com/expo/expo/pull/44401) by [@mberube09](https://github.com/mberube09))
+
 ### 💡 Others
 
 - [test] add maestro e2e tests for dev menu ([#43421](https://github.com/expo/expo/pull/43421) by [@pmleczek](https://github.com/pmleczek))
