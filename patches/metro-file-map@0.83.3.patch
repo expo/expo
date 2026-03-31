@@ -211,21 +211,36 @@ index ec21a55e797f272d5c326420482c0682b9350293..3495993258977c030962d68d2eeee6e1
          this._startupPerfLogger?.point("constructFileSystem_end");
          const plugins = this.#plugins;
 diff --git a/src/lib/RootPathUtils.js b/src/lib/RootPathUtils.js
-index 78a4a45428e5896d72ca764e788a79a6531e24cb..6fa86e59e76edf8e42dd4ca8d02fe9acaab7b898 100644
+index 78a4a45428e5896d72ca764e788a79a6531e24cb..d19f55a6d4846828b416933424da5e4a085cf189 100644
 --- a/src/lib/RootPathUtils.js
 +++ b/src/lib/RootPathUtils.js
-@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
    value: true,
  });
  exports.RootPathUtils = void 0;
++exports.getAncestorOfRootIdx = getAncestorOfRootIdx;
 +exports.pathsToPattern = pathsToPattern;
  var _invariant = _interopRequireDefault(require("invariant"));
  var path = _interopRequireWildcard(require("path"));
  function _getRequireWildcardCache(e) {
-@@ -236,3 +237,19 @@ class RootPathUtils {
+@@ -236,3 +238,33 @@ class RootPathUtils {
    }
  }
  exports.RootPathUtils = RootPathUtils;
++function getAncestorOfRootIdx(normalPath) {
++  let pos = 0;
++  while (normalPath.startsWith(UP_FRAGMENT_SEP, pos)) {
++    pos += UP_FRAGMENT_SEP_LENGTH;
++  }
++  if (
++    normalPath.length === pos + 2 &&
++    normalPath.charCodeAt(pos) === 46 &&
++    normalPath.charCodeAt(pos + 1) === 46
++  ) {
++    return pos / UP_FRAGMENT_SEP_LENGTH + 1;
++  }
++  return pos / UP_FRAGMENT_SEP_LENGTH;
++}
 +function pathsToPattern(paths, pathUtils) {
 +  if (paths.length === 0) {
 +    return null;
@@ -243,7 +258,7 @@ index 78a4a45428e5896d72ca764e788a79a6531e24cb..6fa86e59e76edf8e42dd4ca8d02fe9ac
 +  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
 +}
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b60a6c1fe 100644
+index 35d85514984821711f6ba9268715de553cc0836b..8f8d0293c0aca4b2dd5c9dff1b12fd957148981e 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
 @@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
@@ -254,7 +269,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
  var _RootPathUtils = require("./RootPathUtils");
  var _invariant = _interopRequireDefault(require("invariant"));
  var _path = _interopRequireDefault(require("path"));
-@@ -15,29 +16,49 @@ function isDirectory(node) {
+@@ -15,29 +16,47 @@ function isDirectory(node) {
    return node instanceof Map;
  }
  function isRegularFile(node) {
@@ -263,7 +278,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
  }
  class TreeFS {
    #cachedNormalSymlinkTargets = new WeakMap();
-+  #fallbackBoundary;
++  #fallbackBoundaryDepth;
 +  #fallbackFilesystem;
    #rootDir;
    #rootNode = new Map();
@@ -277,13 +292,11 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
      this.#processFile = processFile;
 +    this.#fallbackFilesystem = fallbackFilesystem ?? null;
 +    if (serverRoot != null) {
-+      const boundaryNormal = this.#pathUtils.absoluteToNormal(serverRoot);
-+      this.#fallbackBoundary =
-+        boundaryNormal !== ''
-+          ? boundaryNormal + _path.default.sep + '..' + _path.default.sep
-+          : '..' + _path.default.sep;
++      this.#fallbackBoundaryDepth = (0, _RootPathUtils.getAncestorOfRootIdx)(
++        this.#pathUtils.absoluteToNormal(serverRoot),
++      );
 +    } else {
-+      this.#fallbackBoundary = null;
++      this.#fallbackBoundaryDepth = null;
 +    }
 +    this.#rootPattern = (0, _RootPathUtils.pathsToPattern)(
 +      roots ?? [],
@@ -308,7 +321,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
      });
      tfs.#rootNode = fileSystemData;
      return tfs;
-@@ -364,17 +385,39 @@ class TreeFS {
+@@ -364,17 +383,39 @@ class TreeFS {
        }
        if (segmentNode == null) {
          if (opts.makeDirectories !== true && segmentName !== "..") {
@@ -358,7 +371,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
          }
        }
        if (
-@@ -672,7 +715,9 @@ class TreeFS {
+@@ -672,7 +713,9 @@ class TreeFS {
    }
    *_metadataIterator(rootNode, opts, prefix = "") {
      for (const [name, node] of rootNode) {
@@ -369,7 +382,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
          !opts.includeNodeModules &&
          isDirectory(node) &&
          name === "node_modules"
-@@ -716,12 +761,24 @@ class TreeFS {
+@@ -716,12 +759,24 @@ class TreeFS {
    ) {
      const pathSep = opts.alwaysYieldPosix ? "/" : _path.default.sep;
      const prefixWithSep = pathPrefix === "" ? pathPrefix : pathPrefix + pathSep;
@@ -395,7 +408,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
          continue;
        }
        const nodePath = prefixWithSep + name;
-@@ -762,6 +819,17 @@ class TreeFS {
+@@ -762,6 +817,17 @@ class TreeFS {
            }
          }
        } else if (opts.recursive) {
@@ -413,7 +426,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
          yield* this._pathIterator(
            node,
            iterationRootParentNode,
-@@ -780,7 +848,15 @@ class TreeFS {
+@@ -780,7 +846,15 @@ class TreeFS {
      if (cachedResult != null) {
        return cachedResult;
      }
@@ -430,7 +443,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
      (0, _invariant.default)(
        typeof literalSymlinkTarget === "string",
        "Expected symlink target to be populated.",
-@@ -820,16 +896,83 @@ class TreeFS {
+@@ -820,16 +894,84 @@ class TreeFS {
      }
      return result.node;
    }
@@ -458,9 +471,10 @@ index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b
      return clone;
    }
 +  #isOutsideFallbackBoundary(canonicalPath) {
++    const maxDepth = this.#fallbackBoundaryDepth;
 +    return (
-+      this.#fallbackBoundary != null &&
-+      canonicalPath.startsWith(this.#fallbackBoundary)
++      maxDepth != null &&
++      (0, _RootPathUtils.getAncestorOfRootIdx)(canonicalPath) > maxDepth
 +    );
 +  }
 +  #populateFromFilesystem(parentNode, segmentName, parentCanonicalPath) {
