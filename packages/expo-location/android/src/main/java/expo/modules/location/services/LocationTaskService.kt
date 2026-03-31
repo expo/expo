@@ -98,17 +98,11 @@ class LocationTaskService : Service() {
       if (ai.metaData?.containsKey(META_DATA_FOREGROUND_SERVICE_ICON_KEY) == true) {
         ai.metaData.getInt(META_DATA_FOREGROUND_SERVICE_ICON_KEY)
       } else {
-        // Fall back to the standard notification_icon drawable (configured via app.json
-        // notification.icon, used by expo-notifications). The previous fallback —
-        // applicationInfo.icon — is the full-color launcher icon, which Android renders
-        // as a solid white square in notifications (small icons must be monochrome).
-        mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
-          .takeIf { it != 0 } ?: applicationInfo.icon
+        getDefaultNotificationIcon()
       }
     } catch (e: Exception) {
       android.util.Log.e("expo-location", "Could not fetch default notification icon.", e)
-      mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
-        .takeIf { it != 0 } ?: applicationInfo.icon
+      getDefaultNotificationIcon()
     }
 
     return builder.setCategory(Notification.CATEGORY_SERVICE)
@@ -127,6 +121,18 @@ class LocationTaskService : Service() {
       channel.description = "Background location notification channel"
       notificationManager.createNotificationChannel(channel)
     }
+  }
+
+  /**
+   * Returns the best available notification icon resource ID.
+   * Prefers the `notification_icon` drawable (configured via app.json notification.icon,
+   * used by expo-notifications) over `applicationInfo.icon`. The launcher icon is
+   * full-color and renders as a solid white square in notifications, since Android
+   * requires small notification icons to be monochrome.
+   */
+  private fun getDefaultNotificationIcon(): Int {
+    return mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
+      .takeIf { it != 0 } ?: applicationInfo.icon
   }
 
   private fun colorStringToInteger(color: String?): Int? {
