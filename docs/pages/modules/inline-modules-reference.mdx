@@ -1,12 +1,14 @@
 ---
 title: Inline modules reference
 description: A reference of Expo inline modules.
-sidebar_title: Inline modules reference
 ---
 
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 
-Inline modules is a set of functionalities which allow for simple native module creation and usage.
+> **warning** **Warning:** Inline modules are currently experimental. The API is subject to breaking changes.
+
+Inline modules let you write native module code (Kotlin and Swift) directly in your Expo project directory,
+without creating a separate Expo module package. Expo discovers these files automatically and includes them in the build during prebuild.
 
 ## Configuration
 
@@ -40,25 +42,27 @@ Configures in which directories the inline modules can be created.
 }
 ```
 
-Files inside nested directories will also be used, for example if `watchedDirectories = ["app"]`
-and there exists a `app/nested/directory/SomeModule.kt` then the `SomeModule` will be used.
+Files inside nested directories will also be used.
+For example, if `watchedDirectories = ["app"]` is defined in the app config,
+and a module file such as **app/nested/directory/SomeModule.kt** exists in a nested path, then `SomeModule` can be used in your app.
 
 A directory in `watchedDirectories`:
 
-- needs to be inside a JS project, that is have an ancestor in the directory tree which has `package.json`. For example `"watchedDirectories": ["app", "src/some/directory", pathToOtherProject]` should work and `"watchedDirectories": ["/", pathToFolderNotInNodeProject]` won't.
-- cannot be the whole project directory `"./"`, nor an ancestor of it (for example `../`).
-- cannot be a subdirectory of other directory in `watchedDirectories`. For example `watchedDirectories` cannot be `["app", "app/nested/directory"]`, however you can just set `watchedDirectories` to `["app"]`.
-- cannot contain special characters like `" ", "(", ")", "$"`. Note that this means you cannot have `"app/(tabs)"` in the `watchedDirectories`, but you can have `"app"` and it should still use native files from `"app/(tabs)"` directory.
+- Needs to be inside a TypeScript/JavaScript project. This means it needs to have an ancestor in the directory tree that has **package.json**. For example, `"watchedDirectories": ["app", "src/some/directory", pathToOtherProject]` should work and `"watchedDirectories": ["/", pathToFolderNotInNodeProject]` won't.
+- Cannot be the whole project directory, for example,`"./"`, nor an ancestor of it (for example `../`).
+- Cannot be a subdirectory of the other directory in `watchedDirectories`. For example, `watchedDirectories` cannot be `["app", "app/nested/directory"]`, you can just set `watchedDirectories` to `["app"]`.
+- Cannot contain special characters like `" ", "(", ")", "$"`. This means you cannot have `"app/(tabs)"` in the `watchedDirectories`, but you can have `"app"` and it should still use native files from `"app/(tabs)"` directory.
 
 </PaddedAPIBox>
 
-> **Warning** You need to run `yarn expo prebuild` after changing the `app.json` configuration, for it to take effect.
+> **Warning** You need to run `npx expo prebuild` after changing the [app config](/workflow/configuration/), for it to take effect.
 
-## General information
+## Naming convention
 
-Inline module file name has to match the native module name. This means that if you have a `SimpleModule.kt` then the inline module inside it has to be:
+The inline module file name has to match the native module name (which needs to be unique in your whole app).
+If you have a **SimpleModule.kt**, then the inline module inside it has that file name. For example:
 
-```kt
+```kotlin
 // SimpleModule.kt
 // ...
 class SimpleModule: Module() { // Note that the class name has to match the filename.
@@ -66,7 +70,4 @@ class SimpleModule: Module() { // Note that the class name has to match the file
         // Name("SimpleModule") // Note that `Name` also has to match the filename. So you can just omit it.
     }
 }
-
 ```
-
-This means that you cannot have different inline modules with the same name in different directories.
