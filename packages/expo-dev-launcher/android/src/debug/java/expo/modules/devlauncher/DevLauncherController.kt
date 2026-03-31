@@ -35,6 +35,7 @@ import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHandler
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactory
+import expo.modules.devlauncher.launcher.loaders.DevLauncherEmbeddedAppLoader
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
@@ -209,6 +210,54 @@ class DevLauncherController private constructor(
   override fun onAppLoadedWithError() {
     synchronized(this) {
       appIsLoading = false
+    }
+  }
+
+  fun hasEmbeddedBundle(): Boolean {
+    val enabled = getMetadataValue(context, "EXDevClientEmbeddedBundle", "false").toBoolean()
+    if (!enabled) {
+      return false
+    }
+
+    return try {
+      context.assets.open("index.android.bundle").use { true }
+    } catch (_: Exception) {
+      false
+    }
+  }
+
+  suspend fun loadEmbeddedBundle(mainActivity: ReactActivity? = null) {
+    synchronized(this) {
+      if (appIsLoading) {
+        return
+      }
+      appIsLoading = true
+    }
+
+    try {
+      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
+
+      val appIntent = createAppIntent()
+      val appLoader = DevLauncherEmbeddedAppLoader(appHost, context, this)
+      useDeveloperSupport = false
+      manifest = null
+      manifestURL = null
+
+      val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
+      lifecycle.addListener(appLoaderListener)
+      mode = Mode.APP
+
+      if (appLoader.launch(appIntent)) {
+        latestLoadedApp = null
+        lifecycle.removeListener(appLoaderListener)
+      } else {
+        mode = Mode.LAUNCHER
+      }
+    } catch (e: Exception) {
+      synchronized(this) {
+        appIsLoading = false
+      }
+      throw e
     }
   }
 

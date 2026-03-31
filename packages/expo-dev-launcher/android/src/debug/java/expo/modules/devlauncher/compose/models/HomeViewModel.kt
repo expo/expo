@@ -33,6 +33,7 @@ sealed interface HomeAction {
   object ScanQRCode : HomeAction
   object ClearLoadingError : HomeAction
   object RefreshServers : HomeAction
+  object LoadEmbeddedBundle : HomeAction
 }
 
 data class HomeState(
@@ -40,7 +41,8 @@ data class HomeState(
   val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList(),
   val crashReport: DevLauncherErrorInstance? = null,
   val loadingError: String? = null,
-  val isRefreshing: Boolean = false
+  val isRefreshing: Boolean = false,
+  val hasEmbeddedBundle: Boolean = false
 )
 
 class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
@@ -58,7 +60,8 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
     HomeState(
       runningPackagers = filterPackagers(packagerService.runningPackagers.value),
       recentlyOpenedApps = devLauncherController.getRecentlyOpenedApps(),
-      crashReport = errorRegistryService.consumeException()
+      crashReport = errorRegistryService.consumeException(),
+      hasEmbeddedBundle = devLauncherController.hasEmbeddedBundle()
     )
   )
 
@@ -154,6 +157,17 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
       is HomeAction.ClearLoadingError -> _state.value = _state.value.copy(loadingError = null)
 
       is HomeAction.RefreshServers -> refreshServers()
+
+      HomeAction.LoadEmbeddedBundle ->
+        devLauncherController.coroutineScope.launch {
+          try {
+            devLauncherController.loadEmbeddedBundle()
+          } catch (e: Exception) {
+            _state.value = _state.value.copy(
+              loadingError = e.message ?: "Failed to load embedded bundle"
+            )
+          }
+        }
 
       is HomeAction.NavigateToCrashReport -> throw IllegalStateException("Navigation action should be handled by the UI layer, not the ViewModel.")
 
