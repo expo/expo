@@ -5,12 +5,13 @@
   "main": "src/StatusBar",
   "types": "build/StatusBar.d.ts",
   "exports": {
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
     ".": {
       "types": "./build/StatusBar.d.ts",
       "default": "./src/StatusBar.ts"
-    }
+    },
+    "./plugin": "./plugin/build/index.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
     "build": "expo-module build",
@@ -36,9 +37,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
-  "dependencies": {
-    "react-native-is-edge-to-edge": "^1.2.1"
-  },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

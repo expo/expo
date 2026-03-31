@@ -1,5 +1,5 @@
 import React from 'react';
-import { type StyleProp, type TextStyle } from 'react-native';
+import { ColorValue, type StyleProp, type TextStyle } from 'react-native';
 import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 export type StackScreenTitleProps = {
     /**
@@ -22,7 +22,7 @@ export type StackScreenTitleProps = {
         fontFamily?: TextStyle['fontFamily'];
         fontSize?: TextStyle['fontSize'];
         fontWeight?: Exclude<TextStyle['fontWeight'], number>;
-        color?: string;
+        color?: ColorValue;
         textAlign?: 'left' | 'center';
     }>;
     /**
@@ -34,7 +34,7 @@ export type StackScreenTitleProps = {
         fontFamily?: TextStyle['fontFamily'];
         fontSize?: TextStyle['fontSize'];
         fontWeight?: Exclude<TextStyle['fontWeight'], number>;
-        color?: string;
+        color?: ColorValue;
     }>;
     /**
      * Enables large title mode.

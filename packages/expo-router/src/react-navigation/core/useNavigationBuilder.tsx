@@ -1,5 +1,7 @@
+'use client';
 import deepEqual from 'fast-deep-equal';
 import * as React from 'react';
+import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
@@ -310,7 +312,7 @@ export function useNavigationBuilder<
 ) {
   const navigatorKey = useRegisterNavigator();
 
-  const route = React.useContext(NavigationRouteContext) as NavigatorRoute | undefined;
+  const route = use(NavigationRouteContext) as NavigatorRoute | undefined;
 
   const isNestedParamsConsumed =
     typeof route?.params === 'object' && route.params != null
@@ -415,7 +417,7 @@ export function useNavigationBuilder<
     setKey,
     getKey,
     getIsInitial,
-  } = React.useContext(NavigationStateContext);
+  } = use(NavigationStateContext);
 
   const stateCleanupRef = React.useRef<boolean>(false);
   const lastStateRef = React.useRef<State | PartialState<State> | undefined>(undefined);
@@ -839,7 +841,7 @@ export function useNavigationBuilder<
     setState,
   });
 
-  const onUnhandledActionParent = React.useContext(UnhandledActionContext);
+  const onUnhandledActionParent = use(UnhandledActionContext);
 
   const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
     if (

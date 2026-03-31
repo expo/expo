@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeStackView = NativeStackView;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const react_native_screens_1 = require("react-native-screens");
@@ -86,9 +88,9 @@ const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescripto
     const isModal = presentation === 'modal' || presentation === 'formSheet' || presentation === 'pageSheet';
     // Modals are fullscreen in landscape only on iPhone
     const isIPhone = react_native_1.Platform.OS === 'ios' && !(react_native_1.Platform.isPad || react_native_1.Platform.isTV);
-    const isParentHeaderShown = React.useContext(elements_1.HeaderShownContext);
-    const parentHeaderHeight = React.useContext(elements_1.HeaderHeightContext);
-    const parentHeaderBack = React.useContext(elements_1.HeaderBackContext);
+    const isParentHeaderShown = (0, react_1.use)(elements_1.HeaderShownContext);
+    const parentHeaderHeight = (0, react_1.use)(elements_1.HeaderHeightContext);
+    const parentHeaderBack = (0, react_1.use)(elements_1.HeaderBackContext);
     const isLandscape = (0, elements_1.useFrameSize)((frame) => frame.width > frame.height);
     const topInset = isParentHeaderShown || (react_native_1.Platform.OS === 'ios' && isModal) || (isIPhone && isLandscape)
         ? 0

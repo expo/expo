@@ -10,7 +10,11 @@
 
 ### 🐛 Bug fixes
 
+- Add native no-op for `renderInShadowRoot` to avoid `react-dom` resolution errors on native platforms. ([#43893](https://github.com/expo/expo/issues/43893)) ([#44190](https://github.com/expo/expo/pull/44190) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
+
+- Stop @expo/log-box from rebuilding on every pnpm install ([#44330](https://github.com/expo/expo/pull/44330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### ⚠️ Notices
 

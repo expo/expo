@@ -68,4 +68,20 @@ export async function requestPermissionsAsync(writeOnly = false, granularPermiss
     }
     return await ExpoMediaLibraryNext.requestPermissionsAsync(writeOnly);
 }
+/**
+ * Checks user's permissions for accessing media library.
+ * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has
+ * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
+ */
+export async function getPermissionsAsync(writeOnly = false, granularPermissions) {
+    if (!ExpoMediaLibraryNext.getPermissionsAsync) {
+        throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
+    }
+    if (Platform.OS === 'android') {
+        return await ExpoMediaLibraryNext.getPermissionsAsync(writeOnly, granularPermissions);
+    }
+    return await ExpoMediaLibraryNext.getPermissionsAsync(writeOnly);
+}
 //# sourceMappingURL=index.js.map

@@ -10,12 +10,7 @@ import {
   withStringsXml,
 } from 'expo/config-plugins';
 
-import {
-  NavigationBarBehavior,
-  NavigationBarButtonStyle,
-  NavigationBarPosition,
-  NavigationBarVisibility,
-} from '../..';
+import { NavigationBarVisibility } from '../..';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 
@@ -28,22 +23,27 @@ type LegacyNavigationBarStyle = NonNullable<AndroidNavigationBar['barStyle']>;
 type NavigationBarStyle = 'light' | 'dark';
 
 export type Props = {
+  /**
+   * Whether the OS should keep the navigation bar translucent for contrast.
+   * @default true
+   * @platform android
+   */
   enforceContrast?: boolean;
+  /**
+   * Whether the navigation bar starts hidden.
+   * @platform android
+   */
   hidden?: boolean;
+  /**
+   * Which style the navigation bar starts with. Accepts `light` and `dark`.
+   * @platform android
+   */
   style?: NavigationBarStyle;
 
   /** @deprecated */
-  barStyle?: NavigationBarButtonStyle | null;
+  barStyle?: NavigationBarStyle | null;
   /** @deprecated */
   visibility?: NavigationBarVisibility;
-  /** @deprecated */
-  backgroundColor?: string | null;
-  /** @deprecated */
-  behavior?: NavigationBarBehavior;
-  /** @deprecated */
-  borderColor?: string;
-  /** @deprecated */
-  position?: NavigationBarPosition;
 };
 
 type ResolvedProps = {
@@ -91,24 +91,6 @@ export function resolveProps(
     WarningAggregator.addWarningAndroid(
       'expo-navigation-bar visibility',
       'Use `hidden` instead. This will be removed in a future release.'
-    );
-  }
-  if ('behavior' in props) {
-    WarningAggregator.addWarningAndroid(
-      'expo-navigation-bar behavior',
-      EDGE_TO_EDGE_DEPRECATION_MESSAGE
-    );
-  }
-  if ('borderColor' in props) {
-    WarningAggregator.addWarningAndroid(
-      'expo-navigation-bar borderColor',
-      EDGE_TO_EDGE_DEPRECATION_MESSAGE
-    );
-  }
-  if ('position' in props) {
-    WarningAggregator.addWarningAndroid(
-      'expo-navigation-bar position',
-      EDGE_TO_EDGE_DEPRECATION_MESSAGE
     );
   }
 
@@ -231,21 +213,24 @@ export function applyEnforceNavigationBarContrast(
     return config;
   }
   const mainTheme = style[mainThemeIndex];
-  const enforceIndex = mainTheme.item.findIndex(
-    ({ $ }) => $.name === 'android:enforceNavigationBarContrast'
-  );
-  if (enforceIndex !== -1) {
-    style[mainThemeIndex].item[enforceIndex] = enforceNavigationBarContrastItem;
-    return config;
-  }
 
-  config.modResults.resources.style = [
-    {
-      $: style[mainThemeIndex].$,
-      item: [enforceNavigationBarContrastItem, ...mainTheme.item],
-    },
-    ...style.filter(({ $ }) => $.name !== 'AppTheme'),
-  ];
+  if (mainTheme != null) {
+    const enforceIndex = mainTheme.item.findIndex(
+      ({ $ }) => $.name === 'android:enforceNavigationBarContrast'
+    );
+    if (enforceIndex !== -1) {
+      mainTheme.item[enforceIndex] = enforceNavigationBarContrastItem;
+      return config;
+    }
+
+    config.modResults.resources.style = [
+      {
+        $: mainTheme.$,
+        item: [enforceNavigationBarContrastItem, ...mainTheme.item],
+      },
+      ...style.filter(({ $ }) => $.name !== 'AppTheme'),
+    ];
+  }
 
   return config;
 }

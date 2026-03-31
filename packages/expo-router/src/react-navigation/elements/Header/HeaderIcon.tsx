@@ -1,3 +1,4 @@
+'use client';
 import { Image, type ImageProps, Platform, StyleSheet } from 'react-native';
 
 import { useLocale, useTheme } from '../../native';

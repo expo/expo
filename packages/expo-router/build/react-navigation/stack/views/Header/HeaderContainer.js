@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeaderContainer = HeaderContainer;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const Header_1 = require("./Header");
 const elements_1 = require("../../../elements");
@@ -42,7 +44,7 @@ const native_1 = require("../../../native");
 const HeaderStyleInterpolators_1 = require("../../TransitionConfigs/HeaderStyleInterpolators");
 function HeaderContainer({ mode, scenes, layout, getPreviousScene, getFocusedRoute, onContentHeightChange, style, }) {
     const focusedRoute = getFocusedRoute();
-    const parentHeaderBack = React.useContext(elements_1.HeaderBackContext);
+    const parentHeaderBack = (0, react_1.use)(elements_1.HeaderBackContext);
     const { buildHref } = (0, native_1.useLinkBuilder)();
     return (<react_native_1.View pointerEvents="box-none" style={style}>
       {/* We render header only on two top-most headers as

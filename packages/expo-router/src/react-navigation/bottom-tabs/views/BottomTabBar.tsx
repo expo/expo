@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { use } from 'react';
 import {
   Animated,
   type LayoutChangeEvent,
@@ -170,7 +171,7 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
 
   const isKeyboardShown = useIsKeyboardShown();
 
-  const onHeightChange = React.useContext(BottomTabBarHeightCallbackContext);
+  const onHeightChange = use(BottomTabBarHeightCallbackContext);
 
   const shouldShowTabBar = !(tabBarHideOnKeyboard && isKeyboardShown);
 

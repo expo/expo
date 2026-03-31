@@ -32,7 +32,7 @@ If you need to make native code changes to your Expo project, such as adding cus
 - Install [direnv](http://direnv.net/) and [Homebrew](https://brew.sh/).
 - Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`).
 - Run `brew bundle` in the root directory.
-- Run `pnpm` in the root directory.
+- Run `pnpm install` in the root directory.
 - Run `pnpm setup:native` in the root directory.
 - Run `pnpm build` in the `packages/expo` directory.
 

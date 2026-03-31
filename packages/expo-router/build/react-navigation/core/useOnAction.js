@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useOnAction = useOnAction;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const DeprecatedNavigationInChildContext_1 = require("./DeprecatedNavigationInChildContext");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
 const useOnPreventRemove_1 = require("./useOnPreventRemove");
@@ -48,8 +50,8 @@ const useOnPreventRemove_1 = require("./useOnPreventRemove");
  * When the action handler handles as action, it returns `true`, otherwise `false`.
  */
 function useOnAction({ router, getState, setState, key, actionListeners, beforeRemoveListeners, routerConfigOptions, emitter, }) {
-    const { onAction: onActionParent, onRouteFocus: onRouteFocusParent, addListener: addListenerParent, onDispatchAction, } = React.useContext(NavigationBuilderContext_1.NavigationBuilderContext);
-    const navigationInChildEnabled = React.useContext(DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext);
+    const { onAction: onActionParent, onRouteFocus: onRouteFocusParent, addListener: addListenerParent, onDispatchAction, } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
+    const navigationInChildEnabled = (0, react_1.use)(DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext);
     const routerConfigOptionsRef = React.useRef(routerConfigOptions);
     React.useEffect(() => {
         routerConfigOptionsRef.current = routerConfigOptions;

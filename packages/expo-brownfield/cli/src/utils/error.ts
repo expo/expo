@@ -10,6 +10,8 @@ type ErrorType =
   | 'ios-scheme-not-found'
   | 'ios-workspace-not-found'
   | 'ios-workspace-unknown-error'
+  | 'package-not-installed'
+  | 'plugin-not-configured'
   | 'prebuild-cancelled';
 
 class CLIError {
@@ -27,6 +29,10 @@ class CLIError {
     'ios-scheme-not-found': 'Could not find brownfield iOS scheme',
     'ios-workspace-not-found': 'Could not find brownfield iOS workspace',
     'ios-workspace-unknown-error': 'Unknown error occurred while finding brownfield iOS workspace',
+    'package-not-installed':
+      'expo-brownfield is not installed in the project. Install it with `npx expo install expo-brownfield`',
+    'plugin-not-configured':
+      'expo-brownfield is not configured as a plugin. Add it to the `plugins` array in your app config',
     'prebuild-cancelled': 'Brownfield cannot be built without prebuilding the native project',
   };
 

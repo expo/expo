@@ -125,9 +125,11 @@ docs/pages/versions/*/react-native/*.diff
 /apps/expo-go/src/dist
 
 # Prebuilds
-/packages/**/*.xcframework
+/packages/**/xcframeworks/
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
+/packages/**/.build/
+/packages/precompile/.cache/
 !crsqlite.xcframework
 
 # iOS

@@ -1,0 +1,33 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "EXStructuredHeaders",
+      "podName": "EXStructuredHeaders",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "EXStructuredHeaders",
+          "path": "ios",
+          "pattern": "**/*.m",
+          "headerPattern": "**/*.h",
+          "dependencies": [],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ],
+          "includeDirectories": [
+            "."
+          ],
+          "exclude": [
+            "Tests/**"
+          ]
+        }
+      ]
+    }
+  ]
+}

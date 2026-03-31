@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -39,6 +40,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigationBuilder = useNavigationBuilder;
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
+const react_1 = require("react");
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 const react_is_1 = require("react-is");
 const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
@@ -208,7 +210,7 @@ const getStateFromParams = (params) => {
  */
 function useNavigationBuilder(createRouter, options) {
     const navigatorKey = (0, useRegisterNavigator_1.useRegisterNavigator)();
-    const route = React.useContext(NavigationProvider_1.NavigationRouteContext);
+    const route = (0, react_1.use)(NavigationProvider_1.NavigationRouteContext);
     const isNestedParamsConsumed = typeof route?.params === 'object' && route.params != null
         ? CONSUMED_PARAMS in route.params && route.params[CONSUMED_PARAMS] === route.params
         : false;
@@ -255,7 +257,7 @@ function useNavigationBuilder(createRouter, options) {
     const isStateValid = React.useCallback((state) => state.type === undefined || state.type === router.type, [router.type]);
     const isStateInitialized = React.useCallback((state) => state !== undefined && state.stale === false && isStateValid(state), [isStateValid]);
     const doesStateHaveOnlyInvalidRoutes = React.useCallback((state) => state.routes.every((r) => !routeNames.includes(r.name)), [routeNames]);
-    const { state: currentState, getState: getCurrentState, setState: setCurrentState, setKey, getKey, getIsInitial, } = React.useContext(NavigationStateContext_1.NavigationStateContext);
+    const { state: currentState, getState: getCurrentState, setState: setCurrentState, setKey, getKey, getIsInitial, } = (0, react_1.use)(NavigationStateContext_1.NavigationStateContext);
     const stateCleanupRef = React.useRef(false);
     const lastStateRef = React.useRef(undefined);
     const setState = (0, useLatestCallback_1.default)((state) => {
@@ -580,7 +582,7 @@ function useNavigationBuilder(createRouter, options) {
         getState,
         setState,
     });
-    const onUnhandledActionParent = React.useContext(UnhandledActionContext_1.UnhandledActionContext);
+    const onUnhandledActionParent = (0, react_1.use)(UnhandledActionContext_1.UnhandledActionContext);
     const onUnhandledAction = (0, useLatestCallback_1.default)((action) => {
         if (options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
             action.type === 'NAVIGATE' &&

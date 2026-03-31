@@ -1,6 +1,8 @@
+'use client';
 import * as React from 'react';
 import {
   Animated,
+  type ColorValue,
   Easing,
   type GestureResponderEvent,
   Platform,
@@ -13,14 +15,15 @@ import {
 import { useTheme } from '../native';
 
 type HoverEffectProps = {
-  color?: string;
+  color?: ColorValue;
   hoverOpacity?: number;
   activeOpacity?: number;
 };
 
 export type Props = Omit<PressableProps, 'style' | 'onPress'> & {
+  ref?: React.Ref<React.ComponentRef<typeof AnimatedPressable>>;
   href?: string;
-  pressColor?: string;
+  pressColor?: ColorValue;
   pressOpacity?: number;
   hoverEffect?: HoverEffectProps;
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
@@ -39,22 +42,20 @@ const useNativeDriver = Platform.OS !== 'web';
 /**
  * PlatformPressable provides an abstraction on top of Pressable to handle platform differences.
  */
-function PlatformPressableInternal(
-  {
-    disabled,
-    onPress,
-    onPressIn,
-    onPressOut,
-    android_ripple,
-    pressColor,
-    pressOpacity = 0.3,
-    hoverEffect,
-    style,
-    children,
-    ...rest
-  }: Props,
-  ref: React.Ref<React.ComponentRef<typeof AnimatedPressable>>
-) {
+function PlatformPressableInternal({
+  ref,
+  disabled,
+  onPress,
+  onPressIn,
+  onPressOut,
+  android_ripple,
+  pressColor,
+  pressOpacity = 0.3,
+  hoverEffect,
+  style,
+  children,
+  ...rest
+}: Props) {
   const { dark } = useTheme();
   const [opacity] = React.useState(() => new Animated.Value(1));
 
@@ -152,9 +153,7 @@ function PlatformPressableInternal(
   );
 }
 
-export const PlatformPressable = React.forwardRef(PlatformPressableInternal);
-
-PlatformPressable.displayName = 'PlatformPressable';
+export const PlatformPressable = PlatformPressableInternal;
 
 const css = String.raw;
 

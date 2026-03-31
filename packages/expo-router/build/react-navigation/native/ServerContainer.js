@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -33,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ServerContainer = void 0;
+exports.ServerContainer = ServerContainer;
 const React = __importStar(require("react"));
 const core_1 = require("../core");
 const ServerContext_1 = require("./ServerContext");
@@ -44,7 +45,7 @@ const ServerContext_1 = require("./ServerContext");
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which contains helper methods.
  */
-exports.ServerContainer = React.forwardRef(function ServerContainer({ children, location }, ref) {
+function ServerContainer({ ref, children, location, }) {
     React.useEffect(() => {
         console.error("'ServerContainer' should only be used on the server with 'react-dom/server' for SSR.");
     }, []);
@@ -69,5 +70,5 @@ exports.ServerContainer = React.forwardRef(function ServerContainer({ children, 
     return (<ServerContext_1.ServerContext.Provider value={{ location }}>
       <core_1.CurrentRenderContext.Provider value={current}>{children}</core_1.CurrentRenderContext.Provider>
     </ServerContext_1.ServerContext.Provider>);
-});
+}
 //# sourceMappingURL=ServerContainer.js.map

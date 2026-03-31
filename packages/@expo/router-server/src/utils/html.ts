@@ -25,5 +25,5 @@ const ESCAPED_CHARACTERS: { [match: string]: string } = {
  * embed data in an HTML context to prevent XSS.
  */
 export function escapeUnsafeCharacters(str: string): string {
-  return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match]);
+  return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match] ?? match);
 }

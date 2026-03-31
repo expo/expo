@@ -1,4 +1,5 @@
-import * as React from 'react';
+'use client';
+import { use } from 'react';
 
 import { type NavigationState } from '../routers';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
@@ -15,8 +16,8 @@ export function useNavigation<
     getState(): NavigationState | undefined;
   },
 >(): T {
-  const root = React.useContext(NavigationContainerRefContext);
-  const navigation = React.useContext(NavigationContext);
+  const root = use(NavigationContainerRefContext);
+  const navigation = use(NavigationContext);
 
   if (navigation === undefined && root === undefined) {
     throw new Error(

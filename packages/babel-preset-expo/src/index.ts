@@ -71,11 +71,11 @@ type BabelPresetExpoPlatformOptions = {
   /**
    * Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`.
    *
-   * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+   * > **Note:** If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
    *
-   * @default `false` on client and `true` on server.
+   * @default `true`
    */
-  unstable_transformImportMeta?: boolean;
+  transformImportMeta?: boolean;
 };
 
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
@@ -338,7 +338,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
   }
 
-  const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
+  const polyfillImportMeta = platformOptions.transformImportMeta !== false;
 
   extraPlugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
 

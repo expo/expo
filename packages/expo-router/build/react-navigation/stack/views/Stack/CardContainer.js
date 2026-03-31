@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CardContainer = void 0;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const Card_1 = require("./Card");
 const CardA11yWrapper_1 = require("./CardA11yWrapper");
@@ -46,7 +48,7 @@ const EPSILON = 0.1;
 function CardContainerInner({ interpolationIndex, index, active, opening, closing, gesture, focused, modal, getPreviousScene, getFocusedRoute, hasAbsoluteFloatHeader, headerHeight, onHeaderHeightChange, isParentHeaderShown, isNextScreenTransparent, detachCurrentScreen, layout, onCloseRoute, onOpenRoute, onGestureCancel, onGestureEnd, onGestureStart, onTransitionEnd, onTransitionStart, preloaded, renderHeader, safeAreaInsetBottom, safeAreaInsetLeft, safeAreaInsetRight, safeAreaInsetTop, scene, }) {
     const wrapperRef = React.useRef(null);
     const { direction } = (0, native_1.useLocale)();
-    const parentHeaderHeight = React.useContext(elements_1.HeaderHeightContext);
+    const parentHeaderHeight = (0, react_1.use)(elements_1.HeaderHeightContext);
     const { options } = scene.descriptor;
     const enabled = focused && options.keyboardHandlingEnabled !== false;
     const { onPageChangeStart, onPageChangeCancel, onPageChangeConfirm } = (0, useKeyboardManager_1.useKeyboardManager)({

@@ -1,5 +1,5 @@
 import { RouteNode } from './Route';
-import { UrlObject } from './global-state/routeInfo';
+import { UrlObject } from './global-state/getRouteInfoFromState';
 import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath } from './link/linking';
 import { LinkingOptions } from './react-navigation/native';

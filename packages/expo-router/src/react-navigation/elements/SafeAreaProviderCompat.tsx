@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 import {
   Dimensions,
   Platform,
@@ -34,7 +36,7 @@ const initialMetrics =
     : initialWindowMetrics;
 
 export function SafeAreaProviderCompat({ children, style }: Props) {
-  const insets = React.useContext(SafeAreaInsetsContext);
+  const insets = use(SafeAreaInsetsContext);
 
   return (
     <FrameSizeProvider

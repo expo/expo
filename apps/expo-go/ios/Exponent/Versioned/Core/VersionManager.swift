@@ -11,7 +11,6 @@ import EXManifests
 @objc(EXVersionManager)
 final class VersionManager: EXVersionManagerObjC {
   var appContext: AppContext?
-  var legacyModulesProxy: LegacyNativeModulesProxy?
   var legacyModuleRegistry: EXModuleRegistry?
   private var hasRegisteredExpoModules = false
 
@@ -54,17 +53,14 @@ final class VersionManager: EXVersionManagerObjC {
     }
 
     let legacyModuleRegistry = createLegacyModuleRegistry(params: params, manifest: manifest)
-    let legacyModulesProxy = LegacyNativeModulesProxy(customModuleRegistry: legacyModuleRegistry)
     let config = createAppContextConfig()
     let appContext = AppContext(
-      legacyModulesProxy: legacyModulesProxy,
       legacyModuleRegistry: legacyModuleRegistry,
       config: config
     )
 
     self.appContext = appContext
     self.legacyModuleRegistry = legacyModuleRegistry
-    self.legacyModulesProxy = legacyModulesProxy
 
     registerExpoModules(appContext)
     hasRegisteredExpoModules = true
@@ -89,8 +85,7 @@ final class VersionManager: EXVersionManagerObjC {
     // that would work well for us (especially properly invalidating existing app context on reload).
     let appContext = getOrCreateAppContext()
 
-    guard let legacyModulesProxy,
-          let legacyModuleRegistry else {
+    guard let legacyModuleRegistry else {
       fatalError("Legacy modules should have been initialized")
     }
 
@@ -98,9 +93,6 @@ final class VersionManager: EXVersionManagerObjC {
       EXAppState(),
       EXDisabledDevLoadingView(),
       EXStatusBarManager(),
-
-      // Adding EXNativeModulesProxy with the custom moduleRegistry.
-      legacyModulesProxy,
 
       // Adding the way to access the module registry from RCTBridgeModules.
       EXModuleRegistryHolderReactModule(moduleRegistry: legacyModuleRegistry),

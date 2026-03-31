@@ -1,5 +1,7 @@
+'use client';
 import {
   Animated,
+  type ColorValue,
   Platform,
   type StyleProp,
   StyleSheet,
@@ -10,7 +12,7 @@ import {
 import { useTheme } from '../../native';
 
 type Props = Omit<TextProps, 'style'> & {
-  tintColor?: string;
+  tintColor?: ColorValue;
   children?: string;
   style?: Animated.WithAnimatedValue<StyleProp<TextStyle>>;
 };

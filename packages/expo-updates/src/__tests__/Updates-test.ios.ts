@@ -102,9 +102,9 @@ it('returns the proper object when logs returned from readLogEntriesAsync', asyn
 
   const actual = await Updates.readLogEntriesAsync();
   expect(actual.length).toEqual(2);
-  expect(actual[0].timestamp).toEqual(100);
-  expect(actual[0].level).toEqual('info');
-  expect(actual[0].updateId).toBeUndefined();
-  expect(actual[1].code).toEqual('JSRuntimeError');
-  expect(actual[1].stacktrace?.length).toEqual(3);
+  expect(actual[0]?.timestamp).toEqual(100);
+  expect(actual[0]?.level).toEqual('info');
+  expect(actual[0]?.updateId).toBeUndefined();
+  expect(actual[1]?.code).toEqual('JSRuntimeError');
+  expect(actual[1]?.stacktrace?.length).toEqual(3);
 });

@@ -1,9 +1,10 @@
-import * as React from 'react';
+'use client';
+import { use } from 'react';
 
 import { HeaderHeightContext } from './HeaderHeightContext';
 
 export function useHeaderHeight() {
-  const height = React.useContext(HeaderHeightContext);
+  const height = use(HeaderHeightContext);
 
   if (height === undefined) {
     throw new Error(

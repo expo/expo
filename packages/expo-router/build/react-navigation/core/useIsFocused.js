@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -36,6 +37,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IsFocusedContext = exports.FocusedRouteKeyContext = void 0;
 exports.useIsFocused = useIsFocused;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const useNavigation_1 = require("./useNavigation");
 exports.FocusedRouteKeyContext = React.createContext(undefined);
 exports.IsFocusedContext = React.createContext(undefined);
@@ -44,7 +46,7 @@ exports.IsFocusedContext = React.createContext(undefined);
  * This can be used if a component needs to render something based on the focus state.
  */
 function useIsFocused() {
-    const isFocused = React.useContext(exports.IsFocusedContext);
+    const isFocused = (0, react_1.use)(exports.IsFocusedContext);
     const navigation = (0, useNavigation_1.useNavigation)();
     const isFocusedAvailable = isFocused !== undefined;
     const subscribe = React.useCallback((callback) => {

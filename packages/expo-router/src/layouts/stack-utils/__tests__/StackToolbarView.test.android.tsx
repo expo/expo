@@ -13,10 +13,6 @@ jest.mock('@expo/ui/jetpack-compose', () => {
   };
 });
 
-jest.mock('@expo/ui/jetpack-compose/modifiers', () => ({
-  fillMaxHeight: jest.fn(() => 'fillMaxHeight'),
-}));
-
 jest.mock('../../../toolbar/AnimatedItemContainer', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   return {
@@ -36,10 +32,6 @@ const { AnimatedItemContainer } = jest.requireMock(
 const MockedAnimatedItemContainer = AnimatedItemContainer as jest.MockedFunction<
   typeof AnimatedItemContainer
 >;
-
-const { fillMaxHeight } = jest.requireMock(
-  '@expo/ui/jetpack-compose/modifiers'
-) as typeof import('@expo/ui/jetpack-compose/modifiers');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -72,22 +64,19 @@ describe('StackToolbarView component', () => {
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it.each(['left', 'right', undefined, 'xyz'] as const)(
-    'throws error when not in bottom placement (placement=%s)',
-    (placement) => {
-      expect(() => {
-        render(
-          <ToolbarPlacementContext.Provider value={placement as any}>
-            <StackToolbarView>
-              <Text>Custom Content</Text>
-            </StackToolbarView>
-          </ToolbarPlacementContext.Provider>
-        );
-      }).toThrow('Stack.Toolbar.View must be used inside a Stack.Toolbar');
+  it('throws error when used outside a toolbar (no placement context)', () => {
+    expect(() => {
+      render(
+        <ToolbarPlacementContext.Provider value={null as any}>
+          <StackToolbarView>
+            <Text>Custom Content</Text>
+          </StackToolbarView>
+        </ToolbarPlacementContext.Provider>
+      );
+    }).toThrow('Stack.Toolbar.View must be used inside a Stack.Toolbar');
 
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-    }
-  );
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
+  });
 
   it('passes children through to RNHostView', () => {
     render(
@@ -133,7 +122,7 @@ describe('NativeToolbarView', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it('renders Box with fillMaxHeight modifier and contentAlignment="center"', () => {
+  it('renders Box with contentAlignment="center"', () => {
     render(
       <NativeToolbarView>
         <Text>Content</Text>
@@ -141,7 +130,6 @@ describe('NativeToolbarView', () => {
     );
 
     expect(MockedBox.mock.calls[0][0]).toMatchObject({
-      modifiers: [fillMaxHeight()],
       contentAlignment: 'center',
     });
     expect(consoleErrorSpy).not.toHaveBeenCalled();

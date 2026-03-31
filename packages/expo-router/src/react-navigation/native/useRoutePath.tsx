@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 
 import { getPathFromState, useStateForPath } from '../core';
 import { LinkingContext } from './LinkingContext';
@@ -9,7 +11,7 @@ import { LinkingContext } from './LinkingContext';
  * @returns Path for the current route.
  */
 export function useRoutePath() {
-  const { options } = React.useContext(LinkingContext);
+  const { options } = use(LinkingContext);
   const state = useStateForPath();
 
   if (state === undefined) {

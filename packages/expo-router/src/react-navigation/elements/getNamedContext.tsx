@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 
 const contexts = '__react_navigation__elements_contexts';

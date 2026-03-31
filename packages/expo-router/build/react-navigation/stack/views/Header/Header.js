@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Header = void 0;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const HeaderSegment_1 = require("./HeaderSegment");
 const elements_1 = require("../../../elements");
@@ -61,8 +63,8 @@ exports.Header = React.memo(function Header({ back, layout, progress, options, r
             });
         }
     }, 50), [navigation, route.key]);
-    const isModal = React.useContext(ModalPresentationContext_1.ModalPresentationContext);
-    const isParentHeaderShown = React.useContext(elements_1.HeaderShownContext);
+    const isModal = (0, react_1.use)(ModalPresentationContext_1.ModalPresentationContext);
+    const isParentHeaderShown = (0, react_1.use)(elements_1.HeaderShownContext);
     const statusBarHeight = options.headerStatusBarHeight !== undefined
         ? options.headerStatusBarHeight
         : isModal || isParentHeaderShown

@@ -11,7 +11,7 @@ import {
 import fs from 'fs';
 import path from 'path';
 
-type ConfigPluginProps = {
+export type ConfigPluginProps = {
   supportsRTL?: boolean;
   forcesRTL?: boolean;
   allowDynamicLocaleChangesAndroid?: boolean;

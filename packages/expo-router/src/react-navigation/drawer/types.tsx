@@ -1,4 +1,4 @@
-import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { PanGesture } from 'react-native-gesture-handler';
 
 import type { HeaderOptions } from '../elements';
@@ -19,7 +19,7 @@ import type {
 export type Scene = {
   route: Route<string>;
   focused: boolean;
-  color?: string;
+  color?: ColorValue;
 };
 
 export type Layout = { width: number; height: number };
@@ -63,35 +63,35 @@ export type DrawerNavigationOptions = HeaderOptions & {
 
   /**
    * Title string of a screen displayed in the drawer
-   * or a function that given { focused: boolean, color: string } returns a React.Node
+   * or a function that given { focused: boolean, color: ColorValue } returns a React.Node
    * When undefined, scene title is used.
    */
-  drawerLabel?: string | ((props: { color: string; focused: boolean }) => React.ReactNode);
+  drawerLabel?: string | ((props: { color: ColorValue; focused: boolean }) => React.ReactNode);
 
   /**
-   * A function that given { focused: boolean, color: string } returns a React.Node to display an icon the drawer.
+   * A function that given { focused: boolean, color: ColorValue } returns a React.Node to display an icon the drawer.
    */
-  drawerIcon?: (props: { color: string; size: number; focused: boolean }) => React.ReactNode;
+  drawerIcon?: (props: { color: ColorValue; size: number; focused: boolean }) => React.ReactNode;
 
   /**
    * Color for the icon and label in the active item in the drawer.
    */
-  drawerActiveTintColor?: string;
+  drawerActiveTintColor?: ColorValue;
 
   /**
    * Background color for the active item in the drawer.
    */
-  drawerActiveBackgroundColor?: string;
+  drawerActiveBackgroundColor?: ColorValue;
 
   /**
    * Color for the icon and label in the inactive items in the drawer.
    */
-  drawerInactiveTintColor?: string;
+  drawerInactiveTintColor?: ColorValue;
 
   /**
    * Background color for the inactive items in the drawer.
    */
-  drawerInactiveBackgroundColor?: string;
+  drawerInactiveBackgroundColor?: ColorValue;
 
   /**
    * Whether label font should scale to respect Text Size accessibility settings.
@@ -154,7 +154,7 @@ export type DrawerNavigationOptions = HeaderOptions & {
    * Color of the overlay to be displayed on top of the content view when drawer gets open.
    * The opacity is animated from `0` to `1` when the drawer opens.
    */
-  overlayColor?: string;
+  overlayColor?: ColorValue;
 
   /**
    * Accessibility label for the overlay. This is read by the screen reader when the user taps the overlay.

@@ -59,6 +59,9 @@ function getProjectRoot(args) {
     return projectRoot;
 }
 function getFileArgumentAtIndex(args, index) {
+    if (args._[index] == null) {
+        Log.exit(`Argument at index ${index} is not set`);
+    }
     const path = (0, path_1.resolve)(args._[index]);
     if (!(0, fs_1.existsSync)(path)) {
         Log.exit(`Invalid file: ${path}`);

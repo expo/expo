@@ -1,4 +1,4 @@
-import Color from 'color';
+'use client';
 import * as React from 'react';
 import {
   Animated,
@@ -30,6 +30,7 @@ import {
   type PanGestureHandlerGestureEvent,
 } from '../GestureHandler';
 import { CardContent } from './CardContent';
+import { Color } from '../../../../utils/color';
 
 type Props = {
   animated: boolean;
@@ -491,7 +492,7 @@ function Card({
   const { backgroundColor } = StyleSheet.flatten(contentStyle || {});
 
   const isTransparent =
-    typeof backgroundColor === 'string' ? Color(backgroundColor).alpha() === 0 : false;
+    typeof backgroundColor === 'string' ? Color(backgroundColor)?.alpha() === 0 : false;
 
   return (
     <CardAnimationContext.Provider value={interpolationProps}>

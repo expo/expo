@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 
 type Render = (children: React.ReactNode) => React.JSX.Element;

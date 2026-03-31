@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,12 +36,13 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useFocusEvents = useFocusEvents;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const NavigationContext_1 = require("./NavigationContext");
 /**
  * Hook to take care of emitting `focus` and `blur` events.
  */
 function useFocusEvents({ state, emitter }) {
-    const navigation = React.useContext(NavigationContext_1.NavigationContext);
+    const navigation = (0, react_1.use)(NavigationContext_1.NavigationContext);
     const lastFocusedKeyRef = React.useRef(undefined);
     const currentFocusedKey = state.routes[state.index].key;
     // When the parent screen changes its focus state, we also need to change child's focus

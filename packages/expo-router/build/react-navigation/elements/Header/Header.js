@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -37,8 +38,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Header = Header;
-const color_1 = __importDefault(require("color"));
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const search_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/search-icon.png"));
@@ -52,6 +53,7 @@ const HeaderSearchBar_1 = require("./HeaderSearchBar");
 const HeaderShownContext_1 = require("./HeaderShownContext");
 const HeaderTitle_1 = require("./HeaderTitle");
 const getDefaultHeaderHeight_1 = require("./getDefaultHeaderHeight");
+const color_1 = require("../../../utils/color");
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;
 const warnIfHeaderStylesDefined = (styles) => {
@@ -70,7 +72,7 @@ function Header(props) {
     const frame = (0, useFrameSize_1.useFrameSize)((size) => size, true);
     const { colors } = (0, native_1.useTheme)();
     const navigation = (0, native_1.useNavigation)();
-    const isParentHeaderShown = React.useContext(HeaderShownContext_1.HeaderShownContext);
+    const isParentHeaderShown = (0, react_1.use)(HeaderShownContext_1.HeaderShownContext);
     const [searchBarVisible, setSearchBarVisible] = React.useState(false);
     const [titleLayout, setTitleLayout] = React.useState(undefined);
     const onTitleLayout = (e) => {
@@ -201,7 +203,8 @@ function Header(props) {
             // Allow touch through the header when background color is transparent
             headerTransparent &&
                 (backgroundStyle.backgroundColor === 'transparent' ||
-                    (0, color_1.default)(backgroundStyle.backgroundColor).alpha() === 0)
+                    (backgroundStyle.backgroundColor &&
+                        (0, color_1.Color)(backgroundStyle.backgroundColor)?.alpha() === 0))
                 ? 'none'
                 : 'auto'} style={backgroundStyle}/>)}
       </react_native_1.Animated.View>

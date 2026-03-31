@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -44,7 +45,7 @@ const useNativeDriver = react_native_1.Platform.OS !== 'web';
 /**
  * PlatformPressable provides an abstraction on top of Pressable to handle platform differences.
  */
-function PlatformPressableInternal({ disabled, onPress, onPressIn, onPressOut, android_ripple, pressColor, pressOpacity = 0.3, hoverEffect, style, children, ...rest }, ref) {
+function PlatformPressableInternal({ ref, disabled, onPress, onPressIn, onPressOut, android_ripple, pressColor, pressOpacity = 0.3, hoverEffect, style, children, ...rest }) {
     const { dark } = (0, native_1.useTheme)();
     const [opacity] = React.useState(() => new react_native_1.Animated.Value(1));
     const animateTo = (toValue, duration) => {
@@ -114,8 +115,7 @@ function PlatformPressableInternal({ disabled, onPress, onPressIn, onPressOut, a
       {children}
     </AnimatedPressable>);
 }
-exports.PlatformPressable = React.forwardRef(PlatformPressableInternal);
-exports.PlatformPressable.displayName = 'PlatformPressable';
+exports.PlatformPressable = PlatformPressableInternal;
 const css = String.raw;
 const CLASS_NAME = `__react-navigation_elements_Pressable_hover`;
 const CSS_TEXT = css `

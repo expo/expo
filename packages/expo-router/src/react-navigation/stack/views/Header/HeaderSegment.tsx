@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { type LayoutChangeEvent, Platform, StyleSheet, type ViewStyle } from 'react-native';
 

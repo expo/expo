@@ -248,7 +248,9 @@ const withAndroidDayNightTheme = (config, props) => {
                     name: 'AppTheme',
                     parent: 'Theme.AppCompat.DayNight.NoActionBar',
                 },
-                item: [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))],
+                item: style[0] != null
+                    ? [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))]
+                    : [],
             },
             ...style.filter(({ $ }) => !excludedStyles.includes($.name)),
         ];

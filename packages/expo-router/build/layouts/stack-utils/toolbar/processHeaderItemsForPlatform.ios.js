@@ -81,7 +81,7 @@ function convertToolbarChildrenToUnstableItems(children, side) {
  * On iOS, left/right toolbar items are converted to `unstable_headerLeftItems`/`unstable_headerRightItems`
  * which react-native-screens processes natively.
  */
-function processHeaderItemsForPlatform(children, placement) {
+function processHeaderItemsForPlatform(children, placement, _colors) {
     if (placement !== 'left' && placement !== 'right') {
         return null;
     }

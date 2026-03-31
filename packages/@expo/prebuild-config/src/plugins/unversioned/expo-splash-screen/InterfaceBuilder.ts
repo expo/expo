@@ -351,13 +351,13 @@ export function applyImageToSplashScreenXML(
   {
     imageName,
     contentMode,
-    backgroundColor,
+    backgroundColor = '#ffffff',
     enableFullScreenImage,
     imageWidth = 100,
   }: {
     imageName: string;
     contentMode: ImageContentMode;
-    backgroundColor: string;
+    backgroundColor?: string;
     enableFullScreenImage: boolean;
     imageWidth?: number;
   }

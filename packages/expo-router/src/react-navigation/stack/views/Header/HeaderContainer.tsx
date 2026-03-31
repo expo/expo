@@ -1,4 +1,6 @@
+'use client';
 import * as React from 'react';
+import { use } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Header } from './Header';
@@ -43,7 +45,7 @@ export function HeaderContainer({
   style,
 }: Props) {
   const focusedRoute = getFocusedRoute();
-  const parentHeaderBack = React.useContext(HeaderBackContext);
+  const parentHeaderBack = use(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
 
   return (

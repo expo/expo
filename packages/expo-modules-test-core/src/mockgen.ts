@@ -345,7 +345,7 @@ function generatePropTypesForDefinition(definition: OutputNestedClassDefinition)
     undefined,
     ts.factory.createTypeLiteralNode([
       ...definition.props.map((p) => {
-        const propType = mapSwiftTypeToTsType(p.types.parameters[0].typename);
+        const propType = mapSwiftTypeToTsType(p.types.parameters[0]?.typename ?? '');
         return ts.factory.createPropertySignature(undefined, p.name, undefined, propType);
       }),
       ...definition.events.map((e) => {

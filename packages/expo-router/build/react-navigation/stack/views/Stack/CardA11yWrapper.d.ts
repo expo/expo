@@ -1,5 +1,6 @@
 import * as React from 'react';
 type Props = {
+    ref?: React.Ref<CardA11yWrapperRef>;
     focused: boolean;
     active: boolean;
     animated: boolean;
@@ -10,6 +11,6 @@ type Props = {
 export type CardA11yWrapperRef = {
     setInert: (value: boolean) => void;
 };
-export declare const CardA11yWrapper: React.ForwardRefExoticComponent<Props & React.RefAttributes<CardA11yWrapperRef>>;
+export declare const CardA11yWrapper: ({ ref, focused, active, animated, isNextScreenTransparent, detachCurrentScreen, children, }: Props) => React.JSX.Element;
 export {};
 //# sourceMappingURL=CardA11yWrapper.d.ts.map

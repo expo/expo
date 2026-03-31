@@ -241,11 +241,6 @@ class Env {
     return boolish('EXPO_UNSTABLE_SERVER_FUNCTIONS', false);
   }
 
-  /** Enable unstable/experimental mode where React Native Web isn't required to run Expo apps on web. */
-  get EXPO_NO_REACT_NATIVE_WEB(): boolean {
-    return boolish('EXPO_NO_REACT_NATIVE_WEB', false);
-  }
-
   /** Enable unstable/experimental support for deploying the native server in `npx expo run` commands. */
   get EXPO_UNSTABLE_DEPLOY_SERVER(): boolean {
     return boolish('EXPO_UNSTABLE_DEPLOY_SERVER', false);

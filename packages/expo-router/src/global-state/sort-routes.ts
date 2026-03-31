@@ -1,4 +1,4 @@
-import type { RouterStore } from './router-store';
+import type { RouterStore } from './store';
 import { sortRoutes } from '../Route';
 
 export function getSortedRoutes(this: RouterStore) {

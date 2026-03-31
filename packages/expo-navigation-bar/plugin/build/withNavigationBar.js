@@ -37,15 +37,6 @@ function resolveProps(config, props) {
     if ('visibility' in props) {
         config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar visibility', 'Use `hidden` instead. This will be removed in a future release.');
     }
-    if ('behavior' in props) {
-        config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar behavior', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
-    }
-    if ('borderColor' in props) {
-        config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar borderColor', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
-    }
-    if ('position' in props) {
-        config_plugins_1.WarningAggregator.addWarningAndroid('expo-navigation-bar position', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
-    }
     const hidden = props.hidden ?? (props.visibility == null ? undefined : props.visibility === 'hidden');
     return {
         enforceContrast: props.enforceContrast,
@@ -132,18 +123,20 @@ function applyEnforceNavigationBarContrast(config, enforceNavigationBarContrast)
         return config;
     }
     const mainTheme = style[mainThemeIndex];
-    const enforceIndex = mainTheme.item.findIndex(({ $ }) => $.name === 'android:enforceNavigationBarContrast');
-    if (enforceIndex !== -1) {
-        style[mainThemeIndex].item[enforceIndex] = enforceNavigationBarContrastItem;
-        return config;
+    if (mainTheme != null) {
+        const enforceIndex = mainTheme.item.findIndex(({ $ }) => $.name === 'android:enforceNavigationBarContrast');
+        if (enforceIndex !== -1) {
+            mainTheme.item[enforceIndex] = enforceNavigationBarContrastItem;
+            return config;
+        }
+        config.modResults.resources.style = [
+            {
+                $: mainTheme.$,
+                item: [enforceNavigationBarContrastItem, ...mainTheme.item],
+            },
+            ...style.filter(({ $ }) => $.name !== 'AppTheme'),
+        ];
     }
-    config.modResults.resources.style = [
-        {
-            $: style[mainThemeIndex].$,
-            item: [enforceNavigationBarContrastItem, ...mainTheme.item],
-        },
-        ...style.filter(({ $ }) => $.name !== 'AppTheme'),
-    ];
     return config;
 }
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withNavigationBar, pkg.name, pkg.version);

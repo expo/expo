@@ -8,6 +8,8 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
 class StatusBarReactActivityLifecycleListener : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
+    // Execute static tasks before the JS engine starts.
+    // These values are defined via config plugins.
     val visibility = activity.getString(R.string.expo_status_bar_visibility).lowercase()
 
     if (visibility.isNotBlank()) {

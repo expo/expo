@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -35,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SceneView = SceneView;
 const React = __importStar(require("react"));
+const react_1 = require("react");
 const EnsureSingleNavigator_1 = require("./EnsureSingleNavigator");
 const NavigationFocusedRouteStateContext_1 = require("./NavigationFocusedRouteStateContext");
 const NavigationStateContext_1 = require("./NavigationStateContext");
@@ -89,7 +91,7 @@ function SceneView({ screen, route, navigation, routeState, getState, setState, 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const getIsInitial = React.useCallback(() => isInitialRef.current, []);
-    const parentFocusedRouteState = React.useContext(NavigationFocusedRouteStateContext_1.NavigationFocusedRouteStateContext);
+    const parentFocusedRouteState = (0, react_1.use)(NavigationFocusedRouteStateContext_1.NavigationFocusedRouteStateContext);
     const focusedRouteState = React.useMemo(() => {
         const state = {
             routes: [
