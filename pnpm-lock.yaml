@@ -3825,6 +3825,10 @@ importers:
       react-native:
         specifier: 0.85.0-rc.5
         version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
 
   packages/expo-dev-menu:
     dependencies:
