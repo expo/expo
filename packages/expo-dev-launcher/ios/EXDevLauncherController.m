@@ -531,8 +531,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   RCTDevLoadingViewSetEnabled(NO);
   [self _initAppWithUrl:bundleUrl bundleUrl:bundleUrl manifest:nil];
-  // Clear manifestURL so that reload attempts don't try to load a file:// URL
-  // through the manifest parser path.
   self.manifestURL = nil;
   if (onSuccess) {
     onSuccess();
