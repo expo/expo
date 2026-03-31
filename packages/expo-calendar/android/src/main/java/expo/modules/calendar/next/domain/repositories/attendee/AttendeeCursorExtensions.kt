@@ -18,13 +18,13 @@ fun Cursor.toAttendeeEntity() = AttendeeEntity(
   ),
   email = getString(getColumnIndexOrThrow(CalendarContract.Attendees.ATTENDEE_EMAIL)),
   name = getOptionalString(CalendarContract.Attendees.ATTENDEE_NAME),
-  role = getOptionalInt(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP)?.let { value ->
+  role = getOptionalInt(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP).let { value ->
     AttendeeRole.entries.find { it.value == value }
   },
-  status = getOptionalInt(CalendarContract.Attendees.ATTENDEE_STATUS)?.let { value ->
+  status = getOptionalInt(CalendarContract.Attendees.ATTENDEE_STATUS).let { value ->
     AttendeeStatus.entries.find { it.value == value }
   },
-  type = getOptionalInt(CalendarContract.Attendees.ATTENDEE_TYPE)?.let { value ->
+  type = getOptionalInt(CalendarContract.Attendees.ATTENDEE_TYPE).let { value ->
     AttendeeType.entries.find { it.value == value }
   }
 )
