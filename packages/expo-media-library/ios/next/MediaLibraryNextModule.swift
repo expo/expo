@@ -210,7 +210,7 @@ public final class MediaLibraryNextModule: Module {
         .permissions?
         .getPermissionUsingRequesterClass(
           requesterClass(writeOnly),
-          resolve: promise.resolver,
+          resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
     }
@@ -220,7 +220,7 @@ public final class MediaLibraryNextModule: Module {
         .permissions?
         .askForPermission(
           usingRequesterClass: requesterClass(writeOnly),
-          resolve: promise.resolver,
+          resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
     }
