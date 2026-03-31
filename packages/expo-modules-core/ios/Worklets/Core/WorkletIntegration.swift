@@ -7,11 +7,11 @@ import ExpoModulesCore
 @objc(EXWorkletIntegration)
 public final class WorkletIntegration: NSObject {
   @objc public static func register() {
-    AppContext.uiRuntimeFactory = { appContext, pointerValue, runtime in
+    AppContext.uiRuntimeFactory = { _, pointerValue, runtime in
       guard let pointer = WorkletRuntimeFactory.extractRuntimePointer(pointerValue, runtime: runtime) else {
         throw WorkletRuntimePointerExtractionException()
       }
-      return WorkletRuntimeFactory.createWorkletRuntime(appContext, fromPointer: pointer)
+      return WorkletRuntimeFactory.createWorkletRuntime(fromPointer: pointer)
     }
   }
 }
