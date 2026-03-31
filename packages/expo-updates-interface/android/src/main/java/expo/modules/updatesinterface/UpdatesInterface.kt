@@ -79,6 +79,7 @@ interface UpdatesStateChangeSubscription {
    * Call this to remove the subscription and stop receiving state change events
    */
   fun remove()
+
   /*
    * When updates is enabled, returns the current state context as an instance of UpdatesNativeInterfaceStateContext
    */
