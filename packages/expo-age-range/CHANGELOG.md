@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Update AgeRangeResponse to allow null values ([#44310](https://github.com/expo/expo/pull/44310) by [@joshbuchea](https://github.com/joshbuchea))
+
 ### 💡 Others
 
 ## 0.2.10 — 2026-02-25

@@ -19,9 +19,9 @@ export type AgeRangeRequest = {
  */
 export type AgeRangeResponse = {
     /** The lower limit of the person’s age range. */
-    lowerBound?: number;
+    lowerBound?: number | null;
     /** The upper limit of the person’s age range. */
-    upperBound?: number;
+    upperBound?: number | null;
     /**
      * Indicates whether the age range was declared by the user themselves or someone else (parent, guardian, or Family Organizer in a Family Sharing group).
      *
