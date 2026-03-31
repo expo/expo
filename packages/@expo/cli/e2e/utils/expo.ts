@@ -20,11 +20,18 @@ export const executeExpoAsync: typeof executeAsync = (cwd, flags, options) =>
   });
 
 /** Install any (dev) dependencies with Bun and verbose logging on unexpected errors */
-export const executePnpmAsync: typeof executeAsync = (cwd, flags, options) =>
-  executeAsync(cwd, flags, {
+export const executePnpmAsync: typeof executeAsync = (cwd, flags, options = {}) => {
+  // Strip npm_config_minimum_release_age inherited from the monorepo's pnpm-workspace.yaml,
+  // as it blocks recently published packages without the matching exclusion list.
+  const { npm_config_minimum_release_age, ...processEnv } = process.env;
+
+  return executeAsync(cwd, flags, {
     command: ['pnpm'],
     ...options,
+    extendEnv: false, // Don't let execa merge env with process.env
+    env: { ...processEnv, ...options.env },
   });
+};
 
 /** Create a managed background server running `expo serve` from source */
 export function createExpoServe(options: Partial<BackgroundServerOptions> = {}) {

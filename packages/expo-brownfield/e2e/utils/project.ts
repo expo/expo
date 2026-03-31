@@ -155,9 +155,15 @@ const installPackage = async (projectRoot: string) => {
     force: true,
   });
 
+  // Strip npm_config_minimum_release_age inherited from the monorepo's pnpm-workspace.yaml,
+  // as it blocks recently published packages without the matching exclusion list.
+  const { npm_config_minimum_release_age, ...processEnv } = process.env;
+
   await spawnAsync('pnpm', ['add', `./${packageTarball}`], {
     cwd: projectRoot,
     stdio: 'pipe',
+    extendEnv: false, // Don't let execa merge env with process.env
+    env: processEnv,
   });
 };
 
