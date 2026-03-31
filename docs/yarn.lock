@@ -5517,7 +5517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.12.2, axios@npm:^1.4.0":
+"axios@npm:^1.4.0":
   version: 1.12.2
   resolution: "axios@npm:1.12.2"
   dependencies:
@@ -8110,7 +8110,6 @@ __metadata:
     "@vvago/vale": "npm:3.12.0"
     "@xyflow/react": "npm:^12.10.1"
     acorn: "npm:^8.16.0"
-    axios: "npm:^1.12.2"
     cheerio: "npm:^1.2.0"
     clipboard-copy: "npm:^4.0.1"
     cmdk: "npm:^0.2.1"
