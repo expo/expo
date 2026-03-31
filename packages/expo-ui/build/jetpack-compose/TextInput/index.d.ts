@@ -76,8 +76,19 @@ export type TextInputProps = {
      */
     autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
     /**
+     * Whether the text input is enabled.
+     * @default true
+     * @platform android
+     */
+    enabled?: boolean;
+    /**
+     * Whether the text input is read-only. A read-only field cannot be edited but retains normal visual styling (unlike `enabled={false}` which grays it out).
+     * @default false
+     * @platform android
+     */
+    readOnly?: boolean;
+    /**
      * Placeholder text shown inside the field when empty and focused.
-     *
      */
     placeholder?: string;
     /** Modifiers for the component */
@@ -98,6 +109,9 @@ export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText' | 'childr
 declare function TextInputComponent(props: TextInputProps): import("react").JSX.Element;
 declare namespace TextInputComponent {
     var Label: (props: {
+        children: React.ReactNode;
+    }) => import("react").JSX.Element;
+    var TrailingIcon: (props: {
         children: React.ReactNode;
     }) => import("react").JSX.Element;
 }

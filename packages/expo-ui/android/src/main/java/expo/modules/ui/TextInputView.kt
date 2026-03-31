@@ -32,6 +32,8 @@ data class TextInputProps(
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
+  val enabled: MutableState<Boolean> = mutableStateOf(true),
+  val readOnly: MutableState<Boolean> = mutableStateOf(false),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList()),
 ) : ComposeProps
 
@@ -95,28 +97,38 @@ class TextInputView(context: Context, appContext: AppContext) :
     val label: (@Composable () -> Unit)? = labelSlotView?.let {
       { with(ComposableScope()) { with(it) { Content() } } }
     }
+    val trailingIconSlotView = findChildSlotView(this@TextInputView, "trailingIcon")
+    val trailingIcon: (@Composable () -> Unit)? = trailingIconSlotView?.let {
+      { with(ComposableScope()) { with(it) { Content() } } }
+    }
     val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
 
     if (props.variant.value == TextInputViewVariant.OUTLINED) {
       OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        enabled = props.enabled.value,
+        readOnly = props.readOnly.value,
         placeholder = placeholder,
         maxLines = maxLines,
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,
         label = label,
+        trailingIcon = trailingIcon,
         modifier = modifier
       )
     } else {
       TextField(
         value = value,
         onValueChange = onValueChange,
+        enabled = props.enabled.value,
+        readOnly = props.readOnly.value,
         placeholder = placeholder,
         maxLines = maxLines,
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,
         label = label,
+        trailingIcon = trailingIcon,
         modifier = modifier
       )
     }

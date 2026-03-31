@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 
 package expo.modules.ui
 
@@ -8,6 +8,8 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -55,6 +57,7 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.ui.convertibles.AlignmentType
 import expo.modules.ui.convertibles.CompositingStrategyType
 import expo.modules.ui.convertibles.GraphicsLayerParams
+import expo.modules.ui.menu.LocalExposedDropdownMenuBoxScope
 
 typealias ModifierType = Map<String, Any?>
 typealias ModifierList = List<ModifierType>
@@ -199,6 +202,16 @@ internal enum class SemanticRoleType(val value: String) : Enumerable {
 internal data class ToggleableParams(
   @Field val value: Boolean = false,
   @Field val role: SemanticRoleType? = null
+) : Record
+
+// Only PRIMARY_NOT_EDITABLE is supported because we don't have a synchronous TextInput.
+internal enum class MenuAnchorType(val value: String) : Enumerable {
+  PRIMARY_NOT_EDITABLE("primaryNotEditable"),
+}
+
+internal data class MenuAnchorParams(
+  @Field val type: MenuAnchorType = MenuAnchorType.PRIMARY_NOT_EDITABLE,
+  @Field val enabled: Boolean? = null
 ) : Record
 
 // endregion
@@ -559,6 +572,24 @@ object ModifierRegistry {
         role = role,
         onValueChange = { eventDispatcher("toggleable", emptyMap()) }
       )
+    }
+
+    // ExposedDropdownMenuBox scope-dependent modifier
+    register("menuAnchor") { map, _, _, _ ->
+      val scope = LocalExposedDropdownMenuBoxScope.current
+      if (scope != null) {
+        val params = recordFromMap<MenuAnchorParams>(map)
+        with(scope) {
+          Modifier.menuAnchor(
+            type = when (params.type) {
+              MenuAnchorType.PRIMARY_NOT_EDITABLE -> ExposedDropdownMenuAnchorType.PrimaryNotEditable
+            },
+            enabled = params.enabled ?: true
+          )
+        }
+      } else {
+        Modifier
+      }
     }
   }
 }

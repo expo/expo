@@ -28,9 +28,10 @@ import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
-import expo.modules.ui.menu.ItemPressedEvent
-import expo.modules.ui.picker.ExposedDropdownMenuPickerContent
-import expo.modules.ui.picker.ExposedDropdownMenuPickerProps
+import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
+import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
+import expo.modules.ui.menu.ExposedDropdownMenuContent
+import expo.modules.ui.menu.ExposedDropdownMenuProps
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
@@ -253,8 +254,8 @@ class ExpoUIModule : Module() {
     ExpoUIView("DropdownMenuItemView", events = {
       Events("onItemPressed")
     }) { props: DropdownMenuItemProps ->
-      val onItemPressed by remember { EventDispatcher<ItemPressedEvent>() }
-      DropdownMenuItemContent(props) { onItemPressed(it) }
+      val onItemPressed by remember { EventDispatcher<Unit>() }
+      DropdownMenuItemContent(props) { onItemPressed(Unit) }
     }
 
     ExpoUIView("LinearProgressIndicatorView") { props: LinearProgressIndicatorProps ->
@@ -468,11 +469,18 @@ class ExpoUIModule : Module() {
       FloatingActionButtonContent(props) { onButtonPressed(Unit) }
     }
 
-    ExpoUIView("ExposedDropdownMenuPickerView", events = {
+    ExpoUIView("ExposedDropdownMenuBoxView", events = {
       Events("onExpandedChange")
-    }) { props: ExposedDropdownMenuPickerProps ->
+    }) { props: ExposedDropdownMenuBoxProps ->
       val onExpandedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
-      ExposedDropdownMenuPickerContent(props) { onExpandedChange(GenericEventPayload1(it)) }
+      ExposedDropdownMenuBoxContent(props) { onExpandedChange(GenericEventPayload1(it)) }
+    }
+
+    ExpoUIView("ExposedDropdownMenuView", events = {
+      Events("onDismissRequest")
+    }) { props: ExposedDropdownMenuProps ->
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ExposedDropdownMenuContent(props) { onDismissRequest(Unit) }
     }
 
     //endregion Expo UI views

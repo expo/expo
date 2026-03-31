@@ -100,8 +100,19 @@ export type TextInputProps = {
    */
   autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
   /**
+   * Whether the text input is enabled.
+   * @default true
+   * @platform android
+   */
+  enabled?: boolean;
+  /**
+   * Whether the text input is read-only. A read-only field cannot be edited but retains normal visual styling (unlike `enabled={false}` which grays it out).
+   * @default false
+   * @platform android
+   */
+  readOnly?: boolean;
+  /**
    * Placeholder text shown inside the field when empty and focused.
-   *
    */
   placeholder?: string;
   /** Modifiers for the component */
@@ -146,6 +157,16 @@ function Label(props: { children: React.ReactNode }) {
 }
 
 /**
+ * A trailing icon slot for `TextInput`.
+ * Displayed at the end of the text field.
+ *
+ * @platform android
+ */
+function TrailingIcon(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
+}
+
+/**
  * Renders a `TextInput` component.
  */
 function TextInputComponent(props: TextInputProps) {
@@ -153,5 +174,6 @@ function TextInputComponent(props: TextInputProps) {
 }
 
 TextInputComponent.Label = Label;
+TextInputComponent.TrailingIcon = TrailingIcon;
 
 export { TextInputComponent as TextInput };

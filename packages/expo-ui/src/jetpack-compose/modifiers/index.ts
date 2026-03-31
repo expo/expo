@@ -253,6 +253,18 @@ export const align = (alignment: Alignment) => createModifier('align', { alignme
  */
 export const matchParentSize = () => createModifier('matchParentSize');
 
+/**
+ * Marks a composable as the anchor for an `ExposedDropdownMenuBox`.
+ * Only works when used inside `ExposedDropdownMenuBox`.
+ * @param type - Anchor type. Currently only `'primaryNotEditable'` is supported.
+ * @param enabled - Whether the anchor is enabled. Defaults to `true`.
+ */
+export const menuAnchor = (type?: 'primaryNotEditable', enabled?: boolean) =>
+  createModifier('menuAnchor', {
+    ...(type && { type }),
+    ...(enabled !== undefined && { enabled }),
+  });
+
 // =============================================================================
 // Interaction Modifiers
 // =============================================================================
