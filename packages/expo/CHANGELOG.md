@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent `original*` globals from being enumerable or from being created for globals with getters, since these may be side-effectful ([#44407](https://github.com/expo/expo/pull/44407) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Decouple web entry files from `react-native-web` by adding web-specific forks for `registerRootComponent`, `AppRegistry`, `AppEntryNotFound`, and `DevLoadingView`. ([#44298](https://github.com/expo/expo/pull/44298) by [@EvanBacon](https://github.com/EvanBacon))
