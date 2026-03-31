@@ -55,7 +55,6 @@ function TextInputAnchor({
     // key={value} forces remount so defaultValue updates the displayed text
     <TextInput
       defaultValue={value}
-      onChangeText={() => {}}
       key={value}
       readOnly
       enabled={enabled}

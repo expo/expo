@@ -28,7 +28,7 @@ export type TextInputProps = {
     /**
      * A callback triggered when user types in text into the TextInput.
      */
-    onChangeText: (value: string) => void;
+    onChangeText?: (value: string) => void;
     /**
      * If true, the text input can be multiple lines.
      * While the content will wrap, there's no keyboard button to insert a new line.
