@@ -3,6 +3,7 @@ package expo.modules.calendar.next
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
 import expo.modules.calendar.next.domain.dto.event.EventExceptionInput
+import kotlin.time.Duration.Companion.milliseconds
 import expo.modules.calendar.next.domain.repositories.attendee.AttendeeRepository
 import expo.modules.calendar.next.domain.repositories.event.EventRepository
 import expo.modules.calendar.next.domain.repositories.instance.InstanceRepository
@@ -66,8 +67,8 @@ class ExpoCalendarEvent(
   }
 
   suspend fun delete() {
-    if ((options?.futureEvents == null || options.futureEvents == false) && options?.instanceStartDate != null) {
-      eventRepository.insertException(eventId, EventExceptionInput.Cancellation(options.instanceStartDate.toLong()))
+    if (options?.futureEvents != true && options?.instanceStartDate != null) {
+      eventRepository.insertException(eventId, EventExceptionInput.Cancellation(options.instanceStartDate.toLong().milliseconds))
     } else {
       eventRepository.remove(eventId)
     }
@@ -90,12 +91,10 @@ class ExpoCalendarEvent(
   }
 
   suspend fun getAttendees(): List<ExpoCalendarAttendee> = withContext(Dispatchers.IO) {
-    try {
+    runCatching {
       attendeeRepository.findAllByEventId(eventId)
         .map { ExpoCalendarAttendee(it, attendeeMapper, attendeeRepository) }
-    } catch (e: Exception) {
-      throw AttendeeNotFoundException("Attendees could not be found", e)
-    }
+    }.getOrElse { throw AttendeeNotFoundException("Attendees could not be found", it) }
   }
 
   fun getOccurrence(options: RecurringEventOptions?): ExpoCalendarEvent {

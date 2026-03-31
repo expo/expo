@@ -12,27 +12,15 @@ import expo.modules.calendar.next.records.EventInputRecord
 import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.utils.dateToMilliseconds
-import expo.modules.kotlin.types.ValueOrUndefined
+import expo.modules.kotlin.types.map
 
 class EventMapper {
   fun toEventUpdate(input: EventUpdateRecord) = EventUpdate(
     title = input.title,
     description = input.notes,
-    dtStart = if (input.startDate.isUndefined) {
-      ValueOrUndefined.Undefined()
-    } else {
-      ValueOrUndefined.Value(dateToMilliseconds(input.startDate.optional))
-    },
-    dtEnd = if (input.endDate.isUndefined) {
-      ValueOrUndefined.Undefined()
-    } else {
-      ValueOrUndefined.Value(dateToMilliseconds(input.endDate.optional))
-    },
-    availability = if (input.availability.isUndefined) {
-      ValueOrUndefined.Undefined()
-    } else {
-      ValueOrUndefined.Value(input.availability.optional?.toDomain())
-    },
+    dtStart = input.startDate.map { dateToMilliseconds(it) },
+    dtEnd = input.endDate.map { dateToMilliseconds(it) },
+    availability = input.availability.map { it?.toDomain() },
     allDay = input.allDay,
     eventLocation = input.location,
     organizer = input.organizerEmail,
@@ -41,16 +29,8 @@ class EventMapper {
     guestsCanSeeGuests = input.guestsCanSeeGuests,
     eventTimezone = input.timeZone,
     eventEndTimezone = input.endTimeZone,
-    accessLevel = if (input.accessLevel.isUndefined) {
-      ValueOrUndefined.Undefined()
-    } else {
-      ValueOrUndefined.Value(input.accessLevel.optional?.toDomain())
-    },
-    rrule = if (input.recurrenceRule.isUndefined) {
-      ValueOrUndefined.Undefined()
-    } else {
-      ValueOrUndefined.Value(input.recurrenceRule.optional?.toDomain())
-    }
+    accessLevel = input.accessLevel.map { it?.toDomain() },
+    rrule = input.recurrenceRule.map { it?.toDomain() }
   )
 
   fun toEventInput(calendarId: CalendarId, eventRecord: EventInputRecord) = EventInput(
