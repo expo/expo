@@ -1,17 +1,21 @@
 diff --git a/src/crawlers/node/fallback.js b/src/crawlers/node/fallback.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..792716a62ef3dd22e60fcd678377bc148ea35bf0
+index 0000000000000000000000000000000000000000..31e3dbc259f23cbad26474c5fdfbf349173e31bc
 --- /dev/null
 +++ b/src/crawlers/node/fallback.js
-@@ -0,0 +1,126 @@
+@@ -0,0 +1,141 @@
 +"use strict";
 +
 +Object.defineProperty(exports, "__esModule", {
 +  value: true,
 +});
 +exports.default = createFallbackFilesystem;
++exports.shouldFallbackCrawlDir = shouldFallbackCrawlDir;
 +var fs = _interopRequireWildcard(require("graceful-fs"));
-+var path = _interopRequireWildcard(require("path"));
++var _path = _interopRequireDefault(require("path"));
++function _interopRequireDefault(e) {
++  return e && e.__esModule ? e : { default: e };
++}
 +function _interopRequireWildcard(e, t) {
 +  if ("function" == typeof WeakMap)
 +    var r = new WeakMap(),
@@ -66,7 +70,7 @@ index 0000000000000000000000000000000000000000..792716a62ef3dd22e60fcd678377bc14
 +    const result = dirNode ?? new Map();
 +    for (const entry of dirEntries) {
 +      const name = entry.name.toString();
-+      const childPath = path.join(absolutePath, name);
++      const childPath = absolutePath + _path.default.sep + name;
 +      if (ignore(childPath)) {
 +        continue;
 +      }
@@ -83,7 +87,7 @@ index 0000000000000000000000000000000000000000..792716a62ef3dd22e60fcd678377bc14
 +          result.set(name, [0, 0, 0, "", null, target, null]);
 +        } catch {}
 +      } else if (entry.isFile()) {
-+        const ext = path.extname(name).slice(1);
++        const ext = _path.default.extname(name).slice(1);
 +        if (!extensions.includes(ext) || result.has(name)) {
 +          continue;
 +        }
@@ -106,9 +110,11 @@ index 0000000000000000000000000000000000000000..792716a62ef3dd22e60fcd678377bc14
 +        return null;
 +      }
 +      if (stat.isDirectory()) {
-+        return readdir(absolutePath, isDirectory(prevNode) ? prevNode : null);
-+      }
-+      if (stat.isSymbolicLink()) {
++        const dirNode = isDirectory(prevNode) ? prevNode : null;
++        return shouldFallbackCrawlDir(absolutePath)
++          ? readdir(absolutePath, dirNode)
++          : (dirNode ?? new Map());
++      } else if (stat.isSymbolicLink()) {
 +        if (!includeSymlinks) {
 +          return null;
 +        }
@@ -118,17 +124,26 @@ index 0000000000000000000000000000000000000000..792716a62ef3dd22e60fcd678377bc14
 +        } catch {
 +          return null;
 +        }
-+      }
-+      if (stat.isFile()) {
-+        const ext = path.extname(absolutePath).slice(1);
++      } else if (stat.isFile()) {
++        const ext = _path.default.extname(absolutePath).slice(1);
 +        if (!extensions.includes(ext)) {
 +          return null;
 +        }
 +        return [stat.mtime.getTime(), stat.size, 0, "", null, 0, null];
++      } else {
++        return null;
 +      }
-+      return null;
 +    },
 +  };
++}
++function shouldFallbackCrawlDir(canonicalPath) {
++  const lastSepIdx = canonicalPath.lastIndexOf(_path.default.sep);
++  const basename =
++    lastSepIdx === -1 ? canonicalPath : canonicalPath.slice(lastSepIdx + 1);
++  if (basename === "..") {
++    return true;
++  }
++  return basename !== "node_modules" && basename.charCodeAt(0) !== 46;
 +}
 diff --git a/src/index.js b/src/index.js
 index ec21a55e797f272d5c326420482c0682b9350293..3495993258977c030962d68d2eeee6e1fdb48381 100644
@@ -216,10 +231,18 @@ index 78a4a45428e5896d72ca764e788a79a6531e24cb..6fa86e59e76edf8e42dd4ca8d02fe9ac
 +  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
 +}
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f184d28a733 100644
+index 35d85514984821711f6ba9268715de553cc0836b..1d32eaf3c9cd88c4a0b17f6e71a4c16b3aafdfe9 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
-@@ -15,29 +15,49 @@ function isDirectory(node) {
+@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
+ });
+ exports.default = void 0;
+ var _constants = _interopRequireDefault(require("../constants"));
++var _fallback = require("../crawlers/node/fallback");
+ var _RootPathUtils = require("./RootPathUtils");
+ var _invariant = _interopRequireDefault(require("invariant"));
+ var _path = _interopRequireDefault(require("path"));
+@@ -15,29 +16,49 @@ function isDirectory(node) {
    return node instanceof Map;
  }
  function isRegularFile(node) {
@@ -273,7 +296,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f18
      });
      tfs.#rootNode = fileSystemData;
      return tfs;
-@@ -364,17 +384,39 @@ class TreeFS {
+@@ -364,17 +385,39 @@ class TreeFS {
        }
        if (segmentNode == null) {
          if (opts.makeDirectories !== true && segmentName !== "..") {
@@ -323,7 +346,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f18
          }
        }
        if (
-@@ -672,7 +714,9 @@ class TreeFS {
+@@ -672,7 +715,9 @@ class TreeFS {
    }
    *_metadataIterator(rootNode, opts, prefix = "") {
      for (const [name, node] of rootNode) {
@@ -334,7 +357,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f18
          !opts.includeNodeModules &&
          isDirectory(node) &&
          name === "node_modules"
-@@ -716,12 +760,24 @@ class TreeFS {
+@@ -716,12 +761,24 @@ class TreeFS {
    ) {
      const pathSep = opts.alwaysYieldPosix ? "/" : _path.default.sep;
      const prefixWithSep = pathPrefix === "" ? pathPrefix : pathPrefix + pathSep;
@@ -360,7 +383,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f18
          continue;
        }
        const nodePath = prefixWithSep + name;
-@@ -762,6 +818,17 @@ class TreeFS {
+@@ -762,6 +819,17 @@ class TreeFS {
            }
          }
        } else if (opts.recursive) {
@@ -378,7 +401,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f18
          yield* this._pathIterator(
            node,
            iterationRootParentNode,
-@@ -780,7 +847,15 @@ class TreeFS {
+@@ -780,7 +848,15 @@ class TreeFS {
      if (cachedResult != null) {
        return cachedResult;
      }
@@ -395,7 +418,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f18
      (0, _invariant.default)(
        typeof literalSymlinkTarget === "string",
        "Expected symlink target to be populated.",
-@@ -820,16 +895,87 @@ class TreeFS {
+@@ -820,16 +896,78 @@ class TreeFS {
      }
      return result.node;
    }
@@ -428,15 +451,6 @@ index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f18
 +      canonicalPath.startsWith(this.#fallbackBoundary)
 +    );
 +  }
-+  #shouldFallbackCrawlDir(canonicalPath) {
-+    const lastSepIdx = canonicalPath.lastIndexOf(_path.default.sep);
-+    const basename =
-+      lastSepIdx === -1 ? canonicalPath : canonicalPath.slice(lastSepIdx + 1);
-+    if (basename === "..") {
-+      return true;
-+    }
-+    return basename !== "node_modules" && basename.charCodeAt(0) !== 46;
-+  }
 +  #populateFromFilesystem(parentNode, segmentName, parentCanonicalPath) {
 +    const fallback = this.#fallbackFilesystem;
 +    if (fallback == null) {
@@ -450,7 +464,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f18
 +      return null;
 +    } else if (
 +      parentCanonicalPath !== "" &&
-+      this.#shouldFallbackCrawlDir(parentCanonicalPath)
++      (0, _fallback.shouldFallbackCrawlDir)(parentCanonicalPath)
 +    ) {
 +      this.#populateDirFromFilesystem(parentNode, parentCanonicalPath);
 +      return parentNode.get(segmentName) ?? null;
