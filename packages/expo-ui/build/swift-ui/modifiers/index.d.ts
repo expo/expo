@@ -211,13 +211,14 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  *
  * @param style - The foreground style configuration. Can be:
  *
- * **Simple Color (string):**
+ * **Simple Color (`Color`):**
  * - Hex colors: `'#FF0000'`, `'#RGB'`, `'#RRGGBB'`, `'#AARRGGBB'`
  * - Named colors: `'red'`, `'blue'`, `'green'`, and so on.
+ * - React Native color values like `PlatformColor('label')`
  *
  * **Explicit Color Object:**
  * ```ts
- * { type: 'color', color: '#FF0000' }
+ * { type: 'color', color: PlatformColor('label') }
  * ```
  *
  * **Hierarchical Styles (Semantic):**
@@ -234,7 +235,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```ts
  * {
  *   type: 'linearGradient',
- *   colors: ['#FF0000', '#0000FF', '#00FF00'],
+ *   colors: [PlatformColor('systemPink'), '#0000FF', '#00FF00'],
  *   startPoint: { x: 0, y: 0 },    // Top-left
  *   endPoint: { x: 1, y: 1 }       // Bottom-right
  * }
@@ -244,7 +245,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```ts
  * {
  *   type: 'radialGradient',
- *   colors: ['#FF0000', '#0000FF'],
+ *   colors: [PlatformColor('systemPink'), '#0000FF'],
  *   center: { x: 0.5, y: 0.5 },    // Center of view
  *   startRadius: 0,                // Inner radius
  *   endRadius: 100                 // Outer radius
@@ -255,7 +256,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```ts
  * {
  *   type: 'angularGradient',
- *   colors: ['#FF0000', '#00FF00', '#0000FF'],
+ *   colors: [PlatformColor('systemPink'), '#00FF00', '#0000FF'],
  *   center: { x: 0.5, y: 0.5 }     // Rotation center
  * }
  * ```
@@ -285,15 +286,15 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * @since iOS 15.0+ (hierarchical quinary requires iOS 16.0+)
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)).
  */
-export declare const foregroundStyle: (style: string | {
+export declare const foregroundStyle: (style: Color | {
     type: "color";
-    color: string;
+    color: Color;
 } | {
     type: "hierarchical";
     style: "primary" | "secondary" | "tertiary" | "quaternary" | "quinary";
 } | {
     type: "linearGradient";
-    colors: string[];
+    colors: Color[];
     startPoint: {
         x: number;
         y: number;
@@ -304,7 +305,7 @@ export declare const foregroundStyle: (style: string | {
     };
 } | {
     type: "radialGradient";
-    colors: string[];
+    colors: Color[];
     center: {
         x: number;
         y: number;
@@ -313,7 +314,7 @@ export declare const foregroundStyle: (style: string | {
     endRadius: number;
 } | {
     type: "angularGradient";
-    colors: string[];
+    colors: Color[];
     center: {
         x: number;
         y: number;
