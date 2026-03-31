@@ -1,0 +1,54 @@
+diff --git a/src/resolve.js b/src/resolve.js
+index b8b090cb23ce6f332881b5a318155f636301ce12..da8961ce927f7c7d63ea6567a819cf9848440a1a 100644
+--- a/src/resolve.js
++++ b/src/resolve.js
+@@ -189,7 +189,9 @@ function resolve(context, moduleName, platform) {
+         type: "empty",
+       };
+     }
+-    const result = resolvePackage(context, candidate, platform);
++    const result = resolvePackage(context, candidate, platform, {
++      isPackageRoot: parsedSpecifier.posixSubpath === ".",
++    });
+     if (result.type === "resolved") {
+       return result.resolution;
+     }
+@@ -241,7 +243,7 @@ function parseBareSpecifier(specifier) {
+     posixSubpath: "." + normalized.slice(firstSepIdx),
+   };
+ }
+-function resolveModulePath(context, toModuleName, platform) {
++function resolveModulePath(context, toModuleName, platform, options) {
+   const modulePath = _path.default.isAbsolute(toModuleName)
+     ? _path.default.sep === "/"
+       ? toModuleName
+@@ -261,7 +263,7 @@ function resolveModulePath(context, toModuleName, platform) {
+   }
+   const dirPath = _path.default.dirname(redirectedPath);
+   const fileName = _path.default.basename(redirectedPath);
+-  const fileResult = redirectedPath.endsWith(_path.default.sep)
++  const fileResult = redirectedPath.endsWith(_path.default.sep) || options?.skipFileResolution === true
+     ? null
+     : resolveFile(context, dirPath, fileName, platform);
+   if (fileResult != null && fileResult.type === "resolved") {
+@@ -321,7 +323,7 @@ class MissingFileInHastePackageError extends Error {
+     Object.assign(this, opts);
+   }
+ }
+-function resolvePackage(context, absoluteCandidatePath, platform) {
++function resolvePackage(context, absoluteCandidatePath, platform, options) {
+   if (context.unstable_enablePackageExports) {
+     const pkg = context.getPackageForModule(absoluteCandidatePath);
+     const exportsField = pkg?.packageJson.exports;
+@@ -356,7 +358,10 @@ function resolvePackage(context, absoluteCandidatePath, platform) {
+       }
+     }
+   }
+-  return resolveModulePath(context, absoluteCandidatePath, platform);
++  return resolveModulePath(context, absoluteCandidatePath, platform, {
++    skipFileResolution:
++      context.isESMImport === true && options?.isPackageRoot === true,
++  });
+ }
+ function resolvePackageEntryPoint(context, packagePath, platform) {
+   const dirLookup = context.fileSystemLookup(packagePath);
