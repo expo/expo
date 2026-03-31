@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionHookOptions, PermissionResponse } from 'expo';
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
 import { GranularPermission } from './types/GranularPermission';
 export * from './MediaLibraryNext.types';
@@ -28,4 +28,18 @@ export declare function requestPermissionsAsync(writeOnly?: boolean, granularPer
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export declare function getPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to access the media library.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions<{
+    writeOnly?: boolean;
+    granularPermissions?: GranularPermission[];
+}>) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export type { PermissionHookOptions };
 //# sourceMappingURL=index.d.ts.map
