@@ -10,6 +10,8 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
+> **warning** **Warning:** Inline modules are currently experimental. The API is subject to breaking changes.
+
 In this tutorial, you will create an example native module and a native view directly inside your Expo project's **app** directory using inline modules.
 Unlike the standard Expo Modules, inline modules don't require a separate package or `create-expo-module` scaffolding.
 You write Kotlin and Swift files alongside your app code, and Expo discovers them automatically.
@@ -18,7 +20,7 @@ You write Kotlin and Swift files alongside your app code, and Expo discovers the
 
 ## Setup your project
 
-Open the [app config](/workflow/configuration/) and set the `expo.experiments.inlineModules.watchedDirectories` to `["app"]`
+Open the [app config](/workflow/configuration/) and set the `expo.experiments.inlineModules.watchedDirectories` to `["app"]`:
 
 ```json app.json
 {
