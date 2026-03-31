@@ -66,6 +66,9 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+      - name: 📦 Install react-native submodule dependencies
+        run: yarn install
+        working-directory: react-native-lab/react-native
       - name: 💅 Run Spotless lint check
         working-directory: apps/expo-go/android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/expo-go/android` to automatically fix formatting.' && exit 1; }
