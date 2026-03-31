@@ -23,11 +23,21 @@ export default function PullToRefreshBoxScreen() {
         onRefresh={basic.onRefresh}
         contentAlignment="topCenter">
         <LazyColumn modifiers={[fillMaxSize()]}>
-          <ListItem headline="Item 1" />
-          <ListItem headline="Item 2" />
-          <ListItem headline="Item 3" />
-          <ListItem headline="Item 4" />
-          <ListItem headline="Item 5" />
+          <ListItem>
+            <ListItem.HeadlineContent>Item 1</ListItem.HeadlineContent>
+          </ListItem>
+          <ListItem>
+            <ListItem.HeadlineContent>Item 2</ListItem.HeadlineContent>
+          </ListItem>
+          <ListItem>
+            <ListItem.HeadlineContent>Item 3</ListItem.HeadlineContent>
+          </ListItem>
+          <ListItem>
+            <ListItem.HeadlineContent>Item 4</ListItem.HeadlineContent>
+          </ListItem>
+          <ListItem>
+            <ListItem.HeadlineContent>Item 5</ListItem.HeadlineContent>
+          </ListItem>
         </LazyColumn>
       </PullToRefreshBox>
     </Host>
