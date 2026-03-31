@@ -212,10 +212,15 @@ index 78a4a45428e5896d72ca764e788a79a6531e24cb..6fa86e59e76edf8e42dd4ca8d02fe9ac
 +  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
 +}
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..23afe719e350f11097e97a04c86af6a6d8b1c087 100644
+index 35d85514984821711f6ba9268715de553cc0836b..b45afdf657dbe54c154d35da20f1ef98e2f77af6 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
-@@ -19,14 +19,21 @@ function isRegularFile(node) {
+@@ -15,18 +15,25 @@ function isDirectory(node) {
+   return node instanceof Map;
+ }
+ function isRegularFile(node) {
+-  return node[_constants.default.SYMLINK] === 0;
++  return node != null && node[_constants.default.SYMLINK] === 0;
  }
  class TreeFS {
    #cachedNormalSymlinkTargets = new WeakMap();
@@ -302,7 +307,18 @@ index 35d85514984821711f6ba9268715de553cc0836b..23afe719e350f11097e97a04c86af6a6
          }
        }
        if (
-@@ -716,6 +747,16 @@ class TreeFS {
+@@ -672,7 +703,9 @@ class TreeFS {
+   }
+   *_metadataIterator(rootNode, opts, prefix = "") {
+     for (const [name, node] of rootNode) {
+-      if (
++      if (node == null) {
++        continue;
++      } else if (
+         !opts.includeNodeModules &&
+         isDirectory(node) &&
+         name === "node_modules"
+@@ -716,12 +749,24 @@ class TreeFS {
    ) {
      const pathSep = opts.alwaysYieldPosix ? "/" : _path.default.sep;
      const prefixWithSep = pathPrefix === "" ? pathPrefix : pathPrefix + pathSep;
@@ -319,7 +335,16 @@ index 35d85514984821711f6ba9268715de553cc0836b..23afe719e350f11097e97a04c86af6a6
      for (const [name, node] of this.#directoryNodeIterator(
        iterationRootNode,
        iterationRootParentNode,
-@@ -762,6 +803,17 @@ class TreeFS {
+       ancestorOfRootIdx,
+     )) {
+-      if (opts.subtreeOnly && name === "..") {
++      if (node == null) {
++        continue;
++      } else if (opts.subtreeOnly && name === "..") {
+         continue;
+       }
+       const nodePath = prefixWithSep + name;
+@@ -762,6 +807,17 @@ class TreeFS {
            }
          }
        } else if (opts.recursive) {
@@ -337,7 +362,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..23afe719e350f11097e97a04c86af6a6
          yield* this._pathIterator(
            node,
            iterationRootParentNode,
-@@ -780,7 +832,15 @@ class TreeFS {
+@@ -780,7 +836,15 @@ class TreeFS {
      if (cachedResult != null) {
        return cachedResult;
      }
@@ -354,7 +379,14 @@ index 35d85514984821711f6ba9268715de553cc0836b..23afe719e350f11097e97a04c86af6a6
      (0, _invariant.default)(
        typeof literalSymlinkTarget === "string",
        "Expected symlink target to be populated.",
-@@ -831,5 +891,58 @@ class TreeFS {
+@@ -825,11 +889,63 @@ class TreeFS {
+     for (const [name, node] of root) {
+       if (isDirectory(node)) {
+         clone.set(name, this._cloneTree(node));
+-      } else {
++      } else if (node != null) {
+         clone.set(name, [...node]);
+       }
      }
      return clone;
    }
@@ -378,23 +410,22 @@ index 35d85514984821711f6ba9268715de553cc0836b..23afe719e350f11097e97a04c86af6a6
 +        : parentCanonicalPath + _path.default.sep + segmentName;
 +    if (this.#rootPattern?.test(childCanonicalPath)) {
 +      return null;
-+    }
-+    if (
++    } else if (
 +      parentCanonicalPath !== "" &&
 +      this.#shouldFallbackCrawlDir(parentCanonicalPath)
 +    ) {
 +      this.#populateDirFromFilesystem(parentNode, parentCanonicalPath);
 +      return parentNode.get(segmentName) ?? null;
++    } else if (parentNode.has(segmentName)) {
++      return parentNode.get(segmentName) ?? null;
++    } else {
++      const parentAbsolute =
++        this.#pathUtils.normalToAbsolute(parentCanonicalPath);
++      const absolutePath = parentAbsolute + _path.default.sep + segmentName;
++      const node = fallback.lookup(absolutePath, parentNode.get(segmentName));
++      parentNode.set(segmentName, node);
++      return node;
 +    }
-+    const parentAbsolute =
-+      this.#pathUtils.normalToAbsolute(parentCanonicalPath);
-+    const absolutePath = parentAbsolute + _path.default.sep + segmentName;
-+    const node = fallback.lookup(absolutePath, parentNode.get(segmentName));
-+    if (node == null) {
-+      return null;
-+    }
-+    parentNode.set(segmentName, node);
-+    return node;
 +  }
 +  #populateDirFromFilesystem(dirNode, canonicalPath) {
 +    const fallback = this.#fallbackFilesystem;
