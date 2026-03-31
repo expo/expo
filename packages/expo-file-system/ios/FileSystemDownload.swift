@@ -12,8 +12,11 @@ class DownloadTaskStore: NSObject, URLSessionDownloadDelegate {
   private let queue = DispatchQueue(label: "expo.modules.filesystem.DownloadTaskStore")
   private var tasks: [String: URLSessionDownloadTask] = [:]
   private var delegatesByTaskId: [Int: DownloadDelegate] = [:]
+  private var session: URLSession?
 
-  lazy var session: URLSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+  deinit {
+    session?.invalidateAndCancel()
+  }
 
   func store(task: URLSessionDownloadTask, delegate: DownloadDelegate, forUuid uuid: String) {
     queue.sync {
@@ -39,6 +42,17 @@ class DownloadTaskStore: NSObject, URLSessionDownloadDelegate {
   private func delegate(for task: URLSessionTask) -> DownloadDelegate? {
     queue.sync {
       delegatesByTaskId[task.taskIdentifier]
+    }
+  }
+
+  func makeDownloadTask(with request: URLRequest) -> URLSessionDownloadTask {
+    queue.sync {
+      let currentSession = session ?? {
+        let newSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+        session = newSession
+        return newSession
+      }()
+      return currentSession.downloadTask(with: request)
     }
   }
 
@@ -112,7 +126,7 @@ func downloadFileWithStore(
         downloadStore.remove(uuid: downloadUuid)
       }
     )
-    let task = downloadStore.session.downloadTask(with: request)
+    let task = downloadStore.makeDownloadTask(with: request)
     downloadStore.store(task: task, delegate: delegate, forUuid: downloadUuid)
     task.resume()
   } else {

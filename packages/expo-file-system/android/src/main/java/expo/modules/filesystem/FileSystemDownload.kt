@@ -2,8 +2,11 @@ package expo.modules.filesystem
 
 import android.webkit.URLUtil
 import expo.modules.kotlin.services.FilePermissionService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -46,8 +49,8 @@ private val sharedHttpClient = OkHttpClient()
  *
  * When [downloadUUID] is non-null, the response body is streamed through a manual byte-copy loop
  * that emits `downloadProgress` events via [emitProgress]. Progress events are throttled to fire at
- * most once every [PROGRESS_THROTTLE_MS] milliseconds; a final event is always sent when the
- * download is complete (i.e. `totalRead == contentLength`).
+ * most once every [PROGRESS_THROTTLE_MS] milliseconds; a final event is always sent after the
+ * read loop finishes, even when the server omits the content length.
  *
  * When [downloadUUID] is null the response body is copied with `InputStream.copyTo` and no progress
  * events are emitted.
@@ -71,35 +74,37 @@ suspend fun downloadFileWithStore(
   val response = executeRequest(request, downloadUUID, downloadStore)
 
   try {
-    if (!response.isSuccessful) {
-      throw UnableToDownloadException("response has status: ${response.code}")
-    }
+    return response.use { activeResponse ->
+      if (!activeResponse.isSuccessful) {
+        throw UnableToDownloadException("response has status: ${activeResponse.code}")
+      }
 
-    val contentDisposition = response.headers["content-disposition"]
-    val contentType = response.headers["content-type"]
-    val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
+      val contentDisposition = activeResponse.headers["content-disposition"]
+      val contentType = activeResponse.headers["content-type"]
+      val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
 
-    val destination = if (to is FileSystemDirectory) {
-      File(to.javaFile, fileName)
-    } else {
-      to.javaFile
-    }
+      val destination = if (to is FileSystemDirectory) {
+        File(to.javaFile, fileName)
+      } else {
+        to.javaFile
+      }
 
-    if (options?.idempotent != true && destination.exists()) {
-      throw DestinationAlreadyExistsException()
-    }
+      if (options?.idempotent != true && destination.exists()) {
+        throw DestinationAlreadyExistsException()
+      }
 
-    val body = response.body ?: throw UnableToDownloadException("response body is null")
-    body.byteStream().use { input ->
-      FileOutputStream(destination).use { output ->
-        if (downloadUUID != null) {
-          streamWithProgress(input, output, body.contentLength(), downloadUUID, emitProgress)
-        } else {
-          input.copyTo(output)
+      val body = activeResponse.body ?: throw UnableToDownloadException("response body is null")
+      body.byteStream().use { input ->
+        FileOutputStream(destination).use { output ->
+          if (downloadUUID != null) {
+            streamWithProgress(input, output, body.contentLength(), downloadUUID, emitProgress)
+          } else {
+            input.copyTo(output)
+          }
         }
       }
+      destination.toURI()
     }
-    return destination.toURI()
   } finally {
     if (downloadUUID != null) {
       downloadStore.remove(downloadUUID)
@@ -149,37 +154,39 @@ private const val PROGRESS_THROTTLE_MS = 100L
 /**
  * Copies bytes from [input] to [output] while emitting throttled progress events.
  *
- * Events fire when at least [PROGRESS_THROTTLE_MS] have elapsed since the last event,
- * or when the download is complete (`totalRead == contentLength`).
+ * Events fire when at least [PROGRESS_THROTTLE_MS] have elapsed since the last event.
+ * A final event is emitted after the read loop completes, even when [contentLength] is `-1`.
  *
  * Checks for coroutine cancellation on each read iteration so that the download
  * can be interrupted promptly when the caller cancels.
  */
-private suspend fun streamWithProgress(
+internal suspend fun streamWithProgress(
   input: InputStream,
   output: FileOutputStream,
   contentLength: Long,
   uuid: String,
-  emitProgress: (uuid: String, bytesWritten: Long, totalBytes: Long) -> Unit
-) {
+  emitProgress: (uuid: String, bytesWritten: Long, totalBytes: Long) -> Unit,
+  currentTimeProvider: () -> Long = System::currentTimeMillis
+) = withContext(Dispatchers.IO) {
   val buffer = ByteArray(8192)
   var bytesRead: Int
   var totalRead = 0L
   var lastUpdateTime = 0L
 
   while (input.read(buffer).also { bytesRead = it } != -1) {
-    coroutineContext.ensureActive()
+    currentCoroutineContext().ensureActive()
     output.write(buffer, 0, bytesRead)
     totalRead += bytesRead
 
-    val now = System.currentTimeMillis()
+    val now = currentTimeProvider()
     val timeSinceLastUpdate = now - lastUpdateTime
-    val isComplete = totalRead == contentLength
     val shouldThrottle = timeSinceLastUpdate < PROGRESS_THROTTLE_MS
 
-    if (!shouldThrottle || isComplete) {
+    if (!shouldThrottle) {
       lastUpdateTime = now
       emitProgress(uuid, totalRead, contentLength)
     }
   }
+
+  emitProgress(uuid, totalRead, contentLength)
 }
