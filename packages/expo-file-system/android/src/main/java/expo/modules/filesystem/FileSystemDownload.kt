@@ -1,7 +1,7 @@
 package expo.modules.filesystem
 
 import android.webkit.URLUtil
-import expo.modules.interfaces.filesystem.Permission
+import expo.modules.kotlin.services.FilePermissionService
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
@@ -60,7 +60,7 @@ suspend fun downloadFileWithStore(
   downloadStore: DownloadTaskStore,
   emitProgress: (uuid: String, bytesWritten: Long, totalBytes: Long) -> Unit
 ): URI {
-  to.validatePermission(Permission.WRITE)
+  to.validatePermission(FilePermissionService.Permission.WRITE)
 
   val requestBuilder = Request.Builder().url(url.toURL())
   options?.headers?.forEach { (key, value) ->
