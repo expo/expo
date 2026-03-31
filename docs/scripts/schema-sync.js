@@ -19,6 +19,7 @@ async function run() {
   }
 
   if (version === 'unversioned') {
+    console.log('Fetching schema for unversioned from production...');
     const response = await fetch(
       `http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`
     );
