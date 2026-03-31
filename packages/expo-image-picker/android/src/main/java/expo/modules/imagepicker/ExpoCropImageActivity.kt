@@ -69,7 +69,8 @@ class ExpoCropImageActivity : CropImageActivity() {
     // Inset the crop view margins so it doesn't overlap with system bars or display cutouts
     ViewCompat.setOnApplyWindowInsetsListener(cropImageView) { view, insets ->
       val values = insets.getInsets(
-        WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+        WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+      )
 
       view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
         setMargins(values.left, values.top, values.right, values.bottom)
@@ -131,13 +132,16 @@ class ExpoCropImageActivity : CropImageActivity() {
       decorView.setBackgroundColor(activityBackgroundColor)
 
       // Add the status bar view with zero initial height (will be sized by insets listener below)
-      addContentView(statusBarView,
-        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0))
+      addContentView(
+        statusBarView,
+        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+      )
 
       // Dynamically resize the status bar view to match the actual status bar / display cutout height
       ViewCompat.setOnApplyWindowInsetsListener(decorView) { _, insets ->
         val values = insets.getInsets(
-          WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout())
+          WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout()
+        )
         statusBarView.updateLayoutParams { height = values.top }
         insets
       }
