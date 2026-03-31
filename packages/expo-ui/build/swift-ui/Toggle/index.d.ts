@@ -5,10 +5,12 @@ export type ToggleProps = {
     /**
      * An observable SwiftUI state object that drives the toggle.
      * Create one with `useToggleState()`.
+     * When provided, this takes precedence over `isOn` and `onIsOnChange`.
      */
     state?: ToggleState;
     /**
      * A Boolean value that determines the on/off state of the toggle.
+     * Ignored when `state` is provided.
      */
     isOn?: boolean;
     /**
