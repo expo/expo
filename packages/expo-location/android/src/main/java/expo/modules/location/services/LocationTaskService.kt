@@ -125,7 +125,7 @@ class LocationTaskService : Service() {
 
   /**
    * Returns the best available notification icon resource ID.
-   * Prefers the `notification_icon` drawable (configured via app.json notification.icon,
+   * Prefers the `notification_icon` drawable (configured via app config's `notification.icon`,
    * used by expo-notifications) over `applicationInfo.icon`. The launcher icon is
    * full-color and renders as a solid white square in notifications, since Android
    * requires small notification icons to be monochrome.
