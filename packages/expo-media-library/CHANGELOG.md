@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- [next] Refactor Calendar@Next ([#43434](https://github.com/expo/expo/pull/43434) by [@Wenszel](https://github.com/Wenszel))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
