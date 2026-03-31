@@ -538,6 +538,7 @@ describe('DownloadPauseState persistence', () => {
 
 describe('DownloadTask persistence store', () => {
   const storageKeyPrefix = 'expo-file-system:download-task:';
+  const customKeyPrefix = 'custom-prefix:';
 
   function createStore() {
     const data = new Map<string, string>();
@@ -576,12 +577,60 @@ describe('DownloadTask persistence store', () => {
 
     const store = createStore();
     const persistedTask = new DownloadTask('https://example.com/f', new File(Paths.cache, 'f2'), {
-      persistence: store,
+      persistenceConfig: { backend: store },
     });
 
     expect(typeof persistedTask.id).toBe('string');
     expect(persistedTask.id).toBeTruthy();
     expect(store.setItem).not.toHaveBeenCalled();
+  });
+
+  it('uses a custom key prefix when provided', async () => {
+    const store = createStore();
+    const task = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video.mp4'),
+      {
+        persistenceConfig: { backend: store, keyPrefix: customKeyPrefix },
+      }
+    );
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    expect(store.setItem.mock.calls[0]![0]).toBe(`${customKeyPrefix}${task.id}`);
+  });
+
+  it('uses a custom id when provided', () => {
+    const store = createStore();
+    const task = new DownloadTask('https://example.com/f', new File(Paths.cache, 'f2'), {
+      persistenceConfig: { backend: store, customId: 'download-123' },
+    });
+
+    expect(task.id).toBe('download-123');
+  });
+
+  it('uses both custom key prefix and custom id when provided', async () => {
+    const store = createStore();
+    const task = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video.mp4'),
+      {
+        persistenceConfig: {
+          backend: store,
+          keyPrefix: customKeyPrefix,
+          customId: 'download-123',
+        },
+      }
+    );
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    expect(task.id).toBe('download-123');
+    expect(store.setItem.mock.calls[0]![0]).toBe(`${customKeyPrefix}download-123`);
   });
 
   it('persists paused state after pause and active operation settles', async () => {
@@ -590,7 +639,7 @@ describe('DownloadTask persistence store', () => {
       'https://example.com/video.mp4',
       new File(Paths.cache, 'video.mp4'),
       {
-        persistence: store,
+        persistenceConfig: { backend: store },
         headers: { Authorization: 'Bearer token' },
       }
     );
@@ -630,7 +679,7 @@ describe('DownloadTask persistence store', () => {
       'https://example.com/video.mp4',
       new File(Paths.cache, 'video.mp4'),
       {
-        persistence: store,
+        persistenceConfig: { backend: store },
       }
     );
 
@@ -653,16 +702,44 @@ describe('DownloadTask persistence store', () => {
   it('restoreAsync returns null for missing or corrupt records', async () => {
     const missingStore = createStore();
     await expect(
-      DownloadTask.restoreAsync('missing-task', { persistence: missingStore })
+      DownloadTask.restoreAsync('missing-task', {
+        persistenceConfig: { backend: missingStore },
+      })
     ).resolves.toBeNull();
 
     const corruptStore = createStore();
     corruptStore.data.set(`${storageKeyPrefix}corrupt-task`, '{not-json');
 
     await expect(
-      DownloadTask.restoreAsync('corrupt-task', { persistence: corruptStore })
+      DownloadTask.restoreAsync('corrupt-task', {
+        persistenceConfig: { backend: corruptStore },
+      })
     ).resolves.toBeNull();
     expect(corruptStore.removeItem).toHaveBeenCalledWith(`${storageKeyPrefix}corrupt-task`);
+  });
+
+  it('restoreAsync reads the correct key when a custom prefix is provided', async () => {
+    const store = createStore();
+    store.data.set(
+      `${customKeyPrefix}saved-task`,
+      JSON.stringify({
+        version: 1,
+        pauseState: {
+          url: 'https://example.com/video.mp4',
+          fileUri: 'file:///mock/cache/video.mp4',
+          isDirectory: false,
+          headers: { Authorization: 'Bearer token' },
+          resumeData: 'saved-resume-data',
+        },
+      })
+    );
+
+    const task = await DownloadTask.restoreAsync('saved-task', {
+      persistenceConfig: { backend: store, keyPrefix: customKeyPrefix },
+    });
+
+    expect(store.getItem).toHaveBeenCalledWith(`${customKeyPrefix}saved-task`);
+    expect(task?.id).toBe('saved-task');
   });
 
   it('restoreAsync rebuilds a paused task and preserves saved headers', async () => {
@@ -685,7 +762,7 @@ describe('DownloadTask persistence store', () => {
     const controller = new AbortController();
 
     const task = await DownloadTask.restoreAsync('saved-task', {
-      persistence: store,
+      persistenceConfig: { backend: store },
       onProgress,
       signal: controller.signal,
     });
@@ -708,7 +785,7 @@ describe('DownloadTask persistence store', () => {
       'https://example.com/video.mp4',
       new File(Paths.cache, 'video.mp4'),
       {
-        persistence: store,
+        persistenceConfig: { backend: store },
       }
     );
 
@@ -724,7 +801,7 @@ describe('DownloadTask persistence store', () => {
       'https://example.com/video.mp4',
       new File(Paths.cache, 'video2.mp4'),
       {
-        persistence: store,
+        persistenceConfig: { backend: store },
       }
     );
     cancelTask.downloadAsync().catch(() => {});
@@ -739,7 +816,7 @@ describe('DownloadTask persistence store', () => {
     const failingTask = new DownloadTask(
       'https://example.com/video.mp4',
       new File(Paths.cache, 'video3.mp4'),
-      { persistence: store }
+      { persistenceConfig: { backend: store } }
     );
     await expect(failingTask.downloadAsync()).rejects.toThrow('network error');
     expect(store.removeItem).toHaveBeenCalledWith(`${storageKeyPrefix}${failingTask.id}`);
@@ -756,7 +833,7 @@ describe('DownloadTask persistence store', () => {
       'https://example.com/video.mp4',
       new File(Paths.cache, 'video.mp4'),
       {
-        persistence: store,
+        persistenceConfig: { backend: store },
       }
     );
 

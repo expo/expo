@@ -727,24 +727,35 @@ export type DownloadTaskOptions = {
      */
     signal?: AbortSignal;
     /**
-     * Optional key-value store used to persist paused downloads across app restarts.
-     * `expo-sqlite/kv-store` can be passed directly here.
+     * Optional persistence configuration used to store paused downloads across app restarts.
+     * `expo-sqlite/kv-store` can be passed as `backend`.
      */
-    persistence?: DownloadTaskPersistenceStore;
+    persistenceConfig?: DownloadTaskPersistenceConfig;
 };
 /**
  * Minimal key-value store interface for persisting paused download state.
  */
-export type DownloadTaskPersistenceStore = {
+export type DownloadTaskPersistenceBackend = {
     getItem(key: string): string | null | Promise<string | null>;
     setItem(key: string, value: string): void | Promise<void>;
     removeItem(key: string): void | Promise<void>;
 };
 /**
+ * Configuration for persisted download task storage.
+ */
+export type DownloadTaskPersistenceConfig = {
+    backend: DownloadTaskPersistenceBackend;
+    keyPrefix?: string;
+    customId?: string;
+};
+/**
  * Options for restoring a persisted download task by ID.
  */
-export type DownloadTaskRestoreOptions = Omit<DownloadTaskOptions, 'headers'> & {
-    persistence: DownloadTaskPersistenceStore;
+export type DownloadTaskRestoreOptions = Omit<DownloadTaskOptions, 'headers' | 'persistenceConfig'> & {
+    persistenceConfig: {
+        backend: DownloadTaskPersistenceBackend;
+        keyPrefix?: string;
+    };
 };
 /**
  * The native URL session mode used by iOS upload and download tasks.

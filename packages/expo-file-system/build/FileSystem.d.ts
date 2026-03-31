@@ -129,6 +129,7 @@ export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask 
     private _url;
     private _destination;
     private _options?;
+    private _persistenceConfig?;
     private _id;
     private _resumeData?;
     private _subscription?;

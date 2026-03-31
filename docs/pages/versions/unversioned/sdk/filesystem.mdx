@@ -192,7 +192,7 @@ const url = 'https://pdfobject.com/pdf/sample.pdf';
 const destination = new File(Paths.cache, 'sample.pdf');
 
 const task = File.createDownloadTask(url, destination, {
-  persistence: Storage,
+  persistenceConfig: { backend: Storage },
   onProgress: ({ bytesWritten, totalBytes }) => {
     console.log(`Downloaded ${bytesWritten} / ${totalBytes}`);
   },
@@ -206,7 +206,7 @@ const taskId = task.id;
 await task.pauseAsync();
 
 const restoredTask = await DownloadTask.restoreAsync(taskId!, {
-  persistence: Storage,
+  persistenceConfig: { backend: Storage },
 });
 
 await restoredTask?.resumeAsync();
