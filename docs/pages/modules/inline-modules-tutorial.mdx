@@ -43,7 +43,7 @@ Note that not all directories are allowed. For more information, see the [inline
 
 ## Run prebuild
 
-Run the prebuild command to generate **android** and **iOS** native projects with the inline modules setup.
+Run the prebuild command to generate **android** and **ios** native projects with the inline modules setup.
 
 <Terminal cmdCopy="npx expo prebuild" cmd={['$ npx expo prebuild']} />
 
@@ -123,6 +123,7 @@ After running the above command(s), you will see the app with text constant comi
 ## Create a native view
 
 To create a native view inside the **app** directory, let's use the `ExpoWebView` example.
+
 For Android, create a Kotlin file called **FirstInlineView.kt** inside the **app** directory and add a view similar to the following:
 
 ```kotlin app/FirstInlineView.kt
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-Now run your example app by compiling it using `npx expo run:android` or `npx expo run:ios` command to view the inline view.
+Now run your example app by compiling it using `npx expo run:android` or `npx expo run:ios` command.
 
 After running the above command(s), you will see the app with a text constant coming from the native android/iOS module and a web view coming from a native view.
 
