@@ -216,10 +216,10 @@ index 78a4a45428e5896d72ca764e788a79a6531e24cb..6fa86e59e76edf8e42dd4ca8d02fe9ac
 +  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
 +}
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..e0f722c17d554105d7096836d8f3f09082c4e12f 100644
+index 35d85514984821711f6ba9268715de553cc0836b..92002a94a51bb624f8654d231e526f184d28a733 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
-@@ -15,18 +15,35 @@ function isDirectory(node) {
+@@ -15,29 +15,49 @@ function isDirectory(node) {
    return node instanceof Map;
  }
  function isRegularFile(node) {
@@ -257,9 +257,10 @@ index 35d85514984821711f6ba9268715de553cc0836b..e0f722c17d554105d7096836d8f3f090
      if (files != null) {
        this.bulkAddOrModify(files);
      }
-@@ -34,10 +51,13 @@ class TreeFS {
+   }
    getSerializableSnapshot() {
-     return this._cloneTree(this.#rootNode);
+-    return this._cloneTree(this.#rootNode);
++    return this._cloneTree(this.#rootNode, '');
    }
 -  static fromDeserializedSnapshot({ rootDir, fileSystemData, processFile }) {
 +  static fromDeserializedSnapshot({ rootDir, fileSystemData, processFile, fallbackFilesystem, roots, serverRoot }) {
@@ -394,12 +395,28 @@ index 35d85514984821711f6ba9268715de553cc0836b..e0f722c17d554105d7096836d8f3f090
      (0, _invariant.default)(
        typeof literalSymlinkTarget === "string",
        "Expected symlink target to be populated.",
-@@ -825,11 +900,73 @@ class TreeFS {
+@@ -820,16 +895,87 @@ class TreeFS {
+     }
+     return result.node;
+   }
+-  _cloneTree(root) {
++  _cloneTree(root, prefix) {
+     const clone = new Map();
      for (const [name, node] of root) {
-       if (isDirectory(node)) {
-         clone.set(name, this._cloneTree(node));
--      } else {
-+      } else if (node != null) {
+-      if (isDirectory(node)) {
+-        clone.set(name, this._cloneTree(node));
++      if (node == null) {
++        continue;
++      } else if (isDirectory(node)) {
++        const childPath =
++          prefix === "" ? name : prefix + _path.default.sep + name;
++        if (
++          this.#rootPattern == null ||
++          this.#rootPattern?.test(childPath + _path.default.sep)
++        ) {
++          clone.set(name, this._cloneTree(node, childPath));
++        }
+       } else {
          clone.set(name, [...node]);
        }
      }
