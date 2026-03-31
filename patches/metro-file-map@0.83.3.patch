@@ -1,9 +1,9 @@
 diff --git a/src/crawlers/node/fallback.js b/src/crawlers/node/fallback.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..31e3dbc259f23cbad26474c5fdfbf349173e31bc
+index 0000000000000000000000000000000000000000..280240472913d9efd94dfe29d37757612fd8ac47
 --- /dev/null
 +++ b/src/crawlers/node/fallback.js
-@@ -0,0 +1,141 @@
+@@ -0,0 +1,153 @@
 +"use strict";
 +
 +Object.defineProperty(exports, "__esModule", {
@@ -138,12 +138,24 @@ index 0000000000000000000000000000000000000000..31e3dbc259f23cbad26474c5fdfbf349
 +}
 +function shouldFallbackCrawlDir(canonicalPath) {
 +  const lastSepIdx = canonicalPath.lastIndexOf(_path.default.sep);
-+  const basename =
-+    lastSepIdx === -1 ? canonicalPath : canonicalPath.slice(lastSepIdx + 1);
-+  if (basename === "..") {
++  const baseStart = lastSepIdx + 1;
++  const baseLen = canonicalPath.length - baseStart;
++  if (
++    baseLen === 2 &&
++    canonicalPath.charCodeAt(baseStart) === 46 &&
++    canonicalPath.charCodeAt(baseStart + 1) === 46
++  ) {
++    return true;
++  } else if (canonicalPath.charCodeAt(baseStart) === 46) {
++    return false;
++  } else if (
++    baseLen === 12 &&
++    canonicalPath.startsWith("node_modules", baseStart)
++  ) {
++    return false;
++  } else {
 +    return true;
 +  }
-+  return basename !== "node_modules" && basename.charCodeAt(0) !== 46;
 +}
 diff --git a/src/index.js b/src/index.js
 index ec21a55e797f272d5c326420482c0682b9350293..3495993258977c030962d68d2eeee6e1fdb48381 100644
@@ -231,7 +243,7 @@ index 78a4a45428e5896d72ca764e788a79a6531e24cb..6fa86e59e76edf8e42dd4ca8d02fe9ac
 +  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
 +}
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..1d32eaf3c9cd88c4a0b17f6e71a4c16b3aafdfe9 100644
+index 35d85514984821711f6ba9268715de553cc0836b..1de340f65cea9e3b7aec87b4ff87b79b60a6c1fe 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
 @@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
@@ -368,7 +380,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1d32eaf3c9cd88c4a0b17f6e71a4c16b
 +        pathPrefix === ""
 +          ? canonicalRoot
 +          : canonicalRoot + _path.default.sep + pathPrefix;
-+      this.#populateDirFromFilesystem(iterationRootNode, rootCanonical);
++      this.#populateDirFromFilesystem(iterationRootNode, rootCanonical, false);
 +    }
 +
      for (const [name, node] of this.#directoryNodeIterator(
@@ -396,7 +408,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1d32eaf3c9cd88c4a0b17f6e71a4c16b
 +            opts.canonicalPathOfRoot,
 +            nodePathWithSystemSeparators,
 +          );
-+          this.#populateDirFromFilesystem(node, canonicalPath);
++          this.#populateDirFromFilesystem(node, canonicalPath, false);
 +        }
          yield* this._pathIterator(
            node,
@@ -418,7 +430,7 @@ index 35d85514984821711f6ba9268715de553cc0836b..1d32eaf3c9cd88c4a0b17f6e71a4c16b
      (0, _invariant.default)(
        typeof literalSymlinkTarget === "string",
        "Expected symlink target to be populated.",
-@@ -820,16 +896,78 @@ class TreeFS {
+@@ -820,16 +896,83 @@ class TreeFS {
      }
      return result.node;
    }
@@ -460,13 +472,16 @@ index 35d85514984821711f6ba9268715de553cc0836b..1d32eaf3c9cd88c4a0b17f6e71a4c16b
 +      parentCanonicalPath === ""
 +        ? segmentName
 +        : parentCanonicalPath + _path.default.sep + segmentName;
-+    if (this.#rootPattern?.test(childCanonicalPath) || this.#isOutsideFallbackBoundary(childCanonicalPath)) {
++    if (
++      this.#rootPattern?.test(childCanonicalPath) ||
++      this.#isOutsideFallbackBoundary(childCanonicalPath)
++    ) {
 +      return null;
 +    } else if (
 +      parentCanonicalPath !== "" &&
 +      (0, _fallback.shouldFallbackCrawlDir)(parentCanonicalPath)
 +    ) {
-+      this.#populateDirFromFilesystem(parentNode, parentCanonicalPath);
++      this.#populateDirFromFilesystem(parentNode, parentCanonicalPath, true);
 +      return parentNode.get(segmentName) ?? null;
 +    } else if (parentNode.has(segmentName)) {
 +      return parentNode.get(segmentName) ?? null;
@@ -479,12 +494,14 @@ index 35d85514984821711f6ba9268715de553cc0836b..1d32eaf3c9cd88c4a0b17f6e71a4c16b
 +      return node;
 +    }
 +  }
-+  #populateDirFromFilesystem(dirNode, canonicalPath) {
++  #populateDirFromFilesystem(dirNode, canonicalPath, skipCheck) {
 +    const fallback = this.#fallbackFilesystem;
 +    if (
 +      fallback == null ||
-+      this.#rootPattern?.test(canonicalPath) ||
-+      this.#isOutsideFallbackBoundary(canonicalPath)
++      !skipCheck && (
++        this.#rootPattern?.test(canonicalPath) ||
++        this.#isOutsideFallbackBoundary(canonicalPath)
++      )
 +    ) {
 +      return;
 +    }
