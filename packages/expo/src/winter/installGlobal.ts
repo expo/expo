@@ -88,8 +88,7 @@ export function installGlobal<T extends object>(name: string, getValue: () => T)
   if (__DEV__ && descriptor && !descriptor.get) {
     const backupName = `original${name[0] ?? ''.toUpperCase()}${name.slice(1)}`;
     // NOTE(@kitten): We don't want the global to be enumerably different in development
-    descriptor.enumerable = false;
-    Object.defineProperty(object, backupName, descriptor);
+    Object.defineProperty(object, backupName, { ...descriptor, enumerable: false });
   }
 
   const { enumerable, writable, configurable = false } = descriptor || {};
