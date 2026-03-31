@@ -1,0 +1,12 @@
+diff --git a/src/node-haste/DependencyGraph/createFileMap.js b/src/node-haste/DependencyGraph/createFileMap.js
+index 5d9c111e797fd37c6657230f39b35ce911483ee9..4f401a4440ded9d29ae987198184628b95fb0c2b 100644
+--- a/src/node-haste/DependencyGraph/createFileMap.js
++++ b/src/node-haste/DependencyGraph/createFileMap.js
+@@ -110,6 +110,7 @@ function createFileMap(config, options) {
+     resetCache: config.resetCache,
+     rootDir: config.projectRoot,
+     roots: config.watchFolders,
++    serverRoot: config.server.unstable_serverRoot,
+     throwOnModuleCollision: options?.throwOnModuleCollision ?? true,
+     useWatchman: config.resolver.useWatchman,
+     watch,
