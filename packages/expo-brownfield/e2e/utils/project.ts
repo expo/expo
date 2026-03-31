@@ -162,7 +162,6 @@ const installPackage = async (projectRoot: string) => {
   await spawnAsync('pnpm', ['add', `./${packageTarball}`], {
     cwd: projectRoot,
     stdio: 'pipe',
-    extendEnv: false, // Don't let execa merge env with process.env
     env: processEnv,
   });
 };
