@@ -3,8 +3,8 @@ import { type ModifierConfig } from '../../types';
 import { PrimitiveBaseProps } from '../layout';
 export interface RNHostProps extends PrimitiveBaseProps {
     /**
-     * When true, the RNHost will update its size in the Jetpack Compose view tree to match the children's size.
-     * When false, the RNHost will use the size of the parent Jetpack Compose View.
+     * When `true`, the RNHost will update its size in the Jetpack Compose view tree to match the children's size.
+     * When `false`, the RNHost will use the size of the parent Jetpack Compose View.
      * Can be only set once on mount.
      * @default false
      */
