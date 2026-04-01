@@ -194,7 +194,13 @@ function convertEntryPointToRelative(projectRoot, absolutePath) {
     serverRoot = realServerRoot;
     absolutePath = _fs().default.realpathSync(absolutePath);
   }
-  return toPosixPath(_path().default.relative(serverRoot, absolutePath));
+  let entry = toPosixPath(_path().default.relative(serverRoot, absolutePath));
+
+  // Strip file extension, if it's trivially resolvable
+  if (entry.endsWith('.js')) {
+    entry = entry.slice(0, -3);
+  }
+  return entry;
 }
 
 // TODO: Move to internals
