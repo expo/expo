@@ -394,7 +394,7 @@ export async function exportEmbedAssetsAsync(
     });
 
     const dependencies = await server._bundler.getDependencies(
-      [entryFile],
+      [convertEntryPointToRelative(projectRoot, entryFile)],
       transformOptions,
       resolverOptions,
       { onProgress, shallow: false, lazy: false }
