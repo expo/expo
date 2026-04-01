@@ -30,7 +30,7 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
   return (
     <AnimatedItemContainer visible={!props.hidden}>
       <IconButton onClick={props.onPress} enabled={!props.disabled}>
-        <Icon source={props.source} tintColor={tintColor} size={24} />
+        <Icon source={props.source} tint={tintColor} size={24} />
       </IconButton>
     </AnimatedItemContainer>
   );
