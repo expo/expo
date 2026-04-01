@@ -148,7 +148,7 @@ export const expectPrebuild = async (projectRoot: string, platform: 'android' | 
   const prebuildDir = path.join(projectRoot, platform);
   expect(fs.existsSync(prebuildDir)).toBe(true);
 
-  const prebuildFiles = fs.readdirSync(prebuildDir, { recursive: true });
+  const prebuildFiles = listFiles(prebuildDir);
   expect(prebuildFiles.length).toBeGreaterThan(0);
 };
 
@@ -168,10 +168,11 @@ export const expectFile = async ({
   filePath,
   content,
 }: ExpectFileOptions) => {
-  let fullFilePath;
+  let fullFilePath: string;
 
   if (fileName) {
-    const files = fs.readdirSync(projectRoot, { recursive: true });
+    const files = listFiles(projectRoot);
+
     const file = files.find(
       (entry) =>
         entry.endsWith(fileName) &&
@@ -180,7 +181,7 @@ export const expectFile = async ({
     );
     expect(file).toBeDefined();
 
-    fullFilePath = path.join(projectRoot, file);
+    fullFilePath = path.join(projectRoot, file!);
     expect(fs.existsSync(fullFilePath)).toBe(true);
   }
 
@@ -189,7 +190,7 @@ export const expectFile = async ({
     expect(fs.existsSync(fullFilePath)).toBe(true);
   }
 
-  const fileContent = fs.readFileSync(fullFilePath, 'utf-8');
+  const fileContent = fs.readFileSync(fullFilePath!, 'utf-8');
   if (Array.isArray(content)) {
     content?.forEach((pattern) => {
       expect(fileContent).toContain(pattern);
@@ -233,3 +234,23 @@ export const expectFiles = async (options: ExpectFilesOptions) => {
     });
   }
 };
+
+export function listFiles(target: string) {
+  const baseDir = path.resolve(target);
+  const results: string[] = [];
+  function list(dir: string = '') {
+    const target = path.resolve(baseDir, dir);
+    const entries = fs.readdirSync(target, { withFileTypes: true });
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+    for (const entry of entries) {
+      const name = dir ? path.join(dir, entry.name) : entry.name;
+      if (entry.isFile()) {
+        results.push(name);
+      } else if (entry.isDirectory() && entry.name !== 'node_modules') {
+        list(name);
+      }
+    }
+  }
+  list();
+  return results.sort();
+}
