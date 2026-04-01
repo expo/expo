@@ -27,7 +27,7 @@ const IOS_PREBUILD_PACKAGES = [
   'expo-modules-core',
   'expo-print',
   'expo-sensors',
-  'expo-ui',
+  '@expo/ui',
   'expo-video',
 ];
 
