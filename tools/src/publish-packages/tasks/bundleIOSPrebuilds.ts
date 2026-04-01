@@ -14,9 +14,7 @@ import { Parcel, TaskArgs } from '../types';
  */
 const IOS_PREBUILD_PACKAGES = [
   'expo-modules-core',
-  'expo-image',
   'expo-image-manipulator',
-  'expo-camera',
   'expo-video',
   'expo-contacts',
   'expo-file-system',
@@ -29,7 +27,6 @@ const IOS_PREBUILD_PACKAGES = [
   'expo-live-photo',
   'expo-brownfield',
   'expo-ui',
-  'expo-screen-orientation',
 ];
 
 const PRECOMPILE_BUILD_DIR = path.join(PACKAGES_DIR, 'precompile', '.build');
