@@ -1267,11 +1267,22 @@ async function buildPackageSwiftContext(
     // This handles dependencies between external packages in node_modules
     const externalPkg = getExternalPackageByProductName(depName);
     if (externalPkg) {
+      // Compute the dependency's version prefix from the building package's prefix.
+      // The building package (pkg) has outputVersionPrefix set (e.g. "4.2.2/0.85.0-rc.5/0.16.0"),
+      // but the fresh ExternalPackage from getExternalPackageByProductName doesn't.
+      // We reuse the RN/Hermes version parts and substitute the dep's own package version.
+      const depVersionPrefix = pkg.outputVersionPrefix
+        ? Frameworks.computeVersionPrefixForDependency(
+            pkg.outputVersionPrefix,
+            externalPkg.packageVersion
+          )
+        : undefined;
+
       const xcframeworkPath = Frameworks.getFrameworkPath(
         externalPkg.buildPath,
         depName,
         buildType,
-        externalPkg.outputVersionPrefix
+        depVersionPrefix
       );
 
       if (await fs.pathExists(xcframeworkPath)) {
@@ -1289,7 +1300,7 @@ async function buildPackageSwiftContext(
         xcframeworkPaths.set(depName, {
           buildPath: externalPkg.buildPath,
           productName: depName,
-          versionPrefix: externalPkg.outputVersionPrefix,
+          versionPrefix: depVersionPrefix,
         });
         continue;
       } else {

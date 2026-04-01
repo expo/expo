@@ -239,6 +239,29 @@ export const Frameworks = {
   hasSharedSPMDepFramework: (productName: string, buildType: BuildFlavor): boolean => {
     return fs.existsSync(Frameworks.getSharedSPMDepFrameworkPath(productName, buildType));
   },
+
+  /**
+   * Computes the output version prefix for a dependency package, given the building
+   * package's version prefix and the dependency's package version.
+   *
+   * Version prefixes have the format: <packageVersion>/<reactNativeVersion>/<hermesVersion>
+   * The RN and Hermes version parts are shared across all external packages in a build,
+   * so we extract them from the building package's prefix and combine with the dep's version.
+   *
+   * @param buildingPkgVersionPrefix The building package's outputVersionPrefix (e.g. "4.2.2/0.85.0/1.0.0")
+   * @param depPackageVersion The dependency package's version (e.g. "0.16.0")
+   * @returns The computed version prefix for the dependency (e.g. "0.16.0/0.85.0/1.0.0")
+   */
+  computeVersionPrefixForDependency: (
+    buildingPkgVersionPrefix: string,
+    depPackageVersion: string
+  ): string => {
+    // Split prefix into parts: [packageVersion, rnVersion, hermesVersion]
+    const parts = buildingPkgVersionPrefix.split(path.sep);
+    // Replace the first part (building package's version) with the dep's version
+    // Keep the RN and Hermes version parts (index 1 and beyond)
+    return path.join(depPackageVersion, ...parts.slice(1));
+  },
 };
 
 /**

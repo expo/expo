@@ -405,3 +405,50 @@ describe('Shared SPM dependency path functions', () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// computeVersionPrefixForDependency
+// ---------------------------------------------------------------------------
+
+describe('computeVersionPrefixForDependency', () => {
+  it('replaces the building package version with dependency version', () => {
+    const buildingPrefix = path.join('4.2.2', '0.85.0', '1.0.0');
+    const result = Frameworks.computeVersionPrefixForDependency(buildingPrefix, '0.16.0');
+    assert.equal(result, path.join('0.16.0', '0.85.0', '1.0.0'));
+  });
+
+  it('preserves RN and Hermes versions from building package', () => {
+    const buildingPrefix = path.join('1.0.0', '0.83.0', '2.0.0');
+    const result = Frameworks.computeVersionPrefixForDependency(buildingPrefix, '3.5.1');
+    assert.equal(result, path.join('3.5.1', '0.83.0', '2.0.0'));
+  });
+
+  it('produces correct xcframework path when combined with getFrameworkPath', () => {
+    const buildingPrefix = path.join('4.2.2', '0.85.0-rc.5', '0.16.0');
+    const depVersion = '0.16.0';
+    const depBuildPath = '/repo/packages/precompile/.build/react-native-worklets';
+    const depVersionPrefix = Frameworks.computeVersionPrefixForDependency(
+      buildingPrefix,
+      depVersion
+    );
+    const result = Frameworks.getFrameworkPath(
+      depBuildPath,
+      'RNWorklets',
+      'Debug',
+      depVersionPrefix
+    );
+    assert.equal(
+      result,
+      path.join(
+        depBuildPath,
+        'output',
+        '0.16.0',
+        '0.85.0-rc.5',
+        '0.16.0',
+        'debug',
+        'xcframeworks',
+        'RNWorklets.xcframework'
+      )
+    );
+  });
+});
