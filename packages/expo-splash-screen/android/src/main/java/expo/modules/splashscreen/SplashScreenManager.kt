@@ -31,14 +31,14 @@ object SplashScreenManager {
       return
     }
 
-    val duration = options.duration
-
     // Android 13 (API 33): custom exit animations via setOnExitAnimationListener can crash with
     // SurfaceControl.checkNotReleased() when the app is backgrounded during the transition.
     // https://issuetracker.google.com/issues/242118185
     if (Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU) {
       return
     }
+
+    val duration = options.duration
 
     splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
       val splashScreenView = splashScreenViewProvider.view
