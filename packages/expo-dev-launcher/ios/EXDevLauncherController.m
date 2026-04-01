@@ -55,6 +55,9 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 @property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
+@property (nonatomic, strong) NSString *defaultLaunchURLString;
+@property (nonatomic, strong) NSURL *defaultLaunchURL;
+@property (nonatomic) BOOL useDefaultLaunchUriFallback;
 
 @end
 
@@ -84,6 +87,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.dependencyProvider = [RCTAppDependencyProvider new];
     self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
+
+    self.defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URI"];
+    self.useDefaultLaunchUriFallback = self.defaultLaunchURLString.length != 0;
+    self.defaultLaunchURL = [NSURL URLWithString:self.defaultLaunchURLString];
   }
   return self;
 }
@@ -222,9 +229,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
-  NSString *defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URI"];
-  BOOL useDefaultLaunchUriFallback = defaultLaunchURLString.length != 0;
-  NSURL *defaultLaunchURL = [NSURL URLWithString:defaultLaunchURLString];
+  BOOL useDefaultLaunchUriFallback = self.useDefaultLaunchUriFallback;
 
   if (!hasGrantedNetworkPermission) {
     shouldTryToLaunchLastOpenedBundle = NO;
@@ -239,7 +244,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   }
 
   if (useDefaultLaunchUriFallback) {
-    [self loadApp: defaultLaunchURL withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
+    [self loadApp: self.defaultLaunchURL withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
   }
 
   [self navigateToLauncher];
@@ -258,12 +263,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     });
   };
 
-  NSString *defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URI"];
-  BOOL useDefaultLaunchUriFallback = defaultLaunchURLString.length != 0;
-  NSURL *defaultLaunchURL = [NSURL URLWithString:defaultLaunchURLString];
-
-  if (useDefaultLaunchUriFallback) {
-    [self loadApp: defaultLaunchURL withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
+  if (self.useDefaultLaunchUriFallback) {
+    [self loadApp: self.defaultLaunchURL withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
   }
 }
 
