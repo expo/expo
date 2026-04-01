@@ -49,6 +49,10 @@ const schema = {
                     type: 'boolean',
                     nullable: true,
                 },
+                defaultLaunchURI: {
+                    type: 'string',
+                    nullable: true,
+                },
             },
             nullable: true,
         },
@@ -71,6 +75,10 @@ const schema = {
                 },
                 embeddedBundle: {
                     type: 'boolean',
+                    nullable: true,
+                },
+                defaultLaunchURI: {
+                    type: 'string',
                     nullable: true,
                 },
             },

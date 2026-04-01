@@ -108,6 +108,10 @@ const schema: JSONSchema<PluginConfigType> = {
           type: 'boolean',
           nullable: true,
         },
+        defaultLaunchURI: {
+          type: 'string',
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -130,6 +134,10 @@ const schema: JSONSchema<PluginConfigType> = {
         },
         embeddedBundle: {
           type: 'boolean',
+          nullable: true,
+        },
+        defaultLaunchURI: {
+          type: 'string',
           nullable: true,
         },
       },

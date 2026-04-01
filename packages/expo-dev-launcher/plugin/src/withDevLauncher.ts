@@ -118,7 +118,8 @@ export default createRunOncePlugin<PluginConfigType>(
   (config, props = {}) => {
     validateConfig(props);
 
-    const defaultLauncherURI = props.defaultLaunchURI;
+    const androidDefaultLauncherURI = props.android?.defaultLaunchURI ?? props.defaultLaunchURI;
+    const iosDefaultLauncherURI = props.ios?.defaultLaunchURI ?? props.defaultLaunchURI;
     const iOSLaunchMode =
       props.ios?.launchMode ??
       props.launchMode ??
@@ -129,8 +130,8 @@ export default createRunOncePlugin<PluginConfigType>(
       if (iOSLaunchMode === 'launcher') {
         config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
       }
-      if (defaultLauncherURI) {
-        config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URI'] = defaultLauncherURI;
+      if (iosDefaultLauncherURI) {
+        config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URI'] = iosDefaultLauncherURI;
       }
       return config;
     });
@@ -166,11 +167,11 @@ export default createRunOncePlugin<PluginConfigType>(
           false?.toString()
         );
       }
-      if (defaultLauncherURI) {
+      if (androidDefaultLauncherURI) {
         AndroidConfig.Manifest.addMetaDataItemToMainApplication(
           mainApplication,
           'DEV_CLIENT_DEFAULT_LAUNCHER_URI',
-          defaultLauncherURI
+          androidDefaultLauncherURI
         );
       }
       return config;
