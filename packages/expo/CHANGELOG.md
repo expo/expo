@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent `original*` globals from being enumerable or from being created for globals with getters, since these may be side-effectful ([#44407](https://github.com/expo/expo/pull/44407) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.9 — 2026-03-27
