@@ -349,4 +349,37 @@ struct JavaScriptRuntimeTests {
     let klass = try runtime.createClass(name: "$_Foo123") { this, _ in this }
     #expect(klass.asObject().getProperty("name").getString() == "$_Foo123")
   }
+
+  // MARK: - Unsafe pointee access
+
+  @Test
+  func `withUnsafePointee returns non-null pointee`() {
+    runtime.withUnsafePointee { runtimePointee in
+      #expect(runtimePointee != UnsafeMutableRawPointer(bitPattern: 0))
+    }
+  }
+
+  @Test
+  func `withUnsafePointee returns value from closure`() {
+    let result = runtime.withUnsafePointee { _ in
+      return 42
+    }
+    #expect(result == 42)
+  }
+
+  @Test
+  func `withUnsafePointee returns same pointee across calls`() {
+    let pointee1 = runtime.withUnsafePointee { return $0 }
+    let pointee2 = runtime.withUnsafePointee { return $0 }
+    #expect(pointee1 == pointee2)
+  }
+
+  @Test
+  func `init from unsafePointer creates functional runtime`() throws {
+    let newRuntime = runtime.withUnsafePointee { runtimePointee in
+      return JavaScriptRuntime(unsafePointer: runtimePointee)
+    }
+    let result = try newRuntime.eval("1 + 2")
+    #expect(result.getInt() == 3)
+  }
 }
