@@ -394,6 +394,7 @@ PODS:
     - RNScreens
   - ExpoRouter/Tests (55.0.2):
     - ExpoModulesCore
+    - ExpoModulesTestCore
     - RNScreens
   - EXStructuredHeaders (55.0.0)
   - EXStructuredHeaders/Tests (55.0.0)
@@ -2924,7 +2925,7 @@ SPEC CHECKSUMS:
   ExpoModulesMacros: 6e01118aed19527180871e271177089c34d90dd2
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
-  ExpoRouter: 60f5eeaabdf1f5d07b353ce8047d373b5830e821
+  ExpoRouter: 617b413f30eb9fa39b210e4261814b13afd0418b
   EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
   EXUpdates: a0f980531cbcf45906b2489febd4e11a5895f332
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
