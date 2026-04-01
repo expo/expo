@@ -73,7 +73,8 @@ class ExpoImageOkHttpClientGlideModule : LibraryGlideModule() {
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
     val client = OkHttpClientProvider.createClient()
     // We don't use the `GlideUrl` directly but we want to replace the default okhttp loader anyway
-    // to make sure that the app will use only one client.    registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))
+    // to make sure that the app will use only one client.    
+    registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))
     registry.prepend(GlideUrlWrapper::class.java, InputStream::class.java, GlideUrlWrapperLoader.Factory(client))
   }
 }
