@@ -485,44 +485,44 @@ PODS:
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
-  - GoogleUtilities (8.0.2):
-    - GoogleUtilities/AppDelegateSwizzler (= 8.0.2)
-    - GoogleUtilities/Environment (= 8.0.2)
-    - GoogleUtilities/Logger (= 8.0.2)
-    - GoogleUtilities/MethodSwizzler (= 8.0.2)
-    - GoogleUtilities/Network (= 8.0.2)
-    - "GoogleUtilities/NSData+zlib (= 8.0.2)"
-    - GoogleUtilities/Privacy (= 8.0.2)
-    - GoogleUtilities/Reachability (= 8.0.2)
-    - GoogleUtilities/SwizzlerTestHelpers (= 8.0.2)
-    - GoogleUtilities/UserDefaults (= 8.0.2)
-  - GoogleUtilities/AppDelegateSwizzler (8.0.2):
+  - GoogleUtilities (8.1.0):
+    - GoogleUtilities/AppDelegateSwizzler (= 8.1.0)
+    - GoogleUtilities/Environment (= 8.1.0)
+    - GoogleUtilities/Logger (= 8.1.0)
+    - GoogleUtilities/MethodSwizzler (= 8.1.0)
+    - GoogleUtilities/Network (= 8.1.0)
+    - "GoogleUtilities/NSData+zlib (= 8.1.0)"
+    - GoogleUtilities/Privacy (= 8.1.0)
+    - GoogleUtilities/Reachability (= 8.1.0)
+    - GoogleUtilities/SwizzlerTestHelpers (= 8.1.0)
+    - GoogleUtilities/UserDefaults (= 8.1.0)
+  - GoogleUtilities/AppDelegateSwizzler (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Environment (8.0.2):
+  - GoogleUtilities/Environment (8.1.0):
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Logger (8.0.2):
+  - GoogleUtilities/Logger (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Privacy
-  - GoogleUtilities/MethodSwizzler (8.0.2):
+  - GoogleUtilities/MethodSwizzler (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Network (8.0.2):
+  - GoogleUtilities/Network (8.1.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Privacy
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (8.0.2)":
+  - "GoogleUtilities/NSData+zlib (8.1.0)":
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (8.0.2)
-  - GoogleUtilities/Reachability (8.0.2):
+  - GoogleUtilities/Privacy (8.1.0)
+  - GoogleUtilities/Reachability (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GoogleUtilities/SwizzlerTestHelpers (8.0.2):
+  - GoogleUtilities/SwizzlerTestHelpers (8.1.0):
     - GoogleUtilities/MethodSwizzler
-  - GoogleUtilities/UserDefaults (8.0.2):
+  - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - hermes-engine (250829098.0.10):
@@ -532,8 +532,8 @@ PODS:
   - hermes-engine/cdp (250829098.0.10)
   - hermes-engine/Hermes (250829098.0.10)
   - hermes-engine/Public (250829098.0.10)
-  - libavif/core (0.11.1)
-  - libavif/libdav1d (0.11.1):
+  - libavif/core (1.0.0)
+  - libavif/libdav1d (1.0.0):
     - libavif/core
     - libdav1d (>= 0.6.0)
   - libdav1d (1.2.0)
@@ -3833,10 +3833,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - SDWebImage (5.21.1):
-    - SDWebImage/Core (= 5.21.1)
-  - SDWebImage/Core (5.21.1)
-  - SDWebImageAVIFCoder (0.11.0):
+  - SDWebImage (5.21.7):
+    - SDWebImage/Core (= 5.21.7)
+  - SDWebImage/Core (5.21.7)
+  - SDWebImageAVIFCoder (0.11.1):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.7.0):
@@ -3845,13 +3845,13 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1)
-  - Stripe (25.6.1):
-    - StripeApplePay (= 25.6.1)
-    - StripeCore (= 25.6.1)
-    - StripeIssuing (= 25.6.1)
-    - StripePayments (= 25.6.1)
-    - StripePaymentsUI (= 25.6.1)
-    - StripeUICore (= 25.6.1)
+  - Stripe (25.6.4):
+    - StripeApplePay (= 25.6.4)
+    - StripeCore (= 25.6.4)
+    - StripeIssuing (= 25.6.4)
+    - StripePayments (= 25.6.4)
+    - StripePaymentsUI (= 25.6.4)
+    - StripeUICore (= 25.6.4)
   - stripe-react-native (0.58.0):
     - boost
     - DoubleConversion
@@ -3944,32 +3944,32 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - StripeApplePay (25.6.1):
-    - StripeCore (= 25.6.1)
-  - StripeCore (25.6.1)
-  - StripeFinancialConnections (25.6.1):
-    - StripeCore (= 25.6.1)
-    - StripeUICore (= 25.6.1)
-  - StripeIssuing (25.6.1):
-    - StripeCore (= 25.6.1)
-    - StripePayments (= 25.6.1)
-    - StripePaymentsUI (= 25.6.1)
-  - StripePayments (25.6.1):
-    - StripeCore (= 25.6.1)
-    - StripePayments/Stripe3DS2 (= 25.6.1)
-  - StripePayments/Stripe3DS2 (25.6.1):
-    - StripeCore (= 25.6.1)
-  - StripePaymentSheet (25.6.1):
-    - StripeApplePay (= 25.6.1)
-    - StripeCore (= 25.6.1)
-    - StripePayments (= 25.6.1)
-    - StripePaymentsUI (= 25.6.1)
-  - StripePaymentsUI (25.6.1):
-    - StripeCore (= 25.6.1)
-    - StripePayments (= 25.6.1)
-    - StripeUICore (= 25.6.1)
-  - StripeUICore (25.6.1):
-    - StripeCore (= 25.6.1)
+  - StripeApplePay (25.6.4):
+    - StripeCore (= 25.6.4)
+  - StripeCore (25.6.4)
+  - StripeFinancialConnections (25.6.4):
+    - StripeCore (= 25.6.4)
+    - StripeUICore (= 25.6.4)
+  - StripeIssuing (25.6.4):
+    - StripeCore (= 25.6.4)
+    - StripePayments (= 25.6.4)
+    - StripePaymentsUI (= 25.6.4)
+  - StripePayments (25.6.4):
+    - StripeCore (= 25.6.4)
+    - StripePayments/Stripe3DS2 (= 25.6.4)
+  - StripePayments/Stripe3DS2 (25.6.4):
+    - StripeCore (= 25.6.4)
+  - StripePaymentSheet (25.6.4):
+    - StripeApplePay (= 25.6.4)
+    - StripeCore (= 25.6.4)
+    - StripePayments (= 25.6.4)
+    - StripePaymentsUI (= 25.6.4)
+  - StripePaymentsUI (25.6.4):
+    - StripeCore (= 25.6.4)
+    - StripePayments (= 25.6.4)
+    - StripeUICore (= 25.6.4)
+  - StripeUICore (25.6.4):
+    - StripeCore (= 25.6.4)
   - SwiftUIIntrospect (1.3.0)
   - UMAppLoader (55.0.2)
   - Yoga (0.0.0)
@@ -4067,11 +4067,12 @@ DEPENDENCIES:
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - fast_float (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../../../react-native-lab/react-native/packages/react-native/Libraries/FBLazyVector`)
-  - FirebaseAnalytics
-  - FirebaseCore
-  - FirebaseCoreExtension
-  - FirebaseCrashlytics
-  - FirebaseInstallations
+  - FirebaseAnalytics (~> 11.11.0)
+  - FirebaseCore (~> 11.11.0)
+  - FirebaseCoreExtension (~> 11.11.0)
+  - FirebaseCrashlytics (~> 11.11.0)
+  - FirebaseInstallations (~> 11.11.0)
+  - FirebaseRemoteConfigInterop (~> 11.11.0)
   - fmt (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/glog.podspec`)
   - GoogleDataTransport
@@ -4169,7 +4170,6 @@ DEPENDENCIES:
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.24.0_react-native@0.85.0-rc.7_@babel+core@7.29.0_@react-native+j_13b819fbf58d0992c266449063c2a242/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.85.0-rc.7_@babel+core@7.29.0_@react-native+jest_fe76ad4e138df5705aad66c8a6c6a3a4/node_modules/react-native-svg`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.7.4_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_1394b60a0c33b1b9112ebcb69b019308/node_modules/react-native-worklets`)"
-  - SocketRocket
   - SocketRocket (~> 0.7.1)
   - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.58.0_expo@packages+expo_react-native-webview@13.16.0_reac_7ba5a46418caa32ba6317d3d4ca6af53/node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -4640,9 +4640,9 @@ SPEC CHECKSUMS:
   glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
-  GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
+  GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: 4de4833a80a7b39c6c5d6c725a600e2faa49bc14
-  libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
+  libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: 8f959969761e9c45d70353667d00af0e5b9cadb3
@@ -4742,26 +4742,26 @@ SPEC CHECKSUMS:
   RNScreens: 7f643ee0fd1407dc5085c7795460bd93da113b8f
   RNSVG: c9d7c940ad9655eba72c5b9ca7b017c95bb58083
   RNWorklets: 0e57a4e632da91afd5f68942ef3e27e340942449
-  SDWebImage: f29024626962457f3470184232766516dee8dfea
-  SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
+  SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
+  SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Stripe: 94302932d03430b90a54c04e69d3e0fd5d577088
+  Stripe: 7cb1009980324c6c16b6a4af5843b8ef54549065
   stripe-react-native: e5a279578c1a1b2ba638a867613b909ea49a4047
-  StripeApplePay: 601bfe7cfeb189a746d8b16cd5268ef61eb2b6ca
-  StripeCore: b8ed1f6970bfff4c121fbfe23574a696c43606a9
-  StripeFinancialConnections: e2493d0e75f4654c08ffcf9d8ad9a16ac4feb079
-  StripeIssuing: a430e32e1d6cf319e48053b3638c573786a85e2b
-  StripePayments: c221c48de3e1bca1a44917eb8078274201ee3feb
-  StripePaymentSheet: 55304df0141f9ea31f2019c7b8250a367cefc77c
-  StripePaymentsUI: 1ae73daeaa9f8006df9f82c45b6b0448722a9d45
-  StripeUICore: 08df139d6407e525c14c1edcf8f7fe6802be68ec
+  StripeApplePay: 91000b0927f53c58a2a1f829a4ee246d508bd1c4
+  StripeCore: f6ca805768a7807ec014c0523cd99a3d16d21d6b
+  StripeFinancialConnections: 2cb9bc81468599d1b4b41178f49879a65c8ac52e
+  StripeIssuing: 7ffde774af77d713aff204858fcf765eeb3677d3
+  StripePayments: 4de3976a0d5f626cfc8ad4e010aff1cbda8dc1e5
+  StripePaymentSheet: 29443db7e8635e2d3a00758f1ecebbb17a24ff19
+  StripePaymentsUI: 37551e684263db449368ccac27438947e1b45f84
+  StripeUICore: f1e43a68ab1e1428f8738df821eb64efac1d871a
   SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
   UMAppLoader: c293af4db56cec1e66b63abe25a222b24f88fea1
   Yoga: 2efc5e332e74d254f890de0e9c53b47674a970bb
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: d1b4587c50c70034d98c25eb7639095fc3251aa1
+PODFILE CHECKSUM: 73864670647a86fa25c542477e3c06e12784f88f
 
 COCOAPODS: 1.16.2

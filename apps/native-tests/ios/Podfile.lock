@@ -460,8 +460,8 @@ PODS:
   - hermes-engine (250829098.0.10):
     - hermes-engine/Pre-built (= 250829098.0.10)
   - hermes-engine/Pre-built (250829098.0.10)
-  - libavif/core (0.11.1)
-  - libavif/libdav1d (0.11.1):
+  - libavif/core (1.0.0)
+  - libavif/libdav1d (1.0.0):
     - libavif/core
     - libdav1d (>= 0.6.0)
   - libdav1d (1.2.0)
@@ -491,7 +491,7 @@ PODS:
   - OHHTTPStubs/NSURLSession (9.1.0):
     - OHHTTPStubs/Core
   - OHHTTPStubs/OHPathHelpers (9.1.0)
-  - Quick (7.3.0)
+  - Quick (7.3.1)
   - RCTDeprecation (0.85.0-rc.7)
   - RCTRequired (0.85.0-rc.7)
   - RCTSwiftUI (0.85.0-rc.7)
@@ -2548,10 +2548,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - SDWebImage (5.21.0):
-    - SDWebImage/Core (= 5.21.0)
-  - SDWebImage/Core (5.21.0)
-  - SDWebImageAVIFCoder (0.11.0):
+  - SDWebImage (5.21.7):
+    - SDWebImage/Core (= 5.21.7)
+  - SDWebImage/Core (5.21.7)
+  - SDWebImageAVIFCoder (0.11.1):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.7.0):
@@ -2930,12 +2930,12 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
   FBLazyVector: 0a4f3183cfecc7c9f3db440332ab522298a14a2e
   hermes-engine: 407f52f1dca2c25263c5f76e80cc38a39e0f6ec0
-  libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
+  libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
-  Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
+  Quick: 83e25bf349dd84f894b024f48033274512d6129b
   RCTDeprecation: 54055f7c975058d91bbe3b3a29bcce747b947188
   RCTRequired: 1457f577eda5f3f2c975f1df5e37e12a073cbb20
   RCTSwiftUI: 002605083a94f83dcae0682c1ec4c42c9abb2990
@@ -3013,8 +3013,8 @@ SPEC CHECKSUMS:
   RNReanimated: 9fd0265ba4d26e3c611cfe669c3cef0e10695caf
   RNScreens: 01b065ded2dfe7987bcce770ff3a196be417ff41
   RNWorklets: 8ad3204ef4ffd03ea4f43623112ad43ed4bd1cab
-  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
-  SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
+  SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
+  SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   Yoga: 983ded1b2ad53df33755f1f74cad7fee7d3081c4
