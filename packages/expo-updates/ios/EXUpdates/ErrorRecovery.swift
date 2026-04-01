@@ -128,12 +128,12 @@ public final class ErrorRecovery: NSObject {
 
   public func handle(error: NSError) {
     startPipeline(withEncounteredError: error)
-    ErrorRecovery.writeErrorOrExceptionToLog(error, logger)
+    ErrorRecovery.writeErrorOrExceptionToLog(error, logger, dispatchQueue: errorRecoveryQueue)
   }
 
   public func handle(exception: NSException) {
     startPipeline(withEncounteredError: exception)
-    ErrorRecovery.writeErrorOrExceptionToLog(exception, logger)
+    ErrorRecovery.writeErrorOrExceptionToLog(exception, logger, dispatchQueue: errorRecoveryQueue)
   }
 
   public func notify(newRemoteLoadStatus newStatus: RemoteLoadStatus) {
