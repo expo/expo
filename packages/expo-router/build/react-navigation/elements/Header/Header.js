@@ -38,7 +38,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Header = Header;
-const color_1 = __importDefault(require("color"));
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -54,6 +53,7 @@ const HeaderSearchBar_1 = require("./HeaderSearchBar");
 const HeaderShownContext_1 = require("./HeaderShownContext");
 const HeaderTitle_1 = require("./HeaderTitle");
 const getDefaultHeaderHeight_1 = require("./getDefaultHeaderHeight");
+const color_1 = require("../../../utils/color");
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;
 const warnIfHeaderStylesDefined = (styles) => {
@@ -203,7 +203,8 @@ function Header(props) {
             // Allow touch through the header when background color is transparent
             headerTransparent &&
                 (backgroundStyle.backgroundColor === 'transparent' ||
-                    (0, color_1.default)(backgroundStyle.backgroundColor).alpha() === 0)
+                    (backgroundStyle.backgroundColor &&
+                        (0, color_1.Color)(backgroundStyle.backgroundColor)?.alpha() === 0))
                 ? 'none'
                 : 'auto'} style={backgroundStyle}/>)}
       </react_native_1.Animated.View>

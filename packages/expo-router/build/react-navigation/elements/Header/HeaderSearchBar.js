@@ -38,12 +38,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeaderSearchBar = void 0;
-const color_1 = __importDefault(require("color"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const clear_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/clear-icon.png"));
 const close_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/close-icon.png"));
 const search_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/search-icon.png"));
+const color_1 = require("../../../utils/color");
 const PlatformPressable_1 = require("../PlatformPressable");
 const Text_1 = require("../Text");
 const HeaderButton_1 = require("./HeaderButton");
@@ -137,7 +137,7 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
     return (<react_native_1.Animated.View pointerEvents={visible ? 'auto' : 'none'} aria-live="polite" aria-hidden={!visible} style={[styles.container, { opacity: visibleAnim }, style]}>
       <react_native_1.View style={styles.searchbarContainer}>
         <HeaderIcon_1.HeaderIcon source={search_icon_png_1.default} tintColor={textColor} style={styles.inputSearchIcon}/>
-        <react_native_1.TextInput {...rest} ref={inputRef} onChange={onChangeText} onChangeText={setValue} autoFocus={autoFocus} autoCapitalize={autoCapitalize === 'systemDefault' ? undefined : autoCapitalize} inputMode={INPUT_TYPE_TO_MODE[inputType ?? 'text']} enterKeyHint={enterKeyHint} placeholder={placeholder} placeholderTextColor={(0, color_1.default)(textColor).alpha(0.5).string()} cursorColor={colors.primary} selectionHandleColor={colors.primary} selectionColor={(0, color_1.default)(colors.primary).alpha(0.3).string()} style={[
+        <react_native_1.TextInput {...rest} ref={inputRef} onChange={onChangeText} onChangeText={setValue} autoFocus={autoFocus} autoCapitalize={autoCapitalize === 'systemDefault' ? undefined : autoCapitalize} inputMode={INPUT_TYPE_TO_MODE[inputType ?? 'text']} enterKeyHint={enterKeyHint} placeholder={placeholder} placeholderTextColor={(0, color_1.Color)(textColor)?.alpha(0.5).string()} cursorColor={colors.primary} selectionHandleColor={colors.primary} selectionColor={(0, color_1.Color)(colors.primary)?.alpha(0.3).string()} style={[
             fonts.regular,
             styles.searchbar,
             {
@@ -146,7 +146,8 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
                     default: 'transparent',
                 }),
                 color: textColor,
-                borderBottomColor: (0, color_1.default)(textColor).alpha(0.2).string(),
+                borderBottomColor: (0, color_1.Color)(textColor)?.alpha(0.2).string() ??
+                    (dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'),
             },
         ]}/>
         {react_native_1.Platform.OS === 'ios' ? (<PlatformPressable_1.PlatformPressable onPress={onClear} style={[

@@ -62,7 +62,9 @@ export default createExpoPages(async ({ createPage, createLayout }, { getRouteOp
 
           const first = Array.isArray(defined) ? defined[0] : defined;
 
-          grouped.push(first);
+          if (first != null) {
+            grouped.push(first);
+          }
         }
         return grouped;
       });

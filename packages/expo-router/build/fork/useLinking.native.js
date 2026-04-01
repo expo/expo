@@ -66,6 +66,7 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
             return undefined;
         }
         if (enabled !== false && linkingHandlers.length && process.env.EXPO_OS !== 'android') {
+            // TODO(@ubax): This check should be removed
             if (linkingHandlers.length > 1) {
                 console.error([
                     'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',

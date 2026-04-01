@@ -24,6 +24,6 @@ const ESCAPED_CHARACTERS = {
  * embed data in an HTML context to prevent XSS.
  */
 function escapeUnsafeCharacters(str) {
-    return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match]);
+    return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match] ?? match);
 }
 //# sourceMappingURL=html.js.map

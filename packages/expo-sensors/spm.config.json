@@ -1,0 +1,60 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoSensors",
+      "podName": "ExpoSensors",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoSensors_ios_objc",
+          "moduleName": "ExpoSensors",
+          "path": "ios",
+          "pattern": "**/*.m",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ],
+          "includeDirectories": [
+            "."
+          ],
+          "compilerFlags": [
+            "-DEXPO_DISABLE_MOTION_PERMISSION=1"
+          ]
+        },
+        {
+          "type": "swift",
+          "name": "ExpoSensors",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoSensors_ios_objc"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ]
+        }
+      ]
+    }
+  ]
+}

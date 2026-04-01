@@ -116,6 +116,8 @@
     "@expo/metro-runtime": "workspace:*",
     "react": "*",
     "react-native": "*",
+    "react-dom": "*",
+    "react-native-web": "*",
     "react-native-webview": "*"
   },
   "peerDependenciesMeta": {
@@ -123,6 +125,12 @@
       "optional": true
     },
     "@expo/metro-runtime": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-web": {
       "optional": true
     },
     "react-native-webview": {

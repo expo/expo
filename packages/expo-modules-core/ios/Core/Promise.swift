@@ -9,6 +9,16 @@ public struct Promise: AnyArgument, Sendable {
   public var rejecter: RejectClosure
 
   /**
+   The resolver that is compatible with the legacy `EXPromiseResolveBlock`.
+   Necessary in some places not converted to Swift, such as `EXPermissionsMethodsDelegate`.
+   */
+  public var legacyResolver: EXPromiseResolveBlock {
+    return { value in
+      resolve(value)
+    }
+  }
+
+  /**
    The rejecter that is compatible with the legacy `EXPromiseRejectBlock`.
    Necessary in some places not converted to Swift, such as `EXPermissionsMethodsDelegate`.
    */

@@ -116,7 +116,6 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
 
-    optionalRequire(() => require('./tests/NavigationBar')),
     optionalRequire(() => require('./tests/SystemUI'))
   );
 

@@ -68,12 +68,18 @@ class Query: SharedObject {
     return self
   }
 
-  func limit(_ limit: Int) -> Query {
+  func limit(_ limit: Int) throws -> Query {
+    guard limit >= 0 else {
+      throw InvalidQueryArgumentException("limit must be greater than or equal to 0")
+    }
     self.limit = limit
     return self
   }
 
-  func offset(_ offset: Int) -> Query {
+  func offset(_ offset: Int) throws -> Query {
+    guard offset >= 0 else {
+      throw InvalidQueryArgumentException("offset must be greater than or equal to 0")
+    }
     self.offset = offset
     return self
   }
@@ -89,13 +95,14 @@ class Query: SharedObject {
   }
 
   func exe() async throws -> [Asset] {
+    if let result = try await resolveZeroLimitResult() {
+      return result
+    }
+
     let fetchOptions = constructFetchOptions()
     let phFetchResult = try await fetch(fetchOptions)
-    let phAssets = getExactNumberOfPHAssets(
-      from: phFetchResult,
-      fetchLimit: fetchOptions.fetchLimit
-    )
-    return phAssets.map { Asset(localIdentifier: $0.localIdentifier) }
+    return sliceFetchedAssets(from: phFetchResult)
+      .map { Asset(localIdentifier: $0.localIdentifier) }
   }
 
   private func constructFetchOptions() -> PHFetchOptions {
@@ -116,17 +123,24 @@ class Query: SharedObject {
     return PHAsset.fetchAssets(with: fetchOptions)
   }
 
-  private func getExactNumberOfPHAssets(
+  // fetchLimit set to 0 in the Photo Library returns all assets.
+  // The API should return empty array in this scenario.
+  private func resolveZeroLimitResult() async throws -> [Asset]? {
+    guard limit == 0 else {
+      return nil
+    }
+    // Validates the album and throws if it doesn't exist.
+    if let album {
+      _ = try await album.getCollection()
+    }
+    return []
+  }
+
+  private func sliceFetchedAssets(
     from phFetchResult: PHFetchResult<PHAsset>,
-    fetchLimit: Int
   ) -> [PHAsset] {
     let start = offset ?? 0
-    let end: Int
-    if fetchLimit > 0 {
-      end = min(start + fetchLimit - 1, phFetchResult.count - 1)
-    } else {
-      end = phFetchResult.count - 1
-    }
+    let end = phFetchResult.count - 1
     guard start <= end else {
       return []
     }

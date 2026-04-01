@@ -2,7 +2,6 @@ export {
   ThemeProvider,
   DarkTheme,
   DefaultTheme,
-  type Theme,
   useTheme,
   usePreventRemove,
   useRoute,
@@ -11,3 +10,9 @@ export {
   createNavigatorFactory,
   useNavigationBuilder,
 } from './native';
+
+export { TabRouter } from './routers';
+
+export * from './native/types';
+export * from './core/types';
+export * from './native-stack/types';

@@ -63,6 +63,7 @@ export function useLinking(
     }
 
     if (enabled !== false && linkingHandlers.length && process.env.EXPO_OS !== 'android') {
+      // TODO(@ubax): This check should be removed
       if (linkingHandlers.length > 1) {
         console.error(
           [

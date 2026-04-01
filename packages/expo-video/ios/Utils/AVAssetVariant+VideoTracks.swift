@@ -1,7 +1,10 @@
 import AVKit
 
 extension AVAssetVariant.VideoAttributes {
-  var videoSize: VideoSize {
+  var videoSize: VideoSize? {
+    guard presentationSize.width.isFinite, presentationSize.height.isFinite else {
+      return nil
+    }
     return VideoSize(width: Int(presentationSize.width), height: Int(presentationSize.height))
   }
 

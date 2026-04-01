@@ -1,3 +1,5 @@
+import type { ColorValue } from 'react-native';
+
 import type {
   getActionFromState as getActionFromStateDefault,
   getPathFromState as getPathFromStateDefault,
@@ -32,12 +34,12 @@ type FontStyle = {
 interface NativeTheme {
   dark: boolean;
   colors: {
-    primary: string;
-    background: string;
-    card: string;
-    text: string;
-    border: string;
-    notification: string;
+    primary: ColorValue;
+    background: ColorValue;
+    card: ColorValue;
+    text: ColorValue;
+    border: ColorValue;
+    notification: ColorValue;
   };
   fonts: {
     regular: FontStyle;

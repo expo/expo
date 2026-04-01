@@ -19,6 +19,7 @@ import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addTemplateTarball } from './addTemplateTarball';
+import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
 const { cyan } = chalk;
@@ -57,8 +58,15 @@ export const prepareCanaries = new Task<TaskArgs>(
       );
     }
 
-    // Override the tag option – canary releases should always use `canary` tag
-    options.tag = 'canary';
+    // Only use the `canary` tag when publishing from `main` or the latest `sdk-*` branch.
+    // Other branches publish canary versions without the `canary` dist-tag so they
+    // don't overwrite the canary tag that points at main/latest-sdk builds.
+    const currentBranch = await Git.getCurrentBranchNameAsync();
+    if (await shouldUseCanaryTag(currentBranch)) {
+      options.tag = 'canary';
+    } else {
+      options.tag = `canary-sdk-${currentSdkMajor}`;
+    }
   }
 );
 
@@ -92,7 +100,12 @@ export const cleanWorkingTree = new Task<TaskArgs>(
         await Git.cleanAsync({
           recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'packages/**/local-maven-repo/**', 'templates/**/*.tgz'],
+          paths: [
+            'packages/**/*.tgz',
+            'packages/**/local-maven-repo/**',
+            'packages/**/prebuilds/**',
+            'templates/**/*.tgz',
+          ],
         });
       },
       'Cleaned up the working tree'
@@ -118,6 +131,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateAndroidProjects,
       publishAndroidArtifacts,
       addTemplateTarball,
+      bundleIOSPrebuilds,
       packPackageToTarball,
       publishPackages,
       cleanWorkingTree,
@@ -131,6 +145,43 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
     );
   }
 );
+
+/**
+ * Returns `true` if the current branch should publish with the `canary` dist-tag.
+ * Only `main` and the latest `sdk-*` branch qualify.
+ */
+async function shouldUseCanaryTag(currentBranch: string): Promise<boolean> {
+  if (currentBranch === 'main') {
+    return true;
+  }
+  const sdkMatch = currentBranch.match(/^sdk-(\d+)$/);
+  if (!sdkMatch) {
+    return false;
+  }
+  const latestSdkBranch = await getLatestRemoteSdkBranchAsync();
+  return currentBranch === latestSdkBranch;
+}
+
+/**
+ * Lists remote `sdk-*` branches and returns the name of the one with the highest number.
+ */
+async function getLatestRemoteSdkBranchAsync(): Promise<string | null> {
+  const { stdout } = await Git.runAsync(['branch', '-r', '--list', 'origin/sdk-*']);
+  let maxSdk = -1;
+  let latestBranch: string | null = null;
+
+  for (const line of stdout.split('\n')) {
+    const match = line.trim().match(/^origin\/sdk-(\d+)$/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num > maxSdk) {
+        maxSdk = num;
+        latestBranch = `sdk-${num}`;
+      }
+    }
+  }
+  return latestBranch;
+}
 
 /**
  * Returns a canary version suffix for the current date and HEAD commit hash.

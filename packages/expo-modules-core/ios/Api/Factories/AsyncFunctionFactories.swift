@@ -1,4 +1,20 @@
 /**
+ Asynchronous function from an optimized function descriptor.
+ The descriptor is produced by `@OptimizedFunction` macro-generated peer functions.
+ */
+public func AsyncFunction(
+  _ name: String,
+  _ descriptor: OptimizedFunctionDescriptor
+) -> OptimizedAsyncFunctionDefinition {
+  return OptimizedAsyncFunctionDefinition(
+    name: name,
+    typeEncoding: descriptor.typeEncoding,
+    argsCount: descriptor.argsCount,
+    block: descriptor.block
+  )
+}
+
+/**
  Asynchronous function without arguments.
  */
 public func AsyncFunction<R>(

@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BottomTabItem = BottomTabItem;
-const color_1 = __importDefault(require("color"));
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const elements_1 = require("../../elements");
 const TabBarIcon_1 = require("./TabBarIcon");
+const color_1 = require("../../../utils/color");
 const native_1 = require("../../native");
 const renderButtonDefault = (props) => <elements_1.PlatformPressable {...props}/>;
 const SUPPORTS_LARGE_CONTENT_VIEWER = react_native_1.Platform.OS === 'ios' && parseInt(react_native_1.Platform.Version, 10) >= 13;
@@ -21,21 +21,23 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
     const { colors, fonts } = (0, native_1.useTheme)();
     const activeTintColor = customActiveTintColor ??
         (variant === 'uikit' && sidebar && horizontal
-            ? (0, color_1.default)(colors.primary).isDark()
+            ? (0, color_1.Color)(colors.primary)?.isDark()
                 ? 'white'
-                : (0, color_1.default)(colors.primary).darken(0.71).string()
-            : colors.primary);
-    const inactiveTintColor = customInactiveTintColor === undefined
-        ? variant === 'material'
-            ? (0, color_1.default)(colors.text).alpha(0.68).rgb().string()
-            : (0, color_1.default)(colors.text).mix((0, color_1.default)(colors.card), 0.5).hex()
-        : customInactiveTintColor;
+                : (0, color_1.Color)(colors.primary)?.darken(0.71).string()
+            : undefined) ??
+        colors.primary;
+    const inactiveTintColor = customInactiveTintColor ??
+        (variant === 'material'
+            ? (0, color_1.Color)(colors.text)?.alpha(0.68).string()
+            : (0, color_1.Color)(colors.text)?.alpha(0.5).string()) ??
+        colors.text;
     const activeBackgroundColor = customActiveBackgroundColor ??
         (variant === 'material'
-            ? (0, color_1.default)(activeTintColor).alpha(0.12).rgb().string()
+            ? (0, color_1.Color)(activeTintColor)?.alpha(0.12).string()
             : sidebar && horizontal
                 ? colors.primary
-                : 'transparent');
+                : 'transparent') ??
+        'transparent';
     const { options } = descriptor;
     const labelString = (0, elements_1.getLabel)({
         label: typeof options.tabBarLabel === 'string' ? options.tabBarLabel : undefined,

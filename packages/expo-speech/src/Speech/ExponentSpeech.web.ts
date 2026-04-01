@@ -55,17 +55,25 @@ class ExpoSpeech extends NativeModule<ExpoSpeechEvents> {
     }
     if ('_voiceIndex' in options && options._voiceIndex != null) {
       const voices = await getVoices();
-      message.voice = voices[Math.min(voices.length - 1, Math.max(0, options._voiceIndex))];
+      const voice = voices[Math.min(voices.length - 1, Math.max(0, options._voiceIndex))];
+
+      if (voice != null) {
+        message.voice = voice;
+      }
     }
     if (typeof options.voice === 'string') {
       const voices = await getVoices();
-      message.voice =
+      const voice =
         voices[
           Math.max(
             0,
             voices.findIndex((voice) => voice.voiceURI === options.voice)
           )
         ];
+
+      if (voice != null) {
+        message.voice = voice;
+      }
     }
     if (typeof options.onResume === 'function') {
       message.onresume = options.onResume;
