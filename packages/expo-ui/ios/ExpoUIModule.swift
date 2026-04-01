@@ -26,7 +26,7 @@ public final class ExpoUIModule: Module {
       }
 
       Function("_setValue") { (state: ObservableState, wrapper: [String: Any]) in
-        state.value = wrapper["value"] as Any
+        state.value = wrapper["value"]
       }
     }
 
