@@ -405,11 +405,14 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
 
       return result;
     } catch (error) {
+      if (this._options?.signal?.aborted) {
+        this._state = 'cancelled';
+        throw createAbortError();
+      }
       if (this.state === 'cancelled') {
         throw error;
       }
-      this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
-      if (this._options?.signal?.aborted) throw createAbortError();
+      this._state = 'error';
       throw error;
     } finally {
       this._cleanup();
@@ -613,11 +616,14 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       this._state = 'paused';
       return null;
     } catch (error) {
+      if (this._options?.signal?.aborted) {
+        this._state = 'cancelled';
+        throw createAbortError();
+      }
       if (this.state === 'cancelled') {
         throw error;
       }
-      this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
-      if (this._options?.signal?.aborted) throw createAbortError();
+      this._state = 'error';
       throw error;
     } finally {
       this._cleanup();

@@ -228,7 +228,7 @@ class FileSystemDownloadTask: SharedObject {
   func cancel() {
     isPausing = false
     downloadTask?.cancel()
-    cleanup(unregisterDelegate: true)
+    cleanup(unregisterDelegate: false)
   }
 
   func finishTask() {
@@ -237,7 +237,7 @@ class FileSystemDownloadTask: SharedObject {
 
   override func sharedObjectWillRelease() {
     downloadTask?.cancel()
-    cleanup(unregisterDelegate: true)
+    cleanup(unregisterDelegate: false)
   }
 
   private func cleanup(unregisterDelegate: Bool) {

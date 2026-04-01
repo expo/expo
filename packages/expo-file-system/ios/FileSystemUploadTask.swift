@@ -81,6 +81,12 @@ class FileSystemUploadTask: SharedObject {
         uploadTask = session.uploadTask(with: request, fromFile: sourceUrl)
       }
 
+      guard !cancelled else {
+        promise.reject(UploadCancelledException())
+        cleanup(invalidateSession: true)
+        return
+      }
+
       uploadTask?.resume()
     } catch {
       promise.reject(UnableToUploadException(error.localizedDescription))
@@ -91,12 +97,10 @@ class FileSystemUploadTask: SharedObject {
   func cancel() {
     cancelled = true
     uploadTask?.cancel()
-    cleanup(invalidateSession: true)
   }
 
   override func sharedObjectWillRelease() {
     uploadTask?.cancel()
-    cleanup(invalidateSession: true)
   }
 
   fileprivate func emitProgress(bytesSent: Int64, totalBytes: Int64) {

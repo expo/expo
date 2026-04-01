@@ -320,6 +320,94 @@ describe('AbortSignal integration', () => {
     await expect(task.downloadAsync()).rejects.toThrow('The operation was aborted');
     expect(task.state).toBe('cancelled');
   });
+
+  it('aborting during active upload throws AbortError (not native error)', async () => {
+    const controller = new AbortController();
+    let rejectNative!: (reason: Error) => void;
+    jest.spyOn(ExpoFileSystem.FileSystemUploadTask.prototype, 'start').mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectNative = reject;
+        })
+    );
+    jest
+      .spyOn(ExpoFileSystem.FileSystemUploadTask.prototype, 'cancel')
+      .mockImplementation(function (this: any) {
+        // Simulate native cancel rejecting the start promise
+        rejectNative(new Error('upload cancelled natively'));
+      });
+
+    const file = new File(Paths.cache, 'photo.jpg');
+    const task = new UploadTask(file, 'https://example.com/upload', {
+      signal: controller.signal,
+    });
+    const promise = task.uploadAsync();
+
+    controller.abort();
+
+    const error: Error = await promise.catch((e) => e);
+    expect(error.name).toBe('AbortError');
+    expect(error.message).toBe('The operation was aborted.');
+    expect(task.state).toBe('cancelled');
+  });
+
+  it('aborting during active download throws AbortError (not native error)', async () => {
+    const controller = new AbortController();
+    let rejectNative!: (reason: Error) => void;
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectNative = reject;
+        })
+    );
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'cancel')
+      .mockImplementation(function (this: any) {
+        rejectNative(new Error('download cancelled natively'));
+      });
+
+    const dest = new File(Paths.cache, 'video.mp4');
+    const task = new DownloadTask('https://example.com/video.mp4', dest, {
+      signal: controller.signal,
+    });
+    const promise = task.downloadAsync();
+
+    controller.abort();
+
+    const error: Error = await promise.catch((e) => e);
+    expect(error.name).toBe('AbortError');
+    expect(error.message).toBe('The operation was aborted.');
+    expect(task.state).toBe('cancelled');
+  });
+
+  it('aborting during active download sets state before promise settles', async () => {
+    const controller = new AbortController();
+    let rejectNative!: (reason: Error) => void;
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectNative = reject;
+        })
+    );
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'cancel')
+      .mockImplementation(function (this: any) {
+        rejectNative(new Error('cancelled'));
+      });
+
+    const dest = new File(Paths.cache, 'video.mp4');
+    const task = new DownloadTask('https://example.com/video.mp4', dest, {
+      signal: controller.signal,
+    });
+    const promise = task.downloadAsync();
+
+    // Abort via signal
+    controller.abort();
+
+    await promise.catch(() => {});
+    // After the promise settles, state must be 'cancelled'
+    expect(task.state).toBe('cancelled');
+  });
 });
 
 describe('DownloadPauseState persistence', () => {
