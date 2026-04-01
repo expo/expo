@@ -893,6 +893,10 @@ export type DownloadPauseState = {
    */
   headers?: Record<string, string>;
   /**
+   * The iOS session mode that should be used when restoring the paused download.
+   */
+  sessionType: NetworkTaskSessionType;
+  /**
    * Platform-specific opaque resume data.
    */
   resumeData?: string;

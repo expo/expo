@@ -213,6 +213,39 @@ describe('DownloadTask', () => {
     );
   });
 
+  it('keeps download sessionType undefined when options are provided without sessionType', async () => {
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockResolvedValue(null);
+
+    const task = new DownloadTask(url, destination, {
+      headers: { Authorization: 'Bearer token' },
+    });
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    expect(ExpoFileSystem.FileSystemDownloadTask.prototype.start).toHaveBeenCalledWith(
+      url,
+      destination,
+      expect.objectContaining({
+        headers: { Authorization: 'Bearer token' },
+        sessionType: undefined,
+      })
+    );
+
+    await task.resumeAsync();
+
+    expect(ExpoFileSystem.FileSystemDownloadTask.prototype.resume).toHaveBeenCalledWith(
+      url,
+      destination,
+      'mock-resume-data',
+      expect.objectContaining({
+        headers: { Authorization: 'Bearer token' },
+        sessionType: undefined,
+      })
+    );
+  });
+
   it('transitions to active then paused when native returns null', async () => {
     jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockResolvedValue(null);
 
@@ -461,7 +494,9 @@ describe('DownloadPauseState persistence', () => {
 
   it('savable() returns correct state with isDirectory false for File destination', async () => {
     const dest = new File(Paths.cache, 'video.mp4');
-    const task = new DownloadTask('https://example.com/video.mp4', dest);
+    const task = new DownloadTask('https://example.com/video.mp4', dest, {
+      sessionType: 'foreground',
+    });
     const downloadPromise = task.downloadAsync();
     task.pause();
     await downloadPromise;
@@ -471,6 +506,7 @@ describe('DownloadPauseState persistence', () => {
     expect(state.url).toBe('https://example.com/video.mp4');
     expect(state.fileUri).toBe(dest.uri);
     expect(state.isDirectory).toBe(false);
+    expect(state.sessionType).toBe('foreground');
     expect(state.resumeData).toBe('resume-blob');
   });
 
@@ -490,6 +526,7 @@ describe('DownloadPauseState persistence', () => {
       url: 'https://example.com/f',
       fileUri: 'file:///mock/cache/f',
       isDirectory: false,
+      sessionType: 'background',
     };
     expect(() => DownloadTask.fromSavable(state)).toThrow(
       'Cannot restore task: DownloadPauseState has no resumeData'
@@ -503,11 +540,13 @@ describe('DownloadPauseState persistence', () => {
       isDirectory: false,
       resumeData: 'saved-resume-data',
       headers: { Authorization: 'Bearer token' },
+      sessionType: 'foreground',
     };
     const task = DownloadTask.fromSavable(state);
     expect(task.state).toBe('paused');
     const savedAgain = task.savable();
     expect(savedAgain.url).toBe('https://example.com/video.mp4');
+    expect(savedAgain.sessionType).toBe('foreground');
     expect(savedAgain.resumeData).toBe('saved-resume-data');
   });
 
@@ -516,6 +555,7 @@ describe('DownloadPauseState persistence', () => {
       url: 'https://example.com/video.mp4',
       fileUri: 'file:///mock/cache/video.mp4',
       isDirectory: false,
+      sessionType: 'background',
       resumeData: 'data',
     };
     const task = DownloadTask.fromSavable(state);
@@ -528,6 +568,7 @@ describe('DownloadPauseState persistence', () => {
       url: 'https://example.com/video.mp4',
       fileUri: 'file:///mock/cache/',
       isDirectory: true,
+      sessionType: 'background',
       resumeData: 'data',
     };
     const task = DownloadTask.fromSavable(state);
@@ -641,6 +682,7 @@ describe('DownloadTask persistence store', () => {
       {
         persistenceConfig: { backend: store },
         headers: { Authorization: 'Bearer token' },
+        sessionType: 'foreground',
       }
     );
 
@@ -660,6 +702,7 @@ describe('DownloadTask persistence store', () => {
         fileUri: new File(Paths.cache, 'video.mp4').uri,
         isDirectory: false,
         headers: { Authorization: 'Bearer token' },
+        sessionType: 'foreground',
         resumeData: 'resume-blob',
       },
     });
@@ -729,6 +772,7 @@ describe('DownloadTask persistence store', () => {
           fileUri: 'file:///mock/cache/video.mp4',
           isDirectory: false,
           headers: { Authorization: 'Bearer token' },
+          sessionType: 'foreground',
           resumeData: 'saved-resume-data',
         },
       })
@@ -753,6 +797,7 @@ describe('DownloadTask persistence store', () => {
           fileUri: 'file:///mock/cache/video.mp4',
           isDirectory: false,
           headers: { Authorization: 'Bearer token' },
+          sessionType: 'foreground',
           resumeData: 'saved-resume-data',
         },
       })
@@ -775,6 +820,7 @@ describe('DownloadTask persistence store', () => {
       fileUri: 'file:///mock/cache/video.mp4',
       isDirectory: false,
       headers: { Authorization: 'Bearer token' },
+      sessionType: 'foreground',
       resumeData: 'saved-resume-data',
     });
   });

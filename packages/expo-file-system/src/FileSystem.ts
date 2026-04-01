@@ -380,22 +380,6 @@ function isPersistedDownloadTaskRecord(value: unknown): value is PersistedDownlo
   );
 }
 
-function resolveDownloadTaskSessionType(
-  sessionType?: DownloadTaskOptions['sessionType']
-): NonNullable<DownloadTaskOptions['sessionType']> {
-  return sessionType ?? 'background';
-}
-
-function normalizeDownloadTaskOptions(options?: DownloadTaskOptions): DownloadTaskOptions | undefined {
-  if (!options) {
-    return undefined;
-  }
-  return {
-    ...options,
-    sessionType: resolveDownloadTaskSessionType(options.sessionType),
-  };
-}
-
 function wireNetworkTaskAbortSignal(
   signal: NetworkTaskOptions<never>['signal'],
   cancel: () => void
@@ -537,7 +521,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     super();
     this._url = url;
     this._destination = destination;
-    this._options = normalizeDownloadTaskOptions(options);
+    this._options = options;
     this._persistenceConfig = options?.persistenceConfig
       ? {
           backend: options.persistenceConfig.backend,
@@ -545,7 +529,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
         }
       : undefined;
     this._id = this._persistenceConfig
-      ? (this._options?.persistenceConfig?.customId ?? uuid.v4())
+      ? (options?.persistenceConfig?.customId ?? uuid.v4())
       : null;
   }
 
@@ -625,6 +609,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       fileUri: this._destination.uri,
       isDirectory: this._destination instanceof Directory,
       headers: this._options?.headers,
+      sessionType: this._options?.sessionType ?? 'background',
       resumeData: this._resumeData,
     };
   }
@@ -635,8 +620,12 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     }
     const dest = state.isDirectory ? new Directory(state.fileUri) : new File(state.fileUri);
     const mergedOptions =
-      options || state.headers
-        ? { ...options, headers: { ...state.headers, ...options?.headers } }
+      options || state.headers || state.sessionType
+        ? {
+            ...options,
+            headers: { ...state.headers, ...options?.headers },
+            sessionType: state.sessionType ?? options?.sessionType,
+          }
         : undefined;
     const task = new DownloadTask(state.url, dest, mergedOptions);
     task._resumeData = state.resumeData;
