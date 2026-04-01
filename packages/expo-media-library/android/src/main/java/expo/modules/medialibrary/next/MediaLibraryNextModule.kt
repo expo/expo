@@ -261,6 +261,10 @@ class MediaLibraryNextModule : Module() {
       systemPermissionsDelegate.getPermissions(writeOnly ?: false, permissions, promise)
     }
 
+    AsyncFunction("presentPermissionsPicker") { permissions: List<GranularPermission>?, promise: Promise ->
+      systemPermissionsDelegate.presentPermissionsPicker(permissions, promise)
+    }
+
     RegisterActivityContracts {
       with(mediaStorePermissionsDelegate) {
         registerMediaStoreContracts(this@MediaLibraryNextModule)

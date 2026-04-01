@@ -1,5 +1,6 @@
 import ExpoModulesCore
 import Photos
+import PhotosUI
 
 public final class MediaLibraryNextModule: Module {
   public func definition() -> ModuleDefinition {
@@ -247,6 +248,13 @@ public final class MediaLibraryNextModule: Module {
           reject: promise.legacyRejecter
         )
     }
+
+    AsyncFunction("presentPermissionsPicker") { (_ mediaTypes: [String]?) in
+      guard let vc = appContext?.utilities?.currentViewController() else {
+        return
+      }
+      PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: vc)
+    }.runOnQueue(.main)
   }
 
   private func getAssetIdsFromAssetRefs(from assetRefs: Either<[Asset], [URL]>) async throws -> [String] {
