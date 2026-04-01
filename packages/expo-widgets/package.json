@@ -11,7 +11,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -32,17 +31,17 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
   "dependencies": {
-    "@expo/plist": "^0.5.2",
-    "@expo/ui": "~55.0.1"
+    "@expo/plist": "workspace:^0.5.2",
+    "@expo/ui": "workspace:~55.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "^55.0.2",
+    "expo-module-scripts": "workspace:*",
     "resolve-workspace-root": "^2.0.0"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*"
   }
 }

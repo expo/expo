@@ -1,4 +1,5 @@
 import Foundation
+internal import React
 import ExpoModulesCore
 
 public protocol ScreenOrientationController: AnyObject {

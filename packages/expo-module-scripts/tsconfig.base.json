@@ -2,12 +2,7 @@
   "compilerOptions": {
     // Typings
     "lib": ["dom", "DOM.Iterable", "esnext"],
-    "types": ["jest", "jest-require"],
-    "typeRoots": [
-      "./ts-declarations",
-      "./node_modules/@types",
-      "../../node_modules/@types",
-    ],
+    "types": ["jest"],
 
     // Target and resolution options
     "jsx": "react-native",
@@ -31,10 +26,11 @@
     // TODO: Enable in the future
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
 
     // Best practice warnings
     "noUnusedLocals": true,
     // TODO: Enable in the future
-    "noUnusedParameters": false,
+    "noUnusedParameters": false
   }
 }

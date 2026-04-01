@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeStackView = NativeStackView;
-const native_stack_1 = require("@react-navigation/native-stack");
 const react_1 = require("react");
 const RootModal_1 = require("../../layouts/RootModal");
+const native_stack_1 = require("../../react-navigation/native-stack");
 function NativeStackView(props) {
     return (<RootModal_1.RootModalProvider>
       <NativeStackViewInner {...props}/>

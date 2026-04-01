@@ -7,7 +7,11 @@ import type {
   NativeToolbarMenuActionProps,
   NativeToolbarMenuProps,
 } from '../toolbar/StackToolbarMenu/types';
-import { ToolbarPlacementContext } from '../toolbar/context';
+import {
+  ToolbarColorContext,
+  type ToolbarColors,
+  ToolbarPlacementContext,
+} from '../toolbar/context';
 import { StackToolbarLabel } from '../toolbar/toolbar-primitives';
 
 jest.mock('@expo/ui/jetpack-compose', () => {
@@ -40,7 +44,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
   return {
     DropdownMenu,
     DropdownMenuItem,
-    Divider: jest.fn(() => <View testID="Divider" />),
+    HorizontalDivider: jest.fn(() => <View testID="HorizontalDivider" />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
     Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
@@ -74,6 +78,11 @@ jest.mock('../../../toolbar/AnimatedItemContainer', () => {
     AnimatedItemContainer: jest.fn((props) => <View testID="AnimatedItemContainer" {...props} />),
   };
 });
+
+const { background } = jest.requireMock(
+  '@expo/ui/jetpack-compose/modifiers'
+) as typeof import('@expo/ui/jetpack-compose/modifiers');
+const MockedBackground = background as jest.MockedFunction<typeof background>;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -164,6 +173,49 @@ describe('NativeToolbarMenu', () => {
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.tintColor).toBe('dynamic:onSurface');
+      });
+    });
+
+    describe('toolbar color context', () => {
+      function renderWithColors(
+        menuProps: NativeToolbarMenuProps,
+        colors: ToolbarColors,
+        children?: React.ReactNode
+      ) {
+        return render(
+          <ToolbarColorContext.Provider value={colors}>
+            <NativeToolbarMenu {...menuProps}>{children}</NativeToolbarMenu>
+          </ToolbarColorContext.Provider>
+        );
+      }
+
+      it('uses context tintColor for icon when no prop tintColor', () => {
+        renderWithColors(defaultProps, { tintColor: 'context-tint' });
+
+        const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+        expect(icon.props.tintColor).toBe('context-tint');
+      });
+
+      it('prop tintColor takes precedence over context', () => {
+        renderWithColors(
+          { ...defaultProps, tintColor: 'prop-tint' },
+          { tintColor: 'context-tint' }
+        );
+
+        const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+        expect(icon.props.tintColor).toBe('prop-tint');
+      });
+
+      it('uses context backgroundColor for dropdown background', () => {
+        renderWithColors(defaultProps, { backgroundColor: 'context-bg' });
+
+        expect(MockedBackground).toHaveBeenCalledWith('context-bg');
+      });
+
+      it('falls back to default surfaceContainer when no context backgroundColor', () => {
+        renderWithColors(defaultProps, {});
+
+        expect(MockedBackground).toHaveBeenCalledWith('dynamic:surfaceContainer');
       });
     });
 
@@ -279,11 +331,11 @@ describe('NativeToolbarMenu', () => {
       );
     }
 
-    it('renders Divider and action inside root items', () => {
+    it('renders HorizontalDivider and action inside root items', () => {
       renderInline();
 
       const rootItems = screen.getByTestId('DropdownMenu.Items');
-      expect(within(rootItems).getByTestId('Divider')).toBeDefined();
+      expect(within(rootItems).getByTestId('HorizontalDivider')).toBeDefined();
       expect(within(rootItems).getByTestId('DropdownMenuItem')).toBeDefined();
     });
 
@@ -424,6 +476,43 @@ describe('NativeToolbarMenuAction', () => {
 
     const menuItems = screen.getByTestId('DropdownMenu.Items');
     expect(within(menuItems).queryByTestId('DropdownMenuItem')).toBeNull();
+  });
+
+  describe('toolbar color context', () => {
+    function renderActionWithColors(
+      actionProps: NativeToolbarMenuActionProps,
+      colors: ToolbarColors
+    ) {
+      return render(
+        <ToolbarColorContext.Provider value={colors}>
+          <NativeToolbarMenu source={{ uri: 'icon' }}>
+            <NativeToolbarMenuAction {...actionProps} />
+          </NativeToolbarMenu>
+        </ToolbarColorContext.Provider>
+      );
+    }
+
+    it('uses context tintColor for non-destructive action text', () => {
+      renderActionWithColors(
+        { onPress: jest.fn(), children: 'Action' },
+        { tintColor: 'context-tint' }
+      );
+
+      const menuItems = screen.getByTestId('DropdownMenu.Items');
+      const text = within(menuItems).getByTestId('ComposeText');
+      expect(text.props.color).toBe('context-tint');
+    });
+
+    it('destructive action ignores context tintColor', () => {
+      renderActionWithColors(
+        { onPress: jest.fn(), children: 'Action', destructive: true },
+        { tintColor: 'context-tint' }
+      );
+
+      const menuItems = screen.getByTestId('DropdownMenu.Items');
+      const text = within(menuItems).getByTestId('ComposeText');
+      expect(text.props.color).toBe('material:error');
+    });
   });
 
   it('shows destructive text color', () => {

@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getConfiguration = getConfiguration;
 exports.getSwiftModuleNames = getSwiftModuleNames;
 exports.resolveModuleAsync = resolveModuleAsync;
 exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
@@ -15,6 +16,9 @@ const iosInlineModules_1 = require("../../inlineModules/iosInlineModules");
 const utils_1 = require("../../utils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
+function getConfiguration(options) {
+    return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
+}
 const indent = '  ';
 /** Find all *.podspec files in top-level directories */
 async function findPodspecFiles(revision) {
@@ -82,6 +86,14 @@ async function generateModulesProviderAsync(modules, targetPath, entitlementPath
     const entitlements = await parseEntitlementsAsync(entitlementPath);
     const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements, params);
     const parentPath = path_1.default.dirname(targetPath);
+    // Avoid writing the file if the content hasn't changed to prevent unnecessary recompilation.
+    try {
+        const existingContent = await fs_1.default.promises.readFile(targetPath, 'utf8');
+        if (existingContent === generatedFileContent) {
+            return;
+        }
+    }
+    catch { }
     await fs_1.default.promises.mkdir(parentPath, { recursive: true });
     await fs_1.default.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }

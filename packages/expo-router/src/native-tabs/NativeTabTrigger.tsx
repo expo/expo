@@ -1,9 +1,9 @@
 'use client';
 
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { isValidElement, useCallback, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet, type ImageSourcePropType } from 'react-native';
 
+import { useNavigation, useRoute } from '../react-navigation/native';
 import {
   NativeTabsTriggerIcon,
   NativeTabsTriggerBadge,

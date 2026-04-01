@@ -8,7 +8,7 @@
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepublishOnly": "yarn run clean && yarn run build",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "test:e2e": "expo-module clean && expo-module tsc && expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
@@ -41,17 +41,17 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/patch-project#readme",
   "devDependencies": {
-    "@expo/cli": "55.0.12",
+    "@expo/cli": "workspace:*",
     "@types/debug": "^4.1.5",
     "@types/getenv": "^1.0.0",
-    "expo-module-scripts": "^55.0.2",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
   "dependencies": {
     "@bacons/xcode": "1.0.0-alpha.24",
-    "@expo/config": "~55.0.8",
-    "@expo/config-plugins": "~55.0.6",
-    "@expo/env": "~2.1.1",
+    "@expo/config": "workspace:~55.0.8",
+    "@expo/config-plugins": "workspace:~55.0.6",
+    "@expo/env": "workspace:~2.1.1",
     "@expo/spawn-async": "^1.7.2",
     "arg": "5.0.2",
     "chalk": "^4.0.0",
@@ -61,6 +61,6 @@
     "resolve-from": "^5.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   }
 }

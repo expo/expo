@@ -106,11 +106,11 @@ public final class MediaLibraryNextModule: Module {
       }
 
       Function("limit") { (this: Query, limit: Int) in
-        this.limit(limit)
+        try this.limit(limit)
       }
 
       Function("offset") { (this: Query, offset: Int) in
-        this.offset(offset)
+        try this.offset(offset)
       }
 
       Function("album") { (this: Query, album: Album) in

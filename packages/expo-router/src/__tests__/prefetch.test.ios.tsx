@@ -1,5 +1,3 @@
-import type { StackNavigationState } from '@react-navigation/native';
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { screen, act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
@@ -12,6 +10,8 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../navigationParams';
+import type { StackNavigationState } from '../react-navigation/native';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { renderRouter } from '../testing-library';
 
 type HeaderTitleFunction = Extract<

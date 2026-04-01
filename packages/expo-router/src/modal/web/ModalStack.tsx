@@ -1,22 +1,4 @@
 'use client';
-import {
-  createNavigatorFactory,
-  EventArg,
-  ParamListBase,
-  StackActionHelpers,
-  StackActions,
-  StackNavigationState,
-  StackRouter,
-  StackRouterOptions,
-  useNavigationBuilder,
-  usePreventRemoveContext,
-  useTheme,
-} from '@react-navigation/native';
-import {
-  NativeStackNavigationEventMap,
-  NativeStackNavigationOptions,
-  NativeStackView,
-} from '@react-navigation/native-stack';
 import React, { useCallback, useEffect } from 'react';
 
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
@@ -29,6 +11,24 @@ import {
 } from './utils';
 import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 import { withLayoutContext } from '../../layouts/withLayoutContext';
+import {
+  createNavigatorFactory,
+  EventArg,
+  ParamListBase,
+  StackActionHelpers,
+  StackActions,
+  StackNavigationState,
+  StackRouter,
+  StackRouterOptions,
+  useNavigationBuilder,
+  usePreventRemoveContext,
+  useTheme,
+} from '../../react-navigation/native';
+import {
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+  NativeStackView,
+} from '../../react-navigation/native-stack';
 
 function ModalStackNavigator({
   initialRouteName,

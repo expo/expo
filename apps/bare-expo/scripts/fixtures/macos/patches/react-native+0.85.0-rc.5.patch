@@ -1,7 +1,7 @@
-diff --git a/node_modules/react-native/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js b/node_modules/react-native/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
+diff --git a/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js b/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
 index c640b5a..fa980e8 100644
---- a/node_modules/react-native/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
-+++ b/node_modules/react-native/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
+--- a/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
++++ b/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
 @@ -18,7 +18,7 @@ import type {HostComponent} from '../../types/HostComponent';
  
  import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
@@ -38,10 +38,10 @@ index c640b5a..fa980e8 100644
    ...ViewProps,
  
    /**
-diff --git a/node_modules/react-native/src/private/components/virtualview/VirtualViewNativeComponent.js b/node_modules/react-native/src/private/components/virtualview/VirtualViewNativeComponent.js
+diff --git a/src/private/components/virtualview/VirtualViewNativeComponent.js b/src/private/components/virtualview/VirtualViewNativeComponent.js
 index 4ba5b68..951a000 100644
---- a/node_modules/react-native/src/private/components/virtualview/VirtualViewNativeComponent.js
-+++ b/node_modules/react-native/src/private/components/virtualview/VirtualViewNativeComponent.js
+--- a/src/private/components/virtualview/VirtualViewNativeComponent.js
++++ b/src/private/components/virtualview/VirtualViewNativeComponent.js
 @@ -18,7 +18,7 @@ import type {HostComponent} from '../../types/HostComponent';
  
  import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
@@ -78,10 +78,10 @@ index 4ba5b68..951a000 100644
    ...ViewProps,
  
    /**
-diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
+diff --git a/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js b/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
 index 22ce1ab..d6352f7 100644
---- a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
-+++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
+--- a/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
++++ b/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
 @@ -22,15 +22,15 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
  import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
  import * as React from 'react';
@@ -101,10 +101,10 @@ index 22ce1ab..d6352f7 100644
    ...ViewProps,
    /**
     * Determines whether the keyboard gets dismissed in response to a drag.
-diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
+diff --git a/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js b/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
 index 35acd83..4a2d5d1 100644
---- a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
-+++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
+--- a/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
++++ b/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
 @@ -21,7 +21,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
  import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
  import * as React from 'react';
@@ -123,10 +123,10 @@ index 35acd83..4a2d5d1 100644
    /**
     * The background color of the refresh indicator.
     */
-diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
+diff --git a/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js b/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
 index c91e734..1a51ca2 100644
---- a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
-+++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
+--- a/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
++++ b/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
 @@ -21,12 +21,12 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
  import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
  import * as React from 'react';
@@ -142,10 +142,10 @@ index c91e734..1a51ca2 100644
    ...ViewProps,
  
    // Props
-diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
+diff --git a/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js b/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
 index 178951b..a7dff66 100644
---- a/node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
-+++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
+--- a/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
++++ b/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
 @@ -38,11 +38,11 @@ export type ElementRectangle = {
  interface NativeCommands {
    +highlightTraceUpdates: (
@@ -160,10 +160,10 @@ index 178951b..a7dff66 100644
    ) => void;
    +clearElementsHighlights: (
      viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
-diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
+diff --git a/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js b/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
 index a27f5b3..b5aa18a 100644
---- a/node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
-+++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
+--- a/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
++++ b/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
 @@ -18,11 +18,11 @@ import type {HostComponent} from '../../types/HostComponent';
  
  import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
@@ -187,10 +187,10 @@ index a27f5b3..b5aa18a 100644
        | 'portrait'
        | 'portrait-upside-down'
        | 'landscape'
-diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
+diff --git a/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js b/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
 index 3d6feb9..1f9f75a 100644
---- a/node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
-+++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
+--- a/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
++++ b/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
 @@ -21,12 +21,12 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
  import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
  import * as React from 'react';
@@ -206,10 +206,10 @@ index 3d6feb9..1f9f75a 100644
    ...ViewProps,
  
    // Props
-diff --git a/node_modules/react-native/src/private/webapis/dom/nodes/specs/NativeDOM.js b/node_modules/react-native/src/private/webapis/dom/nodes/specs/NativeDOM.js
+diff --git a/src/private/webapis/dom/nodes/specs/NativeDOM.js b/src/private/webapis/dom/nodes/specs/NativeDOM.js
 index 28f9e44..63f68ce 100644
---- a/node_modules/react-native/src/private/webapis/dom/nodes/specs/NativeDOM.js
-+++ b/node_modules/react-native/src/private/webapis/dom/nodes/specs/NativeDOM.js
+--- a/src/private/webapis/dom/nodes/specs/NativeDOM.js
++++ b/src/private/webapis/dom/nodes/specs/NativeDOM.js
 @@ -52,25 +52,25 @@ export interface Spec extends TurboModule {
     */
  
@@ -371,10 +371,10 @@ index 28f9e44..63f68ce 100644
  
    /**
     * This is a React Native implementation of `Document.prototype.getElementById`
-diff --git a/node_modules/react-native/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js b/node_modules/react-native/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js
+diff --git a/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js b/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js
 index 1b5f835..4241e5e 100644
---- a/node_modules/react-native/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js
-+++ b/node_modules/react-native/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js
+--- a/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js
++++ b/src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks.js
 @@ -12,7 +12,7 @@ import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
  
  import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
@@ -399,10 +399,10 @@ index 1b5f835..4241e5e 100644
      options?: RequestIdleCallbackOptions,
    ) => IdleCallbackID;
    +cancelIdleCallback: (handle: IdleCallbackID) => void;
-diff --git a/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js b/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
+diff --git a/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js b/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
 index cbe579b..fed5c09 100644
---- a/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
-+++ b/node_modules/react-native/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
+--- a/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
++++ b/src/private/webapis/intersectionobserver/specs/NativeIntersectionObserver.js
 @@ -14,25 +14,25 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
  
  export type NativeIntersectionObserverEntry = {
@@ -447,10 +447,10 @@ index cbe579b..fed5c09 100644
  }
  
  export default (TurboModuleRegistry.get<Spec>(
-diff --git a/node_modules/react-native/src/private/webapis/microtasks/specs/NativeMicrotasks.js b/node_modules/react-native/src/private/webapis/microtasks/specs/NativeMicrotasks.js
+diff --git a/src/private/webapis/microtasks/specs/NativeMicrotasks.js b/src/private/webapis/microtasks/specs/NativeMicrotasks.js
 index c6be40a..4f07158 100644
---- a/node_modules/react-native/src/private/webapis/microtasks/specs/NativeMicrotasks.js
-+++ b/node_modules/react-native/src/private/webapis/microtasks/specs/NativeMicrotasks.js
+--- a/src/private/webapis/microtasks/specs/NativeMicrotasks.js
++++ b/src/private/webapis/microtasks/specs/NativeMicrotasks.js
 @@ -13,7 +13,7 @@ import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
  import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
  
@@ -460,10 +460,10 @@ index c6be40a..4f07158 100644
  }
  
  export default (TurboModuleRegistry.getEnforcing<Spec>(
-diff --git a/node_modules/react-native/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js b/node_modules/react-native/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js
+diff --git a/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js b/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js
 index ade4886..c4fbcb2 100644
---- a/node_modules/react-native/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js
-+++ b/node_modules/react-native/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js
+--- a/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js
++++ b/src/private/webapis/mutationobserver/specs/NativeMutationObserver.js
 @@ -15,16 +15,16 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
  export type MutationObserverId = number;
  
@@ -496,10 +496,10 @@ index ade4886..c4fbcb2 100644
  }
  
  export default (TurboModuleRegistry.get<Spec>(
-diff --git a/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js b/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
+diff --git a/src/private/webapis/performance/specs/NativePerformance.js b/src/private/webapis/performance/specs/NativePerformance.js
 index 47025dd..af194df 100644
---- a/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
-+++ b/node_modules/react-native/src/private/webapis/performance/specs/NativePerformance.js
+--- a/src/private/webapis/performance/specs/NativePerformance.js
++++ b/src/private/webapis/performance/specs/NativePerformance.js
 @@ -42,14 +42,14 @@ export type RawPerformanceEntry = {
    decodedBodySize?: number,
  };

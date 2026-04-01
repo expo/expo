@@ -2,8 +2,37 @@ import { vol } from 'memfs';
 
 import { resolveEntryPoint } from '../paths';
 
-jest.mock('fs');
-jest.mock('resolve-from');
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
+jest.mock('@expo/require-utils', () => {
+  const requireUtils = jest.requireActual('@expo/require-utils');
+  return {
+    ...requireUtils,
+    resolveFrom(
+      fromDirectory: string,
+      moduleId: string,
+      params?: { extensions?: readonly string[] }
+    ) {
+      const fs = require('memfs').fs;
+      const path = require('path');
+      const candidates: string[] = [];
+      if (moduleId.startsWith('.') || moduleId.startsWith('/')) {
+        candidates.push(path.resolve(fromDirectory, moduleId));
+      } else {
+        candidates.push(path.join(fromDirectory, 'node_modules', moduleId));
+        candidates.push(path.resolve(fromDirectory, moduleId));
+      }
+      for (const candidate of candidates) {
+        if (fs.existsSync(candidate)) return candidate;
+        for (const ext of params?.extensions ?? []) {
+          const e = ext[0] !== '.' ? `.${ext}` : ext;
+          if (fs.existsSync(candidate + e)) return candidate + e;
+        }
+      }
+      return null;
+    },
+  };
+});
 
 describe(resolveEntryPoint, () => {
   afterEach(() => vol.reset());

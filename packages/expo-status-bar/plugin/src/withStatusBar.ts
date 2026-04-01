@@ -9,13 +9,15 @@ import {
   withStringsXml,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-status-bar/package.json');
+const pkg = require('../../package.json');
 
 type LegacyStatusBarStyle = NonNullable<NonNullable<ExpoConfig['androidStatusBar']>['barStyle']>;
 type StatusBarStyle = 'light' | 'dark';
 
 export type Props = {
+  /** Determines whether the status bar starts hidden. */
   hidden?: boolean;
+  /** Determines which style the status bar starts with. */
   style?: StatusBarStyle;
 };
 

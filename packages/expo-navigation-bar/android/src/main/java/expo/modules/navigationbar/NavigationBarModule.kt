@@ -4,11 +4,11 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
-import expo.modules.kotlin.Promise
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.navigationbar.singletons.NavigationBar
 
 class NavigationBarModule : Module() {
   private val currentActivity get() = appContext.throwingActivity
@@ -44,19 +44,32 @@ class NavigationBarModule : Module() {
       }
     }
 
-    AsyncFunction("setButtonStyleAsync") { buttonStyle: String, promise: Promise ->
-      NavigationBar.setButtonStyle(
-        currentActivity,
-        buttonStyle,
-        {
-          promise.resolve(null)
-        },
-        { m -> promise.reject(NavigationBarException(m)) }
-      )
+    AsyncFunction("setStyle") { style: String ->
+      val window = currentActivity.window
+
+      WindowInsetsControllerCompat(window, window.decorView).run {
+        when (style) {
+          "dark" -> isAppearanceLightNavigationBars = true
+          "light" -> isAppearanceLightNavigationBars = false
+        }
+      }
+
+      return@AsyncFunction
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("setVisibilityAsync") { visibility: String, promise: Promise ->
-      NavigationBar.setVisibility(currentActivity, visibility, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
+    AsyncFunction("setHidden") { hidden: Boolean ->
+      val window = currentActivity.window
+
+      WindowInsetsControllerCompat(window, window.decorView).run {
+        systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        when (hidden) {
+          true -> hide(WindowInsetsCompat.Type.navigationBars())
+          false -> show(WindowInsetsCompat.Type.navigationBars())
+        }
+      }
+
+      return@AsyncFunction
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction<String>("getVisibilityAsync") {

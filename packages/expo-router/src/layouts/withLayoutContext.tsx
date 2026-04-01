@@ -1,4 +1,3 @@
-import { EventMapBase, NavigationState } from '@react-navigation/native';
 import React, {
   Children,
   forwardRef,
@@ -13,6 +12,7 @@ import React, {
 
 import { useContextKey } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
+import { EventMapBase, NavigationState } from '../react-navigation/native';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';

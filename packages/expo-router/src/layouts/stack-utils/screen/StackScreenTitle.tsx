@@ -1,9 +1,10 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React, { useMemo } from 'react';
-import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
+import { ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
+import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { convertFontWeightToStringFontWeight } from '../../../utils/style';
+import { areAllChildrenPrimitiveValues, convertChildrenToString } from '../toolbar/shared';
 
 export type StackScreenTitleProps = {
   /**
@@ -26,9 +27,7 @@ export type StackScreenTitleProps = {
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
     fontWeight?: Exclude<TextStyle['fontWeight'], number>;
-    // TODO(@ubax): This should be ColorValue, but react-navigation types
-    // currently only accept string for color props. In RN v8 we can change this to ColorValue.
-    color?: string;
+    color?: ColorValue;
     textAlign?: 'left' | 'center';
   }>;
   /**
@@ -40,9 +39,7 @@ export type StackScreenTitleProps = {
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
     fontWeight?: Exclude<TextStyle['fontWeight'], number>;
-    // TODO(@ubax): This should be ColorValue, but react-navigation types
-    // currently only accept string for color props. In RN v8 we can change this to ColorValue.
-    color?: string;
+    color?: ColorValue;
   }>;
   /**
    * Enables large title mode.
@@ -141,7 +138,7 @@ export function appendStackScreenTitlePropsToOptions(
 
   let titleOptions: NativeStackNavigationOptions = props.asChild
     ? { headerTitle: () => <>{props.children}</> }
-    : { title: props.children as string | undefined };
+    : { title: convertChildrenToString(props.children) };
 
   if (props.asChild && typeof props.children === 'string') {
     if (__DEV__) {
@@ -151,7 +148,7 @@ export function appendStackScreenTitlePropsToOptions(
     }
     titleOptions = {};
   }
-  if (!props.asChild && props.children != null && typeof props.children !== 'string') {
+  if (!props.asChild && props.children != null && !areAllChildrenPrimitiveValues(props.children)) {
     if (__DEV__) {
       console.warn(
         'Stack.Screen.Title: Component passed to Stack.Screen.Title without `asChild` enabled. In order to render a custom component as the title, set `asChild` to true.'
