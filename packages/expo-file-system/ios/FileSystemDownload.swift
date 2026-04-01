@@ -259,22 +259,25 @@ class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
     }
 
     do {
-      let dest: URL
-      if let dir = destination as? FileSystemDirectory {
-        let filename = httpResponse.suggestedFilename ?? sourceUrl.lastPathComponent
-        dest = dir.url.appendingPathComponent(filename)
-      } else {
-        dest = destination.url
-      }
-      if FileManager.default.fileExists(atPath: dest.path) {
-        if options?.idempotent == true {
-          try FileManager.default.removeItem(at: dest)
+      let resolvedUrl = try destination.withCorrectTypeAndScopedAccess(permission: .write) {
+        let dest: URL
+        if let dir = destination as? FileSystemDirectory {
+          let filename = httpResponse.suggestedFilename ?? sourceUrl.lastPathComponent
+          dest = dir.url.appendingPathComponent(filename)
         } else {
-          throw DestinationAlreadyExistsException()
+          dest = destination.url
         }
+        if FileManager.default.fileExists(atPath: dest.path) {
+          if options?.idempotent == true {
+            try FileManager.default.removeItem(at: dest)
+          } else {
+            throw DestinationAlreadyExistsException()
+          }
+        }
+        try FileManager.default.moveItem(at: location, to: dest)
+        return dest.absoluteString
       }
-      try FileManager.default.moveItem(at: location, to: dest)
-      promise.resolve(dest.absoluteString)
+      promise.resolve(resolvedUrl)
     } catch {
       promise.reject(error)
     }

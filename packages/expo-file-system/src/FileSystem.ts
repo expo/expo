@@ -341,7 +341,9 @@ function resolveDownloadTaskSessionType(
   return sessionType ?? 'background';
 }
 
-function normalizeDownloadTaskOptions(options?: DownloadTaskOptions): DownloadTaskOptions | undefined {
+function normalizeDownloadTaskOptions(
+  options?: DownloadTaskOptions
+): DownloadTaskOptions | undefined {
   if (!options) {
     return undefined;
   }

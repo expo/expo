@@ -138,6 +138,26 @@ class FileSystemUploadTask: SharedObject {
     return tempDir.appendingPathComponent(filename)
   }
 
+  private func writeAll(_ output: OutputStream, _ buffer: UnsafePointer<UInt8>, length: Int) throws {
+    var offset = 0
+    while offset < length {
+      let written = output.write(buffer.advanced(by: offset), maxLength: length - offset)
+      if written <= 0 {
+        throw UploadFailedToCreateBodyException()
+      }
+      offset += written
+    }
+  }
+
+  private func writeAll(_ output: OutputStream, _ data: [UInt8]) throws {
+    try data.withUnsafeBufferPointer { buffer in
+      guard let baseAddress = buffer.baseAddress else {
+        return
+      }
+      try writeAll(output, baseAddress, length: data.count)
+    }
+  }
+
   private func createMultipartBody(boundary: String, sourceUrl: URL, options: UploadTaskOptions) throws -> URL {
     let fieldName = options.fieldName ?? sourceUrl.lastPathComponent
     let mimeType = options.mimeType ?? findMimeType(forAttachment: sourceUrl)
@@ -162,14 +182,14 @@ class FileSystemUploadTask: SharedObject {
       for (key, value) in params {
         let part = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(key)\"\r\n\r\n\(value)\r\n"
         let partData = Array(part.utf8)
-        output.write(partData, maxLength: partData.count)
+        try writeAll(output, partData)
       }
     }
 
     // Write file part header
     let header = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(sourceUrl.lastPathComponent)\"\r\nContent-Type: \(mimeType)\r\n\r\n"
     let headerData = Array(header.utf8)
-    output.write(headerData, maxLength: headerData.count)
+    try writeAll(output, headerData)
 
     // Stream file content in 64KB chunks
     guard let input = InputStream(url: sourceUrl) else {
@@ -185,7 +205,7 @@ class FileSystemUploadTask: SharedObject {
     while input.hasBytesAvailable {
       let bytesRead = input.read(buffer, maxLength: bufferSize)
       if bytesRead > 0 {
-        output.write(buffer, maxLength: bytesRead)
+        try writeAll(output, buffer, length: bytesRead)
       } else if bytesRead < 0 {
         throw UploadFailedToCreateBodyException()
       }
@@ -194,7 +214,7 @@ class FileSystemUploadTask: SharedObject {
     // Write closing boundary
     let closing = "\r\n--\(boundary)--\r\n"
     let closingData = Array(closing.utf8)
-    output.write(closingData, maxLength: closingData.count)
+    try writeAll(output, closingData)
 
     completed = true
     return tempURL

@@ -678,7 +678,8 @@ export type UploadOptions = {
      */
     onProgress?: (data: UploadProgress) => void;
     /**
-     * AbortSignal to cancel the upload.
+     * An `AbortSignal` that can be used to cancel the upload.
+     * When the signal is aborted, the upload is cancelled and the promise rejects with an `AbortError`.
      */
     signal?: AbortSignal;
 };
@@ -757,10 +758,12 @@ export declare class UploadTask {
     /**
      * Starts the upload operation.
      * @returns A promise that resolves with the upload result.
+     * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
      */
     uploadAsync(): Promise<UploadResult>;
     /**
      * Cancels the upload operation.
+     * Any pending `uploadAsync()` promise rejects after cancellation.
      */
     cancel(): void;
     /**
@@ -788,6 +791,7 @@ export declare class DownloadTask {
     /**
      * Starts the download operation.
      * @returns A promise that resolves with the downloaded file, or null if paused.
+     * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
      */
     downloadAsync(): Promise<File | null>;
     /**
@@ -797,10 +801,12 @@ export declare class DownloadTask {
     /**
      * Resumes a paused download operation.
      * @returns A promise that resolves with the downloaded file, or null if paused again.
+     * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
      */
     resumeAsync(): Promise<File | null>;
     /**
      * Cancels the download operation.
+     * Any pending `downloadAsync()` or `resumeAsync()` promise rejects after cancellation.
      */
     cancel(): void;
     /**

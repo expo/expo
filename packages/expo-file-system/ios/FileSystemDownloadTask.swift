@@ -297,27 +297,30 @@ private final class DownloadTaskDelegate: NSObject {
         return
       }
 
-      let destinationUrl: URL
-      if let directory = destination as? FileSystemDirectory {
-        let httpResponse = downloadTask.response as? HTTPURLResponse
-        let filename = httpResponse?.suggestedFilename ??
-          downloadTask.originalRequest?.url?.lastPathComponent ??
-          "download"
-        destinationUrl = directory.url.appendingPathComponent(filename)
-      } else {
-        destinationUrl = destination.url
-      }
+      let resolvedUrl = try destination.withCorrectTypeAndScopedAccess(permission: .write) {
+        let destinationUrl: URL
+        if let directory = destination as? FileSystemDirectory {
+          let httpResponse = downloadTask.response as? HTTPURLResponse
+          let filename = httpResponse?.suggestedFilename ??
+            downloadTask.originalRequest?.url?.lastPathComponent ??
+            "download"
+          destinationUrl = directory.url.appendingPathComponent(filename)
+        } else {
+          destinationUrl = destination.url
+        }
 
-      if FileManager.default.fileExists(atPath: destinationUrl.path) {
-        try FileManager.default.removeItem(at: destinationUrl)
-      }
+        if FileManager.default.fileExists(atPath: destinationUrl.path) {
+          try FileManager.default.removeItem(at: destinationUrl)
+        }
 
-      try FileManager.default.createDirectory(
-        at: destinationUrl.deletingLastPathComponent(),
-        withIntermediateDirectories: true
-      )
-      try FileManager.default.moveItem(at: location, to: destinationUrl)
-      promise.resolve(destinationUrl.absoluteString)
+        try FileManager.default.createDirectory(
+          at: destinationUrl.deletingLastPathComponent(),
+          withIntermediateDirectories: true
+        )
+        try FileManager.default.moveItem(at: location, to: destinationUrl)
+        return destinationUrl.absoluteString
+      }
+      promise.resolve(resolvedUrl)
     } catch {
       promise.reject(
         UnableToDownloadException("Failed to move downloaded file: \(error.localizedDescription)")

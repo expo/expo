@@ -1181,9 +1181,6 @@ function DownloadTaskSection() {
     </>
   );
 }
-    </>
-  );
-}
 
 // ===== Styles =====
 

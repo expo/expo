@@ -86,7 +86,15 @@ class FileSystemDownloadTask : SharedObject() {
   fun pause(): Map<String, String> {
     isPausing = true
     call?.cancel()
-    val resumeData = bytesWritten.toString()
+    // Use the file's on-disk length rather than the in-memory bytesWritten counter,
+    // which may be ahead of what was actually flushed. A too-low offset is safe because
+    // resume() truncates the file to the offset before appending — we just re-download
+    // a few bytes. A too-high offset (from bytesWritten) is dangerous because setLength()
+    // would extend the file with zeros, corrupting the download.
+    // For SAF-backed files, DocumentFile.length() metadata may lag behind the actual
+    // written bytes, but this is still safe — worst case we re-download a small amount.
+    val fileLength = destinationFile?.length()
+    val resumeData = (if (fileLength != null && fileLength > 0) fileLength else bytesWritten).toString()
     return mapOf("resumeData" to resumeData)
   }
 
