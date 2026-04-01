@@ -61,6 +61,8 @@ module Expo
     @repo_root = nil
     @linked_pods = nil
     @build_from_source_patterns = []
+    @react_native_version = nil
+    @hermes_version = nil
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -1088,12 +1090,19 @@ module Expo
 
         # Prefer codegenConfig.name from the installed package.json
         installed_codegen_name = nil
+        pkg_version = nil
         pkg_json_path = File.join(package_root, 'package.json')
         if File.exist?(pkg_json_path)
-          installed_codegen_name = JSON.parse(File.read(pkg_json_path)).dig('codegenConfig', 'name')
+          pkg_json = JSON.parse(File.read(pkg_json_path))
+          installed_codegen_name = pkg_json.dig('codegenConfig', 'name')
+          pkg_version = pkg_json['version']
         end
 
         base_dir = custom_modules_path || File.join(effective_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR)
+
+        # Compute versioned output path for 3rd-party packages:
+        # <base>/<npm_package>/output/<pkgVersion>/<rnVersion>/<hermesVersion>
+        version_prefix = version_prefix_for_external_package(pkg_version)
 
         products.each do |product|
           pod_name = product['podName']
@@ -1101,12 +1110,25 @@ module Expo
 
           product_name = product['name'] || pod_name
           codegen_name = installed_codegen_name || product['codegenName']
-          build_output_dir = File.join(base_dir, npm_package, 'output')
+
+          # Use versioned path if versions are available, otherwise fall back to flat path
+          if version_prefix
+            build_output_dir = File.join(base_dir, npm_package, 'output', version_prefix)
+          else
+            build_output_dir = File.join(base_dir, npm_package, 'output')
+          end
 
           # Fallback: check for prebuilds bundled inside the package directory (shipped in npm)
-          bundled_output_dir = File.join(package_root, 'prebuilds', 'output')
-          if !File.directory?(build_output_dir) && File.directory?(bundled_output_dir)
-            build_output_dir = bundled_output_dir
+          # Try versioned path first, then flat path for backward compatibility
+          if !File.directory?(File.join(build_output_dir, build_flavor, 'xcframeworks'))
+            bundled_versioned_dir = version_prefix ? File.join(package_root, 'prebuilds', 'output', version_prefix) : nil
+            bundled_flat_dir = File.join(package_root, 'prebuilds', 'output')
+
+            if bundled_versioned_dir && File.directory?(bundled_versioned_dir)
+              build_output_dir = bundled_versioned_dir
+            elsif File.directory?(bundled_flat_dir)
+              build_output_dir = bundled_flat_dir
+            end
           end
 
           targets = (product['targets'] || [])
@@ -1345,6 +1367,79 @@ module Expo
         File.write(json_path, JSON.pretty_generate(spec_json))
 
         json_path
+      end
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Helpers: version resolution for 3rd-party prebuild versioning
+      # ──────────────────────────────────────────────────────────────────────
+
+      # Returns the installed React Native version from node_modules.
+      def react_native_version
+        @react_native_version ||= begin
+          rn_pkg = File.join(find_node_modules_dir, 'react-native', 'package.json')
+          File.exist?(rn_pkg) ? JSON.parse(File.read(rn_pkg))['version'] : nil
+        end
+      end
+
+      # Returns the Hermes version, accounting for Hermes v1 opt-in.
+      # Mirrors the TypeScript resolution logic in tools/src/prebuilds/Utils.ts.
+      def hermes_version
+        @hermes_version ||= begin
+          rn_path = File.join(find_node_modules_dir, 'react-native')
+          is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
+          version = nil
+
+          # Read from version.properties (primary source)
+          props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
+          if File.exist?(props_path)
+            props = parse_version_properties(props_path)
+            version = is_v1 ? props['HERMES_V1_VERSION_NAME'] : props['HERMES_VERSION_NAME']
+          end
+
+          # Fallback to tag files
+          unless version
+            tag_file = is_v1 ? '.hermesv1version' : '.hermesversion'
+            tag_path = File.join(rn_path, 'sdks', tag_file)
+            version = File.read(tag_path).strip if File.exist?(tag_path)
+          end
+
+          # Normalize: strip "hermes-" prefix and "v" prefix
+          version&.gsub(/^hermes-?/i, '')&.gsub(/^v/i, '')&.strip
+        end
+      end
+
+      # Returns the node_modules directory for the project.
+      def find_node_modules_dir
+        @node_modules_dir ||= begin
+          repo_root = find_repo_root
+          if repo_root
+            File.join(repo_root, 'node_modules')
+          else
+            File.join(File.dirname(Dir.pwd), 'node_modules')
+          end
+        end
+      end
+
+      # Parses a Java-style .properties file into a Hash.
+      def parse_version_properties(file_path)
+        props = {}
+        File.readlines(file_path).each do |line|
+          trimmed = line.strip
+          next if trimmed.empty? || trimmed.start_with?('#')
+          key, value = trimmed.split('=', 2)
+          props[key.strip] = value.strip if key && value
+        end
+        props
+      end
+
+      # Returns the version prefix path for a 3rd-party package.
+      # Format: "<packageVersion>/<reactNativeVersion>/<hermesVersion>"
+      # Returns nil if versions cannot be resolved.
+      def version_prefix_for_external_package(package_version)
+        rn_ver = react_native_version
+        hermes_ver = hermes_version
+        return nil unless package_version && rn_ver && hermes_ver
+        File.join(package_version, rn_ver, hermes_ver)
       end
 
       # ──────────────────────────────────────────────────────────────────────

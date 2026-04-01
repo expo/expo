@@ -340,6 +340,13 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     ctx.reactNativeVersion = reactNativeVersion;
     ctx.hermesVersion = hermesVersion;
 
+    // 5b. Set versioned output prefix on external packages
+    for (const pkg of ctx.packages) {
+      if (isExternalPackage(pkg)) {
+        pkg.outputVersionPrefix = path.join(pkg.packageVersion, reactNativeVersion, hermesVersion);
+      }
+    }
+
     // 6. Verify local tarball paths exist if provided
     const hasPlaceholder = (p?: string) => p?.includes('{flavor}') || p?.includes('{Flavor}');
     await verifyLocalTarballPathsIfSetAsync({
