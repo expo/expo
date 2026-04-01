@@ -28,7 +28,16 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
   },
   async (parcels: Parcel[]) => {
     logger.log('\n📱 Building iOS prebuilds...');
-    const result = await runPrebuildPackagesAsync(IOS_PREBUILD_PACKAGES, {
+
+    const relevantParcels = IOS_PREBUILD_PACKAGES.filter((name) =>
+      parcels.some((p) => p.pkg.packageName === name)
+    );
+    if (relevantParcels.length === 0) {
+      logger.log('No iOS prebuild packages in publish set, skipping');
+      return;
+    }
+
+    const result = await runPrebuildPackagesAsync(relevantParcels, {
       clean: false,
       cleanCache: false,
       skipGenerate: false,
@@ -44,7 +53,14 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
       if (result.errorLogPath) {
         logger.error(`Error log: ${result.errorLogPath}`);
       }
-      throw new Error('iOS prebuild pipeline failed');
+
+      const errorDetails = result.errors
+        .map((e) => `  - [${e.packageName}/${e.productName}] ${e.stage}: ${e.error.message}`)
+        .join('\n');
+      const errorMessage = errorDetails
+        ? `iOS prebuild pipeline failed:\n${errorDetails}`
+        : 'iOS prebuild pipeline failed';
+      throw new Error(errorMessage);
     }
 
     // Copy built tarballs into each package's prebuilds/ directory
