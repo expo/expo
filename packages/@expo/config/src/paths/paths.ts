@@ -152,10 +152,14 @@ export function convertEntryPointToRelative(projectRoot: string, absolutePath: s
   // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
   // We need to make sure to get the non-symlinked path to the server or project root.
   let serverRoot = getMetroServerRoot(projectRoot);
-  const realServerRoot = fs.realpathSync(serverRoot);
-  if (realServerRoot !== serverRoot) {
-    serverRoot = realServerRoot;
-    absolutePath = fs.realpathSync(absolutePath);
+  try {
+    const realServerRoot = fs.realpathSync(serverRoot);
+    if (realServerRoot !== serverRoot) {
+      serverRoot = realServerRoot;
+      absolutePath = fs.realpathSync(absolutePath);
+    }
+  } catch {
+    // NOTE: `fs.realpathSync` can fail if `projectRoot` doesn't exist (e.g. mocked folder)
   }
 
   let entry = toPosixPath(path.relative(serverRoot, absolutePath));
