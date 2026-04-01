@@ -35,7 +35,7 @@ export function logPackageBanner(
   logger.info(`   ・Build:        ${chalk.dim(relPath(pkg.buildPath))}`);
   logger.info(`   ・Cache:        ${chalk.dim(relPath(artifactsPath))}`);
   logger.info(
-    `   ・XCFrameworks: ${chalk.dim(relPath(Frameworks.getFrameworksOutputPath(pkg.buildPath, flavors[0])).replace(`/${flavors[0].toLowerCase()}`, '/<flavor>'))}`
+    `   ・XCFrameworks: ${chalk.dim(relPath(Frameworks.getFrameworksOutputPath(pkg.buildPath, flavors[0], pkg.outputVersionPrefix)).replace(`/${flavors[0].toLowerCase()}`, '/<flavor>'))}`
   );
 }
 

@@ -35,6 +35,7 @@ export type PrebuildCliOptions = {
   product?: string;
   platform?: BuildPlatform;
   includeExternal?: boolean;
+  externalOnly?: boolean;
   sign?: string;
   noTimestamp?: boolean;
   verbose: boolean;
@@ -59,6 +60,7 @@ export interface PrebuildRequest {
   readonly productFilter?: string;
   readonly platformFilter?: BuildPlatform;
   readonly includeExternal: boolean;
+  readonly externalOnly: boolean;
   readonly signing?: SigningOptions;
   readonly verbose: boolean;
   readonly bundleSharedDeps: boolean;
@@ -133,7 +135,8 @@ export function createRequest(
     skipVerify: options.skipVerify,
     productFilter: options.product,
     platformFilter: options.platform,
-    includeExternal: options.includeExternal ?? false,
+    includeExternal: !!(options.includeExternal || options.externalOnly),
+    externalOnly: options.externalOnly ?? false,
     signing,
     verbose: options.verbose,
     localTarballTemplates: {
