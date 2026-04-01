@@ -302,6 +302,8 @@ export const prepareInputsStep: Step<PrebuildContext> = {
 
     if (request.packageNames.length > 0) {
       logger.info(`📦 Prebuilding packages: ${chalk.green(request.packageNames.join(', '))}`);
+    } else if (request.externalOnly) {
+      logger.info(`📦 Discovering external packages with spm.config.json...`);
     } else {
       const externalNote = request.includeExternal ? ' (including external packages)' : '';
       logger.info(`📦 Discovering packages with spm.config.json${externalNote}...`);
@@ -310,7 +312,8 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     // 1. Verify packages exist and have spm.config.json (or discover all)
     const requestedPackages = await verifyAllPackagesAsync(
       request.packageNames,
-      request.includeExternal
+      request.includeExternal,
+      request.externalOnly
     );
 
     // 2. Auto-add unbuilt dependencies to the build set
@@ -339,6 +342,13 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     });
     ctx.reactNativeVersion = reactNativeVersion;
     ctx.hermesVersion = hermesVersion;
+
+    // 5b. Set versioned output prefix on external packages
+    for (const pkg of ctx.packages) {
+      if (isExternalPackage(pkg)) {
+        pkg.outputVersionPrefix = path.join(pkg.packageVersion, reactNativeVersion, hermesVersion);
+      }
+    }
 
     // 6. Verify local tarball paths exist if provided
     const hasPlaceholder = (p?: string) => p?.includes('{flavor}') || p?.includes('{Flavor}');

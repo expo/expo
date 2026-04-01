@@ -73,6 +73,20 @@ describe('Frameworks path functions', () => {
       assert.ok(result.includes('/debug/'));
       assert.ok(!result.includes('/Debug/'));
     });
+
+    it('includes version prefix when provided', () => {
+      const versionPrefix = path.join('1.2.3', '0.83.0', '1.0.0');
+      const result = Frameworks.getFrameworksOutputPath(buildPath, 'Debug', versionPrefix);
+      assert.equal(
+        result,
+        path.join(buildPath, 'output', '1.2.3', '0.83.0', '1.0.0', 'debug', 'xcframeworks')
+      );
+    });
+
+    it('omits version prefix when undefined', () => {
+      const result = Frameworks.getFrameworksOutputPath(buildPath, 'Debug', undefined);
+      assert.equal(result, path.join(buildPath, 'output', 'debug', 'xcframeworks'));
+    });
   });
 
   describe('getFrameworkPath', () => {
@@ -91,6 +105,24 @@ describe('Frameworks path functions', () => {
         path.join(buildPath, 'output', 'release', 'xcframeworks', 'ExpoFoo.xcframework')
       );
     });
+
+    it('returns versioned .xcframework path when version prefix provided', () => {
+      const versionPrefix = path.join('3.16.7', '0.83.0', '1.0.0');
+      const result = Frameworks.getFrameworkPath(buildPath, 'ExpoFoo', 'Debug', versionPrefix);
+      assert.equal(
+        result,
+        path.join(
+          buildPath,
+          'output',
+          '3.16.7',
+          '0.83.0',
+          '1.0.0',
+          'debug',
+          'xcframeworks',
+          'ExpoFoo.xcframework'
+        )
+      );
+    });
   });
 
   describe('getTarballPath', () => {
@@ -107,6 +139,24 @@ describe('Frameworks path functions', () => {
       assert.equal(
         result,
         path.join(buildPath, 'output', 'release', 'xcframeworks', 'ExpoFoo.tar.gz')
+      );
+    });
+
+    it('returns versioned .tar.gz path when version prefix provided', () => {
+      const versionPrefix = path.join('3.16.7', '0.83.0', '1.0.0');
+      const result = Frameworks.getTarballPath(buildPath, 'ExpoFoo', 'Debug', versionPrefix);
+      assert.equal(
+        result,
+        path.join(
+          buildPath,
+          'output',
+          '3.16.7',
+          '0.83.0',
+          '1.0.0',
+          'debug',
+          'xcframeworks',
+          'ExpoFoo.tar.gz'
+        )
       );
     });
   });

@@ -1,17 +1,12 @@
-name: Prebuild iOS XCFrameworks
+name: Prebuild External iOS XCFrameworks
 
 on:
   workflow_dispatch:
     inputs:
       packages:
-        description: 'Space-separated package names (leave empty for all)'
+        description: 'Space-separated external package names (leave empty for all external packages)'
         required: false
         default: ''
-      include-external:
-        description: 'Include external (third-party) packages'
-        required: false
-        type: boolean
-        default: false
       concurrency:
         description: 'Max parallel packages (default: auto)'
         required: false
@@ -49,20 +44,15 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
 
-      - name: Prebuild XCFrameworks (${{ matrix.flavor }})
+      - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
         env:
           INPUT_PACKAGES: ${{ github.event.inputs.packages }}
-          INPUT_INCLUDE_EXTERNAL: ${{ github.event.inputs.include-external }}
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
         run: |
-          ARGS="-f ${{ matrix.flavor }} -v"
+          ARGS="-f ${{ matrix.flavor }} -v --external-only"
 
           if [ -n "$INPUT_PACKAGES" ]; then
             ARGS="$ARGS $INPUT_PACKAGES"
-          fi
-
-          if [ "$INPUT_INCLUDE_EXTERNAL" = "true" ]; then
-            ARGS="$ARGS --include-external"
           fi
 
           if [ -n "$INPUT_CONCURRENCY" ]; then

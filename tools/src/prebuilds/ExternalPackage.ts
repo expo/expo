@@ -38,6 +38,18 @@ export interface SPMPackageSource {
   packageVersion: string;
 
   /**
+   * Optional version prefix inserted into output paths for 3rd-party packages.
+   * When set, output paths become:
+   *   <buildPath>/output/<versionPrefix>/<flavor>/xcframeworks/
+   * instead of:
+   *   <buildPath>/output/<flavor>/xcframeworks/
+   *
+   * Format: "<packageVersion>/<reactNativeVersion>/<hermesVersion>"
+   * Set during pipeline prepare:inputs step after RN/Hermes versions are resolved.
+   */
+  outputVersionPrefix?: string;
+
+  /**
    * Returns the SPM configuration for this package
    */
   getSwiftPMConfiguration(): SPMConfig;
@@ -73,6 +85,12 @@ export class ExternalPackage implements SPMPackageSource {
    * The package version from node_modules package.json
    */
   packageVersion: string;
+
+  /**
+   * Optional version prefix for versioned output paths.
+   * Set during pipeline prepare:inputs step.
+   */
+  outputVersionPrefix?: string;
 
   /**
    * The parsed SPM configuration
