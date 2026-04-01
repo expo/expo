@@ -11,7 +11,7 @@ index 40202fde055cab40ba8f6e01fcfc86a88665c4e3..713d65341c327513067644b9e77b1f26
      const retry = (error) => {
        if (crawl === _watchman.default) {
 diff --git a/src/crawlers/node/index.js b/src/crawlers/node/index.js
-index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..eadcbd4391055dfd4be16e0273ec1b814a135b6f 100644
+index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..72a0ff8fec241c54a3634c306595c944b0669d07 100644
 --- a/src/crawlers/node/index.js
 +++ b/src/crawlers/node/index.js
 @@ -8,8 +8,9 @@ var _RootPathUtils = require("../../lib/RootPathUtils");
@@ -25,7 +25,7 @@ index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..eadcbd4391055dfd4be16e0273ec1b81
  var _os = require("os");
  var path = _interopRequireWildcard(require("path"));
  function _getRequireWildcardCache(e) {
-@@ -39,6 +40,81 @@ function _interopRequireDefault(e) {
+@@ -39,6 +40,86 @@ function _interopRequireDefault(e) {
    return e && e.__esModule ? e : { default: e };
  }
  const debug = require("debug")("Metro:NodeCrawler");
@@ -47,9 +47,14 @@ index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..eadcbd4391055dfd4be16e0273ec1b81
 +  const result = new Map();
 +  let activeCalls = 0;
 +  const pathUtils = new _RootPathUtils.RootPathUtils(rootDir);
++  const visited = new Set();
 +  const exts = new Set(extensions);
 +
 +  function search(directory, dirNormal) {
++    if (visited.has(directory)) {
++      return;
++    }
++    visited.add(directory);
 +    activeCalls++;
 +    fs.readdir(directory, {withFileTypes: true}, (err, entries) => {
 +      activeCalls--;
@@ -107,7 +112,21 @@ index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..eadcbd4391055dfd4be16e0273ec1b81
  function find(
    roots,
    extensions,
-@@ -169,7 +245,44 @@ function findNative(
+@@ -50,8 +131,13 @@ function find(
+ ) {
+   const result = new Map();
+   let activeCalls = 0;
++  const visited = new Set();
+   const pathUtils = new _RootPathUtils.RootPathUtils(rootDir);
+   function search(directory) {
++    if (visited.has(directory)) {
++      return;
++    }
++    visited.add(directory);
+     activeCalls++;
+     fs.readdir(
+       directory,
+@@ -169,7 +255,44 @@ function findNative(
      }
    });
  }
@@ -152,7 +171,7 @@ index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..eadcbd4391055dfd4be16e0273ec1b81
    const {
      console,
      previousState,
-@@ -181,45 +294,44 @@ async function nodeCrawl(options) {
+@@ -181,45 +304,44 @@ async function nodeCrawl(options) {
      perfLogger,
      roots,
      abortSignal,
