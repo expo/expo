@@ -15,6 +15,7 @@
 - [iOS] Fix crash when loading PHAsset url fails ([#43373](https://github.com/expo/expo/pull/43373) by [@fractalbeauty](https://github.com/fractalbeauty))
 - [iOS] Fix crashes when `VideoTrack` properties are non-finite.
 - [Android] Fix PiP exiting immediately after auto-entering from fullscreen. ([#44157](https://github.com/expo/expo/pull/44157) by [@behenate](https://github.com/behenate))
+- [Android] Fix broken layout after returning from PiP when auto-enter if off. ([#44163](https://github.com/expo/expo/pull/44163) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
