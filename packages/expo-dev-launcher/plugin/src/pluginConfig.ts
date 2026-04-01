@@ -38,7 +38,7 @@ export type PluginConfigOptions = {
   launchMode?: 'most-recent' | 'launcher';
   /**
    * Instead of navigating to launcher screen launch directly into this URI.
-   * If `launchMode` is set to `most-recent` then launcher will use the defaultLauncherURI if launching previously opened project fails.
+   * If `launchMode` is set to `most-recent` then launcher will use the defaultLaunchURI if launching previously opened project fails.
    */
   defaultLaunchURI?: string;
   /**
@@ -70,7 +70,7 @@ const schema: JSONSchema<PluginConfigType> = {
       enum: ['most-recent', 'launcher'],
       nullable: true,
     },
-    defaultLauncherURI: {
+    defaultLaunchURI: {
       type: ['string'],
       nullable: true,
     },

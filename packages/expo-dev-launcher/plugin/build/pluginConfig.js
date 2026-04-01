@@ -11,7 +11,7 @@ const schema = {
             enum: ['most-recent', 'launcher'],
             nullable: true,
         },
-        defaultLauncherURI: {
+        defaultLaunchURI: {
             type: ['string'],
             nullable: true,
         },

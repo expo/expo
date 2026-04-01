@@ -281,6 +281,16 @@ class DevLauncherController private constructor(
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
+  fun launchDefaultUriOrNavigateToLauncher(scope: CoroutineScope, defaultLaunchUri: Uri, activityToBeInvalidated: ReactActivity?) {
+    scope.launch{
+      try {
+        loadApp(defaultLaunchUri, activityToBeInvalidated)
+      } catch (_: Throwable) {
+        navigateToLauncher()
+      }
+    }
+  }
+
   override fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
     val defaultLaunchUri = getMetadataValue(context, "DEV_CLIENT_DEFAULT_LAUNCHER_URI", "").toUri()
     val useDefaultLaunchUriFallback = defaultLaunchUri.toString() != ""
@@ -302,13 +312,7 @@ class DevLauncherController private constructor(
           // fallback to navigating to the launcher home screen
 
           if (useDefaultLaunchUriFallback) {
-            coroutineScope.launch {
-              try {
-                loadApp(defaultLaunchUri, activityToBeInvalidated)
-              } catch (_: Throwable) {
-                navigateToLauncher()
-              }
-            }
+            launchDefaultUriOrNavigateToLauncher(coroutineScope, defaultLaunchUri, activityToBeInvalidated)
             return true
           }
           navigateToLauncher()
@@ -335,24 +339,12 @@ class DevLauncherController private constructor(
       val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
-        coroutineScope.launch {
-          try {
-            loadApp(lastOpenedApp.url.toUri(), activityToBeInvalidated)
-          } catch (_: Throwable) {
-            navigateToLauncher()
-          }
-        }
+        launchDefaultUriOrNavigateToLauncher(coroutineScope, defaultLaunchUri, activityToBeInvalidated)
         return true
       }
 
       if (useDefaultLaunchUriFallback) {
-        coroutineScope.launch {
-          try {
-            loadApp(defaultLaunchUri, activityToBeInvalidated)
-          } catch (_: Throwable) {
-            navigateToLauncher()
-          }
-        }
+        launchDefaultUriOrNavigateToLauncher(coroutineScope, defaultLaunchUri, activityToBeInvalidated)
         return true
       }
       return handleExternalIntent(it)
