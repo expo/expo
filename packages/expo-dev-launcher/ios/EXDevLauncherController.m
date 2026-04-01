@@ -196,6 +196,18 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     });
   };
 
+  void (^launchDefaultUriFallback)(NSError *) = ^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+
+      [self launchDefaultUriFallback];
+    });
+  };
+
 #if TARGET_OS_SIMULATOR
   BOOL hasGrantedNetworkPermission = YES;
 #else
@@ -210,18 +222,49 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
+  NSString *defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URI"];
+  BOOL useDefaultLaunchUriFallback = defaultLaunchURLString.length != 0;
+  NSURL *defaultLaunchURL = [NSURL URLWithString:defaultLaunchURLString];
 
   if (!hasGrantedNetworkPermission) {
     shouldTryToLaunchLastOpenedBundle = NO;
+    useDefaultLaunchUriFallback = NO;
   }
   
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
     // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
-    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:launchDefaultUriFallback];
     return;
   }
+
+  if (useDefaultLaunchUriFallback) {
+    [self loadApp: defaultLaunchURL withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
+  }
+
   [self navigateToLauncher];
+}
+
+- (void)launchDefaultUriFallback {
+  void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+
+      [self navigateToLauncher];
+    });
+  };
+
+  NSString *defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URI"];
+  BOOL useDefaultLaunchUriFallback = defaultLaunchURLString.length != 0;
+  NSURL *defaultLaunchURL = [NSURL URLWithString:defaultLaunchURLString];
+
+  if (useDefaultLaunchUriFallback) {
+    [self loadApp: defaultLaunchURL withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
+  }
 }
 
 - (void)navigateToLauncher

@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSURL *)sourceUrl;
 
+- (void)launchDefaultUriFallback;
+
 - (void)navigateToLauncher;
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options;
