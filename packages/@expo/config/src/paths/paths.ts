@@ -133,17 +133,29 @@ export function getMetroWorkspaceGlobs(monorepoRoot: string): string[] | null {
   return getWorkspaceGlobs(monorepoRoot);
 }
 
+function toPosixPath(filePath: string): string {
+  return filePath.replace(/\\/g, '/');
+}
+
 /**
  * Convert an absolute entry point to a server or project root relative filepath.
  * This is useful on Android where the entry point is an absolute path.
  */
 export function convertEntryPointToRelative(projectRoot: string, absolutePath: string) {
+  if (!path.isAbsolute(absolutePath)) {
+    absolutePath = path.resolve(projectRoot, absolutePath);
+  }
+
   // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
   // We need to make sure to get the non-symlinked path to the server or project root.
-  return path.relative(
-    fs.realpathSync(getMetroServerRoot(projectRoot)),
-    fs.realpathSync(absolutePath)
-  );
+  let serverRoot = getMetroServerRoot(projectRoot);
+  const realServerRoot = fs.realpathSync(serverRoot);
+  if (realServerRoot !== serverRoot) {
+    serverRoot = realServerRoot;
+    absolutePath = fs.realpathSync(absolutePath);
+  }
+
+  return toPosixPath(path.relative(serverRoot, absolutePath));
 }
 
 /**
