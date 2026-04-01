@@ -137,9 +137,11 @@ function toPosixPath(filePath: string): string {
   return filePath.replace(/\\/g, '/');
 }
 
+// TODO: Move to internals
 /**
  * Convert an absolute entry point to a server or project root relative filepath.
  * This is useful on Android where the entry point is an absolute path.
+ * @deprecated
  */
 export function convertEntryPointToRelative(projectRoot: string, absolutePath: string) {
   if (!path.isAbsolute(absolutePath)) {
@@ -158,10 +160,12 @@ export function convertEntryPointToRelative(projectRoot: string, absolutePath: s
   return toPosixPath(path.relative(serverRoot, absolutePath));
 }
 
+// TODO: Move to internals
 /**
  * Resolve the entry point relative to either the server or project root.
  * This relative entry path should be used to pass non-absolute paths to Metro,
  * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
+ * @deprecated
  */
 export const resolveRelativeEntryPoint: typeof resolveEntryPoint = (projectRoot, options) => {
   return convertEntryPointToRelative(projectRoot, resolveEntryPoint(projectRoot, options));
