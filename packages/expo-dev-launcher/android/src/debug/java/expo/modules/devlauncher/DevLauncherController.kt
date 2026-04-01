@@ -219,11 +219,9 @@ class DevLauncherController private constructor(
       return false
     }
 
-    return try {
+    return runCatching {
       context.assets.open("index.android.bundle").use { true }
-    } catch (_: Exception) {
-      false
-    }
+    }.getOrDefault(false)
   }
 
   suspend fun loadEmbeddedBundle(mainActivity: ReactActivity? = null) {
@@ -254,10 +252,12 @@ class DevLauncherController private constructor(
         mode = Mode.LAUNCHER
       }
     } catch (e: Exception) {
+      mode = Mode.LAUNCHER
+      throw e
+    } finally {
       synchronized(this) {
         appIsLoading = false
       }
-      throw e
     }
   }
 
