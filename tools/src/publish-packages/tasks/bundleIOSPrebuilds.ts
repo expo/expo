@@ -12,7 +12,25 @@ import { Parcel, TaskArgs } from '../types';
 /**
  * Packages whose iOS prebuilt xcframeworks should be bundled into the npm tarball.
  */
-const IOS_PREBUILD_PACKAGES = ['expo-modules-core'];
+const IOS_PREBUILD_PACKAGES = [
+  'expo-modules-core',
+  'expo-image',
+  'expo-image-manipulator',
+  'expo-camera',
+  'expo-video',
+  'expo-contacts',
+  'expo-file-system',
+  'expo-media-library',
+  'expo-location',
+  'expo-maps',
+  'expo-print',
+  'expo-sensors',
+  'expo-font',
+  'expo-live-photo',
+  'expo-brownfield',
+  'expo-ui',
+  'expo-screen-orientation',
+];
 
 const PRECOMPILE_BUILD_DIR = path.join(PACKAGES_DIR, 'precompile', '.build');
 const FLAVORS = ['debug', 'release'] as const;
@@ -46,6 +64,7 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
       skipCompose: false,
       skipVerify: false,
       verbose: false,
+      bundleSharedDeps: true,
     });
 
     if (result.exitCode !== 0) {

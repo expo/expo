@@ -63,7 +63,8 @@ export const Frameworks = {
     product: SPMProduct,
     buildType: BuildFlavor,
     platform?: BuildPlatform,
-    signing?: SigningOptions
+    signing?: SigningOptions,
+    options?: { bundleSharedDeps?: boolean }
   ): Promise<void> => {
     const spmConfig = pkg.getSwiftPMConfiguration();
 
@@ -132,7 +133,7 @@ export const Frameworks = {
     // Copy SPM dependency xcframeworks (e.g., Lottie.xcframework for lottie-react-native)
     // These are pre-built binary frameworks that the product dynamically links against
     // and must be embedded in the app bundle at runtime.
-    await copySPMDependencyXCFrameworksAsync(pkg, product, buildType);
+    await copySPMDependencyXCFrameworksAsync(pkg, product, buildType, options?.bundleSharedDeps);
 
     // Sign the XCFramework if a signing identity is provided
     if (signing?.identity) {
@@ -140,7 +141,7 @@ export const Frameworks = {
     }
 
     // Create tarball containing the product xcframework and any SPM dependency xcframeworks
-    await createProductTarballAsync(pkg, product, buildType);
+    await createProductTarballAsync(pkg, product, buildType, options?.bundleSharedDeps);
   },
 
   /**
@@ -405,7 +406,8 @@ const copyResourceBundlesIntoXCFrameworkAsync = async (
 const copySPMDependencyXCFrameworksAsync = async (
   pkg: SPMPackageSource,
   product: SPMProduct,
-  buildType: BuildFlavor
+  buildType: BuildFlavor,
+  bundleSharedDeps?: boolean
 ): Promise<void> => {
   // Check if this product has SPM package dependencies
   const spmPackages = product.spmPackages;
@@ -421,12 +423,26 @@ const copySPMDependencyXCFrameworksAsync = async (
     const packageName = spmPkg.packageName || path.basename(spmPkg.url, '.git');
     const productName = spmPkg.productName;
 
-    // Skip deps that are shared — they were built as standalone xcframeworks
-    // and will be vendored separately at pod install time
+    // Shared deps are normally skipped — they were built as standalone xcframeworks
+    // and vendored separately at pod install time. When bundleSharedDeps is true
+    // (npm bundling mode), copy them from the shared location into the output dir
+    // so they end up in the product tarball.
     if (Frameworks.hasSharedSPMDepFramework(productName, buildType)) {
+      if (!bundleSharedDeps) {
+        logger.info(
+          `⏭️  Skipping shared SPM dep ${chalk.cyan(productName)} (already at shared location)`
+        );
+        continue;
+      }
+
+      const sharedPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
+      const destPath = path.join(outputDir, `${productName}.xcframework`);
       logger.info(
-        `⏭️  Skipping shared SPM dep ${chalk.cyan(productName)} (already at shared location)`
+        `📦 Copying shared SPM dep ${chalk.cyan(productName)} from shared location → ${path.relative(pkg.path, destPath)}`
       );
+      await fs.remove(destPath);
+      execSync(`rsync -a --delete "${sharedPath}/" "${destPath}/"`, { stdio: 'pipe' });
+      logger.info(`✅ Bundled shared dep ${productName}.xcframework`);
       continue;
     }
 
@@ -540,7 +556,8 @@ const copySPMDependencyXCFrameworksAsync = async (
 const createProductTarballAsync = async (
   pkg: SPMPackageSource,
   product: SPMProduct,
-  buildType: BuildFlavor
+  buildType: BuildFlavor,
+  bundleSharedDeps?: boolean
 ): Promise<void> => {
   const outputDir = Frameworks.getFrameworksOutputPath(pkg.buildPath, buildType);
   const tarballPath = Frameworks.getTarballPath(pkg.buildPath, product.name, buildType);
@@ -549,13 +566,12 @@ const createProductTarballAsync = async (
   const xcframeworkEntries = [`${product.name}.xcframework`];
 
   // Include SPM dependency xcframeworks (e.g., Lottie.xcframework for lottie-react-native)
-  // Skip deps that exist at the shared location — they are distributed independently
+  // Skip shared deps unless bundleSharedDeps is true (npm bundling mode)
   const spmPackages = product.spmPackages;
   if (spmPackages && spmPackages.length > 0) {
     for (const spmPkg of spmPackages) {
       const depName = spmPkg.productName;
-      // Skip shared deps — they live at .spm-deps/ and are vendored separately
-      if (Frameworks.hasSharedSPMDepFramework(depName, buildType)) {
+      if (!bundleSharedDeps && Frameworks.hasSharedSPMDepFramework(depName, buildType)) {
         continue;
       }
       const depXcframework = `${depName}.xcframework`;
