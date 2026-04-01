@@ -1,0 +1,533 @@
+diff --git a/src/crawlers/node/fallback.js b/src/crawlers/node/fallback.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..280240472913d9efd94dfe29d37757612fd8ac47
+--- /dev/null
++++ b/src/crawlers/node/fallback.js
+@@ -0,0 +1,153 @@
++"use strict";
++
++Object.defineProperty(exports, "__esModule", {
++  value: true,
++});
++exports.default = createFallbackFilesystem;
++exports.shouldFallbackCrawlDir = shouldFallbackCrawlDir;
++var fs = _interopRequireWildcard(require("graceful-fs"));
++var _path = _interopRequireDefault(require("path"));
++function _interopRequireDefault(e) {
++  return e && e.__esModule ? e : { default: e };
++}
++function _interopRequireWildcard(e, t) {
++  if ("function" == typeof WeakMap)
++    var r = new WeakMap(),
++      n = new WeakMap();
++  return (_interopRequireWildcard = function (e, t) {
++    if (!t && e && e.__esModule) return e;
++    var o,
++      i,
++      f = { __proto__: null, default: e };
++    if (null === e || ("object" != typeof e && "function" != typeof e))
++      return f;
++    if ((o = t ? n : r)) {
++      if (o.has(e)) return o.get(e);
++      o.set(e, f);
++    }
++    for (const t in e)
++      "default" !== t &&
++        {}.hasOwnProperty.call(e, t) &&
++        ((i =
++          (o = Object.defineProperty) &&
++          Object.getOwnPropertyDescriptor(e, t)) &&
++        (i.get || i.set)
++          ? o(f, t, i)
++          : (f[t] = e[t]));
++    return f;
++  })(e, t);
++}
++const readdirMarker = Symbol.for("fallbackDir");
++function markDir(dirNode) {
++  dirNode[readdirMarker] = true;
++}
++function isMarkedDir(dirNode) {
++  return !!dirNode[readdirMarker];
++}
++function isDirectory(node) {
++  return node instanceof Map;
++}
++function createFallbackFilesystem(opts) {
++  const { extensions, ignore, includeSymlinks } = opts;
++  function readdir(absolutePath, dirNode) {
++    if (dirNode != null && isMarkedDir(dirNode)) {
++      return dirNode;
++    }
++    let dirEntries;
++    try {
++      dirEntries = fs.readdirSync(absolutePath, {
++        withFileTypes: true,
++      });
++    } catch {
++      return null;
++    }
++    const result = dirNode ?? new Map();
++    for (const entry of dirEntries) {
++      const name = entry.name.toString();
++      const childPath = absolutePath + _path.default.sep + name;
++      if (ignore(childPath)) {
++        continue;
++      }
++      if (entry.isDirectory()) {
++        if (!result.has(name)) {
++          result.set(name, new Map());
++        }
++      } else if (entry.isSymbolicLink()) {
++        if (!includeSymlinks || result.has(name)) {
++          continue;
++        }
++        try {
++          const target = fs.readlinkSync(childPath);
++          result.set(name, [0, 0, 0, "", null, target, null]);
++        } catch {}
++      } else if (entry.isFile()) {
++        const ext = _path.default.extname(name).slice(1);
++        if (!extensions.includes(ext) || result.has(name)) {
++          continue;
++        }
++        result.set(name, [0, 0, 0, "", null, 0, null]);
++      }
++    }
++    markDir(result);
++    return result;
++  }
++  return {
++    readdir,
++    lookup(absolutePath, prevNode) {
++      if (ignore(absolutePath)) {
++        return null;
++      }
++      let stat;
++      try {
++        stat = fs.lstatSync(absolutePath);
++      } catch {
++        return null;
++      }
++      if (stat.isDirectory()) {
++        const dirNode = isDirectory(prevNode) ? prevNode : null;
++        return shouldFallbackCrawlDir(absolutePath)
++          ? readdir(absolutePath, dirNode)
++          : (dirNode ?? new Map());
++      } else if (stat.isSymbolicLink()) {
++        if (!includeSymlinks) {
++          return null;
++        }
++        try {
++          const target = fs.readlinkSync(absolutePath);
++          return [stat.mtime.getTime(), stat.size, 0, "", null, target, null];
++        } catch {
++          return null;
++        }
++      } else if (stat.isFile()) {
++        const ext = _path.default.extname(absolutePath).slice(1);
++        if (!extensions.includes(ext)) {
++          return null;
++        }
++        return [stat.mtime.getTime(), stat.size, 0, "", null, 0, null];
++      } else {
++        return null;
++      }
++    },
++  };
++}
++function shouldFallbackCrawlDir(canonicalPath) {
++  const lastSepIdx = canonicalPath.lastIndexOf(_path.default.sep);
++  const baseStart = lastSepIdx + 1;
++  const baseLen = canonicalPath.length - baseStart;
++  if (
++    baseLen === 2 &&
++    canonicalPath.charCodeAt(baseStart) === 46 &&
++    canonicalPath.charCodeAt(baseStart + 1) === 46
++  ) {
++    return true;
++  } else if (canonicalPath.charCodeAt(baseStart) === 46) {
++    return false;
++  } else if (
++    baseLen === 12 &&
++    canonicalPath.startsWith("node_modules", baseStart)
++  ) {
++    return false;
++  } else {
++    return true;
++  }
++}
+diff --git a/src/index.js b/src/index.js
+index ec21a55e797f272d5c326420482c0682b9350293..3495993258977c030962d68d2eeee6e1fdb48381 100644
+--- a/src/index.js
++++ b/src/index.js
+@@ -29,6 +29,7 @@ Object.defineProperty(exports, "HastePlugin", {
+ });
+ exports.default = void 0;
+ var _DiskCacheManager = require("./cache/DiskCacheManager");
++var _fallback = _interopRequireDefault(require("./crawlers/node/fallback"));
+ var _constants = _interopRequireDefault(require("./constants"));
+ var _checkWatchmanCapabilities = _interopRequireDefault(
+   require("./lib/checkWatchmanCapabilities"),
+@@ -165,6 +166,8 @@ class FileMap extends _events.default {
+     };
+     this._options = {
+       ...buildParameters,
++      enableFallback: options.enableFallback !== false,
++      serverRoot: options.serverRoot ?? null,
+       healthCheck: options.healthCheck,
+       perfLoggerFactory: options.perfLoggerFactory,
+       resetCache: options.resetCache,
+@@ -222,16 +225,31 @@ class FileMap extends _events.default {
+           this.emit("metadata");
+           return result?.content;
+         };
++        const fallbackFilesystem = this._options.enableFallback
++          ? (0, _fallback.default)({
++              extensions: this._options.extensions,
++              ignore: (filePath) => this._options.ignorePattern.test(filePath),
++              includeSymlinks: this._options.enableSymlinks,
++            })
++          : null;
++        const roots = this._options.roots;
++        const serverRoot = this._options.serverRoot;
+         const fileSystem =
+           initialData != null
+             ? _TreeFS.default.fromDeserializedSnapshot({
+                 rootDir,
+                 fileSystemData: initialData.fileSystemData,
+                 processFile,
++                fallbackFilesystem,
++                roots,
++                serverRoot,
+               })
+             : new _TreeFS.default({
+                 rootDir,
+                 processFile,
++                fallbackFilesystem,
++                roots,
++                serverRoot,
+               });
+         this._startupPerfLogger?.point("constructFileSystem_end");
+         const plugins = this.#plugins;
+diff --git a/src/lib/RootPathUtils.js b/src/lib/RootPathUtils.js
+index 78a4a45428e5896d72ca764e788a79a6531e24cb..d19f55a6d4846828b416933424da5e4a085cf189 100644
+--- a/src/lib/RootPathUtils.js
++++ b/src/lib/RootPathUtils.js
+@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
+   value: true,
+ });
+ exports.RootPathUtils = void 0;
++exports.getAncestorOfRootIdx = getAncestorOfRootIdx;
++exports.pathsToPattern = pathsToPattern;
+ var _invariant = _interopRequireDefault(require("invariant"));
+ var path = _interopRequireWildcard(require("path"));
+ function _getRequireWildcardCache(e) {
+@@ -236,3 +238,33 @@ class RootPathUtils {
+   }
+ }
+ exports.RootPathUtils = RootPathUtils;
++function getAncestorOfRootIdx(normalPath) {
++  let pos = 0;
++  while (normalPath.startsWith(UP_FRAGMENT_SEP, pos)) {
++    pos += UP_FRAGMENT_SEP_LENGTH;
++  }
++  if (
++    normalPath.length === pos + 2 &&
++    normalPath.charCodeAt(pos) === 46 &&
++    normalPath.charCodeAt(pos + 1) === 46
++  ) {
++    return pos / UP_FRAGMENT_SEP_LENGTH + 1;
++  }
++  return pos / UP_FRAGMENT_SEP_LENGTH;
++}
++function pathsToPattern(paths, pathUtils) {
++  if (paths.length === 0) {
++    return null;
++  }
++  const pathsPatterns = paths.map((input) => {
++    let pattern = pathUtils.absoluteToNormal(input);
++    if (pattern === "") {
++      return `(?!\\.\\.(?:\\${path.sep}|$))`;
++    }
++    if (!pattern.endsWith(path.sep)) {
++      pattern += path.sep;
++    }
++    return pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g, "\\$&");
++  });
++  return new RegExp(`^(?:${pathsPatterns.join("|")})`);
++}
+diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
+index 35d85514984821711f6ba9268715de553cc0836b..8f8d0293c0aca4b2dd5c9dff1b12fd957148981e 100644
+--- a/src/lib/TreeFS.js
++++ b/src/lib/TreeFS.js
+@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
+ });
+ exports.default = void 0;
+ var _constants = _interopRequireDefault(require("../constants"));
++var _fallback = require("../crawlers/node/fallback");
+ var _RootPathUtils = require("./RootPathUtils");
+ var _invariant = _interopRequireDefault(require("invariant"));
+ var _path = _interopRequireDefault(require("path"));
+@@ -15,29 +16,47 @@ function isDirectory(node) {
+   return node instanceof Map;
+ }
+ function isRegularFile(node) {
+-  return node[_constants.default.SYMLINK] === 0;
++  return node != null && node[_constants.default.SYMLINK] === 0;
+ }
+ class TreeFS {
+   #cachedNormalSymlinkTargets = new WeakMap();
++  #fallbackBoundaryDepth;
++  #fallbackFilesystem;
+   #rootDir;
+   #rootNode = new Map();
+   #pathUtils;
+   #processFile;
+-  constructor({ rootDir, files, processFile }) {
++  #rootPattern;
++  constructor({ rootDir, files, processFile, fallbackFilesystem, roots, serverRoot }) {
+     this.#rootDir = rootDir;
+     this.#pathUtils = new _RootPathUtils.RootPathUtils(rootDir);
+     this.#processFile = processFile;
++    this.#fallbackFilesystem = fallbackFilesystem ?? null;
++    if (serverRoot != null) {
++      this.#fallbackBoundaryDepth = (0, _RootPathUtils.getAncestorOfRootIdx)(
++        this.#pathUtils.absoluteToNormal(serverRoot),
++      );
++    } else {
++      this.#fallbackBoundaryDepth = null;
++    }
++    this.#rootPattern = (0, _RootPathUtils.pathsToPattern)(
++      roots ?? [],
++      this.#pathUtils,
++    );
+     if (files != null) {
+       this.bulkAddOrModify(files);
+     }
+   }
+   getSerializableSnapshot() {
+-    return this._cloneTree(this.#rootNode);
++    return this._cloneTree(this.#rootNode, '');
+   }
+-  static fromDeserializedSnapshot({ rootDir, fileSystemData, processFile }) {
++  static fromDeserializedSnapshot({ rootDir, fileSystemData, processFile, fallbackFilesystem, roots, serverRoot }) {
+     const tfs = new TreeFS({
+       rootDir,
+       processFile,
++      fallbackFilesystem,
++      roots,
++      serverRoot,
+     });
+     tfs.#rootNode = fileSystemData;
+     return tfs;
+@@ -364,17 +383,39 @@ class TreeFS {
+       }
+       if (segmentNode == null) {
+         if (opts.makeDirectories !== true && segmentName !== "..") {
+-          return {
+-            canonicalMissingPath: isLastSegment
+-              ? targetNormalPath
+-              : targetNormalPath.slice(0, fromIdx - 1),
+-            exists: false,
+-            missingSegmentName: segmentName,
+-          };
++          if (this.#fallbackFilesystem != null) {
++            const parentEnd = isLastSegment
++              ? fromIdx - segmentName.length - 1
++              : fromIdx - segmentName.length - 2;
++            const parentCanonicalPath =
++              parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : "";
++            segmentNode = this.#populateFromFilesystem(
++              parentNode,
++              segmentName,
++              parentCanonicalPath,
++            );
++            if (segmentNode != null) {
++              ancestorOfRootIdx = null;
++            }
++          }
++          if (segmentNode == null) {
++            return {
++              canonicalMissingPath: isLastSegment
++                ? targetNormalPath
++                : targetNormalPath.slice(0, fromIdx - 1),
++              exists: false,
++              missingSegmentName: segmentName,
++            };
++          }
+         }
+-        segmentNode = new Map();
+-        if (opts.makeDirectories === true) {
+-          parentNode.set(segmentName, segmentNode);
++        if (segmentNode == null) {
++          segmentNode = new Map();
++          if (
++            opts.makeDirectories === true ||
++            (segmentName === '..' && this.#fallbackFilesystem != null)
++          ) {
++            parentNode.set(segmentName, segmentNode);
++          }
+         }
+       }
+       if (
+@@ -672,7 +713,9 @@ class TreeFS {
+   }
+   *_metadataIterator(rootNode, opts, prefix = "") {
+     for (const [name, node] of rootNode) {
+-      if (
++      if (node == null) {
++        continue;
++      } else if (
+         !opts.includeNodeModules &&
+         isDirectory(node) &&
+         name === "node_modules"
+@@ -716,12 +759,24 @@ class TreeFS {
+   ) {
+     const pathSep = opts.alwaysYieldPosix ? "/" : _path.default.sep;
+     const prefixWithSep = pathPrefix === "" ? pathPrefix : pathPrefix + pathSep;
++
++    if (this.#fallbackFilesystem != null && iterationRootNode.size === 0) {
++      const canonicalRoot = opts.canonicalPathOfRoot;
++      const rootCanonical =
++        pathPrefix === ""
++          ? canonicalRoot
++          : canonicalRoot + _path.default.sep + pathPrefix;
++      this.#populateDirFromFilesystem(iterationRootNode, rootCanonical, false);
++    }
++
+     for (const [name, node] of this.#directoryNodeIterator(
+       iterationRootNode,
+       iterationRootParentNode,
+       ancestorOfRootIdx,
+     )) {
+-      if (opts.subtreeOnly && name === "..") {
++      if (node == null) {
++        continue;
++      } else if (opts.subtreeOnly && name === "..") {
+         continue;
+       }
+       const nodePath = prefixWithSep + name;
+@@ -762,6 +817,17 @@ class TreeFS {
+           }
+         }
+       } else if (opts.recursive) {
++        if (this.#fallbackFilesystem != null && node.size === 0) {
++          const nodePathWithSystemSeparators =
++            pathSep === _path.default.sep
++              ? nodePath
++              : nodePath.replaceAll(pathSep, _path.default.sep);
++          const canonicalPath = _path.default.join(
++            opts.canonicalPathOfRoot,
++            nodePathWithSystemSeparators,
++          );
++          this.#populateDirFromFilesystem(node, canonicalPath, false);
++        }
+         yield* this._pathIterator(
+           node,
+           iterationRootParentNode,
+@@ -780,7 +846,15 @@ class TreeFS {
+     if (cachedResult != null) {
+       return cachedResult;
+     }
+-    const literalSymlinkTarget = symlinkNode[_constants.default.SYMLINK];
++    let literalSymlinkTarget = symlinkNode[_constants.default.SYMLINK];
++    if (literalSymlinkTarget === 1) {
++      const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPathOfSymlink);
++      const lookup = this.#fallbackFilesystem.lookup(absolutePath);
++      if (lookup != null) {
++        literalSymlinkTarget = lookup[_constants.default.SYMLINK];
++        symlinkNode[_constants.default.SYMLINK] = literalSymlinkTarget;
++      }
++    }
+     (0, _invariant.default)(
+       typeof literalSymlinkTarget === "string",
+       "Expected symlink target to be populated.",
+@@ -820,16 +894,84 @@ class TreeFS {
+     }
+     return result.node;
+   }
+-  _cloneTree(root) {
++  _cloneTree(root, prefix) {
+     const clone = new Map();
+     for (const [name, node] of root) {
+-      if (isDirectory(node)) {
+-        clone.set(name, this._cloneTree(node));
++      if (node == null) {
++        continue;
++      } else if (isDirectory(node)) {
++        const childPath =
++          prefix === "" ? name : prefix + _path.default.sep + name;
++        if (
++          this.#rootPattern == null ||
++          this.#rootPattern?.test(childPath + _path.default.sep)
++        ) {
++          clone.set(name, this._cloneTree(node, childPath));
++        }
+       } else {
+         clone.set(name, [...node]);
+       }
+     }
+     return clone;
+   }
++  #isOutsideFallbackBoundary(canonicalPath) {
++    const maxDepth = this.#fallbackBoundaryDepth;
++    return (
++      maxDepth != null &&
++      (0, _RootPathUtils.getAncestorOfRootIdx)(canonicalPath) > maxDepth
++    );
++  }
++  #populateFromFilesystem(parentNode, segmentName, parentCanonicalPath) {
++    const fallback = this.#fallbackFilesystem;
++    if (fallback == null) {
++      return null;
++    }
++    const childCanonicalPath =
++      parentCanonicalPath === ""
++        ? segmentName
++        : parentCanonicalPath + _path.default.sep + segmentName;
++    if (
++      this.#rootPattern?.test(childCanonicalPath) ||
++      this.#isOutsideFallbackBoundary(childCanonicalPath)
++    ) {
++      return null;
++    } else if (
++      parentCanonicalPath !== "" &&
++      (0, _fallback.shouldFallbackCrawlDir)(parentCanonicalPath)
++    ) {
++      this.#populateDirFromFilesystem(parentNode, parentCanonicalPath, true);
++      return parentNode.get(segmentName) ?? null;
++    } else if (parentNode.has(segmentName)) {
++      return parentNode.get(segmentName) ?? null;
++    } else {
++      const parentAbsolute =
++        this.#pathUtils.normalToAbsolute(parentCanonicalPath);
++      const absolutePath = parentAbsolute + _path.default.sep + segmentName;
++      const node = fallback.lookup(absolutePath, parentNode.get(segmentName));
++      parentNode.set(segmentName, node);
++      return node;
++    }
++  }
++  #populateDirFromFilesystem(dirNode, canonicalPath, skipCheck) {
++    const fallback = this.#fallbackFilesystem;
++    if (
++      fallback == null ||
++      !skipCheck && (
++        this.#rootPattern?.test(canonicalPath) ||
++        this.#isOutsideFallbackBoundary(canonicalPath)
++      )
++    ) {
++      return;
++    }
++    const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
++    const entries = fallback.readdir(absolutePath, dirNode);
++    if (entries != null && entries !== dirNode) {
++      for (const [name, entry] of entries) {
++        if (!dirNode.has(name)) {
++          dirNode.set(name, entry);
++        }
++      }
++    }
++  }
+ }
+ exports.default = TreeFS;
