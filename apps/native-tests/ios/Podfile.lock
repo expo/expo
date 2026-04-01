@@ -240,6 +240,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu/UITests (55.0.9):
+    - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -266,6 +267,7 @@ PODS:
     - Yoga
   - Expo/Tests (55.0.2):
     - ExpoModulesCore
+    - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2913,9 +2915,9 @@ SPEC CHECKSUMS:
   EASClient: cb7854d65c09c520cc7d165f266c1d3bb901ceb7
   EXJSONUtils: 475f1af3d20fbd99268694df81d096817092aa89
   EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: c56d8767adbfa930c299ad052091e0e0e13d0a68
+  Expo: 5b891535ab874124ee26c5216419748c2fcc55e3
   expo-dev-launcher: 52dad5ea74c968013ebb2707370e28a0cf9d8b7f
-  expo-dev-menu: 0758a54a6cd1605d3dd917717e447e1a10c3e84f
+  expo-dev-menu: 3ab7b064b3d3db84334481bdb24325e0b67889c3
   expo-dev-menu-interface: 58beb5e831034c20466d8c26ba679b0aa385abd2
   ExpoClipboard: 0acdce934cb6a71b507da1117399645265e51ed5
   ExpoImage: d9446e7c2d365c063df7c8acd9c88b76a7b48ee4
