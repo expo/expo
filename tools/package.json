@@ -30,6 +30,7 @@
   "author": "support@expo.dev",
   "license": "MIT",
   "dependencies": {
+    "@bacons/xcode": "1.0.0-alpha.33",
     "@expo/commander": "2.21.1",
     "@expo/json-file": "^8.3.3",
     "@expo/multipart-body-parser": "^1.1.0",
@@ -38,6 +39,7 @@
     "@expo/xcpretty": "^4.4.0",
     "@expo/spawn-async": "^1.7.2",
     "@expo/swiftlint": "^0.57.1",
+    "@expo/xcpretty": "^4.4.0",
     "@linear/sdk": "^2.6.0",
     "@octokit/rest": "^19.0.7",
     "chalk": "^4.1.2",
