@@ -75,7 +75,7 @@
     "expo-web-browser": "workspace:*",
     "lottie-react-native": "^7.3.4",
     "react": "19.2.3",
-    "react-native": "0.85.0-rc.5",
+    "react-native": "0.85.0-rc.7",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-keyboard-controller": "^1.20.7",
     "react-native-maps": "1.27.2",

@@ -1,0 +1,13 @@
+diff --git a/ios/LottieReactNative/ContainerView.swift b/ios/LottieReactNative/ContainerView.swift
+index 88e7287a65bbebdf1a32b66c2ad0573ee84ac440..4230213e7e654073d023184a1be61c8e81700427 100644
+--- a/ios/LottieReactNative/ContainerView.swift
++++ b/ios/LottieReactNative/ContainerView.swift
+@@ -286,8 +286,6 @@ class ContainerView: RCTView {
+         if let current = animationView {
+             // Remove from view hierarchy
+             current.removeFromSuperview()
+-            // Clear layer contents to prevent any rendering artifacts
+-            current.layer.contents = nil
+             // Clear the reference
+             animationView = nil
+         }

@@ -41,4 +41,6 @@ preferWorkspacePackages: true
 minimumReleaseAge: 1440
 
 minimumReleaseAgeExclude:
-  - "@expo/*"
+  - '@expo/*'
+  - '@react-native/*'
+  - 'react-native'

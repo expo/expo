@@ -63,6 +63,8 @@ module Expo
     @build_from_source_patterns = []
     @react_native_version = nil
     @hermes_version = nil
+    @claimed_vendored_frameworks = nil  # Set<String> — xcframework names already claimed by a prebuilt pod
+    @framework_owner_map = nil          # Hash: framework_name -> owning_pod_name
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -339,6 +341,13 @@ module Expo
         spec.source = { :http => URI::File.build(path: default_tarball).to_s, :flatten => false }
         spec.vendored_frameworks = build_vendored_paths(product_name, pod_info, spec.name)
 
+        extra_fw_paths = framework_search_paths_for_skipped_deps(spec.name, pod_info)
+        if extra_fw_paths.any?
+          spec.pod_target_xcconfig ||= {}
+          existing = spec.pod_target_xcconfig['FRAMEWORK_SEARCH_PATHS'] || '$(inherited)'
+          spec.pod_target_xcconfig['FRAMEWORK_SEARCH_PATHS'] = ([existing] + extra_fw_paths).join(' ')
+        end
+
         strip_bundled_deps_from_spec(spec, pod_info)
 
         spec.prepare_command = prepare_command_script(product_name, pod_info[:build_output_dir])
@@ -388,6 +397,13 @@ module Expo
         # Ensure DEFINES_MODULE is set
         spec_json['pod_target_xcconfig'] ||= {}
         spec_json['pod_target_xcconfig']['DEFINES_MODULE'] = 'YES'
+
+        # Add framework search paths for shared SPM deps owned by another prebuilt pod
+        extra_fw_paths = framework_search_paths_for_skipped_deps(spec.name, pod_info)
+        if extra_fw_paths.any?
+          existing = spec_json['pod_target_xcconfig']['FRAMEWORK_SEARCH_PATHS'] || '$(inherited)'
+          spec_json['pod_target_xcconfig']['FRAMEWORK_SEARCH_PATHS'] = ([existing] + extra_fw_paths).join(' ')
+        end
 
         Pod::Specification.from_json(spec_json.to_json)
       end
@@ -843,18 +859,55 @@ module Expo
       end
 
       # Builds the vendored_frameworks paths array for a prebuilt pod.
+      # Deduplicates shared SPM dependency frameworks across multiple prebuilt pods:
+      # the first pod to claim a framework "owns" it; subsequent pods skip it and
+      # instead get FRAMEWORK_SEARCH_PATHS pointing at the owning pod's directory.
       #
       # @param product_name [String] The product/module name
       # @param pod_info [Hash] Package info from spm.config.json lookup
       # @param pod_name [String] The pod name (for summary tracking)
       # @return [Array<String>] vendored framework paths
       def build_vendored_paths(product_name, pod_info, pod_name)
+        @claimed_vendored_frameworks ||= Set.new
+        @framework_owner_map ||= {}
+
         paths = ["#{product_name}.xcframework"]
+        @claimed_vendored_frameworks.add(product_name)
+        @framework_owner_map[product_name] = pod_name
+
         (pod_info[:spm_dependency_frameworks] || []).each do |dep_name|
-          paths << "#{dep_name}.xcframework"
+          if @claimed_vendored_frameworks.include?(dep_name)
+            owner = @framework_owner_map[dep_name]
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Skipping #{dep_name}.xcframework from #{pod_name} — already vendored by #{owner}"
+          else
+            paths << "#{dep_name}.xcframework"
+            @claimed_vendored_frameworks.add(dep_name)
+            @framework_owner_map[dep_name] = pod_name
+          end
           log_spm_dependency(pod_name, dep_name)
         end
         paths
+      end
+
+      # Returns FRAMEWORK_SEARCH_PATHS entries for shared SPM dependency frameworks
+      # that were claimed by another prebuilt pod. The non-owning pod needs these
+      # paths so the linker can find the xcframeworks at build time.
+      #
+      # @param pod_name [String] The pod name
+      # @param pod_info [Hash] Package info from spm.config.json lookup
+      # @return [Array<String>] framework search path entries
+      def framework_search_paths_for_skipped_deps(pod_name, pod_info)
+        @claimed_vendored_frameworks ||= Set.new
+        @framework_owner_map ||= {}
+
+        paths = []
+        (pod_info[:spm_dependency_frameworks] || []).each do |dep_name|
+          owner = @framework_owner_map[dep_name]
+          if owner && owner != pod_name
+            paths << "\"${PODS_ROOT}/#{owner}\""
+          end
+        end
+        paths.uniq
       end
 
       # ──────────────────────────────────────────────────────────────────────

@@ -8,14 +8,14 @@ import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 class SetTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val setType: KType
+  private val setType: TypeDescriptor
 ) : DynamicAwareTypeConverters<Set<*>>() {
   private val elementConverter = converterProvider.obtainTypeConverter(
-    requireNotNull(setType.arguments.first().type) {
+    requireNotNull(setType.params.first()) {
       "The set type should contain the type of elements."
     }
   )
@@ -33,7 +33,7 @@ class SetTypeConverter(
         exceptionDecorator({ cause ->
           CollectionElementCastException(
             setType,
-            setType.arguments.first().type!!,
+            setType.params.first(),
             it!!::class,
             cause
           )
@@ -50,7 +50,7 @@ class SetTypeConverter(
         exceptionDecorator({ cause ->
           CollectionElementCastException(
             setType,
-            setType.arguments.first().type!!,
+            setType.params.first(),
             type,
             cause
           )
