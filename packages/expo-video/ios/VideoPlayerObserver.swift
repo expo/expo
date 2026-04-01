@@ -457,7 +457,16 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     // The AVPlayerItem.error can't be modified, so we have a custom field for caching errors
     if newStatus == .error {
       let playerItemError = (playerItem as? VideoPlayerItem)?.urlAsset.cachingError ?? playerItem.error ?? error
-      error = PlayerItemLoadException(playerItemError?.localizedDescription)
+      // Include DASH debug info in the error message for JS-side visibility
+      var debugSuffix = ""
+      #if DEBUG
+      if let videoPlayerItem = playerItem as? VideoPlayerItem {
+        let asset = videoPlayerItem.urlAsset
+        let fileHelperDesc = asset.dashFileHelper != nil ? "SET" : "NIL"
+        debugSuffix = " [isDASH=\(asset.isDASH),fileHelper=\(fileHelperDesc),url=\(asset.url.scheme ?? "nil")://\(asset.url.host ?? "nil")]"
+      }
+      #endif
+      error = PlayerItemLoadException((playerItemError?.localizedDescription ?? "unknown") + debugSuffix)
       status = .error
     }
 

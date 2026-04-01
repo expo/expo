@@ -7,6 +7,26 @@ class VideoPlayerItem: AVPlayerItem {
   let urlAsset: VideoAsset
   let videoSource: VideoSource
   let isHls: Bool
+
+  // DASH-to-HLS fMP4 segments don't advertise random-access support in
+  // their init segment, so AVPlayer sets these to false. Override them
+  // to true for DASH content so AVPlayerViewController enables the
+  // interactive scrubber and time controls.
+  override var canPlayFastForward: Bool {
+    if urlAsset.isDASH { return true }
+    return super.canPlayFastForward
+  }
+
+  override var canPlayReverse: Bool {
+    if urlAsset.isDASH { return true }
+    return super.canPlayReverse
+  }
+
+  override var canPlayFastReverse: Bool {
+    if urlAsset.isDASH { return true }
+    return super.canPlayFastReverse
+  }
+
   var videoTracks: [VideoTrack] {
     get async {
       return await tracksLoadingTask?.value ?? []
@@ -25,7 +45,11 @@ class VideoPlayerItem: AVPlayerItem {
     let asset = VideoAsset(url: url, videoSource: videoSource)
     self.urlAsset = asset
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
-    self.createTracksLoadingTask()
+    // Skip track loading for DASH assets — m3u8 files haven't been written
+    // yet, so loadTracks() on the empty file:// URL would fail.
+    if !asset.isDASH {
+      self.createTracksLoadingTask()
+    }
   }
 
   init?(videoSource: VideoSource, urlOverride: URL? = nil) async throws {
@@ -37,16 +61,41 @@ class VideoPlayerItem: AVPlayerItem {
 
     let asset = VideoAsset(url: url, videoSource: videoSource)
     self.urlAsset = asset
-    // We can ignore any exceptions thrown during the load. The asset will be assigned to the `VideoPlayer` anyways
-    // and cause it to go into .error state trigerring the `onStatusChange` event.
-    do {
-      _ = try await asset.load(.duration, .preferredTransform, .isPlayable)
-    } catch {
-        // Catch block is intentionally left empty
+    // Skip asset.load() for DASH assets — the file:// m3u8 hasn't been written
+    // yet at this point. We load asset properties after writing playlists below.
+    if !asset.isDASH {
+      // We can ignore any exceptions thrown during the load. The asset will be assigned to the `VideoPlayer` anyways
+      // and cause it to go into .error state trigerring the `onStatusChange` event.
+      do {
+        _ = try await asset.load(.duration, .preferredTransform, .isPlayable)
+      } catch {
+          // Catch block is intentionally left empty
+      }
     }
 
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
-    self.createTracksLoadingTask()
+    if !asset.isDASH {
+      self.createTracksLoadingTask()
+    } else {
+      // For DASH assets, fetch the MPD and write m3u8 files before AVPlayer
+      // tries to load the file:// URL. Then start periodic refresh for live.
+      if let fileHelper = asset.dashFileHelper {
+        await fileHelper.fetchAndWriteInitialPlaylists()
+        fileHelper.startLiveUpdatesTimer()
+      }
+      do {
+        _ = try await asset.load(.duration, .preferredTransform, .isPlayable)
+      } catch {
+        // Non-fatal — live streams have indefinite duration
+      }
+      // Allow seeking away from the live edge (enables interactive scrubber)
+      self.automaticallyPreservesTimeOffsetFromLive = false
+      // Keep buffering while paused so scrubbing works smoothly
+      self.canUseNetworkResourcesForLiveStreamingWhilePaused = true
+      // Set a small configured offset so AVPlayer doesn't snap back to live edge
+      self.configuredTimeOffsetFromLive = CMTime(seconds: 2, preferredTimescale: 1)
+      self.createTracksLoadingTask()
+    }
   }
 
   deinit {
