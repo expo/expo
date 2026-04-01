@@ -19,7 +19,7 @@ import { getPackageByName } from '../../Packages';
 import { Artifacts } from '../Artifacts';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
-import { isExternalPackage } from '../ExternalPackage';
+import { getExternalPackageByProductName, isExternalPackage } from '../ExternalPackage';
 import { Frameworks } from '../Frameworks';
 import type { BuildFlavor } from '../Prebuilder.types';
 import { buildSharedSPMDependencyAsync } from '../SPMBuild';
@@ -204,6 +204,59 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
 }
 
 // ---------------------------------------------------------------------------
+// Helper: frameworkExistsAtAnyVersion
+// ---------------------------------------------------------------------------
+
+/**
+ * Checks if an xcframework exists at either a non-versioned or versioned output path.
+ * Versioned paths have the format: output/<packageVersion>/<rnVersion>/<hermesVersion>/<flavor>/xcframeworks/
+ * Non-versioned paths have the format: output/<flavor>/xcframeworks/
+ */
+function frameworkExistsAtAnyVersion(
+  buildPath: string,
+  productName: string,
+  buildType: BuildFlavor
+): boolean {
+  // Check non-versioned path first (quick check)
+  if (fs.existsSync(Frameworks.getFrameworkPath(buildPath, productName, buildType))) {
+    return true;
+  }
+
+  // Check versioned paths by scanning the output directory
+  const outputDir = path.join(buildPath, 'output');
+  if (!fs.existsSync(outputDir)) {
+    return false;
+  }
+
+  const flavor = buildType.toLowerCase();
+  const xcframeworkName = `${productName}.xcframework`;
+
+  // Scan top-level entries in output/ — version directories are non-flavor names
+  try {
+    for (const entry of fs.readdirSync(outputDir)) {
+      if (entry === 'debug' || entry === 'release') continue;
+      // Walk a known depth: <ver>/<rnVer>/<hermesVer>/<flavor>/xcframeworks/
+      const verDir = path.join(outputDir, entry);
+      if (!fs.statSync(verDir).isDirectory()) continue;
+      for (const rnVer of fs.readdirSync(verDir)) {
+        const rnDir = path.join(verDir, rnVer);
+        if (!fs.statSync(rnDir).isDirectory()) continue;
+        for (const hermesVer of fs.readdirSync(rnDir)) {
+          const candidate = path.join(rnDir, hermesVer, flavor, 'xcframeworks', xcframeworkName);
+          if (fs.existsSync(candidate)) {
+            return true;
+          }
+        }
+      }
+    }
+  } catch {
+    // If we can't read the directory, assume not found
+  }
+
+  return false;
+}
+
+// ---------------------------------------------------------------------------
 // Helper: expandWithUnbuiltDependencies
 // ---------------------------------------------------------------------------
 
@@ -235,25 +288,36 @@ export function expandWithUnbuiltDependencies(packages: SPMPackageSource[]): SPM
         if (!product.externalDependencies) continue;
 
         for (const dep of product.externalDependencies) {
-          if (!dep.includes('/')) continue;
+          let depPackageName: string;
+          let depProductName: string;
 
-          // Parse package name and product name (handle scoped: @expo/ui/ExpoUI)
-          const parts = dep.split('/');
-          const isScoped = parts[0].startsWith('@');
-          const depPackageName = isScoped ? `${parts[0]}/${parts[1]}` : parts[0];
-          const depProductName = isScoped ? parts[2] : parts[1];
+          if (dep.includes('/')) {
+            // Parse package name and product name (handle scoped: @expo/ui/ExpoUI)
+            const parts = dep.split('/');
+            const isScoped = parts[0].startsWith('@');
+            depPackageName = isScoped ? `${parts[0]}/${parts[1]}` : parts[0];
+            depProductName = isScoped ? parts[2] : parts[1];
+          } else {
+            // Bare product name (e.g., "RNWorklets")
+            // Resolve to package via external package configs
+            const externalPkg = getExternalPackageByProductName(dep);
+            if (!externalPkg) continue;
+            depPackageName = externalPkg.packageName;
+            depProductName = dep;
+          }
 
           // Skip cache deps and deps already in the build set
           if (CACHE_DEPS.has(depPackageName)) continue;
           if (packagesByName.has(depPackageName) || added.has(depPackageName)) continue;
 
           // Check if the xcframework already exists (for both debug and release)
+          // Check both non-versioned and versioned paths (versioned: output/<ver>/<rn>/<hermes>/<flavor>/xcframeworks/)
           const depBuildPath = path.join(getPrecompileDir(), '.build', depPackageName);
-          const debugExists = fs.existsSync(
-            Frameworks.getFrameworkPath(depBuildPath, depProductName, 'Debug')
-          );
-          const releaseExists = fs.existsSync(
-            Frameworks.getFrameworkPath(depBuildPath, depProductName, 'Release')
+          const debugExists = frameworkExistsAtAnyVersion(depBuildPath, depProductName, 'Debug');
+          const releaseExists = frameworkExistsAtAnyVersion(
+            depBuildPath,
+            depProductName,
+            'Release'
           );
 
           if (debugExists && releaseExists) continue;
