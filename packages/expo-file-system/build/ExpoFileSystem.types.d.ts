@@ -691,6 +691,13 @@ export type DownloadTaskOptions = {
      */
     headers?: Record<string, string>;
     /**
+     * Determines whether the iOS native session should continue in the background.
+     * Android accepts this option for API consistency and ignores it.
+     *
+     * @default 'background'
+     */
+    sessionType?: DownloadTaskSessionType;
+    /**
      * Callback for download progress updates.
      */
     onProgress?: (data: DownloadProgress) => void;
@@ -699,6 +706,10 @@ export type DownloadTaskOptions = {
      */
     signal?: AbortSignal;
 };
+/**
+ * The native URL session mode used by iOS download tasks.
+ */
+export type DownloadTaskSessionType = 'background' | 'foreground';
 /**
  * Represents the state of a paused download that can be persisted and resumed later.
  */
@@ -720,7 +731,7 @@ export type DownloadPauseState = {
      */
     headers?: Record<string, string>;
     /**
-     * Platform-specific resume data (byte offset as string).
+     * Platform-specific opaque resume data.
      */
     resumeData?: string;
 };

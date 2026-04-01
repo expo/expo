@@ -13,6 +13,7 @@ import {
   DownloadTaskOptions,
   DownloadPauseState,
   TaskState,
+  type DownloadTaskSessionType,
 } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
@@ -332,6 +333,24 @@ Directory.pickDirectoryAsync = async function (initialUri?: string) {
 };
 
 /**
+ * Download tasks default to background sessions unless the caller explicitly opts out.
+ */
+function resolveDownloadTaskSessionType(
+  sessionType?: DownloadTaskSessionType
+): DownloadTaskSessionType {
+  return sessionType ?? 'background';
+}
+
+function normalizeDownloadTaskOptions(options?: DownloadTaskOptions): DownloadTaskOptions | undefined {
+  if (!options) {
+    return undefined;
+  }
+  return {
+    ...options,
+    sessionType: resolveDownloadTaskSessionType(options.sessionType),
+  };
+}
+/**
  * Represents an upload task with progress tracking and cancellation support.
  */
 export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
@@ -445,12 +464,14 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
   private _resumeData?: string;
   private _subscription?: EventSubscription;
   private _abortHandler?: () => void;
+  private _inFlightOperation?: Promise<File | null>;
+  private _pauseRequest?: Promise<void>;
 
   constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions) {
     super();
     this._url = url;
     this._destination = destination;
-    this._options = options;
+    this._options = normalizeDownloadTaskOptions(options);
   }
 
   get state(): TaskState {
@@ -460,45 +481,31 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
   async downloadAsync(): Promise<File | null> {
     this._assertState(['idle'], 'downloadAsync');
     this._state = 'active';
-    try {
-      this._wireAbortSignal();
-      this._wireProgress();
-
-      const nativeOpts = {
+    this._pauseRequest = undefined;
+    const operation = this._runDownloadOperation(() =>
+      super.start(this._url, this._destination, {
         headers: this._options?.headers,
-      };
-
-      const result = await super.start(this._url, this._destination, nativeOpts);
-      if (result) {
-        this._state = 'completed';
-        const file = new File(result);
-        this._emitFinalProgressEvent(file.size);
-        return file;
-      }
-      // null = paused (native resolved with nil because isPausing was set)
-      this._state = 'paused';
-      return null;
-    } catch (error) {
-      if (this.state === 'cancelled') {
-        throw error;
-      }
-      this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
-      if (this._options?.signal?.aborted) throw createAbortError();
-      throw error;
-    } finally {
-      this._cleanup();
-    }
+        sessionType: resolveDownloadTaskSessionType(this._options?.sessionType),
+      })
+    );
+    this._inFlightOperation = operation;
+    return operation;
   }
 
-  pause(): { resumeData: string } {
+  pause(): void {
     this._assertState(['active'], 'pause');
-    const result = super.pause();
-    this._resumeData = result.resumeData ?? undefined;
+    this._pauseRequest = Promise.resolve(super.pause()).then((result) => {
+      this._resumeData = result?.resumeData ?? undefined;
+    });
     // State transition to 'paused' happens in downloadAsync()/resumeAsync()
     // when the native promise resolves with null
-    return result;
   }
 
+  async pauseAsync(): Promise<void> {
+    this.pause();
+    await this._pauseRequest;
+    await this._inFlightOperation;
+  }
   async resumeAsync(): Promise<File | null> {
     this._assertState(['paused'], 'resumeAsync');
     if (!this._resumeData) {
@@ -507,39 +514,21 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       );
     }
     this._state = 'active';
-    try {
-      this._wireAbortSignal();
-      this._wireProgress();
-
-      const nativeOpts = {
+    this._pauseRequest = undefined;
+    const operation = this._runDownloadOperation(() =>
+      super.resume(this._url, this._destination, this._resumeData!, {
         headers: this._options?.headers,
-      };
-
-      const result = await super.resume(this._url, this._destination, this._resumeData, nativeOpts);
-      if (result) {
-        this._state = 'completed';
-        this._resumeData = undefined;
-        const file = new File(result);
-        this._emitFinalProgressEvent(file.size);
-        return file;
-      }
-      this._state = 'paused';
-      return null;
-    } catch (error) {
-      if (this.state === 'cancelled') {
-        throw error;
-      }
-      this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
-      if (this._options?.signal?.aborted) throw createAbortError();
-      throw error;
-    } finally {
-      this._cleanup();
-    }
+        sessionType: resolveDownloadTaskSessionType(this._options?.sessionType),
+      })
+    );
+    this._inFlightOperation = operation;
+    return operation;
   }
 
   cancel(): void {
     if (['completed', 'cancelled', 'error'].includes(this._state)) return;
     this._state = 'cancelled';
+    this._pauseRequest = undefined;
     super.cancel();
     this._cleanup();
   }
@@ -560,10 +549,11 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       throw new Error('Cannot restore task: DownloadPauseState has no resumeData');
     }
     const dest = state.isDirectory ? new Directory(state.fileUri) : new File(state.fileUri);
-    const mergedOptions: DownloadTaskOptions | undefined =
+    const mergedOptions = normalizeDownloadTaskOptions(
       options || state.headers
         ? { ...options, headers: { ...state.headers, ...options?.headers } }
-        : undefined;
+        : undefined
+    );
     const task = new DownloadTask(state.url, dest, mergedOptions);
     task._resumeData = state.resumeData;
     task._state = 'paused';
@@ -601,6 +591,37 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     }
   }
 
+  private async _runDownloadOperation(
+    operation: () => Promise<string | null>
+  ): Promise<File | null> {
+    try {
+      this._wireAbortSignal();
+      this._wireProgress();
+
+      const result = await operation();
+      if (result) {
+        this._state = 'completed';
+        this._resumeData = undefined;
+        const file = new File(result);
+        this._emitFinalProgressEvent(file.size);
+        return file;
+      }
+
+      await this._pauseRequest;
+      this._state = 'paused';
+      return null;
+    } catch (error) {
+      if (this.state === 'cancelled') {
+        throw error;
+      }
+      this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
+      if (this._options?.signal?.aborted) throw createAbortError();
+      throw error;
+    } finally {
+      this._cleanup();
+      this._inFlightOperation = undefined;
+    }
+  }
   private _emitFinalProgressEvent(fileSize: number) {
     // Emit a synthetic final progress to guarantee 100% is reported.
     // Native progress events may not fire for small files, and even when they do,

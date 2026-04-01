@@ -27,6 +27,7 @@ export {
   type UploadProgress,
   type UploadResult,
   type DownloadTaskOptions,
+  type DownloadTaskSessionType,
   type DownloadPauseState,
   type TaskState,
 } from './ExpoFileSystem.types';

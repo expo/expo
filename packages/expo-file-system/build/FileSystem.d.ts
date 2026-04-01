@@ -136,12 +136,13 @@ export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask 
     private _resumeData?;
     private _subscription?;
     private _abortHandler?;
+    private _inFlightOperation?;
+    private _pauseRequest?;
     constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions);
     get state(): TaskState;
     downloadAsync(): Promise<File | null>;
-    pause(): {
-        resumeData: string;
-    };
+    pause(): void;
+    pauseAsync(): Promise<void>;
     resumeAsync(): Promise<File | null>;
     cancel(): void;
     savable(): DownloadPauseState;
@@ -150,6 +151,7 @@ export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask 
     private _wireAbortSignal;
     private _wireProgress;
     private _cleanup;
+    private _runDownloadOperation;
     private _emitFinalProgressEvent;
 }
 //# sourceMappingURL=FileSystem.d.ts.map

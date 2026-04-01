@@ -160,6 +160,33 @@ describe('DownloadTask', () => {
     expect(result!.uri).toContain('video.mp4');
   });
 
+  it('forwards sessionType to native start and resume calls', async () => {
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockResolvedValue(null);
+
+    const task = new DownloadTask(url, destination, {
+      sessionType: 'foreground',
+    });
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    expect(ExpoFileSystem.FileSystemDownloadTask.prototype.start).toHaveBeenCalledWith(
+      url,
+      destination,
+      expect.objectContaining({ sessionType: 'foreground' })
+    );
+
+    await task.resumeAsync();
+
+    expect(ExpoFileSystem.FileSystemDownloadTask.prototype.resume).toHaveBeenCalledWith(
+      url,
+      destination,
+      'mock-resume-data',
+      expect.objectContaining({ sessionType: 'foreground' })
+    );
+  });
+
   it('transitions to active then paused when native returns null', async () => {
     jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockResolvedValue(null);
 

@@ -2,54 +2,181 @@
 
 import ExpoModulesCore
 
+enum DownloadTaskSessionType: String, Enumerable {
+  case background
+  case foreground
+}
+
 /**
  * A record type for download task options.
  */
 struct DownloadTaskOptions: Record {
   @Field var headers: [String: String]?
+  @Field var sessionType: DownloadTaskSessionType = .background
+}
+
+private final class DownloadTaskSessionDispatcher: NSObject, URLSessionDownloadDelegate {
+  static let shared = DownloadTaskSessionDispatcher()
+
+  private var delegates: [String: DownloadTaskDelegate] = [:]
+  private let lock = NSLock()
+  private lazy var sessionHandler = ExpoAppDelegateSubscriberRepository.getSubscriberOfType(
+    FileSystemBackgroundSessionHandler.self
+  )
+
+  func register(
+    delegate: DownloadTaskDelegate,
+    for task: URLSessionDownloadTask,
+    in session: URLSession
+  ) -> String {
+    let key = makeKey(session: session, task: task)
+    lock.lock()
+    delegates[key] = delegate
+    lock.unlock()
+    return key
+  }
+
+  func unregister(key: String?) {
+    guard let key else {
+      return
+    }
+    lock.lock()
+    delegates.removeValue(forKey: key)
+    lock.unlock()
+  }
+
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didWriteData bytesWritten: Int64,
+    totalBytesWritten: Int64,
+    totalBytesExpectedToWrite: Int64
+  ) {
+    delegate(for: session, task: downloadTask)?.urlSession(
+      session,
+      downloadTask: downloadTask,
+      didWriteData: bytesWritten,
+      totalBytesWritten: totalBytesWritten,
+      totalBytesExpectedToWrite: totalBytesExpectedToWrite
+    )
+  }
+
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didFinishDownloadingTo location: URL
+  ) {
+    delegate(for: session, task: downloadTask)?.urlSession(
+      session,
+      downloadTask: downloadTask,
+      didFinishDownloadingTo: location
+    )
+  }
+
+  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    let key = makeKey(session: session, task: task)
+    delegate(for: session, task: task)?.urlSession(session, task: task, didCompleteWithError: error)
+    unregister(key: key)
+  }
+
+  func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+    guard let identifier = session.configuration.identifier else {
+      return
+    }
+    sessionHandler?.invokeCompletionHandler(forSessionIdentifier: identifier)
+  }
+
+  private func delegate(for session: URLSession, task: URLSessionTask) -> DownloadTaskDelegate? {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+    return delegates[makeKey(session: session, task: task)]
+  }
+
+  private func makeKey(session: URLSession, task: URLSessionTask) -> String {
+    let sessionIdentifier = session.configuration.identifier ?? "foreground"
+    return "\(sessionIdentifier):\(task.taskIdentifier)"
+  }
+}
+
+private final class DownloadTaskSessionManager {
+  static let shared = DownloadTaskSessionManager()
+
+  private let dispatcher = DownloadTaskSessionDispatcher.shared
+
+  private lazy var foregroundSession = createForegroundSession()
+
+  #if os(iOS)
+  private lazy var backgroundSession = createBackgroundSession()
+  #endif
+
+  func session(for type: DownloadTaskSessionType) -> URLSession {
+    switch type {
+    case .foreground:
+      return foregroundSession
+    case .background:
+      #if os(iOS)
+      return backgroundSession
+      #else
+      return foregroundSession
+      #endif
+    }
+  }
+
+  func register(
+    delegate: DownloadTaskDelegate,
+    for task: URLSessionDownloadTask,
+    in session: URLSession
+  ) -> String {
+    return dispatcher.register(delegate: delegate, for: task, in: session)
+  }
+
+  func unregister(key: String?) {
+    dispatcher.unregister(key: key)
+  }
+
+  private func createForegroundSession() -> URLSession {
+    let configuration = URLSessionConfiguration.default
+    configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+    configuration.urlCache = nil
+    return URLSession(configuration: configuration, delegate: dispatcher, delegateQueue: .main)
+  }
+
+  #if os(iOS)
+  private func createBackgroundSession() -> URLSession {
+    let configuration = URLSessionConfiguration.background(
+      withIdentifier: Self.backgroundSessionIdentifier
+    )
+    configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+    configuration.urlCache = nil
+    configuration.sessionSendsLaunchEvents = true
+    configuration.isDiscretionary = false
+    return URLSession(configuration: configuration, delegate: dispatcher, delegateQueue: .main)
+  }
+
+  private static let backgroundSessionIdentifier = {
+    let bundleIdentifier = Bundle.main.bundleIdentifier ?? "expo.modules.filesystem"
+    return "\(bundleIdentifier).expo-file-system.download-task.background"
+  }()
+  #endif
 }
 
 /**
  * A SharedObject that handles file downloads with pause/resume support and progress tracking.
- * Uses URLSessionDataTask with manual file writing so that pause/resume works via byte-offset
- * Range headers, independent of server-provided resume data.
  */
 class FileSystemDownloadTask: SharedObject {
-  private var session: URLSession?
-  private var dataTask: URLSessionDataTask?
-  private var delegate: DownloadTaskDelegate?
-  private var destinationAccess: FileSystemScopedAccess?
+  private var downloadTask: URLSessionDownloadTask?
+  private var delegateKey: String?
+  private var sessionType: DownloadTaskSessionType = .background
   var isPausing = false
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
+    sessionType = options?.sessionType ?? .background
 
-    do {
-      destinationAccess = try makeScopedAccess(for: to, permission: .write)
-    } catch {
-      promise.reject(error)
-      return
-    }
-    let destinationUrl = resolveDestinationUrl(to: to, url: url)
-
-    // Remove existing file for a fresh start
-    if FileManager.default.fileExists(atPath: destinationUrl.path) {
-      try? FileManager.default.removeItem(at: destinationUrl)
-    }
-
-    // Create parent directories
-    try? FileManager.default.createDirectory(
-      at: destinationUrl.deletingLastPathComponent(),
-      withIntermediateDirectories: true
-    )
-    FileManager.default.createFile(atPath: destinationUrl.path, contents: nil)
-
-    delegate = DownloadTaskDelegate(sharedObject: self, destinationUrl: destinationUrl, offset: 0, promise: promise)
-
-    let configuration = URLSessionConfiguration.default
-    configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-    configuration.urlCache = nil
-    session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: .main)
+    let session = DownloadTaskSessionManager.shared.session(for: sessionType)
+    let delegate = DownloadTaskDelegate(sharedObject: self, destination: to, promise: promise)
 
     var request = URLRequest(url: url)
     if let headers = options?.headers {
@@ -58,210 +185,165 @@ class FileSystemDownloadTask: SharedObject {
       }
     }
 
-    dataTask = session?.dataTask(with: request)
-    dataTask?.resume()
+    let task = session.downloadTask(with: request)
+    downloadTask = task
+    delegateKey = DownloadTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
+    task.resume()
   }
 
-  func pause() -> [String: String?] {
+  func pause() async -> [String: String?] {
     isPausing = true
-    dataTask?.cancel()
-    let bytesWritten = delegate?.totalBytesWritten ?? 0
-    return ["resumeData": String(bytesWritten)]
+    guard let downloadTask else {
+      return ["resumeData": nil]
+    }
+
+    let resumeData = await downloadTask.cancelByProducingResumeData()
+    return ["resumeData": resumeData?.base64EncodedString()]
   }
 
-  func resume(url: URL, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?, promise: Promise) {
+  func resume(
+    url: URL,
+    to: FileSystemPath,
+    resumeData: String,
+    options: DownloadTaskOptions?,
+    promise: Promise
+  ) {
     isPausing = false
+    sessionType = options?.sessionType ?? sessionType
 
-    // Invalidate the old session from the previous start/resume call
-    session?.invalidateAndCancel()
-    session = nil
-    delegate = nil
-
-    guard let offset = Int64(resumeData) else {
+    guard let data = Data(base64Encoded: resumeData) else {
       promise.reject(InvalidResumeDataException())
       return
     }
 
-    do {
-      destinationAccess = try makeScopedAccess(for: to, permission: .write)
-    } catch {
-      promise.reject(error)
-      return
-    }
-    let destinationUrl = resolveDestinationUrl(to: to, url: url)
+    let session = DownloadTaskSessionManager.shared.session(for: sessionType)
+    let delegate = DownloadTaskDelegate(sharedObject: self, destination: to, promise: promise)
+    let task = session.downloadTask(withResumeData: data)
 
-    delegate = DownloadTaskDelegate(sharedObject: self, destinationUrl: destinationUrl, offset: offset, promise: promise)
-
-    let configuration = URLSessionConfiguration.default
-    configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-    configuration.urlCache = nil
-    session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: .main)
-
-    var request = URLRequest(url: url)
-    request.setValue("bytes=\(offset)-", forHTTPHeaderField: "Range")
-    if let headers = options?.headers {
-      for (key, value) in headers {
-        request.setValue(value, forHTTPHeaderField: key)
-      }
-    }
-
-    dataTask = session?.dataTask(with: request)
-    dataTask?.resume()
+    downloadTask = task
+    delegateKey = DownloadTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
+    task.resume()
   }
 
   func cancel() {
     isPausing = false
-    dataTask?.cancel()
-    cleanup(invalidateSession: true)
+    downloadTask?.cancel()
+    cleanup(unregisterDelegate: true)
+  }
+
+  func finishTask() {
+    cleanup(unregisterDelegate: false)
   }
 
   override func sharedObjectWillRelease() {
-    dataTask?.cancel()
-    cleanup(invalidateSession: true)
+    downloadTask?.cancel()
+    cleanup(unregisterDelegate: true)
   }
 
-  fileprivate func cleanup(invalidateSession: Bool = false) {
-    delegate = nil
-    dataTask = nil
-    destinationAccess = nil
-    if invalidateSession {
-      session?.invalidateAndCancel()
+  private func cleanup(unregisterDelegate: Bool) {
+    if unregisterDelegate {
+      DownloadTaskSessionManager.shared.unregister(key: delegateKey)
     }
-    session = nil
-  }
-
-  private func resolveDestinationUrl(to: FileSystemPath, url: URL) -> URL {
-    if let directory = to as? FileSystemDirectory {
-      let filename = url.lastPathComponent.isEmpty ? "download" : url.lastPathComponent
-      return directory.url.appendingPathComponent(filename)
-    }
-    return to.url
+    delegateKey = nil
+    downloadTask = nil
   }
 }
 
 // MARK: - Download Task Delegate
 
-class DownloadTaskDelegate: NSObject, URLSessionDataDelegate {
+private final class DownloadTaskDelegate: NSObject {
   private weak var sharedObject: FileSystemDownloadTask?
-  private let destinationUrl: URL
+  private let destination: FileSystemPath
   private let promise: Promise
-  private var fileHandle: FileHandle?
-  private(set) var totalBytesWritten: Int64
-  private let offset: Int64
-  private var expectedTotalBytes: Int64 = -1
   private var lastProgressTime: TimeInterval = 0
-  private let progressThrottleInterval: TimeInterval = 0.1 // 100ms
-  private var settled = false
+  private let progressThrottleInterval: TimeInterval = 0.1
 
-  init(sharedObject: FileSystemDownloadTask, destinationUrl: URL, offset: Int64, promise: Promise) {
+  init(sharedObject: FileSystemDownloadTask, destination: FileSystemPath, promise: Promise) {
     self.sharedObject = sharedObject
-    self.destinationUrl = destinationUrl
-    self.offset = offset
-    self.totalBytesWritten = offset
+    self.destination = destination
     self.promise = promise
     super.init()
   }
 
-  // Response received — open file handle
   func urlSession(
     _ session: URLSession,
-    dataTask: URLSessionDataTask,
-    didReceive response: URLResponse,
-    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+    downloadTask: URLSessionDownloadTask,
+    didWriteData bytesWritten: Int64,
+    totalBytesWritten: Int64,
+    totalBytesExpectedToWrite: Int64
   ) {
-    let httpResponse = response as? HTTPURLResponse
-
-    // Validate HTTP status
-    if let httpResponse,
-       !(200...299).contains(httpResponse.statusCode) && httpResponse.statusCode != 206 {
-      completionHandler(.cancel)
-      settled = true
-      promise.reject(UnableToDownloadException("server returned HTTP \(httpResponse.statusCode)"))
-      return
-    }
-
-    let isPartial = httpResponse?.statusCode == 206
-
-    if offset > 0 && isPartial {
-      // Server supports Range — truncate to offset and write from there
-      fileHandle = try? FileHandle(forWritingTo: destinationUrl)
-      fileHandle?.truncateFile(atOffset: UInt64(offset))
-      fileHandle?.seek(toFileOffset: UInt64(offset))
-    } else {
-      // Fresh download or server ignored Range header (200 instead of 206) — truncate and restart
-      totalBytesWritten = 0
-      try? FileManager.default.removeItem(at: destinationUrl)
-      FileManager.default.createFile(atPath: destinationUrl.path, contents: nil)
-      fileHandle = try? FileHandle(forWritingTo: destinationUrl)
-    }
-
-    if fileHandle == nil {
-      completionHandler(.cancel)
-      settled = true
-      promise.reject(UnableToDownloadException("Failed to open file for writing: \(destinationUrl.path)"))
-      return
-    }
-
-    let contentLength = response.expectedContentLength
-    if isPartial {
-      expectedTotalBytes = contentLength > 0 ? offset + contentLength : -1
-    } else {
-      expectedTotalBytes = contentLength > 0 ? contentLength : -1
-    }
-
-    completionHandler(.allow)
-  }
-
-  // Data chunk received — write to file and emit progress
-  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-    fileHandle?.write(data)
-    totalBytesWritten += Int64(data.count)
-
     let currentTime = Date().timeIntervalSince1970
-    if currentTime - lastProgressTime >= progressThrottleInterval {
+    let shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval ||
+      totalBytesWritten == totalBytesExpectedToWrite
+
+    if shouldEmit {
       lastProgressTime = currentTime
       sharedObject?.emit(event: "progress", arguments: [
         "bytesWritten": totalBytesWritten,
-        "totalBytes": expectedTotalBytes
+        "totalBytes": totalBytesExpectedToWrite,
       ])
     }
   }
 
-  // Task completion with error handling
-  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    fileHandle?.closeFile()
-    fileHandle = nil
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didFinishDownloadingTo location: URL
+  ) {
+    do {
+      if let httpResponse = downloadTask.response as? HTTPURLResponse,
+         !(200...299).contains(httpResponse.statusCode) {
+        promise.reject(UnableToDownloadException("server returned HTTP \(httpResponse.statusCode)"))
+        return
+      }
 
-    // Guard against double-resolve (e.g., HTTP status rejection followed by cancellation callback)
-    guard !settled else {
-      session.finishTasksAndInvalidate()
+      let destinationUrl: URL
+      if let directory = destination as? FileSystemDirectory {
+        let httpResponse = downloadTask.response as? HTTPURLResponse
+        let filename = httpResponse?.suggestedFilename ??
+          downloadTask.originalRequest?.url?.lastPathComponent ??
+          "download"
+        destinationUrl = directory.url.appendingPathComponent(filename)
+      } else {
+        destinationUrl = destination.url
+      }
+
+      if FileManager.default.fileExists(atPath: destinationUrl.path) {
+        try FileManager.default.removeItem(at: destinationUrl)
+      }
+
+      try FileManager.default.createDirectory(
+        at: destinationUrl.deletingLastPathComponent(),
+        withIntermediateDirectories: true
+      )
+      try FileManager.default.moveItem(at: location, to: destinationUrl)
+      promise.resolve(destinationUrl.absoluteString)
+    } catch {
+      promise.reject(
+        UnableToDownloadException("Failed to move downloaded file: \(error.localizedDescription)")
+      )
+    }
+  }
+
+  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    defer {
+      sharedObject?.finishTask()
+    }
+
+    guard let error else {
       return
     }
-    settled = true
 
-    if let error = error {
-      let nsError = error as NSError
-      if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
-        if sharedObject?.isPausing == true {
-          // Paused — resolve with nil
-          promise.resolve(nil)
-        } else {
-          promise.reject(DownloadCancelledException())
-        }
+    let nsError = error as NSError
+    if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+      if sharedObject?.isPausing == true {
+        promise.resolve(nil)
       } else {
-        promise.reject(UnableToDownloadException(error.localizedDescription))
+        promise.reject(DownloadCancelledException())
       }
-    } else {
-      // Emit final progress
-      sharedObject?.emit(event: "progress", arguments: [
-        "bytesWritten": totalBytesWritten,
-        "totalBytes": totalBytesWritten
-      ])
-      promise.resolve(destinationUrl.absoluteString)
+      return
     }
 
-    // Invalidate session to break retain cycle
-    session.finishTasksAndInvalidate()
-    sharedObject?.cleanup()
+    promise.reject(UnableToDownloadException(error.localizedDescription))
   }
 }
