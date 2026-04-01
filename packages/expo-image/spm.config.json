@@ -1,0 +1,81 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoImage",
+      "podName": "ExpoImage",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "spmPackages": [
+        {
+          "url": "https://github.com/SDWebImage/SDWebImage.git",
+          "productName": "SDWebImage",
+          "version": {
+            "exact": "5.21.6"
+          }
+        },
+        {
+          "url": "https://github.com/SDWebImage/SDWebImageAVIFCoder.git",
+          "productName": "SDWebImageAVIFCoder",
+          "version": {
+            "exact": "0.12.0"
+          }
+        },
+        {
+          "url": "https://github.com/SDWebImage/SDWebImageSVGCoder.git",
+          "productName": "SDWebImageSVGCoder",
+          "version": {
+            "exact": "1.8.0"
+          }
+        },
+        {
+          "url": "https://github.com/SDWebImage/SDWebImageWebPCoder.git",
+          "productName": "SDWebImageWebPCoder",
+          "version": {
+            "exact": "0.15.0"
+          }
+        },
+        {
+          "url": "https://github.com/SDWebImage/libavif-Xcode.git",
+          "productName": "libavif",
+          "version": {
+            "exact": "1.0.0"
+          }
+        }
+      ],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "ExpoImage",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore",
+            "SDWebImage",
+            "SDWebImageAVIFCoder",
+            "SDWebImageSVGCoder",
+            "SDWebImageWebPCoder",
+            "libavif"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ],
+          "exclude": [
+            "Tests/**"
+          ]
+        }
+      ]
+    }
+  ]
+}

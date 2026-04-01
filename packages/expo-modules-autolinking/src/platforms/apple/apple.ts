@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
+import { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
@@ -14,6 +15,16 @@ import { listFilesInDirectories, fileExistsAsync } from '../../utils';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
+
+interface AppleConfigurationOutput {
+  buildFromSource: string[];
+}
+
+export function getConfiguration(
+  options: AutolinkingOptions
+): AppleConfigurationOutput | undefined {
+  return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
+}
 
 const indent = '  ';
 

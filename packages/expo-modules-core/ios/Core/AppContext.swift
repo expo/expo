@@ -1,4 +1,4 @@
-@preconcurrency import React
+@preconcurrency internal import React
 
 /**
  The app context is an interface to a single Expo app.
@@ -54,7 +54,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    or when the app context is "bridgeless" (for example in native unit tests).
    */
   @objc
-  public weak var reactBridge: RCTBridge?
+  internal weak var reactBridge: RCTBridge?
 
   /**
    RCTHost wrapper. This is set by ``ExpoReactNativeFactory`` in `didInitializeRuntime`.
@@ -182,8 +182,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
-    return hostWrapper?.findView(withTag: viewTag) as? ViewType
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
+    return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
   }
 
   // MARK: - Running on specific queues
@@ -326,12 +326,14 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns view modules wrapped by the base `ViewModuleWrapper` class.
    */
   @objc
-  public func getViewManagers() -> [ViewModuleWrapper] {
-    return moduleRegistry.flatMap { holder in
-      holder.definition.views.map { key, viewDefinition in
-        ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
+  public func getViewManagers() -> [Any] {
+    var result: [Any] = []
+    for holder in moduleRegistry {
+      for (key, viewDefinition) in holder.definition.views {
+        result.append(ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW))        
       }
     }
+    return result
   }
 
   /**
@@ -355,9 +357,22 @@ public final class AppContext: NSObject, @unchecked Sendable {
    When remote debugging is enabled, this will always return `nil`.
    */
   @JavaScriptActor
-  @objc
   public func getNativeModuleObject(_ moduleName: String) -> JavaScriptObject? {
     return moduleRegistry.get(moduleHolderForName: moduleName)?.javaScriptObject
+  }
+
+  /**
+   Returns a JavaScript object that represents a module with given name.
+   This is a non-actor-isolated wrapper for ObjC interop that uses `assumeIsolated` internally.
+
+   - Warning: This method must only be called from the JavaScript thread.
+   It will crash if called from other threads.
+   */
+  @objc
+  public func getNativeModuleObjectUnsafe(_ moduleName: String) -> JavaScriptObject? {
+    return JavaScriptActor.assumeIsolated {
+      return moduleRegistry.get(moduleHolderForName: moduleName)?.javaScriptObject
+    }
   }
 
   /**
@@ -383,10 +398,20 @@ public final class AppContext: NSObject, @unchecked Sendable {
       }
   }
 
+  private var _expoModulesConfig: ModulesProxyConfig?
+
   @objc
-  public final lazy var expoModulesConfig = ModulesProxyConfig(constants: self.exportedModulesConstants(),
-                                                               methodNames: self.exportedFunctionNames(),
-                                                               viewManagers: self.viewManagersMetadata())
+  public var expoModulesConfig: ModulesProxyConfig {
+    if let cachedConfig = _expoModulesConfig {
+      return cachedConfig
+    }
+    let newConfig: ModulesProxyConfig = ModulesProxyConfig(
+      constants: self.exportedModulesConstants(),
+      methodNames: self.exportedFunctionNames(),
+      viewManagers: self.viewManagersMetadata())
+    _expoModulesConfig = newConfig
+    return newConfig
+  }
 
   private func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()

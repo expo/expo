@@ -19,6 +19,7 @@ import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addTemplateTarball } from './addTemplateTarball';
+import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
 const { cyan } = chalk;
@@ -35,15 +36,19 @@ export const prepareCanaries = new Task<TaskArgs>(
     const canarySuffix = await getCurrentCanaryVersionSuffix();
     const currentSdkVersion = await sdkVersionAsync();
     const currentSdkMajor = semver.major(currentSdkVersion);
-    const nextSdkVersion = await getNextSdkVersion();
+    const currentBranch = await Git.getCurrentBranchNameAsync();
+    const bumpToNextSdk = await shouldUseCanaryTag(currentBranch);
+    const nextSdkVersion = bumpToNextSdk ? await getNextSdkVersion() : null;
 
     for (const parcel of parcels) {
       const { pkg, state, pkgView } = parcel;
-      // Packages whose major version matches the current SDK should be bumped
-      // to the next SDK version for canary releases (e.g. 55.0.2 → 56.0.0-canary-...).
+      // On main/latest-sdk branches, packages whose major version matches the
+      // current SDK are bumped to the next SDK version (e.g. 55.0.2 → 56.0.0-canary-...).
+      // On other branches, the current package version is used as the base
+      // (e.g. 55.0.0 → 55.0.0-canary-...) so canaries reflect a patch on that SDK.
       const baseVersion =
-        semver.major(pkg.packageVersion) === currentSdkMajor
-          ? nextSdkVersion
+        bumpToNextSdk && semver.major(pkg.packageVersion) === currentSdkMajor
+          ? nextSdkVersion!
           : (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
 
       // Strip any pre-release tag from the baseVersion
@@ -60,7 +65,6 @@ export const prepareCanaries = new Task<TaskArgs>(
     // Only use the `canary` tag when publishing from `main` or the latest `sdk-*` branch.
     // Other branches publish canary versions without the `canary` dist-tag so they
     // don't overwrite the canary tag that points at main/latest-sdk builds.
-    const currentBranch = await Git.getCurrentBranchNameAsync();
     if (await shouldUseCanaryTag(currentBranch)) {
       options.tag = 'canary';
     } else {
@@ -99,7 +103,12 @@ export const cleanWorkingTree = new Task<TaskArgs>(
         await Git.cleanAsync({
           recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'packages/**/local-maven-repo/**', 'templates/**/*.tgz'],
+          paths: [
+            'packages/**/*.tgz',
+            'packages/**/local-maven-repo/**',
+            'packages/**/prebuilds/**',
+            'templates/**/*.tgz',
+          ],
         });
       },
       'Cleaned up the working tree'
@@ -125,6 +134,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateAndroidProjects,
       publishAndroidArtifacts,
       addTemplateTarball,
+      bundleIOSPrebuilds,
       packPackageToTarball,
       publishPackages,
       cleanWorkingTree,

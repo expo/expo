@@ -1,6 +1,7 @@
 require_relative 'constants'
 require_relative 'package'
 require_relative 'packages_config'
+require_relative 'precompiled_modules'
 
 # Require extensions to CocoaPods' classes
 require_relative 'cocoapods/sandbox'
@@ -19,9 +20,17 @@ module Expo
       @options = options
 
       validate_target_definition()
+
+      # Clear stale CocoaPods download cache for precompiled pods.
+      Expo::PrecompiledModules.clear_cocoapods_cache
+
       resolve_result = resolve()
 
       Expo::PackagesConfig.instance.coreFeatures = resolve_result['coreFeatures']
+
+      # Pass buildFromSource configuration to PrecompiledModules
+      configuration = resolve_result['configuration'] || {}
+      Expo::PrecompiledModules.build_from_source = configuration['buildFromSource'] || []
 
       @packages = resolve_result['modules'].map { |json_package| Package.new(json_package) }
       @extraPods = resolve_result['extraDependencies']
@@ -71,16 +80,13 @@ module Expo
               use_modular_headers_for_dependencies(pod.spec.all_dependencies)
             end
 
-            podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
-
             debug_configurations = @target_definition.build_configurations ? @target_definition.build_configurations.select { |config| config.include?('Debug') }.keys : ['Debug']
 
-            pod_options = {
-              :path => podspec_dir_path,
-              :configuration => package.debugOnly ? debug_configurations : [] # An empty array means all configurations
-            }.merge(global_flags, package.flags)
+            pod_options = Expo::PrecompiledModules.pod_registration_options(
+              pod, project_directory, debug_configurations, package, global_flags
+            )
 
-            if tests_only || include_tests
+            if (tests_only || include_tests) && Expo::PrecompiledModules.should_include_test_specs?(pod.pod_name)
               test_specs_names = pod.spec.test_specs.map { |test_spec|
                 test_spec.name.delete_prefix(pod.spec.name + "/")
               }
@@ -121,6 +127,9 @@ module Expo
         requirements << options
         @podfile.pod(pod['name'], *requirements)
       }
+
+      Expo::PrecompiledModules.register_external_pods(@podfile, @target_definition, project_directory)
+
       self
     end
 

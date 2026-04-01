@@ -21,7 +21,6 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
 
   s.source_files = "**/*.{h,m,swift}"
-
   if podfile_properties['MOTION_PERMISSION'] == 'false'
     s.pod_target_xcconfig = {
       'OTHER_SWIFT_FLAGS' => '$(inherited) -DEXPO_DISABLE_MOTION_PERMISSION',
