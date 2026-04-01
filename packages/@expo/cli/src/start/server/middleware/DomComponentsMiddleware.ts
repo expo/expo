@@ -53,11 +53,12 @@ export function createDomComponentsMiddleware(
 
     checkWebViewInstalled(projectRoot);
 
+    // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
     // Generate a unique entry file for the webview.
-    const generatedEntry = toPosixPath(file.startsWith('file://') ? fileURLToFilePath(file) : file);
-    const virtualEntry = toPosixPath(resolveFrom(projectRoot, 'expo/dom/entry.js'));
+    const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+    const generatedEntryPath = path.resolve(file.startsWith('file://') ? fileURLToFilePath(file) : file);
     // The relative import path will be used like URI so it must be POSIX.
-    const relativeImport = './' + path.posix.relative(path.dirname(virtualEntry), generatedEntry);
+    const relativeImport = './' + toPosixPath(path.relative(path.dirname(virtualEntry), generatedEntryPath));
     // Create the script URL
     const requestUrlBase = `http://${req.headers.host}`;
     // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`

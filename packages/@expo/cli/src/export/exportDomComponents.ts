@@ -49,12 +49,12 @@ export async function exportDomComponentAsync({
   // MUST MATCH THE BABEL PLUGIN!
   const hash = crypto.createHash('md5').update(filePath).digest('hex');
   const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;
-  const generatedEntryPath = toPosixPath(
+  const generatedEntryPath = path.resolve(
     filePath.startsWith('file://') ? url.fileURLToPath(filePath) : filePath
   );
   const baseUrl = `/${DOM_COMPONENTS_BUNDLE_DIR}`;
   // The relative import path will be used like URI so it must be POSIX.
-  const relativeImport = './' + path.posix.relative(path.dirname(virtualEntry), generatedEntryPath);
+  const relativeImport = './' + toPosixPath(path.relative(path.dirname(virtualEntry), generatedEntryPath));
   // Run metro bundler and create the JS bundles/source maps.
   const bundle = await devServer.legacySinglePageExportBundleAsync({
     platform: 'web',
