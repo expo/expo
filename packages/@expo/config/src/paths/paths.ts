@@ -119,6 +119,7 @@ export function getMetroServerRoot(projectRoot: string): string {
 
   serverRoot = resolveWorkspaceRoot(projectRoot);
   if (serverRoot != null) {
+    serverRoot = path.resolve(serverRoot);
     _metroServerRootCache.set(projectRoot, serverRoot);
   }
 
@@ -145,7 +146,7 @@ function toPosixPath(filePath: string): string {
  */
 export function convertEntryPointToRelative(projectRoot: string, absolutePath: string) {
   if (!path.isAbsolute(absolutePath)) {
-    absolutePath = path.resolve(projectRoot, absolutePath);
+    absolutePath = path.resolve(process.cwd(), projectRoot, absolutePath);
   }
 
   // The project root could be using a different root on MacOS (`/var` vs `/private/var`)

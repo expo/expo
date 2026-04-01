@@ -159,6 +159,7 @@ function getMetroServerRoot(projectRoot) {
   }
   serverRoot = (0, _resolveWorkspaceRoot().resolveWorkspaceRoot)(projectRoot);
   if (serverRoot != null) {
+    serverRoot = _path().default.resolve(serverRoot);
     _metroServerRootCache.set(projectRoot, serverRoot);
   }
   return serverRoot ?? projectRoot;
@@ -183,7 +184,7 @@ function toPosixPath(filePath) {
  */
 function convertEntryPointToRelative(projectRoot, absolutePath) {
   if (!_path().default.isAbsolute(absolutePath)) {
-    absolutePath = _path().default.resolve(projectRoot, absolutePath);
+    absolutePath = _path().default.resolve(process.cwd(), projectRoot, absolutePath);
   }
 
   // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
