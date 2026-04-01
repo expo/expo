@@ -4,27 +4,25 @@ import ExpoModulesCore
 import SwiftUI
 
 /**
- * A SharedObject that conforms to ObservableObject, enabling SwiftUI views
- * to observe state changes that originate from JavaScript.
+ * A SharedObject observable by SwiftUI.
  *
- * Subclass this to create typed state objects:
+ * Created from JavaScript via `useNativeState(false)`.
  *
- *  class ToggleState: ObservableState {
- *    @Published var isOn: Bool = false
- *  }
+ * Example (in a SwiftUI view):
  *
- * Register in the module via `Class()`:
- *
- *  Class(ToggleState.self) {
- *    Constructor { ToggleState() }
- *    Property("isOn") { $0.isOn }
- *      .set { $0.isOn = $1 }
- *  }
- *
- * Use in SwiftUI view props via `@Field`:
- *
- *  final class ToggleProps: UIBaseViewProps {
- *    @Field var state: ToggleState?
- *  }
+ *   Toggle(label, isOn: state.binding(false))
  */
-internal class ObservableState: SharedObject, ObservableObject {}
+internal class ObservableState: SharedObject, ObservableObject {
+  @Published var value: Any?
+
+  init(value: Any?) {
+    self.value = value
+  }
+
+  func binding<T>(_ fallback: T) -> Binding<T> {
+    Binding(
+      get: { self.value as? T ?? fallback },
+      set: { self.value = $0 }
+    )
+  }
+}

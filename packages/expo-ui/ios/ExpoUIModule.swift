@@ -14,20 +14,19 @@ public final class ExpoUIModule: Module {
       }
     }
 
-    // MARK: - Observable State Classes
+    // MARK: - Observable State
 
-    Class(ToggleState.self) {
-      Constructor { (initialValue: Bool) -> ToggleState in
-        let state = ToggleState()
-        state.isOn = initialValue
-        return state
+    Class(ObservableState.self) {
+      Constructor { (initial: [String: Any]) -> ObservableState in
+        return ObservableState(value: initial["value"])
       }
 
-      Property("isOn") { (state: ToggleState) -> Bool in
-        return state.isOn
+      Function("getValue") { (state: ObservableState) -> Any in
+        return state.value ?? NSNull()
       }
-      .set { (state: ToggleState, value: Bool) in
-        state.isOn = value
+
+      Function("_setValue") { (state: ObservableState, wrapper: [String: Any]) in
+        state.value = wrapper["value"] as Any
       }
     }
 
@@ -134,5 +133,8 @@ public final class ExpoUIModule: Module {
     ExpoUIView(GridView.self)
     ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
+
+    // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
+    ExpoUIView(SyncToggleView.self)
   }
 }

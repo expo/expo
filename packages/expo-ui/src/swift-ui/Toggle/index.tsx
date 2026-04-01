@@ -2,21 +2,12 @@ import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { getStateId } from '../State';
-import { type ToggleState } from './state';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type ToggleProps = {
   /**
-   * An observable SwiftUI state object that drives the toggle.
-   * Create one with `useToggleState()`.
-   * When provided, this takes precedence over `isOn` and `onIsOnChange`.
-   */
-  state?: ToggleState;
-  /**
    * A Boolean value that determines the on/off state of the toggle.
-   * Ignored when `state` is provided.
    */
   isOn?: boolean;
   /**
@@ -39,8 +30,7 @@ export type ToggleProps = {
   children?: React.ReactNode;
 } & CommonViewModifierProps;
 
-type NativeToggleProps = Omit<ToggleProps, 'onIsOnChange' | 'state'> & {
-  state?: number;
+type NativeToggleProps = Omit<ToggleProps, 'onIsOnChange'> & {
   onIsOnChange: (event: NativeSyntheticEvent<{ isOn: boolean }>) => void;
 };
 
@@ -53,11 +43,10 @@ const ToggleNativeView: React.ComponentType<NativeToggleProps> = requireNativeVi
  * A control that toggles between on and off states.
  */
 export function Toggle(props: ToggleProps) {
-  const { children, onIsOnChange, state, modifiers, ...restProps } = props;
+  const { children, onIsOnChange, modifiers, ...restProps } = props;
 
   const baseProps = {
     ...restProps,
-    state: getStateId(state),
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     onIsOnChange: ({ nativeEvent: { isOn } }: NativeSyntheticEvent<{ isOn: boolean }>) => {
@@ -67,5 +56,3 @@ export function Toggle(props: ToggleProps) {
 
   return <ToggleNativeView {...baseProps}>{children}</ToggleNativeView>;
 }
-
-export { ToggleState, useToggleState } from './state';
