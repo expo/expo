@@ -1,4 +1,5 @@
 import type { ExpoConfig } from '@expo/config';
+import { convertEntryPointToRelative } from '@expo/config/paths';
 import assert from 'assert';
 import crypto from 'crypto';
 import path from 'path';
@@ -14,7 +15,7 @@ import {
   DOM_COMPONENTS_BUNDLE_DIR,
 } from '../start/server/middleware/DomComponentsMiddleware';
 import { env } from '../utils/env';
-import { resolveRealEntryFilePath, toPosixPath } from '../utils/filePath';
+import { toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:export:exportDomComponents') as typeof console.log;
 
@@ -43,7 +44,7 @@ export async function exportDomComponentAsync({
   bundle: BundleOutput;
   htmlOutputName: string;
 }> {
-  const virtualEntry = toPosixPath(resolveFrom(projectRoot, 'expo/dom/entry.js'));
+  const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
   debug('Bundle DOM Component:', filePath);
   // MUST MATCH THE BABEL PLUGIN!
   const hash = crypto.createHash('md5').update(filePath).digest('hex');
@@ -59,7 +60,7 @@ export async function exportDomComponentAsync({
     platform: 'web',
     domRoot: encodeURI(relativeImport),
     splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
-    mainModuleName: resolveRealEntryFilePath(projectRoot, virtualEntry),
+    mainModuleName: convertEntryPointToRelative(projectRoot, virtualEntry),
     mode: dev ? 'development' : 'production',
     engine: isHermes ? 'hermes' : undefined,
     serializerIncludeMaps: includeSourceMaps,
