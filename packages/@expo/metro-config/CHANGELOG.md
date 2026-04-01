@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Honor runtime `runBeforeMainModule` in static serializer output so merged pre-main modules are preserved. ([#43546](https://github.com/expo/expo/pull/43546) by [@hannojg](https://github.com/hannojg))
+
 ### 💡 Others
 
 - Updated the `isHermesV1` detection logic and fixed unit tests. ([#43841](https://github.com/expo/expo/pull/43841) by [@kudo](https://github.com/kudo))

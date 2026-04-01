@@ -79,6 +79,51 @@ describe(withSerializerPlugins, () => {
     expect(defaultGetMainModules).not.toHaveBeenCalled();
     expect(overrideGetMainModules).toHaveBeenCalled();
   });
+
+  it('uses runtime runBeforeMainModule in static output mode', async () => {
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+        serializer: {
+          // Simulate stale closure config that does not include the runtime list.
+          getModulesRunBeforeMainModule: () => [],
+        },
+      },
+      [],
+      null
+    );
+
+    const preMainFile = 'pre-main.js';
+    const preMainPath = `${projectRoot}/${preMainFile}`;
+
+    const [entryPoint, preModules, graph, options] = await microBundle({
+      fs: {
+        'index.js': `console.log("index");`,
+      },
+      preModulesFs: {
+        [preMainFile]: `console.log("pre-main");`,
+      },
+      options: {
+        dev: false,
+        platform: 'ios',
+        output: 'static',
+      },
+    });
+
+    options.runBeforeMainModule = [preMainPath];
+
+    const output = await serializer(entryPoint, preModules, graph, options as any);
+
+    if (typeof output === 'string' || !('artifacts' in output)) {
+      throw new Error('Expected static serializer output');
+    }
+
+    const entryAsset = output.artifacts.find(
+      (asset) => asset.type === 'js' && asset.originFilename === 'index.js'
+    );
+
+    expect(entryAsset?.source).toContain(`TEST_RUN_MODULE("${preMainPath}");`);
+  });
 });
 
 jest.mock('../exportHermes', () => {
