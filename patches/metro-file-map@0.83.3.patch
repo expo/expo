@@ -11,19 +11,21 @@ index 40202fde055cab40ba8f6e01fcfc86a88665c4e3..713d65341c327513067644b9e77b1f26
      const retry = (error) => {
        if (crawl === _watchman.default) {
 diff --git a/src/crawlers/node/index.js b/src/crawlers/node/index.js
-index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..51bd69e079fdc7c60ecc776ed0d0dc1b882a0e2d 100644
+index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..eadcbd4391055dfd4be16e0273ec1b814a135b6f 100644
 --- a/src/crawlers/node/index.js
 +++ b/src/crawlers/node/index.js
-@@ -9,7 +9,7 @@ var _hasNativeFindSupport = _interopRequireDefault(
+@@ -8,8 +8,9 @@ var _RootPathUtils = require("../../lib/RootPathUtils");
+ var _hasNativeFindSupport = _interopRequireDefault(
    require("./hasNativeFindSupport"),
  );
++var _constants = _interopRequireDefault(require("../../constants"));
  var _child_process = require("child_process");
 -var fs = _interopRequireWildcard(require("graceful-fs"));
 +var fs = require("fs");
  var _os = require("os");
  var path = _interopRequireWildcard(require("path"));
  function _getRequireWildcardCache(e) {
-@@ -39,6 +39,81 @@ function _interopRequireDefault(e) {
+@@ -39,6 +40,81 @@ function _interopRequireDefault(e) {
    return e && e.__esModule ? e : { default: e };
  }
  const debug = require("debug")("Metro:NodeCrawler");
@@ -105,43 +107,131 @@ index bad321db4da3f3c0d08840ac3df02ac3cfc79adb..51bd69e079fdc7c60ecc776ed0d0dc1b
  function find(
    roots,
    extensions,
-@@ -181,14 +256,16 @@ async function nodeCrawl(options) {
+@@ -169,7 +245,44 @@ function findNative(
+     }
+   });
+ }
++
++async function asyncStatKnownFiles(fileData, previousFileSystem, rootDir) {
++  const pathUtils = new _RootPathUtils.RootPathUtils(rootDir);
++  const promises = [];
++  const externalPrefix = '..' + path.sep;
++  for (const [normalPath, metadata] of fileData) {
++    if (metadata[_constants.default.SYMLINK] !== 0) {
++      continue;
++    } if (
++      metadata[_constants.default.MTIME] != null &&
++      metadata[_constants.default.MTIME] > 0
++    ) {
++      continue;
++    } else if (normalPath.startsWith(externalPrefix)) {
++      // Skip reading mtime for files outside of project root
++      continue;
++    }
++    const absolutePath = pathUtils.normalToAbsolute(normalPath);
++    if (!previousFileSystem.exists(absolutePath)) {
++      continue;
++    }
++    promises.push(
++      fs.promises.lstat(absolutePath).then(
++        (stat) => {
++          metadata[_constants.default.MTIME] = stat.mtime.getTime();
++          metadata[_constants.default.SIZE] = stat.size;
++        },
++        () => {
++          fileData.delete(normalPath);
++        },
++      ),
++    );
++  }
++  await Promise.all(promises);
++}
++
+ async function nodeCrawl(options) {
++  const skipStat = !!options.skipStat;
+   const {
+     console,
+     previousState,
+@@ -181,45 +294,44 @@ async function nodeCrawl(options) {
      perfLogger,
      roots,
      abortSignal,
-+    skipStat,
++    subpath,
    } = options;
    abortSignal?.throwIfAborted();
    perfLogger?.point("nodeCrawl_start");
-   const useNativeFind =
-+    !skipStat &&
+-  const useNativeFind =
++  debug("Using skipStat: %s", !!skipStat);
++  let crawlFn;
++  if (skipStat) {
++    crawlFn = findWithoutStat;
++  } else if (
      !forceNodeFilesystemAPI &&
      (0, _os.platform)() !== "win32" &&
-     (await (0, _hasNativeFindSupport.default)());
+-    (await (0, _hasNativeFindSupport.default)());
 -  debug("Using system find: %s", useNativeFind);
-+  debug('Using system find: %s, skipStat: %s', useNativeFind, !!skipStat);
-   return new Promise((resolve, reject) => {
-     const callback = (fileData) => {
-       const difference = previousState.fileSystem.getDifference(fileData);
-@@ -200,7 +277,17 @@ async function nodeCrawl(options) {
-       }
-       resolve(difference);
-     };
+-  return new Promise((resolve, reject) => {
+-    const callback = (fileData) => {
+-      const difference = previousState.fileSystem.getDifference(fileData);
+-      perfLogger?.point("nodeCrawl_end");
+-      try {
+-        abortSignal?.throwIfAborted();
+-      } catch (e) {
+-        reject(e);
+-      }
+-      resolve(difference);
+-    };
 -    if (useNativeFind) {
-+    if (skipStat) {
-+      findWithoutStat(
-+        roots,
-+        extensions,
-+        ignore,
-+        includeSymlinks,
-+        rootDir,
-+        console,
-+        callback,
-+      );
-+    } else if (useNativeFind) {
-       findNative(
-         roots,
-         extensions,
+-      findNative(
+-        roots,
+-        extensions,
+-        ignore,
+-        includeSymlinks,
+-        rootDir,
+-        console,
+-        callback,
+-      );
+-    } else {
+-      find(
+-        roots,
+-        extensions,
+-        ignore,
+-        includeSymlinks,
+-        rootDir,
+-        console,
+-        callback,
+-      );
+-    }
++    (await (0, _hasNativeFindSupport.default)())
++  ) {
++    crawlFn = findNative;
++  } else {
++    crawlFn = find;
++  }
++  const fileData = await new Promise((resolve) => {
++    crawlFn(
++      roots,
++      extensions,
++      ignore,
++      includeSymlinks,
++      rootDir,
++      console,
++      resolve,
++    );
++  });
++  perfLogger?.point("nodeCrawl_afterCrawl");
++  abortSignal?.throwIfAborted();
++  if (skipStat) {
++    await asyncStatKnownFiles(fileData, previousState.fileSystem, rootDir);
++    perfLogger?.point("nodeCrawl_afterStat");
++    abortSignal?.throwIfAborted();
++  }
++  const difference = previousState.fileSystem.getDifference(fileData, {
++    subpath,
+   });
++  perfLogger?.point("nodeCrawl_end");
++  return difference;
+ }
 diff --git a/src/flow-types.d.ts b/src/flow-types.d.ts
 index c8e344a77e04640b687e6f4d3e5d4e75de20fa1d..f57a2d814a8b6da768e718543ad629af91623e4c 100644
 --- a/src/flow-types.d.ts
@@ -154,49 +244,134 @@ index c8e344a77e04640b687e6f4d3e5d4e75de20fa1d..f57a2d814a8b6da768e718543ad629af
  }
  
  export type WatcherStatus =
+diff --git a/src/lib/FileProcessor.js b/src/lib/FileProcessor.js
+index d2b0887c9916d61eb827b4217aefcab3dab56e69..b551ffb5ad96148f3096e9de407725b1ba2e3920 100644
+--- a/src/lib/FileProcessor.js
++++ b/src/lib/FileProcessor.js
+@@ -87,12 +87,14 @@ class FileProcessor {
+   #getWorkerInput(absolutePath, fileMetadata, req) {
+     const computeSha1 =
+       req.computeSha1 && fileMetadata[_constants.default.SHA1] == null;
++    const computeMtime = fileMetadata[_constants.default.MTIME] == null || fileMetadata[_constants.default.MTIME] === 0;
+     const { computeDependencies, maybeReturnContent } = req;
+     if (absolutePath.includes(NODE_MODULES)) {
+-      if (computeSha1) {
++      if (computeSha1 || computeMtime) {
+         return {
+           computeDependencies: false,
+           computeSha1: true,
++          computeMtime,
+           dependencyExtractor: null,
+           enableHastePackages: false,
+           filePath: absolutePath,
+@@ -105,6 +107,7 @@ class FileProcessor {
+     return {
+       computeDependencies,
+       computeSha1,
++      computeMtime,
+       dependencyExtractor: this.#dependencyExtractor,
+       enableHastePackages: this.#enableHastePackages,
+       filePath: absolutePath,
+@@ -155,6 +158,12 @@ function processWorkerReply(metadata, fileMetadata) {
+   if (metadata.sha1 != null) {
+     fileMetadata[_constants.default.SHA1] = metadata.sha1;
+   }
++  if (metadata.mtime != null) {
++    fileMetadata[_constants.default.MTIME] = metadata.mtime;
++  }
++  if (metadata.size != null) {
++    fileMetadata[_constants.default.SIZE] = metadata.size;
++  }
+   return metadata.content;
+ }
+ function normalizeWorkerError(mixedError) {
 diff --git a/src/lib/TreeFS.js b/src/lib/TreeFS.js
-index 35d85514984821711f6ba9268715de553cc0836b..68bc16c995276e7c58f9ea9aaebc38aa307eadca 100644
+index 35d85514984821711f6ba9268715de553cc0836b..54f1ad8f7263af8e8718b75b983e97f8c228a5ae 100644
 --- a/src/lib/TreeFS.js
 +++ b/src/lib/TreeFS.js
 @@ -8,6 +8,7 @@ var _constants = _interopRequireDefault(require("../constants"));
  var _RootPathUtils = require("./RootPathUtils");
  var _invariant = _interopRequireDefault(require("invariant"));
  var _path = _interopRequireDefault(require("path"));
-+var fs = require("fs");
++var _fs = require("fs");
  function _interopRequireDefault(e) {
    return e && e.__esModule ? e : { default: e };
  }
-@@ -74,6 +75,33 @@ class TreeFS {
+@@ -74,6 +75,7 @@ class TreeFS {
          if (isRegularFile(newMetadata) !== isRegularFile(metadata)) {
            continue;
          }
-+        
-+        // lazy-stat from statless crawler found for comparison
-+        if (!newMetadata[_constants.default.MTIME]) {
-+          const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
-+          try {
-+            const stat = fs.lstatSync(absolutePath);
-+            newMetadata[_constants.default.MTIME] = stat.mtime.getTime();
-+            newMetadata[_constants.default.SIZE] = stat.size;
-+          } catch {
-+            files.delete(canonicalPath);
-+            changedFiles.delete(canonicalPath);
-+            removedFiles.add(canonicalPath);
-+            continue;
-+          }
-+          // read symlink target now so it's available immediately
-+          if (newMetadata[H.SYMLINK] === 1) {
-+            try {
-+              newMetadata[H.SYMLINK] = fs.readlinkSync(absolutePath);
-+            } catch {
-+              files.delete(canonicalPath);
-+              changedFiles.delete(canonicalPath);
-+              removedFiles.add(canonicalPath);
-+              continue;
-+            }
-+          }
-+        }
 +
          if (
            newMetadata[_constants.default.MTIME] != null &&
            newMetadata[_constants.default.MTIME] != 0 &&
+@@ -114,6 +116,20 @@ class TreeFS {
+       return null;
+     }
+     const { canonicalPath, node: fileMetadata } = result;
++    if (fileMetadata[_constants.default.MTIME] != null && fileMetadata[_constants.default.MTIME] > 0) {
++      const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
++      try {
++        const stat = await _fs.promises.stat(absolutePath);
++        const diskMtime = stat.mtime.getTime();
++        if (diskMtime !== fileMetadata[_constants.default.MTIME]) {
++          fileMetadata[_constants.default.SHA1] = null;
++          fileMetadata[_constants.default.MTIME] = diskMtime;
++          fileMetadata[_constants.default.SIZE] = stat.size;
++        }
++      } catch {
++        fileMetadata[_constants.default.SHA1] = null;
++      }
++    }
+     const existing = fileMetadata[_constants.default.SHA1];
+     if (existing != null && existing.length > 0) {
+       return {
+diff --git a/src/worker.js b/src/worker.js
+index 387a7be2820f60374a07b08227879228ed4c0ff3..f94d9d58517b7ef6b499f603d6deba9c375a2e64 100644
+--- a/src/worker.js
++++ b/src/worker.js
+@@ -29,7 +29,9 @@ class Worker {
+     let dependencies;
+     let id;
+     let sha1;
+-    const { computeDependencies, computeSha1, enableHastePackages, filePath } =
++    let mtime;
++    let size;
++    const { computeDependencies, computeSha1, computeMtime, enableHastePackages, filePath } =
+       data;
+     const getContent = () => {
+       if (content == null) {
+@@ -37,6 +39,17 @@ class Worker {
+       }
+       return content;
+     };
++
++    if (computeMtime) {
++      try {
++        const stat = fs.statSync(filePath);
++        mtime = stat.mtime.getTime();
++        size = stat.size;
++      } catch {
++        // noop
++      }
++    }
++
+     if (enableHastePackages && filePath.endsWith(PACKAGE_JSON)) {
+       try {
+         const fileData = JSON.parse(getContent().toString());
+@@ -78,11 +91,15 @@ class Worker {
+           dependencies,
+           id,
+           sha1,
++          mtime,
++          size,
+         }
+       : {
+           dependencies,
+           id,
+           sha1,
++          mtime,
++          size,
+         };
+   }
+ }
