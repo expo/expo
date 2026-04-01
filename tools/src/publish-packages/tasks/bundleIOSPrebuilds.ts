@@ -27,7 +27,7 @@ const IOS_PREBUILD_PACKAGES = [
   'expo-modules-core',
   'expo-print',
   'expo-sensors',
-  '@expo/ui',
+  'expo-ui',
   'expo-video',
 ];
 
@@ -47,7 +47,7 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
     logger.log('\n📱 Building iOS prebuilds...');
 
     const relevantParcels = IOS_PREBUILD_PACKAGES.filter((name) =>
-      parcels.some((p) => p.pkg.packageName === name)
+      parcels.some((p) => p.pkg.packageName === name || p.pkg.packageSlug === name)
     );
     if (relevantParcels.length === 0) {
       logger.log('No iOS prebuild packages in publish set, skipping');
@@ -83,7 +83,9 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
 
     // Copy built tarballs into each package's prebuilds/ directory
     for (const pkgName of IOS_PREBUILD_PACKAGES) {
-      const parcel = parcels.find((p) => p.pkg.packageName === pkgName);
+      const parcel = parcels.find(
+        (p) => p.pkg.packageName === pkgName || p.pkg.packageSlug === pkgName
+      );
       if (!parcel) {
         logger.warn(`Package ${pkgName} not found in parcels, skipping prebuild bundling`);
         continue;
