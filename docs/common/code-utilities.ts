@@ -55,7 +55,7 @@ function replaceCodeBlockVariables(value: string, version?: string): string {
   for (const [key, val] of Object.entries(variables)) {
     result = result.replaceAll(key, val);
   }
-  const unreplaced = result.match(/\{\{[a-zA-Z]+\}\}/g);
+  const unreplaced = result.match(/{{[A-Za-z]+}}/g);
   if (unreplaced) {
     throw new Error(
       `Unknown code block variable(s): ${[...new Set(unreplaced)].join(', ')}. ` +
