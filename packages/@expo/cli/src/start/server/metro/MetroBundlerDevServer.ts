@@ -1304,7 +1304,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Maybe put behind a flag for now?
       middleware.use(domComponentRenderer);
 
-      const serverRoot = metro._config.server.unstable_serverRoot ?? this.projectRoot;
+      // NOTE: Optional is to accommodate mocks in tests
+      const serverRoot = metro._config?.server?.unstable_serverRoot ?? this.projectRoot;
 
       middleware.use(
         new CreateFileMiddleware({
