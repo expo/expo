@@ -302,6 +302,8 @@ export const prepareInputsStep: Step<PrebuildContext> = {
 
     if (request.packageNames.length > 0) {
       logger.info(`📦 Prebuilding packages: ${chalk.green(request.packageNames.join(', '))}`);
+    } else if (request.externalOnly) {
+      logger.info(`📦 Discovering external packages with spm.config.json...`);
     } else {
       const externalNote = request.includeExternal ? ' (including external packages)' : '';
       logger.info(`📦 Discovering packages with spm.config.json${externalNote}...`);
@@ -310,7 +312,8 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     // 1. Verify packages exist and have spm.config.json (or discover all)
     const requestedPackages = await verifyAllPackagesAsync(
       request.packageNames,
-      request.includeExternal
+      request.includeExternal,
+      request.externalOnly
     );
 
     // 2. Auto-add unbuilt dependencies to the build set
