@@ -3318,6 +3318,28 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
 
+  packages/expo-app-metrics:
+    dependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../expo
+      expo-updates-interface:
+        specifier: workspace:*
+        version: link:../expo-updates-interface
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-native:
+        specifier: 0.85.0-rc.7
+        version: 0.85.0-rc.7(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.7(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+    devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+
   packages/expo-apple-authentication:
     dependencies:
       expo:
@@ -4731,6 +4753,25 @@ importers:
       memfs:
         specifier: ^3.2.0
         version: 3.6.0
+
+  packages/expo-observe:
+    dependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../expo
+      expo-app-metrics:
+        specifier: workspace:*
+        version: link:../expo-app-metrics
+      expo-eas-client:
+        specifier: workspace:*
+        version: link:../expo-eas-client
+      expo-updates-interface:
+        specifier: workspace:*
+        version: link:../expo-updates-interface
+    devDependencies:
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
 
   packages/expo-print:
     dependencies:

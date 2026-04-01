@@ -1,0 +1,44 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+
+/**
+ A struct that represents a single metric which consists of a category, name, value and its creation timestamp.
+ Metrics stored in the local storage are of this form.
+ */
+public struct Metric: Codable, Sendable {
+  public enum Category: String, Codable, CaseIterable, Sendable {
+    case appStartup
+    case frameRate
+    case memory
+    case session
+  }
+
+  public let category: Metric.Category?
+  public let name: String
+  public let value: Double
+  public var timestamp: String = Date.now.ISO8601Format()
+  public var routeName: String? = nil
+  public var params: AnyCodable? = nil
+
+  init(
+    category: Metric.Category?,
+    name: String,
+    value: Double,
+    timestamp: String = Date.now.ISO8601Format(),
+    routeName: String? = nil,
+    params: [String: Any]? = nil
+  ) {
+    self.category = category
+    self.name = name
+    self.value = value
+    self.timestamp = timestamp
+    self.routeName = routeName
+    self.params = AnyCodable(params)
+  }
+
+  func getMetricKey() -> String {
+    if let category {
+      return "\(category.rawValue).\(name)"
+    }
+    return name
+  }
+}
