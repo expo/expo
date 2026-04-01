@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { resolveEntryPoint } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 
@@ -96,7 +96,7 @@ it('runs `npx expo export:embed`', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -168,7 +168,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -243,7 +243,7 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -317,7 +317,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -502,7 +502,7 @@ it('runs `npx expo export:embed --bytecode`', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
