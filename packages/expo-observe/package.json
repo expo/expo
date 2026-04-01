@@ -4,6 +4,7 @@
   "description": "Expo module that dispatches collected app metrics to EAS Observe",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
+  "private": true,
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
