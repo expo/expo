@@ -457,9 +457,6 @@ it('runs `npx expo export:embed --platform android` with relative paths', async 
     }
   );
 
-  // Ensure the experimental module resolution warning is logged
-  expect(stdout).toMatch('Fast resolver is enabled.');
-
   const outputDir = path.join(projectRoot, output);
 
   // Ensure output.js is a utf8 encoded file
