@@ -125,6 +125,8 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'ReactAppDependencyProvider'
     test_spec.dependency 'React'
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.platforms = {
       :ios => '16.4'
     }

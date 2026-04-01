@@ -230,6 +230,8 @@ dependencies {
     implementation workletsProject
   }
 
+  implementation("io.github.lukmccall.pika:pika-api:0.0.3-2.1.20")
+
   testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.14.9'

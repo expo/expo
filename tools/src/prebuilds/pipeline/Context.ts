@@ -20,7 +20,7 @@ import type { UnitError, UnitStatus } from './Types';
 
 export type PrebuildCliOptions = {
   reactNativeVersion?: string;
-  hermesVersion: string;
+  hermesVersion?: string;
   clean: boolean;
   cleanCache: boolean;
   flavor?: BuildFlavor;
@@ -35,10 +35,12 @@ export type PrebuildCliOptions = {
   product?: string;
   platform?: BuildPlatform;
   includeExternal?: boolean;
+  externalOnly?: boolean;
   sign?: string;
   noTimestamp?: boolean;
   verbose: boolean;
   concurrency?: number;
+  bundleSharedDeps?: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -58,15 +60,17 @@ export interface PrebuildRequest {
   readonly productFilter?: string;
   readonly platformFilter?: BuildPlatform;
   readonly includeExternal: boolean;
+  readonly externalOnly: boolean;
   readonly signing?: SigningOptions;
   readonly verbose: boolean;
+  readonly bundleSharedDeps: boolean;
   readonly localTarballTemplates: {
     readonly reactNative?: string;
     readonly hermes?: string;
     readonly reactNativeDependencies?: string;
   };
   readonly reactNativeVersionOverride?: string;
-  readonly hermesVersionOverride: string;
+  readonly hermesVersionOverride?: string;
   readonly concurrency: number;
 }
 
@@ -131,7 +135,8 @@ export function createRequest(
     skipVerify: options.skipVerify,
     productFilter: options.product,
     platformFilter: options.platform,
-    includeExternal: options.includeExternal ?? false,
+    includeExternal: !!(options.includeExternal || options.externalOnly),
+    externalOnly: options.externalOnly ?? false,
     signing,
     verbose: options.verbose,
     localTarballTemplates: {
@@ -141,6 +146,7 @@ export function createRequest(
     },
     reactNativeVersionOverride: options.reactNativeVersion,
     hermesVersionOverride: options.hermesVersion,
+    bundleSharedDeps: options.bundleSharedDeps ?? false,
     concurrency: options.concurrency ?? Math.ceil(os.cpus().length / 3),
   };
 }

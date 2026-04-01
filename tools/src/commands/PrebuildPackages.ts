@@ -8,16 +8,24 @@ import {
 } from '../prebuilds/pipeline/Index';
 import type { PrebuildCliOptions } from '../prebuilds/pipeline/Index';
 
-async function runPrebuildPackagesAsync(packageNames: string[], options: PrebuildCliOptions) {
+export async function runPrebuildPackagesAsync(
+  packageNames: string[],
+  options: PrebuildCliOptions
+) {
   const request = createRequest(packageNames, options);
   const ctx = createContext(request);
   const removeHandlers = installSignalHandlers(ctx);
+
   try {
-    const result = await runPrebuildPipeline(ctx);
-    process.exit(result.exitCode);
+    return await runPrebuildPipeline(ctx);
   } finally {
     removeHandlers();
   }
+}
+
+async function main(packageNames: string[], options: PrebuildCliOptions) {
+  const result = await runPrebuildPackagesAsync(packageNames, options);
+  process.exit(result.exitCode);
 }
 
 export default (program: Command) => {
@@ -78,6 +86,11 @@ export default (program: Command) => {
       false
     )
     .option(
+      '--external-only',
+      'Build only external (third-party) packages. Implies --include-external.',
+      false
+    )
+    .option(
       '-s, --sign <identity>',
       'Code signing identity (certificate name) to sign the XCFrameworks. If not provided, frameworks are left unsigned.'
     )
@@ -91,5 +104,5 @@ export default (program: Command) => {
       'Maximum number of packages to build in parallel. Defaults to CPU core count.',
       (val: string) => parseInt(val, 10)
     )
-    .asyncAction(runPrebuildPackagesAsync);
+    .asyncAction(main);
 };

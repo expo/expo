@@ -97,7 +97,7 @@ export default function ButtonScreen() {
             <ComposeText>Leading & Trailing Icons</ComposeText>
             <ComposeText>Use Icon as a child to add leading or trailing icons.</ComposeText>
             <Button onClick={() => console.log('Add clicked')}>
-              <Icon source={addIcon} size={18} tintColor="#FFFFFF" />
+              <Icon source={addIcon} size={18} tint="#FFFFFF" />
               <Spacer modifiers={[width(8)]} />
               <ComposeText>Add Item</ComposeText>
             </Button>

@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [next][iOS] Fixed `Query.limit(0)` returning all assets instead of an empty array ([#44245](https://github.com/expo/expo/pull/44245) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add getPermissionsAsync ([#44244](https://github.com/expo/expo/pull/44244) by [@Wenszel](https://github.com/Wenszel))
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [next][iOS] Added support to add or remove assets from Favorites smart album ([#43598](https://github.com/expo/expo/pull/43598) by [@awaisanjumx2](https://github.com/awaisanjumx2))
 - [iOS] Added support to add or remove assets to Favorites smart album ([#43459](https://github.com/expo/expo/pull/43459) by [@awaisanjumx2](https://github.com/awaisanjumx2))

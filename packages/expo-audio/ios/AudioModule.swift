@@ -40,7 +40,7 @@ public class AudioModule: Module {
       #if os(iOS)
       appContext?.permissions?.askForPermission(
         usingRequesterClass: AudioRecordingRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
       #else
@@ -52,7 +52,7 @@ public class AudioModule: Module {
       #if os(iOS)
       appContext?.permissions?.getPermissionUsingRequesterClass(
         AudioRecordingRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
       #else

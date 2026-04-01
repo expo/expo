@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Stop @expo/log-box from rebuilding on every pnpm install ([#44330](https://github.com/expo/expo/pull/44330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))

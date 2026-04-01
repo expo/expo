@@ -64,7 +64,7 @@ internal func getPermissionUsingRequester<Requester: EXPermissionsRequester>(
   EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
     permissionsManager,
     withRequester: Requester.self,
-    resolve: promise.resolver,
+    resolve: promise.legacyResolver,
     reject: promise.legacyRejecter
   )
 }
@@ -80,7 +80,7 @@ internal func askForPermissionUsingRequester<Requester: EXPermissionsRequester>(
   EXPermissionsMethodsDelegate.askForPermission(
     withPermissionsManager: permissionsManager,
     withRequester: Requester.self,
-    resolve: promise.resolver,
+    resolve: promise.legacyResolver,
     reject: promise.legacyRejecter
   )
 }

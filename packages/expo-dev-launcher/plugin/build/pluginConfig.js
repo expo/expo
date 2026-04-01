@@ -20,6 +20,10 @@ const schema = {
             type: 'boolean',
             nullable: true,
         },
+        embeddedBundle: {
+            type: 'boolean',
+            nullable: true,
+        },
         android: {
             type: 'object',
             properties: {
@@ -34,6 +38,10 @@ const schema = {
                     nullable: true,
                 },
                 toolsButton: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                embeddedBundle: {
                     type: 'boolean',
                     nullable: true,
                 },
@@ -54,6 +62,10 @@ const schema = {
                     nullable: true,
                 },
                 toolsButton: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                embeddedBundle: {
                     type: 'boolean',
                     nullable: true,
                 },

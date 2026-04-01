@@ -36,6 +36,9 @@ import expo.modules.kotlin.typedarray.Uint16Array
 import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
 import expo.modules.kotlin.typedarray.Uint8ClampedArray
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
+import expo.modules.kotlin.types.descriptors.toTypeDescriptor
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 import expo.modules.kotlin.types.io.FileTypeConverter
 import expo.modules.kotlin.types.io.PathTypeConverter
 import expo.modules.kotlin.types.net.JavaURITypeConverter
@@ -51,30 +54,29 @@ import java.nio.file.Path
 import java.time.LocalDate
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlin.time.Duration
 
 interface TypeConverterProvider {
-  fun obtainTypeConverter(type: KType): TypeConverter<*>
+  fun obtainTypeConverter(typeDescriptor: TypeDescriptor): TypeConverter<*>
 }
 
 inline fun <reified T : Any> obtainTypeConverter(): TypeConverter<T> {
   @Suppress("UNCHECKED_CAST")
-  return TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>()) as TypeConverter<T>
+  return TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>()) as TypeConverter<T>
 }
 
 inline fun <reified T> convert(value: Dynamic): T {
-  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>())
+  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
   return converter.convert(value) as T
 }
 
 inline fun <reified T> convert(value: Any?): T {
-  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>())
+  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
   return converter.convert(value) as T
 }
 
 fun convert(value: Dynamic, type: KType): Any? {
-  val converter = TypeConverterProviderImpl.obtainTypeConverter(type)
+  val converter = TypeConverterProviderImpl.obtainTypeConverter(type.toTypeDescriptor())
   return converter.convert(value)
 }
 
@@ -84,52 +86,52 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
   private val cachedRecordConverters = mutableMapOf<KType, TypeConverter<*>>()
 
-  private fun getCachedConverter(inputType: KType): TypeConverter<*>? {
-    return cachedConverters[inputType.classifier]
+  private fun getCachedConverter(inputType: TypeDescriptor): TypeConverter<*>? {
+    return cachedConverters[inputType.kClass]
   }
-  private fun getCachedPrimitiveArrayConverter(inputType: KType): TypeConverter<*>? {
-    return cachedPrimitiveArrayConverters[inputType.classifier]
+  private fun getCachedPrimitiveArrayConverter(typeDescriptor: TypeDescriptor): TypeConverter<*>? {
+    return cachedPrimitiveArrayConverters[typeDescriptor.kClass]
   }
 
-  override fun obtainTypeConverter(type: KType): TypeConverter<*> {
-    val nonNullableTypeConverter = obtainNonNullableTypeConverter(type)
-    return if (type.isMarkedNullable) {
+  override fun obtainTypeConverter(typeDescriptor: TypeDescriptor): TypeConverter<*> {
+    val nonNullableTypeConverter = obtainNonNullableTypeConverter(typeDescriptor)
+    return if (typeDescriptor.isNullable) {
       NullableTypeConverter(nonNullableTypeConverter)
     } else {
       nonNullableTypeConverter
     }
   }
 
-  fun obtainNonNullableTypeConverter(type: KType): TypeConverter<*> {
-    getCachedConverter(type)?.let {
+  fun obtainNonNullableTypeConverter(typeDescriptor: TypeDescriptor): TypeConverter<*> {
+    getCachedConverter(typeDescriptor)?.let {
       return it
     }
 
-    val kClass = type.classifier as? KClass<*> ?: throw MissingTypeConverter(type)
+    val kClass = typeDescriptor.kClass
     val jClass = kClass.java
 
     if (jClass.isArray || Array::class.java.isAssignableFrom(jClass)) {
-      return if (isPrimitiveArray(type, jClass)) {
-        getCachedPrimitiveArrayConverter(type) ?: throw MissingTypeConverter(type)
+      return if (isPrimitiveArray(typeDescriptor)) {
+        getCachedPrimitiveArrayConverter(typeDescriptor) ?: throw MissingTypeConverter(typeDescriptor)
       } else {
-        ArrayTypeConverter(this, type)
+        ArrayTypeConverter(this, typeDescriptor)
       }
     }
 
     if (List::class.java.isAssignableFrom(jClass)) {
-      return ListTypeConverter(this, type)
+      return ListTypeConverter(this, typeDescriptor)
     }
 
     if (Map::class.java.isAssignableFrom(jClass)) {
-      return MapTypeConverter(this, type)
+      return MapTypeConverter(this, typeDescriptor)
     }
 
     if (Pair::class.java.isAssignableFrom(jClass)) {
-      return PairTypeConverter(this, type)
+      return PairTypeConverter(this, typeDescriptor)
     }
 
     if (Set::class.java.isAssignableFrom(jClass)) {
-      return SetTypeConverter(this, type)
+      return SetTypeConverter(this, typeDescriptor)
     }
 
     if (jClass.isEnum) {
@@ -137,50 +139,51 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>)
     }
 
-    val cachedConverter = cachedRecordConverters[type]
+    val cachedConverter = cachedRecordConverters[typeDescriptor.kType]
     if (cachedConverter != null) {
       return cachedConverter
     }
 
     if (Record::class.java.isAssignableFrom(jClass)) {
-      val converter = RecordTypeConverter<Record>(this, type)
-      cachedRecordConverters[type] = converter
+      val converter = RecordTypeConverter<Record>(this, typeDescriptor)
+      cachedRecordConverters[typeDescriptor.kType] = converter
       return converter
     }
 
     if (View::class.java.isAssignableFrom(jClass)) {
-      return ViewTypeConverter<View>(type)
+      return ViewTypeConverter<View>(typeDescriptor)
     }
 
     if (SharedRef::class.java.isAssignableFrom(jClass)) {
-      return SharedRefTypeConverter<SharedRef<*>>(type)
+      return SharedRefTypeConverter<SharedRef<*>>(typeDescriptor)
     }
 
     if (SharedObject::class.java.isAssignableFrom(jClass)) {
-      return SharedObjectTypeConverter<SharedObject>(type)
+      return SharedObjectTypeConverter<SharedObject>(typeDescriptor)
     }
 
     if (JavaScriptFunction::class.java.isAssignableFrom(jClass)) {
-      return JavaScriptFunctionTypeConverter<Any>(type)
+      return JavaScriptFunctionTypeConverter<Any>(typeDescriptor)
     }
 
     if (ValueOrUndefined::class.java.isAssignableFrom(jClass)) {
-      return ValueOrUndefinedTypeConverter(this, type)
+      return ValueOrUndefinedTypeConverter(this, typeDescriptor)
     }
 
-    return handelEither(type, jClass)
-      ?: throw MissingTypeConverter(type)
+    return handelEither(typeDescriptor)
+      ?: throw MissingTypeConverter(typeDescriptor)
   }
 
-  private fun handelEither(type: KType, jClass: Class<*>): TypeConverter<*>? {
+  private fun handelEither(typeDescriptor: TypeDescriptor): TypeConverter<*>? {
+    val jClass = typeDescriptor.kClass.java
     if (Either::class.java.isAssignableFrom(jClass)) {
       if (EitherOfFour::class.java.isAssignableFrom(jClass)) {
-        return EitherOfFourTypeConverter<Any, Any, Any, Any>(this, type)
+        return EitherOfFourTypeConverter<Any, Any, Any, Any>(this, typeDescriptor)
       }
       if (EitherOfThree::class.java.isAssignableFrom(jClass)) {
-        return EitherOfThreeTypeConverter<Any, Any, Any>(this, type)
+        return EitherOfThreeTypeConverter<Any, Any, Any>(this, typeDescriptor)
       }
-      return EitherTypeConverter<Any, Any>(this, type)
+      return EitherTypeConverter<Any, Any>(this, typeDescriptor)
     }
 
     return null
@@ -340,16 +343,16 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 class MergedTypeConverterProvider(
   private val providers: List<TypeConverterProvider>
 ) : TypeConverterProvider {
-  override fun obtainTypeConverter(type: KType): TypeConverter<*> {
+  override fun obtainTypeConverter(typeDescriptor: TypeDescriptor): TypeConverter<*> {
     for (provider in providers) {
       try {
-        return provider.obtainTypeConverter(type)
+        return provider.obtainTypeConverter(typeDescriptor)
       } catch (_: MissingTypeConverter) {
         // Ignore and try next provider
       }
     }
 
-    throw MissingTypeConverter(type)
+    throw MissingTypeConverter(typeDescriptor)
   }
 }
 

@@ -73,19 +73,5 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
 
 @end
 
-#pragma mark - Factory Protocol
-
-/**
- Factory protocol for creating AppContext instances from Objective-C
- without importing Swift.h.
- */
-@protocol EXAppContextFactoryProtocol <NSObject>
-
-/**
- Creates a new AppContext instance.
- */
-+ (nonnull id<EXAppContextProtocol>)createAppContext;
-
-@end
 
 NS_ASSUME_NONNULL_END

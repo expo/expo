@@ -18,8 +18,7 @@ function getAllExpoPublicEnvVars(inputEnv = process.env) {
     // Create an object containing all environment variables that start with EXPO_PUBLIC_
     const env = {};
     for (const key in inputEnv) {
-        if (key.startsWith('EXPO_PUBLIC_')) {
-            // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
+        if (key.startsWith('EXPO_PUBLIC_') && inputEnv[key] != null) {
             env[key] = inputEnv[key];
         }
     }
@@ -44,7 +43,9 @@ function serverPreludeSerializerPlugin(entryPoint, preModules, graph, options) {
         const prelude = preModules.find((module) => module.path === '__prelude__');
         if (prelude) {
             debug('Stripping environment variable polyfill in server environment.');
-            prelude.output[0].data.code = prelude.output[0].data.code
+            // TODO: The module output type should be upcast
+            const data = prelude.output[0].data;
+            data.code = data.code
                 .replace(/process=this\.process\|\|{},/, '')
                 .replace(/process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/, '');
         }
@@ -67,8 +68,10 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
     const prelude = preModules.find((module) => module.path === '\0polyfill:environment-variables');
     if (prelude) {
         debug('Injecting environment variables in virtual module.');
+        // TODO: The module type should be upcast
+        const data = prelude.output[0].data;
         // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
-        prelude.output[0].data.code = code;
+        data.code = code;
         return [entryPoint, preModules, graph, options];
     }
     // Old system which doesn't work very well since Metro doesn't serialize graphs the same way in all cases.

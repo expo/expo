@@ -4,7 +4,7 @@
  The app context is an interface to a single Expo app.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject, @unchecked Sendable {
+public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -47,7 +47,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    React bridge of the context's app. Can be `nil` when the bridge
-   hasn't been propagated to the bridge modules yet (see ``ExpoBridgeModule``),
+   hasn't been propagated to the bridge modules yet,
    or when the app context is "bridgeless" (for example in native unit tests).
    */
   @objc
@@ -184,8 +184,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
-    return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
+    return hostWrapper?.findView(withTag: viewTag) as? ViewType
   }
 
   // MARK: - Running on specific queues
