@@ -1,4 +1,5 @@
 import { NativeModule, registerWebModule } from 'expo';
+
 import type { Config, ExpoObserveModuleType } from './types';
 
 export * from './types';

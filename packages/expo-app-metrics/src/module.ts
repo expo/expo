@@ -1,4 +1,5 @@
 import { requireNativeModule } from 'expo';
+
 import { getInitialRouteName, initRouterNavigationEvents } from './routerIntegration';
 import type { ExpoAppMetricsModuleType } from './types';
 
