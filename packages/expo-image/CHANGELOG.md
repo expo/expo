@@ -18,7 +18,7 @@
 ### 💡 Others
 
 - [iOS] Use `internal import SDWebImage` to hide third-party dependency from public module interface. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
-- [android] Use react natives `OKHttpClient`.
+- [android] Use react natives `OKHttpClient`. ([#44431](https://github.com/expo/expo/pull/44431) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.5 — 2026-02-25
 
