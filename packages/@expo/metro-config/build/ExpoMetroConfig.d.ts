@@ -48,7 +48,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
     };
     cacheStores: FileStore<any>[];
     watcher: {
-        unstable_workerThreads: false;
+        unstable_workerThreads: boolean;
         additionalExts: string[];
     };
     serializer: {
