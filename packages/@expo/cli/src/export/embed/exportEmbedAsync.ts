@@ -9,6 +9,7 @@ import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
+import { filterEmbeddedFontsFromAssets } from '@expo/metro-config/build/serializer/filterEmbeddedFontAssets';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
@@ -402,7 +403,7 @@ export async function exportEmbedAssetsAsync(
 
     const config = server._config;
 
-    return getMetroAssets(dependencies, {
+    const assets = await getMetroAssets(dependencies, {
       processModuleFilter: config.serializer.processModuleFilter,
       assetPlugins: config.transformer.assetPlugins,
       platform: transformOptions.platform!,
@@ -412,6 +413,8 @@ export async function exportEmbedAssetsAsync(
       publicPath: config.transformer.publicPath,
       isHosted: false,
     });
+
+    return filterEmbeddedFontsFromAssets(assets, projectRoot, transformOptions.platform!);
   } catch (error: any) {
     if (isError(error)) {
       // Log using Xcode error format so the errors are picked up by xcodebuild.

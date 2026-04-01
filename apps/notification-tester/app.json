@@ -44,6 +44,12 @@
         }
       ],
       [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/SpaceMono-Regular.ttf"]
+        }
+      ],
+      [
         "expo-localization",
         {
           "supportedLocales": {
