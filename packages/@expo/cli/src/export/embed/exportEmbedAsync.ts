@@ -394,7 +394,9 @@ export async function exportEmbedAssetsAsync(
     });
 
     const dependencies = await server._bundler.getDependencies(
-      [convertEntryPointToRelative(projectRoot, entryFile)],
+      // NOTE(@kitten): This isn't an `entryFile`, but instead a `mainModuleName`, that's been renamed
+      // in `getMetroDirectBundleOptions`, where we've passed the already converted name
+      [entryFile],
       transformOptions,
       resolverOptions,
       { onProgress, shallow: false, lazy: false }
