@@ -586,11 +586,6 @@ This pattern is used for some of the pages where we manually update the modifica
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 
-### Prettier
-
-Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
-
-If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
 
 ### Use Step for procedural guides
 
