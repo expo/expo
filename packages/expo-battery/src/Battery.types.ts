@@ -34,9 +34,11 @@ export enum BatteryState {
    */
   FULL,
   /**
-   * **Android only.** The battery is not charging while power is connected (AC/USB/wireless), for
+   * The battery is not charging while power is connected (AC/USB/wireless), for
    * example when battery protection limits charge to 80%, or optimized charging pauses. This
    * differs from `UNPLUGGED` (discharging on battery). On iOS and web, this value is never returned.
+   *
+   * @platform android
    */
   NOT_CHARGING,
 }
