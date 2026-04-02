@@ -586,6 +586,19 @@ This pattern is used for some of the pages where we manually update the modifica
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 
+### Lint pipeline
+
+The lint pipeline runs four tools via **scripts/lint.js** (`yarn run lint`) script:
+
+- `oxfmt` for code formatting
+- `oxlint` for code linting
+- `tsc` for type checking
+- `eslint` for Tailwind CSS classes, MDX linting, and ES Lint only rules
+
+#### Formatting via oxfmt
+
+If you have a code block using an inline annotation such as `/* @info Some text goes here */` or `/* @hide ... */`, make sure to add `/* prettier-ignore */` and `/* oxfmt-ignore */` comments right before the code block to prevent `oxfmt` from reformatting the code block and breaking the annotations.
+
 ### Use Step for procedural guides
 
 For procedural guides, use [`Step`](/docs/ui/components/Step/Step.tsx) component:
