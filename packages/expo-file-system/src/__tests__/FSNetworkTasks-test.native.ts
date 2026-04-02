@@ -117,6 +117,32 @@ describe('UploadTask', () => {
     await expect(uploadPromise).rejects.toThrow('upload cancelled natively');
     expect(task.state).toBe('cancelled');
   });
+
+  it('forwards sessionType to native start calls', async () => {
+    const task = new UploadTask(file, url, {
+      sessionType: 'foreground',
+    });
+
+    await task.uploadAsync();
+
+    expect(ExpoFileSystem.FileSystemUploadTask.prototype.start).toHaveBeenCalledWith(
+      url,
+      file,
+      expect.objectContaining({ sessionType: 'foreground' })
+    );
+  });
+
+  it('defaults upload sessionType to background', async () => {
+    const task = new UploadTask(file, url);
+
+    await task.uploadAsync();
+
+    expect(ExpoFileSystem.FileSystemUploadTask.prototype.start).toHaveBeenCalledWith(
+      url,
+      file,
+      expect.objectContaining({ sessionType: 'background' })
+    );
+  });
 });
 
 describe('DownloadTask', () => {

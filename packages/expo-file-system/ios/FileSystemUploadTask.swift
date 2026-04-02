@@ -18,6 +18,7 @@ struct UploadTaskOptions: Record {
   @Field var fieldName: String?
   @Field var mimeType: String?
   @Field var parameters: [String: String]?
+  @Field var sessionType: NetworkTaskSessionType = .background
 }
 
 /**
@@ -33,9 +34,9 @@ struct UploadTaskResult: Record {
  * A SharedObject that handles file uploads with progress tracking.
  */
 class FileSystemUploadTask: SharedObject {
-  private var session: URLSession?
   private var uploadTask: URLSessionUploadTask?
-  private var delegate: UploadTaskDelegate?
+  private var delegateKey: String?
+  private var sessionType: NetworkTaskSessionType = .background
   private var sourceAccess: FileSystemScopedAccess?
   private var cancelled = false
   private var tempFileURL: URL?
@@ -44,19 +45,11 @@ class FileSystemUploadTask: SharedObject {
 
   func start(url: URL, file: FileSystemFile, options: UploadTaskOptions, promise: Promise) {
     let sourceUrl = file.url
+    cancelled = false
+    sessionType = options.sessionType
 
     do {
-      delegate = UploadTaskDelegate(sharedObject: self, promise: promise)
-
-      let configuration = URLSessionConfiguration.default
-      configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-      configuration.urlCache = nil
-      session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
-
-      guard let session = session else {
-        promise.reject(UnableToUploadException("Failed to create URLSession"))
-        return
-      }
+      let session = NetworkTaskSessionManager.shared.session(for: sessionType)
 
       sourceAccess = try makeScopedAccess(for: file, permission: .read)
 
@@ -81,16 +74,28 @@ class FileSystemUploadTask: SharedObject {
         uploadTask = session.uploadTask(with: request, fromFile: sourceUrl)
       }
 
-      guard !cancelled else {
-        promise.reject(UploadCancelledException())
-        cleanup(invalidateSession: true)
+      guard let uploadTask else {
+        promise.reject(UnableToUploadException("Failed to create upload task"))
+        cleanup()
         return
       }
 
-      uploadTask?.resume()
+      let delegate = UploadTaskDelegate(sharedObject: self, promise: promise) {
+        self.finishTask()
+      }
+      delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: uploadTask, in: session)
+
+      guard !cancelled else {
+        NetworkTaskSessionManager.shared.unregister(key: delegateKey)
+        promise.reject(UploadCancelledException())
+        cleanup()
+        return
+      }
+
+      uploadTask.resume()
     } catch {
       promise.reject(UnableToUploadException(error.localizedDescription))
-      cleanup(invalidateSession: true)
+      cleanup(unregisterDelegate: true)
     }
   }
 
@@ -116,14 +121,17 @@ class FileSystemUploadTask: SharedObject {
     }
   }
 
-  fileprivate func cleanup(invalidateSession: Bool = false) {
-    delegate = nil
+  fileprivate func finishTask() {
+    cleanup()
+  }
+
+  fileprivate func cleanup(unregisterDelegate: Bool = false) {
+    if unregisterDelegate {
+      NetworkTaskSessionManager.shared.unregister(key: delegateKey)
+    }
+    delegateKey = nil
     uploadTask = nil
     sourceAccess = nil
-    if invalidateSession {
-      session?.invalidateAndCancel()
-    }
-    session = nil
     if let tempFileURL = tempFileURL {
       try? FileManager.default.removeItem(at: tempFileURL)
       self.tempFileURL = nil
@@ -231,15 +239,17 @@ class FileSystemUploadTask: SharedObject {
 
 // MARK: - Upload Task Delegate
 
-class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
+class UploadTaskDelegate: NSObject, NetworkTaskDelegate {
   private weak var sharedObject: FileSystemUploadTask?
   private let promise: Promise
+  private let finishTask: () -> Void
   private var responseBody = Data()
   private var settled = false
 
-  init(sharedObject: FileSystemUploadTask, promise: Promise) {
+  init(sharedObject: FileSystemUploadTask, promise: Promise, finishTask: @escaping () -> Void) {
     self.sharedObject = sharedObject
     self.promise = promise
+    self.finishTask = finishTask
     super.init()
   }
 
@@ -260,15 +270,12 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
   // Completion
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     guard !settled else {
-      session.finishTasksAndInvalidate()
       return
     }
     settled = true
 
     defer {
-      // Invalidate session to break retain cycle (delegate → session → delegate)
-      session.finishTasksAndInvalidate()
-      sharedObject?.cleanup()
+      finishTask()
     }
 
     if let error = error {

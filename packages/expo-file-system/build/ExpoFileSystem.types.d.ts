@@ -678,6 +678,19 @@ export type UploadOptions = {
      */
     onProgress?: (data: UploadProgress) => void;
     /**
+     * Determines whether the iOS native session should continue in the background.
+     *
+     * When set to `'background'`, the native transfer may continue after the app is
+     * suspended. However, the JavaScript `UploadTask` instance is not
+     * restored if the app is terminated or relaunched, so its promise, progress
+     * callbacks, and cancellation state are only available while the original JS
+     * runtime is still alive.
+     *
+     * @platform ios
+     * @default 'background'
+     */
+    sessionType?: NetworkTaskSessionType;
+    /**
      * An `AbortSignal` that can be used to cancel the upload.
      * When the signal is aborted, the upload is cancelled and the promise rejects with an `AbortError`.
      */
@@ -695,9 +708,16 @@ export type DownloadTaskOptions = {
      * Determines whether the iOS native session should continue in the background.
      * Android accepts this option for API consistency and ignores it.
      *
+     * When set to `'background'`, the native transfer may continue after the app is
+     * suspended. However, the JavaScript `DownloadTask` instance is not
+     * restored if the app is terminated or relaunched, so its promise, progress
+     * callbacks, and cancellation state are only available while the original JS
+     * runtime is still alive.
+     *
+     * @platform ios
      * @default 'background'
      */
-    sessionType?: DownloadTaskSessionType;
+    sessionType?: NetworkTaskSessionType;
     /**
      * Callback for download progress updates.
      */
@@ -708,9 +728,9 @@ export type DownloadTaskOptions = {
     signal?: AbortSignal;
 };
 /**
- * The native URL session mode used by iOS download tasks.
+ * The native URL session mode used by iOS upload and download tasks.
  */
-export type DownloadTaskSessionType = 'background' | 'foreground';
+export type NetworkTaskSessionType = 'background' | 'foreground';
 /**
  * Represents the state of a paused download that can be persisted and resumed later.
  */

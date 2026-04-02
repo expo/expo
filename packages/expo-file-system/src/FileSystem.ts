@@ -13,7 +13,7 @@ import {
   DownloadTaskOptions,
   DownloadPauseState,
   TaskState,
-  type DownloadTaskSessionType,
+  type NetworkTaskSessionType,
 } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
@@ -335,9 +335,9 @@ Directory.pickDirectoryAsync = async function (initialUri?: string) {
 /**
  * Download tasks default to background sessions unless the caller explicitly opts out.
  */
-function resolveDownloadTaskSessionType(
-  sessionType?: DownloadTaskSessionType
-): DownloadTaskSessionType {
+function resolveNetworkTaskSessionType(
+  sessionType?: NetworkTaskSessionType
+): NetworkTaskSessionType {
   return sessionType ?? 'background';
 }
 
@@ -349,7 +349,17 @@ function normalizeDownloadTaskOptions(
   }
   return {
     ...options,
-    sessionType: resolveDownloadTaskSessionType(options.sessionType),
+    sessionType: resolveNetworkTaskSessionType(options.sessionType),
+  };
+}
+
+function normalizeUploadTaskOptions(options?: UploadOptions): UploadOptions | undefined {
+  if (!options) {
+    return undefined;
+  }
+  return {
+    ...options,
+    sessionType: resolveNetworkTaskSessionType(options.sessionType),
   };
 }
 /**
@@ -367,7 +377,7 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
     super();
     this._file = file;
     this._url = url;
-    this._options = options;
+    this._options = normalizeUploadTaskOptions(options);
   }
 
   get state(): TaskState {
@@ -388,6 +398,7 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
         fieldName: this._options?.fieldName,
         mimeType: this._options?.mimeType,
         parameters: this._options?.parameters,
+        sessionType: resolveNetworkTaskSessionType(this._options?.sessionType),
       };
 
       const result = await super.start(this._url, this._file, nativeOpts);
@@ -490,7 +501,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     const operation = this._runDownloadOperation(() =>
       super.start(this._url, this._destination, {
         headers: this._options?.headers,
-        sessionType: resolveDownloadTaskSessionType(this._options?.sessionType),
+        sessionType: resolveNetworkTaskSessionType(this._options?.sessionType),
       })
     );
     this._inFlightOperation = operation;
@@ -523,7 +534,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     const operation = this._runDownloadOperation(() =>
       super.resume(this._url, this._destination, this._resumeData!, {
         headers: this._options?.headers,
-        sessionType: resolveDownloadTaskSessionType(this._options?.sessionType),
+        sessionType: resolveNetworkTaskSessionType(this._options?.sessionType),
       })
     );
     this._inFlightOperation = operation;

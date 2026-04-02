@@ -31,14 +31,15 @@ import kotlin.coroutines.resumeWithException
 /**
  * Record type for download task options.
  */
-enum class DownloadTaskSessionType(val value: String) : Enumerable {
+enum class NetworkTaskSessionType(val value: String) : Enumerable {
   BACKGROUND("background"),
   FOREGROUND("foreground")
 }
 
 class DownloadTaskOptions : Record {
   @Field var headers: Map<String, String>? = null
-  @Field var sessionType: DownloadTaskSessionType = DownloadTaskSessionType.BACKGROUND
+
+  @Field var sessionType: NetworkTaskSessionType = NetworkTaskSessionType.BACKGROUND
 }
 
 /**

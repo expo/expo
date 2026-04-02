@@ -2,31 +2,77 @@
 
 import ExpoModulesCore
 
-enum DownloadTaskSessionType: String, Enumerable {
+enum NetworkTaskSessionType: String, Enumerable {
   case background
   case foreground
 }
 
-/**
- * A record type for download task options.
- */
-struct DownloadTaskOptions: Record {
-  @Field var headers: [String: String]?
-  @Field var sessionType: DownloadTaskSessionType = .background
+protocol NetworkTaskDelegate: AnyObject {
+  func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didSendBodyData bytesSent: Int64,
+    totalBytesSent: Int64,
+    totalBytesExpectedToSend: Int64
+  )
+
+  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data)
+
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didWriteData bytesWritten: Int64,
+    totalBytesWritten: Int64,
+    totalBytesExpectedToWrite: Int64
+  )
+
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didFinishDownloadingTo location: URL
+  )
+
+  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?)
 }
 
-private final class DownloadTaskSessionDispatcher: NSObject, URLSessionDownloadDelegate {
-  static let shared = DownloadTaskSessionDispatcher()
+extension NetworkTaskDelegate {
+  func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didSendBodyData bytesSent: Int64,
+    totalBytesSent: Int64,
+    totalBytesExpectedToSend: Int64
+  ) {}
 
-  private var delegates: [String: DownloadTaskDelegate] = [:]
+  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {}
+
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didWriteData bytesWritten: Int64,
+    totalBytesWritten: Int64,
+    totalBytesExpectedToWrite: Int64
+  ) {}
+
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didFinishDownloadingTo location: URL
+  ) {}
+}
+
+final class NetworkTaskSessionDispatcher: NSObject, URLSessionDataDelegate, URLSessionDownloadDelegate {
+  static let shared = NetworkTaskSessionDispatcher()
+
+  private var delegates: [String: NetworkTaskDelegate] = [:]
   private let lock = NSLock()
   private lazy var sessionHandler = ExpoAppDelegateSubscriberRepository.getSubscriberOfType(
     FileSystemBackgroundSessionHandler.self
   )
 
   func register(
-    delegate: DownloadTaskDelegate,
-    for task: URLSessionDownloadTask,
+    delegate: NetworkTaskDelegate,
+    for task: URLSessionTask,
     in session: URLSession
   ) -> String {
     let key = makeKey(session: session, task: task)
@@ -43,6 +89,26 @@ private final class DownloadTaskSessionDispatcher: NSObject, URLSessionDownloadD
     lock.lock()
     delegates.removeValue(forKey: key)
     lock.unlock()
+  }
+
+  func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didSendBodyData bytesSent: Int64,
+    totalBytesSent: Int64,
+    totalBytesExpectedToSend: Int64
+  ) {
+    delegate(for: session, task: task)?.urlSession(
+      session,
+      task: task,
+      didSendBodyData: bytesSent,
+      totalBytesSent: totalBytesSent,
+      totalBytesExpectedToSend: totalBytesExpectedToSend
+    )
+  }
+
+  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+    delegate(for: session, task: dataTask)?.urlSession(session, dataTask: dataTask, didReceive: data)
   }
 
   func urlSession(
@@ -86,7 +152,7 @@ private final class DownloadTaskSessionDispatcher: NSObject, URLSessionDownloadD
     sessionHandler?.invokeCompletionHandler(forSessionIdentifier: identifier)
   }
 
-  private func delegate(for session: URLSession, task: URLSessionTask) -> DownloadTaskDelegate? {
+  private func delegate(for session: URLSession, task: URLSessionTask) -> NetworkTaskDelegate? {
     lock.lock()
     defer {
       lock.unlock()
@@ -100,10 +166,10 @@ private final class DownloadTaskSessionDispatcher: NSObject, URLSessionDownloadD
   }
 }
 
-private final class DownloadTaskSessionManager {
-  static let shared = DownloadTaskSessionManager()
+final class NetworkTaskSessionManager {
+  static let shared = NetworkTaskSessionManager()
 
-  private let dispatcher = DownloadTaskSessionDispatcher.shared
+  private let dispatcher = NetworkTaskSessionDispatcher.shared
 
   private lazy var foregroundSession = createForegroundSession()
 
@@ -111,7 +177,7 @@ private final class DownloadTaskSessionManager {
   private lazy var backgroundSession = createBackgroundSession()
   #endif
 
-  func session(for type: DownloadTaskSessionType) -> URLSession {
+  func session(for type: NetworkTaskSessionType) -> URLSession {
     switch type {
     case .foreground:
       return foregroundSession
@@ -125,8 +191,8 @@ private final class DownloadTaskSessionManager {
   }
 
   func register(
-    delegate: DownloadTaskDelegate,
-    for task: URLSessionDownloadTask,
+    delegate: NetworkTaskDelegate,
+    for task: URLSessionTask,
     in session: URLSession
   ) -> String {
     return dispatcher.register(delegate: delegate, for: task, in: session)
@@ -157,9 +223,17 @@ private final class DownloadTaskSessionManager {
 
   private static let backgroundSessionIdentifier = {
     let bundleIdentifier = Bundle.main.bundleIdentifier ?? "expo.modules.filesystem"
-    return "\(bundleIdentifier).expo-file-system.download-task.background"
+    return "\(bundleIdentifier).expo-file-system.network-task.background"
   }()
   #endif
+}
+
+/**
+ * A record type for download task options.
+ */
+struct DownloadTaskOptions: Record {
+  @Field var headers: [String: String]?
+  @Field var sessionType: NetworkTaskSessionType = .background
 }
 
 /**
@@ -168,14 +242,14 @@ private final class DownloadTaskSessionManager {
 class FileSystemDownloadTask: SharedObject {
   private var downloadTask: URLSessionDownloadTask?
   private var delegateKey: String?
-  private var sessionType: DownloadTaskSessionType = .background
+  private var sessionType: NetworkTaskSessionType = .background
   var isPausing = false
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
     sessionType = options?.sessionType ?? .background
 
-    let session = DownloadTaskSessionManager.shared.session(for: sessionType)
+    let session = NetworkTaskSessionManager.shared.session(for: sessionType)
     let delegate = DownloadTaskDelegate(sharedObject: self, destination: to, promise: promise)
 
     var request = URLRequest(url: url)
@@ -187,7 +261,7 @@ class FileSystemDownloadTask: SharedObject {
 
     let task = session.downloadTask(with: request)
     downloadTask = task
-    delegateKey = DownloadTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
+    delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
     task.resume()
   }
 
@@ -216,12 +290,12 @@ class FileSystemDownloadTask: SharedObject {
       return
     }
 
-    let session = DownloadTaskSessionManager.shared.session(for: sessionType)
+    let session = NetworkTaskSessionManager.shared.session(for: sessionType)
     let delegate = DownloadTaskDelegate(sharedObject: self, destination: to, promise: promise)
     let task = session.downloadTask(withResumeData: data)
 
     downloadTask = task
-    delegateKey = DownloadTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
+    delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
     task.resume()
   }
 
@@ -242,7 +316,7 @@ class FileSystemDownloadTask: SharedObject {
 
   private func cleanup(unregisterDelegate: Bool) {
     if unregisterDelegate {
-      DownloadTaskSessionManager.shared.unregister(key: delegateKey)
+      NetworkTaskSessionManager.shared.unregister(key: delegateKey)
     }
     delegateKey = nil
     downloadTask = nil
@@ -251,7 +325,7 @@ class FileSystemDownloadTask: SharedObject {
 
 // MARK: - Download Task Delegate
 
-private final class DownloadTaskDelegate: NSObject {
+private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
   private weak var sharedObject: FileSystemDownloadTask?
   private let destination: FileSystemPath
   private let promise: Promise

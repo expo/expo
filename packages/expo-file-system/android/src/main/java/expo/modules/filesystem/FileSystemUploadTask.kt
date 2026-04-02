@@ -47,6 +47,9 @@ class UploadTaskOptions : Record {
   @Field var mimeType: String? = null
 
   @Field var parameters: Map<String, String>? = null
+
+  // unused, kept for parity with iOS
+  @Field var sessionType: NetworkTaskSessionType = NetworkTaskSessionType.BACKGROUND
 }
 
 /**
