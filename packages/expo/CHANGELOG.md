@@ -14,6 +14,7 @@
 
 - [iOS] Updated AppDelegate Swift header imports for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Remove `RCTHostRuntimeDelegate` usage now that it's merged into `RCTHostDelegate`. ([#43838](https://github.com/expo/expo/pull/43838) by [@zoontek](https://github.com/zoontek))
+- Bump to `@expo/metro@55.0.0` and `metro@0.83.5` ([#44320](https://github.com/expo/expo/pull/44320) by [@kitten](https://github.com/kitten))
 
 ## 55.0.9 — 2026-03-27
 
