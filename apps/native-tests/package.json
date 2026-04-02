@@ -11,7 +11,7 @@
   "dependencies": {
     "expo": "~55.0.10",
     "expo-clipboard": "55.0.10",
-    "expo-dev-client": "~55.0.20",
+    "expo-dev-client": "~55.0.21",
     "expo-router": "~55.0.9",
     "expo-image": "~55.0.7",
     "expo-media-library": "55.0.11",
