@@ -12,7 +12,8 @@ import {
   UploadResult,
   DownloadTaskOptions,
   DownloadPauseState,
-  TaskState,
+  type UploadTaskState,
+  type DownloadTaskState,
   type NetworkTaskSessionType,
 } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
@@ -362,11 +363,64 @@ function normalizeUploadTaskOptions(options?: UploadOptions): UploadOptions | un
     sessionType: resolveNetworkTaskSessionType(options.sessionType),
   };
 }
+
+type TaskState = UploadTaskState | DownloadTaskState;
+
+type NetworkTaskOptions<TProgress> = {
+  signal?: AbortSignal;
+  onProgress?: (progress: TProgress) => void;
+};
+
+function assertNetworkTaskState<TState extends TaskState>(
+  state: TState,
+  allowedStates: readonly TState[],
+  methodName: string
+) {
+  if (!allowedStates.includes(state)) {
+    throw new Error(`Cannot call ${methodName}() in state "${state}"`);
+  }
+}
+
+function wireNetworkTaskAbortSignal(
+  signal: NetworkTaskOptions<never>['signal'],
+  cancel: () => void
+) {
+  if (signal?.aborted) {
+    throw createAbortError();
+  }
+  if (signal) {
+    const abortHandler = () => cancel();
+    signal.addEventListener('abort', abortHandler, { once: true });
+    return abortHandler;
+  }
+  return undefined;
+}
+
+function wireNetworkTaskProgress<TProgress>(
+  onProgress: NetworkTaskOptions<TProgress>['onProgress'],
+  addListener: (listener: (progress: TProgress) => void) => EventSubscription
+) {
+  if (onProgress) {
+    return addListener(onProgress);
+  }
+  return undefined;
+}
+
+function cleanupNetworkTask(
+  signal: NetworkTaskOptions<never>['signal'],
+  subscription: EventSubscription | undefined,
+  abortHandler: (() => void) | undefined
+) {
+  subscription?.remove();
+  if (abortHandler && signal) {
+    signal.removeEventListener('abort', abortHandler);
+  }
+}
 /**
  * Represents an upload task with progress tracking and cancellation support.
  */
 export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
-  private _state: TaskState = 'idle';
+  private _state: UploadTaskState = 'idle';
   private _file: File;
   private _url: string;
   private _options?: UploadOptions;
@@ -380,16 +434,18 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
     this._options = normalizeUploadTaskOptions(options);
   }
 
-  get state(): TaskState {
+  get state(): UploadTaskState {
     return this._state;
   }
 
   async uploadAsync(): Promise<UploadResult> {
-    this._assertState(['idle'], 'uploadAsync');
+    assertNetworkTaskState(this._state, ['idle'], 'uploadAsync');
     this._state = 'active';
     try {
-      this._wireAbortSignal();
-      this._wireProgress();
+      this._abortHandler = wireNetworkTaskAbortSignal(this._options?.signal, () => this.cancel());
+      this._subscription = wireNetworkTaskProgress(this._options?.onProgress, (listener) =>
+        this.addListener('progress', listener)
+      );
 
       const nativeOpts = {
         httpMethod: this._options?.httpMethod || 'POST',
@@ -426,7 +482,9 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
       this._state = 'error';
       throw error;
     } finally {
-      this._cleanup();
+      cleanupNetworkTask(this._options?.signal, this._subscription, this._abortHandler);
+      this._subscription = undefined;
+      this._abortHandler = undefined;
     }
   }
 
@@ -434,38 +492,9 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
     if (['completed', 'cancelled', 'error'].includes(this._state)) return;
     this._state = 'cancelled';
     super.cancel();
-    this._cleanup();
-  }
-
-  private _assertState(allowed: TaskState[], method: string) {
-    if (!allowed.includes(this._state)) {
-      throw new Error(`Cannot call ${method}() in state "${this._state}"`);
-    }
-  }
-
-  private _wireAbortSignal() {
-    if (this._options?.signal?.aborted) throw createAbortError();
-    if (this._options?.signal) {
-      this._abortHandler = () => this.cancel();
-      this._options.signal.addEventListener('abort', this._abortHandler, { once: true });
-    }
-  }
-
-  private _wireProgress() {
-    if (this._options?.onProgress) {
-      this._subscription = this.addListener('progress', this._options.onProgress);
-    }
-  }
-
-  private _cleanup() {
-    if (this._subscription) {
-      this._subscription.remove();
-      this._subscription = undefined;
-    }
-    if (this._abortHandler && this._options?.signal) {
-      this._options.signal.removeEventListener('abort', this._abortHandler);
-      this._abortHandler = undefined;
-    }
+    cleanupNetworkTask(this._options?.signal, this._subscription, this._abortHandler);
+    this._subscription = undefined;
+    this._abortHandler = undefined;
   }
 }
 
@@ -473,7 +502,7 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
  * Represents a download task with pause/resume support and progress tracking.
  */
 export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
-  private _state: TaskState = 'idle';
+  private _state: DownloadTaskState = 'idle';
   private _url: string;
   private _destination: File | Directory;
   private _options?: DownloadTaskOptions;
@@ -490,12 +519,12 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     this._options = normalizeDownloadTaskOptions(options);
   }
 
-  get state(): TaskState {
+  get state(): DownloadTaskState {
     return this._state;
   }
 
   async downloadAsync(): Promise<File | null> {
-    this._assertState(['idle'], 'downloadAsync');
+    assertNetworkTaskState(this._state, ['idle'], 'downloadAsync');
     this._state = 'active';
     this._pauseRequest = undefined;
     const operation = this._runDownloadOperation(() =>
@@ -509,7 +538,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
   }
 
   pause(): void {
-    this._assertState(['active'], 'pause');
+    assertNetworkTaskState(this._state, ['active'], 'pause');
     this._pauseRequest = Promise.resolve(super.pause()).then((result) => {
       this._resumeData = result?.resumeData ?? undefined;
     });
@@ -523,7 +552,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     await this._inFlightOperation;
   }
   async resumeAsync(): Promise<File | null> {
-    this._assertState(['paused'], 'resumeAsync');
+    assertNetworkTaskState(this._state, ['paused'], 'resumeAsync');
     if (!this._resumeData) {
       throw new Error(
         'No resume data available. Was the download paused before any data was received?'
@@ -546,11 +575,13 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     this._state = 'cancelled';
     this._pauseRequest = undefined;
     super.cancel();
-    this._cleanup();
+    cleanupNetworkTask(this._options?.signal, this._subscription, this._abortHandler);
+    this._subscription = undefined;
+    this._abortHandler = undefined;
   }
 
   savable(): DownloadPauseState {
-    this._assertState(['paused'], 'savable');
+    assertNetworkTaskState(this._state, ['paused'], 'savable');
     return {
       url: this._url,
       fileUri: this._destination.uri,
@@ -576,43 +607,14 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     return task;
   }
 
-  private _assertState(allowed: TaskState[], method: string) {
-    if (!allowed.includes(this._state)) {
-      throw new Error(`Cannot call ${method}() in state "${this._state}"`);
-    }
-  }
-
-  private _wireAbortSignal() {
-    if (this._options?.signal?.aborted) throw createAbortError();
-    if (this._options?.signal) {
-      this._abortHandler = () => this.cancel();
-      this._options.signal.addEventListener('abort', this._abortHandler, { once: true });
-    }
-  }
-
-  private _wireProgress() {
-    if (this._options?.onProgress) {
-      this._subscription = this.addListener('progress', this._options.onProgress);
-    }
-  }
-
-  private _cleanup() {
-    if (this._subscription) {
-      this._subscription.remove();
-      this._subscription = undefined;
-    }
-    if (this._abortHandler && this._options?.signal) {
-      this._options.signal.removeEventListener('abort', this._abortHandler);
-      this._abortHandler = undefined;
-    }
-  }
-
   private async _runDownloadOperation(
     operation: () => Promise<string | null>
   ): Promise<File | null> {
     try {
-      this._wireAbortSignal();
-      this._wireProgress();
+      this._abortHandler = wireNetworkTaskAbortSignal(this._options?.signal, () => this.cancel());
+      this._subscription = wireNetworkTaskProgress(this._options?.onProgress, (listener) =>
+        this.addListener('progress', listener)
+      );
 
       const result = await operation();
       if (result) {
@@ -637,10 +639,13 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       this._state = 'error';
       throw error;
     } finally {
-      this._cleanup();
+      cleanupNetworkTask(this._options?.signal, this._subscription, this._abortHandler);
+      this._subscription = undefined;
+      this._abortHandler = undefined;
       this._inFlightOperation = undefined;
     }
   }
+
   private _emitFinalProgressEvent(fileSize: number) {
     // Emit a synthetic final progress to guarantee 100% is reported.
     // Native progress events may not fire for small files, and even when they do,

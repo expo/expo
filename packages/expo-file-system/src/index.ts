@@ -29,7 +29,8 @@ export {
   type DownloadTaskOptions,
   type NetworkTaskSessionType,
   type DownloadPauseState,
-  type TaskState,
+  type UploadTaskState,
+  type DownloadTaskState,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';

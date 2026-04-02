@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { type DownloadOptions, type PathInfo, UploadOptions, UploadResult, DownloadTaskOptions, DownloadPauseState, TaskState } from './ExpoFileSystem.types';
+import { type DownloadOptions, type PathInfo, UploadOptions, UploadResult, DownloadTaskOptions, DownloadPauseState, type UploadTaskState, type DownloadTaskState } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -117,13 +117,9 @@ export declare class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
     private _subscription?;
     private _abortHandler?;
     constructor(file: File, url: string, options?: UploadOptions);
-    get state(): TaskState;
+    get state(): UploadTaskState;
     uploadAsync(): Promise<UploadResult>;
     cancel(): void;
-    private _assertState;
-    private _wireAbortSignal;
-    private _wireProgress;
-    private _cleanup;
 }
 /**
  * Represents a download task with pause/resume support and progress tracking.
@@ -139,7 +135,7 @@ export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask 
     private _inFlightOperation?;
     private _pauseRequest?;
     constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions);
-    get state(): TaskState;
+    get state(): DownloadTaskState;
     downloadAsync(): Promise<File | null>;
     pause(): void;
     pauseAsync(): Promise<void>;
@@ -147,10 +143,6 @@ export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask 
     cancel(): void;
     savable(): DownloadPauseState;
     static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask;
-    private _assertState;
-    private _wireAbortSignal;
-    private _wireProgress;
-    private _cleanup;
     private _runDownloadOperation;
     private _emitFinalProgressEvent;
 }

@@ -758,8 +758,17 @@ export type DownloadPauseState = {
 };
 /**
  * Represents the current state of an upload or download task.
+ * @inline
  */
-export type TaskState = 'idle' | 'active' | 'paused' | 'completed' | 'cancelled' | 'error';
+type TaskState = 'idle' | 'active' | 'paused' | 'completed' | 'cancelled' | 'error';
+/**
+ * Represents the current state of an upload task.
+ */
+export type UploadTaskState = Exclude<TaskState, 'paused'>;
+/**
+ * Represents the current state of a download task.
+ */
+export type DownloadTaskState = TaskState;
 /**
  * Represents an upload task with progress tracking and cancellation support.
  */
@@ -767,7 +776,7 @@ export declare class UploadTask {
     /**
      * The current state of the upload task.
      */
-    readonly state: TaskState;
+    readonly state: UploadTaskState;
     /**
      * Creates a new upload task.
      * @param file The file to upload.
@@ -800,7 +809,7 @@ export declare class DownloadTask {
     /**
      * The current state of the download task.
      */
-    readonly state: TaskState;
+    readonly state: DownloadTaskState;
     /**
      * Creates a new download task.
      * @param url The source URL.
@@ -848,4 +857,5 @@ export declare class DownloadTask {
         remove: () => void;
     };
 }
+export {};
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map
