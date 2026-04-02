@@ -88,7 +88,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
 
-    self.defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URI"];
+    self.defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URL"];
     self.useDefaultLaunchUrlFallback = self.defaultLaunchURLString.length != 0;
     self.defaultLaunchURL = [NSURL URLWithString:self.defaultLaunchURLString];
   }

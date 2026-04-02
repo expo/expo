@@ -103,7 +103,7 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
             config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
         }
         if (iosDefaultLaunchURL) {
-            config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URI'] = iosDefaultLaunchURL;
+            config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URL'] = iosDefaultLaunchURL;
         }
         return config;
     });
@@ -131,7 +131,7 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE', false?.toString());
         }
         if (androidDefaultLaunchURL) {
-            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_DEFAULT_LAUNCHER_URI', androidDefaultLaunchURL);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_DEFAULT_LAUNCHER_URL', androidDefaultLaunchURL);
         }
         return config;
     });

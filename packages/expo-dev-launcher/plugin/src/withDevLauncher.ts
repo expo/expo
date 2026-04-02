@@ -131,7 +131,7 @@ export default createRunOncePlugin<PluginConfigType>(
         config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
       }
       if (iosDefaultLaunchURL) {
-        config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URI'] = iosDefaultLaunchURL;
+        config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URL'] = iosDefaultLaunchURL;
       }
       return config;
     });
@@ -170,7 +170,7 @@ export default createRunOncePlugin<PluginConfigType>(
       if (androidDefaultLaunchURL) {
         AndroidConfig.Manifest.addMetaDataItemToMainApplication(
           mainApplication,
-          'DEV_CLIENT_DEFAULT_LAUNCHER_URI',
+          'DEV_CLIENT_DEFAULT_LAUNCHER_URL',
           androidDefaultLaunchURL
         );
       }
