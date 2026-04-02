@@ -12,13 +12,8 @@ import java.nio.file.StandardCopyOption
  * avoiding user-space buffering.
  *
  * These functions are only for local file-to-local file operations (JavaFile).
- * SAF/ContentProvider/Asset backends must continue using stream-based copy
- * since they only guarantee InputStream/OutputStream via ContentResolver.
- *
- * TODO: SAF files could potentially use ContentResolver.openFileDescriptor()
- * → FileChannel.transferTo() for zero-copy, with fallback to streams when
- * the provider doesn't support file descriptors. FileSystemFileHandle already
- * demonstrates this pattern (forContentURI opens FileChannel via openFileDescriptor).
+ * SAF/ContentProvider backends use FileChannel via copyFileWithChannelFallback
+ * (see Utilities.kt) with stream-based fallback.
  */
 
 @RequiresApi(Build.VERSION_CODES.O)

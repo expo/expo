@@ -2,6 +2,8 @@ package expo.modules.filesystem.fsops
 
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.exception.Exceptions
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -24,6 +26,66 @@ internal fun copyFileViaStream(
     dest.outputStream().use { output ->
       input.copyTo(output, bufferSize = 65_536) // 64KB — reduces syscall overhead vs 8KB default
     }
+  }
+}
+
+/**
+ * Attempt to copy a file using FileChannel.transferTo() for zero-copy.
+ * Returns true if the channel-based copy succeeded, false if either side
+ * doesn't support file descriptors (caller should fall back to streams).
+ */
+internal fun copyFileViaChannel(
+  source: UnifiedFileInterface,
+  dest: UnifiedFileInterface
+): Boolean {
+  val srcPfd = source.openFileDescriptor("r") ?: return false
+  return srcPfd.use { src ->
+    val dstPfd = dest.openFileDescriptor("w") ?: return false
+    dstPfd.use { dst ->
+      runCatching {
+        FileInputStream(src.fileDescriptor).channel.use { inCh ->
+          FileOutputStream(dst.fileDescriptor).channel.use { outCh ->
+            copyChannelContents(inCh.size()) { position, count ->
+              inCh.transferTo(position, count, outCh)
+            }
+          }
+        }
+      }.getOrElse { false }
+    }
+  }
+}
+
+/**
+ * Repeatedly transfers bytes until [size] is reached or the transfer stops
+ * making progress.
+ *
+ * Returns `true` only when all bytes were transferred.
+ */
+internal inline fun copyChannelContents(
+  size: Long,
+  transferTo: (position: Long, count: Long) -> Long
+): Boolean {
+  var position = 0L
+  while (position < size) {
+    val transferred = transferTo(position, size - position)
+    if (transferred <= 0L) {
+      return false
+    }
+    position += transferred
+  }
+  return true
+}
+
+/**
+ * Copy a file using FileChannel if possible, falling back to stream-based copy.
+ * Drop-in replacement for [copyFileViaStream] at all non-NIO call sites.
+ */
+internal fun copyFileWithChannelFallback(
+  source: UnifiedFileInterface,
+  dest: UnifiedFileInterface
+) {
+  if (!copyFileViaChannel(source, dest)) {
+    copyFileViaStream(source, dest)
   }
 }
 
@@ -53,7 +115,7 @@ internal fun copyDirectoryViaStream(
     } else {
       val childDest = dest.createFile(child.type ?: "*/*", childName)
         ?: throw Exceptions.IllegalStateException("Failed to create file: $childName")
-      copyFileViaStream(child, childDest)
+      copyFileWithChannelFallback(child, childDest)
     }
   }
 }
@@ -67,14 +129,14 @@ internal fun copyDirectoryViaStream(
  *
  * @param source Source directory
  * @param dest Destination directory (must exist)
- * @param copyFile Function to copy a single file. Defaults to [copyFileViaStream].
+ * @param copyFile Function to copy a single file. Defaults to [copyFileWithChannelFallback].
  *   Callers can pass an NIO-based alternative for local-to-local copies.
  * @param parallelism Maximum number of concurrent file copies
  */
 internal suspend fun copyDirectoryParallel(
   source: UnifiedFileInterface,
   dest: UnifiedFileInterface,
-  copyFile: (UnifiedFileInterface, UnifiedFileInterface) -> Unit = ::copyFileViaStream,
+  copyFile: (UnifiedFileInterface, UnifiedFileInterface) -> Unit = ::copyFileWithChannelFallback,
   parallelism: Int = 4
 ) = coroutineScope {
   require(source.isDirectory()) { "Source must be directory" }
