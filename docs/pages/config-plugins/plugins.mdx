@@ -215,8 +215,7 @@ Your config plugin can accept parameters passed from your app config. To do so, 
 
 Considering the previous example, let's pass a custom message to the plugin. Add an `options` object in **withAndroidPlugin.ts** and update the `message` variable to use the `options.message` property:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```ts withAndroidPlugin.ts
 /* @hide ...*/ /* @end */
 type AndroidProps = {
@@ -225,14 +224,13 @@ type AndroidProps = {
 
 const withAndroidPlugin: ConfigPlugin<AndroidProps> = (
   config,
-  /* @info Pass an <code>options</code> object to the plugin. */ options = {} /* @end */
+  /* @info Pass an <code>options</code> object to the plugin. */ options = {}/* @end */
 ) => {
   /* @info Use the provided message or fall back to a default */
   const message = options.message || 'Hello world, from Expo plugin!';
   /* @end */
   return withAndroidManifest(config, config => {
-    /* @hide ... rest of the example remains unchanged */
-    /* @end */
+   /* @hide ... rest of the example remains unchanged */ /* @end */
   });
 };
 
@@ -244,19 +242,15 @@ export default withAndroidPlugin;
 
 Similarly, add an `options` object in **withIosPlugin.ts** and update the `message` variable to use the `options.message` property:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```ts withIosPlugin.ts
 /* @hide ...*/ /* @end */
 type IosProps = {
   message?: string;
 };
 
-const withIosPlugin: ConfigPlugin<IosProps> = (
-  config,
-  /* @info Pass an <code>options</code> object to the plugin. */ options = {} /* @end */
-) => {
-  /* @info Use the provided message or fall back to a default */
+const withIosPlugin: ConfigPlugin<IosProps> = (config, /* @info Pass an <code>options</code> object to the plugin. */ options = {}/* @end */) => {
+   /* @info Use the provided message or fall back to a default */
   const message = options.message || 'Hello world, from Expo plugin!';
   /* @end */
   /* @hide ... rest of the example remains unchanged*/ /* @end */
@@ -271,14 +265,10 @@ export default withIosPlugin;
 
 Update the **withPlugin.ts** file to pass the `options` object to both plugins:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```ts withPlugin.ts
 /* @hide ...*/ /* @end */
-const withPlugin: ConfigPlugin<{ message?: string }> = (
-  config,
-  /* @info */ options = {} /* @end */
-) => {
+const withPlugin: ConfigPlugin<{ message?: string }> = (config, /* @info */ options = {}/* @end */) => {
   /* @info */
   config = withAndroidPlugin(config, options);
   return withIosPlugin(config, options);

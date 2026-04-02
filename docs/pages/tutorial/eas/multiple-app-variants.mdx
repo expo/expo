@@ -100,8 +100,7 @@ const getAppName = () => {
 
 We'll use `getAppName()` to assign dynamic `name` values for the app and `getUniqueIdentifier()` to differentiate `android.package` and `ios.bundleIdentifier` for development and preview builds:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```js app.config.js
 export default ({ config }) => ({
   ...config,
@@ -133,8 +132,7 @@ export default ({ config }) => ({
 
 In **eas.json**, add the `APP_VARIANT` environment variable:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```json eas.json|collapseHeight=440
 {
   "build": {

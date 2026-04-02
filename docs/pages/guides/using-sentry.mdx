@@ -83,18 +83,12 @@ Follow the prompts in the wizard to complete the setup process. The wizard will 
 
 Create a new release build of your app and verify that it uploads source maps correctly. You may want to add a button in your app to test that it is working and sourcemaps are wired up as expected, for example:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```jsx
 import { Button } from 'react-native';
 
 // Inside some component
-<Button
-  title="Press me"
-  onPress={() => {
-    throw new Error('Hello, again, Sentry!');
-  }}
-/>;
+<Button title="Press me" onPress={() => { throw new Error('Hello, again, Sentry!'); }}/>
 ```
 
 </Step>

@@ -43,19 +43,15 @@ When the app loads for the first time and the permission status is neither grant
 
 Add the following code snippet inside the **app/(tabs)/index.tsx**:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
-import { /* @tutinfo */ useEffect /* @end */, useState } from 'react';
-/* @tutinfo Import <CODE>expo-media-library</CODE>. */ import * as MediaLibrary from 'expo-media-library'; /* @end */
+import { /* @tutinfo */useEffect/* @end */, useState } from 'react';
+/* @tutinfo Import <CODE>expo-media-library</CODE>. */import * as MediaLibrary from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo Add this statement to import the permissions response and <CODE>requestPermission()</CODE> method from the hook. */ const [
-    permissionResponse,
-    requestPermission,
-  ] = MediaLibrary.usePermissions(); /* @end */
+  /* @tutinfo Add this statement to import the permissions response and <CODE>requestPermission()</CODE> method from the hook. */const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();/* @end */
   // ...rest of the code remains same
 
   /* @tutinfo Add an if statement to check the permission status. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
@@ -82,32 +78,23 @@ We'll use `react-native-view-shot` to allow the user to take a screenshot within
 2. Create an `imageRef` reference variable to store the reference of the screenshot image captured.
 3. Wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass the reference variable to it.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import {
-  useEffect,
-  useState,
-  /* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */ useRef /* @end */,
-} from 'react';
-/* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */ import { captureRef } from 'react-native-view-shot'; /* @end */
+import { useEffect, useState, /* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */useRef/* @end */ } from 'react';
+/* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
-  /* @tutinfo Create an imageRef variable. */ const imageRef = useRef<View>(null); /* @end */
+  /* @tutinfo Create an imageRef variable. */ const imageRef = useRef<View>(null);/* @end */
 
   // ...rest of the code remains same
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @tutinfo Add a View component to wrap the ImageViewer and EmojiSticker inside it. */
-        <View ref={imageRef} collapsable={false}>
-          /* @end */
+        /* @tutinfo Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
           <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
           {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
-          /* @tutinfo */
-        </View>
-        /* @end */
+        /* @tutinfo */</View>/* @end */
       </View>
       {/* ...rest of the code remains same */}
     </GestureHandlerRootView>
@@ -129,8 +116,7 @@ The `captureRef()` method also returns a promise that fulfills with the screensh
 
 Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with the following code:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
@@ -151,10 +137,14 @@ import EmojiSticker from '@/components/EmojiSticker';
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
-  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(
+    undefined
+  );
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
+  const [pickedEmoji, setPickedEmoji] = useState<
+    ImageSourcePropType | undefined
+  >(undefined);
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const imageRef = useRef<View>(null);
 

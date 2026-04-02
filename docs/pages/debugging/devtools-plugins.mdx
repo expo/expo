@@ -98,8 +98,7 @@ export default Layout() {
 
 <Tab>
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```jsx App.js
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
@@ -109,8 +108,11 @@ export default function App() {
 
   useReactNavigationDevTools(navigationRef);
 
-  return <NavigationContainer ref={navigationRef}>{/* ... */}</NavigationContainer>;
+return (
+    <NavigationContainer ref={navigationRef}>{/* ... */}</NavigationContainer>
+  );
 }
+
 ```
 
 </Tab>

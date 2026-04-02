@@ -23,15 +23,19 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <SnackInline label="Basic Webview usage" dependencies={["react-native-webview", "expo-constants"]}>
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```jsx collapseHeight=310
 import { WebView } from 'react-native-webview';
 import Constants from 'expo-constants';
 import { StyleSheet } from 'react-native';
 
 export default function App() {
-  return <WebView style={styles.container} source={{ uri: 'https://expo.dev' }} />;
+  return (
+    <WebView
+      style={styles.container}
+      source={{ uri: 'https://expo.dev' }}
+    />
+  );
 }
 
 const styles = StyleSheet.create({

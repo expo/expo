@@ -52,8 +52,7 @@ With Expo Router, you refer to pages by their URL, or their position relative to
 
 The typical way to link to a page in Expo Router is to use links like web apps. Expo Router has a `Link` component for navigating between pages, where the `href` is the same route you would use in `router.navigate`:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx src/app/index.tsx
 import { View } from 'react-native';
 /* @info Import the <CODE>Link</CODE> React component from <CODE>expo-router</CODE>. */
@@ -73,8 +72,7 @@ export default function Page() {
 
 By default, the `Link` component renders its children inside a `<Text>` element. This means non-text children (such as `View`) may have unexpected layout behavior. To have full control over the layout, use the `asChild` prop with a `Pressable` or another component that accepts `onPress`/`onClick` props:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx
 import { Pressable, Text } from 'react-native';
 import { Link } from 'expo-router';
@@ -83,7 +81,7 @@ export default function Page() {
   return (
     /* @info The <CODE>onPress</CODE> event that navigates to <CODE>/other</CODE> will be passed to <CODE>Pressable</CODE>. */
     <Link href="/other" asChild>
-      /* @end */
+    /* @end */
       <Pressable>
         <Text>Home</Text>
       </Pressable>
@@ -138,8 +136,7 @@ Consider the following file structure:
 
 Each of these links will navigate to the same page:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx src/app/index.tsx
 /* @info Import the <CODE>Link</CODE> React component and <CODE>router</CODE> to navigate imperatively from <CODE>expo-router</CODE>. */
 import { Link, router } from 'expo-router';
@@ -149,21 +146,26 @@ import { View, Pressable, Text } from 'react-native';
 export default function Page() {
   return (
     <View>
-      <Link href="/user/bacon">View user (id inline)</Link>
+      <Link
+        href="/user/bacon">
+        View user (id inline)
+      </Link>
       <Link
         href={{
           pathname: '/user/[id]',
-          params: { id: 'bacon' },
-        }}>
+          params: { id: 'bacon' }
+        }}
+      >
         View user (id in params in href)
       </Link>
       <Pressable
         onPress={() =>
           router.navigate({
             pathname: '/user/[id]',
-            params: { id: 'bacon' },
+            params: { id: 'bacon' }
           })
-        }>
+        }
+      >
         <Text>View user (imperative)</Text>
       </Pressable>
     </View>

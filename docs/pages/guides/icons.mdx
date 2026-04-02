@@ -81,8 +81,7 @@ files={{
   }}
 dependencies={['@expo/vector-icons', 'expo-font']}>
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```jsx
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -113,8 +112,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <Icon name="pacman" size={50} color="red" />
-      /* @end */
+      <Icon name="pacman" size={50} color="red" />/* @end */
     </View>
   );
 }

@@ -134,8 +134,7 @@ The `expo-router/head` component supports the following meta tags:
 
 You may want to switch the values between platforms, for that you can use **Platform.select**:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx src/app/index.tsx
 import Head from 'expo-router/head';
 
@@ -144,7 +143,7 @@ export default function App() {
     <Head>
       <meta
         property="og:url"
-        content={/* @info */ Platform.select({ web: 'https://expo.dev', default: null }) /* @end */}
+        content={/* @info */Platform.select({ web: 'https://expo.dev', default: null })/* @end */}
       />
     </Head>
   );

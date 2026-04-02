@@ -44,8 +44,7 @@ The following examples show how to use the `AuthSession` API to authenticate wit
 - The `redirectUri` requires two slashes (`://`).
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx GitHub Auth Example
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -70,7 +69,7 @@ export default function App() {
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
         /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app',
+        scheme: 'your.app'
         /* @end */
       }),
     },
@@ -115,8 +114,7 @@ export default function App() {
 
 - You cannot define a custom `redirectUri`, Okta will provide you with one.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx Okta Auth Example
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -206,8 +204,7 @@ Here are a few tips you can use to make authentication quick, easy, and secure f
 
 On Android you can optionally warm up the web browser before it's used. This allows the browser app to pre-initialize itself in the background. Doing this can significantly speed up prompting the user for authentication.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -235,8 +232,7 @@ Because there was no secure way to do this to store client secrets in your app b
 
 `expo-auth-session` still supports Implicit flow for legacy code purposes. Below is an example implementation of the Implicit flow.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -261,7 +257,7 @@ function App() {
       scopes: ['user-read-email', 'playlist-modify-public'],
       redirectUri: makeRedirectUri({
         /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app',
+        scheme: 'your.app'
         /* @end */
       }),
     },
@@ -286,8 +282,7 @@ On native platforms such as Android and iOS, you can secure things like access t
 
 You can store your authentication results and rehydrate them later to avoid having to prompt the user to login again.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx
 import * as SecureStore from 'expo-secure-store';
 

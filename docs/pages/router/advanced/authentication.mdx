@@ -99,16 +99,17 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
 The following code snippet is a basic hook that persists tokens securely on native with [`expo-secure-store`](/versions/latest/sdk/securestore) and in local storage on web.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx src/useStorageState.ts
-import { useEffect, useCallback, useReducer } from 'react';
+import  { useEffect, useCallback, useReducer } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
 type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
 
-function useAsyncState<T>(initialValue: [boolean, T | null] = [true, null]): UseStateHook<T> {
+function useAsyncState<T>(
+  initialValue: [boolean, T | null] = [true, null],
+): UseStateHook<T> {
   return useReducer(
     (state: [boolean, T | null], action: T | null = null): [boolean, T | null] => [false, action],
     initialValue

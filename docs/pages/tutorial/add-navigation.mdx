@@ -67,8 +67,7 @@ Inside **app/\_layout.tsx**:
 1. Add a `<Stack.Screen />` component and an `options` prop to update the title of the `/about` route.
 2. Update the `/index` route's title to `Home` by adding `options` prop.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 
@@ -102,8 +101,7 @@ We'll use Expo Router's `Link` component to navigate from the `/index` route to 
 2. Add a `Link` component after `<Text>` component and pass `href` prop with the `/about` route.
 3. Add a style of `fontSize`, `textDecorationLine`, and `color` to `Link` component. It takes the same props as the `<Text>` component.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=300
 import { Text, View, StyleSheet } from 'react-native';
 /* @tutinfo Import <CODE>Link</CODE> component from <CODE>expo-router</CODE>. */ import { Link } from 'expo-router'; /* @end */
@@ -112,8 +110,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Home screen</Text>
-      /* @tutinfo Add <CODE>Link</CODE> component after <CODE>Text</CODE> component and pass the{' '}
-      <CODE>href</CODE> prop with <CODE>/about</CODE> route. */
+      /* @tutinfo Add <CODE>Link</CODE> component after <CODE>Text</CODE> component and pass the <CODE>href</CODE> prop with <CODE>/about</CODE> route. */
       <Link href="/about" style={styles.button}>
         Go to About screen
       </Link>
@@ -158,8 +155,7 @@ When a route doesn't exist, we can use a `+not-found` route to display a fallbac
 2. Add `options` prop from the `Stack.Screen` to display a custom screen title for this route.
 3. Add a `Link` component to navigate to the `/` route, which is our fallback route.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/+not-found.tsx
 import { View, StyleSheet } from 'react-native';
 import { Link, Stack } from 'expo-router';
@@ -167,13 +163,11 @@ import { Link, Stack } from 'expo-router';
 export default function NotFoundScreen() {
   return (
     <>
-      /* @tutinfo Add <CODE>Stack.Screen</CODE> component with <CODE>options</CODE> prop to update
-      the title of <CODE>+not-found</CODE> route. */
+      /* @tutinfo Add <CODE>Stack.Screen</CODE> component with <CODE>options</CODE> prop to update the title of <CODE>+not-found</CODE> route. */
       <Stack.Screen options={{ title: 'Oops! Not Found' }} />
       /* @end */
       <View style={styles.container}>
-        /* @tutinfo Adding a fallback route allows the user to navigate to that screen. Here, the
-        fallback route is Home screen. */
+        /* @tutinfo Adding a fallback route allows the user to navigate to that screen. Here, the fallback route is Home screen. */
         <Link href="/" style={styles.button}>
           Go back to Home screen!
         </Link>
@@ -238,18 +232,14 @@ We'll add a bottom tab navigator to our app and reuse the existing Home and Abou
 
 Update the Root layout file to add a `(tabs)` route:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function RootLayout() {
   return (
     <Stack>
-      /* @tutinfo This is how a tab navigator is nested inside a stack navigator, especially when
-      the Root layout is composed of a parent stack navigator. We're also setting the{' '}
-      <CODE>headerShown</CODE> option to <CODE>false</CODE> to hide the header for the tab
-      navigator. Otherwise, there will be two headers displayed on each screen. */
+      /* @tutinfo This is how a tab navigator is nested inside a stack navigator, especially when the Root layout is composed of a parent stack navigator. We're also setting the <CODE>headerShown</CODE> option to <CODE>false</CODE> to hide the header for the tab navigator. Otherwise, there will be two headers displayed on each screen. */
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       /* @end */
     </Stack>
@@ -259,17 +249,14 @@ export default function RootLayout() {
 
 Inside **(tabs)/\_layout.tsx**, add a `Tabs` component to define the bottom tab layout:
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
     <Tabs>
-      /* @tutinfo <CODE>Tabs.Screen</CODE> component works in a similar way and accepts same props
-      as <CODE>Stack.Screen</CODE> component. The only difference is the navigation pattern on the
-      device. */
+      /* @tutinfo <CODE>Tabs.Screen</CODE> component works in a similar way and accepts same props as <CODE>Stack.Screen</CODE> component. The only difference is the navigation pattern on the device. */
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
       <Tabs.Screen name="about" options={{ title: 'About' }} />
       /* @end */
@@ -300,8 +287,7 @@ Modify the **(tabs)/\_layout.tsx** file to add tab bar icons:
 2. Add the `tabBarIcon` to both the `index` and `about` routes. This function takes `focused` and `color` as params and renders the icon component. From the icon set, we can provide custom icon names.
 3. Add `screenOptions.tabBarActiveTintColor` to the `Tabs` component and set its value to `#ffd33d`. This will change the color of the tab bar icon and label when active.
 
-{/* oxfmt-ignore */}
-
+{/* prettier-ignore */}
 ```tsx app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 /* @tutinfo Import <CODE>Ionicons</CODE> icon set.*/
@@ -334,11 +320,7 @@ export default function TabLayout() {
           title: 'About',
           tabBarIcon: ({ color, focused }) => (
             /* @tutinfo */
-            <Ionicons
-              name={focused ? 'information-circle' : 'information-circle-outline'}
-              color={color}
-              size={24}
-            />
+            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
             /* @end */
           ),
         }}

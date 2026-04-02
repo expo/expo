@@ -23,12 +23,12 @@ EAS Update supports request proxying, which allows you to proxy requests to the 
      - This must pass-through all headers prefixed with `expo-` or `eas-`.
 1. Add the following fields to your **eas.json** configuration file, replacing the placeholders with your actual proxy server URLs:
 
-   {/* oxfmt-ignore */}
-
+   {/* prettier-ignore */}
    ```json eas.json
    {
      "cli": {
-       /* @hide ... */ /* @end */ "updateAssetHostOverride": "updates-asset-proxy.example.com",
+       /* @hide ... */ /* @end */
+       "updateAssetHostOverride": "updates-asset-proxy.example.com",
        "updateManifestHostOverride": "updates-manifest-proxy.example.com"
      }
    }
