@@ -1,6 +1,6 @@
 import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
-import { isNativeModuleAsync } from 'expo-modules-autolinking/exports';
+import { isNativeModuleAsync } from 'expo/internal/unstable-autolinking-exports';
 import fs from 'fs';
 import path from 'path';
 
@@ -155,7 +155,15 @@ export async function promptToClearMalformedNativeProjectsAsync(
 }
 
 export async function maybeBailOnNativeModuleAsync(projectRoot: string) {
-  if (await isNativeModuleAsync(projectRoot)) {
+  let isNativeModule = false;
+  try {
+    isNativeModule = await isNativeModuleAsync(projectRoot);
+  } catch {
+    // We don't care too much about a failure here
+    // TODO(@kitten): Remove try/catch; this is only to protect against version misalignment
+    // Remove this when we're bumping to SDK 56
+  }
+  if (isNativeModule) {
     if (!isInteractive()) {
       Log.warn(
         `Current project was detected as a native module, but the command will continue because the terminal is not interactive.`
