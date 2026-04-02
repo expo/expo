@@ -105,9 +105,9 @@ let oxfmtPromise;
 if (changedFiles !== null && changedFiles.length === 0) {
   oxfmtPromise = Promise.resolve({ status: 0, output: 'No formattable files changed.' });
 } else if (changedFiles !== null) {
-  oxfmtPromise = runAsync('oxfmt', ['--check', ...changedFiles]);
+  oxfmtPromise = runAsync('oxfmt', ['--check', '--diff', ...changedFiles]);
 } else {
-  oxfmtPromise = runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
+  oxfmtPromise = runAsync('oxfmt', ['--check', '--diff', process.cwd(), '**/*.mdx']);
 }
 
 let oxlintPromise;
