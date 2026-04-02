@@ -362,7 +362,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 Code blocks are a great way to add code snippets to our docs. We leverage the usual code block Markdown syntax, but it's expanded to support code block titles and additional params.
 
 <!-- prettier-ignore -->
-````mdx
+```mdx
     {/* For plain code block the syntax is unchanged (but we recommend to always add a title to the snippet): */}
     ```js
     // Your code goes in here
@@ -383,7 +383,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
     ```js collapseHeight=200
     // Your code goes in here
     ```
-````
+```
 
 #### Supported additional params
 
@@ -396,7 +396,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 Snacks are a great way to add instantly-runnable examples to our docs. The [`SnackInline`](/docs/ui/components/Snippet/blocks/SnackInline.tsx) component can be imported to any markdown file, and used like this:
 
 <!-- prettier-ignore -->
-````mdx
+```mdx
 import SnackInline from '~/components/plugins/SnackInline';
 
 <SnackInline label='My Example Label' dependencies={['array of', 'packages', 'this Snack relies on']}>
@@ -419,14 +419,14 @@ import SnackInline from '~/components/plugins/SnackInline';
     ```
 
 </SnackInline>
-````
+```
 
 ### Add multiple code variants
 
 Sometimes it's useful to show multiple ways of doing something, for instance, maybe you'd like to have an example using a React class component, and also an example of a functional component. The `Tabs` plugin is useful for this, and this is how you'd use it in a markdown file:
 
 <!-- prettier-ignore -->
-````mdx
+```mdx
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <Tabs>
@@ -449,7 +449,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
     ```
 </Tab>
 </Tabs>
-````
+```
 
 > [!NOTE]
 > The components should not be indented or they will not be parsed correctly.
