@@ -3,6 +3,7 @@ import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { PropsWithChildren } from 'react';
 
 import { cleanCopyValue } from '~/common/code-utilities';
+import { usePageApiVersion } from '~/providers/page-api-version';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
@@ -24,6 +25,7 @@ type Props = PropsWithChildren<{
 }>;
 
 export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: Props) {
+  const { version } = usePageApiVersion();
   const childrenArray = Array.isArray(children) ? children : [children];
   const codeBlocks = childrenArray.filter(({ props }) =>
     props.children.props.className?.startsWith('language-')
@@ -50,7 +52,7 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
       {codeBlocks.map((codeBlock, index) => (
         <Snippet key={index} className="last:max-lg-gutters:mb-4 mb-0">
           <SnippetHeader title={tabNames[index]} Icon={FileCode01Icon}>
-            <CopyAction text={cleanCopyValue(codeBlock.props.children.props.children)} />
+            <CopyAction text={cleanCopyValue(codeBlock.props.children.props.children, version)} />
           </SnippetHeader>
           <SnippetContent className="h-full p-0">{codeBlock}</SnippetContent>
         </Snippet>
