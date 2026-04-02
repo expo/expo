@@ -17,7 +17,7 @@ type GitHubRepoInfo = {
 
 // See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/prebuild/resolveTemplate.ts#L60-L84
 async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo> {
-  const [, owner, name, t, branch, ...file] = url.pathname.split('/');
+  const [, owner = '', name = '', t, branch, ...file] = url.pathname.split('/');
   const filePath = file.join('/');
 
   // Support repos whose entire purpose is to be an example, e.g.
