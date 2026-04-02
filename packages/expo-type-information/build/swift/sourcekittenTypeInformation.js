@@ -640,9 +640,6 @@ function getSwiftFileTypeInformation(filePath) {
         getTypeIdentifierDefinitionMap(fileTypeInformation);
     return fileTypeInformation;
 }
-// Preprocessing to help sourcekitten functions
-// For now we create a new variable for each return statement,
-// we can find it's type easily with sourcekitten
 function removeComments(fileContent) {
     let multiLineComment = false;
     let singleLineComment = false;
@@ -730,6 +727,9 @@ function returnExpressionEnd(fileContent, returnIndex) {
     }
     return i;
 }
+// Preprocessing to help sourcekitten functions
+// For now we create a new variable for each return statement,
+// we can find it's type easily with sourcekitten
 function preprocessSwiftFile(originalFileContent) {
     const newFileContent = [];
     const fileContent = removeComments(originalFileContent);
