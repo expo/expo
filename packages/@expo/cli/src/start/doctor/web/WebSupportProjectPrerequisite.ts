@@ -61,7 +61,11 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     const requiredPackages: ResolvedPackage[] = [
       { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
-    if (!env.EXPO_NO_REACT_NATIVE_WEB) {
+    const hasReactNative = !!(
+      pkg.dependencies?.['react-native'] || pkg.devDependencies?.['react-native']
+    );
+    if (hasReactNative) {
+      // react-native-web is recommended but not required to start a web project.
       // use react-native-web/package.json to skip node module cache issues when the user installs
       // the package and attempts to resolve the module in the same process.
       requiredPackages.push({ file: 'react-native-web/package.json', pkg: 'react-native-web' });
@@ -101,6 +105,16 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     } catch (error) {
       // Reset the cached check so we can re-run the check if the user re-runs the command by pressing 'w' in the Terminal UI.
       this.resetAssertion();
+
+      // react-native-web is optional — if it's the only missing package, warn instead of blocking.
+      const hasReactDOM = !!(pkg.dependencies?.['react-dom'] || pkg.devDependencies?.['react-dom']);
+      if (env.EXPO_NO_REACT_NATIVE_WEB && hasReactDOM) {
+        Log.warn(
+          chalk`{bold react-native-web} is not installed. Some React Native components may not work on web without it. Install it with: {bold npx expo install react-native-web}`
+        );
+        return false;
+      }
+
       throw error;
     }
   }

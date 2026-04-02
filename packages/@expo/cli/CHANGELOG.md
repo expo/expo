@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Add `react-native-web` to autolinking module resolution modules ([#44160](https://github.com/expo/expo/pull/44160) by [@kitten](https://github.com/kitten))
+- Fix `react-native-web` install check being unconditional ([#44450](https://github.com/expo/expo/pull/44450) by [@kitten](https://github.com/kitten))
 
 ## 55.0.19 — 2026-03-27
 

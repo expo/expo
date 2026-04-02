@@ -230,6 +230,7 @@ describeSkipWin('web-only (no react-native)', () => {
       env: {
         ...process.env,
         NODE_PATH: '',
+        EXPO_NO_REACT_NATIVE_WEB: 'true',
       },
     });
     const exp = JSON.parse(results.stdout);
@@ -241,6 +242,7 @@ describeSkipWin('web-only (no react-native)', () => {
       env: {
         NODE_ENV: 'production',
         TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+        EXPO_NO_REACT_NATIVE_WEB: 'true',
       },
     });
 
