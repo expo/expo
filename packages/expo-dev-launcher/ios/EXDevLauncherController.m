@@ -203,7 +203,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     });
   };
 
-  void (^launchDefaultUriFallbackOrNavigateToLauncher)(NSError *) = ^(NSError *error) {
+  void (^launchDefaultUrlFallbackOrNavigateToLauncher)(NSError *) = ^(NSError *error) {
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
       typeof(self) self = weakSelf;
@@ -211,7 +211,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
         return;
       }
 
-      [self launchDefaultUriFallbackOrNavigateToLauncher];
+      [self launchDefaultUrlFallbackOrNavigateToLauncher];
     });
   };
 
@@ -239,14 +239,14 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
     // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
-    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:launchDefaultUriFallbackOrNavigateToLauncher];
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:launchDefaultUrlFallbackOrNavigateToLauncher];
     return;
   }
 
   [self useDefaultLaunchUrlFallback];
 }
 
-- (void)launchDefaultUriFallbackOrNavigateToLauncher {
+- (void)launchDefaultUrlFallbackOrNavigateToLauncher {
   void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -296,7 +296,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
     // edgecase: this is a dev launcher url but it doesnt specify what url to open
     // fallback to navigating to the launcher home screen
-    [self launchDefaultUriFallbackOrNavigateToLauncher];
+    [self launchDefaultUrlFallbackOrNavigateToLauncher];
     return true;
   }
 
