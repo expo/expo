@@ -18,3 +18,4 @@ export declare function generateModulesProviderAsync(modules: ModuleDescriptorIo
  * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
 export declare function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[]): string;
+export {};
