@@ -92,7 +92,7 @@ export async function isPackageInstalledAsync(
 
   const lines = packages.split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line = lines[i]!.trim();
     if (line === `package:${androidPackage}`) {
       return true;
     }
@@ -331,7 +331,7 @@ export async function isDeviceBootedAsync({
 export async function isBootAnimationCompleteAsync(pid?: string): Promise<boolean> {
   try {
     const props = await getPropertyDataForDeviceAsync({ pid }, PROP_BOOT_ANIMATION_STATE);
-    return !!props[PROP_BOOT_ANIMATION_STATE].match(/stopped/);
+    return !!props[PROP_BOOT_ANIMATION_STATE]?.match(/stopped/);
   } catch {
     return false;
   }
@@ -389,7 +389,7 @@ function parseAdbDeviceProperties(devicePropertiesString: string) {
   const properties: DeviceProperties = {};
   const propertyExp = /\[(.*?)\]: \[(.*?)\]/gm;
   for (const match of devicePropertiesString.matchAll(propertyExp)) {
-    properties[match[1]] = match[2];
+    properties[match[1]!] = match[2]!;
   }
   return properties;
 }

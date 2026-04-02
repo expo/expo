@@ -178,6 +178,10 @@ export async function packNpmTarballAsync(packageDir: string): Promise<string> {
   ).stdout?.trim();
   try {
     const [json] = JSON.parse(results) as { filename: string }[];
+    assert(
+      typeof json?.filename === 'string',
+      'Expected filename property on JSON array of type "string"'
+    );
     return path.resolve(packageDir, json.filename);
   } catch (error: any) {
     const cmdString = `npm ${cmdArgs.join(' ')}`;

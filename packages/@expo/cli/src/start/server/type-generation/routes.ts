@@ -286,7 +286,7 @@ export function extrapolateGroupRoutes(
   const groupsMatch = match[0];
 
   for (const group of groupsMatch.matchAll(CAPTURE_GROUP_REGEX)) {
-    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1].trim()})`), routes);
+    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1]!.trim()})`), routes);
   }
 
   return routes;
