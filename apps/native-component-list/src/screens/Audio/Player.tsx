@@ -202,10 +202,7 @@ export default function Player(props: Props) {
                 setInitialScrubbingMillis(props.currentTime);
               }}
             />
-            <Text
-              style={{ width: 100, textAlign: 'right' }}
-              adjustsFontSizeToFit
-              numberOfLines={1}>
+            <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
               {_formatTime(props.currentTime)} / {_formatTime(props.duration)}
             </Text>
           </>
