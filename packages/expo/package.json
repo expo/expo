@@ -84,7 +84,7 @@
     "@expo/fingerprint": "0.16.6",
     "@expo/local-build-cache-provider": "55.0.7",
     "@expo/log-box": "55.0.8",
-    "@expo/metro": "~54.2.0",
+    "@expo/metro": "~55.0.0",
     "@expo/metro-config": "55.0.11",
     "@expo/vector-icons": "^15.0.2",
     "@ungap/structured-clone": "^1.3.0",
