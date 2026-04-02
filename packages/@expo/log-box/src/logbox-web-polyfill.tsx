@@ -14,7 +14,6 @@ export default () => {
       onDismiss={undefined}
       onChangeSelectedIndex={undefined}
       // Environment polyfill props
-      platform="web"
       devServerUrl={undefined} // not needed for static error
       // Common actions props
       fetchTextAsync={undefined} // fallback to global fetch
