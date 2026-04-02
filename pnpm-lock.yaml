@@ -5328,6 +5328,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
       jest:
         specifier: ^29.3.1
         version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@5.9.3))
