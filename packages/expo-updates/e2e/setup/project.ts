@@ -181,7 +181,7 @@ async function copyCommonFixturesToProject(
     const reactNativeJson = JSON.parse(reactNativeJsonString);
     const reactNativeVersion = reactNativeJson.version;
     const patchFileName = `react-native+${reactNativeVersion}.patch`;
-    if (patchFile.length > 0) {
+    if (patchFile[0] != null) {
       await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', patchFileName));
     }
   }
