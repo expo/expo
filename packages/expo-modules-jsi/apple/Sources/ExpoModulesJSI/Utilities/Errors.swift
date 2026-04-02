@@ -17,13 +17,6 @@ internal struct FatalError {
   }
 
   /**
-   Stops program execution when the already released native state is used.
-   */
-  internal static func nativeStateReleased() -> Never {
-    fatalError("Native state is already released")
-  }
-
-  /**
    Stops program execution when trying to access buffer's elements out of its range.
    */
   internal static func valuesBufferIndexOutRange(index: Int, capacity: Int) -> Never {
