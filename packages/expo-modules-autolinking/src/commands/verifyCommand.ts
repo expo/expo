@@ -174,7 +174,9 @@ export async function verifySearchResults(
       for (let idx = 0; idx < revisions.length; idx++) {
         const prefix = idx !== revisions.length - 1 ? '├─' : '└─';
         const duplicate = revisions[idx];
-        console.log(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
+        if (duplicate != null) {
+          console.log(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
+        }
       }
     }
 

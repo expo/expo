@@ -18,7 +18,7 @@ const findPodspecFile = async (targetPath: string): Promise<string | null> => {
   const mainPodspecFile = podspecFiles.find(
     (podspecFile) => path.basename(podspecFile, '.podspec').toLowerCase() === mainBasename
   );
-  return mainPodspecFile ?? (podspecFiles.length > 0 ? podspecFiles[0] : null);
+  return mainPodspecFile ?? podspecFiles[0] ?? null;
 };
 
 export async function resolveDependencyConfigImplIosAsync(
