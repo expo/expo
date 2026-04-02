@@ -102,7 +102,7 @@
   },
   "devDependencies": {
     "@expo/dom-webview": "^55.0.5",
-    "@expo/metro-runtime": "^55.0.8",
+    "@expo/metro-runtime": "^55.0.9",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/react-test-renderer": "~19.1.0",

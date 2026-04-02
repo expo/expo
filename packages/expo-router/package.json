@@ -82,7 +82,7 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/metro-runtime": "^55.0.8",
+    "@expo/metro-runtime": "^55.0.9",
     "@expo/log-box": "55.0.10",
     "@react-navigation/drawer": "^7.9.4",
     "@testing-library/react-native": ">= 13.2.0",
@@ -133,7 +133,7 @@
     "react-server-dom-webpack": "~19.0.4"
   },
   "dependencies": {
-    "@expo/metro-runtime": "^55.0.8",
+    "@expo/metro-runtime": "^55.0.9",
     "@expo/schema-utils": "^55.0.2",
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
