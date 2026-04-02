@@ -18,7 +18,10 @@ export type SuspenseFallbackProps = {
    * The route's URL parameters.
    *
    * @example
-   * 
+   * ```
+   * { id: "123" } // For a route `./profile/[id].tsx` navigated to as `/profile/123`
+   * ```
+   *
    */
   params: Record<string, string | string[]>;
 };
