@@ -5,7 +5,7 @@ import { withAndroidUserInterfaceStyle } from './withAndroidUserInterfaceStyle';
 import { withIosRootViewBackgroundColor } from './withIosRootViewBackgroundColor';
 import { withIosUserInterfaceStyle } from './withIosUserInterfaceStyle';
 
-const pkg = require('expo-system-ui/package.json');
+const pkg = require('../../package.json');
 
 const withSystemUI: ConfigPlugin = (config) => {
   return withPlugins(config, [

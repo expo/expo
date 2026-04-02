@@ -7,14 +7,13 @@ exports.resizeBufferAsync = resizeBufferAsync;
 exports.isAvailableAsync = isAvailableAsync;
 exports.sharpAsync = sharpAsync;
 exports.findSharpInstanceAsync = findSharpInstanceAsync;
+const require_utils_1 = require("@expo/require-utils");
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
-const resolve_from_1 = __importDefault(require("resolve-from"));
 const semver_1 = __importDefault(require("semver"));
 const env_1 = require("./env");
-const resolveGlobal_1 = require("./resolveGlobal");
 const SHARP_HELP_PATTERN = /\n\nSpecify --help for available options/g;
 const SHARP_REQUIRED_VERSION = '^5.2.0';
 async function resizeBufferAsync(buffer, sizes) {
@@ -114,15 +113,20 @@ async function findSharpBinAsync() {
     try {
         let sharpCliPackagePath;
         try {
-            sharpCliPackagePath = (0, resolveGlobal_1.resolveGlobal)('sharp-cli/package.json');
+            sharpCliPackagePath = (0, require_utils_1.resolveGlobal)('sharp-cli/package.json');
         }
         catch {
             sharpCliPackagePath = require.resolve('sharp-cli/package.json');
         }
+        let sharpPath = null;
+        if (sharpCliPackagePath) {
+            sharpPath = (0, require_utils_1.resolveFrom)(sharpCliPackagePath, 'sharp');
+            if (!sharpPath) {
+                throw Object.assign(new Error(`"sharp" not found, while resolving from "${sharpCliPackagePath}"`), { code: 'MODULE_NOT_FOUND' });
+            }
+        }
         const sharpCliPackage = require(sharpCliPackagePath);
-        const sharpInstance = sharpCliPackagePath
-            ? require((0, resolve_from_1.default)(sharpCliPackagePath, 'sharp'))
-            : null;
+        const sharpInstance = sharpPath ? require(sharpPath) : null;
         if (sharpCliPackagePath &&
             semver_1.default.satisfies(sharpCliPackage.version, SHARP_REQUIRED_VERSION) &&
             typeof sharpCliPackage.bin.sharp === 'string' &&

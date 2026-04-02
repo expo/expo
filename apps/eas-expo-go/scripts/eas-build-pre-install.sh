@@ -35,12 +35,14 @@ EOF
 
 git submodule update --init
 
+# The react-native submodule uses yarn internally.
+yarn --cwd $ROOT_DIR/react-native-lab/react-native install --frozen-lockfile
+
 if [ -n "${EAS_BUILD_NPM_CACHE_URL-}" ]; then
   sed -i -e "s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g" $ROOT_DIR/yarn.lock || true
 fi
 
 pushd $ROOT_DIR/tools
-yarn
 
 if [ "$EAS_BUILD_PROFILE" = "release-client" ] && [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
   et eas remove-background-permissions-from-info-plist

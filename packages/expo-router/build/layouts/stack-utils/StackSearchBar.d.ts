@@ -1,5 +1,5 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import type { SearchBarProps } from 'react-native-screens';
+import { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 export interface StackSearchBarProps extends SearchBarProps {
 }
 /**

@@ -46,11 +46,10 @@ exports.useGlobalSearchParams = useGlobalSearchParams;
 exports.useLocalSearchParams = useLocalSearchParams;
 exports.useSearchParams = useSearchParams;
 exports.useLoaderData = useLoaderData;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const constants_1 = require("./constants");
-const routeInfo_1 = require("./global-state/routeInfo");
+const getRouteInfoFromState_1 = require("./global-state/getRouteInfoFromState");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
@@ -59,6 +58,7 @@ const LoaderCache_1 = require("./loaders/LoaderCache");
 const ServerDataLoaderContext_1 = require("./loaders/ServerDataLoaderContext");
 const getLoaderData_1 = require("./loaders/getLoaderData");
 const utils_1 = require("./loaders/utils");
+const native_1 = require("./react-navigation/native");
 const useScreens_1 = require("./useScreens");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -271,7 +271,7 @@ function useLoaderData() {
     const stateForPath = (0, native_1.useStateForPath)();
     const contextKey = (0, Route_1.useContextKey)();
     const resolvedPath = (0, react_1.useMemo)(() => {
-        const routeInfo = (0, routeInfo_1.getRouteInfoFromState)(stateForPath);
+        const routeInfo = (0, getRouteInfoFromState_1.getRouteInfoFromState)(stateForPath);
         const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
         const resolvedPathname = `/${(0, useScreens_1.getSingularId)(contextPath, { params: routeInfo.params })}`;
         const searchString = routeInfo.searchParams?.toString() || '';

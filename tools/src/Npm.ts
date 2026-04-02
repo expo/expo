@@ -142,6 +142,7 @@ export async function publishPackageAsync(
   const args = [
     'publish',
     options.source ?? '.',
+    // omitting the tag parameter, will make npm publish and mark the as "latest"
     '--tag',
     options.tagName ?? 'latest',
     '--access',

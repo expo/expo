@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { getConfig, getPackageJson } from 'expo/config';
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
@@ -9,6 +10,8 @@ import { withSpinner } from './spinner';
 import type { Platform } from './types';
 
 export const validatePrebuild = async (platform: Platform): Promise<void> => {
+  validatePackageInstalled();
+
   if (!checkPrebuild(platform)) {
     console.info(`${chalk.yellow(`⚠ Prebuild for platform: ${platform} is missing`)}`);
     const response = await prompts({
@@ -29,6 +32,22 @@ export const validatePrebuild = async (platform: Platform): Promise<void> => {
     } else {
       CLIError.handle('prebuild-cancelled');
     }
+  }
+};
+
+export const validatePackageInstalled = (): void => {
+  const PACKAGE_NAME = 'expo-brownfield';
+  const packageJson = getPackageJson(process.cwd());
+  if (!packageJson.dependencies?.[PACKAGE_NAME] && !packageJson.devDependencies?.[PACKAGE_NAME]) {
+    CLIError.handle('package-not-installed');
+    return;
+  }
+  const { exp: config } = getConfig(process.cwd(), { skipSDKVersionRequirement: true });
+  const isBrownfieldPluginConfigured = config.plugins?.some((plugin) =>
+    Array.isArray(plugin) ? plugin[0] === PACKAGE_NAME : plugin === PACKAGE_NAME
+  );
+  if (!isBrownfieldPluginConfigured) {
+    CLIError.handle('plugin-not-configured');
   }
 };
 

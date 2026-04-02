@@ -31,28 +31,12 @@ test.describe('router-e2e with spaces', () => {
       // NOTE(@kitten): This space is reflected in the project root:
       'hmr-env-vars',
       'with-hmr-env-vars',
-      // We're installing the @expo/cli from our workspace source into the newly
-      // created project. This is required to be able to execute the SSR bundle
-      // outside the Expo monorepo module
       {
-        // TODO(@HubertBer): remove @expo/inline-modules after publishing
-        linkExpoPackages: ['@expo/inline-modules', 'expo', '@expo/local-build-cache-provider'],
-        // TODO(@hassankhan): remove @expo/router-server after publishing
-        linkExpoPackagesDev: [
-          '@expo/cli',
-          '@expo/env',
-          '@expo/router-server',
-          'babel-preset-expo',
-          '@expo/metro-config',
-          'expo-server',
-          '@expo/require-utils',
-        ],
+        linkExpoPackages: ['expo']
       }
     );
 
     expoStart = createExpoStart({
-      // Use linked version of @expo/cli via `bun expo-internal`:
-      command: (port) => ['bun', 'expo-internal', 'start', `--port=${port}`],
       cwd: projectRoot,
       env: {
         EXPO_PUBLIC_VALUE_INLINE: 'inlined',

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.modifyAndroidManifest = modifyAndroidManifest;
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-media-library/package.json');
+const pkg = require('../../package.json');
 const GRANULAR_PERMISSIONS_MAP = {
     photo: 'android.permission.READ_MEDIA_IMAGES',
     video: 'android.permission.READ_MEDIA_VIDEO',

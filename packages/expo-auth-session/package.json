@@ -9,7 +9,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -34,17 +33,17 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
-    "expo-application": "~55.0.8",
-    "expo-constants": "~55.0.7",
-    "expo-crypto": "~55.0.8",
-    "expo-linking": "~55.0.7",
-    "expo-web-browser": "~55.0.9",
+    "expo-application": "workspace:~55.0.8",
+    "expo-constants": "workspace:~55.0.7",
+    "expo-crypto": "workspace:~55.0.8",
+    "expo-linking": "workspace:~55.0.7",
+    "expo-web-browser": "workspace:~55.0.9",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
     "@types/invariant": "^2.2.33",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",

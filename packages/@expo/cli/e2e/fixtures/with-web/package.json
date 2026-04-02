@@ -1,11 +1,11 @@
 {
   "private": true,
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "index.js",
   "dependencies": {
     "expo": "^55 || ^55.0.0-0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.0-rc.5",
+    "react-native": "0.85.0-rc.7",
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {

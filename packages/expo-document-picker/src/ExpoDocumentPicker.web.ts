@@ -28,8 +28,8 @@ export default {
       input.addEventListener('change', async () => {
         if (input.files) {
           const results: Promise<DocumentPickerAsset>[] = [];
-          for (let i = 0; i < input.files.length; i++) {
-            results.push(readFileAsync(input.files[i], base64));
+          for (const file of input.files) {
+            results.push(readFileAsync(file, base64));
           }
           try {
             const assets = await Promise.all(results);

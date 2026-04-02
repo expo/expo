@@ -15,11 +15,6 @@ on:
   schedule:
     - cron: '0 18 * * SUN' # 18:00 UTC every Sunday
 
-defaults:
-  tools:
-    node: 22.14.0
-    yarn: 1.22.22
-
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
   cancel_in_progress: true
@@ -36,4 +31,4 @@ jobs:
         id: cli
         working_directory: ../../packages/expo-updates
         run: |
-          yarn test:e2e-cli --ci --runInBand
+          pnpm run test:e2e-cli --ci --runInBand

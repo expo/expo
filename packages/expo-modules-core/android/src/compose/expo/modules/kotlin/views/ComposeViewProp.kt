@@ -65,7 +65,7 @@ class ComposeViewProp(
     return this
   }
 
-  override val isNullable: Boolean = anyType.kType.isMarkedNullable
+  override val isNullable: Boolean = anyType.typeDescriptor.isNullable
 
   override val isStateProp: Boolean
     get() = _isStateProp

@@ -34,6 +34,16 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     resolveSettings?: BaseResolveDeviceProps<Device>
   ): Promise<{ url: string }> {
     await AppleDeviceManager.assertSystemRequirementsAsync();
+
+    // Expo Go only supports iOS (iPhone/iPad), not watchOS or tvOS.
+    // Ensure device selection filters to iOS when launching Expo Go.
+    if (options.runtime === 'expo') {
+      resolveSettings = {
+        ...resolveSettings,
+        device: { ...resolveSettings?.device, osType: 'iOS' } as Device,
+      };
+    }
+
     return super.openAsync(options, resolveSettings);
   }
 

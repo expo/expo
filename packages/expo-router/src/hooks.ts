@@ -1,17 +1,11 @@
 'use client';
 
-import {
-  NavigationProp,
-  NavigationState,
-  useNavigation,
-  useStateForPath,
-} from '@react-navigation/native';
 import type { LoaderFunction } from 'expo-server';
 import React, { use, useMemo } from 'react';
 
 import { LocalRouteParamsContext, useContextKey } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
-import { getRouteInfoFromState } from './global-state/routeInfo';
+import { getRouteInfoFromState } from './global-state/getRouteInfoFromState';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
@@ -19,6 +13,12 @@ import { LoaderCacheContext } from './loaders/LoaderCache';
 import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
 import { getLoaderData } from './loaders/getLoaderData';
 import { fetchLoader } from './loaders/utils';
+import {
+  NavigationProp,
+  NavigationState,
+  useNavigation,
+  useStateForPath,
+} from './react-navigation/native';
 import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 import { getSingularId } from './useScreens';
 

@@ -46,7 +46,7 @@ public final class PedometerModule: Module {
       }
       permissionsManager.getPermissionUsingRequesterClass(
         EXMotionPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -57,7 +57,7 @@ public final class PedometerModule: Module {
       }
       permissionsManager.askForPermission(
         usingRequesterClass: EXMotionPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }

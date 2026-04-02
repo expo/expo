@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withStatusBarExpoGoManifest = exports.setIOSStatusBarInfoPlist = exports.setAndroidStrings = exports.setAndroidStatusBarStyles = exports.resolveAndroidLegacyProps = void 0;
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-status-bar/package.json');
+const pkg = require('../../package.json');
 // strings.xml keys, this should not change.
 const VISIBILITY_KEY = 'expo_status_bar_visibility';
 const LEGACY_BAR_STYLE_MAP = {

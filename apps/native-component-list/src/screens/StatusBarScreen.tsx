@@ -1,5 +1,5 @@
+import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { StatusBar } from 'react-native';
 
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';

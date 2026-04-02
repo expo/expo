@@ -21,6 +21,8 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
 
     with(project) {
       applyDefaultPlugins()
+      applyPikaPlugin()
+
       applyKotlin(kotlinVersion, kspVersion)
       applyDefaultDependencies()
       applyDefaultAndroidSdkVersions()

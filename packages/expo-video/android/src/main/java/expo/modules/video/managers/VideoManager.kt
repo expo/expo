@@ -145,12 +145,6 @@ object VideoManager {
     listeners.forEach {
       it.get()?.onAppForegrounded()
     }
-
-    // Pressing the app icon will bring up the mainActivity instead of the fullscreen activity (at least for BareExpo)
-    // In this case we have to manually finish the fullscreen activity
-    for (fullscreenActivity in fullscreenPlayerActivities.values) {
-      fullscreenActivity.get()?.finish()
-    }
   }
 
   fun onAppBackgrounded() {

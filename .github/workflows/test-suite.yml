@@ -11,7 +11,7 @@ on:
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
       - '!packages/create-expo/**'
       - '!packages/create-expo-nightly/**'
@@ -27,7 +27,7 @@ on:
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
       - '!packages/create-expo/**'
       - '!packages/create-expo-nightly/**'
@@ -71,7 +71,7 @@ jobs:
             "packages/**",
             "!packages/@expo/cli/**",
             "!packages/{create-expo,create-expo-nightly,create-expo-module}/**",
-            yarn.lock,
+            pnpm-lock.yaml,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
 
@@ -129,7 +129,7 @@ jobs:
             "packages/expo-localization/**",
             "packages/expo-sqlite/**",
             "packages/expo-video/**",
-            yarn.lock,
+            pnpm-lock.yaml,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
   ios-build:
@@ -162,24 +162,31 @@ jobs:
           ruby-version: 3.2.2
       - name: Setup ccache
         uses: ./.github/actions/setup-ccache
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           ccache: 'true'
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           bare-expo-pods: 'true'
       - name: Reset ccache stats
         run: ccache -z
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/ios
         continue-on-error: true
       - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform ios
+        run: pnpm expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin main:main --depth 100 --no-recurse-submodules
@@ -188,7 +195,7 @@ jobs:
         id: base-commit
         run: |
           # Since we limit this workflow only triggered from limited paths, we should use custom base commit
-          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages pnpm-lock.yaml) >> "$GITHUB_OUTPUT"
       - name: 📹 Check fingerprint
         id: fingerprint
         uses: expo/actions/fingerprint@main
@@ -263,16 +270,20 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
-      - name: 🧶 Install image comparison server node modules
-        run: yarn install --frozen-lockfile
-        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: Build Screen Inspector
         run: ./scripts/build.sh
         working-directory: apps/bare-expo/e2e/image-comparison/inspector
@@ -359,27 +370,31 @@ jobs:
         uses: ./.github/actions/setup-ccache
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           ccache: 'true'
           gradle: 'true'
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
       - name: Reset ccache stats
         run: ccache -z
-      - name: 🧶 Install workspace node modules
-        run: yarn install --frozen-lockfile
-      - name: 🧶 Install image comparison server node modules
-        run: yarn install --frozen-lockfile
-        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🧪 Test image comparison utilities
         run: bun test
         working-directory: apps/bare-expo/e2e/image-comparison
       - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform android
+        run: pnpm expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin main:main --depth 100 --no-recurse-submodules
@@ -388,7 +403,7 @@ jobs:
         id: base-commit
         run: |
           # Since we limit this workflow only triggered from limited paths, we should use custom base commit
-          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages pnpm-lock.yaml) >> "$GITHUB_OUTPUT"
       - name: 📹 Check fingerprint
         id: fingerprint
         uses: expo/actions/fingerprint@main
@@ -449,16 +464,20 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
-      - name: 🧶 Install image comparison server node modules
-        run: yarn install --frozen-lockfile
-        working-directory: apps/bare-expo/e2e/image-comparison
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🧪 Run e2e tests (bare-expo)
         uses: ./.github/actions/use-android-emulator
         with:

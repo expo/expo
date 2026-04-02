@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "types": "build",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
-  "keywords": [ ],
+  "keywords": [],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "files": [
@@ -23,7 +23,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -32,7 +31,7 @@
     "url": "https://github.com/expo/expo.git"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*",
     "react-dom": "*",
     "react-native": "*"
@@ -43,7 +42,7 @@
     }
   },
   "dependencies": {
-    "@expo/log-box": "55.0.7",
+    "@expo/log-box": "workspace:55.0.7",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",
@@ -51,8 +50,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
-    "expo-constants": "^55.0.7",
-    "expo-module-scripts": "^55.0.2",
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*",
     "react-dom": "19.2.3"
   }
 }
