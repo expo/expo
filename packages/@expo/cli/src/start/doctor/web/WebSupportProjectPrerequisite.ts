@@ -61,11 +61,16 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   }): Promise<boolean> {
     const requiredPackages: ResolvedPackage[] = [
       { file: 'react-dom/package.json', pkg: 'react-dom' },
+    ];
+    const hasReactNative = !!(
+      pkg.dependencies?.['react-native'] || pkg.devDependencies?.['react-native']
+    );
+    if (hasReactNative) {
       // react-native-web is recommended but not required to start a web project.
       // use react-native-web/package.json to skip node module cache issues when the user installs
       // the package and attempts to resolve the module in the same process.
-      { file: 'react-native-web/package.json', pkg: 'react-native-web' },
-    ];
+      requiredPackages.push({ file: 'react-native-web/package.json', pkg: 'react-native-web' });
+    }
 
     const bundler = getPlatformBundlers(this.projectRoot, exp).web;
     // Only include webpack-config if bundler is webpack.
@@ -95,8 +100,8 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
       this.resetAssertion();
 
       // react-native-web is optional — if it's the only missing package, warn instead of blocking.
-      const hasReactDom = !!resolveFrom.silent(this.projectRoot, 'react-dom/package.json');
-      if (hasReactDom) {
+      const hasReactDOM = !!(pkg.dependencies?.['react-dom'] || pkg.devDependencies?.['react-dom']);
+      if (hasReactDOM) {
         Log.warn(
           chalk`{bold react-native-web} is not installed. Some React Native components may not work on web without it. Install it with: {bold npx expo install react-native-web}`
         );
