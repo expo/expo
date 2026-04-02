@@ -280,25 +280,13 @@ class ImagePickerModule : Module() {
 
     permissions.askForPermissions(
       { permissionsResponse ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          if (permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
-            continuation.resume(Unit)
-          } else {
-            continuation.resumeWithException(UserRejectedPermissionsException())
-          }
-        } else if (
-          permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
-          permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED
-        ) {
+         if (permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
           continuation.resume(Unit)
         } else {
           continuation.resumeWithException(UserRejectedPermissionsException())
         }
       },
-      *listOfNotNull(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.Q },
-        Manifest.permission.CAMERA
-      ).toTypedArray()
+     Manifest.permission.CAMERA
     )
   }
 
