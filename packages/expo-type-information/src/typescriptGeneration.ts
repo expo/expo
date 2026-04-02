@@ -112,14 +112,15 @@ function getPropEventElementDeclaration(eventDeclaration: EventDeclaration): ts.
 function getPropTypeElementDeclaration(
   propDeclaration: PropDeclaration
 ): ts.TypeElement | undefined {
-  if (!propDeclaration || !propDeclaration.arguments || propDeclaration.arguments.length < 2) {
+  const propTypeArgument = propDeclaration.arguments[1]?.type;
+  if (!propDeclaration || !propDeclaration.arguments || !propTypeArgument) {
     return undefined;
   }
   return ts.factory.createPropertySignature(
     undefined,
     propDeclaration.name,
     undefined,
-    mapTypeToTsTypeNode(propDeclaration.arguments[1].type)
+    mapTypeToTsTypeNode(propTypeArgument)
   );
 }
 
@@ -627,9 +628,16 @@ function getViewTypesDeclarationsForModule(
       )
     ),
     newlineIdentifier,
-    getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false),
+    mainView
+      ? getPropsTypeDeclaration(
+          getViewPropsTypeName(mainView),
+          mainView.props,
+          mainView.events,
+          false
+        )
+      : [],
     newlineIdentifier,
-    getViewDefaultValueExport(moduleClassDeclaration.views[0])
+    mainView ? getViewDefaultValueExport(mainView) : []
   );
 }
 
@@ -695,14 +703,16 @@ export function getGeneratedJSXIntrinsicsViewDeclarationForModule(
     newlineIdentifier,
     moduleClassDeclaration.classes.map(classDeclarationMap),
     newlineIdentifier,
-    getJsxIntrinsicElementsInterfaceDeclaration([
-      ts.factory.createPropertySignature(
-        undefined,
-        ts.factory.createIdentifier(moduleClassDeclaration.name),
-        undefined,
-        getPropsType(mainView.props, mainView.events)
-      ),
-    ])
+    mainView
+      ? getJsxIntrinsicElementsInterfaceDeclaration([
+          ts.factory.createPropertySignature(
+            undefined,
+            ts.factory.createIdentifier(moduleClassDeclaration.name),
+            undefined,
+            getPropsType(mainView.props, mainView.events)
+          ),
+        ])
+      : []
   );
 }
 
@@ -741,8 +751,11 @@ export function basicTypesIdentifiers(): Set<string> {
 export async function getGeneratedViewTypesFileContent(
   file: string,
   fileTypeInformation: FileTypeInformation
-): Promise<string> {
+): Promise<string | null> {
   const outputModuleDefinition = fileTypeInformation.moduleClasses[0];
+  if (!outputModuleDefinition) {
+    return null;
+  }
   return prettyPrintTSNodesToString(
     file,
     getViewTypesDeclarationsForModule(outputModuleDefinition, fileTypeInformation)
@@ -752,8 +765,11 @@ export async function getGeneratedViewTypesFileContent(
 export async function getGeneratedJSXIntrinsicsViewDeclaration(
   file: string,
   fileTypeInformation: FileTypeInformation
-): Promise<string> {
+): Promise<string | null> {
   const outputModuleDefinition = fileTypeInformation.moduleClasses[0];
+  if (!outputModuleDefinition) {
+    return null;
+  }
   return prettyPrintTSNodesToString(
     file,
     getGeneratedJSXIntrinsicsViewDeclarationForModule(outputModuleDefinition, fileTypeInformation)

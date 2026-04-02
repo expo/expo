@@ -103,10 +103,11 @@ function getBasicTypeFromString(basicType) {
     return undefined;
 }
 function getMockedEnumInstance(enumType) {
-    if (enumType.cases.length === 0) {
+    const firstCase = enumType.cases[0];
+    if (!firstCase) {
         return undefined;
     }
-    return typescript_1.default.factory.createPropertyAccessExpression(typescript_1.default.factory.createRegularExpressionLiteral(enumType.name), enumType.cases[0]);
+    return typescript_1.default.factory.createPropertyAccessExpression(typescript_1.default.factory.createRegularExpressionLiteral(enumType.name), firstCase);
 }
 function getMockedRecordInstance(recordType, fileTypeInformation) {
     return typescript_1.default.factory.createObjectLiteralExpression(recordType.fields.map((f) => typescript_1.default.factory.createPropertyAssignment(f.name ?? '_' + getNextFreeId(), getMockedValueForType(f.type, fileTypeInformation) ?? typescript_1.default.factory.createNull())));
@@ -138,7 +139,8 @@ function getMockedValueForType(type, fileTypeInformation) {
         case typeInformation_1.TypeKind.IDENTIFIER:
             return getMockValueForIdentifier(type.type, fileTypeInformation);
         case typeInformation_1.TypeKind.SUM:
-            return getMockedValueForType(type.type.types[0], fileTypeInformation);
+            const firstType = type.type.types[0];
+            return getMockedValueForType(firstType ?? { kind: typeInformation_1.TypeKind.BASIC, type: typeInformation_1.BasicType.UNDEFINED }, fileTypeInformation);
         case typeInformation_1.TypeKind.PARAMETRIZED:
             return typescript_1.default.factory.createNull();
         case typeInformation_1.TypeKind.OPTIONAL:

@@ -344,9 +344,9 @@ function parseModuleConstructorDeclaration(
 
   // TODO rethink this maybe split based on what closure is expected
   // Maybe this should be the last substructure
-  if (hasSubstructure(definitionParams[1])) {
+  if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = parseClosureTypes(definitionParams[1], file);
-  } else if (hasSubstructure(definitionParams[0])) {
+  } else if (definitionParams[0] && hasSubstructure(definitionParams[0])) {
     types = parseClosureTypes(definitionParams[0], file);
   } else {
     // TODO REDO THIS
@@ -361,11 +361,14 @@ function parseModuleConstructorDeclaration(
 function parseModuleConstantSubstructure(
   substructure: Structure,
   file: FileType
-): ConstantDeclaration {
+): ConstantDeclaration | null {
   const definitionParams = substructure['key.substructure'];
+  if (!definitionParams[0]) {
+    return null;
+  }
   const name = getIdentifierFromOffsetObject(definitionParams[0], file);
   let types = null;
-  if (hasSubstructure(definitionParams[1])) {
+  if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
@@ -384,10 +387,10 @@ function parseModuleClassSubstructure(substructure: Structure, file: FileType): 
       'key.substructure'
     ];
 
-  const name = getIdentifierFromOffsetObject(substructure['key.substructure']?.[0], file).replace(
-    '.self',
-    ''
-  );
+  const nameSubstrucutre = substructure['key.substructure']?.[0];
+  const name = nameSubstrucutre
+    ? getIdentifierFromOffsetObject(nameSubstrucutre, file).replace('.self', '')
+    : 'UnnamedClass';
 
   if (!nestedModuleStructure) {
     console.warn(name + " class is empty or couldn't parse its definition!");
@@ -419,9 +422,12 @@ function parseModuleFunctionSubstructure(
   file: FileType
 ): FunctionDeclaration {
   const definitionParams = substructure['key.substructure'];
-  const name = getIdentifierFromOffsetObject(definitionParams[0], file);
+  const nameSubstrucutre = definitionParams[0];
+  const name = nameSubstrucutre
+    ? getIdentifierFromOffsetObject(nameSubstrucutre, file)
+    : 'UnnamedFunction';
   let types = null;
-  if (hasSubstructure(definitionParams[1])) {
+  if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
@@ -438,9 +444,12 @@ function parseModuleFunctionSubstructure(
 
 function parseModulePropDeclaration(substructure: Structure, file: FileType): PropDeclaration {
   const definitionParams = substructure['key.substructure'];
-  const name = getIdentifierFromOffsetObject(definitionParams[0], file);
+  const nameSubstrucutre = definitionParams[0];
+  const name = nameSubstrucutre
+    ? getIdentifierFromOffsetObject(nameSubstrucutre, file)
+    : 'UnkownProp';
   let types = null;
-  if (hasSubstructure(definitionParams[1])) {
+  if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
@@ -453,21 +462,22 @@ function parseModulePropDeclaration(substructure: Structure, file: FileType): Pr
   };
 }
 
-function parseModuleViewDeclaration(substructure: Structure, file: FileType): ViewDeclaration {
+function parseModuleViewDeclaration(
+  substructure: Structure,
+  file: FileType
+): ViewDeclaration | null {
   // The View arguments is a.self for some class a we want.
   const suffixLength = 5;
-  const name = getIdentifierFromOffsetObject(substructure['key.substructure']?.[0], file).slice(
-    0,
-    -suffixLength
-  );
+  const nameSubstrucutre = substructure['key.substructure']?.[0];
+  if (!nameSubstrucutre) return null;
+  const name = getIdentifierFromOffsetObject(nameSubstrucutre, file).slice(0, -suffixLength);
 
-  return parseModuleStructure(
-    substructure['key.substructure'][1]['key.substructure'][0]['key.substructure'][0][
+  const viewSubstructure =
+    substructure?.['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0]?.[
       'key.substructure'
-    ],
-    file,
-    name
-  );
+    ];
+  if (!viewSubstructure) return null;
+  return parseModuleStructure(viewSubstructure, file, name);
 }
 
 function parseModuleEventDeclaration(structure: Structure, file: FileType, events: string[]): void {
@@ -533,7 +543,10 @@ function parseEnumStructure(enumStructure: Structure): EnumType {
       for (const caseSubstructure of substructure['key.substructure']) {
         // enum case in Swift can have values: case somecase(Int, String)
         // for now we ignore these values
-        enumcases.push(caseSubstructure['key.name'].split('(', 1)[0]);
+        const caseName = caseSubstructure['key.name'].split('(', 1)[0];
+        if (caseName) {
+          enumcases.push(caseName);
+        }
       }
     }
   }
@@ -565,19 +578,28 @@ function parseModuleStructure(
   for (const md of moduleStructure) {
     switch (md['key.name']) {
       case 'Name':
-        mcd.name = getIdentifierFromOffsetObject(md['key.substructure']?.[0], file);
+        const nameSubstrucutre = md['key.substructure']?.[0];
+        if (nameSubstrucutre) {
+          mcd.name = getIdentifierFromOffsetObject(nameSubstrucutre, file);
+        }
         break;
       case 'Function':
         mcd.functions.push(parseModuleFunctionSubstructure(md, file));
         break;
       case 'Constant':
-        mcd.constants.push(parseModuleConstantSubstructure(md, file));
+        const constantDeclaration = parseModuleConstantSubstructure(md, file);
+        if (constantDeclaration) {
+          mcd.constants.push(constantDeclaration);
+        }
         break;
       case 'Class':
         mcd.classes.push(parseModuleClassSubstructure(md, file));
         break;
       case 'Property':
-        mcd.properties.push(parseModulePropertySubstructure(md, file));
+        const propertyDeclaration = parseModulePropertySubstructure(md, file);
+        if (propertyDeclaration) {
+          mcd.properties.push(propertyDeclaration);
+        }
         break;
       case 'AsyncFunction':
         mcd.asyncFunctions.push(parseModuleFunctionSubstructure(md, file));
@@ -589,7 +611,10 @@ function parseModuleStructure(
         mcd.props.push(parseModulePropDeclaration(md, file));
         break;
       case 'View':
-        mcd.views.push(parseModuleViewDeclaration(md, file));
+        const viewDeclaration = parseModuleViewDeclaration(md, file);
+        if (viewDeclaration) {
+          mcd.views.push(viewDeclaration);
+        }
         break;
       case 'Events':
         parseModuleEventDeclaration(md, file, mcd.events);

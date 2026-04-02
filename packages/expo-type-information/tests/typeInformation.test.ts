@@ -5,6 +5,7 @@ import { generateTSMockForModule } from '../src/mockgen';
 import {
   getFileTypeInformation,
   getFileTypeInformationForString,
+  ModuleClassDeclaration,
   serializeTypeInformation,
 } from '../src/typeInformation';
 import {
@@ -47,14 +48,18 @@ it('Same generated mock file', async () => {
   const fileInfo = getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
-    expect(generateTSMockForModule(fileInfo.moduleClasses[0], fileInfo, true)).toMatchSnapshot();
+    expect(
+      generateTSMockForModule(fileInfo.moduleClasses[0] as ModuleClassDeclaration, fileInfo, true)
+    ).toMatchSnapshot();
   }
 });
 it('Same generated mock file JS', async () => {
   const fileInfo = getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
-    expect(generateTSMockForModule(fileInfo.moduleClasses[0], fileInfo, false)).toMatchSnapshot();
+    expect(
+      generateTSMockForModule(fileInfo.moduleClasses[0] as ModuleClassDeclaration, fileInfo, false)
+    ).toMatchSnapshot();
   }
 });
 it('Generation from string is the same as generation from file', async () => {

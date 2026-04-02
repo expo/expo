@@ -71,10 +71,11 @@ function getPropEventElementDeclaration(eventDeclaration) {
     ], typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.VoidKeyword)));
 }
 function getPropTypeElementDeclaration(propDeclaration) {
-    if (!propDeclaration || !propDeclaration.arguments || propDeclaration.arguments.length < 2) {
+    const propTypeArgument = propDeclaration.arguments[1]?.type;
+    if (!propDeclaration || !propDeclaration.arguments || !propTypeArgument) {
         return undefined;
     }
-    return typescript_1.default.factory.createPropertySignature(undefined, propDeclaration.name, undefined, mapTypeToTsTypeNode(propDeclaration.arguments[1].type));
+    return typescript_1.default.factory.createPropertySignature(undefined, propDeclaration.name, undefined, mapTypeToTsTypeNode(propTypeArgument));
 }
 function getPropsType(propsDeclaration, events) {
     return typescript_1.default.factory.createTypeLiteralNode([
@@ -243,7 +244,7 @@ function getRecordDeclaration(recordType, exported) {
     })));
 }
 function getEnumDeclaration(enumType, exported, declared) {
-    return typescript_1.default.factory.createEnumDeclaration([exportModifier, declareModifier], enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
+    return typescript_1.default.factory.createEnumDeclaration(getModifiersArray({ export: exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
 }
 function getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers, unresolvedTypesNamespace) {
     return [].concat([
@@ -275,7 +276,9 @@ function getViewTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInfor
     const undeclaredTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers
         .difference(fileTypeInformation.declaredTypeIdentifiers)
         .difference(basicTypesIdentifiers());
-    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('SharedObject', 'expo'), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false), newlineIdentifier, getViewDefaultValueExport(moduleClassDeclaration.views[0]));
+    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('SharedObject', 'expo'), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, mainView
+        ? getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false)
+        : [], newlineIdentifier, mainView ? getViewDefaultValueExport(mainView) : []);
 }
 function getJsxIntrinsicElementsInterfaceDeclaration(intrinsicElements) {
     const globalIdentifier = typescript_1.default.factory.createIdentifier('global');
@@ -297,9 +300,11 @@ function getGeneratedJSXIntrinsicsViewDeclarationForModule(moduleClassDeclaratio
     const recordDeclarationMap = (recordType) => getRecordDeclaration(recordType, false);
     const enumDeclarationMap = (enumType) => getEnumDeclaration(enumType, false, true);
     const classDeclarationMap = (classDeclaration) => getTsClassDeclaration(classDeclaration, fileTypeInformation, false, true, null);
-    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, false, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, fileTypeInformation.records.flatMap(recordDeclarationMap), newlineIdentifier, fileTypeInformation.enums.flatMap(enumDeclarationMap), newlineIdentifier, moduleClassDeclaration.classes.map(classDeclarationMap), newlineIdentifier, getJsxIntrinsicElementsInterfaceDeclaration([
-        typescript_1.default.factory.createPropertySignature(undefined, typescript_1.default.factory.createIdentifier(moduleClassDeclaration.name), undefined, getPropsType(mainView.props, mainView.events)),
-    ]));
+    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, false, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, fileTypeInformation.records.flatMap(recordDeclarationMap), newlineIdentifier, fileTypeInformation.enums.flatMap(enumDeclarationMap), newlineIdentifier, moduleClassDeclaration.classes.map(classDeclarationMap), newlineIdentifier, mainView
+        ? getJsxIntrinsicElementsInterfaceDeclaration([
+            typescript_1.default.factory.createPropertySignature(undefined, typescript_1.default.factory.createIdentifier(moduleClassDeclaration.name), undefined, getPropsType(mainView.props, mainView.events)),
+        ])
+        : []);
 }
 async function prettifyCode(text, parser = 'babel') {
     return await prettier_1.default.format(text, {
@@ -322,10 +327,16 @@ function basicTypesIdentifiers() {
 }
 async function getGeneratedViewTypesFileContent(file, fileTypeInformation) {
     const outputModuleDefinition = fileTypeInformation.moduleClasses[0];
+    if (!outputModuleDefinition) {
+        return null;
+    }
     return prettyPrintTSNodesToString(file, getViewTypesDeclarationsForModule(outputModuleDefinition, fileTypeInformation));
 }
 async function getGeneratedJSXIntrinsicsViewDeclaration(file, fileTypeInformation) {
     const outputModuleDefinition = fileTypeInformation.moduleClasses[0];
+    if (!outputModuleDefinition) {
+        return null;
+    }
     return prettyPrintTSNodesToString(file, getGeneratedJSXIntrinsicsViewDeclarationForModule(outputModuleDefinition, fileTypeInformation));
 }
 async function getGeneratedModuleTypesFileContent(file, fileTypeInformation) {

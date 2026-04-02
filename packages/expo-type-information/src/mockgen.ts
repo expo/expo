@@ -103,13 +103,14 @@ function getBasicTypeFromString(basicType: string): BasicType | undefined {
 }
 
 function getMockedEnumInstance(enumType: EnumType): ts.Expression | undefined {
-  if (enumType.cases.length === 0) {
+  const firstCase = enumType.cases[0];
+  if (!firstCase) {
     return undefined;
   }
 
   return ts.factory.createPropertyAccessExpression(
     ts.factory.createRegularExpressionLiteral(enumType.name),
-    enumType.cases[0]
+    firstCase
   );
 }
 
@@ -159,7 +160,11 @@ function getMockedValueForType(
     case TypeKind.IDENTIFIER:
       return getMockValueForIdentifier(type.type as string, fileTypeInformation);
     case TypeKind.SUM:
-      return getMockedValueForType((type.type as SumType).types[0], fileTypeInformation);
+      const firstType = (type.type as SumType).types[0];
+      return getMockedValueForType(
+        firstType ?? { kind: TypeKind.BASIC, type: BasicType.UNDEFINED },
+        fileTypeInformation
+      );
     case TypeKind.PARAMETRIZED:
       return ts.factory.createNull();
     case TypeKind.OPTIONAL:

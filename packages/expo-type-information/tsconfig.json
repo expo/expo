@@ -4,7 +4,7 @@
     "moduleResolution": "node",
     "strict": true,
     "outDir": "./build",
-    "types": ["node"],
+    "types": ["node", "jest", "@jest/globals"],
     "module": "commonjs",
     "esModuleInterop": true
   },

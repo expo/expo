@@ -15,7 +15,7 @@ export declare function getViewPropsTypeName(view: ViewDeclaration): string;
 export declare function getGeneratedJSXIntrinsicsViewDeclarationForModule(moduleClassDeclaration: ModuleClassDeclaration, fileTypeInformation: FileTypeInformation): ts.Node[];
 export declare function prettifyCode(text: string, parser?: 'babel' | 'typescript'): Promise<string>;
 export declare function basicTypesIdentifiers(): Set<string>;
-export declare function getGeneratedViewTypesFileContent(file: string, fileTypeInformation: FileTypeInformation): Promise<string>;
-export declare function getGeneratedJSXIntrinsicsViewDeclaration(file: string, fileTypeInformation: FileTypeInformation): Promise<string>;
+export declare function getGeneratedViewTypesFileContent(file: string, fileTypeInformation: FileTypeInformation): Promise<string | null>;
+export declare function getGeneratedJSXIntrinsicsViewDeclaration(file: string, fileTypeInformation: FileTypeInformation): Promise<string | null>;
 export declare function getGeneratedModuleTypesFileContent(file: string, fileTypeInformation: FileTypeInformation): Promise<string>;
 //# sourceMappingURL=typescriptGeneration.d.ts.map
