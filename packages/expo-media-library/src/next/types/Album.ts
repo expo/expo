@@ -73,6 +73,20 @@ export declare class Album {
   add(asset: Asset): Promise<void>;
 
   /**
+   * Removes assets from the album without deleting them from the library.
+   * @platform ios
+   * @param assets - An array of {@link Asset} objects to remove from the album.
+   * @returns A promise that resolves once the assets have been removed.
+   *
+   * @example
+   * ```ts
+   * const assets = await album.getAssets();
+   * await album.removeAssets(assets.slice(0, 2));
+   * ```
+   */
+  removeAssets(assets: Asset[]): Promise<void>;
+
+  /**
    * A static function. Creates a new album with a given name and assets.
    * On Android, if assets are provided and `moveAssets` is true, the assets will be moved into the new album. If false or not supported, the assets will be copied.
    *

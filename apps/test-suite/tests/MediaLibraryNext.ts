@@ -274,6 +274,48 @@ export async function test(t) {
     });
   });
 
+  t.describe('Remove assets from album', () => {
+    if (Platform.OS === 'ios') {
+      t.it('removes an asset from an album without deleting it from the library', async () => {
+        const albumName = createAlbumName('remove asset');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const assetToRemove = (await album.getAssets())[0];
+        await album.removeAssets([assetToRemove]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(0);
+
+        const query = new Query();
+        const allAssets = await query.exe();
+        t.expect(allAssets.find((a) => a.id === assetToRemove.id)).not.toBeUndefined();
+        assetsContainer.push(assetToRemove);
+      });
+    }
+
+    if (Platform.OS === 'ios') {
+      t.it('removes only specified assets, leaving others in the album', async () => {
+        const albumName = createAlbumName('remove partial');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const newAsset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(newAsset);
+        await album.add(newAsset);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(2);
+
+        await album.removeAssets([newAsset]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+        t.expect(assetsAfter.find((a) => a.id === newAsset.id)).toBeUndefined();
+      });
+    }
+  });
+
   t.describe('Image asset properties', () => {
     let asset: Asset;
 
