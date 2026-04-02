@@ -317,7 +317,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     [
       'export:embed',
       '--entry-file',
-      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'android' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
