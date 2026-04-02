@@ -39,15 +39,10 @@ internal fun copyFileViaChannel(
   dest: UnifiedFileInterface
 ): Boolean {
   val srcPfd = source.openFileDescriptor("r") ?: return false
-  val dstPfd = dest.openFileDescriptor("w")
-    ?: run {
-      srcPfd.close()
-      return false
-    }
-
-  return runCatching {
-    srcPfd.use { src ->
-      dstPfd.use { dst ->
+  return srcPfd.use { src ->
+    val dstPfd = dest.openFileDescriptor("w") ?: return false
+    dstPfd.use { dst ->
+      runCatching {
         FileInputStream(src.fileDescriptor).channel.use { inCh ->
           FileOutputStream(dst.fileDescriptor).channel.use { outCh ->
             copyChannelContents(inCh.size()) { position, count ->
@@ -55,9 +50,9 @@ internal fun copyFileViaChannel(
             }
           }
         }
-      }
+      }.getOrElse { false }
     }
-  }.getOrElse { false }
+  }
 }
 
 /**
