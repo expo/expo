@@ -96,6 +96,7 @@ describe('exports static with bundle splitting', () => {
         '_layout',
         'index',
         '\\[post\\]',
+        '\\[...post\\]',
         'about',
         'asset',
         'links',

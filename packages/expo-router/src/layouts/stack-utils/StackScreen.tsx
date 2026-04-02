@@ -1,7 +1,4 @@
 'use client';
-import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
-import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { Children, isValidElement, useMemo, type PropsWithChildren } from 'react';
 
 import { StackHeaderComponent, appendStackHeaderPropsToOptions } from './StackHeaderComponent';
@@ -12,6 +9,9 @@ import {
   appendStackScreenBackButtonPropsToOptions,
 } from './screen';
 import { StackToolbar, appendStackToolbarPropsToOptions } from './toolbar';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
+import type { NativeStackNavigationEventMap } from '../../react-navigation/native-stack';
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
 import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';

@@ -131,7 +131,7 @@ function getParamValue(p, value) {
 }
 function formatRegexPattern(it) {
     // Allow spaces in file path names.
-    it = it.replace(' ', '%20');
+    it = it.replace(/ /g, '%20');
     if (it.startsWith(':')) {
         // TODO: Remove unused match group
         return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;

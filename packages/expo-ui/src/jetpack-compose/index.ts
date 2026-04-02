@@ -1,8 +1,9 @@
 import './MaterialSymbolsAssetsTransformer.fx';
 
 export * from './AlertDialog';
-export * from './BasicAlertDialog';
+export { BasicAlertDialog, type BasicAlertDialogProps } from './BasicAlertDialog';
 export * from './Card';
+export * from './Checkbox';
 export * from './Chip';
 export * from './Button';
 export * from './Icon';
@@ -14,7 +15,7 @@ export * from './LazyColumn';
 export * from './ListItem';
 export * from './RNHostView';
 export * from './DatePicker';
-export * from './Picker';
+export * from './SegmentedButton';
 export * from './Progress';
 export * from './Slider';
 export * from './Spacer';
@@ -31,7 +32,7 @@ export * from './FloatingActionButton';
 export * from './PullToRefreshBox';
 export * from './RadioButton';
 export * from './Surface';
-export * from './Text';
+export { type TextProps, Text } from './Text';
 
 export * from './AnimatedVisibility';
 export * from './Box';

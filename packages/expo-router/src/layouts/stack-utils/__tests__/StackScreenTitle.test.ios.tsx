@@ -14,6 +14,16 @@ describe(appendStackScreenTitlePropsToOptions, () => {
       const result = appendStackScreenTitlePropsToOptions({}, { children: 'Page Title' });
       expect(result.headerTitle).toBeUndefined();
     });
+
+    it('sets title from array of string children', () => {
+      const result = appendStackScreenTitlePropsToOptions({}, { children: ['test ', '123'] });
+      expect(result.title).toBe('test 123');
+    });
+
+    it('sets title from array of numbers children', () => {
+      const result = appendStackScreenTitlePropsToOptions({}, { children: ['test ', 123] });
+      expect(result.title).toBe('test 123');
+    });
   });
 
   describe('asChild', () => {

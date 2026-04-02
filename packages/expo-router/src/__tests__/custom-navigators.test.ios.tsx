@@ -1,9 +1,9 @@
-import { TabRouter, TabRouterOptions } from '@react-navigation/native';
 import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
 import { Navigator, Slot } from '../index';
+import { TabRouter, TabRouterOptions } from '../react-navigation/native';
 import { renderRouter } from '../testing-library';
 
 it('can render a custom navigator', () => {

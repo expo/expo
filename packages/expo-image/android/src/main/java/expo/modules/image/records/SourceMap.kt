@@ -146,7 +146,7 @@ data class SourceMap(
       // Override the size for local assets (apart from SVGs). This ensures that
       // resizeMode "center" displays the image in the correct size.
       override((width * scale).toInt(), (height * scale).toInt())
-    }.customize(`when` = isResourceUri()) {
+    }.customize(`when` = isResourceUri() || isLocalResourceUri()) {
       // Every local resource (drawable) in Android has its own unique numeric id, which are
       // generated at build time. Although these ids are unique, they are not guaranteed unique
       // across builds. The underlying glide implementation caches these resources. To make

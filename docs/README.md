@@ -390,6 +390,46 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 | ---------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `collapseHeight` | number | The custom height that the code block uses to collapse automatically. The default value is `408` and is applied unless the `collapseHeight` param has been specified. |
 
+### Code block variables
+
+Fenced code blocks support dynamic variable substitution using `{{variableName}}` syntax. Variables are replaced with values from `sdk-versions.json` at render time, before syntax highlighting runs. This keeps version numbers in code examples accurate without manual updates each SDK release.
+
+**Available variables:**
+
+| Variable | Example value | Description |
+| --- | --- | --- |
+| `{{iosDeploymentTarget}}` | `15.1` | Minimum iOS deployment target |
+| `{{androidVersion}}` | `7` | Minimum Android version |
+| `{{compileSdkVersion}}` | `36` | Android compileSdkVersion |
+| `{{targetSdkVersion}}` | `36` | Android targetSdkVersion |
+| `{{reactNativeVersion}}` | `0.83` | React Native version |
+| `{{reactVersion}}` | `19.2.0` | React version |
+| `{{xcodeVersion}}` | `26.2` | Minimum Xcode version |
+| `{{nodeVersion}}` | `20.19.x` | Minimum Node.js version |
+| `{{expoSdkVersion}}` | `55.0.0` | Expo SDK version |
+| `{{expoSdkMajorVersion}}` | `55` | Expo SDK major version number |
+
+**Usage in a fenced code block:**
+
+<!-- prettier-ignore -->
+```mdx
+    ```json package.json
+    {
+      "dependencies": {
+        "expo": "~{{expoSdkVersion}}",
+        "react-native": "{{reactNativeVersion}}"
+      }
+    }
+    ```
+```
+
+The rendered output will show the resolved values (for example, `"expo": "~55.0.0"`). The copy button also copies the resolved values.
+
+All variables are defined in `common/code-utilities.ts` and sourced from the first (latest) entry in `ui/components/SDKTables/sdk-versions.json`. To add a new variable, add an entry to the `CODE_BLOCK_VARIABLES` map in that file.
+
+> [!NOTE]
+> These variables only work inside fenced code blocks. For dynamic values in prose text, import `latestSdkVersionValues` from `~/ui/components/SDKTables` and use JSX expressions directly.
+
 ### Add inline Snack examples
 
 Snacks are a great way to add instantly-runnable examples to our docs. The [`SnackInline`](/docs/ui/components/Snippet/blocks/SnackInline.tsx) component can be imported to any markdown file, and used like this:

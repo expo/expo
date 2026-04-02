@@ -43,4 +43,11 @@ class NsdPreferences(application: Application) {
    */
   var filterBySlug: String
     by stringPreferences(sharedPreferences, "")
+
+  /**
+   * When enabled, only NSD services whose `username` TXT record matches
+   * the current logged-in user's username will be shown.
+   */
+  var filterByUsername: Boolean
+    by preferences(sharedPreferences, false)
 }

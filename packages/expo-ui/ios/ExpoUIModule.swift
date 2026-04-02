@@ -116,5 +116,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(PopoverView.self)
     ExpoUIView(GridView.self)
     ExpoUIView(AccessoryWidgetBackgroundView.self)
+    ExpoUIView(LinkView.self)
   }
 }

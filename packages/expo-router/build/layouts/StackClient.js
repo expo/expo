@@ -35,7 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackRouter = exports.stackRouterOverride = void 0;
-const native_1 = require("@react-navigation/native");
 const non_secure_1 = require("nanoid/non-secure");
 const react_1 = __importStar(require("react"));
 const withLayoutContext_1 = require("./withLayoutContext");
@@ -44,6 +43,7 @@ const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
 const stack_utils_1 = require("./stack-utils");
+const native_1 = require("../react-navigation/native");
 const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;

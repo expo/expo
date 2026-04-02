@@ -17,7 +17,8 @@ data class SettingsState(
   // TODO @behenate - make true the default for VR
   val showFabAtLaunch: Boolean = false,
   val filterByPackageName: Boolean = false,
-  val filterBySlug: String = ""
+  val filterBySlug: String = "",
+  val filterByUsername: Boolean = false
 )
 
 sealed interface SettingsAction {
@@ -28,6 +29,7 @@ sealed interface SettingsAction {
   data class ToggleShowFabAtLaunch(val newValue: Boolean) : SettingsAction
   data class ToggleFilterByPackageName(val newValue: Boolean) : SettingsAction
   data class UpdateFilterBySlug(val newValue: String) : SettingsAction
+  data class ToggleFilterByUsername(val newValue: Boolean) : SettingsAction
 }
 
 class SettingsViewModel : ViewModel() {
@@ -44,7 +46,8 @@ class SettingsViewModel : ViewModel() {
       applicationInfo = appService.applicationInfo,
       showFabAtLaunch = menuPreferences.showFab,
       filterByPackageName = nsdPreferences.filterByPackageName,
-      filterBySlug = nsdPreferences.filterBySlug
+      filterBySlug = nsdPreferences.filterBySlug,
+      filterByUsername = nsdPreferences.filterByUsername
     )
   )
 
@@ -64,7 +67,8 @@ class SettingsViewModel : ViewModel() {
   private val nsdListener = {
     _state.value = _state.value.copy(
       filterByPackageName = nsdPreferences.filterByPackageName,
-      filterBySlug = nsdPreferences.filterBySlug
+      filterBySlug = nsdPreferences.filterBySlug,
+      filterByUsername = nsdPreferences.filterByUsername
     )
   }
 
@@ -88,6 +92,7 @@ class SettingsViewModel : ViewModel() {
       is SettingsAction.ToggleShowFabAtLaunch -> menuPreferences.showFab = action.newValue
       is SettingsAction.ToggleFilterByPackageName -> nsdPreferences.filterByPackageName = action.newValue
       is SettingsAction.UpdateFilterBySlug -> nsdPreferences.filterBySlug = action.newValue
+      is SettingsAction.ToggleFilterByUsername -> nsdPreferences.filterByUsername = action.newValue
     }
   }
 }

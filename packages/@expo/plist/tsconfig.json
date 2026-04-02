@@ -5,7 +5,6 @@
   "compilerOptions": {
     "outDir": "build",
     "rootDir": "src",
-    "lib": ["DOM"],
     "sourceMap": true
   },
 }

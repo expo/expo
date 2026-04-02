@@ -4,5 +4,5 @@ module.exports = {
   clearMocks: true,
   displayName: require('./package').name,
   rootDir: __dirname,
-  roots: ['__mocks__', 'src'],
+  roots: ['src'],
 };

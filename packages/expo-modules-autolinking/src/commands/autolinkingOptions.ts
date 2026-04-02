@@ -25,7 +25,16 @@ export interface AutolinkingOptions {
    * @defaultValue `[]`
    */
   exclude: string[];
-  /** A list of package names to opt out of prebuilt Expo modules (Android-only)
+  /** A list of additional package names to verify to be deduplicated.
+   * @remarks
+   * This is useful to verify that additional packages are deduplicated, and adhere to autolinking
+   * semantics, even if they aren't native modules. This can for example be used to check utility
+   * libraries that shouldn't be duplicated because of singleton or internal state.
+   * @defaultValue `[]`
+   */
+  include: string[];
+  /** A list of package name patterns to opt out of prebuilt modules.
+   * Supports regex patterns (e.g., ".*" for all packages, "expo-audio" for exact match).
    * @defaultValue `[]`
    */
   buildFromSource?: string[];
@@ -89,6 +98,12 @@ const parsePackageJsonOptions = (
     }
   }
   const mergedOptions = { ...autolinkingOptions, ...platformOptions };
+
+  // NOTE(@kitten): For `include`, we don't override options per platform, but merge the lists
+  if (Array.isArray(autolinkingOptions?.include) && Array.isArray(platformOptions?.include)) {
+    mergedOptions.include = [...autolinkingOptions.include, ...platformOptions.include];
+  }
+
   const outputOptions: Partial<AutolinkingOptions> = {};
   // legacy_shallowReactNativeLinking
   if (mergedOptions.legacy_shallowReactNativeLinking != null) {
@@ -110,6 +125,10 @@ const parsePackageJsonOptions = (
   // exclude
   if (Array.isArray(mergedOptions.exclude)) {
     outputOptions.exclude = mergedOptions.exclude.filter((x) => typeof x === 'string');
+  }
+  // include
+  if (Array.isArray(mergedOptions.include)) {
+    outputOptions.include = mergedOptions.include.filter((x) => typeof x === 'string');
   }
   // buildFromSource
   if (Array.isArray(mergedOptions.buildFromSource)) {
@@ -261,6 +280,7 @@ const normalizeAutolinkingOptions = (
       ? (resolvePathMaybe(options.nativeModulesDir, appRoot) ?? null)
       : (resolvePathMaybe('./modules', appRoot) ?? null),
     exclude: options.exclude ?? [],
+    include: options.include ?? [],
     buildFromSource: options.buildFromSource,
     flags: options.flags,
   };

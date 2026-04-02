@@ -53,8 +53,17 @@ internal final class FileSystemFile: FileSystemPath {
   var md5: String {
     get throws {
       return try withCorrectTypeAndScopedAccess(permission: .read) {
-        let fileData = try Data(contentsOf: url)
-        let hash = Insecure.MD5.hash(data: fileData)
+        let bufferSize = 65536
+
+        let handle = try FileHandle(forReadingFrom: url)
+        defer { try? handle.close() }
+
+        var hasher = Insecure.MD5()
+        while let chunk = try handle.read(upToCount: bufferSize), !chunk.isEmpty {
+          hasher.update(data: chunk)
+        }
+
+        let hash = hasher.finalize()
         return hash.map { String(format: "%02hhx", $0) }.joined()
       }
     }

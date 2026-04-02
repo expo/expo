@@ -1,5 +1,5 @@
-import { DocumentTitleOptions, LinkingOptions, LocaleDirection, NavigationContainerProps, NavigationContainerRef } from '@react-navigation/native';
 import React from 'react';
+import { DocumentTitleOptions, LinkingOptions, LocaleDirection, NavigationContainerProps, NavigationContainerRef } from '../react-navigation/native';
 declare global {
     var REACT_NAVIGATION_DEVTOOLS: WeakMap<NavigationContainerRef<any>, {
         readonly linking: LinkingOptions<any>;

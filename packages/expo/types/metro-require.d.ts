@@ -6,7 +6,7 @@
 
 declare namespace __MetroModuleApi {
   export interface ProcessEnv {
-    readonly NODE_ENV: 'development' | 'production' | 'test';
+    NODE_ENV: 'development' | 'production' | 'test';
     [key: string]: string | undefined;
   }
 

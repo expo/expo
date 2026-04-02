@@ -36,7 +36,7 @@ exports[`runs \`npx expo prebuild --template expo-template-bare-minimum@50.0.43\
   "android/gradlew.bat",
   "android/settings.gradle",
   "app.json",
-  "bun.lock",
+  "index.js",
   "ios/.gitignore",
   "ios/.xcode.env",
   "ios/Podfile",
@@ -62,6 +62,7 @@ exports[`runs \`npx expo prebuild --template expo-template-bare-minimum@50.0.43\
   "ios/basicprebuild/main.m",
   "metro.config.js",
   "package.json",
+  "pnpm-lock.yaml",
 ]
 `;
 
@@ -106,7 +107,7 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "android/gradlew.bat",
   "android/settings.gradle",
   "app.json",
-  "bun.lock",
+  "index.js",
   "ios/.gitignore",
   "ios/.xcode.env",
   "ios/Podfile",
@@ -127,5 +128,6 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "ios/basicprebuild/basicprebuild.entitlements",
   "metro.config.js",
   "package.json",
+  "pnpm-lock.yaml",
 ]
 `;

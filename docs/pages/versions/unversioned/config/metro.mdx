@@ -117,6 +117,8 @@ import 'emoji-mart/css/emoji-mart.css';
 - On native, all global stylesheets are automatically ignored.
 - Hot reloading is supported for global stylesheets, simply save the file and the changes will be applied.
 
+> **warning** When using Expo Router, always import global CSS in your root **\_layout.tsx**. Expo Router traverses the dependency graph starting from the root layout. Importing CSS in a nested layout causes **node_modules** CSS to load before your custom styles, which can break your intended style order.
+
 ### CSS Modules
 
 > **warning** CSS Modules for native are under development and currently only work on web.

@@ -20,10 +20,17 @@ onFlowStart:
     when:
       platform: android
     commands:
-      - tapOn: exp://
+      - tapOn:
+          label: Tap on "New development server"
+          text: New development server
+          optional: true
+      - tapOn:
+          label: Tap on "Updates URL" text field
+          text: '.*exp:.*'
 - inputText:
     label: Input local update server URL
     text: "http://localhost:8081\n"
+- hideKeyboard
 - tapOn:
     label: Tap on "Connect" button
     text: Connect

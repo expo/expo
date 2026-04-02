@@ -4,7 +4,7 @@
 
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/LazyObject.h>
-#import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 
 namespace expo {
 
@@ -12,6 +12,8 @@ ExpoModulesHostObject::ExpoModulesHostObject(EXAppContext *appContext) : appCont
 
 ExpoModulesHostObject::~ExpoModulesHostObject() {
   modulesCache.clear();
+  // Cast to protocol to access _runtime property without importing Swift.h
+  id<EXAppContextProtocol> appContext = (id<EXAppContextProtocol>)this->appContext;
   appContext._runtime = nil;
 }
 
@@ -19,6 +21,9 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
   std::string moduleName = name.utf8(runtime);
   NSString *nsModuleName = [NSString stringWithUTF8String:moduleName.c_str()];
 
+  // Cast to protocol to access methods without importing Swift.h
+  id<EXAppContextProtocol> appContext = (id<EXAppContextProtocol>)this->appContext;
+  
   if (![appContext hasModule:nsModuleName]) {
     // The module object can already be cached but no longer registered — we remove it from the cache in that case.
     modulesCache.erase(moduleName);
@@ -30,7 +35,7 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
 
   // Create a lazy object for the specific module. It defers initialization of the final module object.
   LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(^SharedJSIObject(jsi::Runtime &runtime) {
-    return [[appContext getNativeModuleObject:nsModuleName] getShared];
+    return [[appContext getNativeModuleObjectUnsafe:nsModuleName] getShared];
   });
 
   // Save the module's lazy host object for later use.
@@ -47,6 +52,8 @@ void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &na
 }
 
 std::vector<jsi::PropNameID> ExpoModulesHostObject::getPropertyNames(jsi::Runtime &runtime) {
+  // Cast to protocol to access methods without importing Swift.h
+  id<EXAppContextProtocol> appContext = (id<EXAppContextProtocol>)this->appContext;
   NSArray<NSString *> *moduleNames = [appContext getModuleNames];
   std::vector<jsi::PropNameID> propertyNames;
 

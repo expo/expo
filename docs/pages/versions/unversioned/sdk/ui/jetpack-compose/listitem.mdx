@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A list item component that follows Material Design 3 guidelines for structured list entries with headline, supporting text, and leading/trailing slots. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/lists) for more information.
+Expo UI ListItem matches the official Jetpack Compose [`ListItem`](<https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp)>) API for structured list entries with headline, supporting, overline, leading, and trailing content slots.
 
 ## Installation
 
@@ -20,54 +20,91 @@ A list item component that follows Material Design 3 guidelines for structured l
 ### Basic list item
 
 ```tsx BasicListItem.tsx
-import { Host, ListItem } from '@expo/ui/jetpack-compose';
+import { Host, ListItem, Text } from '@expo/ui/jetpack-compose';
 
 export default function BasicListItem() {
   return (
     <Host matchContents>
-      <ListItem headline="Settings" />
+      <ListItem>
+        <ListItem.HeadlineContent>
+          <Text>Settings</Text>
+        </ListItem.HeadlineContent>
+      </ListItem>
     </Host>
   );
 }
 ```
 
-### With supporting text and overline
+### With compound components
 
-Use the `supportingText` prop to add a secondary line and `overlineText` for a category label above the headline.
+Use compound components for rich content in each position.
 
-```tsx ListItemWithText.tsx
-import { Host, ListItem } from '@expo/ui/jetpack-compose';
-
-export default function ListItemWithText() {
-  return (
-    <Host matchContents>
-      <ListItem
-        overlineText="ACCOUNT"
-        headline="Profile"
-        supportingText="Manage your account settings and preferences"
-      />
-    </Host>
-  );
-}
-```
-
-### With leading and trailing slots
-
-Use `ListItem.Leading` and `ListItem.Trailing` sub-components to add content to the start and end of the list item.
-
-```tsx ListItemWithSlots.tsx
-import { Host, ListItem, Icon } from '@expo/ui/jetpack-compose';
+```tsx ListItemWithCompoundComponent.tsx
+import { Host, ListItem, Icon, Text } from '@expo/ui/jetpack-compose';
 
 export default function ListItemWithSlots() {
   return (
     <Host matchContents>
-      <ListItem headline="Notifications" supportingText="Manage notification preferences">
-        <ListItem.Leading>
-          <Icon source={require('./assets/notifications.xml')} contentDescription="Notifications" />
-        </ListItem.Leading>
-        <ListItem.Trailing>
-          <Icon source={require('./assets/chevron_forward.xml')} contentDescription="Navigate" />
-        </ListItem.Trailing>
+      <ListItem>
+        <ListItem.HeadlineContent>
+          <Text>Notifications</Text>
+        </ListItem.HeadlineContent>
+        <ListItem.OverlineContent>
+          <Text>ACCOUNT</Text>
+        </ListItem.OverlineContent>
+        <ListItem.SupportingContent>
+          <Text>Manage notification preferences</Text>
+        </ListItem.SupportingContent>
+        <ListItem.LeadingContent>
+          <Icon source={require('./assets/notifications.xml')} />
+        </ListItem.LeadingContent>
+        <ListItem.TrailingContent>
+          <Icon source={require('./assets/chevron.xml')} />
+        </ListItem.TrailingContent>
+      </ListItem>
+    </Host>
+  );
+}
+```
+
+### Clickable list item
+
+Use the `clickable` modifier to handle tap interactions.
+
+```tsx ClickableListItem.tsx
+import { Host, ListItem, Text } from '@expo/ui/jetpack-compose';
+import { clickable } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function ClickableListItem() {
+  return (
+    <Host matchContents>
+      <ListItem modifiers={[clickable(() => console.log('Tapped!'))]}>
+        <ListItem.HeadlineContent>
+          <Text>Tap me</Text>
+        </ListItem.HeadlineContent>
+      </ListItem>
+    </Host>
+  );
+}
+```
+
+### Custom headline content
+
+Use `ListItem.HeadlineContent` for composable headline content like rows with icons.
+
+```tsx ListItemCustomHeadline.tsx
+import { Host, ListItem, Text, Row, Icon } from '@expo/ui/jetpack-compose';
+
+export default function ListItemCustomHeadline() {
+  return (
+    <Host matchContents>
+      <ListItem>
+        <ListItem.HeadlineContent>
+          <Row horizontalArrangement={{ spacedBy: 8 }} verticalAlignment="center">
+            <Text>Premium Feature</Text>
+            <Icon source={require('./assets/star.xml')} size={16} />
+          </Row>
+        </ListItem.HeadlineContent>
       </ListItem>
     </Host>
   );

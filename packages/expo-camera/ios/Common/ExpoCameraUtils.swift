@@ -167,6 +167,16 @@ struct ExpoCameraUtils {
     return UIImage(cgImage: croppedCgImage, scale: image.scale, orientation: image.imageOrientation)
   }
 
+  static func normalizeOrientation(of image: UIImage) -> UIImage {
+    guard image.imageOrientation != .up else {
+      return image
+    }
+    let renderer = UIGraphicsImageRenderer(size: image.size)
+    return renderer.image { _ in
+      image.draw(in: CGRect(origin: .zero, size: image.size))
+    }
+  }
+
   static func write(data: Data, to path: String) -> String? {
     let url = URL(fileURLWithPath: path)
     do {
@@ -237,6 +247,8 @@ struct ExpoCameraUtils {
       throw CameraSavingImageException("Failed to locate `cacheDirectory`")
     }
 
+    let normalizedImage = normalizeOrientation(of: image)
+
     var result = [String: Any]()
     let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("Camera")
     let filename = UUID().uuidString.appending(".jpg")
@@ -244,13 +256,13 @@ struct ExpoCameraUtils {
 
     FileSystemUtilities.ensureDirExists(at: directory)
 
-    guard let data = data(from: image, with: options.metadata ?? [:], quality: Float(options.quality)) else {
+    guard let data = data(from: normalizedImage, with: options.metadata ?? [:], quality: Float(options.quality)) else {
       throw CameraSavingImageException("Image data could not be processed")
     }
 
     result["url"] = fileUrl.absoluteString
-    result["width"] = image.size.width
-    result["height"] = image.size.height
+    result["width"] = normalizedImage.size.width
+    result["height"] = normalizedImage.size.height
     result["base64"] = options.base64 ? data.base64EncodedString() : nil
 
     do {

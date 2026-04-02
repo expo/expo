@@ -1,16 +1,28 @@
 package expo.modules.ui
 
+import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import com.facebook.react.common.assets.ReactFontManager
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
@@ -105,6 +117,50 @@ enum class TextOverflowType(val value: String) : Enumerable {
   }
 }
 
+enum class TextLineBreakType(val value: String) : Enumerable {
+  SIMPLE("simple"),
+  HEADING("heading"),
+  PARAGRAPH("paragraph");
+
+  fun toComposeLineBreak(): androidx.compose.ui.text.style.LineBreak {
+    return when (this) {
+      SIMPLE -> androidx.compose.ui.text.style.LineBreak.Simple
+      HEADING -> androidx.compose.ui.text.style.LineBreak.Heading
+      PARAGRAPH -> androidx.compose.ui.text.style.LineBreak.Paragraph
+    }
+  }
+}
+
+fun resolveFontFamily(name: String?, context: Context): FontFamily? {
+  if (name == null) return null
+  return when (name) {
+    "default" -> FontFamily.Default
+    "sansSerif" -> FontFamily.SansSerif
+    "serif" -> FontFamily.Serif
+    "monospace" -> FontFamily.Monospace
+    "cursive" -> FontFamily.Cursive
+    else -> {
+      val typeface = ReactFontManager.getInstance().getTypeface(name, Typeface.NORMAL, context.assets)
+      FontFamily(typeface)
+    }
+  }
+}
+
+data class TextShadowRecord(
+  @Field val color: Color? = null,
+  @Field val offsetX: Float? = null,
+  @Field val offsetY: Float? = null,
+  @Field val blurRadius: Float? = null
+) : Record {
+  fun toComposeShadow(): Shadow {
+    return Shadow(
+      color = colorToComposeColorOrNull(color) ?: androidx.compose.ui.graphics.Color.Black,
+      offset = Offset(offsetX ?: 0f, offsetY ?: 0f),
+      blurRadius = blurRadius ?: 0f
+    )
+  }
+}
+
 enum class TypographyStyle(val value: String) : Enumerable {
   DISPLAY_LARGE("displayLarge"),
   DISPLAY_MEDIUM("displayMedium"),
@@ -145,23 +201,85 @@ enum class TypographyStyle(val value: String) : Enumerable {
   }
 }
 
+/**
+ * Shared text and span-level style properties.
+ * Both TextSpanRecord and TextProps implement this to ensure style properties
+ * are consistent across parent text and nested spans.
+ */
+interface TextSpanStyle {
+  val text: String
+  val color: Color?
+  val fontSize: Float?
+  val fontWeight: TextFontWeight?
+  val fontStyle: TextFontStyle?
+  val fontFamily: String?
+  val textDecoration: TextDecorationType?
+  val letterSpacing: Float?
+  val background: Color?
+  val shadow: TextShadowRecord?
+}
+
+data class TextSpanRecord(
+  @Field override val text: String = "",
+  @Field val children: List<TextSpanRecord>? = null,
+  @Field override val color: Color? = null,
+  @Field override val fontSize: Float? = null,
+  @Field override val fontWeight: TextFontWeight? = null,
+  @Field override val fontStyle: TextFontStyle? = null,
+  @Field override val fontFamily: String? = null,
+  @Field override val textDecoration: TextDecorationType? = null,
+  @Field override val letterSpacing: Float? = null,
+  @Field override val background: Color? = null,
+  @Field override val shadow: TextShadowRecord? = null
+) : Record, TextSpanStyle
+
 data class TextProps(
-  val text: String = "",
-  val color: Color? = null,
+  override val text: String = "",
+  val spans: List<TextSpanRecord>? = null,
+  override val color: Color? = null,
   val typography: TypographyStyle? = null,
-  val fontSize: Float? = null,
-  val fontWeight: TextFontWeight? = null,
-  val fontStyle: TextFontStyle? = null,
+  override val fontSize: Float? = null,
+  override val fontWeight: TextFontWeight? = null,
+  override val fontStyle: TextFontStyle? = null,
+  override val fontFamily: String? = null,
   val textAlign: TextAlignType? = null,
-  val textDecoration: TextDecorationType? = null,
-  val letterSpacing: Float? = null,
+  override val textDecoration: TextDecorationType? = null,
+  override val letterSpacing: Float? = null,
   val lineHeight: Float? = null,
+  val lineBreak: TextLineBreakType? = null,
+  override val background: Color? = null,
+  override val shadow: TextShadowRecord? = null,
   val overflow: TextOverflowType? = null,
   val softWrap: Boolean? = null,
   val maxLines: Int? = null,
   val minLines: Int? = null,
   val modifiers: ModifierList = emptyList()
-) : ComposeProps
+) : ComposeProps, TextSpanStyle
+
+private fun AnnotatedString.Builder.appendSpans(spans: List<TextSpanRecord>, context: Context?) {
+  for (span in spans) {
+    val style = SpanStyle(
+      color = colorToComposeColorOrNull(span.color) ?: androidx.compose.ui.graphics.Color.Unspecified,
+      fontSize = span.fontSize?.sp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
+      fontWeight = span.fontWeight?.toComposeFontWeight(),
+      fontStyle = span.fontStyle?.toComposeFontStyle(),
+      fontFamily = context?.let { resolveFontFamily(span.fontFamily, it) },
+      textDecoration = span.textDecoration?.toComposeTextDecoration(),
+      letterSpacing = span.letterSpacing?.sp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
+      background = colorToComposeColorOrNull(span.background) ?: androidx.compose.ui.graphics.Color.Unspecified,
+      shadow = span.shadow?.toComposeShadow()
+    )
+    if (span.children != null) {
+      withStyle(style) {
+        appendSpans(span.children, context)
+      }
+    } else {
+      withStyle(style) {
+        append(span.text)
+      }
+    }
+  }
+}
 
 @Composable
 fun FunctionalComposableScope.TextContent(props: TextProps) {
@@ -171,19 +289,34 @@ fun FunctionalComposableScope.TextContent(props: TextProps) {
   // Merge base style with custom properties
   val mergedStyle = baseStyle.merge(
     TextStyle(
+      color = colorToComposeColor(props.color),
       fontSize = props.fontSize?.sp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
       fontWeight = props.fontWeight?.toComposeFontWeight(),
       fontStyle = props.fontStyle?.toComposeFontStyle(),
+      fontFamily = appContext.reactContext?.let { resolveFontFamily(props.fontFamily, it) },
       textDecoration = props.textDecoration?.toComposeTextDecoration(),
       letterSpacing = props.letterSpacing?.sp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
-      lineHeight = props.lineHeight?.sp ?: androidx.compose.ui.unit.TextUnit.Unspecified
+      lineHeight = props.lineHeight?.sp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
+      lineBreak = props.lineBreak?.toComposeLineBreak() ?: androidx.compose.ui.text.style.LineBreak.Unspecified,
+      background = colorToComposeColorOrNull(props.background) ?: androidx.compose.ui.graphics.Color.Unspecified,
+      shadow = props.shadow?.toComposeShadow()
     )
   )
 
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+
+  val textValue = if (props.spans != null) {
+    val context = appContext.reactContext
+    buildAnnotatedString {
+      appendSpans(props.spans, context)
+    }
+  } else {
+    AnnotatedString(props.text)
+  }
+
   Text(
-    text = props.text,
-    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
-    color = colorToComposeColor(props.color),
+    text = textValue,
+    modifier = modifier,
     textAlign = props.textAlign?.toComposeTextAlign(),
     overflow = props.overflow?.toComposeTextOverflow() ?: TextOverflow.Clip,
     softWrap = props.softWrap ?: true,

@@ -6,14 +6,14 @@ import {
 } from '../../build/index.js';
 
 export async function runLegacyCLIAsync(args: string[]) {
-  if (args.length !== 1 && args.length !== 2 && args.length !== 3) {
+  const projectRoot = args[0];
+
+  if (projectRoot == null || (args.length !== 1 && args.length !== 2 && args.length !== 3)) {
     console.log(
       `Usage: npx @expo/fingerprint <projectRoot> [fingerprintFile1ToDiff] [fingerprintFile2ToDiff]`
     );
     process.exit(1);
   }
-
-  const projectRoot = args[0];
 
   const fingerprintFile1ToDiff = args[1];
   const fingerprintFile2ToDiff = args[2];

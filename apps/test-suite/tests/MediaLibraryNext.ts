@@ -436,6 +436,19 @@ export async function test(t) {
       t.expect(secondAsset.id).toBe(bothSecondAsset.id);
     });
 
+    t.it('limit 0 returns no assets', async () => {
+      // given
+      const createdAssets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+      assetsContainer.push(...createdAssets);
+      const albumName = createAlbumName('limit 0 returns no assets');
+      const album = await Album.create(albumName, createdAssets);
+      albumsContainer.push(album);
+      // when
+      const assets = await new Query().album(album).limit(0).exe();
+      // then
+      t.expect(assets.length).toBe(0);
+    });
+
     t.it('offset outside of bounds works correctly', async () => {
       // given
       const asset = await Asset.create(pngFile.localUri);

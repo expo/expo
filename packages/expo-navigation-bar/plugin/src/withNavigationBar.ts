@@ -9,40 +9,48 @@ import {
   withAndroidStyles,
   withStringsXml,
 } from 'expo/config-plugins';
-import {
-  NavigationBarBehavior,
-  NavigationBarButtonStyle,
-  NavigationBarPosition,
-  NavigationBarVisibility,
-} from 'expo-navigation-bar';
+
+import { NavigationBarVisibility } from '../..';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 
-const pkg = require('expo-navigation-bar/package.json');
+const pkg = require('../../package.json');
 
 export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
 
-export type Props = {
-  enforceContrast?: boolean;
-  barStyle?: NavigationBarButtonStyle | null;
-  visibility?: NavigationBarVisibility;
+type AndroidNavigationBar = NonNullable<ExpoConfig['androidNavigationBar']>;
+type LegacyNavigationBarStyle = NonNullable<AndroidNavigationBar['barStyle']>;
+type NavigationBarStyle = 'light' | 'dark';
 
+export type Props = {
   /**
-   * @deprecated
+   * Whether the OS should keep the navigation bar translucent for contrast.
+   * @default true
+   * @platform android
    */
-  backgroundColor?: string | null;
+  enforceContrast?: boolean;
   /**
-   * @deprecated
+   * Whether the navigation bar starts hidden.
+   * @platform android
    */
-  behavior?: NavigationBarBehavior;
+  hidden?: boolean;
   /**
-   * @deprecated
+   * Which style the navigation bar starts with. Accepts `light` and `dark`.
+   * @platform android
    */
-  borderColor?: string;
-  /**
-   * @deprecated
-   */
-  position?: NavigationBarPosition;
+  style?: NavigationBarStyle;
+
+  /** @deprecated */
+  barStyle?: NavigationBarStyle | null;
+  /** @deprecated */
+  visibility?: NavigationBarVisibility;
+};
+
+type ResolvedProps = {
+  enforceContrast?: boolean;
+  hidden?: boolean;
+  style?: NavigationBarStyle;
+  visible?: AndroidNavigationBar['visible'];
 };
 
 const EDGE_TO_EDGE_DEPRECATION_MESSAGE =
@@ -51,10 +59,7 @@ const EDGE_TO_EDGE_DEPRECATION_MESSAGE =
 // strings.xml keys, this should not change.
 const VISIBILITY_KEY = 'expo_navigation_bar_visibility';
 
-const LEGACY_BAR_STYLE_MAP: Record<
-  NonNullable<NonNullable<ExpoConfig['androidNavigationBar']>['barStyle']>,
-  NavigationBarButtonStyle
-> = {
+const LEGACY_BAR_STYLE_MAP: Record<LegacyNavigationBarStyle, NavigationBarStyle> = {
   // Match expo-status-bar
   'dark-content': 'dark',
   'light-content': 'light',
@@ -63,59 +68,62 @@ const LEGACY_BAR_STYLE_MAP: Record<
 export function resolveProps(
   config: Pick<ExpoConfig, 'androidNavigationBar'>,
   props: Props | void
-): Props {
-  if (!props) {
-    const { androidNavigationBar } = config;
+): ResolvedProps {
+  if (props == null) {
+    const { androidNavigationBar = {} } = config;
+    const { barStyle, visible } = androidNavigationBar;
 
     return {
-      enforceContrast: androidNavigationBar?.enforceContrast,
-      barStyle: androidNavigationBar?.barStyle
-        ? LEGACY_BAR_STYLE_MAP[androidNavigationBar?.barStyle]
-        : undefined,
+      enforceContrast: androidNavigationBar.enforceContrast,
+      hidden: visible != null ? true : undefined,
+      style: barStyle != null ? LEGACY_BAR_STYLE_MAP[barStyle] : undefined,
+      visible,
     };
   }
 
-  if ('backgroundColor' in props) {
+  if ('barStyle' in props) {
     WarningAggregator.addWarningAndroid(
-      'androidNavigationBar.backgroundColor',
-      EDGE_TO_EDGE_DEPRECATION_MESSAGE
+      'expo-navigation-bar barStyle',
+      'Use `style` instead. This will be removed in a future release.'
     );
   }
-  if ('behavior' in props) {
+  if ('visibility' in props) {
     WarningAggregator.addWarningAndroid(
-      'androidNavigationBar.behavior',
-      EDGE_TO_EDGE_DEPRECATION_MESSAGE
-    );
-  }
-  if ('borderColor' in props) {
-    WarningAggregator.addWarningAndroid(
-      'androidNavigationBar.borderColor',
-      EDGE_TO_EDGE_DEPRECATION_MESSAGE
-    );
-  }
-  if ('position' in props) {
-    WarningAggregator.addWarningAndroid(
-      'androidNavigationBar.position',
-      EDGE_TO_EDGE_DEPRECATION_MESSAGE
+      'expo-navigation-bar visibility',
+      'Use `hidden` instead. This will be removed in a future release.'
     );
   }
 
-  return props;
+  const hidden =
+    props.hidden ?? (props.visibility == null ? undefined : props.visibility === 'hidden');
+
+  return {
+    enforceContrast: props.enforceContrast,
+    hidden,
+    visible: hidden ? 'leanback' : undefined,
+    style: props.style ?? props.barStyle ?? undefined,
+  };
 }
 
 /**
  * Ensure the Expo Go manifest is updated when the project is using config plugin properties instead
  * of the static values that Expo Go reads from (`androidNavigationBar`).
  */
-export const withAndroidNavigationBarExpoGoManifest: ConfigPlugin<Props> = (config, props) => {
-  if (!config.androidNavigationBar) {
-    // Remap the config plugin props so Expo Go knows how to apply them.
-    config.androidNavigationBar = {
-      barStyle: Object.entries(LEGACY_BAR_STYLE_MAP).find(
-        ([, v]) => v === props.barStyle
-      )?.[0] as keyof typeof LEGACY_BAR_STYLE_MAP,
-    };
+export const withAndroidNavigationBarExpoGoManifest: ConfigPlugin<ResolvedProps> = (
+  config,
+  props
+) => {
+  if (config.androidNavigationBar != null) {
+    return config;
   }
+
+  const barStyle = Object.entries(LEGACY_BAR_STYLE_MAP).find(
+    ([, value]) => value === props.style
+  )?.[0] as LegacyNavigationBarStyle;
+
+  // Remap the config plugin props so Expo Go knows how to apply them.
+  config.androidNavigationBar = { barStyle, visible: props.visible };
+
   return config;
 };
 
@@ -128,9 +136,7 @@ const withNavigationBar: ConfigPlugin<Props | void> = (config, _props) => {
 
   // TODO: Add this to expo/config-plugins
   // Elevate props to a static value on extra so Expo Go can read it.
-  if (!config.extra) {
-    config.extra = {};
-  }
+  config.extra ??= {};
   config.extra[pkg.name] = props;
 
   // Use built-in styles instead of Expo custom properties, this makes the project hopefully a bit more predictable for bare users.
@@ -144,27 +150,23 @@ const withNavigationBar: ConfigPlugin<Props | void> = (config, _props) => {
 
 export function setStrings(
   strings: AndroidConfig.Resources.ResourceXML,
-  { visibility }: Props
+  { hidden }: ResolvedProps
 ): AndroidConfig.Resources.ResourceXML {
-  const stringItems: AndroidConfig.Resources.ResourceItemXML[] = [];
-
-  if (visibility == null) {
+  if (hidden == null) {
     // Since we're using custom strings, we can remove them for convenience between prebuilds.
-    strings = AndroidConfig.Strings.removeStringItem(VISIBILITY_KEY, strings);
-  } else {
-    stringItems.push(
-      AndroidConfig.Resources.buildResourceItem({
-        name: VISIBILITY_KEY,
-        value: visibility,
-        translatable: false,
-      })
-    );
+    return AndroidConfig.Strings.removeStringItem(VISIBILITY_KEY, strings);
   }
 
-  return AndroidConfig.Strings.setStringItem(stringItems, strings);
+  const item = AndroidConfig.Resources.buildResourceItem({
+    name: VISIBILITY_KEY,
+    value: hidden ? 'hidden' : 'visible',
+    translatable: false,
+  });
+
+  return AndroidConfig.Strings.setStringItem([item], strings);
 }
 
-const withNavigationBarStyles: ConfigPlugin<Props> = (config, props) => {
+const withNavigationBarStyles: ConfigPlugin<ResolvedProps> = (config, props) => {
   return withAndroidStyles(config, (config) => {
     config.modResults = setNavigationBarStyles(props, config.modResults);
     return applyEnforceNavigationBarContrast(config, props.enforceContrast !== false);
@@ -172,17 +174,18 @@ const withNavigationBarStyles: ConfigPlugin<Props> = (config, props) => {
 };
 
 export function setNavigationBarStyles(
-  { barStyle }: Props,
+  { style }: ResolvedProps,
   styles: AndroidConfig.Resources.ResourceXML
 ): AndroidConfig.Resources.ResourceXML {
   styles = AndroidConfig.Styles.assignStylesValue(styles, {
     // Adding means the buttons will be darker to account for a light background color.
     // `setStyle('dark')` should do the same thing.
-    add: barStyle === 'dark',
+    add: style === 'dark',
     parent: AndroidConfig.Styles.getAppThemeGroup(),
     name: 'android:windowLightNavigationBar',
     value: 'true',
   });
+
   styles = AndroidConfig.Styles.assignStylesValue(styles, {
     add: true,
     parent: AndroidConfig.Styles.getAppThemeGroup(),
@@ -210,21 +213,24 @@ export function applyEnforceNavigationBarContrast(
     return config;
   }
   const mainTheme = style[mainThemeIndex];
-  const enforceIndex = mainTheme.item.findIndex(
-    ({ $ }) => $.name === 'android:enforceNavigationBarContrast'
-  );
-  if (enforceIndex !== -1) {
-    style[mainThemeIndex].item[enforceIndex] = enforceNavigationBarContrastItem;
-    return config;
-  }
 
-  config.modResults.resources.style = [
-    {
-      $: style[mainThemeIndex].$,
-      item: [enforceNavigationBarContrastItem, ...mainTheme.item],
-    },
-    ...style.filter(({ $ }) => $.name !== 'AppTheme'),
-  ];
+  if (mainTheme != null) {
+    const enforceIndex = mainTheme.item.findIndex(
+      ({ $ }) => $.name === 'android:enforceNavigationBarContrast'
+    );
+    if (enforceIndex !== -1) {
+      mainTheme.item[enforceIndex] = enforceNavigationBarContrastItem;
+      return config;
+    }
+
+    config.modResults.resources.style = [
+      {
+        $: mainTheme.$,
+        item: [enforceNavigationBarContrastItem, ...mainTheme.item],
+      },
+      ...style.filter(({ $ }) => $.name !== 'AppTheme'),
+    ];
+  }
 
   return config;
 }

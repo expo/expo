@@ -37,24 +37,34 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-workspace: 'true'
       - name: 🤖 Set up android emulator
         uses: ./.github/actions/use-android-emulator
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🧶 Install `expo-test-runner`
         run: |
-          yarn global add expo-test-runner@$(cat package.json | grep '"expo-test-runner": "[0-9]*\.[0-9]*\.[0-9]*' | head -n 1 | awk '{print $2}' | sed 's/"//g; s/,//g')
+          pnpm add -g expo-test-runner@$(cat package.json | grep '"expo-test-runner": "[0-9]*\.[0-9]*\.[0-9]*' | head -n 1 | awk '{print $2}' | sed 's/"//g; s/,//g')
         working-directory: packages/expo-dev-client
       - name: 🧪 Run tests
         run: |
-          yarn latest-e2e
+          pnpm latest-e2e
         working-directory: packages/expo-dev-client
       - name: 💾 Store artifacts of build failures
         if: failure()
