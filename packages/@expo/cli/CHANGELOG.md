@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.20 — 2026-04-02
+
+### 💡 Others
+
 - Add `react-native-web` to autolinking module resolution modules ([#44160](https://github.com/expo/expo/pull/44160) by [@kitten](https://github.com/kitten))
 - Fix `react-native-web` install check being unconditional ([#44450](https://github.com/expo/expo/pull/44450) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@55.0.0` and `metro@0.83.5` ([#44320](https://github.com/expo/expo/pull/44320) by [@kitten](https://github.com/kitten))

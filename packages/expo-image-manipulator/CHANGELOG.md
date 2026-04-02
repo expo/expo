@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.12 — 2026-04-02
+
+### 💡 Others
+
 - [iOS] Use `internal import SDWebImageWebPCoder` to hide third-party dependency from public module interface. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.11 — 2026-03-17

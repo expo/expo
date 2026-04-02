@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.2.13 — 2026-04-02
+
+### 🐛 Bug fixes
+
 - Updated remaining `AgeRangeResponse` fields to allow null values to match native API behavior. ([#44393](https://github.com/expo/expo/pull/44393) by [@vonovak](https://github.com/vonovak))
 - Update AgeRangeResponse to allow null values ([#44310](https://github.com/expo/expo/pull/44310) by [@joshbuchea](https://github.com/joshbuchea))
-
-### 💡 Others
 
 ## 0.2.12 — 2026-03-17
 

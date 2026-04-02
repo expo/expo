@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.12 — 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.11 — 2026-03-24
 
 ### 🐛 Bug fixes
@@ -21,7 +25,6 @@
 ### 🐛 Bug fixes
 
 - [Web] Fix `isAvailableAsync` returning `true` on devices without a camera. ([#43932](https://github.com/expo/expo/pull/43932) by [@alanjhughes](https://github.com/alanjhughes))
-
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.9 — 2026-02-25

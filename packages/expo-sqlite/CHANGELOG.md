@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add explicit secure context error for `web/wa-sqlite/AccessHandlePoolVFS.js` ([#40605](https://github.com/expo/expo/pull/40605) by [@BDav24](https://github.com/BDav24))
-
 ### 💡 Others
+
+## 55.0.12 — 2026-04-02
+
+### 🐛 Bug fixes
+
+- Add explicit secure context error for `web/wa-sqlite/AccessHandlePoolVFS.js` ([#40605](https://github.com/expo/expo/pull/40605) by [@BDav24](https://github.com/BDav24))
 
 ## 55.0.11 — 2026-03-17
 

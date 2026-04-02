@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.15 — 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.14 — 2026-03-27
 
 _This version does not introduce any user-facing changes._
@@ -32,7 +36,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [ios] Fixed `requestPermissionsAsync` returning raw permission result without several documented fields ([#43555](https://github.com/expo/expo/pull/43555) by [@vonovak](https://github.com/vonovak))
-
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.10 — 2026-02-25

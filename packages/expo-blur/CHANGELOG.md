@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix the initial blur value not taking the `blurReductionFactor` into account. ([#43814](https://github.com/expo/expo/pull/43814) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 55.0.11 — 2026-04-02
+
+### 🐛 Bug fixes
+
+- [Android] Fix the initial blur value not taking the `blurReductionFactor` into account. ([#43814](https://github.com/expo/expo/pull/43814) by [@behenate](https://github.com/behenate))
 
 ## 55.0.10 — 2026-03-17
 
