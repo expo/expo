@@ -132,7 +132,7 @@ describe('UploadTask', () => {
     );
   });
 
-  it('defaults upload sessionType to background', async () => {
+  it('defaults upload sessionType to undefined (native defaults to background)', async () => {
     const task = new UploadTask(file, url);
 
     await task.uploadAsync();
@@ -140,7 +140,7 @@ describe('UploadTask', () => {
     expect(ExpoFileSystem.FileSystemUploadTask.prototype.start).toHaveBeenCalledWith(
       url,
       file,
-      expect.objectContaining({ sessionType: 'background' })
+      expect.objectContaining({ sessionType: undefined })
     );
   });
 });

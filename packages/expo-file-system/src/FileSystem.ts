@@ -14,7 +14,6 @@ import {
   DownloadPauseState,
   type UploadTaskState,
   type DownloadTaskState,
-  type NetworkTaskSessionType,
 } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
@@ -333,37 +332,6 @@ Directory.pickDirectoryAsync = async function (initialUri?: string) {
   return new Directory(directory);
 };
 
-/**
- * Download tasks default to background sessions unless the caller explicitly opts out.
- */
-function resolveNetworkTaskSessionType(
-  sessionType?: NetworkTaskSessionType
-): NetworkTaskSessionType {
-  return sessionType ?? 'background';
-}
-
-function normalizeDownloadTaskOptions(
-  options?: DownloadTaskOptions
-): DownloadTaskOptions | undefined {
-  if (!options) {
-    return undefined;
-  }
-  return {
-    ...options,
-    sessionType: resolveNetworkTaskSessionType(options.sessionType),
-  };
-}
-
-function normalizeUploadTaskOptions(options?: UploadOptions): UploadOptions | undefined {
-  if (!options) {
-    return undefined;
-  }
-  return {
-    ...options,
-    sessionType: resolveNetworkTaskSessionType(options.sessionType),
-  };
-}
-
 type TaskState = UploadTaskState | DownloadTaskState;
 
 type NetworkTaskOptions<TProgress> = {
@@ -431,7 +399,7 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
     super();
     this._file = file;
     this._url = url;
-    this._options = normalizeUploadTaskOptions(options);
+    this._options = options;
   }
 
   get state(): UploadTaskState {
@@ -454,7 +422,7 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
         fieldName: this._options?.fieldName,
         mimeType: this._options?.mimeType,
         parameters: this._options?.parameters,
-        sessionType: resolveNetworkTaskSessionType(this._options?.sessionType),
+        sessionType: this._options?.sessionType,
       };
 
       const result = await super.start(this._url, this._file, nativeOpts);
@@ -516,7 +484,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     super();
     this._url = url;
     this._destination = destination;
-    this._options = normalizeDownloadTaskOptions(options);
+    this._options = options;
   }
 
   get state(): DownloadTaskState {
@@ -530,7 +498,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     const operation = this._runDownloadOperation(() =>
       super.start(this._url, this._destination, {
         headers: this._options?.headers,
-        sessionType: resolveNetworkTaskSessionType(this._options?.sessionType),
+        sessionType: this._options?.sessionType,
       })
     );
     this._inFlightOperation = operation;
@@ -563,7 +531,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     const operation = this._runDownloadOperation(() =>
       super.resume(this._url, this._destination, this._resumeData!, {
         headers: this._options?.headers,
-        sessionType: resolveNetworkTaskSessionType(this._options?.sessionType),
+        sessionType: this._options?.sessionType,
       })
     );
     this._inFlightOperation = operation;
@@ -596,11 +564,10 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       throw new Error('Cannot restore task: DownloadPauseState has no resumeData');
     }
     const dest = state.isDirectory ? new Directory(state.fileUri) : new File(state.fileUri);
-    const mergedOptions = normalizeDownloadTaskOptions(
+    const mergedOptions =
       options || state.headers
         ? { ...options, headers: { ...state.headers, ...options?.headers } }
-        : undefined
-    );
+        : undefined;
     const task = new DownloadTask(state.url, dest, mergedOptions);
     task._resumeData = state.resumeData;
     task._state = 'paused';

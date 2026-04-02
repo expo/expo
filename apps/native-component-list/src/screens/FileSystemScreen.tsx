@@ -6,7 +6,8 @@ import type {
   UploadProgress,
   DownloadProgress,
   DownloadPauseState,
-  TaskState,
+  DownloadTaskState,
+  UploadTaskState,
 } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as MediaLibrary from 'expo-media-library';
@@ -934,7 +935,7 @@ function UploadSection({ currentFile }: { currentFile: File | null }) {
   const [progress, setProgress] = useState<string>('');
   const [result, setResult] = useState<string>('');
   const [uploading, setUploading] = useState(false);
-  const [taskState, setTaskState] = useState<TaskState | null>(null);
+  const [taskState, setTaskState] = useState<UploadTaskState | null>(null);
   const taskRef = useRef<ReturnType<File['createUploadTask']> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -1017,7 +1018,7 @@ function DownloadTaskSection() {
   const [status, setStatus] = useState<'idle' | 'downloading' | 'paused' | 'completed'>('idle');
   const [resultInfo, setResultInfo] = useState<string>('');
   const [savedState, setSavedState] = useState<DownloadPauseState | null>(null);
-  const [taskState, setTaskState] = useState<TaskState | null>(null);
+  const [taskState, setTaskState] = useState<DownloadTaskState | null>(null);
   const taskRef = useRef<ReturnType<typeof File.createDownloadTask> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 

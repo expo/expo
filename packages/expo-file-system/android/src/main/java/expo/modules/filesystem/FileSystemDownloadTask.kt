@@ -8,7 +8,6 @@ import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -31,15 +30,8 @@ import kotlin.coroutines.resumeWithException
 /**
  * Record type for download task options.
  */
-enum class NetworkTaskSessionType(val value: String) : Enumerable {
-  BACKGROUND("background"),
-  FOREGROUND("foreground")
-}
-
 class DownloadTaskOptions : Record {
   @Field var headers: Map<String, String>? = null
-
-  @Field var sessionType: NetworkTaskSessionType = NetworkTaskSessionType.BACKGROUND
 }
 
 /**
