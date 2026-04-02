@@ -22,6 +22,9 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 const MINIFY_JSON = true;
 
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
+  // drop-in replacements
+  'expo-ui/datetime-picker': ['datetime-picker/index.tsx', 'expo-ui'],
+
   // Swift UI
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
@@ -29,10 +32,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/confirmationdialog': ['swift-ui/ConfirmationDialog/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/contextmenu': ['swift-ui/ContextMenu/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/controlgroup': ['swift-ui/ControlGroup/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/datepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/disclosuregroup': ['swift-ui/DisclosureGroup/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/divider': ['swift-ui/Divider/index.tsx', 'expo-ui'],
-  'expo-ui/swift-ui/foreach': ['swift-ui/ForEach/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/form': ['swift-ui/Form/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/gauge': ['swift-ui/Gauge/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/group': ['swift-ui/Group/index.tsx', 'expo-ui'],
@@ -41,6 +44,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/image': ['swift-ui/Image/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/label': ['swift-ui/Label/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/linearprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/link': ['swift-ui/Link/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/list': ['swift-ui/List/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
@@ -70,8 +74,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/card': ['jetpack-compose/Card/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/carousel': ['jetpack-compose/Carousel/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/circularprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/contextmenu': ['jetpack-compose/ContextMenu/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/dropdownmenu': ['jetpack-compose/DropdownMenu/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/divider': ['jetpack-compose/Divider/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/dockedsearchbar': [
@@ -79,6 +82,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'expo-ui',
   ],
   'expo-ui/jetpack-compose/filterchip': ['jetpack-compose/FilterChip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/floatingactionbutton': [
+    'jetpack-compose/FloatingActionButton/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/horizontalfloatingtoolbar': [
     'jetpack-compose/HorizontalFloatingToolbar/index.tsx',
     'expo-ui',
@@ -91,10 +98,13 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/flowrow': ['jetpack-compose/FlowRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/lazycolumn': ['jetpack-compose/LazyColumn/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/linearprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
-  'expo-ui/jetpack-compose/picker': ['jetpack-compose/Picker/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/segmentedbutton': [
+    'jetpack-compose/SegmentedButton/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/pulltorefreshbox': [
     'jetpack-compose/PullToRefreshBox/index.tsx',
     'expo-ui',
@@ -106,9 +116,9 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/slider': ['jetpack-compose/Slider/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/spacer': ['jetpack-compose/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/surface': ['jetpack-compose/Surface/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/checkbox': ['jetpack-compose/Checkbox/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/text': ['jetpack-compose/Text/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/textbutton': ['jetpack-compose/TextButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
 };
@@ -185,9 +195,12 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
   'expo-router': ['exports.ts'],
-  'expo-router-ui': ['ui/index.ts', 'expo-router'],
-  'expo-router-native-tabs': ['native-tabs/index.ts', 'expo-router'],
-  'expo-router-split-view': ['split-view/index.ts', 'expo-router'],
+  'expo-router/stack': ['stack/index.ts', 'expo-router'],
+  'expo-router/link': ['link/index.ts', 'expo-router'],
+  'expo-router/color': ['color/index.ts', 'expo-router'],
+  'expo-router/native-tabs': ['native-tabs/index.ts', 'expo-router'],
+  'expo-router/split-view': ['split-view/index.ts', 'expo-router'],
+  'expo-router/ui': ['ui/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],

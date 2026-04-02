@@ -1,5 +1,9 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+/// - Warning: The ObjC name `ExpoFabricView` and the selector
+///   `makeViewClassForAppContext:moduleName:viewName:className:` are resolved at runtime via
+///   `NSClassFromString` / `NSSelectorFromString` from `ExpoFabricViewObjC.mm`.
+///   Renaming the class or that method will break those call sites silently at runtime.
 @objc(ExpoFabricView)
 open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
@@ -191,7 +195,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
 
   internal static func inject(appContext: AppContext) {
-    // Keep it weak so we don't leak the app context.
+    // Keep it weak so we don't leak the app context. We use `var` because `let` is only supported in Swift 6.0+
     weak var weakAppContext = appContext
     let appContextBlock: @convention(block) () -> AppContext? = { weakAppContext }
     let appContextBlockImp: IMP = imp_implementationWithBlock(appContextBlock)

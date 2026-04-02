@@ -34,8 +34,9 @@ import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTrans
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
-import { isInteractive } from '../../../utils/interactive';
+import { resolveWatchFolders } from '../../../utils/resolveWatchFolders';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
@@ -900,43 +901,69 @@ export async function withMetroMultiPlatformAsync(
     config,
     exp,
     platformBundlers,
+    serverRoot,
+
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
     isExporting,
-
     isReactServerComponentsEnabled,
+
     getMetroBundler,
   }: {
     config: ConfigT;
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
+    serverRoot?: string | undefined;
+
     isAutolinkingResolverEnabled?: boolean;
     isExporting?: boolean;
-
     isReactServerComponentsEnabled: boolean;
     isNamedRequiresEnabled: boolean;
+
     getMetroBundler: () => Bundler;
   }
 ) {
+  const watchFolders = (config.watchFolders as string[]) || [];
+  asWritable(config).watchFolders = watchFolders;
+
   // Change the default metro-runtime to a custom one that supports bundle splitting.
   // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
   const metroDefaults: typeof import('@expo/metro/metro-config/defaults/defaults') = require('@expo/metro/metro-config/defaults/defaults');
-  asWritable(metroDefaults).moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
+  const metroRequirePolyfill = require.resolve('@expo/cli/build/metro-require/require');
+  const metroOriginalModuleSystem = metroDefaults.moduleSystem;
+  asWritable(metroDefaults).moduleSystem = metroRequirePolyfill;
+  watchFolders.push(path.dirname(metroRequirePolyfill));
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
   // This is used for running Expo CLI in development against projects outside the monorepo.
-  if (!isDirectoryIn(__dirname, projectRoot)) {
-    const watchFolders = (config.watchFolders as string[]) || [];
-    asWritable(config).watchFolders = watchFolders;
+  // NOTE(@kitten): If `projectRoot` is used without `serverRoot` being available this can mistrigger for user monorepos!
+  if (!isDirectoryIn(__dirname, serverRoot ?? projectRoot)) {
+    let reactNativePolyfills: string[] = [];
 
-    watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    // Support web-only `expo start`
+    if (exp.platforms?.includes('ios') || exp.platforms?.includes('android')) {
+      try {
+        reactNativePolyfills = require('react-native/rn-get-polyfills')();
+        watchFolders.push(...resolveWatchFolders('react-native', { deep: false }));
+      } catch (error) {
+        // If the project targets native platforms, react-native is required.
+        throw new CommandError(
+          'REACT_NATIVE_NOT_FOUND',
+          'Failed to resolve react-native. Make sure it is installed in the project dependencies. Remove native platforms from the Expo config if you do not intend to target native platforms.'
+        );
+      }
+    }
+
     watchFolders.push(
-      path.join(require.resolve('@expo/metro-config/package.json'), '../..'),
-      // For virtual modules
-      path.join(require.resolve('expo/package.json'), '..')
+      ...resolveWatchFolders('expo', { deep: true }),
+      ...resolveWatchFolders('@expo/metro', { deep: true }),
+      ...resolveWatchFolders('@expo/metro-runtime', { deep: true }),
+      ...[config.resolver.emptyModulePath, metroOriginalModuleSystem, ...reactNativePolyfills]
+        .map((targetPath) => (fs.existsSync(targetPath) ? path.dirname(targetPath) : null))
+        .filter((targetPath) => targetPath != null)
     );
   }
 

@@ -1,4 +1,5 @@
 export {
+  getConfiguration,
   generateModulesProviderAsync,
   resolveModuleAsync,
   resolveExtraBuildDependenciesAsync,

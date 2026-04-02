@@ -142,7 +142,10 @@ data class CircleRecord(
   val lineColor: Int? = null,
 
   @Field
-  val lineWidth: Float? = null
+  val lineWidth: Float? = null,
+
+  @Field
+  val clickCoordinates: Coordinates? = null
 ) : Record
 
 data class UserLocationRecord(
@@ -319,4 +322,12 @@ data class MapContentPaddingRecord(
 data class MapOptionsRecord(
   @Field
   val mapId: String? = null
+) : Record
+
+data class SelectOptionsRecord(
+  @Field
+  val zoom: Float? = null,
+
+  @Field
+  val moveCamera: Boolean = true
 ) : Record

@@ -4,9 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- bump android dependency, expose new `DECLARED` user status ([#43345](https://github.com/expo/expo/pull/43345) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
+
+- Updated remaining `AgeRangeResponse` fields to allow null values to match native API behavior. ([#44393](https://github.com/expo/expo/pull/44393) by [@vonovak](https://github.com/vonovak))
+- Update AgeRangeResponse to allow null values ([#44310](https://github.com/expo/expo/pull/44310) by [@joshbuchea](https://github.com/joshbuchea))
 
 ### 💡 Others
 

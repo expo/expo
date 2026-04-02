@@ -3,12 +3,15 @@ package expo.modules.maps
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.view.MotionEvent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -78,10 +81,22 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private lateinit var cameraState: CameraPositionState
   private var manualCameraControl = false
 
+  private var lastTouchPoint: Point? = null
+
+  // Selection state management
+  private lateinit var markerState: State<List<Pair<MarkerRecord, MarkerState>>>
+
+  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    if (event.action == MotionEvent.ACTION_DOWN) {
+      lastTouchPoint = Point(event.x.toInt(), event.y.toInt())
+    }
+    return super.dispatchTouchEvent(event)
+  }
+
   @Composable
   override fun ComposableScope.Content() {
     cameraState = updateCameraState()
-    val markerState = markerStateFromProps()
+    markerState = markerStateFromProps()
     val locationSource = locationSourceFromProps()
     val polylineState by polylineStateFromProps()
     val polygonState by polygonStateFromProps()
@@ -164,7 +179,14 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
 
       MapCircles(
         circleState = circleState,
-        onCircleClick = onCircleClick
+        onCircleClick = onCircleClick,
+        getClickCoordinates = {
+          lastTouchPoint?.let { point ->
+            cameraState.projection?.fromScreenLocation(point)?.let { latLng ->
+              Coordinates(latLng.latitude, latLng.longitude)
+            }
+          }
+        }
       )
 
       for ((marker, state) in markerState.value) {
@@ -346,6 +368,39 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
     }
   }
 
+  /**
+   * Programmatically select a marker by its ID.
+   * Shows the info window and optionally animates the camera to the marker.
+   */
+  suspend fun selectMarker(id: String?, options: SelectOptionsRecord?) {
+    if (id == null) {
+      markerState.value.forEach { it.second.hideInfoWindow() }
+      val cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraState.position)
+      cameraState.move(cameraUpdate)
+      return
+    }
+    val (marker, state) = markerState.value.find { it.first.id == id } ?: return
+    state.showInfoWindow()
+    onMarkerClick(
+      MarkerRecord(
+        id = marker.id,
+        title = marker.title,
+        snippet = marker.snippet,
+        coordinates = marker.coordinates
+      )
+    )
+    val moveCamera = options?.moveCamera ?: true
+    if (moveCamera) {
+      val zoom = options?.zoom
+      val cameraUpdate = if (zoom != null) {
+        CameraUpdateFactory.newLatLngZoom(state.position, zoom)
+      } else {
+        CameraUpdateFactory.newLatLng(state.position)
+      }
+      cameraState.animate(cameraUpdate)
+    }
+  }
+
   private fun getIconDescriptor(marker: MarkerRecord): BitmapDescriptor? {
     return marker.icon?.let { icon ->
       val bitmap = if (icon.`is`(toKClass<SharedRef<Drawable>>())) {
@@ -362,7 +417,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
 @Composable
 private fun MapCircles(
   circleState: List<Pair<CircleRecord, LatLng>>,
-  onCircleClick: ViewEventCallback<CircleRecord>
+  onCircleClick: ViewEventCallback<CircleRecord>,
+  getClickCoordinates: () -> Coordinates?
 ) {
   circleState.forEach { (circle, center) ->
     Circle(
@@ -380,7 +436,8 @@ private fun MapCircles(
             radius = circle.radius,
             color = circle.color,
             lineColor = circle.lineColor,
-            lineWidth = circle.lineWidth
+            lineWidth = circle.lineWidth,
+            clickCoordinates = getClickCoordinates()
           )
         )
       }

@@ -45,7 +45,7 @@ export function Layout({
       <header className="fixed top-0 z-[100] h-[60px] w-full">{header}</header>
       <main
         className={mergeClasses('mt-[60px] flex items-stretch', 'max-md-gutters:max-h-[unset]')}>
-        {navigation && <nav className="basis-[256px] max-md-gutters:hidden">{navigation}</nav>}
+        {navigation && <nav className="max-md-gutters:hidden basis-[256px]">{navigation}</nav>}
         <LayoutScroll>
           <article
             className={mergeClasses(
@@ -55,7 +55,7 @@ export function Layout({
             {children}
           </article>
         </LayoutScroll>
-        {sidebar && <aside className="basis-[288px] max-md-gutters:hidden">{sidebar}</aside>}
+        {sidebar && <aside className="max-md-gutters:hidden basis-[288px]">{sidebar}</aside>}
       </main>
     </>
   );

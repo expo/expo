@@ -1,9 +1,11 @@
+export * from './AccessoryWidgetBackground';
 export * from './BottomSheet';
 export * from './Button';
 export * from './Chart';
 export * from './ColorPicker';
 export * from './ContentUnavailableView';
 export * from './ConfirmationDialog';
+export * from './ControlGroup';
 export * from './ContextMenu';
 export * from './DatePicker';
 export * from './Divider';
@@ -38,5 +40,6 @@ export * from './Shapes';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';
+export * from './Link';
 export { type CommonViewModifierProps } from './types';
 //# sourceMappingURL=index.d.ts.map

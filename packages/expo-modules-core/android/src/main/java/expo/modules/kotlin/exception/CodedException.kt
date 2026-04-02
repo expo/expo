@@ -2,6 +2,7 @@ package expo.modules.kotlin.exception
 
 import com.facebook.react.bridge.ReadableType
 import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -31,7 +32,7 @@ open class CodedException(
   val code
     get() = providedCode ?: inferCode(javaClass)
 
-  constructor(code: String, message: String?, cause: Throwable?) : this(message = message, cause = cause) {
+  constructor(code: String?, message: String?, cause: Throwable?) : this(message = message, cause = cause) {
     providedCode = code
   }
 
@@ -88,13 +89,13 @@ internal class EnumNoSuchValueException(
 )
 
 internal class MissingTypeConverter(
-  forType: KType
+  forType: TypeDescriptor
 ) : CodedException(
   message = "Cannot find type converter for '$forType'. Make sure the class implements `expo.modules.kotlin.records.Record` (i.e. `class MyObj : Record`)."
 )
 
 internal class InvalidExpectedType(
-  forType: KType
+  forType: TypeDescriptor
 ) : CodedException(
   message = "Cannot obtain ExpectedType form '$forType'."
 )
@@ -169,7 +170,7 @@ internal class OnViewDidUpdatePropsException(
 )
 
 internal class ArgumentCastException(
-  argDesiredType: KType,
+  argDesiredType: TypeDescriptor,
   argIndex: Int,
   providedType: String,
   cause: CodedException
@@ -199,7 +200,7 @@ internal class InvalidSharedObjectTypeException(
 )
 
 internal class IncorrectRefTypeException(
-  desiredType: KType,
+  desiredType: TypeDescriptor,
   receivedClass: Class<*>
 ) : CodedException(
   message = "Cannot convert received '$receivedClass' to the '$desiredType', because of the inner ref type mismatch"
@@ -211,7 +212,7 @@ internal class FieldCastException private constructor(
 ) : DecoratedException(message, cause) {
   constructor(
     fieldName: String,
-    fieldType: KType,
+    fieldType: TypeDescriptor,
     providedType: ReadableType,
     cause: CodedException
   ) : this(
@@ -222,7 +223,7 @@ internal class FieldCastException private constructor(
   constructor(
     fieldName: String,
     fieldType: KType,
-    recordType: KType,
+    recordType: TypeDescriptor,
     cause: CodedException
   ) : this(
     message = "Cannot cast value for field '$fieldName' ('$fieldType') in record '$recordType'.",
@@ -231,7 +232,7 @@ internal class FieldCastException private constructor(
 }
 
 internal class RecordCastException(
-  recordType: KType,
+  recordType: TypeDescriptor,
   cause: CodedException
 ) : DecoratedException(
   message = "Cannot create a record of the type: '$recordType'.",
@@ -239,8 +240,8 @@ internal class RecordCastException(
 )
 
 internal class CollectionElementCastException private constructor(
-  collectionType: KType,
-  elementType: KType,
+  collectionType: TypeDescriptor,
+  elementType: TypeDescriptor,
   providedType: String,
   cause: CodedException
 ) : DecoratedException(
@@ -248,15 +249,15 @@ internal class CollectionElementCastException private constructor(
   cause
 ) {
   constructor(
-    collectionType: KType,
-    elementType: KType,
+    collectionType: TypeDescriptor,
+    elementType: TypeDescriptor,
     providedType: ReadableType,
     cause: CodedException
   ) : this(collectionType, elementType, providedType.name, cause)
 
   constructor(
-    collectionType: KType,
-    elementType: KType,
+    collectionType: TypeDescriptor,
+    elementType: TypeDescriptor,
     providedType: KClass<*>,
     cause: CodedException
   ) : this(collectionType, elementType, providedType.toString(), cause)

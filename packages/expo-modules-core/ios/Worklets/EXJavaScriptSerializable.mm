@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJavaScriptSerializable.h>
+#import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
 
 #if WORKLETS_ENABLED
 
@@ -48,6 +48,8 @@ EXSerializableValueType toObjCValueType(worklets::Serializable::ValueType type) 
       return EXSerializableValueTypeSynchronizable;
     case worklets::Serializable::ValueType::CustomType:
       return EXSerializableValueTypeCustom;
+    default:
+      return EXSerializableValueTypeUndefined;
   }
 }
 

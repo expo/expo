@@ -1,6 +1,8 @@
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
 
+import '../../types';
+
 import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 

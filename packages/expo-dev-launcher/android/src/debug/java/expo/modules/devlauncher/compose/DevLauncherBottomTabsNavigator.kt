@@ -135,7 +135,7 @@ fun DevLauncherBottomTabsNavigator() {
 
   DevelopmentServersRoute(developmentServersBottomSheetState)
 
-  val isVisible by (DevLauncherController.instance as DevLauncherController).isLoadingToBundler
+  val isVisible by DevLauncherController.instance.isLoadingToBundler
 
   AnimatedVisibility(
     visible = isVisible,

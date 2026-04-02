@@ -1,6 +1,6 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import type { ImageSourcePropType } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
+import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 export interface StackScreenBackButtonProps {
     /**
      * The title to display for the back button.

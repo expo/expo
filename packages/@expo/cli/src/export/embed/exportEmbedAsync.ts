@@ -215,10 +215,12 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
+    // We optimistically build the server-side API routes code here, to ensure they're
+    // valid or to enable parallel deployment in the future (TBD). This is disabled using
+    // the explicit `--skip-server` flag.
     const apiRoutesEnabled =
       devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
-
-    if (apiRoutesEnabled) {
+    if (!options.skipServer && apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,
         pkg,
@@ -227,14 +229,17 @@ export async function exportEmbedBundleAndAssetsAsync(
       });
     }
 
-    // TODO: Remove duplicates...
-    const expoDomComponentReferences = bundles.artifacts
-      .map((artifact) =>
-        Array.isArray(artifact.metadata.expoDomComponentReferences)
-          ? artifact.metadata.expoDomComponentReferences
-          : []
-      )
-      .flat();
+    const expoDomComponentReferences = [
+      ...new Set(
+        bundles.artifacts
+          .map((artifact) =>
+            Array.isArray(artifact.metadata.expoDomComponentReferences)
+              ? artifact.metadata.expoDomComponentReferences
+              : []
+          )
+          .flat()
+      ),
+    ];
     if (expoDomComponentReferences.length > 0) {
       await Promise.all(
         // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.

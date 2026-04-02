@@ -12,25 +12,17 @@ internal final class PickerProps: UIBaseViewProps {
 
 internal struct PickerView: ExpoSwiftUI.View {
   @State var selection: AnyHashable?
-  @State var prevSelection: AnyHashable?
   @ObservedObject var props: PickerProps
-
+  
   init(props: PickerProps) {
     self.props = props
-    let initialSelection = Self.getHashableFromEither(props.selection)
-    _selection = State(initialValue: initialSelection)
-    _prevSelection = State(initialValue: initialSelection)
   }
 
   @ViewBuilder
   private func makePicker() -> some View {
-    let content = (props.children?
-      .compactMap { $0.childView as? PickerContentView }
-      .first)
+    let content = props.children?.slot("content")
 
-    let labelContent = props.children?
-      .compactMap { $0.childView as? PickerLabelView }
-      .first
+    let labelContent = props.children?.slot("label")
 
     if let systemImage = props.systemImage, let label = props.label {
       Picker(label, systemImage: systemImage, selection: $selection) { content }
@@ -61,11 +53,11 @@ internal struct PickerView: ExpoSwiftUI.View {
       }
       props.onSelectionChange(payload)
     }
-    .onReceive(props.selection.publisher) { newValue in
-      let hashableValue = Self.getHashableFromEither(newValue)
-      if prevSelection == hashableValue { return }
-      selection = hashableValue
-      prevSelection = hashableValue
+    .onChange(of: props.selection) { newValue in
+      selection = Self.getHashableFromEither(newValue)
+    }
+    .onAppear {
+      selection = Self.getHashableFromEither(props.selection)
     }
   }
 

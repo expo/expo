@@ -103,8 +103,8 @@ export function createURL(
   let queryString = '';
   const queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
   if (queryStringMatchResult) {
-    hostUri = queryStringMatchResult[1];
-    queryString = queryStringMatchResult[2];
+    hostUri = queryStringMatchResult[1] ?? '';
+    queryString = queryStringMatchResult[2] ?? '';
     let paramsFromHostUri = {};
     try {
       paramsFromHostUri = Object.fromEntries(

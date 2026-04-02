@@ -63,7 +63,7 @@ export function useWebCameraStream(
   const [stream, setStream] = React.useState<MediaStream | null>(null);
 
   const mediaTrackSettings = React.useMemo(() => {
-    return stream ? stream.getTracks()[0].getSettings() : null;
+    return stream?.getTracks()[0]?.getSettings() ?? null;
   }, [stream]);
 
   // The actual camera type - this can be different from the incoming camera type.
@@ -73,7 +73,7 @@ export function useWebCameraStream(
     }
     // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
     const { facingMode = 'user' } = mediaTrackSettings;
-    return FacingModeToCameraType[facingMode];
+    return FacingModeToCameraType[facingMode] ?? null;
   }, [mediaTrackSettings]);
 
   const getStreamDeviceAsync = React.useCallback(async (): Promise<MediaStream | null> => {
@@ -83,9 +83,7 @@ export function useWebCameraStream(
       if (__DEV__) {
         console.warn(`Error requesting UserMedia for type "${preferredType}":`, nativeEvent);
       }
-      if (onMountError) {
-        onMountError({ nativeEvent });
-      }
+      onMountError?.({ nativeEvent });
       return null;
     }
   }, [preferredType, onMountError]);
@@ -105,11 +103,8 @@ export function useWebCameraStream(
       activeStreams.current.push(nextStream!);
     }
 
-    // Set the new stream -> update the video, settings, and actual camera type.
     setStream(nextStream);
-    if (onCameraReady) {
-      onCameraReady();
-    }
+    onCameraReady?.();
     return false;
   }, [getStreamDeviceAsync, setStream, onCameraReady, stream, activeStreams.current]);
 
@@ -143,15 +138,12 @@ export function useWebCameraStream(
       }
     }
 
-    // Only update the native camera if changes were found
-    const hasChanges = !!Object.keys(changes).length;
-
-    const nextWebCameraSettings = { ...capabilities.current, ...changes };
+    const hasChanges = Object.keys(changes).length > 0;
     if (hasChanges) {
       Utils.syncTrackCapabilities(preferredType, stream, changes);
     }
 
-    capabilities.current = nextWebCameraSettings;
+    capabilities.current = { ...capabilities.current, ...changes };
   }, [
     settings.autoFocus,
     settings.flashMode,

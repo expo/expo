@@ -95,7 +95,12 @@ export const maybeRealpath = async (target: string): Promise<string | null> => {
   }
 };
 
-export type PackageJson = Record<string, unknown> & { name?: string; version?: string };
+export type PackageJson = Record<string, unknown> & {
+  name?: string;
+  version?: string;
+  peerDependencies?: Record<string, string>;
+  codegenConfig?: Record<string, unknown>;
+};
 
 export const loadPackageJson = memoize(async function loadPackageJson(
   jsonPath: string

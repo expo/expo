@@ -2,7 +2,7 @@ import { palette } from '@expo/styleguide-base';
 
 export const SnackImage = () => (
   <svg
-    className="absolute bottom-6 right-5"
+    className="absolute right-5 bottom-6"
     width="80"
     height="81"
     viewBox="0 0 80 81"

@@ -4,12 +4,20 @@
   "description": "Modify and observe the native navigation bar on Android devices.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./plugin": "./plugin/build/index.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -34,15 +42,16 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/navigation-bar",
   "dependencies": {
-    "react-native-is-edge-to-edge": "^1.2.1",
     "debug": "^4.3.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "expo-module-scripts": "^55.0.2"
+    "@types/react": "~19.2.0",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   }

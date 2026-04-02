@@ -1,7 +1,16 @@
-export const REACT_ELEMENT_TYPE: symbol = Symbol.for('react.transitional.element');
-export const REACT_FRAGMENT_TYPE: symbol = Symbol.for('react.fragment');
+import { Fragment } from './react-stub';
 
-function ReactElement(type: typeof ReactElement, key: string | null, props: Record<string, any>) {
+export type ReactElementNode = {
+  type: unknown;
+  key: string | null;
+  props: Record<string, any>;
+};
+
+function ReactElement(
+  type: unknown,
+  key: string | null,
+  props: Record<string, any>
+): ReactElementNode {
   if (typeof type === 'function') {
     return (type as any)(props);
   }
@@ -15,7 +24,11 @@ function ReactElement(type: typeof ReactElement, key: string | null, props: Reco
   return element;
 }
 
-function jsxProd(type: typeof ReactElement, config: any, maybeKey?: string | number | bigint) {
+function jsxProd(
+  type: unknown,
+  config: any,
+  maybeKey?: string | number | bigint
+): ReactElementNode {
   let key = null;
   if (maybeKey !== undefined) {
     key = '' + maybeKey;
@@ -45,7 +58,8 @@ function hasValidKey(config: any) {
 
 const jsxFileName = 'widget';
 export {
-  REACT_FRAGMENT_TYPE as Fragment,
+  Fragment,
+  Fragment as _Fragment,
   jsxFileName as _jsxFileName,
   jsxProd,
   jsxProd as jsx,

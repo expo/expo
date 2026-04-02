@@ -1,14 +1,4 @@
 import {
-  CommonNavigationAction,
-  ParamListBase,
-  Router,
-  TabActionType,
-  TabNavigationState,
-  TabRouter,
-  type TabRouterOptions,
-} from '@react-navigation/native';
-
-import {
   appendInternalExpoRouterParams,
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -17,6 +7,15 @@ import {
   removeParams,
   type InternalExpoRouterParams,
 } from '../navigationParams';
+import {
+  CommonNavigationAction,
+  ParamListBase,
+  Router,
+  TabActionType,
+  TabNavigationState,
+  TabRouter,
+  type TabRouterOptions,
+} from '../react-navigation/native';
 
 export function NativeBottomTabsRouter(options: TabRouterOptions) {
   const tabRouter = TabRouter({ ...options });

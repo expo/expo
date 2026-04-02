@@ -19,15 +19,15 @@ export type AgeRangeRequest = {
  */
 export type AgeRangeResponse = {
     /** The lower limit of the person’s age range. */
-    lowerBound?: number;
+    lowerBound: number | null;
     /** The upper limit of the person’s age range. */
-    upperBound?: number;
+    upperBound: number | null;
     /**
      * Indicates whether the age range was declared by the user themselves or someone else (parent, guardian, or Family Organizer in a Family Sharing group).
      *
      * @platform ios
      */
-    ageRangeDeclaration?: 'selfDeclared' | 'guardianDeclared';
+    ageRangeDeclaration?: 'selfDeclared' | 'guardianDeclared' | null;
     /**
      * List of parental controls enabled and shared as a part of age range declaration.
      *
@@ -39,19 +39,19 @@ export type AgeRangeResponse = {
      *
      * @platform android
      */
-    installId?: string;
+    installId?: string | null;
     /**
      * The user's age verification or supervision status.
      *
      * @platform android
      */
-    userStatus?: 'VERIFIED' | 'SUPERVISED' | 'SUPERVISED_APPROVAL_PENDING' | 'SUPERVISED_APPROVAL_DENIED' | 'UNKNOWN';
+    userStatus?: 'VERIFIED' | 'SUPERVISED' | 'SUPERVISED_APPROVAL_PENDING' | 'SUPERVISED_APPROVAL_DENIED' | 'DECLARED' | 'UNKNOWN' | null;
     /**
      * The effective date (timestamp) of the most recent significant change that was approved.
      *
      * @platform android
      */
-    mostRecentApprovalDate?: number;
+    mostRecentApprovalDate?: number | null;
 };
 export interface ExpoAgeRangeModule extends NativeModule {
     requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;

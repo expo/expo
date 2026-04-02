@@ -43,6 +43,7 @@ By default `expo-image-picker` will add `RECORD_AUDIO` permission on Android. Yo
 
 <ConfigPluginExample>
 
+{/* prettier-ignore */}
 ```json app.json
 {
   "expo": {
@@ -50,13 +51,13 @@ By default `expo-image-picker` will add `RECORD_AUDIO` permission on Android. Yo
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "The app accesses your photos to let you share them with your friends.",
           "colors": {
-            "cropToolbarColor": "#000000",
+            "cropToolbarColor": "#000000"
           },
           "dark": {
             "colors": {
-              "cropToolbarColor": "#000000",
+              "cropToolbarColor": "#000000"
             }
           }
         }
@@ -107,19 +108,19 @@ By default `expo-image-picker` will add `RECORD_AUDIO` permission on Android. Yo
       name: 'colors.cropToolbarIconColor',
       platform: 'android',
       description: 'A hex color string for the crop toolbar icon color.',
-      default: '#ffffff',
+      default: '#000000',
     },
     {
       name: 'colors.cropToolbarActionTextColor',
       platform: 'android',
       description: 'A hex color string for the crop toolbar action text color.',
-      default: '#ffffff',
+      default: '#000000',
     },
     {
       name: 'colors.cropBackButtonIconColor',
       platform: 'android',
       description: 'A hex color string for the crop toolbar back button icon color.',
-      default: '#ffffff',
+      default: '#000000',
     },
     {
       name: 'colors.cropBackgroundColor',

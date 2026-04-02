@@ -1,3 +1,4 @@
+import { TriggerMap } from './common';
 import {
   CommonNavigationAction,
   ParamListBase,
@@ -8,9 +9,7 @@ import {
   TabRouterOptions as RNTabRouterOptions,
   type StackActionType,
   type NavigationAction,
-} from '@react-navigation/native';
-
-import { TriggerMap } from './common';
+} from '../react-navigation/native';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;

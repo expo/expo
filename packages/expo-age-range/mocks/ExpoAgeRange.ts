@@ -11,6 +11,7 @@ export async function requestAgeRangeAsync(opts: AgeRangeRequest): Promise<AgeRa
     installId: 'some-id',
     userStatus: 'VERIFIED',
     lowerBound: 18,
+    upperBound: null,
     activeParentalControls: [],
   };
 }

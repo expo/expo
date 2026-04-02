@@ -62,7 +62,7 @@ export interface MiddlewareMatcher {
  *   },
  * };
  * ```
- * @see https://docs.expo.dev/router/reference/middleware/
+ * @see https://docs.expo.dev/router/web/middleware/
  */
 export interface MiddlewareSettings {
   /** Matcher definition that restricts the middleware to run conditionally. */

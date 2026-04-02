@@ -65,6 +65,14 @@ public final class MediaLibraryNextModule: Module {
       AsyncFunction("delete") { (this: Asset) in
         try await this.delete()
       }
+
+      AsyncFunction("getFavorite") { (this: Asset) in
+        try await this.getFavorite()
+      }
+
+      AsyncFunction("setFavorite") { (this: Asset, isFavorite: Bool) in
+        try await this.setFavorite(isFavorite)
+      }
     }
 
     // swiftlint:disable:next closure_body_length
@@ -98,11 +106,11 @@ public final class MediaLibraryNextModule: Module {
       }
 
       Function("limit") { (this: Query, limit: Int) in
-        this.limit(limit)
+        try this.limit(limit)
       }
 
       Function("offset") { (this: Query, offset: Int) in
-        this.offset(offset)
+        try this.offset(offset)
       }
 
       Function("album") { (this: Query, album: Album) in
@@ -202,7 +210,7 @@ public final class MediaLibraryNextModule: Module {
         .permissions?
         .getPermissionUsingRequesterClass(
           requesterClass(writeOnly),
-          resolve: promise.resolver,
+          resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
     }
@@ -212,7 +220,7 @@ public final class MediaLibraryNextModule: Module {
         .permissions?
         .askForPermission(
           usingRequesterClass: requesterClass(writeOnly),
-          resolve: promise.resolver,
+          resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
     }

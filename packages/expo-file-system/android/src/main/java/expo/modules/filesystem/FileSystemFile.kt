@@ -2,12 +2,18 @@ package expo.modules.filesystem
 
 import android.net.Uri
 import android.util.Base64
+import expo.modules.filesystem.unifiedfile.JavaFile
+import expo.modules.filesystem.unifiedfile.SAFDocumentFile
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.FileOutputStream
 import java.security.MessageDigest
 
 class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
+  private val contentResolver
+    get() = appContext?.reactContext?.contentResolver ?: throw Exceptions.ReactContextLost()
+
   // Kept empty for now, but can be used to validate if the uri is a valid file uri. // TODO: Move to the constructor once also moved on iOS
   fun validatePath() {
   }
@@ -45,6 +51,15 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     val created = javaFile.createNewFile()
     if (!created) {
       throw UnableToCreateException("file already exists or could not be created")
+    }
+  }
+
+  fun openHandle(mode: FileMode?): FileSystemFileHandle {
+    val fileImpl = file
+    return when (fileImpl) {
+      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, mode ?: FileMode.READ_WRITE)
+      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, mode ?: FileMode.READ, contentResolver)
+      else -> throw Exceptions.IllegalStateException("File handle is not supported for ${file.uri}")
     }
   }
 
@@ -132,11 +147,17 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
+    val bufferSize = 65536
+
     validatePermission(FilePermissionService.Permission.READ)
     val md = MessageDigest.getInstance("MD5")
-    file.inputStream().use {
-      val digest = md.digest(it.readBytes())
-      return digest.toHexString()
+    file.inputStream().use { stream ->
+      val buffer = ByteArray(bufferSize)
+      var bytesRead: Int
+      while (stream.read(buffer).also { bytesRead = it } != -1) {
+        md.update(buffer, 0, bytesRead)
+      }
+      return md.digest().toHexString()
     }
   }
 

@@ -11,6 +11,7 @@ class MediaController {
 
   private var currentArtworkUrl: URL?
   private var cachedArtwork: MPMediaItemArtwork?
+  private var isLiveStream = false
 
   func setActivePlayer(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
     if let previous = activePlayer, previous.id != player?.id {
@@ -19,6 +20,7 @@ class MediaController {
 
     activePlayer = player
     player?.isActiveForLockScreen = true
+    isLiveStream = options?.isLiveStream ?? false
 
     DispatchQueue.main.async {
       if let player {
@@ -37,71 +39,96 @@ class MediaController {
     }
     var nowPlayingInfo = nowPlayingInfoCenter.nowPlayingInfo ?? [String: Any]()
 
-    nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
-    nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
-    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 1.0
-    nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
+    applyPlaybackInfo(&nowPlayingInfo, for: player)
 
     if let userMetadata = player.metadata {
-      if let title = userMetadata.title {
-        nowPlayingInfo[MPMediaItemPropertyTitle] = title
-      }
-      if let artist = userMetadata.artist {
-        nowPlayingInfo[MPMediaItemPropertyArtist] = artist
-      }
-      if let album = userMetadata.albumTitle {
-        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = album
-      }
-      if let artworkUrl = userMetadata.artworkUrl {
-        if currentArtworkUrl != artworkUrl {
-          currentArtworkUrl = artworkUrl
-        } else {
-          if let cachedArtwork {
-            nowPlayingInfo[MPMediaItemPropertyArtwork] = cachedArtwork
-            self.nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
-          }
-        }
-        loadArtworkFromURL(url: artworkUrl) { [weak self] artwork in
-          if let artwork {
-            self?.cachedArtwork = artwork
-            nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
-            self?.nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
-          }
-        }
-      }
+      applyUserMetadata(&nowPlayingInfo, from: userMetadata)
     } else {
-      // Try to get the metadata from the provided asset
-      if let currentItem = player.ref.currentItem,
-      let asset = currentItem.asset as? AVURLAsset {
-        let metadata = asset.commonMetadata
+      applyAssetMetadata(&nowPlayingInfo, for: player)
+    }
 
-        for item in metadata {
-          switch item.commonKey {
-          case .commonKeyTitle:
-            if let title = item.stringValue {
-              nowPlayingInfo[MPMediaItemPropertyTitle] = title
-            }
-          case .commonKeyArtist:
-            if let artist = item.stringValue {
-              nowPlayingInfo[MPMediaItemPropertyArtist] = artist
-            }
-          case .commonKeyAlbumName:
-            if let album = item.stringValue {
-              nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = album
-            }
-          case .commonKeyArtwork:
-            if let imageData = item.dataValue,
-              let image = UIImage(data: imageData) {
-              let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
-              nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
-            }
-          default:
-            break
-          }
+    nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
+
+    if let artworkUrl = player.metadata?.artworkUrl {
+      loadArtworkIfNeeded(from: artworkUrl)
+    }
+  }
+
+  private func applyPlaybackInfo(_ info: inout [String: Any], for player: AudioPlayer) {
+    if isLiveStream {
+      info[MPNowPlayingInfoPropertyIsLiveStream] = true
+      info.removeValue(forKey: MPMediaItemPropertyPlaybackDuration)
+      info.removeValue(forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime)
+    } else {
+      info[MPNowPlayingInfoPropertyIsLiveStream] = false
+      info[MPMediaItemPropertyPlaybackDuration] = player.duration
+      info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
+    }
+    info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 1.0
+    info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
+  }
+
+  private func applyUserMetadata(_ info: inout [String: Any], from metadata: Metadata) {
+    if let title = metadata.title {
+      info[MPMediaItemPropertyTitle] = title
+    }
+    if let artist = metadata.artist {
+      info[MPMediaItemPropertyArtist] = artist
+    }
+    if let album = metadata.albumTitle {
+      info[MPMediaItemPropertyAlbumTitle] = album
+    }
+  }
+
+  private func applyAssetMetadata(_ info: inout [String: Any], for player: AudioPlayer) {
+    guard let currentItem = player.ref.currentItem,
+      let asset = currentItem.asset as? AVURLAsset else {
+      return
+    }
+
+    for item in asset.commonMetadata {
+      switch item.commonKey {
+      case .commonKeyTitle:
+        if let title = item.stringValue {
+          info[MPMediaItemPropertyTitle] = title
         }
+      case .commonKeyArtist:
+        if let artist = item.stringValue {
+          info[MPMediaItemPropertyArtist] = artist
+        }
+      case .commonKeyAlbumName:
+        if let album = item.stringValue {
+          info[MPMediaItemPropertyAlbumTitle] = album
+        }
+      case .commonKeyArtwork:
+        if let imageData = item.dataValue,
+          let image = UIImage(data: imageData) {
+          info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+        }
+      default:
+        break
       }
     }
-    nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
+  }
+
+  private func loadArtworkIfNeeded(from url: URL) {
+    if currentArtworkUrl == url, let cachedArtwork {
+      var nowPlayingInfo = nowPlayingInfoCenter.nowPlayingInfo ?? [:]
+      nowPlayingInfo[MPMediaItemPropertyArtwork] = cachedArtwork
+      nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
+      return
+    }
+
+    currentArtworkUrl = url
+    loadArtworkFromURL(url: url) { [weak self] artwork in
+      guard let self, let artwork else {
+        return
+      }
+      self.cachedArtwork = artwork
+      var nowPlayingInfo = self.nowPlayingInfoCenter.nowPlayingInfo ?? [:]
+      nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      self.nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
+    }
   }
 
   func clearNowPlayingInfo() {
@@ -204,7 +231,7 @@ class MediaController {
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
-    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = true
+    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !(options?.isLiveStream ?? false)
     remoteCommandCenter.skipForwardCommand.isEnabled = options?.showSeekForward ?? false
     remoteCommandCenter.skipBackwardCommand.isEnabled = options?.showSeekBackward ?? false
   }

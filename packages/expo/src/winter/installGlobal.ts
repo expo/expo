@@ -81,9 +81,14 @@ export function installGlobal<T extends object>(name: string, getValue: () => T)
   // @ts-ignore: globalThis is not defined in all environments
   const object = typeof global !== 'undefined' ? global : globalThis;
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
-  if (__DEV__ && descriptor) {
-    const backupName = `original${name[0].toUpperCase()}${name.slice(1)}`;
-    Object.defineProperty(object, backupName, descriptor);
+
+  // NOTE(@kitten): We have to exclude descriptors with getters here
+  // When two calls of a "lazy getter" conflict, accessing the original will override the global again
+  // (e.g. `globalThis.originalURL` in react-native will set URL back to its own value)
+  if (__DEV__ && descriptor && !descriptor.get) {
+    const backupName = `original${name[0] ?? ''.toUpperCase()}${name.slice(1)}`;
+    // NOTE(@kitten): We don't want the global to be enumerably different in development
+    Object.defineProperty(object, backupName, { ...descriptor, enumerable: false });
   }
 
   const { enumerable, writable, configurable = false } = descriptor || {};

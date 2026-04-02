@@ -87,14 +87,15 @@ internal struct VideoTrack: Record, Equatable {
     let supported = (try? await assetTrack.load(.isPlayable)) ?? true
     let mediaFormat = try? await assetTrack.mediaFormat
     let frameRate = try? await assetTrack.load(.nominalFrameRate)
+    let safeFrameRate = (frameRate?.isFinite == true) ? frameRate : nil
 
-    if let bitrateFloat = try? await assetTrack.load(.estimatedDataRate) {
+    if let bitrateFloat = try? await assetTrack.load(.estimatedDataRate), bitrateFloat.isFinite {
       averageBitrate = Int(bitrateFloat)
     }
 
     let peakBitrate = await assetTrack.getPeakBitrate()
 
-    if let cgSize = try? await assetTrack.load(.naturalSize) {
+    if let cgSize = try? await assetTrack.load(.naturalSize), cgSize.width.isFinite, cgSize.height.isFinite {
       size = VideoSize.from(cgSize)
     }
 
@@ -106,7 +107,7 @@ internal struct VideoTrack: Record, Equatable {
       peakBitrate: peakBitrate,
       averageBitrate: averageBitrate,
       isSupported: supported,
-      frameRate: frameRate
+      frameRate: safeFrameRate
     )
   }
 
@@ -120,9 +121,10 @@ internal struct VideoTrack: Record, Equatable {
     let id = extractHlsTrackId(trackUrl: trackUrl, mainUrl: mainUrl)
     let videoSize = videoAttributes.videoSize
     let mimeType = videoAttributes.getFormattedCodecString()
-    let frameRate = videoAttributes.nominalFrameRate.map(Float.init)
-    let peakBitrate = assetVariant.peakBitRate.map(Int.init)
-    let averageBitrate = assetVariant.averageBitRate.map(Int.init)
+    let frameRate = videoAttributes.nominalFrameRate.flatMap(Float.init)
+    let peakBitrate = assetVariant.peakBitRate.flatMap { $0.isFinite ? Int($0) : nil }
+    let averageBitrate = assetVariant.averageBitRate.flatMap { $0.isFinite ? Int($0) : nil }
+    let safeFrameRate = (frameRate?.isFinite == true) ? frameRate : nil
 
     return VideoTrack(
       id: id,
@@ -133,7 +135,7 @@ internal struct VideoTrack: Record, Equatable {
       peakBitrate: peakBitrate,
       averageBitrate: averageBitrate,
       isSupported: isPlayable,
-      frameRate: frameRate
+      frameRate: safeFrameRate
     )
   }
 

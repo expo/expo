@@ -4,13 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Enable `import.meta` transform by default and rename option to `transformImportMeta` ([#44239](https://github.com/expo/expo/pull/44239) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 - Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
+- Fix `"use no memo"` and `"use no forget"` default opt-out directives being ineffective in react-compiler transform ([#43521](https://github.com/expo/expo/pull/43521) by [@Titozzz](https://github.com/Titozzz), [@kitten](https://github.com/kitten))
+- Update plugin detection to resolve from project root ([#44197](https://github.com/expo/expo/pull/44197) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Remove @babel/plugin-transform-parameters require when using Hermes v1 ([#43080](https://github.com/expo/expo/pull/43080) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.8 — 2026-02-25
 

@@ -17,7 +17,7 @@ const mockSetOptions = jest.fn();
 const mockIsFocused = jest.fn().mockReturnValue(true);
 const mockGetState = jest.fn().mockReturnValue({ type: 'stack', preloadedRoutes: [] });
 
-jest.mock('@react-navigation/native', () => ({
+jest.mock('../../../react-navigation/native', () => ({
   useRoute: jest.fn(() => ({ key: 'route-1', name: 'test', params: {} })),
 }));
 

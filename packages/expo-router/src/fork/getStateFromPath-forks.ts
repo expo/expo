@@ -1,9 +1,9 @@
-import { InitialState } from '@react-navigation/native';
 import escape from 'escape-string-regexp';
 import * as queryString from 'query-string';
 
 import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
+import { InitialState } from '../react-navigation/native';
 import { parseUrlUsingCustomBase } from '../utils/url';
 
 export type ExpoOptions = {
@@ -160,7 +160,7 @@ export function getParamValue(p: string, value: string) {
 
 function formatRegexPattern(it: string): string {
   // Allow spaces in file path names.
-  it = it.replace(' ', '%20');
+  it = it.replace(/ /g, '%20');
 
   if (it.startsWith(':')) {
     // TODO: Remove unused match group

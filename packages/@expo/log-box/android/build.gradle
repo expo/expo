@@ -64,6 +64,10 @@ afterEvaluate {
       inputs.dir project.fileTree(expoLogBoxDirFile) {
         exclude 'dist/**'
         exclude 'android/**'
+        // Including node_modules causes Gradle to hash thousands of files from the pnpm store
+        // for up-to-date checks, leading to OOM. If only a dependency changes (no source file
+        // edits), a clean build is needed to pick it up.
+        exclude 'node_modules/**'
       }
       outputs.dir distDirFile
 

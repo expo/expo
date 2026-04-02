@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "expo": "^55 || ^55.0.0-0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  }
+}

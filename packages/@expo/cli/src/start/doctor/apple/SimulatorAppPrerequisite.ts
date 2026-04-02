@@ -1,18 +1,59 @@
 import { execAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
+import path from 'path';
 
 import * as Log from '../../../log';
 import { Prerequisite, PrerequisiteCommandError } from '../Prerequisite';
 
 const debug = require('debug')('expo:doctor:apple:simulatorApp') as typeof console.log;
 
-async function getSimulatorAppIdAsync(): Promise<string | null> {
+/**
+ * Get the bundle ID of the Simulator.app via AppleScript / LaunchServices.
+ * May return null if the Simulator.app is not registered in LaunchServices
+ * (e.g. when Xcode lives on an external or renamed volume).
+ */
+async function getSimulatorAppIdViaAppleScriptAsync(): Promise<string | null> {
   try {
     return (await execAsync('id of app "Simulator"')).trim();
   } catch {
-    // This error may occur in CI where the users intends to install just the simulators but no Xcode.
+    // This error may occur in CI where the user intends to install just the simulators but no
+    // Xcode, or when Simulator.app is not registered in LaunchServices (e.g. Xcode on an
+    // external or renamed volume).
   }
   return null;
+}
+
+/**
+ * Fallback: locate Simulator.app via the active Xcode developer directory and read its
+ * CFBundleIdentifier directly from the app bundle's Info.plist.
+ * This works even when LaunchServices hasn't indexed Simulator.app.
+ */
+async function getSimulatorAppIdFromBundleAsync(): Promise<string | null> {
+  try {
+    const { stdout: developerDir } = await spawnAsync('xcode-select', ['--print-path']);
+    const simulatorInfoPlist = path.join(
+      developerDir.trim(),
+      'Applications',
+      'Simulator.app',
+      'Contents',
+      'Info.plist'
+    );
+    const { stdout: bundleId } = await spawnAsync('defaults', [
+      'read',
+      simulatorInfoPlist,
+      'CFBundleIdentifier',
+    ]);
+    return bundleId.trim() || null;
+  } catch {
+    // Simulator.app not found at the expected path or xcode-select is unavailable.
+  }
+  return null;
+}
+
+async function getSimulatorAppIdAsync(): Promise<string | null> {
+  return (
+    (await getSimulatorAppIdViaAppleScriptAsync()) ?? (await getSimulatorAppIdFromBundleAsync())
+  );
 }
 
 export class SimulatorAppPrerequisite extends Prerequisite {

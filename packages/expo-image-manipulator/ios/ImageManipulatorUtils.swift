@@ -1,4 +1,4 @@
-import SDWebImageWebPCoder
+internal import SDWebImageWebPCoder
 import Photos
 import ExpoModulesCore
 
@@ -18,22 +18,27 @@ internal func loadImage(atUrl url: URL, appContext: AppContext) async throws -> 
     return try await loadImageFromPhotoLibrary(url: url)
   }
 
-  guard let imageLoader = appContext.imageLoader else {
-    throw ImageLoaderNotFoundException()
-  }
   guard FileSystemUtilities.isReadableFile(appContext, url) else {
-    throw FileSystemReadPermissionException(url.absoluteString)
+    guard let imageLoader = appContext.imageLoader else {
+      throw ImageLoaderNotFoundException()
+    }
+
+    do {
+      if let result = try await imageLoader.loadImage(for: url) {
+        return result
+      }
+    } catch {
+      throw ImageLoadingFailedException((error as NSError).debugDescription)
+    }
+
+    throw ImageLoadingFailedException("")
   }
 
-  do {
-    if let result = try await imageLoader.loadImage(for: url) {
-      return result
-    }
-  } catch {
-    throw ImageLoadingFailedException((error as NSError).debugDescription)
+  // Read local files directly so UIKit preserves HEIC/EXIF orientation metadata.
+  guard let data = try? Data(contentsOf: url), let image = UIImage(data: data) else {
+    throw FileSystemReadPermissionException(url.absoluteString)
   }
-  // TODO: throw something better
-  throw ImageLoadingFailedException("")
+  return image
 }
 
 /**

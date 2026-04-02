@@ -52,21 +52,13 @@ class DevLauncherViewModel: ObservableObject {
   @Published var user: User?
   @Published var selectedAccountId: String?
   @Published var isLoadingServer: Bool = false
+  @Published var isLoadingLocalBundle: Bool = false
   @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
-
-  @Published var browserDevServers: [DevServer] = [] {
-    didSet { updateDevServers() }
-  }
-
-  @Published var localDevServers: [DevServer] = [] {
-    didSet { updateDevServers() }
-  }
 
   @Published var devServers: [DevServer] = []
 
   private var browser: NWBrowser?
   private var pingTask: Task<Void, Never>?
-  private var scanTask: Task<Void, Never>?
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -88,42 +80,21 @@ class DevLauncherViewModel: ObservableObject {
     return isAuthenticated && user != nil
   }
 
+  var hasEmbeddedBundle: Bool {
+    guard let enabled = Bundle.main.object(forInfoDictionaryKey: "EXDevClientEmbeddedBundle") as? Bool, enabled else {
+      return false
+    }
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle") != nil
+  }
+
   init() {
     loadData()
     checkAuthenticationStatus()
     checkForStoredCrashes()
   }
 
-  private func updateDevServers() {
-    let allServers = browserDevServers + localDevServers
-    var serversByPort: [String: DevServer] = [:]
-
-    for server in allServers {
-      guard let port = extractPort(from: server.url) else {
-        serversByPort[server.url] = server
-        continue
-      }
-
-      if let existing = serversByPort[port] {
-        let existingHasName = existing.description != existing.url
-        let newHasName = server.description != server.url
-
-        if newHasName && !existingHasName {
-          serversByPort[port] = server
-        } else if existingHasName == newHasName {
-          let existingIsLinkLocal = existing.url.contains("169.254.")
-          let newIsLinkLocal = server.url.contains("169.254.")
-
-          if existingIsLinkLocal && !newIsLinkLocal {
-            serversByPort[port] = server
-          }
-        }
-      } else {
-        serversByPort[port] = server
-      }
-    }
-
-    devServers = serversByPort.values.sorted(by: <)
+  private func updateDevServers(_ servers: [DevServer]) {
+    devServers = servers.sorted(by: <)
   }
 
   private func extractPort(from url: String) -> String? {
@@ -203,6 +174,22 @@ class DevLauncherViewModel: ObservableObject {
     self.recentlyOpenedApps = []
   }
 
+  func loadLocalBundle() {
+    guard !isLoadingLocalBundle else { return }
+    isLoadingLocalBundle = true
+
+    EXDevLauncherController.sharedInstance().loadLocalBundle(onSuccess: { [weak self] in
+      DispatchQueue.main.async {
+        self?.isLoadingLocalBundle = false
+      }
+    }, onError: { [weak self] error in
+      DispatchQueue.main.async {
+        self?.isLoadingLocalBundle = false
+        self?.showErrorAlert(error.localizedDescription)
+      }
+    })
+  }
+
   func isCompatibleRuntime(_ runtimeVersion: String) -> Bool {
     return runtimeVersion == structuredBuildInfo.runtimeVersion
   }
@@ -214,7 +201,6 @@ class DevLauncherViewModel: ObservableObject {
 
     stopServerDiscovery()
     startDevServerBrowser()
-    startLocalDevServerScanner()
   }
   
   func markNetworkPermissionGranted() {
@@ -284,25 +270,9 @@ class DevLauncherViewModel: ObservableObject {
 
   func stopServerDiscovery() {
     pingTask?.cancel()
-    scanTask?.cancel()
     browser?.cancel()
     pingTask = nil
-    scanTask = nil
     browser = nil
-  }
-
-  private func startLocalDevServerScanner() {
-    scanTask?.cancel()
-    scanTask = Task {
-      await scanLocalDevServers()
-      while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
-        if Task.isCancelled {
-          break
-        }
-        await scanLocalDevServers()
-      }
-    }
   }
 
   private func startDevServerBrowser() {
@@ -357,31 +327,6 @@ class DevLauncherViewModel: ObservableObject {
     browser?.start(queue: DispatchQueue(label: "expo.devlauncher.discovery"))
   }
 
-  private func scanLocalDevServers() async {
-    guard !Task.isCancelled else {
-      return
-    }
-
-    var discoveredServers: [DevServer] = []
-    await withTaskGroup(of: DevServer?.self) { group in
-      for result in NetworkUtilities.getLocalEndpointsToScan() {
-        group.addTask {
-          return await self.resolveDevServer(result)
-        }
-      }
-
-      for await server in group {
-        if let server {
-          discoveredServers.append(server)
-        }
-      }
-    }
-
-    await MainActor.run {
-      self.localDevServers = discoveredServers
-    }
-  }
-
   private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {
     guard !Task.isCancelled else {
       return
@@ -407,7 +352,7 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     await MainActor.run {
-      self.browserDevServers = discoveredServers
+      self.updateDevServers(discoveredServers)
     }
   }
 

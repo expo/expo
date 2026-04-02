@@ -6,11 +6,7 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
-    View(RNHostView.self) {
-      Prop("matchContents") { (view, matchContents: Bool) in
-        view.matchContents = matchContents
-      }
-    }
+    View(RNHostView.self)
 
     OnDestroy {
       Task { @MainActor in
@@ -24,9 +20,9 @@ public final class ExpoUIModule: Module {
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
-    // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
+    // MARK: - Expo UI Views with AsyncFunctions
 
-    View(SecureFieldView.self) {
+    ExpoUIView(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
       }
@@ -37,7 +33,7 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
     }
-    View(TextFieldView.self) {
+    ExpoUIView(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
       }
@@ -51,7 +47,7 @@ public final class ExpoUIModule: Module {
         view.setSelection(start: start, end: end)
       }
     }
-    View(ShareLinkView.self) {
+    ExpoUIView(ShareLinkView.self) {
       AsyncFunction("setItem") { (view: ShareLinkView, url: String?) in
         guard let url, let validURL = URL(string: url) else {
           view.rejectContinuation()
@@ -63,22 +59,9 @@ public final class ExpoUIModule: Module {
 
     // MARK: - Views don't support common view modifiers
 
-    View(ContextMenuActivationElement.self)
-    View(ContextMenuPreview.self)
-    View(ContextMenuContent.self)
-    View(ConfirmationDialogTrigger.self)
-    View(ConfirmationDialogActions.self)
-    View(ConfirmationDialogMessage.self)
+    View(SlotView.self)
     View(NamespaceView.self)
-    View(PopoverViewContent.self)
-    View(PopoverViewPopContent.self)
-    View(SectionContent.self)
-    View(SectionHeader.self)
-    View(SectionFooter.self)
     View(GridRowView.self)
-    View(LabeledContentLabel.self)
-    View(LabeledContentContent.self)
-    View(LabelIcon.self)
     View(HostView.self)
     View(TextView.self)
 
@@ -93,14 +76,13 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ExpoUI.ContentUnavailableView.self)
     ExpoUIView(ConfirmationDialogView.self)
     ExpoUIView(ExpoUI.ContextMenu.self)
-    
-    // Menu component
+
+    ExpoUIView(ControlGroupView.self)
+
     ExpoUIView(MenuView.self)
-    View(MenuLabel.self)
 
     ExpoUIView(FormView.self)
     ExpoUIView(GaugeView.self)
-    View(GaugeLabelView.self)
     ExpoUIView(GroupView.self)
     ExpoUIView(HStackView.self)
     ExpoUIView(ImageView.self)
@@ -108,17 +90,12 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ListView.self)
     ExpoUIView(ListForEachView.self)
 
-    // Picker
     ExpoUIView(PickerView.self)
-    View(PickerContentView.self)
-    View(PickerLabelView.self)
 
     ExpoUIView(ExpoUI.ProgressView.self)
     ExpoUIView(SectionView.self)
 
-    // Slider
     ExpoUIView(SliderView.self)
-    View(SliderLabelView.self)
 
     ExpoUIView(SpacerView.self)
     ExpoUIView(StepperView.self)
@@ -138,5 +115,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(GridView.self)
+    ExpoUIView(AccessoryWidgetBackgroundView.self)
+    ExpoUIView(LinkView.self)
   }
 }

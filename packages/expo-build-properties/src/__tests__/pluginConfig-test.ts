@@ -40,7 +40,7 @@ describe(validateConfig, () => {
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.deploymentTarget\` needs to be at least version 15.1."`
+      `"\`ios.deploymentTarget\` needs to be at least version 16.4."`
     );
   });
 
@@ -228,27 +228,27 @@ describe(validateConfig, () => {
 });
 
 describe('shared config resolution', () => {
-  it('should throw when useHermesV1 is true without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ useHermesV1: true })).toThrow(
-      '`useHermesV1` requires `buildReactNativeFromSource` to be `true`'
+  it('should throw when useHermesV1 is false without buildReactNativeFromSource', () => {
+    expect(() => validateConfig({ useHermesV1: false })).toThrow(
+      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true`'
     );
   });
 
   it('should validate useHermesV1 with buildReactNativeFromSource', () => {
     expect(() =>
-      validateConfig({ useHermesV1: true, buildReactNativeFromSource: true })
+      validateConfig({ useHermesV1: false, buildReactNativeFromSource: true })
     ).not.toThrow();
   });
 
   it('should throw for android-specific useHermesV1 without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ android: { useHermesV1: true } })).toThrow(
-      '`useHermesV1` requires `buildReactNativeFromSource` to be `true` for Android.'
+    expect(() => validateConfig({ android: { useHermesV1: false } })).toThrow(
+      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for Android.'
     );
   });
 
   it('should throw for ios-specific useHermesV1 without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ ios: { useHermesV1: true } })).toThrow(
-      '`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.'
+    expect(() => validateConfig({ ios: { useHermesV1: false } })).toThrow(
+      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for iOS.'
     );
   });
 
@@ -264,23 +264,23 @@ describe('shared config resolution', () => {
     expect(() =>
       validateConfig({
         buildReactNativeFromSource: true,
-        useHermesV1: true,
+        useHermesV1: false,
         reactNativeReleaseLevel: 'experimental',
         android: {
           minSdkVersion: 24,
         },
         ios: {
-          deploymentTarget: '15.1',
+          deploymentTarget: '16.4',
           useHermesV1: false,
         },
       })
     ).not.toThrow();
   });
 
-  it('should allow platform-specific buildReactNativeFromSource to satisfy useHermesV1', () => {
+  it('should allow platform-specific buildReactNativeFromSource to satisfy useHermesV1: false', () => {
     expect(() =>
       validateConfig({
-        useHermesV1: true,
+        useHermesV1: false,
         android: { buildReactNativeFromSource: true },
         ios: { buildReactNativeFromSource: true },
       })

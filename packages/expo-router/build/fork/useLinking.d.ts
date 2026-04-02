@@ -1,5 +1,5 @@
-import { LinkingOptions, getStateFromPath as getStateFromPathDefault, type NavigationContainerRef, type ParamListBase } from '@react-navigation/native';
 import * as React from 'react';
+import { LinkingOptions, getStateFromPath as getStateFromPathDefault, type NavigationContainerRef, type ParamListBase } from '../react-navigation/native';
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 /**
  * Run async function in series as it's called.

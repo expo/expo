@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI Surface matches the official Jetpack Compose [Surface](https://developer.android.com/develop/ui/compose/components/surfaces) API and provides a container that applies Material Design surface styling including color, elevation, and content color.
+Expo UI Surface matches the official Jetpack Compose [Surface](https://developer.android.com/develop/ui/compose/designsystems/material3) API and provides a container that applies Material Design surface styling including color, elevation, and content color.
 
 ## Installation
 
@@ -75,6 +75,30 @@ export default function SurfaceCustomColorsExample() {
         tonalElevation={2}
         modifiers={[paddingAll(16)]}>
         <Text color="#FFFFFF">Custom colored surface</Text>
+      </Surface>
+    </Host>
+  );
+}
+```
+
+### Surface with shape and border
+
+Use the `shape` prop to clip content and `border` to draw a stroke around the surface.
+
+```tsx SurfaceShapeBorderExample.tsx
+import { Host, Surface, Shape, Text } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function SurfaceShapeBorderExample() {
+  return (
+    <Host matchContents>
+      <Surface
+        shape={Shape.RoundedCorner({
+          cornerRadii: { topStart: 16, topEnd: 16, bottomStart: 16, bottomEnd: 16 },
+        })}
+        border={{ width: 2, color: '#6200EE' }}
+        modifiers={[paddingAll(16)]}>
+        <Text>Rounded surface with border</Text>
       </Surface>
     </Host>
   );

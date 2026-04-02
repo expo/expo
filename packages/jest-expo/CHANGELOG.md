@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Add `@react-native/babel-preset` to ignored transform patterns, since it's part of the transformer pipeline ([#44152](https://github.com/expo/expo/pull/44152) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.9 — 2026-02-25
 

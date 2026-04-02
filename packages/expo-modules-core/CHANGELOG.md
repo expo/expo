@@ -4,15 +4,42 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- [iOS] Added `Equatable` conformance to `Either` type. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - `NativeArrayBuffer` and `JavaScriptArrayBuffer` arguments now also accept typed arrays. ([#43082](https://github.com/expo/expo/pull/43082) by [@barthap](https://github.com/barthap))
+- [Android] Use the `RuntimeScheduler` to schedule tasks on the JS thread. ([#43481](https://github.com/expo/expo/pull/43481) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add `nativeModule` look up function and `bundleURL` to AppContext. ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Added a polyfill for Swift [`Mutex`](https://developer.apple.com/documentation/synchronization/mutex) for older platform versions. ([#44122](https://github.com/expo/expo/pull/44122) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed view lookup in bridgeless mode by using `ExpoHostWrapper` instead of `reactBridge.uiManager`. ([#44375](https://github.com/expo/expo/pull/44375) by [@vonovak](https://github.com/vonovak))
+- [Android] Added support for CSS `rgb(...)` and `rgba(...)` color strings when converting JS color values to `android.graphics.Color`. ([#44023](https://github.com/expo/expo/pull/44023) by [@dileepapeiris](https://github.com/dileepapeiris))
+- [Android] Fixed Compose view clipping that caused Material ripple effects to be cut off (e.g., Switch thumb ripple). ([#43656](https://github.com/expo/expo/pull/43656) by [@vonovak](https://github.com/vonovak))
 - [iOS] Fix memory leak due to retain cycle in SwiftUI views. ([#43468](https://github.com/expo/expo/pull/43468) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed compilation issues due to missing fallthrough case in `EXJavaScriptSerializable`. ([#43634](https://github.com/expo/expo/pull/43634) by [@tjzel](https://github.com/tjzel))
+- [iOS] Fix crash that can occur when reloading JavaScript bundle due to object deallocating off the JavaScript thread. ([#43937](https://github.com/expo/expo/pull/43937) by [@cltnschlosser](https://github.com/cltnschlosser))
+- [iOS] Fixed `PersistentFileLog.readEntries` race condition by serializing reads on the dispatch queue. ([#43958](https://github.com/expo/expo/pull/43958) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Make access to module registry thread safe. ([#44042](https://github.com/expo/expo/pull/44042) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed runtime setup crashing in the old bridge module. ([#44121](https://github.com/expo/expo/pull/44121) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Resolve `react-native-worklets` from existing podspec, falling back to peer resolution ([#44232](https://github.com/expo/expo/pull/44232) by [@kitten](https://github.com/kitten))
+- [iOS] Fixed adding SwiftUI views to tabs BottomAccessory. ([#44247](https://github.com/expo/expo/pull/44247) by [@t0maboro](https://github.com/t0maboro))
 
 ### 💡 Others
+
+- [iOS] Extracted ObjC protocols (`EXAppContextProtocol`, `EXReactDelegateProtocol`, `EXAppContextFactoryRegistry`) for cross-xcframework module boundaries. Refactored legacy module registry, Fabric view headers, JSI layer, and podspecs for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add `ViewWrapper` protocol and `AnyContentViewProvider` for type-erased access to wrapped SwiftUI views. ([#43669](https://github.com/expo/expo/pull/43669) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Decoupled Worklets integration into separate podspec. ([#42971](https://github.com/expo/expo/pull/42971) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Improved conversions of returned arrays and dictionaries with mixed element types. ([#42641](https://github.com/expo/expo/pull/42641) by [@barthap](https://github.com/barthap))
+- [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added broader colors support to convertibles. ([#44041](https://github.com/expo/expo/pull/44041) by [@kudo](https://github.com/kudo))
+- [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
+- [iOS] Remove legacy `EXNativeModulesProxy` ([#42672](https://github.com/expo/expo/pull/42672) by [@tsapeta](https://github.com/tsapeta))
+- Exclude ExpoModulesMacros.swift from SPM prebuild ([#44354](https://github.com/expo/expo/pull/44354) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Remove legacy `ExpoBridgeModule` ([#44351](https://github.com/expo/expo/pull/44351) by [@tsapeta](https://github.com/tsapeta))
 
 ## 55.0.12 — 2026-02-25
 
@@ -47,6 +74,10 @@ _This version does not introduce any user-facing changes._
 
 - Removed needless warning when `NativeModulesProxy` is absent. ([#43020](https://github.com/expo/expo/pull/43020) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Removed some unused code. ([#42949](https://github.com/expo/expo/pull/42949) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.8 — 2026-02-08
 

@@ -1,4 +1,5 @@
 import { requireNativeViewManager } from 'expo-modules-core';
+import type { JSX } from 'react';
 import { processColor } from 'react-native';
 
 import { NativeSymbolViewProps, SymbolViewProps } from './SymbolModule.types';
@@ -6,7 +7,7 @@ import { NativeSymbolViewProps, SymbolViewProps } from './SymbolModule.types';
 const NativeView: React.ComponentType<NativeSymbolViewProps> =
   requireNativeViewManager('SymbolModule');
 
-export function SymbolView(props: SymbolViewProps) {
+export function SymbolView(props: SymbolViewProps): JSX.Element {
   if (!NativeView) {
     return <>{props.fallback}</>;
   }

@@ -379,3 +379,134 @@ it('works with tabs', () => {
   expect(screen).toHavePathname('/protected');
   expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
 });
+
+describe('routes without /index suffix', () => {
+  describe('Protected', () => {
+    it('should protect dynamic routes without explicit /index suffix', () => {
+      let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
+
+      renderRouter(
+        {
+          _layout: function Layout() {
+            useStateResult = useState(false);
+            return (
+              <Stack id={undefined}>
+                <Stack.Protected guard={useStateResult[0]}>
+                  <Stack.Screen name="otp/[flow]" />
+                </Stack.Protected>
+              </Stack>
+            );
+          },
+          index: () => <Text testID="index">index</Text>,
+          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+        },
+        { initialUrl: '/otp/signin' }
+      );
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen).toHavePathname('/');
+
+      act(() => {
+        useStateResult[1](true);
+      });
+
+      act(() => router.replace('/otp/signin'));
+
+      expect(screen.getByTestId('otp')).toBeVisible();
+      expect(screen).toHavePathname('/otp/signin');
+    });
+
+    it('should protect routes when _layout exists alongside index', () => {
+      let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
+
+      renderRouter(
+        {
+          _layout: function Layout() {
+            useStateResult = useState(false);
+            return (
+              <Stack id={undefined}>
+                <Stack.Protected guard={useStateResult[0]}>
+                  <Stack.Screen name="otp/[flow]" />
+                </Stack.Protected>
+              </Stack>
+            );
+          },
+          index: () => <Text testID="index">index</Text>,
+          'otp/[flow]/_layout': () => <Stack />,
+          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+        },
+        { initialUrl: '/otp/signin' }
+      );
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen).toHavePathname('/');
+
+      act(() => {
+        useStateResult[1](true);
+      });
+
+      act(() => router.replace('/otp/signin'));
+
+      expect(screen.getByTestId('otp')).toBeVisible();
+      expect(screen).toHavePathname('/otp/signin');
+    });
+
+    it('should protect routes when _layout exists without index', () => {
+      let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
+
+      renderRouter(
+        {
+          _layout: function Layout() {
+            useStateResult = useState(false);
+            return (
+              <Stack id={undefined}>
+                <Stack.Protected guard={useStateResult[0]}>
+                  <Stack.Screen name="otp/[flow]" />
+                </Stack.Protected>
+              </Stack>
+            );
+          },
+          index: () => <Text testID="index">index</Text>,
+          'otp/[flow]/_layout': () => <Stack />,
+          'otp/[flow]/step1': () => <Text testID="step1">Step 1</Text>,
+        },
+        { initialUrl: '/otp/signin/step1' }
+      );
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen).toHavePathname('/');
+
+      act(() => {
+        useStateResult[1](true);
+      });
+
+      act(() => router.replace('/otp/signin/step1'));
+
+      expect(screen.getByTestId('step1')).toBeVisible();
+      expect(screen).toHavePathname('/otp/signin/step1');
+    });
+
+    it('should throw when both name="otp/[flow]" and name="otp/[flow]/index" are used', () => {
+      expect(() =>
+        renderRouter(
+          {
+            _layout: function Layout() {
+              const [guard] = useState(false);
+              return (
+                <Stack id={undefined}>
+                  <Stack.Protected guard={guard}>
+                    <Stack.Screen name="otp/[flow]" />
+                    <Stack.Screen name="otp/[flow]/index" />
+                  </Stack.Protected>
+                </Stack>
+              );
+            },
+            index: () => <Text testID="index">index</Text>,
+            'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+          },
+          { initialUrl: '/otp/signin' }
+        )
+      ).toThrow('Screen names must be unique');
+    });
+  });
+});

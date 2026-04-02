@@ -43,8 +43,7 @@ const resolveBuildConfigIos = (options) => {
         derivedDataPath,
         device,
         simulator,
-        hermesFrameworkPath,
-        scheme,
+        scheme: resolveScheme(options),
         workspace: resolveWorkspace(options),
     };
 };

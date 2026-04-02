@@ -5,6 +5,7 @@ description: Learn how to set up and use pre-packaged jobs in EAS Workflows.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 
 Pre-packaged jobs are ready-to-use workflow jobs that help you automate common tasks like building, submitting, and testing your app. They provide a standardized way to handle these operations without having to write custom job configurations from scratch. This guide covers the available pre-packaged jobs and how to use them in your workflows.
 
@@ -297,6 +298,14 @@ jobs:
 #### Environment variables
 
 You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter               | Type    | Description                                                                                                                                               |
+| ----------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| unstable_skip_cng_check | boolean | Optional. Whether to skip the check for [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) compatibility. Defaults to `false`. |
 
 #### Outputs
 
@@ -833,6 +842,7 @@ jobs:
       maestro_version: string # optional - defaults to latest
       android_system_image_package: string # optional
       device_identifier: string | { android: string, ios: string } # optional
+      output_format: string # optional - defaults to junit
 ```
 
 #### Parameters
@@ -849,7 +859,7 @@ You can pass the following parameters into the `params` list:
 | include_tags                 | string or string[]                                    | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
 | exclude_tags                 | string or string[]                                    | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
 | maestro_version              | string                                                | Optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.                                                                                                                                                                                                                                                                                                                                  |
-| output_format                | string                                                | Optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.                                                                                                                                                                                                                                                                                                             |
+| output_format                | string                                                | Optional. Maestro test report format. Defaults to `junit`. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.                                                                                                                                                                                                                                                                                        |
 | android_system_image_package | string                                                | Optional. Android Emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note that newer images require more computing resources, for which you may want to use large runners.                                                 |
 | device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
 | skip_build_check             | boolean                                               | Optional. Skip validation of the build (whether an iOS build is a simulator build). Defaults to false.                                                                                                                                                                                                                                                                                                                                |
@@ -1657,6 +1667,8 @@ jobs:
 
 ### Common questions
 
+<FAQ>
+
 <Collapsible summary="When to use and when not to use repack?">
 
 Repack job is suitable for the following use cases:
@@ -1671,6 +1683,8 @@ Repack job is not suitable for the following use cases:
 
 </Collapsible>
 
+</FAQ>
+
 #### Parameters
 
 You can pass the following parameters into the `params` list:
@@ -1680,6 +1694,7 @@ You can pass the following parameters into the `params` list:
 | build_id            | string  | Required. The source build ID of the build to repack.                                                                                       |
 | profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
 | embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
+| js_bundle_only      | boolean | Optional. Whether to only repack the JavaScript bundle. Defaults to false, which means the entire app metadata will be updated.             |
 | message             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                               |
 | repack_version      | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                     |
 

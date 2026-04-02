@@ -3,6 +3,24 @@ import path from 'node:path';
 
 export const OUTPUT_DIRECTORY_NAME = 'public';
 export const BUILD_OUTPUT_DIR = 'out';
+export const DOCS_BASE_URL = 'https://docs.expo.dev';
+
+const LLMS_FILES = [
+  { filename: 'llms.txt', description: 'A list of all available documentation files' },
+  {
+    filename: 'llms-full.txt',
+    description:
+      'Complete documentation for Expo, including Expo Router, Expo Modules API, development process, and more',
+  },
+  {
+    filename: 'llms-eas.txt',
+    description: 'Complete documentation for Expo Application Services (EAS)',
+  },
+  {
+    filename: 'llms-sdk.txt',
+    description: 'Complete documentation for the latest Expo SDK',
+  },
+];
 
 const CONTENT_SEPARATOR = '\n\n---\n\n';
 
@@ -100,11 +118,26 @@ export function readUniqueMarkdownContent(markdownPaths, { warnOnMissing = false
   return contentChunks;
 }
 
-export function composeMarkdownDocument({ title, description, contentChunks }) {
+export function generateCrossLinksSection(currentFilename) {
+  const otherFiles = LLMS_FILES.filter(f => f.filename !== currentFilename);
+  let section = '## Other Expo documentation files\n\n';
+
+  for (const file of otherFiles) {
+    section += `- [/${file.filename}](${DOCS_BASE_URL}/${file.filename}): ${file.description}\n`;
+  }
+
+  return section;
+}
+
+export function composeMarkdownDocument({ title, description, contentChunks, currentFilename }) {
   let fullContent = `# ${title}\n\n${description}\n\n`;
 
   for (const content of contentChunks) {
     fullContent += content + CONTENT_SEPARATOR;
+  }
+
+  if (currentFilename) {
+    fullContent += generateCrossLinksSection(currentFilename);
   }
 
   return fullContent;

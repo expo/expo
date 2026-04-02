@@ -7,6 +7,7 @@ export type TextInputRole = 'default' | 'cancel' | 'destructive';
 export type TextInputRef = {
     setText: (newText: string) => Promise<void>;
 };
+export type TextInputVariant = 'filled' | 'outlined';
 export type TextInputProps = {
     /**
      * Can be used for imperatively setting text on the TextInput component.
@@ -16,6 +17,14 @@ export type TextInputProps = {
      * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, change the key prop if you need to change the text value.
      */
     defaultValue?: string;
+    /**
+     * The visual style of the text input field.
+     * - `filled` - A text field with a filled background (default).
+     * - `outlined` - A text field with a transparent background and a border outline.
+     * @default filled
+     * @platform android
+     */
+    variant?: TextInputVariant;
     /**
      * A callback triggered when user types in text into the TextInput.
      */
@@ -67,15 +76,30 @@ export type TextInputProps = {
      */
     autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
     /**
-     * Modifiers for the component.
+     * Placeholder text shown inside the field when empty and focused.
+     *
      */
+    placeholder?: string;
+    /** Modifiers for the component */
     modifiers?: ExpoModifier[];
+    /**
+     * Slot children (e.g. `TextInput.Label`).
+     */
+    children?: React.ReactNode;
 };
-export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
+export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText' | 'children'> & {
+    children?: React.ReactNode;
+} & ViewEvent<'onValueChanged', {
     value: string;
 }>;
 /**
  * Renders a `TextInput` component.
  */
-export declare function TextInput(props: TextInputProps): import("react").JSX.Element;
+declare function TextInputComponent(props: TextInputProps): import("react").JSX.Element;
+declare namespace TextInputComponent {
+    var Label: (props: {
+        children: React.ReactNode;
+    }) => import("react").JSX.Element;
+}
+export { TextInputComponent as TextInput };
 //# sourceMappingURL=index.d.ts.map

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added optional `codeSignIdentity` parameter to `setProvisioningProfileForPbxproj` to allow callers to specify the code signing identity instead of always using `"iPhone Distribution"`. ([#43986](https://github.com/expo/expo/pull/43986) by [@qwertey6](https://github.com/qwertey6))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

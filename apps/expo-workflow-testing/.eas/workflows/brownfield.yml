@@ -1,0 +1,230 @@
+name: E2E Test Suite for Expo Brownfield
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/brownfield.yml
+      - packages/expo-brownfield/**
+      - packages/expo/**
+      - packages/expo-router/**
+      - packages/expo-dev-menu/**
+      - packages/expo-manifests/**
+      - packages/expo-updates/**
+      - pnpm-lock.yaml
+      - '!**/*.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
+  pull_request:
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/brownfield.yml
+      - packages/expo-brownfield/**
+      - packages/expo/**
+      - packages/expo-router/**
+      - packages/expo-dev-menu/**
+      - packages/expo-manifests/**
+      - packages/expo-updates/**
+      - pnpm-lock.yaml
+      - '!**/*.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
+
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
+jobs:
+  detect_platform:
+    name: Detect platform changes
+    runs_on: linux-medium
+    image: latest
+    outputs:
+      should_run_ios: ${{ steps.detect.outputs.should_run_ios }}
+      should_run_android: ${{ steps.detect.outputs.should_run_android }}
+    steps:
+      - uses: eas/checkout
+      - id: detect
+        outputs: [should_run_ios, should_run_android]
+        run: |
+          bash scripts/detect-platform-change.sh \
+            "${{ github.event_name }}" \
+            "${{ github.event.repository.full_name }}" \
+            "${{ github.event.pull_request.number }}" \
+            '^(apps/brownfield-tester/expo-app/|packages/(expo-brownfield|expo|expo-router|expo-dev-menu|expo-manifests|expo-updates|expo-modules-core)/|apps/expo-workflow-testing/\.eas/workflows/brownfield\.yml)'
+
+  compilation_test_android:
+    name: Compilation Test (Android)
+    needs: [detect_platform]
+    if: ${{ needs.detect_platform.outputs.should_run_android == 'true' }}
+    runs_on: linux-large
+    image: latest
+    env:
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"'
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Build Expo CLI
+        run: pnpm --filter @expo/cli prepare
+      - name: Build and publish Android brownfield artifacts
+        working_directory: ../brownfield-tester/expo-app
+        run: |
+          npx expo prebuild --clean -p android
+          npx expo-brownfield build:android --repo MavenLocal --all --verbose
+
+  compilation_test_ios:
+    name: Compilation Test (iOS)
+    needs: [detect_platform]
+    if: ${{ needs.detect_platform.outputs.should_run_ios == 'true' }}
+    runs_on: macos-large
+    image: latest
+    env:
+      EAS_USE_CACHE: '1'
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - uses: eas/restore_build_cache
+        with:
+          platform: ios
+      - name: Build Expo CLI
+        run: pnpm --filter @expo/cli prepare
+      - name: Build iOS artifacts (Release)
+        working_directory: ../brownfield-tester/expo-app
+        run: |
+          npx expo prebuild --clean --platform ios
+          npx expo-brownfield build:ios --release --verbose
+      - name: Build iOS artifacts (Debug)
+        working_directory: ../brownfield-tester/expo-app
+        run: npx expo-brownfield build:ios --debug --verbose
+      - uses: eas/save_build_cache
+        with:
+          platform: ios
+
+  notify_ios_failure:
+    if: ${{ failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
+    name: Notify iOS failure on Slack
+    after: [compilation_test_ios]
+    steps:
+      - run: |
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.commit_message }}"
+          BRANCH="${{ github.ref_name }}"
+          WF_ID="${{ workflow.id }}"
+          ACTOR="${{ github.triggering_actor }}"
+
+          if [ -z "$COMMIT_MESSAGE" ] || [ "$COMMIT_MESSAGE" = "undefined" ]; then
+            COMMIT_DISPLAY="${COMMIT_SHA:0:7}"
+          else
+            COMMIT_DISPLAY=$(echo "$COMMIT_MESSAGE" | head -n1)
+          fi
+
+          PAYLOAD=$(jq -n \
+            --arg text "🚨 Brownfield Compilation Test (iOS) failed" \
+            --arg wf_id "$WF_ID" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg commit_display "$COMMIT_DISPLAY" \
+            --arg actor "$ACTOR" \
+            '{
+              text: $text,
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "*Brownfield Compilation Test (iOS) failed*"
+                  }
+                },
+                {
+                  type: "section",
+                  fields: [
+                    {
+                      type: "mrkdwn",
+                      text: ("*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/expo-workflow-testing/workflows/" + $wf_id + "|" + $wf_id + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Branch:*\n<https://github.com/expo/expo/tree/" + $branch + "|" + $branch + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Commit:*\n<https://github.com/expo/expo/commit/" + $commit_sha + "|" + $commit_display + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Triggered by:*\n" + $actor)
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          curl -X POST "$SLACK_WEBHOOK_IOS" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"
+
+  notify_android_failure:
+    if: ${{ failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
+    name: Notify Android failure on Slack
+    after: [compilation_test_android]
+    steps:
+      - run: |
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.commit_message }}"
+          BRANCH="${{ github.ref_name }}"
+          WF_ID="${{ workflow.id }}"
+          ACTOR="${{ github.triggering_actor }}"
+
+          if [ -z "$COMMIT_MESSAGE" ] || [ "$COMMIT_MESSAGE" = "undefined" ]; then
+            COMMIT_DISPLAY="${COMMIT_SHA:0:7}"
+          else
+            COMMIT_DISPLAY=$(echo "$COMMIT_MESSAGE" | head -n1)
+          fi
+
+          PAYLOAD=$(jq -n \
+            --arg text "🚨 Brownfield Compilation Test (Android) failed" \
+            --arg wf_id "$WF_ID" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg commit_display "$COMMIT_DISPLAY" \
+            --arg actor "$ACTOR" \
+            '{
+              text: $text,
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "*Brownfield Compilation Test (Android) failed*"
+                  }
+                },
+                {
+                  type: "section",
+                  fields: [
+                    {
+                      type: "mrkdwn",
+                      text: ("*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/expo-workflow-testing/workflows/" + $wf_id + "|" + $wf_id + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Branch:*\n<https://github.com/expo/expo/tree/" + $branch + "|" + $branch + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Commit:*\n<https://github.com/expo/expo/commit/" + $commit_sha + "|" + $commit_display + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Triggered by:*\n" + $actor)
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          curl -X POST "$SLACK_WEBHOOK_ANDROID" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"

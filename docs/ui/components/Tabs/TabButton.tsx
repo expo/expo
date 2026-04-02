@@ -46,7 +46,7 @@ export function TabButton({
           className={mergeClasses(
             'absolute inset-0 rounded-md border',
             theme === 'default' && 'border-secondary bg-screen dark:bg-hover dark:drop-shadow-none',
-            theme === 'secondary' && 'border-button-secondary bg-default shadow-xs dark:bg-subtle'
+            theme === 'secondary' && 'border-button-secondary bg-default dark:bg-subtle shadow-xs'
           )}
         />
       )}
@@ -67,7 +67,7 @@ export function TabButton({
           <LabelElement
             theme={active ? 'default' : 'tertiary'}
             weight="medium"
-            className="transition-colors max-md-gutters:text-sm max-sm-gutters:text-xs">
+            className="max-md-gutters:text-sm max-sm-gutters:text-xs transition-colors">
             {label}
           </LabelElement>
           {rightSlot}

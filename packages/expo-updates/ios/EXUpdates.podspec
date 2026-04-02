@@ -14,7 +14,8 @@ use_dev_client = false
 begin
   # No dev client if we are using native debug
   if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
-    use_dev_client = `node --print "require('expo-dev-client/package.json').version" 2>/dev/null`.length > 0
+    project_root = ENV['PROJECT_ROOT'] || Pod::Config.instance.installation_root.to_s
+    use_dev_client = File.dirname(`node --print "require.resolve('expo-dev-client/package.json', { paths: ['#{__dir__}', '#{project_root}'] })"`).length > 0
   end
 rescue
   use_dev_client = false
@@ -29,9 +30,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
-    :tvos => '15.1',
-    :osx => '11.0'
+    :ios => '16.4',
+    :tvos => '16.4',
+    :osx => '13.4'
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }

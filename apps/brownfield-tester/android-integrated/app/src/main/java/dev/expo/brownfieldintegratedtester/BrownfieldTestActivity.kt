@@ -2,6 +2,7 @@ package dev.expo.brownfieldintegratedtester
 
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import expo.modules.brownfield.BrownfieldMessage
 import expo.modules.brownfield.BrownfieldMessaging
@@ -26,7 +27,7 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
         BrownfieldMessaging.addListener { message ->
           Log.i("BrownfieldTestActivity", "Message from React Native received:")
           Log.i("BrownfieldTestActivity", message.toString())
-          showToast(message)
+          showDialog(message)
         }
 
     setupStateListeners()
@@ -59,34 +60,42 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
   private fun setupStateListeners() {
     stateListeners +=
         mutableListOf<Removable?>(
-            BrownfieldState.subscribe("number") { number ->
-              val cast = number as? Double
-              if (cast != null) {
-                Log.i("BrownfieldState", cast.toString())
+            BrownfieldState.subscribe("number") { number: Double ->
+              Log.i("BrownfieldState", number.toString())
+              if (number == 1.0) {
+                BrownfieldState.set("number", 2.0)
               }
             },
             BrownfieldState.subscribe("string") { string ->
               val cast = string as? String
               if (cast != null) {
                 Log.i("BrownfieldState", cast)
+                if (cast == "exex") {
+                  BrownfieldState.set("string", cast + "po")
+                }
               }
             },
-            BrownfieldState.subscribe("boolean") { bool ->
-              val cast = bool as? Boolean
-              if (cast != null) {
-                Log.i("BrownfieldState", cast.toString())
-              }
+            BrownfieldState.subscribe("boolean") { bool: Boolean ->
+              Log.i("BrownfieldState", bool.toString())
             },
             BrownfieldState.subscribe("array") { array ->
-              val cast = array as? MutableList<*>
+              val cast = array as? MutableList<Any?>
               if (cast != null) {
                 Log.i("BrownfieldState", cast.toString())
+                if (cast.size == 3) {
+                  cast.addAll(listOf<Any?>(
+                    mapOf("a" to "b"),
+                    2.34,
+                  ))
+                  BrownfieldState.set("array", cast)
+                }
               }
             },
-            BrownfieldState.subscribe("object") { obj ->
-              val cast = obj as? MutableMap<*, *>
-              if (cast != null) {
-                Log.i("BrownfieldState", cast.toString())
+            BrownfieldState.subscribe("object") { obj: MutableMap<String, Any?> ->
+              Log.i("BrownfieldState", obj.toString())
+              if (!obj.containsKey("d") && obj.containsKey("a")) {
+                obj["d"] = listOf(mapOf("e" to "f"))
+                BrownfieldState.set("object", obj)
               }
             },
         )
@@ -97,12 +106,20 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
     messageTimer = null
   }
 
-  private fun showToast(message: BrownfieldMessage) {
+  private fun showDialog(message: BrownfieldMessage) {
     val sender = message["sender"] as? String
     val nested = message["source"] as? Map<*, *>
     val platform = nested?.get("platform") as? String
     if (sender != null && platform != null) {
-      Toast.makeText(this, "$platform($sender)", Toast.LENGTH_LONG).show()
+      runOnUiThread {
+        AlertDialog.Builder(this)
+            .setTitle("Message Received") // Optional: give it a title
+            .setMessage("$platform($sender)")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss() // Closes the dialog when clicked
+            }
+            .show()
+      }
     }
   }
 

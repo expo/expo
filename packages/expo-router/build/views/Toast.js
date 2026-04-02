@@ -7,10 +7,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CODE_FONT = void 0;
 exports.ToastWrapper = ToastWrapper;
 exports.Toast = Toast;
-const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const bottom_tabs_1 = require("../react-navigation/bottom-tabs");
 exports.CODE_FONT = react_native_1.Platform.select({
     default: 'Courier',
     ios: 'Courier New',

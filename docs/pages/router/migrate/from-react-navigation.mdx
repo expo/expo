@@ -201,11 +201,11 @@ Instead, migrate `navigation` to the `useRouter` hook.
 
 <DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-router-hook.diff" />
 
-Similarly, migrate from the `route` prop to the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook.
+Similarly, migrate from the `route` prop to the [`useLocalSearchParams`](/versions/latest/sdk/router/#uselocalsearchparams) hook.
 
 <DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-local-search-params.diff" />
 
-To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-object/#navigate), import the `navigation` prop from [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
+To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-object/#navigate), import the `navigation` prop from [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook.
 
 <DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-navigation-hook.diff" />
 
@@ -277,11 +277,11 @@ Use `useRootNavigationState()`.
 
 #### `getCurrentRoute`
 
-Unlike React Navigation, Expo Router can reliably represent any route with a string. Use the [`usePathname()`](/router/reference/hooks/#usepathname) or [`useSegments()`](/router/reference/hooks/#usesegments) hooks to identify the current route.
+Unlike React Navigation, Expo Router can reliably represent any route with a string. Use the [`usePathname()`](/versions/latest/sdk/router/#usepathname) or [`useSegments()`](/versions/latest/sdk/router/#usesegments) hooks to identify the current route.
 
 #### `getCurrentOptions`
 
-Use the [`useLocalSearchParams()`](/router/reference/hooks/#uselocalsearchparams) hook to get the current route's query parameters.
+Use the [`useLocalSearchParams()`](/versions/latest/sdk/router/#uselocalsearchparams) hook to get the current route's query parameters.
 
 #### `addListener`
 
@@ -289,11 +289,11 @@ The following events can be migrated:
 
 #### `state`
 
-Use the [`usePathname()`](/router/reference/hooks/#usepathname) or [`useSegments()`](/router/reference/hooks/#usesegments) hooks to identify the current route. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
+Use the [`usePathname()`](/versions/latest/sdk/router/#usepathname) or [`useSegments()`](/versions/latest/sdk/router/#usesegments) hooks to identify the current route. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
 
 #### `options`
 
-Use the [`useLocalSearchParams()`](/router/reference/hooks/#uselocalsearchparams) hook to get the current route's query parameters. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
+Use the [`useLocalSearchParams()`](/versions/latest/sdk/router/#uselocalsearchparams) hook to get the current route's query parameters. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
 
 ### props
 
@@ -307,7 +307,7 @@ Avoid using this pattern in favor of deep linking (for example, a user opens you
 
 #### `onStateChange`
 
-Use the [`usePathname()`](/router/reference/hooks/#usepathname), [`useSegments()`](/router/reference/hooks/#usesegments), and [`useGlobalSearchParams()`](/router/reference/hooks/#useglobalsearchparams) hooks to identify the current route state. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
+Use the [`usePathname()`](/versions/latest/sdk/router/#usepathname), [`useSegments()`](/versions/latest/sdk/router/#usesegments), and [`useGlobalSearchParams()`](/versions/latest/sdk/router/#useglobalsearchparams) hooks to identify the current route state. Use in conjunction with `useEffect(() => {}, [...])` to observe changes.
 
 - If you're attempting to track screen changes, follow the [Screen Tracking guide](/router/reference/screen-tracking/).
 - React Navigation recommends avoiding [`onStateChange`](https://reactnavigation.org/docs/navigation-container/#onstatechange).
@@ -434,7 +434,7 @@ Expo Router wraps `expo-splash-screen` and adds special handling to ensure it's 
 
 ### Navigation state observation
 
-If you're observing the navigation state directly, migrate to the [`usePathname`](/router/reference/hooks/#usepathname), [`useSegments`](/router/reference/hooks/#usesegments), and [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hooks.
+If you're observing the navigation state directly, migrate to the [`usePathname`](/versions/latest/sdk/router/#usepathname), [`useSegments`](/versions/latest/sdk/router/#usesegments), and [`useGlobalSearchParams`](/versions/latest/sdk/router/#useglobalsearchparams) hooks.
 
 ### Pass params to nested screens
 
@@ -457,7 +457,7 @@ In React Navigation, you can use the `initialRouteName` property of the linking 
 
 ### Reset navigation state
 
-You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/router/reference/hooks/#usenavigation) hook from Expo Router to access the `navigation` prop.
+You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook from Expo Router to access the `navigation` prop.
 
 In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `@react-navigation/native`. The object specified in the `reset` action replaces the existing navigation state with the new one.
 

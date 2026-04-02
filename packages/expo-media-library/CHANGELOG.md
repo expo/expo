@@ -4,13 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- [next][iOS] Fixed `Query.limit(0)` returning all assets instead of an empty array ([#44245](https://github.com/expo/expo/pull/44245) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add getPermissionsAsync ([#44244](https://github.com/expo/expo/pull/44244) by [@Wenszel](https://github.com/Wenszel))
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- [next][iOS] Added support to add or remove assets from Favorites smart album ([#43598](https://github.com/expo/expo/pull/43598) by [@awaisanjumx2](https://github.com/awaisanjumx2))
 - [iOS] Added support to add or remove assets to Favorites smart album ([#43459](https://github.com/expo/expo/pull/43459) by [@awaisanjumx2](https://github.com/awaisanjumx2))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.9 — 2026-02-25
 
@@ -74,7 +84,7 @@ _This version does not introduce any user-facing changes._
 - [next] Add documentation ([#39754](https://github.com/expo/expo/pull/39754) by [@Wenszel](https://github.com/Wenszel))
 - mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
-- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+- [Android] Add `android:maxSdkVersion` annotation to `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
 
 ## 18.2.1 - 2025-12-05
 

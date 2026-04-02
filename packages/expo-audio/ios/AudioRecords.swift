@@ -63,6 +63,7 @@ struct Metadata: Record {
 struct LockScreenOptions: Record {
   @Field var showSeekForward: Bool = false
   @Field var showSeekBackward: Bool = false
+  @Field var isLiveStream: Bool = false
 }
 
 enum BitRateStrategy: String, Enumerable {

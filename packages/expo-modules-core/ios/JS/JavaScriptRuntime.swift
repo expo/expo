@@ -62,6 +62,31 @@ public extension JavaScriptRuntime {
   }
 
   /**
+   Creates an optimized synchronous function that uses type encoding to bypass JavaScriptValue boxing
+   for primitive types (Double, Int, String, Bool).
+
+   - Parameters:
+     - name: The function name
+     - typeEncoding: Objective-C type encoding string (e.g., "d@?dd" for (Double, Double) -> Double)
+     - argsCount: Number of arguments
+     - body: The Swift closure to execute
+   - Returns: A JavaScript function object
+   - Note: This is a low-level API. The ObjC layer will create the appropriate typed block based on the type encoding.
+   */
+  func createSyncFunction(_ name: String, typeEncoding: String, argsCount: Int, body: AnyObject) -> JavaScriptObject {
+    return __createSyncFunction(name, typeEncoding: typeEncoding, argsCount: argsCount, body: body)
+  }
+
+  /**
+   Creates an optimized asynchronous function that uses type encoding to bypass JavaScriptValue boxing
+   for primitive types (Double, Int, String, Bool). The block is dispatched to a background queue
+   and the result is returned as a JS Promise.
+   */
+  func createAsyncFunction(_ name: String, typeEncoding: String, argsCount: Int, body: AnyObject) -> JavaScriptObject {
+    return __createAsyncFunction(name, typeEncoding: typeEncoding, argsCount: argsCount, body: body)
+  }
+
+  /**
    Schedules a block to be executed with granted synchronized access to the JS runtime.
    */
   func schedule(priority: SchedulerPriority = .normal, @_implicitSelfCapture _ closure: @JavaScriptActor @escaping () -> Void) {

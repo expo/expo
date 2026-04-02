@@ -23,8 +23,6 @@ This library allows you to request age range information from your app users to 
 
 We strongly recommend testing the functionality on a real device, as simulator runtimes may not work as expected.
 
-On Android, the Play Age Signals API (beta) may throw an exception until January 1, 2026, as per the [official Android documentation](https://developer.android.com/google/play/age-signals/use-age-signals-api#integrate-play-age-signals). From January 1, the API will return live responses.
-
 ## Installation
 
 <APIInstallSection />
@@ -33,7 +31,7 @@ On Android, the Play Age Signals API (beta) may throw an exception until January
 
 ### Setup iOS project
 
-To use the age range API on iOS, you need to build your project with Xcode 26.0 or later. The `com.apple.developer.declared-age-range` entitlement is required. Add it to your [app config](./config/app/) file:
+To use the age range API on iOS, you need to build your project with Xcode 26.0 or later. The `com.apple.developer.declared-age-range` entitlement is required. Add it to your [app config](../config/app/) file:
 
 ```json app.json
 {

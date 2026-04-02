@@ -66,7 +66,7 @@ export const mdComponents: Components = {
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE className="break-words !inline py-0">{children}</CODE>
+      <CODE className="inline! py-0 break-words">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,
@@ -248,7 +248,7 @@ export const resolveTypeName = (
       return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
     } else if (elementType?.declaration) {
       if (type === 'array') {
-        const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};
+        const { parameters, type: paramType } = elementType.declaration.indexSignatures?.[0] ?? {};
         if (parameters && paramType) {
           return (
             <>
@@ -425,7 +425,7 @@ export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div className="flex items-start gap-1">
       <span className={STYLES_SECONDARY}>Default:</span>
-      <CODE className="!text-[90%]">{defaultValue}</CODE>
+      <CODE className="text-[90!%]">{defaultValue}</CODE>
     </div>
   ) : undefined;
 

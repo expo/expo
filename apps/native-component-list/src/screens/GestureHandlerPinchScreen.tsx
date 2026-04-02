@@ -151,7 +151,7 @@ export default GestureHandlerPinchScreen;
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'black',
     overflow: 'hidden',
     alignItems: 'center',

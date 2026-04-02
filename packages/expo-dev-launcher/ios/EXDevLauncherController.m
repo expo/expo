@@ -475,7 +475,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 #if RCT_DEV
     // Connect to the websocket, ignore downloaded update bundles
     if (![bundleUrl.scheme isEqualToString:@"file"]) {
-      [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+      //[[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+      RCTLogWarn(@"bundle scheme is file - unable to connect to sharedPackageConnection from EXDevLauncherController.");
     }
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
@@ -504,6 +505,36 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
       window.backgroundColor = backgroundColor;
     }
   });
+}
+
+- (void)loadLocalBundleOnSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+{
+  NSNumber *embeddedBundleEnabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"EXDevClientEmbeddedBundle"];
+  if (![embeddedBundleEnabled boolValue]) {
+    if (onError) {
+      onError([NSError errorWithDomain:@"DevelopmentClient"
+                                  code:1
+                              userInfo:@{NSLocalizedDescriptionKey: @"Embedded bundle loading is not enabled. Set 'embeddedBundle: true' in your dev-client plugin config."}]);
+    }
+    return;
+  }
+
+  NSURL *bundleUrl = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  if (!bundleUrl) {
+    if (onError) {
+      onError([NSError errorWithDomain:@"DevelopmentClient"
+                                  code:1
+                              userInfo:@{NSLocalizedDescriptionKey: @"No embedded bundle found. Make sure a 'main.jsbundle' is included in the app bundle."}]);
+    }
+    return;
+  }
+
+  RCTDevLoadingViewSetEnabled(NO);
+  [self _initAppWithUrl:bundleUrl bundleUrl:bundleUrl manifest:nil];
+  self.manifestURL = nil;
+  if (onSuccess) {
+    onSuccess();
+  }
 }
 
 - (BOOL)isAppRunning
@@ -625,7 +656,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:self.appBridge];
 
   if (self.manifest != nil) {
     [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];
@@ -637,8 +667,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 - (void)invalidateDevMenuApp
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:nil];
   [manager updateCurrentManifest:nil manifestURL:nil];
+  [manager setAppContext:nil];
 }
 
 -(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants

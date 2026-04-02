@@ -1,6 +1,7 @@
 export * from './Widgets';
 export {
   ExpoWidgetsEvents,
+  LevelOfDetail,
   LiveActivityComponent,
   LiveActivityDismissalPolicy,
   LiveActivityEvents,
@@ -8,7 +9,8 @@ export {
   PushTokenEvent,
   PushToStartTokenEvent,
   UserInteractionEvent,
-  WidgetBase,
+  WidgetEnvironment,
   WidgetFamily,
+  WidgetRenderingMode,
   WidgetTimelineEntry,
 } from './Widgets.types';

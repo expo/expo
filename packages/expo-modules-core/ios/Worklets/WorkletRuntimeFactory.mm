@@ -1,17 +1,17 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/WorkletRuntimeFactory.h>
+#import <ExpoModulesWorklets/WorkletRuntimeFactory.h>
 
 #if WORKLETS_ENABLED
 
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
-#include <ExpoModulesCore/WorkletJSCallInvoker.h>
+#include <ExpoModulesWorklets/WorkletJSCallInvoker.h>
 
 #endif
 
 @implementation WorkletRuntimeFactory
 
-+ (nonnull EXWorkletRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(nullable void *)pointer
++ (nonnull EXWorkletRuntime *)createWorkletRuntimeFromPointer:(nullable void *)pointer
 {
 #if WORKLETS_ENABLED
   jsi::Runtime* jsRuntime = reinterpret_cast<jsi::Runtime *>(pointer);

@@ -49,7 +49,7 @@ Firebase JS SDK does not support all services for mobile apps. Some of these ser
 
 ### Install and initialize Firebase JS SDK
 
-> **warning** Expo SDK 53 and later only support `firebase@^12.0.0`. Versions before this version cause ES module resolution errors.
+> **warning** Expo SDK only supports `firebase@12.0.0` and above. Versions before this version cause ES module resolution errors.
 
 <Step label="1">
 #### Install the SDK
@@ -157,7 +157,7 @@ Each Firebase service is available as a module that can be added as a dependency
 
 You can consider using React Native Firebase when:
 
-- Your app requires access to Firebase services not supported by the Firebase JS SDK, such as [Dynamic Links](https://rnfirebase.io/dynamic-links/usage), [Crashlytics](https://rnfirebase.io/crashlytics/usage), and so on.
+- Your app requires access to Firebase services not supported by the Firebase JS SDK, such as [Dynamic Links](https://rnfirebase.io/screencasts/dynamic-links-overview), [Crashlytics](https://rnfirebase.io/crashlytics/usage), and so on.
   For more information on the additional capabilities offered by the native SDK's, see [React Native Firebase documentation](https://rnfirebase.io/faqs-and-tips#why-react-native-firebase-over-firebase-js-sdk).
 - You want to use native SDKs in your app.
 - You have a bare React Native app with React Native Firebase already configured but are migrating to use Expo SDK.
@@ -181,7 +181,7 @@ React Native Firebase requires [custom native code and cannot be used with Expo 
 Since React Native Firebase requires custom native code, you need to install the `expo-dev-client` library in your project.
 It allows configuring any native code required by React Native Firebase using [Config plugins](/config-plugins/introduction/) without writing native code yourself.
 
-To install [`expo-dev-client`](/development/getting-started/#installing--expo-dev-client--in-your-project), run the following command in your project:
+To install [`expo-dev-client`](/develop/development-builds/create-a-build/), run the following command in your project:
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 </Step>

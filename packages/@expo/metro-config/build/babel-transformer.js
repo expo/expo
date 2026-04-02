@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const node_assert_1 = __importDefault(require("node:assert"));
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
+const getPkgVersion_1 = require("./utils/getPkgVersion");
+const transitiveResolveFrom_1 = require("./utils/transitiveResolveFrom");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
     return String(value) === 'true';
@@ -25,6 +27,19 @@ function memoize(fn) {
 const memoizeWarning = memoize((message) => {
     debug(message);
 });
+function getIsHermesV1(projectRoot) {
+    const hermesCompilerPackageJsonPath = (0, transitiveResolveFrom_1.transitiveResolveFrom)(projectRoot, [
+        'react-native/package.json',
+        'hermes-compiler/package.json',
+    ]);
+    if (!hermesCompilerPackageJsonPath) {
+        return true;
+    }
+    const hermesVersion = (0, getPkgVersion_1.getPkgVersionFromPath)(hermesCompilerPackageJsonPath);
+    // hermes-compiler versions 250829098.x are Hermes V1, while 0.1.x are legacy Hermes.
+    const isLegacyHermes = typeof hermesVersion === 'string' && hermesVersion.startsWith('0.1');
+    return !isLegacyHermes;
+}
 function getBabelCaller({ filename, options, }) {
     const isNodeModule = filename.includes('node_modules');
     const isReactServer = options.customTransformOptions?.environment === 'react-server';
@@ -62,6 +77,8 @@ function getBabelCaller({ filename, options, }) {
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: stringOrUndefined(options.customTransformOptions?.engine),
+        // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
+        isHermesV1: getIsHermesV1(options.projectRoot),
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
         isNodeModule,
@@ -141,7 +158,15 @@ plugins, }) => {
         return { ast: result.ast, metadata: result.metadata };
     }
     finally {
-        if (OLD_BABEL_ENV) {
+        // Restore the old process.env.BABEL_ENV
+        if (OLD_BABEL_ENV != null) {
+            // We have to treat this as a special case because writing undefined to
+            // an environment variable coerces it to the string 'undefined'. To
+            // unset it, we must delete it.
+            // See https://github.com/facebook/metro/pull/446
+            delete process.env.BABEL_ENV;
+        }
+        else {
             process.env.BABEL_ENV = OLD_BABEL_ENV;
         }
     }

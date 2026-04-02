@@ -72,10 +72,10 @@ export const Footer = ({
             <LinkBase
               href={previousPage.href}
               className={mergeClasses(
-                'flex w-full items-center gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
+                'border-default flex w-full items-center gap-3 rounded-md border border-solid px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
-              <ArrowLeftIcon className="shrink-0 text-icon-secondary" />
+              <ArrowLeftIcon className="text-icon-secondary shrink-0" />
               <div>
                 <FOOTNOTE theme="secondary">
                   Previous{previousPage.section ? ` (${previousPage.section})` : ''}
@@ -90,7 +90,7 @@ export const Footer = ({
             <LinkBase
               href={nextPage.href}
               className={mergeClasses(
-                'flex w-full items-center justify-between gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
+                'border-default flex w-full items-center justify-between gap-3 rounded-md border border-solid px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
               <div>
@@ -99,7 +99,7 @@ export const Footer = ({
                 </FOOTNOTE>
                 <P weight="medium">{nextPage.sidebarTitle ?? nextPage.name}</P>
               </div>
-              <ArrowRightIcon className="shrink-0 text-icon-secondary" />
+              <ArrowRightIcon className="text-icon-secondary shrink-0" />
             </LinkBase>
           ) : (
             <div className="w-full" />
@@ -110,7 +110,7 @@ export const Footer = ({
         className={mergeClasses('flex flex-row justify-between gap-4', 'max-md-gutters:flex-col')}>
         <div>
           <PageVote />
-          <UL className="!ml-0 !mt-0 flex-1 !list-none">
+          <UL className="mt-0! ml-0! flex-1 list-none!">
             <ShareFeedbackLink pathname={router?.pathname} />
             {title && <ForumsLink isAPIPage={isAPIPage} title={title} />}
             {title && isAPIPage && (
@@ -119,12 +119,12 @@ export const Footer = ({
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
             <LlmsTxtLink fullVersionHref={llmsFullHref} fullVersionLabel={llmsFullLabel} />
             {!isDev && shouldShowModifiedDate && modificationDate && (
-              <LI className="!mt-4 !text-2xs !text-quaternary">
+              <LI className="text-2xs! text-quaternary! mt-4!">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
               </LI>
             )}
             {isDev && shouldShowModifiedDate && (
-              <LI className="!mt-4 !text-2xs !text-quaternary">
+              <LI className="text-2xs! text-quaternary! mt-4!">
                 Last updated data is not available in dev mode
               </LI>
             )}

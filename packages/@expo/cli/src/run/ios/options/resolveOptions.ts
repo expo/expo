@@ -3,7 +3,7 @@ import { getConfig } from '@expo/config';
 import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
 import { resolveXcodeProject } from './resolveXcodeProject';
-import { isOSType } from '../../../start/platforms/ios/simctl';
+import { OSType, isOSType } from '../../../start/platforms/ios/simctl';
 import { resolveBuildCacheProvider } from '../../../utils/build-cache-providers';
 import { profile } from '../../../utils/profile';
 import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
@@ -20,7 +20,7 @@ export async function resolveOptionsAsync(
 
   // Resolve the scheme before the device so we can filter devices based on
   // whichever scheme is selected (i.e. don't present TV devices if the scheme cannot be run on a TV).
-  const { osType, name: scheme } = await resolveNativeSchemePropsAsync(
+  const { osType: schemeOsType, name: scheme } = await resolveNativeSchemePropsAsync(
     projectRoot,
     options,
     xcodeProject
@@ -29,17 +29,22 @@ export async function resolveOptionsAsync(
   // Use the configuration or `Debug` if none is provided.
   const configuration = options.configuration || 'Debug';
 
+  // Normalize the osType from the scheme, defaulting to iOS if not recognized.
+  const osType: OSType = isOSType(schemeOsType) ? (schemeOsType as OSType) : 'iOS';
+
   // Resolve the device based on the provided device id or prompt
   // from a list of devices (connected or simulated) that are filtered by the scheme.
+  // Returns null when device is "generic" for build-only workflows.
   const device = await profile(resolveDeviceAsync)(options.device, {
-    // It's unclear if there's any value to asserting that we haven't hardcoded the os type in the CLI.
-    osType: isOSType(osType) ? osType : undefined,
+    osType,
     xcodeProject,
     scheme,
     configuration,
   });
 
-  const isSimulator = isSimulatorDevice(device);
+  // Generic builds (device=null) are always simulator builds.
+  // Otherwise check if the resolved device is a simulator.
+  const isSimulator = device ? isSimulatorDevice(device) : true;
 
   const projectConfig = getConfig(projectRoot);
   const buildCacheProvider = await resolveBuildCacheProvider(
@@ -60,6 +65,7 @@ export async function resolveOptionsAsync(
     isSimulator,
     xcodeProject,
     device,
+    osType,
     configuration,
     shouldSkipInitialBundling,
     buildCache: options.buildCache !== false,

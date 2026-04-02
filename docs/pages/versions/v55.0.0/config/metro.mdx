@@ -117,6 +117,8 @@ import 'emoji-mart/css/emoji-mart.css';
 - On native, all global stylesheets are automatically ignored.
 - Hot reloading is supported for global stylesheets, simply save the file and the changes will be applied.
 
+> **warning** When using Expo Router, always import global CSS in your root **\_layout.tsx**. Expo Router traverses the dependency graph starting from the root layout. Importing CSS in a nested layout causes **node_modules** CSS to load before your custom styles, which can break your intended style order.
+
 ### CSS Modules
 
 > **warning** CSS Modules for native are under development and currently only work on web.
@@ -215,7 +217,7 @@ Then, ensure [CSS is setup](#css) in the **metro.config.js** file.
 
 ### Tailwind
 
-> **info** Standard Tailwind CSS supports only web platform. For universal support, use a library such as [NativeWind](https://www.nativewind.dev/), which allows creating styled React Native components with Tailwind CSS.
+> **info** Standard Tailwind CSS supports only web platform. For universal support, use a library such as [NativeWind](https://www.nativewind.dev/) or [Uniwind](https://uniwind.dev/), which allow creating styled React Native components with Tailwind CSS.
 
 <BoxLink
   title="Tailwind CSS"
@@ -635,9 +637,9 @@ Using a variable in the `Worker` constructor is not supported for bundling. To i
 
 ## Bare workflow setup
 
-> This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
+> This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/more/glossary-of-terms/#prebuild) for fully automated setup.
 
-Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
+Projects that don't use [Expo Prebuild](/more/glossary-of-terms/#prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
 
 {/* If this isn't done, then features like [aliases](/guides/typescript/#path-aliases-optional), [absolute imports](/guides/typescript/#absolute-imports-optional), asset hashing, and more will not work. */}
 

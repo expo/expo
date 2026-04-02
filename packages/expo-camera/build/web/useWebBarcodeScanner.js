@@ -50,9 +50,7 @@ export function useWebBarcodeScanner(video, { isEnabled, barcodeTypes, interval,
             }
         }
         catch (error) {
-            if (onError) {
-                onError({ nativeEvent: error });
-            }
+            onError?.({ nativeEvent: error });
         }
         finally {
             if (interval === 0) {
@@ -74,11 +72,7 @@ export function useWebBarcodeScanner(video, { isEnabled, barcodeTypes, interval,
             isRunning.current = true;
             scanAsync();
         }
-        return () => {
-            if (isEnabled) {
-                stop();
-            }
-        };
+        return stop;
     }, [isEnabled]);
 }
 //# sourceMappingURL=useWebBarcodeScanner.js.map

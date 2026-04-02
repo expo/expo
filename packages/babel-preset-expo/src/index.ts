@@ -9,13 +9,13 @@ import {
   getInlineEnvVarsEnabled,
   getIsDev,
   getIsFastRefreshEnabled,
+  getIsHermesV1,
   getIsNodeModule,
   getIsProd,
   getIsReactServer,
   getIsServer,
   getReactCompiler,
   getMetroSourceType,
-  hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
@@ -27,6 +27,7 @@ import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plu
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
+import { hasModule, resolveModule } from './utils/resolveModule';
 import { widgetsPlugin } from './widgets-plugin';
 
 type BabelPresetExpoPlatformOptions = {
@@ -70,11 +71,11 @@ type BabelPresetExpoPlatformOptions = {
   /**
    * Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`.
    *
-   * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+   * > **Note:** If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
    *
-   * @default `false` on client and `true` on server.
+   * @default `true`
    */
-  unstable_transformImportMeta?: boolean;
+  transformImportMeta?: boolean;
 };
 
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
@@ -107,6 +108,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
+  const isHermesV1 = api.caller(getIsHermesV1);
   const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
@@ -174,6 +176,19 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     platformOptions['react-compiler'] !== false
   ) {
     const reactCompilerOptions = platformOptions['react-compiler'];
+    const reactCompilerOptOutDirectives = new Set([
+      // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
+      'widget',
+      // We need to manually include the default opt-out directives, since they get overridden
+      // See:
+      // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L48C1-L48C77
+      // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L69-L86
+      'use no memo',
+      'use no forget',
+      // Add the user's override but preserve defaults above to avoid the pitfall of them being removed
+      ...(reactCompilerOptions?.customOptOutDirectives ?? []),
+    ]);
+
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
@@ -185,8 +200,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         panicThreshold: isDev ? undefined : 'NONE',
         ...reactCompilerOptions,
         // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
-        // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
-        customOptOutDirectives: [...(reactCompilerOptions?.customOptOutDirectives ?? []), 'widget'],
+        customOptOutDirectives: [...reactCompilerOptOutDirectives],
       },
     ]);
   }
@@ -204,9 +218,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
     // should retain the same behavior since it's hard to debug the differences.
-    extraPlugins.push(
-      require('@babel/plugin-transform-parameters'),
+    if (!isHermesV1) {
+      extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    }
 
+    extraPlugins.push(
       // Add support for class static blocks.
       [require('@babel/plugin-transform-class-static-block'), { loose: true }]
     );
@@ -273,9 +289,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(expoInlineManifestPlugin);
   }
 
-  if (hasModule('expo-router')) {
+  if (hasModule(api, 'expo-router/package.json')) {
     extraPlugins.push(expoRouterBabelPlugin);
-
     // Process `loader()` functions for client, loader and server bundles (excluding RSC)
     // - Client bundles: Remove loader exports, they run on server only
     // - Server bundles: Keep loader exports (needed for SSG)
@@ -302,7 +317,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // Transform widget component JSX expressions to capture widget components for native-side evaluation.
   // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
-  if (hasModule('expo-widgets')) {
+  if (hasModule(api, 'expo-widgets/package.json')) {
     extraPlugins.push(widgetsPlugin);
   }
 
@@ -323,7 +338,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
   }
 
-  const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
+  const polyfillImportMeta = platformOptions.transformImportMeta !== false;
 
   extraPlugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
 
@@ -433,15 +448,25 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         platformOptions.decorators ?? { legacy: true },
       ],
 
-      // Automatically add `react-native-reanimated/plugin` when the package is installed.
-      // TODO: Move to be a customTransformOption.
-      hasModule('react-native-worklets') &&
-      platformOptions.worklets !== false &&
-      platformOptions.reanimated !== false
-        ? [require('react-native-worklets/plugin')]
-        : hasModule('react-native-reanimated') &&
-          platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
-    ].filter(Boolean) as PluginItem[],
+      // Automatically add worklets or reanimated plugin when package is installed.
+      ((): PluginItem | null => {
+        if (platformOptions.worklets !== false && platformOptions.reanimated !== false) {
+          const workletsPlugin = resolveModule(api, 'react-native-worklets/plugin');
+          if (workletsPlugin) {
+            return [require(workletsPlugin)];
+          }
+        }
+
+        if (platformOptions.reanimated !== false) {
+          const reanimatedPlugin = resolveModule(api, 'react-native-reanimated/plugin');
+          if (reanimatedPlugin) {
+            return [require(reanimatedPlugin)];
+          }
+        }
+
+        return null;
+      })(),
+    ].filter((x): x is PluginItem => !!x),
   };
 }
 

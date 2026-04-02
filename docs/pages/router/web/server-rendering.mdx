@@ -5,6 +5,7 @@ isAlpha: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -204,6 +205,8 @@ EAS Hosting supports server rendering out of the box. Export your app and deploy
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="Can I use data loaders with server rendering?">
 
 Yes. Server rendering works with [data loaders](/router/web/data-loaders) to fetch data on the server before rendering.
@@ -227,3 +230,5 @@ Caching is handled at the server or CDN level. Configure your deployment platfor
 Yes. [API routes](/router/web/api-routes/) work independently of the rendering mode. They are always executed on the server.
 
 </Collapsible>
+
+</FAQ>

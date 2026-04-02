@@ -4,11 +4,22 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
 
+- Add explicit secure context error for `web/wa-sqlite/AccessHandlePoolVFS.js` ([#40605](https://github.com/expo/expo/pull/40605) by [@BDav24](https://github.com/BDav24))
+
 ### 💡 Others
+
+- Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))
+- Statement bind params now use native `ArrayBuffer`s for blob columns. ([#42639](https://github.com/expo/expo/pull/42639) by [@barthap](https://github.com/barthap))
+- [Android] Returned blob columns now use native `ArrayBuffer`s. ([#42640](https://github.com/expo/expo/pull/42640) by [@barthap](https://github.com/barthap))
+- [iOS] Returned blob columns now use native `ArrayBuffer`s. ([#42642](https://github.com/expo/expo/pull/42642) by [@barthap](https://github.com/barthap))
 
 ## 55.0.10 — 2026-02-25
 

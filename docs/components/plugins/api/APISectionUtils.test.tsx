@@ -131,16 +131,18 @@ describe('APISectionUtils.resolveTypeName', () => {
               type: 'reflection',
               declaration: {
                 name: '__type',
-                indexSignature: {
-                  name: '__index',
-                  parameters: [
-                    {
-                      name: 'column',
-                      type: { type: 'intrinsic', name: 'string' },
-                    },
-                  ],
-                  type: { type: 'intrinsic', name: 'any' },
-                },
+                indexSignatures: [
+                  {
+                    name: '__index',
+                    parameters: [
+                      {
+                        name: 'column',
+                        type: { type: 'intrinsic', name: 'string' },
+                      },
+                    ],
+                    type: { type: 'intrinsic', name: 'any' },
+                  },
+                ],
               },
             },
           },

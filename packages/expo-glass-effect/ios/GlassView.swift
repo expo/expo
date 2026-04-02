@@ -14,6 +14,7 @@ public final class GlassView: ExpoView {
   private var glassStyle: GlassStyle?
   private var glassTintColor: UIColor?
   private var glassIsInteractive: Bool?
+  private var glassColorScheme: GlassColorScheme?
 
   private var radius: CGFloat?
   private var bottomLeftRadius: CGFloat?
@@ -53,6 +54,10 @@ public final class GlassView: ExpoView {
     super.layoutSubviews()
     if !isMounted {
       isMounted = true
+      // Clear the stale effect before re-applying so UIKit fully tears down
+      // the old UIGlassEffect, otherwise re-assigning does not render GlassView correctly. 
+      // https://github.com/expo/expo/issues/43732
+      glassEffectView.effect = UIVisualEffect()
       updateEffect()
     }
   }
@@ -216,12 +221,31 @@ public final class GlassView: ExpoView {
   func setInteractive(_ interactive: Bool) {
     if interactive != glassIsInteractive {
       glassIsInteractive = interactive
+      // Changing isInteractive requires cleaning of previous GlassEffect
+      glassEffectView.effect = UIVisualEffect()
       updateEffect()
     }
   }
 
   func setColorScheme(_ colorScheme: GlassColorScheme) {
-    overrideUserInterfaceStyle = colorScheme.toUIUserInterfaceStyle()
+    if glassColorScheme != colorScheme {
+      glassColorScheme = colorScheme
+      updateEffect()
+    }
+  }
+  
+  public override func didMoveToWindow() {
+    super.didMoveToWindow()
+    if (self.window == nil) {
+      isMounted = false
+    } else {
+      // https://github.com/expo/expo/issues/43732
+      // UIGlassEffect must be created during layoutSubviews
+      // creating it in didMoveToWindow does not render correctly.
+      // layoutSubviews may not fire on re-entry if the geometry hasn't changed,
+      // so explicitly request a layout pass to re-apply the glass effect.
+      setNeedsLayout()
+    }
   }
 
   private func updateEffect() {
@@ -236,6 +260,9 @@ public final class GlassView: ExpoView {
       if let effect = glassEffect as? UIGlassEffect {
         effect.tintColor = glassTintColor
         effect.isInteractive = glassIsInteractive ?? false
+        if let colorScheme = glassColorScheme {
+          glassEffectView.overrideUserInterfaceStyle = colorScheme.toUIUserInterfaceStyle()
+        }
         // we need to set the effect again or it has no effect!
         glassEffectView.effect = effect
         updateBorderRadius()

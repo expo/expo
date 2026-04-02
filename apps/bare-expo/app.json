@@ -92,8 +92,21 @@
           }
         }
       ],
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": true
+        }
+      ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
-    ]
+    ],
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": [
+          "../native-component-list/src/screens/inlineModules/inlineModulesExamples"
+        ]
+      }
+    }
   }
 }

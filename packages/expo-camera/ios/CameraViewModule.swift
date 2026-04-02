@@ -30,18 +30,12 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       )
     }
 
-    Property("isModernBarcodeScannerAvailable") { () -> Bool in
-      if #available(iOS 16.0, *) {
-        return true
-      }
-      return false
+    Property("isModernBarcodeScannerAvailable") {
+      if #available(iOS 16.0, *) { true } else { false }
     }
 
-    Property("toggleRecordingAsyncAvailable") { () -> Bool in
-      if #available(iOS 18.0, *) {
-        return true
-      }
-      return false
+    Property("toggleRecordingAsyncAvailable") {
+      if #available(iOS 18.0, *) { true } else { false }
     }
 
     AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
@@ -256,9 +250,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       AsyncFunction("getAvailablePictureSizes") {
-        return PictureSize.allCases.map {
-          $0.rawValue
-        }
+        return PictureSize.allCases.map { $0.rawValue }
       }
 
       AsyncFunction("getAvailableLenses") { view in
@@ -267,16 +259,20 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
       AsyncFunction("takePictureRef") { (view, options: TakePictureOptions) -> PictureRef in
         #if targetEnvironment(simulator)
-        return try takePictureRefForSimulator(self.appContext, view, options)
-        #else
-        return try await view.takePictureRef(options: options)
+        if AVCaptureDevice.default(for: .video) == nil {
+          return try takePictureRefForSimulator(self.appContext, view, options)
+        }
         #endif
+        return try await view.takePictureRef(options: options)
       }
 
       AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
-        #if targetEnvironment(simulator) // simulator
-        try takePictureForSimulator(self.appContext, view, options, promise)
-        #else
+        #if targetEnvironment(simulator)
+        if AVCaptureDevice.default(for: .video) == nil {
+          try takePictureForSimulator(self.appContext, view, options, promise)
+          return
+        }
+        #endif
         Task {
           do {
             let result = try await view.takePicturePromise(options: options)
@@ -285,17 +281,17 @@ public final class CameraViewModule: Module, ScannerResultHandler {
             promise.reject(error)
           }
         }
-        #endif
       }
 
       AsyncFunction("record") { (view, options: CameraRecordingOptions, promise: Promise) in
         #if targetEnvironment(simulator)
-        throw Exceptions.SimulatorNotSupported()
-        #else
+        if AVCaptureDevice.default(for: .video) == nil {
+          throw Exceptions.SimulatorNotSupported()
+        }
+        #endif
         Task {
           await view.record(options: options, promise: promise)
         }
-        #endif
       }
 
       AsyncFunction("toggleRecording") { view in
@@ -308,10 +304,11 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
       AsyncFunction("stopRecording") { view in
         #if targetEnvironment(simulator)
-        throw Exceptions.SimulatorNotSupported()
-        #else
-        view.stopRecording()
+        if AVCaptureDevice.default(for: .video) == nil {
+          throw Exceptions.SimulatorNotSupported()
+        }
         #endif
+        view.stopRecording()
       }
     }
 
@@ -358,7 +355,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -367,7 +364,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -376,7 +373,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -385,7 +382,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }

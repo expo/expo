@@ -15,6 +15,7 @@ import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
+import { widgetAccentedRenderingMode, widgetURL } from './widgets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -167,7 +168,7 @@ export const onLongPressGesture = (handler: () => void, minimumDuration?: number
 /**
  * Adds an onAppear modifier that calls a function when the view appears.
  * @param handler - Function to call when the view appears.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onlongpressgesture(minimumduration:perform:onpressingchanged:)).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onappear(perform:)).
  */
 export const onAppear = (handler: () => void) =>
   createModifierWithEventListener('onAppear', handler);
@@ -239,6 +240,24 @@ export const scaleEffect = (scale: number | { x: number; y: number }) =>
 export const rotationEffect = (angle: number) => createModifier('rotationEffect', { angle });
 
 /**
+ * Applies a 3D rotation transformation.
+ * @param params - The rotation parameters: `angle` (in degrees), `axis` (x, y, z), and `perspective`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotation3deffect(_:axis:anchor:anchorz:perspective:)).
+ */
+export const rotation3DEffect = (params: {
+  angle: number;
+  axis?: { x?: number; y?: number; z?: number };
+  perspective?: number;
+}) =>
+  createModifier('rotation3DEffect', {
+    angle: params.angle,
+    axisX: params.axis?.x ?? 0,
+    axisY: params.axis?.y ?? 0,
+    axisZ: params.axis?.z ?? 0,
+    perspective: params.perspective ?? 1,
+  });
+
+/**
  * Applies an offset (translation) to a view.
  * @param params - The offset parameters: `x` and `y`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/offset(x:y:)).
@@ -261,13 +280,14 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  *
  * @param style - The foreground style configuration. Can be:
  *
- * **Simple Color (string):**
+ * **Simple Color (`Color`):**
  * - Hex colors: `'#FF0000'`, `'#RGB'`, `'#RRGGBB'`, `'#AARRGGBB'`
  * - Named colors: `'red'`, `'blue'`, `'green'`, and so on.
+ * - React Native color values like `PlatformColor('label')`
  *
  * **Explicit Color Object:**
  * ```ts
- * { type: 'color', color: '#FF0000' }
+ * { type: 'color', color: PlatformColor('label') }
  * ```
  *
  * **Hierarchical Styles (Semantic):**
@@ -284,7 +304,7 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  * ```ts
  * {
  *   type: 'linearGradient',
- *   colors: ['#FF0000', '#0000FF', '#00FF00'],
+ *   colors: [PlatformColor('systemPink'), '#0000FF', '#00FF00'],
  *   startPoint: { x: 0, y: 0 },    // Top-left
  *   endPoint: { x: 1, y: 1 }       // Bottom-right
  * }
@@ -294,7 +314,7 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  * ```ts
  * {
  *   type: 'radialGradient',
- *   colors: ['#FF0000', '#0000FF'],
+ *   colors: [PlatformColor('systemPink'), '#0000FF'],
  *   center: { x: 0.5, y: 0.5 },    // Center of view
  *   startRadius: 0,                // Inner radius
  *   endRadius: 100                 // Outer radius
@@ -305,7 +325,7 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  * ```ts
  * {
  *   type: 'angularGradient',
- *   colors: ['#FF0000', '#00FF00', '#0000FF'],
+ *   colors: [PlatformColor('systemPink'), '#00FF00', '#0000FF'],
  *   center: { x: 0.5, y: 0.5 }     // Rotation center
  * }
  * ```
@@ -337,32 +357,32 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  */
 export const foregroundStyle = (
   style:
-    | string // Simple color (hex string, color name, or Apple system color name)
-    | { type: 'color'; color: string }
+    | Color // Simple color (hex string, color name, or React Native ColorValue)
+    | { type: 'color'; color: Color }
     | {
         type: 'hierarchical';
         style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
       }
     | {
         type: 'linearGradient';
-        colors: string[];
+        colors: Color[];
         startPoint: { x: number; y: number };
         endPoint: { x: number; y: number };
       }
     | {
         type: 'radialGradient';
-        colors: string[];
+        colors: Color[];
         center: { x: number; y: number };
         startRadius: number;
         endRadius: number;
       }
     | {
         type: 'angularGradient';
-        colors: string[];
+        colors: Color[];
         center: { x: number; y: number };
       }
 ) => {
-  if (typeof style === 'string') {
+  if (style == null || typeof style !== 'object' || !('type' in style)) {
     return createModifier('foregroundStyle', { styleType: 'color', color: style });
   }
   if (style.type === 'hierarchical') {
@@ -476,7 +496,7 @@ export const grayscale = (amount: number) => createModifier('grayscale', { amoun
 
 /**
  * Sets the button style for button views.
- * @param style - The button style.
+ * @param style - The button style. `'glass'` and `'glassProminent'` are available on iOS 26+ and tvOS 26+ only.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonstyle(_:)).
  */
 export const buttonStyle = (
@@ -548,6 +568,44 @@ export const scrollDismissesKeyboard = (
  */
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
+
+type UnitPointValue =
+  | 'zero'
+  | 'topLeading'
+  | 'top'
+  | 'topTrailing'
+  | 'leading'
+  | 'center'
+  | 'trailing'
+  | 'bottomLeading'
+  | 'bottom'
+  | 'bottomTrailing';
+
+/**
+ * Sets the default anchor point for a scroll view's content.
+ * @param anchor - The anchor point for initial scroll position and content size changes, or `null` to reset.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:)).
+ */
+export const defaultScrollAnchor = (anchor: UnitPointValue | null) =>
+  createModifier('defaultScrollAnchor', { anchor });
+
+/**
+ * Sets the default anchor point for a scroll view for a specific role.
+ * Pass `null` to opt out of a specific role while keeping anchors for other roles.
+ * @param anchor - The anchor point, or `null` to opt out of this role.
+ * @param role - The scroll anchor role: `'initialOffset'`, `'sizeChanges'`, or `'alignment'`.
+ * @platform ios 18.0+
+ * @platform tvos 18.0+
+ * @platform macos 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:for:)).
+ */
+export const defaultScrollAnchorForRole = (
+  anchor: UnitPointValue | null,
+  role: 'initialOffset' | 'sizeChanges' | 'alignment'
+) => createModifier('defaultScrollAnchorForRole', { anchor, role });
 
 /**
  * Disables the move action for a view in a list.
@@ -984,6 +1042,22 @@ export const listStyle = (style: ListStyle) => createModifier('listStyle', { sty
  */
 export const luminanceToAlpha = () => createModifier('luminanceToAlpha', {});
 
+/**
+ * Sets the mode by which SwiftUI resizes an image to fit its space.
+ * @param capInsets - Inset values that indicate a portion of the image that SwiftUI doesn’t resize.
+ * @param resizingMode - The mode by which SwiftUI resizes the image.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/resizable(capinsets:resizingmode:)).
+ */
+export const resizable = (
+  capInsets?: {
+    top?: number;
+    bottom?: number;
+    leading?: number;
+    trailing?: number;
+  },
+  resizingMode?: 'stretch' | 'tile'
+) => createModifier('resizable', { ...capInsets, resizingMode });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -1012,6 +1086,7 @@ export type BuiltInModifier =
   | ReturnType<typeof border>
   | ReturnType<typeof scaleEffect>
   | ReturnType<typeof rotationEffect>
+  | ReturnType<typeof rotation3DEffect>
   | ReturnType<typeof offset>
   | ReturnType<typeof foregroundColor>
   | ReturnType<typeof foregroundStyle>
@@ -1053,6 +1128,8 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof defaultScrollAnchor>
+  | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1083,7 +1160,10 @@ export type BuiltInModifier =
   | ReturnType<typeof progressViewStyle>
   | ReturnType<typeof gaugeStyle>
   | ReturnType<typeof listStyle>
-  | ReturnType<typeof contentTransition>;
+  | ReturnType<typeof contentTransition>
+  | ReturnType<typeof resizable>
+  | ReturnType<typeof widgetAccentedRenderingMode>
+  | ReturnType<typeof widgetURL>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1128,6 +1208,7 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export * from './widgets';
 export type {
   TimingAnimationParams,
   SpringAnimationParams,

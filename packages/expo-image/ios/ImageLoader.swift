@@ -1,12 +1,12 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-import SDWebImage
+internal import SDWebImage
 import ExpoModulesCore
 
 internal final class ImageLoader {
   nonisolated(unsafe) static let shared = ImageLoader()
 
-  lazy var imageManager = SDWebImageManager(
+  let imageManager = SDWebImageManager(
     cache: SDImageCache.shared,
     loader: SDImageLoadersManager.shared
   )
@@ -22,7 +22,7 @@ internal final class ImageLoader {
     }
     context[.imagePreserveAspectRatio] = true
 
-    return try await withCheckedThrowingContinuation { continuation in
+    let image = try await withCheckedThrowingContinuation { continuation in
       imageManager.loadImage(with: source.uri, context: context, progress: nil) { image, _, error, _, _, _ in
         if let image {
           continuation.resume(returning: image)
@@ -31,6 +31,11 @@ internal final class ImageLoader {
         }
       }
     }
+      
+    if let tintColor = options.tintColor {
+      return image.withTintColor(tintColor)
+    }
+    return image
   }
 }
 

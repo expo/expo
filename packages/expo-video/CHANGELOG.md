@@ -4,11 +4,18 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix crash when loading PHAsset url fails ([#43373](https://github.com/expo/expo/pull/43373) by [@fractalbeauty](https://github.com/fractalbeauty))
+- [iOS] Fix crashes when `VideoTrack` properties are non-finite. ([#44108](https://github.com/expo/expo/pull/44108) by [@behenate](https://github.com/behenate))
+- [Android] Fix PiP exiting immediately after auto-entering from fullscreen. ([#44157](https://github.com/expo/expo/pull/44157) by [@behenate](https://github.com/behenate))
+- [Android] Fix broken layout after returning from PiP when auto-enter if off. ([#44163](https://github.com/expo/expo/pull/44163) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
@@ -254,6 +261,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Fix player reporting status `readyToPlay` while a source is being loaded asynchronously. ([#37180](https://github.com/expo/expo/pull/37180) by [@behenate](https://github.com/behenate))
 - [iOS] Fix player going into `loading` status for a single frame when unpausing with a full buffer. ([#37181](https://github.com/expo/expo/pull/37181) by [@behenate](https://github.com/behenate))
 - [iOS] Fix player getting stuck in `loading` state for null sources. ([#37183](https://github.com/expo/expo/pull/37183) by [@behenate](https://github.com/behenate))
+- [iOS] Fix player not setting default audio track for some HLS streams. ([#37395](https://github.com/expo/expo/pull/37395) by [@vitorclelis96](https://github.com/vitorclelis96))
 
 ## 2.1.9 — 2025-05-08
 

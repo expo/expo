@@ -4,9 +4,14 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fix glass effect not rendering correctly after appearance change while view is off-screen. ([#43771](https://github.com/expo/expo/pull/43771) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fix `isInteractive` prop not being dynamically changeable after mount. ([#43771](https://github.com/expo/expo/pull/43771) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

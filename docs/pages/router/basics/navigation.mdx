@@ -70,7 +70,7 @@ export default function Page() {
 }
 ```
 
-By default, Links can only wrap `Text` components. You can use `Pressable` or other components that support `onPress` and `onClick` props inside a link with the `asChild` prop:
+By default, the `Link` component renders its children inside a `<Text>` element. This means non-text children (such as `View`) may have unexpected layout behavior. To have full control over the layout, use the `asChild` prop with a `Pressable` or another component that accepts `onPress`/`onClick` props:
 
 {/* prettier-ignore */}
 ```tsx
@@ -93,7 +93,7 @@ export default function Page() {
 <BoxLink
   title="Link API reference"
   description="Learn the options available when using Links for navigation."
-  href="/versions/latest/sdk/router/#link"
+  href="/versions/latest/sdk/router/link/#link"
   Icon={BookOpen02Icon}
 />
 

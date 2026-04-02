@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJavaScriptSerializable.h>
+#import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
 
 #ifdef __cplusplus
 #if WORKLETS_ENABLED

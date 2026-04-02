@@ -8,7 +8,7 @@ jsEngine: graaljs
 - assertVisible: 'source = Big Buck Bunny'
 - assertVisible: 'isPlaying = false'
 - assertVisible: 'isAtStart = true'
-- assertVisible: 'duration = 596'
+- assertVisible: 'duration = 634'
 - assertVisible: 'currentTime = 0'
 - assertVisible: 'mimeType = video/avc'
 - assertVisible: 'isSupported = true'

@@ -1,6 +1,7 @@
 //  Copyright © 2023 650 Industries. All rights reserved.
 
 // swiftlint:disable no_grouping_extension
+// swiftlint:disable no_fallthrough_only
 
 import Foundation
 import EXUpdatesInterface
@@ -157,12 +158,39 @@ public struct UpdatesStateContext {
   public let downloadProgress: Double
   public let lastCheckForUpdateTime: Date?
   public let sequenceNumber: Int
+  public let downloadStartTime: Date?
+  public let downloadFinishTime: Date?
 
   private var lastCheckForUpdateTimeDateString: String? {
     guard let lastCheckForUpdateTime = lastCheckForUpdateTime else {
       return nil
     }
     return iso8601DateFormatter.string(from: lastCheckForUpdateTime)
+  }
+
+  var nativeInterfaceContext: UpdatesNativeInterfaceStateContext {
+    return UpdatesNativeInterfaceStateContext(
+      isUpdateAvailable: isUpdateAvailable,
+      isUpdatePending: isUpdatePending,
+      isChecking: isChecking,
+      isDownloading: isDownloading,
+      isRestarting: isRestarting,
+      restartCount: restartCount,
+      latestManifest: latestManifest,
+      downloadedManifest: downloadedManifest,
+      rollback: rollback != nil ?
+        UpdatesNativeInterfaceStateContext.Rollback(
+          commitTime: rollback?.commitTime ?? Date.now
+        ) :
+        nil,
+      checkError: checkError,
+      downloadError: downloadError,
+      downloadProgress: downloadProgress,
+      lastCheckForUpdateTime: lastCheckForUpdateTime,
+      sequenceNumber: sequenceNumber,
+      downloadStartTime: downloadStartTime,
+      downloadFinishTime: downloadFinishTime
+    )
   }
 
   var json: [String: Any?] {
@@ -181,7 +209,13 @@ public struct UpdatesStateContext {
       "downloadProgress": self.downloadProgress,
       "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString,
       "rollback": rollback?.json,
-      "sequenceNumber": sequenceNumber
+      "sequenceNumber": sequenceNumber,
+      "downloadStartTime": downloadStartTime != nil
+        ? Int(floor(downloadStartTime?.timeIntervalSince1970 ?? 0.0 * 1000))
+        : nil,
+      "downloadFinishTime": downloadFinishTime != nil
+        ? Int(floor(downloadFinishTime?.timeIntervalSince1970 ?? 0.0 * 1000))
+        : nil
     ] as [String: Any?]
   }
 }
@@ -203,6 +237,8 @@ public extension UpdatesStateContext {
     self.lastCheckForUpdateTime = nil
     self.rollback = nil
     self.sequenceNumber = 0
+    self.downloadStartTime = nil
+    self.downloadFinishTime = nil
   }
 
   // struct copy, lets you overwrite specific variables retaining the value of the rest
@@ -233,6 +269,8 @@ public extension UpdatesStateContext {
     var downloadError: [String: String]?
     var lastCheckForUpdateTime: Date?
     var rollback: UpdatesStateContextRollback?
+    var downloadStartTime: Date?
+    var downloadFinishTime: Date?
 
     fileprivate init(original: UpdatesStateContext) {
       self.isStartupProcedureRunning = original.isStartupProcedureRunning
@@ -249,6 +287,8 @@ public extension UpdatesStateContext {
       self.downloadProgress = original.downloadProgress
       self.lastCheckForUpdateTime = original.lastCheckForUpdateTime
       self.rollback = original.rollback
+      self.downloadStartTime = original.downloadStartTime
+      self.downloadFinishTime = original.downloadFinishTime
     }
 
     fileprivate func toContext(newRestartCount: Int, newSequenceNumber: Int) -> UpdatesStateContext {
@@ -267,7 +307,9 @@ public extension UpdatesStateContext {
         downloadError: downloadError,
         downloadProgress: downloadProgress,
         lastCheckForUpdateTime: lastCheckForUpdateTime,
-        sequenceNumber: newSequenceNumber
+        sequenceNumber: newSequenceNumber,
+        downloadStartTime: downloadStartTime,
+        downloadFinishTime: downloadFinishTime
       )
     }
   }
@@ -444,6 +486,8 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.downloadProgress = 0.0
         $0.isDownloading = true
+        $0.downloadStartTime = Date.now
+        $0.downloadFinishTime = nil
       }
     case let .downloadProgress(progress):
       return context.copyAndIncrementSequenceNumber {
@@ -455,12 +499,16 @@ internal class UpdatesStateMachine {
         $0.downloadError = nil
         $0.isUpdatePending = true
         $0.downloadProgress = 1.0
+        $0.downloadStartTime = nil
+        $0.downloadFinishTime = nil
       }
     case .downloadCompleteWithRollback:
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
         $0.isUpdatePending = true
+        $0.downloadStartTime = nil
+        $0.downloadFinishTime = nil
       }
     case let .downloadCompleteWithUpdate(manifest):
       return context.copyAndIncrementSequenceNumber {
@@ -471,11 +519,14 @@ internal class UpdatesStateMachine {
         $0.rollback = nil
         $0.isUpdatePending = true
         $0.isUpdateAvailable = true
+        $0.downloadFinishTime = Date.now
       }
     case let .downloadError(errorMessage):
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = ["message": errorMessage]
+        $0.downloadStartTime = nil
+        $0.downloadFinishTime = nil
       }
     case .restart:
       return context.copyAndIncrementSequenceNumber {
@@ -525,4 +576,5 @@ internal class UpdatesStateMachine {
   ]
 }
 
+// swiftlint:enable no_fallthrough_only
 // swiftlint:enable no_grouping_extension
