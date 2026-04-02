@@ -28,7 +28,7 @@ data class OTAttribute(
 @Serializable
 data class OTDataPoint(
   val timeUnixNano: Long,
-  val value: Double,
+  val asDouble: Double,
   val attributes: List<OTAttribute>
 )
 
@@ -103,7 +103,7 @@ fun EASMetric.toOTMetric(): OTMetric {
       dataPoints = listOf(
         OTDataPoint(
           timeUnixNano = timestampToDateNS(timestamp),
-          value = value,
+          asDouble = value,
           attributes = listOf(
             OTAttribute.of(
               key = "session.id",
@@ -126,6 +126,7 @@ fun Event.toOTMetadata(easClientId: String): OTMetadata {
       OTAttribute.of("os.version", metadata.deviceOsVersion ?: ""),
       OTAttribute.of("device.model.name", metadata.deviceName ?: ""),
       OTAttribute.of("device.model.identifier", metadata.deviceModel ?: ""),
+      OTAttribute.of("browser.language", metadata.languageTag ?: ""),
       OTAttribute.of("telemetry.sdk.name", "expo-observe"),
       OTAttribute.of("telemetry.sdk.version", metadata.clientVersion ?: ""),
       OTAttribute.of("telemetry.sdk.language", "kotlin"),
@@ -133,6 +134,7 @@ fun Event.toOTMetadata(easClientId: String): OTMetadata {
       OTAttribute.of("expo.app.build_number", metadata.appBuildNumber ?: ""),
       OTAttribute.of("expo.app.update_id", metadata.appUpdateId ?: ""),
       OTAttribute.of("expo.sdk.version", metadata.expoSdkVersion),
+      OTAttribute.of("expo.environment", metadata.environment ?: ""),
       OTAttribute.of("expo.react_native.version", metadata.reactNativeVersion),
       OTAttribute.of("expo.eas_client.id", easClientId)
     )

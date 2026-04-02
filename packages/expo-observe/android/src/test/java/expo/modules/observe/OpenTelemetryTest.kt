@@ -1,7 +1,6 @@
 package expo.modules.observe
 
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -92,7 +91,7 @@ class OpenTelemetryTest {
     assertEquals(1, otMetric.gauge.dataPoints.size)
 
     val dataPoint = otMetric.gauge.dataPoints[0]
-    assertEquals(3.14, dataPoint.value, 0.001)
+    assertEquals(3.14, dataPoint.asDouble, 0.001)
     assertEquals(1, dataPoint.attributes.size)
     assertEquals("session.id", dataPoint.attributes[0].key)
     assertEquals(testSessionId, dataPoint.attributes[0].value.stringValue)
@@ -222,7 +221,7 @@ class OpenTelemetryTest {
     // Resource should have "attributes" array
     val resource = entry["resource"]!!.jsonObject
     val attributes = resource["attributes"]!!.jsonArray
-    assertTrue(attributes.size > 0)
+    assertTrue(attributes.isNotEmpty())
 
     // Each attribute should have "key" and "value" with "stringValue"
     val firstAttr = attributes[0].jsonObject
@@ -286,7 +285,7 @@ class OpenTelemetryTest {
     // DataPoint should have timeUnixNano, value, attributes
     val dp = dataPoints[0].jsonObject
     assertNotNull(dp["timeUnixNano"])
-    assertNotNull(dp["value"])
+    assertNotNull(dp["asDouble"])
     assertNotNull(dp["attributes"])
 
     // Session.id attribute should be present
