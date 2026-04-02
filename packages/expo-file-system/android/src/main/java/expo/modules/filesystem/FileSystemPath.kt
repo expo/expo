@@ -13,7 +13,7 @@ import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.exception.Exceptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
@@ -147,25 +147,25 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
   }
 
-  fun copy(to: FileSystemPath, options: RelocationOptions) {
+  suspend fun copy(to: FileSystemPath, options: RelocationOptions) {
     validateType()
     to.validateType()
     validatePermission(FilePermissionService.Permission.READ)
     to.validatePermission(FilePermissionService.Permission.WRITE)
 
-    runBlocking(Dispatchers.IO) {
+    withContext(Dispatchers.IO) {
       file.copyTo(to.asCopyOrMoveDestination(options.overwrite))
     }
   }
 
-  fun move(to: FileSystemPath, options: RelocationOptions) {
+  suspend fun move(to: FileSystemPath, options: RelocationOptions) {
     validateType()
     to.validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     to.validatePermission(FilePermissionService.Permission.WRITE)
 
     // moveTo returns the URI of where the file was actually moved to
-    val finalUri = runBlocking(Dispatchers.IO) {
+    val finalUri = withContext(Dispatchers.IO) {
       file.moveTo(to.asCopyOrMoveDestination(options.overwrite))
     }
 
