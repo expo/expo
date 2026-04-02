@@ -2,7 +2,6 @@ import { mergeClasses } from '@expo/styleguide';
 import { TabList, TabPanels, Tabs as ReachTabs, TabsProps } from '@reach/tabs';
 import {
   Children,
-  createContext,
   Fragment,
   PropsWithChildren,
   ReactElement,
@@ -13,11 +12,10 @@ import {
   useMemo,
 } from 'react';
 
+import { InsideTabsContext } from './InsideTabsContext';
 import { Tab } from './Tab';
 import { TabButton } from './TabButton';
 import { SharedTabsContext } from './TabsGroup';
-
-export const InsideTabsContext = createContext(false);
 
 type Props = PropsWithChildren<TabsProps> & {
   tabs?: string[];
@@ -84,7 +82,7 @@ const InnerTabs = ({
           <TabButton key={index} active={index === tabIndex} label={title} layoutId={layoutId} />
         ))}
       </TabList>
-      <InsideTabsContext.Provider value={true}>
+      <InsideTabsContext.Provider value>
         <TabPanels
           className={mergeClasses(
             'px-5 py-4',

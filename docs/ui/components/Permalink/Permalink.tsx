@@ -4,7 +4,7 @@ import { Children, isValidElement, useContext, type PropsWithChildren } from 're
 import { AdditionalProps } from '~/common/headingManager';
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink/PermalinkIcon';
-import { InsideTabsContext } from '~/ui/components/Tabs/Tabs';
+import { InsideTabsContext } from '~/ui/components/Tabs/InsideTabsContext';
 
 import { PermalinkBase } from './PermalinkBase';
 
