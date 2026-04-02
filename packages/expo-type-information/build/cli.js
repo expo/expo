@@ -11,7 +11,7 @@ const typeInformation_1 = require("./typeInformation");
 const typescriptGeneration_1 = require("./typescriptGeneration");
 async function main(args) {
     const cli = commander_1.default
-        .version(require('expo-type-information/package.json').version)
+        .version(require('../package.json').version)
         .description('CLI commands for retrieving type information from native files.');
     typeInformationCommand(cli);
     generateModuleTypesCommand(cli);
