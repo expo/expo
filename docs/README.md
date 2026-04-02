@@ -361,8 +361,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Code blocks are a great way to add code snippets to our docs. We leverage the usual code block Markdown syntax, but it's expanded to support code block titles and additional params.
 
-<!-- oxfmt-ignore -->
-
+<!-- prettier-ignore -->
 ````mdx
     {/* For plain code block the syntax is unchanged (but we recommend to always add a title to the snippet): */}
     ```js
@@ -396,8 +395,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 
 Snacks are a great way to add instantly-runnable examples to our docs. The [`SnackInline`](/docs/ui/components/Snippet/blocks/SnackInline.tsx) component can be imported to any markdown file, and used like this:
 
-<!-- oxfmt-ignore -->
-
+<!-- prettier-ignore -->
 ````mdx
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -427,8 +425,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Sometimes it's useful to show multiple ways of doing something, for instance, maybe you'd like to have an example using a React class component, and also an example of a functional component. The `Tabs` plugin is useful for this, and this is how you'd use it in a markdown file:
 
-<!-- oxfmt-ignore -->
-
+<!-- prettier-ignore -->
 ````mdx
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -588,7 +585,9 @@ oxlint handles the majority of lint rules (183 rules). ESLint handles Tailwind c
 
 Please commit any sizeable diffs that are the result of formatting separately to make reviews as easy as possible.
 
-If you have a code block using `/* @info */` highlighting, use `{/* oxfmt-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct. The highlighting annotation will sometimes swallow newlines.
+If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct. The highlighting annotation will sometimes swallow newlines.
+
+> **Note:** Always use `{/* prettier-ignore */}` (not `{/* oxfmt-ignore */}`) to protect fenced code blocks in MDX files. While oxfmt is the formatter, `oxfmt-ignore` does not work for fenced code blocks in MDX. The `prettier-ignore` directive is supported by oxfmt for backward compatibility and correctly prevents formatting of code block content.
 
 ### Use Step for procedural guides
 
