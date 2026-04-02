@@ -281,7 +281,7 @@ class DevLauncherController private constructor(
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
-  fun launchDefaultUriOrNavigateToLauncher(scope: CoroutineScope, defaultLaunchUrl: Uri, activityToBeInvalidated: ReactActivity?) {
+  fun launchDefaultUrlOrNavigateToLauncher(scope: CoroutineScope, defaultLaunchUrl: Uri, activityToBeInvalidated: ReactActivity?) {
     scope.launch{
       try {
         loadApp(defaultLaunchUrl, activityToBeInvalidated)
@@ -313,7 +313,7 @@ class DevLauncherController private constructor(
           // fallback to navigating to the launcher home screen
 
           if (useDefaultLaunchUrlFallback) {
-            launchDefaultUriOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+            launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
             return true
           }
           navigateToLauncher()
@@ -340,12 +340,12 @@ class DevLauncherController private constructor(
       val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
-        launchDefaultUriOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+        launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
         return true
       }
 
       if (useDefaultLaunchUrlFallback) {
-        launchDefaultUriOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+        launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
         return true
       }
       return handleExternalIntent(it)
