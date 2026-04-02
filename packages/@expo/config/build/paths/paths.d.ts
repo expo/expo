@@ -20,7 +20,7 @@ export declare function getMetroWorkspaceGlobs(monorepoRoot: string): string[] |
  * This is useful on Android where the entry point is an absolute path.
  * @deprecated
  */
-export declare function convertEntryPointToRelative(projectRoot: string, absolutePath: string): string;
+export declare function convertEntryPointToRelative(projectRoot: string, absolutePath: string, extname?: string | null): string;
 /**
  * Resolve the entry point relative to either the server or project root.
  * This relative entry path should be used to pass non-absolute paths to Metro,

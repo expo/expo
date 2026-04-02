@@ -347,7 +347,8 @@ export async function createMetroServerAndBundleRequestAsync(
 
   const directBundleOptions = getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
     splitChunks: false,
-    mainModuleName: convertEntryPointToRelative(projectRoot, options.entryFile),
+    // TODO(@kitten): This currently has to match a filename exactly
+    mainModuleName: convertEntryPointToRelative(projectRoot, options.entryFile, null),
     platform: options.platform,
     minify: options.minify,
     mode: options.dev ? 'development' : 'production',
