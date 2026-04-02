@@ -8607,7 +8607,7 @@ __metadata:
     next: "patch:next@npm%3A16.1.6#~/.yarn/patches/next-npm-16.1.6-9fac11317e.patch"
     next-router-mock: "npm:^0.9.13"
     nprogress: "npm:0.2.0"
-    oxfmt: "npm:^0.42.0"
+    oxfmt: "npm:0.42.0"
     oxlint: "npm:^1.57.0"
     oxlint-tsgolint: "npm:^0.17.4"
     path-browserify: "npm:^1.0.1"
@@ -12847,7 +12847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oxfmt@npm:^0.42.0":
+"oxfmt@npm:0.42.0":
   version: 0.42.0
   resolution: "oxfmt@npm:0.42.0"
   dependencies:
