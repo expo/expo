@@ -25,7 +25,7 @@ export function extractMissingDependencyError(errorOutput: string): [string, str
   const results = errorOutput.match(
     /Unable to find a specification for ['"`]([\w-_\d\s]+)['"`] depended upon by ['"`]([\w-_\d\s]+)['"`]/
   );
-  if (results) {
+  if (results != null && results[1] != null && results[2] != null) {
     return [results[1], results[2]];
   }
   return null;
