@@ -1,17 +1,16 @@
 #!/usr/bin/env node
-const { spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 
 const projectPath = path.join(process.cwd(), 'example', 'android');
 
-let result;
 switch (process.platform) {
   case 'darwin':
-    result = spawn('open', ['-a', 'Android Studio', projectPath], { stdio: 'inherit' });
+    spawn('open', ['-a', 'Android Studio', projectPath], { stdio: 'inherit' });
     break;
   case 'linux': {
-    const fs = require('fs');
-    const os = require('os');
     const home = os.homedir();
 
     let studioSh;
@@ -73,7 +72,7 @@ switch (process.platform) {
         process.exit(1);
       }
     }
-    result = spawn(studioSh, [projectPath], { stdio: 'inherit' });
+    spawn(studioSh, [projectPath], { stdio: 'inherit' });
     break;
   }
   case 'win32': {
@@ -88,7 +87,7 @@ switch (process.platform) {
       );
       process.exit(1);
     }
-    result = spawn(studioExe, [projectPath], { stdio: 'inherit' });
+    spawn(studioExe, [projectPath], { stdio: 'inherit' });
     break;
   }
   default:
@@ -96,4 +95,4 @@ switch (process.platform) {
     process.exit(1);
 }
 
-process.exit(result.status ?? 0);
+process.exit(0);

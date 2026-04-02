@@ -10,5 +10,5 @@ if (process.platform !== 'darwin') {
 }
 
 const projectPath = path.join(process.cwd(), 'example', 'ios');
-const result = spawn('xed', [projectPath], { stdio: 'inherit' });
-process.exit(result.status ?? 0);
+spawn('xed', [projectPath], { stdio: 'inherit' });
+process.exit(0);
