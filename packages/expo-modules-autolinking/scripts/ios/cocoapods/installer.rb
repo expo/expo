@@ -35,6 +35,22 @@ module Pod
       # Call original implementation first
       _original_perform_post_install_actions.bind(self).()
 
+      # CocoaPods overrides generate_available_uuid_list to use a fast sequential counter
+      # (Pod::Project#generate_available_uuid_list) that skips collision checks. After
+      # predictabilize_uuids reassigns all UUIDs to deterministic values, the counter resets
+      # and new sequential UUIDs can collide with existing ones, corrupting Pods.xcodeproj.
+      # Fix: replace the sequential generator with collision-safe random UUIDs for any
+      # objects created after predictabilize_uuids has run.
+      # IMPORTANT: This must run before any code that creates new PBX objects.
+      project = self.pods_project
+      existing_uuids = project.objects_by_uuid.keys.to_set
+      project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
+        new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
+        uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
+        @generated_uuids += uniques
+        @available_uuids += uniques
+      end
+
       # Next we'll perform an Expo workaround for Codegen in React Native where it uses the wrong output path for
       # the generated files. This can be remove when the following PR is merged and released upstream:
       # https://github.com/facebook/react-native/pull/54066
@@ -107,21 +123,6 @@ module Pod
         end
       else
         Pod::UI.puts "[Expo] ".yellow + "ReactCodegen target not found in pods project"
-      end
-
-      # CocoaPods overrides generate_available_uuid_list to use a fast sequential counter
-      # (Pod::Project#generate_available_uuid_list) that skips collision checks. After
-      # predictabilize_uuids reassigns all UUIDs to deterministic values, the counter resets
-      # and new sequential UUIDs can collide with existing ones, corrupting Pods.xcodeproj.
-      # Fix: replace the sequential generator with collision-safe random UUIDs for any
-      # objects created after predictabilize_uuids has run.
-      project = self.pods_project
-      existing_uuids = project.objects_by_uuid.keys.to_set
-      project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
-        new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
-        uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
-        @generated_uuids += uniques
-        @available_uuids += uniques
       end
 
       # Run all precompiled module post-install configuration
