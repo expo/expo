@@ -75,7 +75,13 @@
   },
   "peerDependencies": {
     "expo": "workspace:*",
+    "expo-dev-client": "workspace:*",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-dev-client": {
+      "optional": true
+    }
   }
 }

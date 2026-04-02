@@ -456,7 +456,7 @@ function CopyMoveSection({
         action={withCurrentFile(async (file) => {
           const dest = new Directory(Paths.cache, 'test_sandbox_copy');
           dest.create({ intermediates: true, idempotent: true });
-          file.copy(dest, { overwrite });
+          await file.copy(dest, { overwrite });
           return dest.list().map((f) => f.name);
         })}
       />
@@ -465,7 +465,7 @@ function CopyMoveSection({
         action={withCurrentFile(async (file) => {
           const dest = new Directory(Paths.document, 'test_sandbox_copy');
           dest.create({ intermediates: true, idempotent: true });
-          file.copy(dest, { overwrite });
+          await file.copy(dest, { overwrite });
           return { destUri: dest.uri, files: dest.list().map((f) => f.name) };
         })}
       />
@@ -486,7 +486,7 @@ function CopyMoveSection({
         <SimpleActionDemo
           title="Copy to destination directory"
           action={withCurrentFile(async (file) => {
-            file.copy(safDirectory, { overwrite });
+            await file.copy(safDirectory, { overwrite });
             return safDirectory.list().map((f) => f.name);
           })}
         />
@@ -498,7 +498,7 @@ function CopyMoveSection({
           const dest = new Directory(Paths.cache, 'test_sandbox_moved');
           dest.create({ intermediates: true, idempotent: true });
           const oldUri = file.uri;
-          file.move(dest, { overwrite });
+          await file.move(dest, { overwrite });
           return { oldUri, newUri: file.uri };
         })}
       />

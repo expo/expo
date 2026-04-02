@@ -9,7 +9,6 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.toAnyType
 import io.mockk.mockk
 import org.junit.Test
-import kotlin.reflect.typeOf
 
 class ConcreteViewPropTest {
   @Test
@@ -18,7 +17,7 @@ class ConcreteViewPropTest {
     var providedValue = -1
     var providedView: View? = null
 
-    val prop = ConcreteViewProp<View, Int>("name", { typeOf<Int>() }.toAnyType<Int>()) { view, value ->
+    val prop = ConcreteViewProp<View, Int>("name", toAnyType<Int>()) { view, value ->
       providedValue = value
       providedView = view
     }
@@ -42,7 +41,7 @@ class ConcreteViewPropTest {
     val mockedView = mockk<View>()
     var providedValue: MyRecord? = null
 
-    val prop = ConcreteViewProp<View, MyRecord>("name", { typeOf<MyRecord>() }.toAnyType<MyRecord>()) { _, value ->
+    val prop = ConcreteViewProp<View, MyRecord>("name", toAnyType<MyRecord>()) { _, value ->
       providedValue = value
     }
 

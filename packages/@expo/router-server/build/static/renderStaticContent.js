@@ -55,6 +55,7 @@ const server_node_1 = __importDefault(require("react-dom/server.node"));
 const getRootComponent_1 = require("./getRootComponent");
 const html_1 = require("./html");
 const debug_1 = require("../utils/debug");
+const html_2 = require("../utils/html");
 const debug = (0, debug_1.createDebug)('expo:router:server:renderStaticContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
@@ -108,40 +109,24 @@ async function getStaticContent(location, options) {
     // Inject hydration assets (JS/CSS bundles). Used in SSR mode
     if (options?.assets) {
         if (options.assets.css.length > 0) {
-            /**
-             * For each CSS file, inject two link elements; one for preloading and one as the actual
-             * stylesheet. This matches what we do for SSG
-             *
-             * @see @expo/cli/src/start/server/metro/serializeHtml.ts
-             */
-            const injectedCSS = options.assets.css
-                .flatMap((href) => [
-                `<link rel="preload" href="${href}" as="style">`,
-                `<link rel="stylesheet" href="${href}">`,
-            ])
-                .join('\n');
+            const injectedCSS = (0, html_2.createInjectedCssElements)(options.assets.css);
             output = output.replace('</head>', `${injectedCSS}\n</head>`);
         }
         if (options.assets.js.length > 0) {
-            const injectedJS = options.assets.js
-                .map((src) => `<script src="${src}" defer></script>`)
-                .join('\n');
+            const injectedJS = (0, html_2.createInjectedScriptElements)(options.assets.js);
             output = output.replace('</body>', `${injectedJS}\n</body>`);
         }
     }
     return '<!DOCTYPE html>' + output;
 }
 function mixHeadComponentsWithStaticResults(helmet, html) {
-    // Head components
-    for (const key of ['title', 'priority', 'meta', 'link', 'script', 'style'].reverse()) {
-        const result = helmet?.[key]?.toString();
-        if (result) {
-            html = html.replace('<head>', `<head>${result}`);
-        }
+    const { headTags, htmlAttributes, bodyAttributes } = (0, html_2.serializeHelmetToHtml)(helmet);
+    if (headTags) {
+        html = html.replace('<head>', `<head>${headTags}`);
     }
     // attributes
-    html = html.replace('<html ', `<html ${helmet?.htmlAttributes.toString()} `);
-    html = html.replace('<body ', `<body ${helmet?.bodyAttributes.toString()} `);
+    html = html.replace('<html ', `<html ${htmlAttributes} `);
+    html = html.replace('<body ', `<body ${bodyAttributes} `);
     return html;
 }
 // Re-export for use in server

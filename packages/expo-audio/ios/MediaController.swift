@@ -11,6 +11,7 @@ class MediaController {
 
   private var currentArtworkUrl: URL?
   private var cachedArtwork: MPMediaItemArtwork?
+  private var isLiveStream = false
 
   func setActivePlayer(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
     if let previous = activePlayer, previous.id != player?.id {
@@ -19,6 +20,7 @@ class MediaController {
 
     activePlayer = player
     player?.isActiveForLockScreen = true
+    isLiveStream = options?.isLiveStream ?? false
 
     DispatchQueue.main.async {
       if let player {
@@ -53,8 +55,15 @@ class MediaController {
   }
 
   private func applyPlaybackInfo(_ info: inout [String: Any], for player: AudioPlayer) {
-    info[MPMediaItemPropertyPlaybackDuration] = player.duration
-    info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
+    if isLiveStream {
+      info[MPNowPlayingInfoPropertyIsLiveStream] = true
+      info.removeValue(forKey: MPMediaItemPropertyPlaybackDuration)
+      info.removeValue(forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime)
+    } else {
+      info[MPNowPlayingInfoPropertyIsLiveStream] = false
+      info[MPMediaItemPropertyPlaybackDuration] = player.duration
+      info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
+    }
     info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 1.0
     info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
   }
@@ -222,7 +231,7 @@ class MediaController {
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
-    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = true
+    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !(options?.isLiveStream ?? false)
     remoteCommandCenter.skipForwardCommand.isEnabled = options?.showSeekForward ?? false
     remoteCommandCenter.skipBackwardCommand.isEnabled = options?.showSeekBackward ?? false
   }

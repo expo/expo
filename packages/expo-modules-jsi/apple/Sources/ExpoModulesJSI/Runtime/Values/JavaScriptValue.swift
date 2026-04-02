@@ -89,6 +89,20 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     }
   }
 
+  /**
+   Provides scoped access to a raw pointer to the underlying `facebook.jsi.Value`.
+   The pointer is valid only for the duration of the closure and must not be stored or escaped.
+   */
+  public func withUnsafePointee<R>(_ body: (UnsafeRawPointer) throws -> R) rethrows -> R {
+    // Using `withUnsafePointer(to:)` crashes the SIL optimizer in release builds
+    // due to a Swift compiler bug with C++ interop value types.
+    return try withUnsafeBytes(of: pointee) { bytes in
+      // Force-unwrap is safe — baseAddress is only nil for zero-length buffers,
+      // which can't happen since facebook.jsi.Value has a non-zero size.
+      return try body(bytes.baseAddress!)
+    }
+  }
+
   // MARK: - Type checks
 
   public func isUndefined() -> Bool {

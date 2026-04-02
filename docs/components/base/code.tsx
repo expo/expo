@@ -12,6 +12,7 @@ import {
   getCodeBlockDataFromChildren,
 } from '~/common/code-utilities';
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
+import { usePageApiVersion } from '~/providers/page-api-version';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetExpandOverlay } from '~/ui/components/Snippet/SnippetExpandOverlay';
@@ -37,6 +38,7 @@ type CodeProps = PropsWithChildren<{
 export function Code({ className, children, title }: CodeProps) {
   const contentRef = useRef<HTMLPreElement>(null);
   const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
+  const { version } = usePageApiVersion();
 
   const {
     language,
@@ -52,7 +54,8 @@ export function Code({ className, children, title }: CodeProps) {
   const [didMount, setDidMount] = useState(false);
   const collapseHeight = getCollapseHeight(params);
   const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
-  const highlightedHtml = getCodeData(value, language);
+  const resolvedVersion = params?.sdkVersion ? `v${params.sdkVersion}` : version;
+  const highlightedHtml = getCodeData(value, language, resolvedVersion);
 
   useEffect(() => {
     if (contentRef?.current?.clientHeight) {
@@ -99,7 +102,7 @@ export function Code({ className, children, title }: CodeProps) {
   return codeBlockTitle ? (
     <Snippet>
       <SnippetHeader title={codeBlockTitle} Icon={getIconForFile(codeBlockTitle)}>
-        <CopyAction text={cleanCopyValue(value)} />
+        <CopyAction text={cleanCopyValue(value, resolvedVersion)} />
         <SettingsAction />
       </SnippetHeader>
       <SnippetContent className="p-0">

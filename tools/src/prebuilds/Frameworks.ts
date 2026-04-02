@@ -76,7 +76,8 @@ export const Frameworks = {
     const xcframeworkOutputPath = Frameworks.getFrameworkPath(
       pkg.buildPath,
       product.name,
-      buildType
+      buildType,
+      pkg.outputVersionPrefix
     );
 
     // Collect frameworks for each build platform
@@ -147,12 +148,23 @@ export const Frameworks = {
   /**
    * Gets the output path for xcframeworks for the given package.
    * XCFrameworks are stored under: <buildPath>/output/<flavor>/xcframeworks/
+   * For versioned 3rd-party packages: <buildPath>/output/<versionPrefix>/<flavor>/xcframeworks/
    * @param buildPath Package build path (centralized under packages/precompile/.build/<pkg>/)
    * @param buildType Build flavor
+   * @param versionPrefix Optional version prefix for 3rd-party packages (e.g. "1.2.3/0.83.0/1.0.0")
    * @returns Output path for xcframeworks
    */
-  getFrameworksOutputPath: (buildPath: string, buildType: BuildFlavor): string => {
-    return path.join(buildPath, 'output', buildType.toLowerCase(), 'xcframeworks');
+  getFrameworksOutputPath: (
+    buildPath: string,
+    buildType: BuildFlavor,
+    versionPrefix?: string
+  ): string => {
+    const parts = [buildPath, 'output'];
+    if (versionPrefix) {
+      parts.push(versionPrefix);
+    }
+    parts.push(buildType.toLowerCase(), 'xcframeworks');
+    return path.join(...parts);
   },
 
   /**
@@ -160,11 +172,17 @@ export const Frameworks = {
    * @param buildPath Package build path (centralized under packages/precompile/.build/<pkg>/)
    * @param productName SPM product name
    * @param buildType Build flavor
+   * @param versionPrefix Optional version prefix for 3rd-party packages
    * @returns Full path to the built XCFramework
    */
-  getFrameworkPath: (buildPath: string, productName: string, buildType: BuildFlavor): string => {
+  getFrameworkPath: (
+    buildPath: string,
+    productName: string,
+    buildType: BuildFlavor,
+    versionPrefix?: string
+  ): string => {
     return path.join(
-      Frameworks.getFrameworksOutputPath(buildPath, buildType),
+      Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
       `${productName}.xcframework`
     );
   },
@@ -174,11 +192,17 @@ export const Frameworks = {
    * @param buildPath Package build path (centralized under packages/precompile/.build/<pkg>/)
    * @param productName SPM product name
    * @param buildType Build flavor
+   * @param versionPrefix Optional version prefix for 3rd-party packages
    * @returns Full path to the product tarball
    */
-  getTarballPath: (buildPath: string, productName: string, buildType: BuildFlavor): string => {
+  getTarballPath: (
+    buildPath: string,
+    productName: string,
+    buildType: BuildFlavor,
+    versionPrefix?: string
+  ): string => {
     return path.join(
-      Frameworks.getFrameworksOutputPath(buildPath, buildType),
+      Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
       `${productName}.tar.gz`
     );
   },
@@ -214,6 +238,29 @@ export const Frameworks = {
    */
   hasSharedSPMDepFramework: (productName: string, buildType: BuildFlavor): boolean => {
     return fs.existsSync(Frameworks.getSharedSPMDepFrameworkPath(productName, buildType));
+  },
+
+  /**
+   * Computes the output version prefix for a dependency package, given the building
+   * package's version prefix and the dependency's package version.
+   *
+   * Version prefixes have the format: <packageVersion>/<reactNativeVersion>/<hermesVersion>
+   * The RN and Hermes version parts are shared across all external packages in a build,
+   * so we extract them from the building package's prefix and combine with the dep's version.
+   *
+   * @param buildingPkgVersionPrefix The building package's outputVersionPrefix (e.g. "4.2.2/0.85.0/1.0.0")
+   * @param depPackageVersion The dependency package's version (e.g. "0.16.0")
+   * @returns The computed version prefix for the dependency (e.g. "0.16.0/0.85.0/1.0.0")
+   */
+  computeVersionPrefixForDependency: (
+    buildingPkgVersionPrefix: string,
+    depPackageVersion: string
+  ): string => {
+    // Split prefix into parts: [packageVersion, rnVersion, hermesVersion]
+    const parts = buildingPkgVersionPrefix.split(path.sep);
+    // Replace the first part (building package's version) with the dep's version
+    // Keep the RN and Hermes version parts (index 1 and beyond)
+    return path.join(depPackageVersion, ...parts.slice(1));
   },
 };
 
@@ -415,7 +462,11 @@ const copySPMDependencyXCFrameworksAsync = async (
     return;
   }
 
-  const outputDir = Frameworks.getFrameworksOutputPath(pkg.buildPath, buildType);
+  const outputDir = Frameworks.getFrameworksOutputPath(
+    pkg.buildPath,
+    buildType,
+    pkg.outputVersionPrefix
+  );
   const buildPath = SPMBuild.getPackageBuildPath(pkg, product, buildType);
 
   for (const spmPkg of spmPackages) {
@@ -559,8 +610,17 @@ const createProductTarballAsync = async (
   buildType: BuildFlavor,
   bundleSharedDeps?: boolean
 ): Promise<void> => {
-  const outputDir = Frameworks.getFrameworksOutputPath(pkg.buildPath, buildType);
-  const tarballPath = Frameworks.getTarballPath(pkg.buildPath, product.name, buildType);
+  const outputDir = Frameworks.getFrameworksOutputPath(
+    pkg.buildPath,
+    buildType,
+    pkg.outputVersionPrefix
+  );
+  const tarballPath = Frameworks.getTarballPath(
+    pkg.buildPath,
+    product.name,
+    buildType,
+    pkg.outputVersionPrefix
+  );
 
   // Collect all xcframework directories to include in the tarball
   const xcframeworkEntries = [`${product.name}.xcframework`];

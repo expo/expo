@@ -136,11 +136,19 @@ export declare class Directory {
     /**
      * Copies a directory.
      */
-    copy(destination: Directory | File, options?: RelocationOptions): void;
+    copy(destination: Directory | File, options?: RelocationOptions): Promise<void>;
+    /**
+     * Copies a directory synchronously.
+     */
+    copySync(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File, options?: RelocationOptions): void;
+    move(destination: Directory | File, options?: RelocationOptions): Promise<void>;
+    /**
+     * Moves a directory synchronously. Updates the `uri` property that now points to the new location.
+     */
+    moveSync(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Renames a directory.
      */
@@ -300,11 +308,19 @@ export declare class File {
     /**
      * Copies a file.
      */
-    copy(destination: Directory | File, options?: RelocationOptions): void;
+    copy(destination: Directory | File, options?: RelocationOptions): Promise<void>;
+    /**
+     * Copies a file synchronously.
+     */
+    copySync(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File, options?: RelocationOptions): void;
+    move(destination: Directory | File, options?: RelocationOptions): Promise<void>;
+    /**
+     * Moves a file synchronously. Updates the `uri` property that now points to the new location.
+     */
+    moveSync(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Renames a file.
      */

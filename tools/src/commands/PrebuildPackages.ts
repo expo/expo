@@ -86,6 +86,11 @@ export default (program: Command) => {
       false
     )
     .option(
+      '--external-only',
+      'Build only external (third-party) packages. Implies --include-external.',
+      false
+    )
+    .option(
       '-s, --sign <identity>',
       'Code signing identity (certificate name) to sign the XCFrameworks. If not provided, frameworks are left unsigned.'
     )

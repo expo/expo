@@ -124,7 +124,7 @@ export async function createFromFixtureAsync(
       for (const pkg of linkExpoPackages) {
         const link = createPackageLink(projectRoot, `packages/${pkg}`);
         log('Linked into dependencies', pkg);
-        dependencies[pkg] = '*'
+        dependencies[pkg] = '*';
         resolutions[pkg] = link;
       }
 
