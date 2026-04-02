@@ -53,7 +53,7 @@
     "@expo/osascript": "^2.4.2",
     "@expo/package-manager": "^1.10.3",
     "@expo/plist": "^0.5.2",
-    "@expo/prebuild-config": "^55.0.11",
+    "@expo/prebuild-config": "^55.0.12",
     "@expo/require-utils": "^55.0.3",
     "@expo/router-server": "^55.0.13",
     "@expo/schema-utils": "^55.0.2",
