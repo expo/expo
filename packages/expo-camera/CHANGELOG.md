@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix orientation issue caused by upstream changes. ([#44171](https://github.com/expo/expo/pull/44171) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 55.0.16 — 2026-04-21
