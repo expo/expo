@@ -1,0 +1,34 @@
+{
+  "pr_url": "https://github.com/expo/expo/pull/44096",
+  "owner": "expo",
+  "repo": "expo",
+  "pull_number": 44096,
+  "summary": "_🤖 This is an automated review. Addressing it doesn't guarantee a merge._\n\nReplaces method swizzling on `UIWindow.gestureRecognizers` with a `UIWindow.didBecomeKeyNotification`-based approach for attaching the dev menu's three-finger long-press gesture recognizer. The old swizzling approach interfered with UIKit's internal gesture handling during `fullScreenModal` dismissals, causing app freezes (#42777). The new approach is cleaner and avoids modifying UIKit internals.\n\nThe design is sound -- one bug in the CHANGELOG and one thread-safety concern to address.",
+  "verdict": "COMMENT",
+  "comments": [
+    {
+      "path": "packages/expo-dev-menu/CHANGELOG.md",
+      "line": 11,
+      "side": "RIGHT",
+      "body": "The link references PR #44039 which is an unrelated, already-merged CLI fix. This should reference #44096 (this PR).\n\n```suggestion\n- [iOS] Fix app freeze when dismissing a `fullScreenModal` by replacing `UIWindow.gestureRecognizers` swizzling with a notification-based approach for attaching the dev menu touch gesture recognizer. ([#44096](https://github.com/expo/expo/pull/44096) by [@WolffM](https://github.com/WolffM))\n```",
+      "severity": "suggestion",
+      "line_content": "#44039"
+    },
+    {
+      "path": "packages/expo-dev-menu/ios/Interceptors/DevMenuTouchInterceptor.swift",
+      "line": 39,
+      "side": "RIGHT",
+      "body": "When `isInstalled` is set from a background thread, the actual work is dispatched asynchronously to the main thread. Since `willSet` fires before the stored property changes, this creates a window where:\n\n1. Thread B sets `isInstalled = true` -> `willSet` dispatches async block to main thread\n2. Before the block executes, the property is already `true`\n3. Thread B (or another) sets `isInstalled = false` -> `willSet` fires again (old=true, new=false), dispatches another async block\n4. Both blocks now execute on the main queue -- but in between, `isInstalled` has already changed\n\nThe blocks capture `newValue` so they do the right work, but the `recognizer.isEnabled = newValue` at the end of each block reads the captured value, not the current property. This means you could end up with the recognizer enabled even though `isInstalled` is `false`, if the blocks execute out of order relative to property mutations.\n\nIn practice this is unlikely because `isInstalled` is only toggled during setup and preference changes (both infrequent), but it would be more correct to always dispatch synchronously when off the main thread (like the existing `Dispatch.mainSync` helper in `DevMenuManager.swift`) or to read the current `isInstalled` value at the end of the block instead of the captured `newValue`.",
+      "severity": "nit",
+      "line_content": "DispatchQueue.main.async(execute: block)"
+    },
+    {
+      "path": "packages/expo-dev-menu/ios/Interceptors/DevMenuTouchInterceptor.swift",
+      "line": 45,
+      "side": "RIGHT",
+      "body": "Consider what happens when the app launches and no window is key yet, or when all windows are above `.normal` level (e.g. during an alert). `addRecognizerToKeyWindow()` would find no matching window and the recognizer wouldn't be attached. Then, when a normal window does become key, `windowDidBecomeKey` will fire and attach it -- so this is fine.\n\nHowever, there's an edge case: if the app's main window is already key *before* the notification observer is registered (which can happen during `DevMenuPreferences.setup()` called from `DevMenuManager.init()`), you rely on `addRecognizerToKeyWindow()` to catch it. This looks correct as written -- just confirming the ordering is intentional and works.",
+      "severity": "nit",
+      "line_content": "addRecognizerToKeyWindow()"
+    }
+  ]
+}

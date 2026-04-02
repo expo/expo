@@ -1,0 +1,26 @@
+{
+  "pr_url": "https://github.com/expo/expo/pull/44276",
+  "owner": "expo",
+  "repo": "expo",
+  "pull_number": 44276,
+  "summary": "_🤖 This is an automated review. Addressing it doesn't guarantee a merge._\n\nThis PR fixes a real production deadlock (30 hang events across 11 users) by replacing a `queue.sync` read in `requiredOrientationMask()` with an `os_unfair_lock`-protected cached value. The approach is sound: the lock-protected cache is updated inside the same GCD barrier blocks that mutate `controllerInterfaceMasks`, so it stays consistent. The change to `registerController`/`unregisterController` from `queue.sync` to `queue.async(flags: .barrier)` is a correctness improvement (they are writes and should use barriers).\n\nTwo items worth noting:\n1. Since the minimum deployment target is iOS 16.4, `OSAllocatedUnfairLock` is available and would be a safer/cleaner alternative to raw `os_unfair_lock` (see inline comment).\n2. Pre-existing issue: `screenOrientationDidChange` (line 205) still uses `queue.sync(flags: .barrier)` which has the same deadlock potential if called from the main thread while a barrier write is pending. `enforceDesiredDeviceOrientation` dispatches to the main queue via `RCTExecuteOnMainQueue` and then calls `screenOrientationDidChange` from within that block, so the same class of deadlock is possible there. Could be addressed in a follow-up.",
+  "verdict": "COMMENT",
+  "comments": [
+    {
+      "path": "packages/expo-screen-orientation/ios/ScreenOrientationRegistry.swift",
+      "line": 23,
+      "side": "RIGHT",
+      "body": "Since the minimum deployment target is iOS 16.4, consider using `OSAllocatedUnfairLock<UIInterfaceOrientationMask>` instead of a raw `os_unfair_lock` + separate cached value. `OSAllocatedUnfairLock` heap-allocates the lock internally, removing the risk of the lock address moving (a well-known Swift pitfall with `os_unfair_lock` stored properties -- safe here because this is an `NSObject` subclass, but `OSAllocatedUnfairLock` makes it obviously safe).\n\nThis would simplify the code to something like:\n```swift\nprivate let cachedMask = OSAllocatedUnfairLock(initialState: UIInterfaceOrientationMask([]))\n```\nRead: `cachedMask.withLock { $0 }`\nWrite: `cachedMask.withLock { $0 = newMask }`",
+      "severity": "suggestion",
+      "line_content": "private var _cachedMask: UIInterfaceOrientationMask = []"
+    },
+    {
+      "path": "packages/expo-screen-orientation/ios/ScreenOrientationRegistry.swift",
+      "line": 237,
+      "side": "RIGHT",
+      "body": "Changing `registerController` from `queue.sync` to `queue.async(flags: .barrier)` is correct (it's a write and should use a barrier), but note this means `registerController` now returns before the append actually happens.\n\nIn `OnAppEntersForeground`, the code calls `registerController(self)` immediately followed by `setMask(lastMask, forController: self)`. Both are now `queue.async(flags: .barrier)`, so GCD FIFO ordering guarantees the register happens before the setMask -- this is fine.\n\nHowever, if any caller ever relies on the controller being registered immediately after `registerController` returns (e.g., to read `orientationControllers`), that assumption would break. Worth a brief comment noting the async nature.",
+      "severity": "nit",
+      "line_content": "queue.async(flags: .barrier)"
+    }
+  ]
+}

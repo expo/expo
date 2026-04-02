@@ -1,0 +1,18 @@
+{
+  "pr_url": "https://github.com/expo/expo/pull/44401",
+  "owner": "expo",
+  "repo": "expo",
+  "pull_number": 44401,
+  "summary": "_🤖 This is an automated review. Addressing it doesn't guarantee a merge._\n\nCorrect bug fix. Both native platforms (iOS and Android) emit `{\"value\": T}` for the `change` event, but `addSharedStateListener` was passing the raw event object to the callback instead of unwrapping `.value`. The `useSharedState` hook in the same file already handles this correctly. The fix aligns the two code paths.\n\nOne minor CHANGELOG style note below.",
+  "verdict": "APPROVE",
+  "comments": [
+    {
+      "path": "packages/expo-brownfield/CHANGELOG.md",
+      "line": 22,
+      "side": "RIGHT",
+      "body": "The CHANGELOG entries in this repo use plain descriptions (e.g., `Fix shared state listener not unwrapping native event value`), not conventional-commit format. Consider reformatting to match the surrounding style:\n\n```\n- Fix `addSharedStateListener` passing the raw native event object instead of the unwrapped value ([#44401](...) by [@mberube09](...))\n```",
+      "severity": "nit",
+      "line_content": "fix(expo-brownfield): unwrap native event in addSharedStateListener"
+    }
+  ]
+}

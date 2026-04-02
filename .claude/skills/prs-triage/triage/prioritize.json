@@ -1,0 +1,979 @@
+{
+  "prioritized_at": "2026-04-01T20:32:52.041Z",
+  "source_triage": "/Users/vojta/_dev/expo/.claude/skills/prs-triage/triage/fetch.json",
+  "total_prs": 37,
+  "prs": [
+    {
+      "number": 44421,
+      "url": "https://github.com/expo/expo/pull/44421",
+      "title": "[docs] Workflows: `on.app_store_connect` docs",
+      "author": "sswrk",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 65,
+      "additions": 141,
+      "deletions": 0,
+      "changed_files": 3,
+      "quick_win_score": 40,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "large",
+        "file_scope": "focused",
+        "change_type": "docs-only"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44416,
+      "url": "https://github.com/expo/expo/pull/44416",
+      "title": "@expo/log-box: Use OkHttpClientProvider instead of raw OkHttpClient",
+      "author": "cortinico",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 64,
+      "additions": 3,
+      "deletions": 2,
+      "changed_files": 2,
+      "quick_win_score": 75,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44243,
+      "url": "https://github.com/expo/expo/pull/44243",
+      "title": "fix(expo-splash-screen): skip custom splash exit animation on Android 13",
+      "author": "huextrat",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 60,
+      "additions": 9,
+      "deletions": 0,
+      "changed_files": 2,
+      "quick_win_score": 75,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44195,
+      "url": "https://github.com/expo/expo/pull/44195",
+      "title": "docs(bare): require Metro to extend expo/metro-config without Expo CLI",
+      "author": "vj2303",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 60,
+      "additions": 4,
+      "deletions": 0,
+      "changed_files": 1,
+      "quick_win_score": 85,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "docs-only"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 1,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 43948,
+      "url": "https://github.com/expo/expo/pull/43948",
+      "title": "fix(expo-modules-autolinking): support commander 12+ import changes",
+      "author": "yocontra",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 58,
+      "additions": 24,
+      "deletions": 24,
+      "changed_files": 8,
+      "quick_win_score": 45,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "small",
+        "file_scope": "moderate",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 3
+      }
+    },
+    {
+      "number": 44148,
+      "url": "https://github.com/expo/expo/pull/44148",
+      "title": "[web][sqlite] Fix sync worker result length encoding in WorkerChannel",
+      "author": "silto",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 55,
+      "additions": 66,
+      "deletions": 4,
+      "changed_files": 3,
+      "quick_win_score": 45,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "medium",
+        "file_scope": "focused",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 3
+      }
+    },
+    {
+      "number": 44191,
+      "url": "https://github.com/expo/expo/pull/44191",
+      "title": "fix(expo-constants): Fall back to embedded app config when expoClient is missing from manifest",
+      "author": "mvincentong",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 54,
+      "additions": 22,
+      "deletions": 1,
+      "changed_files": 3,
+      "quick_win_score": 55,
+      "impact_score": 10,
+      "quick_win_details": {
+        "diff_size": "small",
+        "file_scope": "focused",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [
+          {
+            "number": 44091,
+            "thumbs_up": 0,
+            "comments": 3
+          }
+        ],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44429,
+      "url": "https://github.com/expo/expo/pull/44429",
+      "title": "[android][go] Use SDK version to check update compatibility",
+      "author": "fschindler",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 52,
+      "additions": 9,
+      "deletions": 6,
+      "changed_files": 2,
+      "quick_win_score": 65,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44135,
+      "url": "https://github.com/expo/expo/pull/44135",
+      "title": "[web][sqllite] allow SQLiteProviderto rerender on children change without reopening DB",
+      "author": "Choco-milk-for-u",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 52,
+      "additions": 21,
+      "deletions": 8,
+      "changed_files": 5,
+      "quick_win_score": 55,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "small",
+        "file_scope": "focused",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 4
+      }
+    },
+    {
+      "number": 44140,
+      "url": "https://github.com/expo/expo/pull/44140",
+      "title": "fix(expo-router): add navigation to screenListeners and listeners callback type",
+      "author": "kittipatv",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 51,
+      "additions": 49,
+      "deletions": 7,
+      "changed_files": 4,
+      "quick_win_score": 45,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "medium",
+        "file_scope": "focused",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44417,
+      "url": "https://github.com/expo/expo/pull/44417",
+      "title": "Update gitignore to generalize env file patterns",
+      "author": "AbdoXCode",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 50,
+      "additions": 2,
+      "deletions": 2,
+      "changed_files": 1,
+      "quick_win_score": 65,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 0
+      }
+    },
+    {
+      "number": 43946,
+      "url": "https://github.com/expo/expo/pull/43946",
+      "title": "[expo-symbols][expo-ui] Support custom SF Symbols from asset catalogs",
+      "author": "chrism",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 49,
+      "additions": 11,
+      "deletions": 2,
+      "changed_files": 4,
+      "quick_win_score": 55,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "focused",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44132,
+      "url": "https://github.com/expo/expo/pull/44132",
+      "title": "fix(cli): load `.env` files before resolving options in `expo export`",
+      "author": "savaryna",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 46,
+      "additions": 5,
+      "deletions": 0,
+      "changed_files": 2,
+      "quick_win_score": 75,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44277,
+      "url": "https://github.com/expo/expo/pull/44277",
+      "title": "fix(android): sync MediaItem metadata for AOD lock screen (expo-audio)",
+      "author": "vj2303",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 45,
+      "additions": 80,
+      "deletions": 1,
+      "changed_files": 2,
+      "quick_win_score": 55,
+      "impact_score": 10,
+      "quick_win_details": {
+        "diff_size": "medium",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [
+          {
+            "number": 44166,
+            "thumbs_up": 0,
+            "comments": 0
+          }
+        ],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44096,
+      "url": "https://github.com/expo/expo/pull/44096",
+      "title": "[expo-dev-menu] Fix app freeze when dismissing fullScreenModal (iOS)",
+      "author": "WolffM",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 45,
+      "additions": 51,
+      "deletions": 28,
+      "changed_files": 2,
+      "quick_win_score": 55,
+      "impact_score": 30,
+      "quick_win_details": {
+        "diff_size": "medium",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [
+          {
+            "number": 42777,
+            "thumbs_up": 7,
+            "comments": 9
+          }
+        ],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44087,
+      "url": "https://github.com/expo/expo/pull/44087",
+      "title": "[workspace] cleanup package.json files, reorder dependencies",
+      "author": "Simek",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 45,
+      "additions": 111,
+      "deletions": 156,
+      "changed_files": 71,
+      "quick_win_score": 5,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "large",
+        "file_scope": "broad",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 4
+      }
+    },
+    {
+      "number": 44401,
+      "url": "https://github.com/expo/expo/pull/44401",
+      "title": "fix(expo-brownfield): unwrap native event in addSharedStateListener",
+      "author": "mberube09",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 44,
+      "additions": 8,
+      "deletions": 3,
+      "changed_files": 2,
+      "quick_win_score": 75,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 0
+      }
+    },
+    {
+      "number": 44189,
+      "url": "https://github.com/expo/expo/pull/44189",
+      "title": "fix(expo-router,jest-expo): Preserve parenthesized query params & fix babel config scoping",
+      "author": "mvincentong",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 44,
+      "additions": 100,
+      "deletions": 15,
+      "changed_files": 6,
+      "quick_win_score": 10,
+      "impact_score": 60,
+      "quick_win_details": {
+        "diff_size": "large",
+        "file_scope": "moderate",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [
+          {
+            "number": 26664,
+            "thumbs_up": 25,
+            "comments": 21
+          },
+          {
+            "number": 43980,
+            "thumbs_up": 0,
+            "comments": 0
+          }
+        ],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44188,
+      "url": "https://github.com/expo/expo/pull/44188",
+      "title": "fix(expo-router): Fix Jest 30 compatibility in testing library",
+      "author": "mvincentong",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 44,
+      "additions": 151,
+      "deletions": 41,
+      "changed_files": 8,
+      "quick_win_score": 10,
+      "impact_score": 15,
+      "quick_win_details": {
+        "diff_size": "large",
+        "file_scope": "moderate",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [
+          {
+            "number": 40184,
+            "thumbs_up": 0,
+            "comments": 6
+          }
+        ],
+        "pr_thumbs_up": 1,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 43955,
+      "url": "https://github.com/expo/expo/pull/43955",
+      "title": "[ios][ui] Add scroll position tracking and scroll target behavior to ScrollView",
+      "author": "ramonclaudio",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 44,
+      "additions": 343,
+      "deletions": 18,
+      "changed_files": 27,
+      "quick_win_score": 10,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "very large",
+        "file_scope": "broad",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44276,
+      "url": "https://github.com/expo/expo/pull/44276",
+      "title": "fix(screen-orientation): prevent main thread deadlock in requiredOrientationMask",
+      "author": "fendermany",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 42,
+      "additions": 28,
+      "deletions": 10,
+      "changed_files": 1,
+      "quick_win_score": 65,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "small",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44271,
+      "url": "https://github.com/expo/expo/pull/44271",
+      "title": "[expo-image][ios] reduce redundant reloads in recycled lists",
+      "author": "song-react",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 42,
+      "additions": 37,
+      "deletions": 2,
+      "changed_files": 1,
+      "quick_win_score": 65,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "small",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44218,
+      "url": "https://github.com/expo/expo/pull/44218",
+      "title": "fix(expo-dev-launcher): stop probing localhost:8085",
+      "author": "kylealwyn",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 42,
+      "additions": 4,
+      "deletions": 2,
+      "changed_files": 3,
+      "quick_win_score": 65,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "focused",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44141,
+      "url": "https://github.com/expo/expo/pull/44141",
+      "title": "fix(expo-modules-core): Swift 6 / Xcode 16 strict concurrency compliance",
+      "author": "vj2303",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 42,
+      "additions": 9,
+      "deletions": 7,
+      "changed_files": 8,
+      "quick_win_score": 55,
+      "impact_score": 10,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "moderate",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [
+          {
+            "number": 44106,
+            "thumbs_up": 0,
+            "comments": 1
+          }
+        ],
+        "pr_thumbs_up": 0,
+        "pr_comments": 3
+      }
+    },
+    {
+      "number": 44345,
+      "url": "https://github.com/expo/expo/pull/44345",
+      "title": "fix(expo-sqlite): eagerly materialize result rows to prevent cursor corruption on shared statements",
+      "author": "jmalmo",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 41,
+      "additions": 413,
+      "deletions": 51,
+      "changed_files": 7,
+      "quick_win_score": 15,
+      "impact_score": 10,
+      "quick_win_details": {
+        "diff_size": "very large",
+        "file_scope": "moderate",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [
+          {
+            "number": 44344,
+            "thumbs_up": 0,
+            "comments": 0
+          }
+        ],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44319,
+      "url": "https://github.com/expo/expo/pull/44319",
+      "title": "[ios][expo-ui] Add selectedSegmentTintColor modifier for segmented pickers",
+      "author": "fedeciancaglini",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 41,
+      "additions": 85,
+      "deletions": 0,
+      "changed_files": 4,
+      "quick_win_score": 45,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "medium",
+        "file_scope": "focused",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 43939,
+      "url": "https://github.com/expo/expo/pull/43939",
+      "title": "[ios][sqlite] Fix database path handling for paths with whitespace",
+      "author": "nickrugge",
+      "tier": 2,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 40,
+      "additions": 1,
+      "deletions": 3,
+      "changed_files": 1,
+      "quick_win_score": 75,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44346,
+      "url": "https://github.com/expo/expo/pull/44346",
+      "title": "[ios][widgets] Fix getLiveActivityUrl reading URL from shared storage",
+      "author": "prenansb",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 38,
+      "additions": 4,
+      "deletions": 4,
+      "changed_files": 2,
+      "quick_win_score": 75,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44139,
+      "url": "https://github.com/expo/expo/pull/44139",
+      "title": "[ui][android] Add Badge and BadgedBox components",
+      "author": "benjaminkomen",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 37,
+      "additions": 562,
+      "deletions": 1,
+      "changed_files": 21,
+      "quick_win_score": 10,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "very large",
+        "file_scope": "broad",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44136,
+      "url": "https://github.com/expo/expo/pull/44136",
+      "title": "[ui][android] Add SwipeToDismissBox component",
+      "author": "benjaminkomen",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": true,
+      "composite_score": 37,
+      "additions": 591,
+      "deletions": 7,
+      "changed_files": 15,
+      "quick_win_score": 10,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "very large",
+        "file_scope": "broad",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44312,
+      "url": "https://github.com/expo/expo/pull/44312",
+      "title": "[expo-brownfield] Initialize React host before creating RN view (#44120)",
+      "author": "vj2303",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 36,
+      "additions": 12,
+      "deletions": 4,
+      "changed_files": 3,
+      "quick_win_score": 65,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "focused",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 0
+      }
+    },
+    {
+      "number": 44341,
+      "url": "https://github.com/expo/expo/pull/44341",
+      "title": "[router] Allow platform-specific routes without same-directory fallback files",
+      "author": "JavanPoirier",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 32,
+      "additions": 391,
+      "deletions": 21,
+      "changed_files": 6,
+      "quick_win_score": 15,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "very large",
+        "file_scope": "moderate",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44340,
+      "url": "https://github.com/expo/expo/pull/44340",
+      "title": "[tv][router] Add file router .tv platform extension support",
+      "author": "JavanPoirier",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 29,
+      "additions": 215,
+      "deletions": 8,
+      "changed_files": 11,
+      "quick_win_score": 15,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "large",
+        "file_scope": "broad",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44167,
+      "url": "https://github.com/expo/expo/pull/44167",
+      "title": "fix(jest-expo): add jest as peer dependency to prevent silent major version mismatches",
+      "author": "ForestSpark",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 28,
+      "additions": 2,
+      "deletions": 0,
+      "changed_files": 2,
+      "quick_win_score": 75,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "tiny",
+        "file_scope": "minimal",
+        "change_type": "code"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44425,
+      "url": "https://github.com/expo/expo/pull/44425",
+      "title": "[ios][video] Add DASH-to-HLS proxy for live video playback",
+      "author": "cipolleschi",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 27,
+      "additions": 1217,
+      "deletions": 10,
+      "changed_files": 6,
+      "quick_win_score": 15,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "very large",
+        "file_scope": "moderate",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 2
+      }
+    },
+    {
+      "number": 44179,
+      "url": "https://github.com/expo/expo/pull/44179",
+      "title": "[expo-clipboard] Set multiple string formats",
+      "author": "nickpwhite",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 21,
+      "additions": 2773,
+      "deletions": 2419,
+      "changed_files": 33,
+      "quick_win_score": 10,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "very large",
+        "file_scope": "broad",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    },
+    {
+      "number": 44138,
+      "url": "https://github.com/expo/expo/pull/44138",
+      "title": "[android][video] Add pictureInPictureActions and nowPlayingActions props to VideoPlayer",
+      "author": "EdgarJMesquita",
+      "tier": 3,
+      "is_new": false,
+      "is_reviewed": false,
+      "composite_score": 19,
+      "additions": 1273,
+      "deletions": 39,
+      "changed_files": 72,
+      "quick_win_score": 10,
+      "impact_score": 0,
+      "quick_win_details": {
+        "diff_size": "very large",
+        "file_scope": "broad",
+        "change_type": "native"
+      },
+      "impact_details": {
+        "linked_issues": [],
+        "pr_thumbs_up": 0,
+        "pr_comments": 1
+      }
+    }
+  ]
+}
