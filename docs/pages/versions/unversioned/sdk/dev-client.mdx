@@ -39,9 +39,9 @@ You can configure development client launcher using its built-in [config plugin]
         "expo-dev-client",
         {
           "launchMode": "most-recent",
-          "defaultLaunchURI": "http://localhost:8081",
+          "defaultLaunchURL": "http://localhost:8081",
           "android": {
-            "defaultLaunchURI": "http://10.0.0.2:8081"
+            "defaultLaunchURL": "http://10.0.0.2:8081"
           }
         }
       ]
@@ -71,10 +71,10 @@ You can configure development client launcher using its built-in [config plugin]
       default: 'true',
     },
     {
-      name: 'defaultLaunchURI',
+      name: 'defaultLaunchURL',
       description: [
         'Launch directly into this URI instead of navigating to launcher screen.',
-        'If `launchMode` is set to `most-recent`, then launcher will use the defaultLaunchURI as a fallback.',
+        'If `launchMode` is set to `most-recent`, then launcher will use the defaultLaunchURL as a fallback.',
       ].join('\n'),
     },
     {
@@ -98,18 +98,18 @@ You can configure development client launcher using its built-in [config plugin]
       platform: 'ios',
     },
     {
-      name: 'android.defaultLaunchURI',
+      name: 'android.defaultLaunchURL',
       description: [
         'Instead of navigating to launcher screen launch directly into this URI.',
-        'If `launchMode` is set to `most-recent`, then launcher will use the defaultLaunchURI as a fallback.',
+        'If `launchMode` is set to `most-recent`, then launcher will use the defaultLaunchURL as a fallback.',
       ].join('\n'),
       platform: 'android',
     },
     {
-      name: 'ios.defaultLaunchURI',
+      name: 'ios.defaultLaunchURL',
       description: [
         'Instead of navigating to launcher screen launch directly into this URI.',
-        'If `launchMode` is set to `most-recent`, then launcher will use the defaultLaunchURI as a fallback.',
+        'If `launchMode` is set to `most-recent`, then launcher will use the defaultLaunchURL as a fallback.',
       ].join('\n'),
       platform: 'ios',
     },

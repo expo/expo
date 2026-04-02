@@ -34,9 +34,9 @@ export type PluginConfigOptions = {
     launchMode?: 'most-recent' | 'launcher';
     /**
      * Instead of navigating to launcher screen launch directly into this URI.
-     * If `launchMode` is set to `most-recent` then launcher will use the defaultLaunchURI if launching previously opened project fails.
+     * If `launchMode` is set to `most-recent` then launcher will use the defaultLaunchURL if launching previously opened project fails.
      */
-    defaultLaunchURI?: string;
+    defaultLaunchURL?: string;
     /**
      * @deprecated use the `launchMode` property instead
      */

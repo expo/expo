@@ -92,8 +92,8 @@ const withLocalNetworkPermission = (config) => {
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {}) => {
     (0, pluginConfig_1.validateConfig)(props);
-    const androiddefaultLaunchURI = props.android?.defaultLaunchURI ?? props.defaultLaunchURI;
-    const iosdefaultLaunchURI = props.ios?.defaultLaunchURI ?? props.defaultLaunchURI;
+    const androidDefaultLaunchURL = props.android?.defaultLaunchURL ?? props.defaultLaunchURL;
+    const iosDefaultLaunchURL = props.ios?.defaultLaunchURL ?? props.defaultLaunchURL;
     const iOSLaunchMode = props.ios?.launchMode ??
         props.launchMode ??
         props.ios?.launchModeExperimental ??
@@ -102,8 +102,8 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
         if (iOSLaunchMode === 'launcher') {
             config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
         }
-        if (iosdefaultLaunchURI) {
-            config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URI'] = iosdefaultLaunchURI;
+        if (iosDefaultLaunchURL) {
+            config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URI'] = iosDefaultLaunchURL;
         }
         return config;
     });
@@ -130,8 +130,8 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
         if (androidLaunchMode === 'launcher') {
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE', false?.toString());
         }
-        if (androiddefaultLaunchURI) {
-            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_DEFAULT_LAUNCHER_URI', androiddefaultLaunchURI);
+        if (androidDefaultLaunchURL) {
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_DEFAULT_LAUNCHER_URI', androidDefaultLaunchURL);
         }
         return config;
     });

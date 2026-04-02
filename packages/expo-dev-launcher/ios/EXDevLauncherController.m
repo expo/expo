@@ -57,7 +57,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 @property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
 @property (nonatomic, strong) NSString *defaultLaunchURLString;
 @property (nonatomic, strong) NSURL *defaultLaunchURL;
-@property (nonatomic) BOOL useDefaultLaunchUriFallback;
+@property (nonatomic) BOOL useDefaultLaunchUrlFallback;
 
 @end
 
@@ -89,7 +89,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
 
     self.defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URI"];
-    self.useDefaultLaunchUriFallback = self.defaultLaunchURLString.length != 0;
+    self.useDefaultLaunchUrlFallback = self.defaultLaunchURLString.length != 0;
     self.defaultLaunchURL = [NSURL URLWithString:self.defaultLaunchURLString];
   }
   return self;
@@ -229,11 +229,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
-  BOOL useDefaultLaunchUriFallback = self.useDefaultLaunchUriFallback;
+  BOOL useDefaultLaunchUrlFallback = self.useDefaultLaunchUrlFallback;
 
   if (!hasGrantedNetworkPermission) {
     shouldTryToLaunchLastOpenedBundle = NO;
-    useDefaultLaunchUriFallback = NO;
+    useDefaultLaunchUrlFallback = NO;
   }
   
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
@@ -243,7 +243,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return;
   }
 
-  [self useDefaultLaunchUriFallback];
+  [self useDefaultLaunchUrlFallback];
 }
 
 - (void)launchDefaultUriFallbackOrNavigateToLauncher {
@@ -259,7 +259,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     });
   };
 
-  if (self.useDefaultLaunchUriFallback) {
+  if (self.useDefaultLaunchUrlFallback) {
     [self loadApp: self.defaultLaunchURL withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
   }
 

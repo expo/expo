@@ -11,7 +11,7 @@ const schema = {
             enum: ['most-recent', 'launcher'],
             nullable: true,
         },
-        defaultLaunchURI: {
+        defaultLaunchURL: {
             type: ['string'],
             nullable: true,
         },
@@ -49,7 +49,7 @@ const schema = {
                     type: 'boolean',
                     nullable: true,
                 },
-                defaultLaunchURI: {
+                defaultLaunchURL: {
                     type: 'string',
                     nullable: true,
                 },
@@ -77,7 +77,7 @@ const schema = {
                     type: 'boolean',
                     nullable: true,
                 },
-                defaultLaunchURI: {
+                defaultLaunchURL: {
                     type: 'string',
                     nullable: true,
                 },
