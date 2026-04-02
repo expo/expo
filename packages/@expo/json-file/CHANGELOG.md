@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 10.0.13 — 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.12 — 2026-02-03
 
 ### 💡 Others
