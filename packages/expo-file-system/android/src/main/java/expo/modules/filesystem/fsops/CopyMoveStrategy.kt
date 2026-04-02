@@ -94,10 +94,14 @@ sealed class CopyMoveStrategy(
     }
 
     override fun tryNativeMove(resolved: DestinationSink): Uri? {
-      if (resolved !is DestinationSink.LocalFile) return null
+      if (resolved !is DestinationSink.LocalFile) {
+        return null
+      }
 
       // Fast path: atomic rename (same filesystem)
-      if (file.renameTo(resolved.target)) return resolved.target.uri
+      if (file.renameTo(resolved.target)) {
+        return resolved.target.uri
+      }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         return runCatching {

@@ -34,9 +34,16 @@ sealed class DestinationSink(val spec: DestinationSpec) {
           if (source.isDirectory()) {
             target.mkdir()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-              copyDirectoryParallel(source, target, copyFile = { src, dst ->
-                copyFileNio((src as JavaFile).toPath(), (dst as JavaFile).toPath())
-              })
+              copyDirectoryParallel(
+                source,
+                target,
+                copyFile = { src, dst ->
+                  copyFileNio(
+                    (src as JavaFile).toPath(),
+                    (dst as JavaFile).toPath()
+                  )
+                }
+              )
             } else {
               copyDirectoryParallel(source, target)
             }
