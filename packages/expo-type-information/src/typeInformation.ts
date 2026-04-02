@@ -237,10 +237,10 @@ export function deserializeTypeInformation({
  *  For now this option is slow so it's not enabled by default.
  * @returns FileTypeInformation object if the file provided was .swift file and it was parsed successfully. Otherwise it returns null.
  */
-export function getFileTypeInformation(
+export async function getFileTypeInformation(
   absoluteFilePath: string,
   preprocessFile: boolean = false
-): FileTypeInformation | null {
+): Promise<FileTypeInformation | null> {
   if (absoluteFilePath.endsWith('.swift')) {
     if (preprocessFile) {
       return getFileTypeInformationForString(
@@ -249,7 +249,7 @@ export function getFileTypeInformation(
         true
       );
     }
-    return getSwiftFileTypeInformation(absoluteFilePath);
+    return await getSwiftFileTypeInformation(absoluteFilePath);
   }
   return null;
 }
@@ -262,17 +262,17 @@ export function getFileTypeInformation(
  *  For now this option is slow so it's not enabled by default.
  * @returns FileTypeInformation object if the content provided was Swift and was parsed successfully. Otherwise it returns null.
  */
-export function getFileTypeInformationForString(
+export async function getFileTypeInformationForString(
   content: string,
   language: 'Swift',
   preprocessFile: boolean = false
-): FileTypeInformation | null {
+): Promise<FileTypeInformation | null> {
   if (language === 'Swift') {
     const tmp = os.tmpdir();
     const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
     const preprocessedContent = preprocessFile ? preprocessSwiftFile(content) : content;
     fs.writeFileSync(filePath, preprocessedContent, 'utf8');
-    const fileTypeInfo = getFileTypeInformation(filePath);
+    const fileTypeInfo = await getFileTypeInformation(filePath);
     fs.rmSync(filePath);
     return fileTypeInfo;
   }

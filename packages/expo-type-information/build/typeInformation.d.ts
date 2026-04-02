@@ -173,7 +173,7 @@ export declare function deserializeTypeInformation({ usedTypeIdentifiersList, de
  *  For now this option is slow so it's not enabled by default.
  * @returns FileTypeInformation object if the file provided was .swift file and it was parsed successfully. Otherwise it returns null.
  */
-export declare function getFileTypeInformation(absoluteFilePath: string, preprocessFile?: boolean): FileTypeInformation | null;
+export declare function getFileTypeInformation(absoluteFilePath: string, preprocessFile?: boolean): Promise<FileTypeInformation | null>;
 /**
  * This function creates a temporary file with the provided content and extracts FileTypeInformation from it.
  * @param content Swift code.
@@ -182,5 +182,5 @@ export declare function getFileTypeInformation(absoluteFilePath: string, preproc
  *  For now this option is slow so it's not enabled by default.
  * @returns FileTypeInformation object if the content provided was Swift and was parsed successfully. Otherwise it returns null.
  */
-export declare function getFileTypeInformationForString(content: string, language: 'Swift', preprocessFile?: boolean): FileTypeInformation | null;
+export declare function getFileTypeInformationForString(content: string, language: 'Swift', preprocessFile?: boolean): Promise<FileTypeInformation | null>;
 //# sourceMappingURL=typeInformation.d.ts.map

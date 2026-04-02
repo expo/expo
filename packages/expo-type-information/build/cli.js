@@ -22,8 +22,8 @@ async function main(args) {
 }
 main(process.argv.slice(2));
 function typeInformationCommand(cli) {
-    return cli.command('type-information <filePath>').action((filePath) => {
-        const typeInfo = (0, typeInformation_1.getFileTypeInformation)(filePath, true);
+    return cli.command('type-information <filePath>').action(async (filePath) => {
+        const typeInfo = await (0, typeInformation_1.getFileTypeInformation)(filePath, true);
         if (typeInfo) {
             const typeInfoSerialized = (0, typeInformation_1.serializeTypeInformation)(typeInfo);
             console.log(JSON.stringify(typeInfoSerialized, null, 2));
@@ -34,8 +34,8 @@ function typeInformationCommand(cli) {
     });
 }
 function generateModuleTypesCommand(cli) {
-    return cli.command('generate-module-types <filePath>').action((filePath) => {
-        const typeInfo = (0, typeInformation_1.getFileTypeInformation)(filePath, true);
+    return cli.command('generate-module-types <filePath>').action(async (filePath) => {
+        const typeInfo = await (0, typeInformation_1.getFileTypeInformation)(filePath, true);
         if (typeInfo) {
             (0, typescriptGeneration_1.getGeneratedModuleTypesFileContent)(fs_1.default.realpathSync(filePath), typeInfo).then(console.log);
         }
@@ -45,8 +45,8 @@ function generateModuleTypesCommand(cli) {
     });
 }
 function generateViewTypesCommand(cli) {
-    return cli.command('generate-view-types <filePath>').action((filePath) => {
-        const typeInfo = (0, typeInformation_1.getFileTypeInformation)(filePath, true);
+    return cli.command('generate-view-types <filePath>').action(async (filePath) => {
+        const typeInfo = await (0, typeInformation_1.getFileTypeInformation)(filePath, true);
         if (typeInfo) {
             (0, typescriptGeneration_1.getGeneratedViewTypesFileContent)(fs_1.default.realpathSync(filePath), typeInfo).then(console.log);
         }
@@ -56,8 +56,8 @@ function generateViewTypesCommand(cli) {
     });
 }
 function generateMocksForFileCommand(cli) {
-    return cli.command('generate-mocks-for-file <filePath>').action((filePath) => {
-        const typeInfo = (0, typeInformation_1.getFileTypeInformation)(filePath, true);
+    return cli.command('generate-mocks-for-file <filePath>').action(async (filePath) => {
+        const typeInfo = await (0, typeInformation_1.getFileTypeInformation)(filePath, true);
         if (typeInfo) {
             (0, mockgen_1.generateMocks)([typeInfo], 'typescript');
         }
@@ -67,8 +67,8 @@ function generateMocksForFileCommand(cli) {
     });
 }
 function generateJsxIntrinsics(cli) {
-    return cli.command('generate-jsx-intrinsics <filePath>').action((filePath) => {
-        const typeInfo = (0, typeInformation_1.getFileTypeInformation)(filePath, true);
+    return cli.command('generate-jsx-intrinsics <filePath>').action(async (filePath) => {
+        const typeInfo = await (0, typeInformation_1.getFileTypeInformation)(filePath, true);
         if (typeInfo) {
             (0, typescriptGeneration_1.getGeneratedJSXIntrinsicsViewDeclaration)(filePath, typeInfo).then(console.log);
         }

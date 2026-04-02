@@ -15,10 +15,10 @@ import {
 
 const swiftFile = fs.realpathSync('./tests/TestModule.swift');
 
-it('Same type information', () => {
+it('Same type information', async () => {
   expect(
     serializeTypeInformation(
-      getFileTypeInformation(swiftFile) ?? {
+      (await getFileTypeInformation(swiftFile)) ?? {
         usedTypeIdentifiers: new Set(),
         declaredTypeIdentifiers: new Set(),
         inferredTypeParametersCount: new Map(),
@@ -31,21 +31,21 @@ it('Same type information', () => {
   ).toMatchSnapshot();
 });
 it('Same generated view file', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile, true);
+  const fileInfo = await getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(await getGeneratedViewTypesFileContent(swiftFile, fileInfo)).toMatchSnapshot();
   }
 });
 it('Same generated module file', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile, true);
+  const fileInfo = await getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(await getGeneratedModuleTypesFileContent(swiftFile, fileInfo)).toMatchSnapshot();
   }
 });
 it('Same generated mock file', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile, true);
+  const fileInfo = await getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(
@@ -54,7 +54,7 @@ it('Same generated mock file', async () => {
   }
 });
 it('Same generated mock file JS', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile, true);
+  const fileInfo = await getFileTypeInformation(swiftFile, true);
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(
@@ -63,8 +63,8 @@ it('Same generated mock file JS', async () => {
   }
 });
 it('Generation from string is the same as generation from file', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile, true);
-  const fileInfoForString = getFileTypeInformationForString(
+  const fileInfo = await getFileTypeInformation(swiftFile, true);
+  const fileInfoForString = await getFileTypeInformationForString(
     fs.readFileSync(swiftFile, 'utf8'),
     'Swift',
     true
@@ -72,8 +72,8 @@ it('Generation from string is the same as generation from file', async () => {
   expect(fileInfo).toEqual(fileInfoForString);
 });
 it('Generation from string is the same as generation from file 2', async () => {
-  const fileInfo = getFileTypeInformation(swiftFile, false);
-  const fileInfoForString = getFileTypeInformationForString(
+  const fileInfo = await getFileTypeInformation(swiftFile, false);
+  const fileInfoForString = await getFileTypeInformationForString(
     fs.readFileSync(swiftFile, 'utf8'),
     'Swift',
     false
