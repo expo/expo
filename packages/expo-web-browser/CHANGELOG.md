@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `openAuthSessionAsync` silently failing on iOS 17.4+ when using `https://` redirect URLs without Associated Domains entitlements. The HTTPS universal link callback API is now opt-in via the `preferUniversalLinks` option. ([#44452](https://github.com/expo/expo/pull/44452) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 55.0.10 — 2026-03-17
