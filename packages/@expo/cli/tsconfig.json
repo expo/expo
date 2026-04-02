@@ -4,9 +4,6 @@
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"],
   "compilerOptions": {
     "lib": ["dom", "esnext"],
-    "outDir": "./build",
-
-    // TODO: Enable in the future
-    "noUncheckedIndexedAccess": false
+    "outDir": "./build"
   }
 }
