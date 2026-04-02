@@ -59,11 +59,20 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   /**
-   Raw pointer to the underlying JSI runtime. DO NOT USE IT!
+   Creates a runtime from a raw pointer to the underlying `facebook.jsi.Runtime`.
    */
-  @_spi(Unsafe)
-  public var unsafe_pointee: UnsafeMutableRawPointer {
-    return Unmanaged<facebook.jsi.Runtime>.passUnretained(pointee).toOpaque()
+  public init(unsafePointer: UnsafeMutableRawPointer) {
+    let runtime = unsafeBitCast(unsafePointer, to: facebook.jsi.Runtime.self)
+    self.pointee = runtime
+    self.scheduler = expo.RuntimeScheduler(runtime)
+  }
+
+  /**
+   Provides scoped access to a raw pointer to the underlying `facebook.jsi.Runtime`.
+   The pointer is valid only for the duration of the closure and must not be stored or escaped.
+   */
+  public func withUnsafePointee<R>(_ body: (UnsafeMutableRawPointer) throws -> R) rethrows -> R {
+    return try body(Unmanaged<facebook.jsi.Runtime>.passUnretained(pointee).toOpaque())
   }
 
   /**
