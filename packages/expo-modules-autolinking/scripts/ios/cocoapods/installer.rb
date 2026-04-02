@@ -109,6 +109,21 @@ module Pod
         Pod::UI.puts "[Expo] ".yellow + "ReactCodegen target not found in pods project"
       end
 
+      # CocoaPods overrides generate_available_uuid_list to use a fast sequential counter
+      # (Pod::Project#generate_available_uuid_list) that skips collision checks. After
+      # predictabilize_uuids reassigns all UUIDs to deterministic values, the counter resets
+      # and new sequential UUIDs can collide with existing ones, corrupting Pods.xcodeproj.
+      # Fix: replace the sequential generator with collision-safe random UUIDs for any
+      # objects created after predictabilize_uuids has run.
+      project = self.pods_project
+      existing_uuids = project.objects_by_uuid.keys.to_set
+      project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
+        new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
+        uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
+        @generated_uuids += uniques
+        @available_uuids += uniques
+      end
+
       # Run all precompiled module post-install configuration
       Expo::PrecompiledModules.perform_post_install(self)
     end
