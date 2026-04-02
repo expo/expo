@@ -64,8 +64,11 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     if (options.isAuthenticationRequired) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         val authType =
-          if (options.isUserPresenceRequired) KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
-          else KeyProperties.AUTH_BIOMETRIC_STRONG
+          if (options.isUserPresenceRequired) {
+            KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
+          } else {
+            KeyProperties.AUTH_BIOMETRIC_STRONG
+          }
         builder.setUserAuthenticationParameters(0, authType)
       } else {
         if (options.isUserPresenceRequired) {
@@ -93,7 +96,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     requireAuthentication: Boolean,
     authenticationPrompt: String,
     authenticationHelper: AuthenticationHelper,
-    isUserPresenceRequired: Boolean,
+    isUserPresenceRequired: Boolean
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
     val cipher = Cipher.getInstance(AES_CIPHER)
@@ -102,7 +105,9 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
     val requireAuthenticationString = if (requireAuthentication) {
       if (isUserPresenceRequired) "userPresence" else "biometry"
-    } else null
+    } else {
+      null
+    }
     val authenticatedCipher = authenticationHelper.authenticateCipher(cipher, requireAuthenticationString, authenticationPrompt)
 
     return createEncryptedItemWithCipher(plaintextValue, authenticatedCipher, gcmSpec)

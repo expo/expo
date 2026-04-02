@@ -69,7 +69,7 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
     requireAuthentication: Boolean,
     authenticationPrompt: String,
     authenticationHelper: AuthenticationHelper,
-    isUserPresenceRequired: Boolean,
+    isUserPresenceRequired: Boolean
   ): JSONObject {
     // This should never be called after we dropped Android SDK 22 support.
     throw EncryptException(
