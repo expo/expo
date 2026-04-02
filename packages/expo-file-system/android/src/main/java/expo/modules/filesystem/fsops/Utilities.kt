@@ -61,7 +61,7 @@ internal fun copyFileViaChannel(
  *
  * Returns `true` only when all bytes were transferred.
  */
-private inline fun copyChannelContents(
+internal inline fun copyChannelContents(
   size: Long,
   transferTo: (position: Long, count: Long) -> Long
 ): Boolean {
