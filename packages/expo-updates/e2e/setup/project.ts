@@ -95,17 +95,9 @@ const expoResolutions: { [key: string]: string } = {};
 function linkExpoDependency(repoRoot: string, projectRoot: string, dependencyName: string) {
   // Pack up the named Expo package into the destination folder
   const dependencyComponents = dependencyName.split('/');
-  let dependencyPath: string;
-  if (dependencyComponents[0] === '@expo') {
-    dependencyPath = path.resolve(
-      repoRoot,
-      'packages',
-      dependencyComponents[0],
-      dependencyComponents[1]
-    );
-  } else {
-    dependencyPath = path.resolve(repoRoot, 'packages', dependencyComponents[0]);
-  }
+  const paths = dependencyComponents.slice(0, dependencyComponents[0] === '@expo' ? 2 : 1);
+  const dependencyPath = path.resolve(repoRoot, 'packages', ...paths);
+
   // Return the dependency in the form needed by package.json, as a relative path
   const dependency = `link:.${path.sep}${path.relative(projectRoot, dependencyPath)}`;
   return { dependency };
@@ -367,7 +359,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        glob: "^11.0.0",
+        glob: '^11.0.0',
         'react-native': 'npm:react-native-tvos@0.85.0-0rc5',
         '@react-native-tvos/config-tv': '^0.1.5',
       },
