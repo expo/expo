@@ -1,5 +1,6 @@
 import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
+import { isNativeModuleAsync } from 'expo-modules-autolinking/exports';
 import fs from 'fs';
 import path from 'path';
 
@@ -122,6 +123,8 @@ export async function promptToClearMalformedNativeProjectsAsync(
 
   if (!platforms.length) {
     return;
+  } else if (await maybeBailOnNativeModuleAsync(projectRoot)) {
+    return;
   }
 
   const displayPlatforms = platforms.map((platform) => chalk.cyan(platform));
@@ -149,4 +152,28 @@ export async function promptToClearMalformedNativeProjectsAsync(
     // Warn the user that the process may fail.
     Log.warn('Continuing with malformed native projects');
   }
+}
+
+export async function maybeBailOnNativeModuleAsync(projectRoot: string) {
+  if (await isNativeModuleAsync(projectRoot)) {
+    if (!isInteractive()) {
+      Log.warn(
+        `Current project was detected as a native module, but the command will continue because the terminal is not interactive.`
+      );
+      return false;
+    } else {
+      Log.warn('Current project was detected as a native module and not an Expo app.');
+    }
+
+    const answer = await confirmAsync({
+      message: `Continue anyway?`,
+    });
+    if (!answer) {
+      return true;
+    }
+
+    Log.log();
+  }
+
+  return false;
 }
