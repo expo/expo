@@ -12,7 +12,7 @@ import util from 'util';
 const cacheDownloadedKeys: Record<string, string> = {};
 
 function stripQueryParams(url: string): string {
-  return url.split('?')[0].split('#')[0];
+  return url.split('?')[0]?.split('#')[0] ?? '';
 }
 
 function temporaryDirectory() {
@@ -22,7 +22,7 @@ function temporaryDirectory() {
 }
 
 export async function downloadOrUseCachedImage(url: string): Promise<string> {
-  if (url in cacheDownloadedKeys) {
+  if (cacheDownloadedKeys[url] != null) {
     return cacheDownloadedKeys[url];
   }
   if (url.startsWith('http')) {
