@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { spawnSync } = require('child_process');
+const { spawn } = require('child_process');
 const path = require('path');
 
 if (process.platform !== 'darwin') {
@@ -10,5 +10,5 @@ if (process.platform !== 'darwin') {
 }
 
 const projectPath = path.join(process.cwd(), 'example', 'ios');
-const result = spawnSync('xed', [projectPath], { stdio: 'inherit' });
+const result = spawn('xed', [projectPath], { stdio: 'inherit' });
 process.exit(result.status ?? 0);

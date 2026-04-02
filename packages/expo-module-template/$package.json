@@ -5,13 +5,13 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "node scripts/build.js",
-    "clean": "node scripts/clean.js",
+    "build": "node internal/module_scripts/build.js",
+    "clean": "node internal/module_scripts/clean.js",
     "lint": "eslint src/",
-    "test": "node scripts/test.js",
-    "prepare": "node scripts/prepare.js",
-    "open:ios": "node scripts/open-ios.js",
-    "open:android": "node scripts/open-android.js"
+    "test": "node internal/module_scripts/test.js",
+    "prepare": "node internal/module_scripts/prepare.js",
+    "open:ios": "node internal/module_scripts/open-ios.js",
+    "open:android": "node internal/module_scripts/open-android.js"
   },
   "keywords": [
     "react-native",

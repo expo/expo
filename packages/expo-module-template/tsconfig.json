@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["dom", "DOM.Iterable", "esnext"],
+    "types": ["jest"],
     "typeRoots": ["./ts-declarations", "./node_modules/@types"],
     "jsx": "react-native",
     "target": "esnext",
