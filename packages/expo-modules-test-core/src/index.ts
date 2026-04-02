@@ -1,6 +1,4 @@
-import { getAllExpoModulesInWorkingDirectory } from './getStructure';
-import { generateMocks } from './mockgen';
-
+import { generateMocks, getAllExpoModulesInWorkingDirectory } from 'expo-type-information';
 const command = process.argv[2];
 
 if (command === 'generate-js-mocks') {
