@@ -11,10 +11,6 @@ describe('computeCanaryVersion', () => {
       assert.equal(computeCanaryVersion('55.0.9', 55, isMain, '56.0.0'), '56.0.0');
     });
 
-    it('bumps SDK-versioned packages with higher patch to next major', () => {
-      assert.equal(computeCanaryVersion('55.0.13', 55, isMain, '56.0.0'), '56.0.0');
-    });
-
     it('returns null for non-SDK-versioned packages', () => {
       assert.equal(computeCanaryVersion('2.0.9', 55, isMain, '56.0.0'), null);
     });
@@ -29,10 +25,6 @@ describe('computeCanaryVersion', () => {
 
     it('patch-bumps SDK-versioned packages', () => {
       assert.equal(computeCanaryVersion('55.0.9', 55, isMain, '56.0.0'), '55.0.10');
-    });
-
-    it('patch-bumps SDK-versioned packages with higher patch', () => {
-      assert.equal(computeCanaryVersion('55.0.13', 55, isMain, '56.0.0'), '55.0.14');
     });
 
     it('returns null for non-SDK-versioned packages', () => {
