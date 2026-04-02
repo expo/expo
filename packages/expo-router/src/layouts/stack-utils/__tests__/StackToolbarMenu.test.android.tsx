@@ -151,28 +151,28 @@ describe('NativeToolbarMenu', () => {
         );
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBe('red');
+        expect(icon.props.tint).toBe('red');
       });
 
       it('falls back to dynamic onSurface when imageRenderingMode is template and no tintColor', () => {
         render(<NativeToolbarMenu {...defaultProps} imageRenderingMode="template" />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBe('dynamic:onSurface');
+        expect(icon.props.tint).toBe('dynamic:onSurface');
       });
 
       it('uses provided tintColor when imageRenderingMode is undefined', () => {
         render(<NativeToolbarMenu {...defaultProps} tintColor="red" />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBe('red');
+        expect(icon.props.tint).toBe('red');
       });
 
       it('falls back to dynamic onSurface when both imageRenderingMode and tintColor are undefined', () => {
         render(<NativeToolbarMenu {...defaultProps} />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBe('dynamic:onSurface');
+        expect(icon.props.tint).toBe('dynamic:onSurface');
       });
     });
 
@@ -193,7 +193,7 @@ describe('NativeToolbarMenu', () => {
         renderWithColors(defaultProps, { tintColor: 'context-tint' });
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBe('context-tint');
+        expect(icon.props.tint).toBe('context-tint');
       });
 
       it('prop tintColor takes precedence over context', () => {
@@ -203,7 +203,7 @@ describe('NativeToolbarMenu', () => {
         );
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.tintColor).toBe('prop-tint');
+        expect(icon.props.tint).toBe('prop-tint');
       });
 
       it('uses context backgroundColor for dropdown background', () => {
