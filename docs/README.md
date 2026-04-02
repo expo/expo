@@ -396,18 +396,18 @@ Fenced code blocks support dynamic variable substitution using `{{variableName}}
 
 **Available variables:**
 
-| Variable | Example value | Description |
-| --- | --- | --- |
-| `{{iosDeploymentTarget}}` | `15.1` | Minimum iOS deployment target |
-| `{{androidVersion}}` | `7` | Minimum Android version |
-| `{{compileSdkVersion}}` | `36` | Android compileSdkVersion |
-| `{{targetSdkVersion}}` | `36` | Android targetSdkVersion |
-| `{{reactNativeVersion}}` | `0.83` | React Native version |
-| `{{reactVersion}}` | `19.2.0` | React version |
-| `{{xcodeVersion}}` | `26.2` | Minimum Xcode version |
-| `{{nodeVersion}}` | `20.19.x` | Minimum Node.js version |
-| `{{expoSdkVersion}}` | `55.0.0` | Expo SDK version |
-| `{{expoSdkMajorVersion}}` | `55` | Expo SDK major version number |
+| Variable                  | Example value | Description                   |
+| ------------------------- | ------------- | ----------------------------- |
+| `{{iosDeploymentTarget}}` | `15.1`        | Minimum iOS deployment target |
+| `{{androidVersion}}`      | `7`           | Minimum Android version       |
+| `{{compileSdkVersion}}`   | `36`          | Android compileSdkVersion     |
+| `{{targetSdkVersion}}`    | `36`          | Android targetSdkVersion      |
+| `{{reactNativeVersion}}`  | `0.83`        | React Native version          |
+| `{{reactVersion}}`        | `19.2.0`      | React version                 |
+| `{{xcodeVersion}}`        | `26.2`        | Minimum Xcode version         |
+| `{{nodeVersion}}`         | `20.19.x`     | Minimum Node.js version       |
+| `{{expoSdkVersion}}`      | `55.0.0`      | Expo SDK version              |
+| `{{expoSdkMajorVersion}}` | `55`          | Expo SDK major version number |
 
 **Usage in a fenced code block:**
 
@@ -585,7 +585,6 @@ modificationDate: April 8th, 2024
 This pattern is used for some of the pages where we manually update the modification date, such as [Build server infrastructure](/docs/pages/build-reference/infrastructure.mdx).
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
-
 
 ### Use Step for procedural guides
 
