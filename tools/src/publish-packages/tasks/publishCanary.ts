@@ -36,16 +36,21 @@ export const prepareCanaries = new Task<TaskArgs>(
     const canarySuffix = await getCurrentCanaryVersionSuffix();
     const currentSdkVersion = await sdkVersionAsync();
     const currentSdkMajor = semver.major(currentSdkVersion);
-    const nextSdkVersion = await getNextSdkVersion();
+    const currentBranch = await Git.getCurrentBranchNameAsync();
+    const isMain = currentBranch === 'main';
 
     for (const parcel of parcels) {
       const { pkg, state, pkgView } = parcel;
-      // Packages whose major version matches the current SDK should be bumped
-      // to the next SDK version for canary releases (e.g. 55.0.2 → 56.0.0-canary-...).
-      const baseVersion =
-        semver.major(pkg.packageVersion) === currentSdkMajor
-          ? nextSdkVersion
-          : (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
+      // On `main`, SDK-versioned packages are bumped to the next major for canary releases
+      // (e.g. 55.0.2 → 56.0.0-canary-...) since main represents next-SDK development.
+      // On `sdk-*` branches, they get a patch bump (e.g. 55.0.2 → 55.0.3-canary-...)
+      // since these are fixes for an already-released SDK.
+      let baseVersion: string;
+      if (semver.major(pkg.packageVersion) === currentSdkMajor) {
+        baseVersion = isMain ? await getNextSdkVersion() : semver.inc(pkg.packageVersion, 'patch')!;
+      } else {
+        baseVersion = (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
+      }
 
       // Strip any pre-release tag from the baseVersion
       // For example, convert "5.0.0-rc.0" or "5.0.0-preview.0" to "5.0.0"
@@ -61,7 +66,6 @@ export const prepareCanaries = new Task<TaskArgs>(
     // Only use the `canary` tag when publishing from `main` or the latest `sdk-*` branch.
     // Other branches publish canary versions without the `canary` dist-tag so they
     // don't overwrite the canary tag that points at main/latest-sdk builds.
-    const currentBranch = await Git.getCurrentBranchNameAsync();
     if (await shouldUseCanaryTag(currentBranch)) {
       options.tag = 'canary';
     } else {
