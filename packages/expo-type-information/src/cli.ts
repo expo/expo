@@ -12,7 +12,7 @@ import {
 
 async function main(args: string[]) {
   const cli = commander
-    .version(require('expo-type-information/package.json').version)
+    .version(require('../package.json').version)
     .description('CLI commands for retrieving type information from native files.');
 
   typeInformationCommand(cli);
