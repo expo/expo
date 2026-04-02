@@ -16,7 +16,7 @@ const util_1 = __importDefault(require("util"));
 // cache downloaded images into memory
 const cacheDownloadedKeys = {};
 function stripQueryParams(url) {
-    return url.split('?')[0].split('#')[0];
+    return url.split('?')[0]?.split('#')[0] ?? '';
 }
 function temporaryDirectory() {
     const directory = path_1.default.join(os_1.default.tmpdir(), (0, crypto_1.randomBytes)(16).toString('hex'));
@@ -24,7 +24,7 @@ function temporaryDirectory() {
     return directory;
 }
 async function downloadOrUseCachedImage(url) {
-    if (url in cacheDownloadedKeys) {
+    if (cacheDownloadedKeys[url] != null) {
         return cacheDownloadedKeys[url];
     }
     if (url.startsWith('http')) {

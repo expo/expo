@@ -48,7 +48,7 @@ export async function downloadImage(url: string): Promise<string> {
   const streamPipeline = util.promisify(stream.pipeline);
   const localPath = path.join(outputPath, path.basename(stripQueryParams(url)));
   // Type casting is required, see: https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
-  const readableBody = stream.Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+  const readableBody = stream.Readable.fromWeb(response.body);
   await streamPipeline(readableBody, fs.createWriteStream(localPath));
 
   // If an image URL doesn't have a name, get the mime type and move the file.

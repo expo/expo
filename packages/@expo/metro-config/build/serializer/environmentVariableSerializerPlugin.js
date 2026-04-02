@@ -12,7 +12,7 @@ const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines")
 const debug = require('debug')('expo:metro-config:serializer:env-var');
 function getTransformEnvironment(url) {
     const match = url.match(/[&?]transform\.environment=([^&]+)/);
-    return match ? match[1] : null;
+    return match?.[1] ?? null;
 }
 function getAllExpoPublicEnvVars(inputEnv = process.env) {
     // Create an object containing all environment variables that start with EXPO_PUBLIC_
@@ -44,7 +44,7 @@ function serverPreludeSerializerPlugin(entryPoint, preModules, graph, options) {
         if (prelude) {
             debug('Stripping environment variable polyfill in server environment.');
             // TODO: The module output type should be upcast
-            const data = prelude.output[0].data;
+            const data = prelude.output[0]?.data;
             data.code = data.code
                 .replace(/process=this\.process\|\|{},/, '')
                 .replace(/process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/, '');
@@ -69,7 +69,7 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
     if (prelude) {
         debug('Injecting environment variables in virtual module.');
         // TODO: The module type should be upcast
-        const data = prelude.output[0].data;
+        const data = prelude.output[0]?.data;
         // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
         data.code = code;
         return [entryPoint, preModules, graph, options];

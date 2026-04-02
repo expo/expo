@@ -71,12 +71,18 @@ async function chooseAppAsync(listOfAppNames) {
     let i;
     for (i = 0; i < listOfAppNames.length; i++) {
         if (running[i]) {
-            return listOfAppNames[i];
+            const appName = listOfAppNames[i];
+            if (appName != null) {
+                return appName;
+            }
         }
     }
     for (i = 0; i < listOfAppNames.length; i++) {
         if (appIds[i]) {
-            return listOfAppNames[i];
+            const appName = listOfAppNames[i];
+            if (appName != null) {
+                return appName;
+            }
         }
     }
     return null;

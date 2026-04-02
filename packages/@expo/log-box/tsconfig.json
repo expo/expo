@@ -1,7 +1,7 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
   "compilerOptions": {
-    "lib": ["DOM"],
+    "lib": ["dom", "DOM.Iterable", "esnext"],
     "noEmit": true,
     "jsx": "react",
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
