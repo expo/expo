@@ -784,6 +784,7 @@ export async function getGeneratedModuleTypesFileContent(
     0
   ) ?? {
     name: 'EmptyModule',
+    constructor: null,
     asyncFunctions: [],
     functions: [],
     properties: [],
@@ -792,6 +793,7 @@ export async function getGeneratedModuleTypesFileContent(
     constants: [],
     props: [],
     events: [],
+    definitionOffset: 0,
   };
   return prettyPrintTSNodesToString(
     file,

@@ -9,8 +9,9 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "build": "expo-module build",
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" expo-module test",
+    "expo-module": "expo-module"
   },
   "bin": {
     "expo-type-information": "./bin/cli.js"
