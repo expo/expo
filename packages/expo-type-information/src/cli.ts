@@ -8,6 +8,7 @@ import {
   FileTypeInformation,
   getFileTypeInformation,
   serializeTypeInformation,
+  TypeInferenceOption,
 } from './typeInformation';
 import {
   getGeneratedJSXIntrinsicsViewDeclaration,
@@ -18,7 +19,7 @@ import {
 export type TypeInformationCommandCommonArguments = {
   inputPath: string;
   outputPath?: string;
-  typeInference: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
+  typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
 };
 
 function addCommonOptions(command: commander.Command): commander.Command {
@@ -74,14 +75,17 @@ function sanitizeAndValidateOutputPath(rawPath: string): string | null {
   }
 }
 
-function isInferenceOptionValid(
-  option: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE'
-): boolean {
-  return (
-    option === 'NO_INFERENCE' ||
-    option === 'SIMPLE_INFERENCE' ||
-    option === 'PREPROCESS_AND_INFERENCE'
-  );
+function parseInferenceOption(option?: string): TypeInferenceOption | null {
+  if (!option) return TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+  switch (option) {
+    case 'NO_INFERENCE':
+      return TypeInferenceOption.NO_INFERENCE;
+    case 'SIMPLE_INFERENCE':
+      return TypeInferenceOption.SIMPLE_INFERENCE;
+    case 'PREPROCESS_AND_INFERENCE':
+      return TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+  }
+  return null;
 }
 
 interface ParsedArguments {
@@ -111,15 +115,16 @@ async function parseCommonArgumentsAndGetFileTypeInformation(
     realOutputPath = validatedOutPath;
   }
 
-  if (!isInferenceOptionValid(options.typeInference)) {
-    console.error(`Invalid typeInference option.`);
+  const typeInference = parseInferenceOption(options.typeInference);
+  if (typeInference === null) {
+    console.error(`Invalid typeInference option. ${options.typeInference}`);
     return null;
   }
 
-  const typeInfo = await getFileTypeInformation(
-    realInputPath,
-    options.typeInference === 'PREPROCESS_AND_INFERENCE'
-  );
+  const typeInfo = await getFileTypeInformation({
+    input: { type: 'file', inputFileAbsolutePath: realInputPath },
+    typeInference,
+  });
 
   if (!typeInfo) {
     console.log(

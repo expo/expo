@@ -51,10 +51,18 @@ function sanitizeAndValidateOutputPath(rawPath) {
         return null;
     }
 }
-function isInferenceOptionValid(option) {
-    return (option === 'NO_INFERENCE' ||
-        option === 'SIMPLE_INFERENCE' ||
-        option === 'PREPROCESS_AND_INFERENCE');
+function parseInferenceOption(option) {
+    if (!option)
+        return typeInformation_1.TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+    switch (option) {
+        case 'NO_INFERENCE':
+            return typeInformation_1.TypeInferenceOption.NO_INFERENCE;
+        case 'SIMPLE_INFERENCE':
+            return typeInformation_1.TypeInferenceOption.SIMPLE_INFERENCE;
+        case 'PREPROCESS_AND_INFERENCE':
+            return typeInformation_1.TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+    }
+    return null;
 }
 async function parseCommonArgumentsAndGetFileTypeInformation(options) {
     const realInputPath = sanitizeAndValidatePath(options.inputPath);
@@ -71,11 +79,15 @@ async function parseCommonArgumentsAndGetFileTypeInformation(options) {
         }
         realOutputPath = validatedOutPath;
     }
-    if (!isInferenceOptionValid(options.typeInference)) {
-        console.error(`Invalid typeInference option.`);
+    const typeInference = parseInferenceOption(options.typeInference);
+    if (typeInference === null) {
+        console.error(`Invalid typeInference option. ${options.typeInference}`);
         return null;
     }
-    const typeInfo = await (0, typeInformation_1.getFileTypeInformation)(realInputPath, options.typeInference === 'PREPROCESS_AND_INFERENCE');
+    const typeInfo = await (0, typeInformation_1.getFileTypeInformation)({
+        input: { type: 'file', inputFileAbsolutePath: realInputPath },
+        typeInference,
+    });
     if (!typeInfo) {
         console.log(chalk_1.default.red(`Provided file: ${options.inputPath} couldn't be parsed for type information!`));
         return null;

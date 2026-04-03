@@ -3,22 +3,35 @@ import * as fs from 'fs';
 
 import { generateTSMockForModule } from '../src/mockgen';
 import {
+  FileTypeInformation,
   getFileTypeInformation,
-  getFileTypeInformationForString,
   ModuleClassDeclaration,
   serializeTypeInformation,
+  TypeInferenceOption,
 } from '../src/typeInformation';
 import {
   getGeneratedModuleTypesFileContent,
   getGeneratedViewTypesFileContent,
 } from '../src/typescriptGeneration';
+import { GetFileTypeInformationOptions } from '../build';
 
 const swiftFile = fs.realpathSync('./tests/TestModule.swift');
+const getDefaultArgs = (): GetFileTypeInformationOptions => {
+  return {
+    input: { inputFileAbsolutePath: swiftFile, type: 'file' },
+    typeInference: TypeInferenceOption.PREPROCESS_AND_INFERENCE,
+  };
+};
+
+let defaultArgsFileInfo: FileTypeInformation | null = null;
+beforeAll(async () => {
+  defaultArgsFileInfo = await getFileTypeInformation(getDefaultArgs());
+});
 
 it('Same type information', async () => {
   expect(
     serializeTypeInformation(
-      (await getFileTypeInformation(swiftFile)) ?? {
+      (await getFileTypeInformation(getDefaultArgs())) ?? {
         usedTypeIdentifiers: new Set(),
         declaredTypeIdentifiers: new Set(),
         inferredTypeParametersCount: new Map(),
@@ -31,21 +44,21 @@ it('Same type information', async () => {
   ).toMatchSnapshot();
 });
 it('Same generated view file', async () => {
-  const fileInfo = await getFileTypeInformation(swiftFile, true);
+  const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(await getGeneratedViewTypesFileContent(swiftFile, fileInfo)).toMatchSnapshot();
   }
 });
 it('Same generated module file', async () => {
-  const fileInfo = await getFileTypeInformation(swiftFile, true);
+  const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(await getGeneratedModuleTypesFileContent(swiftFile, fileInfo)).toMatchSnapshot();
   }
 });
 it('Same generated mock file', async () => {
-  const fileInfo = await getFileTypeInformation(swiftFile, true);
+  const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(
@@ -54,7 +67,7 @@ it('Same generated mock file', async () => {
   }
 });
 it('Same generated mock file JS', async () => {
-  const fileInfo = await getFileTypeInformation(swiftFile, true);
+  const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     expect(
@@ -62,21 +75,36 @@ it('Same generated mock file JS', async () => {
     ).toMatchSnapshot();
   }
 });
-it('Generation from string is the same as generation from file', async () => {
-  const fileInfo = await getFileTypeInformation(swiftFile, true);
-  const fileInfoForString = await getFileTypeInformationForString(
-    fs.readFileSync(swiftFile, 'utf8'),
-    'Swift',
-    true
-  );
+
+it('Generation from string is the same as generation from file. Preprocessing.', async () => {
+  const fileInfo = defaultArgsFileInfo;
+  const fileInfoForString = await getFileTypeInformation({
+    input: { type: 'string', fileContent: fs.readFileSync(swiftFile, 'utf8'), language: 'Swift' },
+    typeInference: TypeInferenceOption.PREPROCESS_AND_INFERENCE,
+  });
   expect(fileInfo).toEqual(fileInfoForString);
 });
-it('Generation from string is the same as generation from file 2', async () => {
-  const fileInfo = await getFileTypeInformation(swiftFile, false);
-  const fileInfoForString = await getFileTypeInformationForString(
-    fs.readFileSync(swiftFile, 'utf8'),
-    'Swift',
-    false
-  );
+
+it('Generation from string is the same as generation from file. Simple type inference.', async () => {
+  const fileInfo = await getFileTypeInformation({
+    input: { type: 'file', inputFileAbsolutePath: swiftFile },
+    typeInference: TypeInferenceOption.NO_INFERENCE,
+  });
+  const fileInfoForString = await getFileTypeInformation({
+    input: { type: 'string', fileContent: fs.readFileSync(swiftFile, 'utf8'), language: 'Swift' },
+    typeInference: TypeInferenceOption.NO_INFERENCE,
+  });
+  expect(fileInfo).toEqual(fileInfoForString);
+});
+
+it('Generation from string is the same as generation from file. No type inference.', async () => {
+  const fileInfo = await getFileTypeInformation({
+    input: { type: 'file', inputFileAbsolutePath: swiftFile },
+    typeInference: TypeInferenceOption.SIMPLE_INFERENCE,
+  });
+  const fileInfoForString = await getFileTypeInformation({
+    input: { type: 'string', fileContent: fs.readFileSync(swiftFile, 'utf8'), language: 'Swift' },
+    typeInference: TypeInferenceOption.SIMPLE_INFERENCE,
+  });
   expect(fileInfo).toEqual(fileInfoForString);
 });
