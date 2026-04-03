@@ -7,7 +7,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
-        class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+        class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
         data-heading="true"
         id="name"
       >
@@ -160,7 +160,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
-        class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+        class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
         data-heading="true"
         id="androidnavigationbar"
       >
@@ -312,7 +312,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
-          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+          class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
           data-heading="true"
           id="visible"
         >
@@ -406,7 +406,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="text-secondary px-1 break-words"
+              class="text-secondary px-1 wrap-break-word"
             >
               androidNavigationBar
               .
@@ -424,7 +424,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
           <h5
-            class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+            class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
             data-heading="true"
             id="always"
           >
@@ -490,7 +490,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                • Path:
                
               <code
-                class="text-secondary px-1 break-words"
+                class="text-secondary px-1 wrap-break-word"
               >
                 androidNavigationBar.visible
                 .
@@ -510,7 +510,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
-          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+          class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
           data-heading="true"
           id="backgroundcolor"
         >
@@ -576,7 +576,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="text-secondary px-1 break-words"
+              class="text-secondary px-1 wrap-break-word"
             >
               androidNavigationBar
               .
@@ -598,7 +598,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           6 character long hex color string, eg: 
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             '#000000'
@@ -610,7 +610,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
-        class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+        class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
         data-heading="true"
         id="intentfilters"
       >
@@ -790,7 +790,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
-          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+          class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
           data-heading="true"
           id="autoverify"
         >
@@ -856,7 +856,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="text-secondary px-1 break-words"
+              class="text-secondary px-1 wrap-break-word"
             >
               intentFilters
               .
@@ -875,7 +875,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
-          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+          class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
           data-heading="true"
           id="data"
         >
@@ -941,7 +941,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="text-secondary px-1 break-words"
+              class="text-secondary px-1 wrap-break-word"
             >
               intentFilters
               .
@@ -953,7 +953,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
           <h5
-            class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+            class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
             data-heading="true"
             id="host"
           >
@@ -1019,7 +1019,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                • Path:
                
               <code
-                class="text-secondary px-1 break-words"
+                class="text-secondary px-1 wrap-break-word"
               >
                 intentFilters.data
                 .

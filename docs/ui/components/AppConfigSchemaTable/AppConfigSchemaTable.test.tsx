@@ -2,10 +2,9 @@ import { screen } from '@testing-library/react';
 
 import { renderWithHeadings } from '~/common/test-utilities';
 
+import AppConfigSchemaTable from './';
 import { formatSchema, createDescription } from './helpers';
 import { Property } from './types';
-
-import AppConfigSchemaTable from './';
 
 const TEST_SCHEMA: Record<string, Property> = {
   name: {

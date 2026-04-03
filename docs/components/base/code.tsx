@@ -5,7 +5,6 @@ import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
-
 import {
   cleanCopyValue,
   getCodeData,
@@ -96,7 +95,7 @@ export function Code({ className, children, title }: CodeProps) {
   }
 
   const commonClasses = mergeClasses(
-    wordWrap && 'break-words! whitespace-pre-wrap!',
+    wordWrap && 'wrap-break-word! whitespace-pre-wrap!',
     showExpand && !isExpanded && `[&::-webkit-scrollbar-track]:bg-default! overflow-y-hidden!`
   );
 

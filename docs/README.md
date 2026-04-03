@@ -396,18 +396,18 @@ Fenced code blocks support dynamic variable substitution using `{{variableName}}
 
 **Available variables:**
 
-| Variable | Example value | Description |
-| --- | --- | --- |
-| `{{iosDeploymentTarget}}` | `15.1` | Minimum iOS deployment target |
-| `{{androidVersion}}` | `7` | Minimum Android version |
-| `{{compileSdkVersion}}` | `36` | Android compileSdkVersion |
-| `{{targetSdkVersion}}` | `36` | Android targetSdkVersion |
-| `{{reactNativeVersion}}` | `0.83` | React Native version |
-| `{{reactVersion}}` | `19.2.0` | React version |
-| `{{xcodeVersion}}` | `26.2` | Minimum Xcode version |
-| `{{nodeVersion}}` | `20.19.x` | Minimum Node.js version |
-| `{{expoSdkVersion}}` | `55.0.0` | Expo SDK version |
-| `{{expoSdkMajorVersion}}` | `55` | Expo SDK major version number |
+| Variable                  | Example value | Description                   |
+| ------------------------- | ------------- | ----------------------------- |
+| `{{iosDeploymentTarget}}` | `15.1`        | Minimum iOS deployment target |
+| `{{androidVersion}}`      | `7`           | Minimum Android version       |
+| `{{compileSdkVersion}}`   | `36`          | Android compileSdkVersion     |
+| `{{targetSdkVersion}}`    | `36`          | Android targetSdkVersion      |
+| `{{reactNativeVersion}}`  | `0.83`        | React Native version          |
+| `{{reactVersion}}`        | `19.2.0`      | React version                 |
+| `{{xcodeVersion}}`        | `26.2`        | Minimum Xcode version         |
+| `{{nodeVersion}}`         | `20.19.x`     | Minimum Node.js version       |
+| `{{expoSdkVersion}}`      | `55.0.0`      | Expo SDK version              |
+| `{{expoSdkMajorVersion}}` | `55`          | Expo SDK major version number |
 
 **Usage in a fenced code block:**
 
@@ -586,11 +586,18 @@ This pattern is used for some of the pages where we manually update the modifica
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 
-### Prettier
+### Lint pipeline
 
-Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
+The lint pipeline runs four tools via **scripts/lint.js** (`yarn run lint`) script:
 
-If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
+- `oxfmt` for code formatting
+- `oxlint` for code linting
+- `tsc` for type checking
+- `eslint` for Tailwind CSS classes, MDX linting, and ES Lint only rules
+
+#### Formatting via oxfmt
+
+If you have a code block using an inline annotation such as `/* @info Some text goes here */` or `/* @hide ... */`, make sure to add `/* prettier-ignore */` and `/* oxfmt-ignore */` comments right before the code block to prevent `oxfmt` from reformatting the code block and breaking the annotations.
 
 ### Use Step for procedural guides
 
