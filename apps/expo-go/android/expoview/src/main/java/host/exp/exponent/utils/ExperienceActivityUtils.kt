@@ -75,6 +75,7 @@ object ExperienceActivityUtils {
 
   // region StatusBar configuration
 
+  @Suppress("DEPRECATION")
   fun configureStatusBar(manifest: Manifest, activity: Activity) {
     val statusBarOptions = manifest.getAndroidStatusBarOptions() ?: return
 
@@ -82,19 +83,19 @@ object ExperienceActivityUtils {
     val hidden = statusBarOptions.optBoolean("hidden")
 
     activity.runOnUiThread {
-      activity.window.run {
-        // clear android:windowTranslucentStatus flag as Window is edge-to-edge
-        clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+      val window = activity.window
 
-        WindowInsetsControllerCompat(this, decorView).run {
-          if (hidden) {
-            hide(WindowInsetsCompat.Type.statusBars())
-          }
+      // clear android:windowTranslucentStatus flag as Window is edge-to-edge
+      window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
-          when (style) {
-            "dark" -> isAppearanceLightStatusBars = true
-            "light" -> isAppearanceLightStatusBars = false
-          }
+      WindowInsetsControllerCompat(window, window.decorView).run {
+        if (hidden) {
+          hide(WindowInsetsCompat.Type.statusBars())
+        }
+
+        when (style) {
+          "dark" -> isAppearanceLightStatusBars = true
+          "light" -> isAppearanceLightStatusBars = false
         }
       }
     }
@@ -130,6 +131,7 @@ object ExperienceActivityUtils {
     )
   }
 
+  @Suppress("DEPRECATION")
   fun setNavigationBar(manifest: Manifest, activity: Activity) {
     val navBarOptions = manifest.getAndroidNavigationBarOptions() ?: return
 
@@ -138,23 +140,23 @@ object ExperienceActivityUtils {
     val hidden = navBarOptions.optBoolean("hidden")
 
     activity.runOnUiThread {
-      activity.window.run {
-        // clear android:windowTranslucentNavigation flag as Window is edge-to-edge
-        clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+      val window = activity.window
 
-        WindowInsetsControllerCompat(this, decorView).run {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            isNavigationBarContrastEnforced = enforceContrast
-          }
+      // clear android:windowTranslucentNavigation flag as Window is edge-to-edge
+      window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
 
-          if (hidden) {
-            hide(WindowInsetsCompat.Type.navigationBars())
-          }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        window.isNavigationBarContrastEnforced = enforceContrast
+      }
 
-          when (style) {
-            "dark" -> isAppearanceLightNavigationBars = true
-            "light" -> isAppearanceLightNavigationBars = false
-          }
+      WindowInsetsControllerCompat(window, window.decorView).run {
+        if (hidden) {
+          hide(WindowInsetsCompat.Type.navigationBars())
+        }
+
+        when (style) {
+          "dark" -> isAppearanceLightNavigationBars = true
+          "light" -> isAppearanceLightNavigationBars = false
         }
       }
     }
