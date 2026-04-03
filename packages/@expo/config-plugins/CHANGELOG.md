@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Replaced `AndroidConfig.StatusBar` with `AndroidConfig.SystemBars`, which sets transparent defaults for both status and navigation bar colors. ([#44469](44469) by [@zoontek](https://github.com/zoontek))
+- Replaced `AndroidConfig.StatusBar` with `AndroidConfig.SystemBars`, which sets transparent defaults for both status and navigation bar colors. ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
 
 ### 🎉 New features
 
