@@ -226,6 +226,7 @@ export default defineConfig([
     },
     rules: {
       ...mdx.flat.rules,
+      'import/no-unresolved': 'error',
       'no-unused-vars': ['warn', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
       'no-unused-expressions': 'off',
       'no-useless-escape': 'off',
