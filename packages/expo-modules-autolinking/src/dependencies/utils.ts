@@ -146,7 +146,7 @@ export function mergeResolutionResults(
   const output: ResolutionResult = base == null ? Object.create(null) : base;
   for (let idx = 0; idx < results.length; idx++) {
     for (const key in results[idx]) {
-      const resolution = results[idx]?.[key]!;
+      const resolution = results[idx]![key]!;
       const prevResolution = output[key];
       if (prevResolution != null) {
         output[key] = mergeWithDuplicate(prevResolution, resolution);
