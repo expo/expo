@@ -153,7 +153,7 @@ We use Algolia as the main search results provider for our docs. This is set up 
 
 Besides the query, the results are also filtered based on the `version` tag. This tag represents the user's current location. The tag is set in the `components/DocumentationPage.tsx` head.
 
-Inside `@expo/styleguide` library, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]` in [`packages/search-ui/src/components/CommandMenu.tsx`](https://github.com/expo/styleguide/blob/main/packages/search-ui/src/components/CommandMenu.tsx). Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version.
+Inside `@expo/styleguide` library, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]` in `packages/search-ui/src/components/CommandMenu.tsx`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version.
 
 - All unversioned pages use the version tag `none`
 - All versioned pages use the SDK version (for example, `v51.0.0` or `v50.0.0`)
@@ -201,7 +201,7 @@ The API reference docs are generated from the TypeScript source code.
 
 This section walks through the process of updating documentation for an Expo package. Throughout this document, we will assume we want to update TypeDoc definitions of property inside `expo-constants` as an example.
 
-> For more information on how TypeDoc/JSDoc parses comments, see [**Doc comments in TypeDoc documentation**](https://typedoc.org/guides/doccomments/).
+> For more information on how TypeDoc/JSDoc parses comments, see [**Doc comments in TypeDoc documentation**](https://typedoc.org/documents/Doc_Comments.html).
 
 #### Prerequisites
 
