@@ -424,6 +424,14 @@ export const monospacedDigit = () => createModifier('monospacedDigit', {});
 export const tint = (color: Color) => createModifier('tint', { color });
 
 /**
+ * Sets the selected segment tint color of a segmented picker.
+ * Unlike `tint()`, this works with `pickerStyle("segmented")` by targeting the underlying `UISegmentedControl`.
+ * @param color - The tint color (hex string). For example, `#FF0000`.
+ */
+export const selectedSegmentTintColor = (color: Color) =>
+  createModifier('selectedSegmentTintColor', { color });
+
+/**
  * Hides or shows a view.
  * @param hidden - Whether the view should be hidden.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/hidden(_:)).

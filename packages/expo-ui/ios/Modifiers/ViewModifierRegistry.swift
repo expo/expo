@@ -198,6 +198,72 @@ internal struct TintModifier: ViewModifier, Record {
   }
 }
 
+internal struct SelectedSegmentTintColorModifier: ViewModifier, Record {
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+    if let color = color {
+      content.introspectSegmentedControl(color: UIColor(color))
+    } else {
+      content
+    }
+  }
+}
+
+private extension View {
+  func introspectSegmentedControl(color: UIColor) -> some View {
+    self.background(
+      SegmentedControlFinder(selectedColor: color)
+        .frame(width: 0, height: 0)
+        .allowsHitTesting(false)
+    )
+  }
+}
+
+#if !os(tvOS)
+private struct SegmentedControlFinder: UIViewRepresentable {
+  let selectedColor: UIColor
+
+  func makeUIView(context: Context) -> UIView {
+    let view = UIView()
+    view.isHidden = true
+    view.isUserInteractionEnabled = false
+    return view
+  }
+
+  func updateUIView(_ uiView: UIView, context: Context) {
+    DispatchQueue.main.async {
+      guard let segmented = uiView.findSuperview(ofType: UISegmentedControl.self) else { return }
+      segmented.selectedSegmentTintColor = selectedColor
+    }
+  }
+}
+
+private extension UIView {
+  func findSuperview<T: UIView>(ofType type: T.Type) -> T? {
+    var current: UIView? = superview
+    while let view = current {
+      if let match = view as? T { return match }
+      if let parent = view.superview {
+        for sibling in parent.subviews where sibling !== view {
+          if let match = sibling.findDescendant(ofType: type) { return match }
+        }
+      }
+      current = view.superview
+    }
+    return nil
+  }
+
+  func findDescendant<T: UIView>(ofType type: T.Type) -> T? {
+    if let match = self as? T { return match }
+    for child in subviews {
+      if let match = child.findDescendant(ofType: type) { return match }
+    }
+    return nil
+  }
+}
+#endif
+
 internal struct HiddenModifier: ViewModifier, Record {
   @Field var hidden: Bool = true
 
@@ -1556,6 +1622,10 @@ extension ViewModifierRegistry {
 
     register("tint") { params, appContext, _ in
       return try TintModifier(from: params, appContext: appContext)
+    }
+
+    register("selectedSegmentTintColor") { params, appContext, _ in
+      return try SelectedSegmentTintColorModifier(from: params, appContext: appContext)
     }
 
     register("hidden") { params, appContext, _ in
