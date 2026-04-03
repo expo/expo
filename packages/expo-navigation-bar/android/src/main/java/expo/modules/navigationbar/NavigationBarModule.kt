@@ -45,6 +45,14 @@ class NavigationBarModule : Module() {
     }
 
     AsyncFunction("setStyle") { style: String ->
+      // android:enforceNavigationBarContrast is not available below Android Q.
+      // This means the navigation bar is always semi-opaque, but the button style
+      // is not automatically adjusted for contrast. We prevent changing
+      // it to avoid "light on light" or "dark on dark" navigation bar style.
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        return@AsyncFunction
+      }
+
       val window = currentActivity.window
 
       WindowInsetsControllerCompat(window, window.decorView).run {
