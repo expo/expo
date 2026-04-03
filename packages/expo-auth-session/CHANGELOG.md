@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `timeout` option to `TokenRequestConfig` and `RevokeTokenRequestConfig` for aborting token requests after a specified duration in milliseconds. ([#44476](https://github.com/expo/expo/pull/44476) by [@dulmandakh](https://github.com/dulmandakh))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
