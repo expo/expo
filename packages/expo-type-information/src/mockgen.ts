@@ -340,6 +340,12 @@ const pattern = `${rootDir}/**/*.swift`;
 export async function getAllExpoModulesInWorkingDirectory(): Promise<FileTypeInformation[]> {
   const files = globSync(pattern);
   return (
-    await Promise.all(files.map((file) => getFileTypeInformation(fs.realpathSync(file))))
+    await Promise.all(
+      files.map((file) =>
+        getFileTypeInformation({
+          input: { type: 'file', inputFileAbsolutePath: fs.realpathSync(file) },
+        })
+      )
+    )
   ).filter((f) => f) as FileTypeInformation[];
 }

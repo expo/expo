@@ -33,11 +33,10 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BasicType = exports.TypeKind = exports.IdentifierKind = void 0;
+exports.TypeInferenceOption = exports.BasicType = exports.TypeKind = exports.IdentifierKind = void 0;
 exports.serializeTypeInformation = serializeTypeInformation;
 exports.deserializeTypeInformation = deserializeTypeInformation;
 exports.getFileTypeInformation = getFileTypeInformation;
-exports.getFileTypeInformationForString = getFileTypeInformationForString;
 const fs = __importStar(require("fs"));
 const os = __importStar(require("os"));
 const path = __importStar(require("path"));
@@ -102,39 +101,44 @@ function deserializeTypeInformation({ usedTypeIdentifiersList, declaredTypeIdent
     };
 }
 /**
- * This function reads and extracts FileTypeInformation from a given file.
- * @param absoluteFilePath Absolute path to a Swift/Kotlin file.
- * @param preprocessFile If this flag is set to true and Swift file is provided, then the file is preprocessed so that more type information can be inferred.
- *  For now this option is slow so it's not enabled by default.
- * @returns FileTypeInformation object if the file provided was .swift file and it was parsed successfully. Otherwise it returns null.
+ * Defines the level of type inference to apply when extracting type information.
+ * Note: In case where type inference is on, it may take more then twice the time to compute the type information.
  */
-async function getFileTypeInformation(absoluteFilePath, preprocessFile = false) {
-    if (absoluteFilePath.endsWith('.swift')) {
-        if (preprocessFile) {
-            return getFileTypeInformationForString(fs.readFileSync(absoluteFilePath, 'utf-8'), 'Swift', true);
-        }
-        return await (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(absoluteFilePath);
-    }
-    return null;
-}
+var TypeInferenceOption;
+(function (TypeInferenceOption) {
+    /** No type inference will be performed. */
+    TypeInferenceOption[TypeInferenceOption["NO_INFERENCE"] = 0] = "NO_INFERENCE";
+    /** Basic type inference will be applied. */
+    TypeInferenceOption[TypeInferenceOption["SIMPLE_INFERENCE"] = 1] = "SIMPLE_INFERENCE";
+    /** * Preprocesses the file by injecting returns to extract more type info from sourcekitten. */
+    TypeInferenceOption[TypeInferenceOption["PREPROCESS_AND_INFERENCE"] = 2] = "PREPROCESS_AND_INFERENCE";
+})(TypeInferenceOption || (exports.TypeInferenceOption = TypeInferenceOption = {}));
 /**
- * This function creates a temporary file with the provided content and extracts FileTypeInformation from it.
- * @param content Swift code.
- * @param language For now only Swift is supported.
- * @param preprocessFile If this flag is set to true and Swift file is provided, then the file is preprocessed so that more type information can be inferred.
- *  For now this option is slow so it's not enabled by default.
- * @returns FileTypeInformation object if the content provided was Swift and was parsed successfully. Otherwise it returns null.
+ * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
+ * * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
+ * the function will create a temporary file with the (optionally preprocessed) content to facilitate parsing.
+ * * @param options - Configuration object containing the input source (file or string) and the desired level of type inference.
+ * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it returns `null`.
  */
-async function getFileTypeInformationForString(content, language, preprocessFile = false) {
-    if (language === 'Swift') {
-        const tmp = os.tmpdir();
-        const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
-        const preprocessedContent = preprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(content) : content;
-        fs.writeFileSync(filePath, preprocessedContent, 'utf8');
-        const fileTypeInfo = await getFileTypeInformation(filePath);
-        fs.rmSync(filePath);
-        return fileTypeInfo;
+async function getFileTypeInformation({ input, typeInference, }) {
+    const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+    const typeInferenceOn = typeInference !== TypeInferenceOption.NO_INFERENCE;
+    if (!shouldPreprocessFile && input.type === 'file') {
+        return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(input.inputFileAbsolutePath, {
+            typeInference: typeInferenceOn,
+        });
     }
-    return null;
+    const fileContent = input.type === 'file'
+        ? fs.readFileSync(input.inputFileAbsolutePath, 'utf-8')
+        : input.fileContent;
+    const preprocessedContent = shouldPreprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent) : fileContent;
+    const tmp = os.tmpdir();
+    const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
+    fs.writeFileSync(filePath, preprocessedContent, 'utf8');
+    const fileTypeInfo = await (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(filePath, {
+        typeInference: typeInferenceOn,
+    });
+    fs.rmSync(filePath);
+    return fileTypeInfo;
 }
 //# sourceMappingURL=typeInformation.js.map

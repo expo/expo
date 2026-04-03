@@ -175,20 +175,41 @@ export declare function serializeTypeInformation({ usedTypeIdentifiers, declared
  */
 export declare function deserializeTypeInformation({ usedTypeIdentifiersList, declaredTypeIdentifiersList, inferredTypeParametersCountList, typeIdentifierDefinitionList, moduleClasses, records, enums, }: FileTypeInformationSerialized): FileTypeInformation;
 /**
- * This function reads and extracts FileTypeInformation from a given file.
- * @param absoluteFilePath Absolute path to a Swift/Kotlin file.
- * @param preprocessFile If this flag is set to true and Swift file is provided, then the file is preprocessed so that more type information can be inferred.
- *  For now this option is slow so it's not enabled by default.
- * @returns FileTypeInformation object if the file provided was .swift file and it was parsed successfully. Otherwise it returns null.
+ * Defines the level of type inference to apply when extracting type information.
+ * Note: In case where type inference is on, it may take more then twice the time to compute the type information.
  */
-export declare function getFileTypeInformation(absoluteFilePath: string, preprocessFile?: boolean): Promise<FileTypeInformation | null>;
+export declare enum TypeInferenceOption {
+    /** No type inference will be performed. */
+    NO_INFERENCE = 0,
+    /** Basic type inference will be applied. */
+    SIMPLE_INFERENCE = 1,
+    /** * Preprocesses the file by injecting returns to extract more type info from sourcekitten. */
+    PREPROCESS_AND_INFERENCE = 2
+}
+export type StringInputOption = {
+    type: 'string';
+    fileContent: string;
+    language: 'Swift';
+};
+export type FileInputOption = {
+    type: 'file';
+    inputFileAbsolutePath: string;
+};
 /**
- * This function creates a temporary file with the provided content and extracts FileTypeInformation from it.
- * @param content Swift code.
- * @param language For now only Swift is supported.
- * @param preprocessFile If this flag is set to true and Swift file is provided, then the file is preprocessed so that more type information can be inferred.
- *  For now this option is slow so it's not enabled by default.
- * @returns FileTypeInformation object if the content provided was Swift and was parsed successfully. Otherwise it returns null.
+ * Options specifying the input source and inference level for retrieving type information.
  */
-export declare function getFileTypeInformationForString(content: string, language: 'Swift', preprocessFile?: boolean): Promise<FileTypeInformation | null>;
+export type GetFileTypeInformationOptions = {
+    /** The input source, provided either as a direct string or a file path. */
+    input: StringInputOption | FileInputOption;
+    /** The desired level of type inference. Defaults to PREPROCESS_AND_INFERENCE if omitted. */
+    typeInference?: TypeInferenceOption;
+};
+/**
+ * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
+ * * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
+ * the function will create a temporary file with the (optionally preprocessed) content to facilitate parsing.
+ * * @param options - Configuration object containing the input source (file or string) and the desired level of type inference.
+ * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it returns `null`.
+ */
+export declare function getFileTypeInformation({ input, typeInference, }: GetFileTypeInformationOptions): Promise<FileTypeInformation | null>;
 //# sourceMappingURL=typeInformation.d.ts.map
