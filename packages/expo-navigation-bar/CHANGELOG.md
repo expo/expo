@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `setStyle` on Android < Q by setting an explicit navigation bar color for proper button contrast. ([#44477](https://github.com/expo/expo/pull/44477) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 - Deprecated `setVisibilityAsync`, `getVisibilityAsync`, `useVisibility`, `addVisibilityListener`, and top-level `setStyle` in favor of the `NavigationBar` component and its static methods. ([#44327](https://github.com/expo/expo/pull/44327) by [@zoontek](https://github.com/zoontek))
