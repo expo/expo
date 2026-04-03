@@ -199,7 +199,7 @@ export default defineConfig([
 
   // JavaScript/Node files configuration
   {
-    files: ['**/*.js', '**/*.cjs', '**/*.ts'],
+    files: ['**/*.js', '**/*.cjs'],
     plugins: {
       lodash,
       unicorn,
