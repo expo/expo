@@ -173,10 +173,8 @@ export async function verifySearchResults(
       const revisions = [revision, ...(revision.duplicates ?? [])];
       for (let idx = 0; idx < revisions.length; idx++) {
         const prefix = idx !== revisions.length - 1 ? '├─' : '└─';
-        const duplicate = revisions[idx];
-        if (duplicate != null) {
-          console.log(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
-        }
+        const duplicate = revisions[idx]!;
+        console.log(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
       }
     }
 

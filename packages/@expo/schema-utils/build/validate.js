@@ -206,11 +206,8 @@ const validateItems = (itemsSchema, additionalItems, value, path) => {
   if (Array.isArray(itemsSchema)) {
     let idx = 0;
     for (idx = 0; idx < itemsSchema.length; idx++) {
-      const schema = itemsSchema[idx];
-      if (schema != null) {
-        if ((child = validateSchema(schema, value[idx], `${path}[${idx}]`)) != null) {
-          return child;
-        }
+      if ((child = validateSchema(itemsSchema[idx], value[idx], `${path}[${idx}]`)) != null) {
+        return child;
       }
     }
     if (idx < value.length) {

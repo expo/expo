@@ -101,22 +101,20 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
         const hasStorePaths = versions.some((version) => STORE_PATH.test(version.originPath));
         for (let idx = 0; idx < versions.length; idx++) {
           const prefix = idx !== versions.length - 1 ? '├─' : '└─';
-          const duplicate = versions[idx];
-          if (duplicate != null) {
-            line.push(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
-            // If some duplicates are isolated store paths, but not all, we display the real path
-            // of the non store paths to assure the user that this check is aware of isolated dependencies
-            if (
-              hasStorePaths &&
-              duplicate.originPath !== duplicate.path &&
-              STORE_PATH.test(duplicate.path)
-            ) {
-              const linkedOutput = !STORE_PATH.test(duplicate.originPath)
-                ? `linked to: ${path.relative(projectRoot, dependency.path)}`
-                : 'linked to a different installation';
-              const prefix = idx !== versions.length - 1 ? '│' : ' ';
-              line.push(`  ${prefix}  ` + chalk.grey(`└─ ${linkedOutput}`));
-            }
+          const duplicate = versions[idx]!;
+          line.push(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
+          // If some duplicates are isolated store paths, but not all, we display the real path
+          // of the non store paths to assure the user that this check is aware of isolated dependencies
+          if (
+            hasStorePaths &&
+            duplicate.originPath !== duplicate.path &&
+            STORE_PATH.test(duplicate.path)
+          ) {
+            const linkedOutput = !STORE_PATH.test(duplicate.originPath)
+              ? `linked to: ${path.relative(projectRoot, dependency.path)}`
+              : 'linked to a different installation';
+            const prefix = idx !== versions.length - 1 ? '│' : ' ';
+            line.push(`  ${prefix}  ` + chalk.grey(`└─ ${linkedOutput}`));
           }
         }
         issues.push(line.join('\n'));
