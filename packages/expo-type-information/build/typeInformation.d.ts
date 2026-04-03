@@ -58,30 +58,38 @@ export type Type = {
 export type PropertyDeclaration = ConstantDeclaration;
 export type ViewDeclaration = ModuleClassDeclaration;
 export type EventDeclaration = string;
+/**
+ * Retain information of where the thing was defined in the file.
+ * As collecting type information is written in asynchronous way it is non-deterministic.
+ * To make it deterministic we just sort the declaration by the definitionOffset, maintianing the same ordering as in original file.
+ */
+export type DefinitionOffset = {
+    definitionOffset: number;
+};
 export type ConstantDeclaration = {
     name: string;
     type: Type;
-};
+} & DefinitionOffset;
 export type FunctionDeclaration = {
     name: string;
     returnType: Type;
     arguments: Argument[];
     parameters: Type[];
-};
+} & DefinitionOffset;
 export type PropDeclaration = {
     name: string;
     arguments: Argument[];
-};
+} & DefinitionOffset;
 export type ConstructorDeclaration = {
     arguments: Argument[];
-};
+} & DefinitionOffset;
 export type ClassDeclaration = {
     name: string;
     constructor: ConstructorDeclaration | null;
     methods: FunctionDeclaration[];
     asyncMethods: FunctionDeclaration[];
     properties: PropertyDeclaration[];
-};
+} & DefinitionOffset;
 export type ModuleClassDeclaration = {
     name: string;
     constructor: ConstructorDeclaration | null;
@@ -93,7 +101,7 @@ export type ModuleClassDeclaration = {
     props: PropDeclaration[];
     views: ViewDeclaration[];
     events: EventDeclaration[];
-};
+} & DefinitionOffset;
 export type TypeIdentifierDefinitionMap = Map<string, {
     kind: IdentifierKind;
     definition: string | RecordType | EnumType | ClassDeclaration;
