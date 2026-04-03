@@ -5,15 +5,10 @@ export * from './MediaLibraryNext.types';
 export declare class Query extends ExpoMediaLibraryNext.Query {
 }
 export declare class Asset extends ExpoMediaLibraryNext.Asset {
-    static create(filePath: string, album?: Album): Promise<Asset>;
-    static delete(assets: Asset[]): Promise<void>;
     getFavorite(): Promise<boolean>;
     setFavorite(isFavorite: boolean): Promise<void>;
 }
 export declare class Album extends ExpoMediaLibraryNext.Album {
-    static create(name: string, assetsRefs: string[] | Asset[], moveAssets?: boolean): Promise<Album>;
-    static delete(albums: Album[], deleteAssets?: boolean): Promise<void>;
-    static get(title: string): Promise<Album | null>;
 }
 /**
  * Asks the user to grant permissions for accessing media in user's media library.

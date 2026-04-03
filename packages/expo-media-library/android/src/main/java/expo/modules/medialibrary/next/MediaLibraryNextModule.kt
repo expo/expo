@@ -130,6 +130,14 @@ class MediaLibraryNextModule : Module() {
       AsyncFunction("delete") Coroutine { self: Asset ->
         self.delete()
       }
+
+      StaticAsyncFunction("create") Coroutine { filePath: Uri, album: Album? ->
+        return@Coroutine assetFactory.create(filePath, album?.getRelativePath())
+      }
+
+      StaticAsyncFunction("delete") Coroutine { assets: List<Asset> ->
+        assetDeleter.delete(assets.map { it.contentUri })
+      }
     }
 
     Class(Album::class) {
@@ -155,6 +163,28 @@ class MediaLibraryNextModule : Module() {
 
       AsyncFunction("delete") Coroutine { self: Album ->
         self.delete()
+      }
+
+      StaticAsyncFunction("get") Coroutine { title: String ->
+        albumQuery.getAlbum(title)
+      }
+
+      StaticAsyncFunction("delete") Coroutine { albums: List<Album>, deleteAssets: Boolean ->
+        val contentUris = albums
+          .map { it.getAssets() }
+          .flatten()
+          .map { it.contentUri }
+        assetDeleter.delete(contentUris)
+      }
+
+      StaticAsyncFunction("create") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, move: Boolean ->
+        val assetListKClass = toKClass<List<Asset>>()
+        if (assetRefs.`is`(assetListKClass)) {
+          val assetList = assetRefs.get(assetListKClass)
+          return@Coroutine albumFactory.createFromAssets(name, assetList, move)
+        }
+        val assetPaths = assetRefs.get(toKClass<List<Uri>>())
+        return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
       }
     }
 
@@ -213,36 +243,6 @@ class MediaLibraryNextModule : Module() {
       AsyncFunction("exe") Coroutine { self: Query ->
         return@Coroutine self.exe()
       }
-    }
-
-    AsyncFunction("createAsset") Coroutine { filePath: Uri, album: Album? ->
-      return@Coroutine assetFactory.create(filePath, album?.getRelativePath())
-    }
-
-    AsyncFunction("createAlbum") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, move: Boolean ->
-      val assetListKClass = toKClass<List<Asset>>()
-      if (assetRefs.`is`(assetListKClass)) {
-        val assetList = assetRefs.get(assetListKClass)
-        return@Coroutine albumFactory.createFromAssets(name, assetList, move)
-      }
-      val assetPaths = assetRefs.get(toKClass<List<Uri>>())
-      return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
-    }
-
-    AsyncFunction("getAlbum") Coroutine { title: String ->
-      albumQuery.getAlbum(title)
-    }
-
-    AsyncFunction("deleteAlbums") Coroutine { albums: List<Album> ->
-      val contentUris = albums
-        .map { it.getAssets() }
-        .flatten()
-        .map { it.contentUri }
-      assetDeleter.delete(contentUris)
-    }
-
-    AsyncFunction("deleteAssets") Coroutine { assets: List<Asset> ->
-      assetDeleter.delete(assets.map { it.contentUri })
     }
 
     AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->

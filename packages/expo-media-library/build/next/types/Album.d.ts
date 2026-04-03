@@ -80,7 +80,7 @@ export declare class Album {
      * console.log(await album.getTitle()); // "My Album"
      * ```
      */
-    static create(name: string, assetsRefs: string[] | Asset[], moveAssets: boolean): Promise<Album>;
+    static create(name: string, assetsRefs: string[] | Asset[], moveAssets?: boolean): Promise<Album>;
     /**
      * A static function. Deletes multiple albums at once.
      * @param albums - An array of {@link Album} instances to delete.

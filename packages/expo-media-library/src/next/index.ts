@@ -10,16 +10,6 @@ export class Query extends ExpoMediaLibraryNext.Query {}
 
 export class Asset extends ExpoMediaLibraryNext.Asset {
   // @hidden
-  static create(filePath: string, album?: Album): Promise<Asset> {
-    return ExpoMediaLibraryNext.createAsset(filePath, album);
-  }
-
-  // @hidden
-  static delete(assets: Asset[]): Promise<void> {
-    return ExpoMediaLibraryNext.deleteAssets(assets);
-  }
-
-  // @hidden
   getFavorite(): Promise<boolean> {
     if (Platform.OS !== 'ios') {
       throw new UnavailabilityError('MediaLibrary', 'getFavorite is only available on iOS');
@@ -36,33 +26,7 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
   }
 }
 
-export class Album extends ExpoMediaLibraryNext.Album {
-  // @hidden
-  static create(
-    name: string,
-    assetsRefs: string[] | Asset[],
-    moveAssets: boolean = true
-  ): Promise<Album> {
-    if (Platform.OS === 'ios') {
-      return ExpoMediaLibraryNext.createAlbum(name, assetsRefs);
-    }
-    return ExpoMediaLibraryNext.createAlbum(name, assetsRefs, moveAssets);
-  }
-
-  // @hidden
-  static delete(albums: Album[], deleteAssets: boolean = false): Promise<void> {
-    if (Platform.OS === 'ios') {
-      return ExpoMediaLibraryNext.deleteAlbums(albums, deleteAssets);
-    } else {
-      return ExpoMediaLibraryNext.deleteAlbums(albums);
-    }
-  }
-
-  // @hidden
-  static get(title: string): Promise<Album | null> {
-    return ExpoMediaLibraryNext.getAlbum(title);
-  }
-}
+export class Album extends ExpoMediaLibraryNext.Album {}
 
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
