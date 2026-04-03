@@ -337,9 +337,9 @@ export async function generateMocks(
 
 const rootDir = process.cwd();
 const pattern = `${rootDir}/**/*.swift`;
-export function getAllExpoModulesInWorkingDirectory(): FileTypeInformation[] {
+export async function getAllExpoModulesInWorkingDirectory(): Promise<FileTypeInformation[]> {
   const files = globSync(pattern);
-  return files
-    .map((file) => getFileTypeInformation(fs.realpathSync(file)))
-    .filter((f) => f) as FileTypeInformation[];
+  return (
+    await Promise.all(files.map((file) => getFileTypeInformation(fs.realpathSync(file))))
+  ).filter((f) => f) as FileTypeInformation[];
 }

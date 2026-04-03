@@ -108,12 +108,12 @@ function deserializeTypeInformation({ usedTypeIdentifiersList, declaredTypeIdent
  *  For now this option is slow so it's not enabled by default.
  * @returns FileTypeInformation object if the file provided was .swift file and it was parsed successfully. Otherwise it returns null.
  */
-function getFileTypeInformation(absoluteFilePath, preprocessFile = false) {
+async function getFileTypeInformation(absoluteFilePath, preprocessFile = false) {
     if (absoluteFilePath.endsWith('.swift')) {
         if (preprocessFile) {
             return getFileTypeInformationForString(fs.readFileSync(absoluteFilePath, 'utf-8'), 'Swift', true);
         }
-        return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(absoluteFilePath);
+        return await (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(absoluteFilePath);
     }
     return null;
 }
@@ -125,13 +125,13 @@ function getFileTypeInformation(absoluteFilePath, preprocessFile = false) {
  *  For now this option is slow so it's not enabled by default.
  * @returns FileTypeInformation object if the content provided was Swift and was parsed successfully. Otherwise it returns null.
  */
-function getFileTypeInformationForString(content, language, preprocessFile = false) {
+async function getFileTypeInformationForString(content, language, preprocessFile = false) {
     if (language === 'Swift') {
         const tmp = os.tmpdir();
         const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
         const preprocessedContent = preprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(content) : content;
         fs.writeFileSync(filePath, preprocessedContent, 'utf8');
-        const fileTypeInfo = getFileTypeInformation(filePath);
+        const fileTypeInfo = await getFileTypeInformation(filePath);
         fs.rmSync(filePath);
         return fileTypeInfo;
     }

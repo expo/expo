@@ -1,6 +1,9 @@
-import { execSync } from 'child_process';
+import { execSync, exec } from 'child_process';
 import fs from 'fs';
 import YAML from 'yaml';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 import {
   Argument,
@@ -8,6 +11,7 @@ import {
   ClassDeclaration,
   ConstantDeclaration,
   ConstructorDeclaration,
+  DefinitionOffset,
   DictionaryType,
   EnumType,
   Field,
@@ -26,6 +30,14 @@ import {
   ViewDeclaration,
 } from '../typeInformation';
 import { Attribute, FileType, Structure } from '../types';
+
+// TODO maybe take the taskAll from cli?
+export const taskAll = <T, R>(
+  inputs: T[],
+  map: (input: T, index: number) => Promise<R>
+): Promise<R[]> => {
+  return Promise.all(inputs.map(map));
+};
 
 function isSwiftDictionary(type: string): boolean {
   return (
@@ -231,11 +243,12 @@ function hasSubstructure(structure: Structure) {
   return structure?.['key.substructure'] && structure['key.substructure'].length > 0;
 }
 
-function findReturnType(structure: Structure, file: FileType): string | null {
+async function findReturnType(structure: Structure, file: FileType): Promise<string | null> {
   if (
     structure['key.kind'] === 'source.lang.swift.decl.var.local' &&
     structure['key.name'].startsWith('returnValueDeclaration_')
   ) {
+    // TODO this return type inference is really costly
     return getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
   }
   if (hasSubstructure(structure)) {
@@ -259,18 +272,22 @@ function getSDKPath(): string {
   return cachedSDKPath;
 }
 
-function extractDeclarationType(structure: Structure, file: FileType): Type {
+async function extractDeclarationType(structure: Structure, file: FileType): Promise<Type> {
   if (structure['key.typename']) {
     return mapSwiftTypeToTsType(structure['key.typename'] as string);
   }
-  const inferReturn = getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
+  // TODO this type inference is really costly
+  const inferReturn = await getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
   return mapSwiftTypeToTsType(inferReturn ?? 'Any');
 }
 
 // Read type description with sourcekitten, works only for variables
 // TODO This function is extremely slow and inefficient
 // consider other options
-function getTypeOfByteOffsetVariable(byteOffset: number, file: FileType): string | null {
+async function getTypeOfByteOffsetVariable(
+  byteOffset: number,
+  file: FileType
+): Promise<string | null> {
   const request = {
     'key.request': 'source.request.cursorinfo',
     'key.sourcefile': file.path,
@@ -288,7 +305,8 @@ function getTypeOfByteOffsetVariable(byteOffset: number, file: FileType): string
 
   const command = 'sourcekitten request --yaml "' + yamlRequest + '"';
   try {
-    const output = JSON.parse(execSync(command, { stdio: 'pipe' }).toString());
+    const { stdout } = await execAsync(command);
+    const output = JSON.parse(stdout.toString());
     const inferredType = output['key.typename'];
     if (inferredType === '<<error type>>') {
       return null;
@@ -312,16 +330,16 @@ function mapSourcekittenParameterToType(parameter: {
 
 const parseModulePropertySubstructure = parseModuleConstantSubstructure;
 
-function parseClosureTypes(
+async function parseClosureTypes(
   structure: Structure,
   file: FileType
-): { parameters: { name: string; typename: string }[]; returnType: string | null } {
+): Promise<{ parameters: { name: string; typename: string }[]; returnType: string | null }> {
   const closure = structure['key.substructure']?.find(
     (s) => s['key.kind'] === 'source.lang.swift.expr.closure'
   );
   if (!closure) {
     // Try finding the preprocessed return value, if not found we don't know the return type
-    const returnType = findReturnType(structure, file);
+    const returnType = await findReturnType(structure, file);
     return { parameters: [], returnType };
   }
   const parameters = closure['key.substructure']
@@ -331,23 +349,23 @@ function parseClosureTypes(
       typename: p['key.typename'],
     }));
 
-  const returnType = closure?.['key.typename'] ?? findReturnType(structure, file);
+  const returnType = closure?.['key.typename'] ?? (await findReturnType(structure, file));
   return { parameters, returnType };
 }
 
-function parseModuleConstructorDeclaration(
+async function parseModuleConstructorDeclaration(
   substructure: Structure,
   file: FileType
-): ConstructorDeclaration {
+): Promise<ConstructorDeclaration> {
   const definitionParams = substructure['key.substructure'];
   let types = null;
 
   // TODO rethink this maybe split based on what closure is expected
   // Maybe this should be the last substructure
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
-    types = parseClosureTypes(definitionParams[1], file);
+    types = await parseClosureTypes(definitionParams[1], file);
   } else if (definitionParams[0] && hasSubstructure(definitionParams[0])) {
-    types = parseClosureTypes(definitionParams[0], file);
+    types = await parseClosureTypes(definitionParams[0], file);
   } else {
     // TODO REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
@@ -355,13 +373,14 @@ function parseModuleConstructorDeclaration(
 
   return {
     arguments: types?.parameters.map(mapSourcekittenParameterToType) ?? [],
+    definitionOffset: substructure['key.offset'],
   };
 }
 
-function parseModuleConstantSubstructure(
+async function parseModuleConstantSubstructure(
   substructure: Structure,
   file: FileType
-): ConstantDeclaration | null {
+): Promise<ConstantDeclaration | null> {
   const definitionParams = substructure['key.substructure'];
   if (!definitionParams[0]) {
     return null;
@@ -369,7 +388,7 @@ function parseModuleConstantSubstructure(
   const name = getIdentifierFromOffsetObject(definitionParams[0], file);
   let types = null;
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
-    types = parseClosureTypes(definitionParams[1], file);
+    types = await parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
@@ -378,10 +397,14 @@ function parseModuleConstantSubstructure(
   return {
     name,
     type: mapSwiftTypeToTsType(types?.returnType ?? undefined),
+    definitionOffset: substructure['key.offset'],
   };
 }
 
-function parseModuleClassSubstructure(substructure: Structure, file: FileType): ClassDeclaration {
+async function parseModuleClassSubstructure(
+  substructure: Structure,
+  file: FileType
+): Promise<ClassDeclaration> {
   const nestedModuleStructure =
     substructure['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0]?.[
       'key.substructure'
@@ -400,13 +423,15 @@ function parseModuleClassSubstructure(substructure: Structure, file: FileType): 
       methods: [],
       asyncMethods: [],
       properties: [],
+      definitionOffset: substructure['key.offset'],
     };
   }
 
-  const classTypeInfo = parseModuleStructure(
+  const classTypeInfo = await parseModuleStructure(
     nestedModuleStructure,
     file,
-    'GREPME Does Not Matter :)'
+    'GREPME Does Not Matter :)',
+    substructure['key.offset']
   );
   return {
     name,
@@ -414,13 +439,14 @@ function parseModuleClassSubstructure(substructure: Structure, file: FileType): 
     asyncMethods: classTypeInfo.asyncFunctions,
     properties: classTypeInfo.properties,
     constructor: classTypeInfo.constructor,
+    definitionOffset: substructure['key.offset'],
   };
 }
 
-function parseModuleFunctionSubstructure(
+async function parseModuleFunctionSubstructure(
   substructure: Structure,
   file: FileType
-): FunctionDeclaration {
+): Promise<FunctionDeclaration> {
   const definitionParams = substructure['key.substructure'];
   const nameSubstrucutre = definitionParams[0];
   const name = nameSubstrucutre
@@ -428,7 +454,7 @@ function parseModuleFunctionSubstructure(
     : 'UnnamedFunction';
   let types = null;
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
-    types = parseClosureTypes(definitionParams[1], file);
+    types = await parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
@@ -439,10 +465,14 @@ function parseModuleFunctionSubstructure(
     returnType: mapSwiftTypeToTsType(types?.returnType ?? undefined), // any or void ? Probably any
     parameters: [], // TODO Module function is not generic. I think so. Check it
     arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
+    definitionOffset: substructure['key.offset'],
   };
 }
 
-function parseModulePropDeclaration(substructure: Structure, file: FileType): PropDeclaration {
+async function parseModulePropDeclaration(
+  substructure: Structure,
+  file: FileType
+): Promise<PropDeclaration> {
   const definitionParams = substructure['key.substructure'];
   const nameSubstrucutre = definitionParams[0];
   const name = nameSubstrucutre
@@ -450,7 +480,7 @@ function parseModulePropDeclaration(substructure: Structure, file: FileType): Pr
     : 'UnkownProp';
   let types = null;
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
-    types = parseClosureTypes(definitionParams[1], file);
+    types = await parseClosureTypes(definitionParams[1], file);
   } else {
     // TODO REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
@@ -459,25 +489,25 @@ function parseModulePropDeclaration(substructure: Structure, file: FileType): Pr
   return {
     name,
     arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
+    definitionOffset: substructure['key.offset'],
   };
 }
 
-function parseModuleViewDeclaration(
+async function parseModuleViewDeclaration(
   substructure: Structure,
   file: FileType
-): ViewDeclaration | null {
+): Promise<ViewDeclaration | null> {
   // The View arguments is a.self for some class a we want.
   const suffixLength = 5;
   const nameSubstrucutre = substructure['key.substructure']?.[0];
   if (!nameSubstrucutre) return null;
   const name = getIdentifierFromOffsetObject(nameSubstrucutre, file).slice(0, -suffixLength);
 
-  const viewSubstructure =
-    substructure?.['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0]?.[
-      'key.substructure'
-    ];
+  const viewStructure =
+    substructure?.['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0];
+  const viewSubstructure = viewStructure?.['key.substructure'];
   if (!viewSubstructure) return null;
-  return parseModuleStructure(viewSubstructure, file, name);
+  return await parseModuleStructure(viewSubstructure, file, name, viewStructure['key.offset']);
 }
 
 function parseModuleEventDeclaration(structure: Structure, file: FileType, events: string[]): void {
@@ -506,27 +536,28 @@ function hasFieldAttribute(attributes: Attribute[] | null, file: FileType): bool
   return false;
 }
 
-function parseRecordStructure(
+async function parseRecordStructure(
   recordStructure: Structure,
   usedTypeIdentifiers: Set<string>,
   inferredTypeParametersCount: Map<string, number>,
   file: FileType
-): RecordType {
+): Promise<RecordType> {
   const fields: Field[] = [];
+  const recordSubstrucutres = recordStructure['key.substructure'].filter(
+    (substructure) =>
+      substructure['key.kind'] === 'source.lang.swift.decl.var.instance' &&
+      hasFieldAttribute(substructure['key.attributes'], file)
+  );
 
-  for (const substructure of recordStructure['key.substructure']) {
-    if (
-      substructure['key.kind'] !== 'source.lang.swift.decl.var.instance' ||
-      !hasFieldAttribute(substructure['key.attributes'], file)
-    ) {
-      continue;
-    }
-
-    const type: Type = extractDeclarationType(substructure, file);
-    fields.push({
-      name: substructure['key.name'],
-      type,
+  const substructureTypeMap = (substructure: Structure) => {
+    return extractDeclarationType(substructure, file).then((type) => {
+      return { type, name: substructure['key.name'] };
     });
+  };
+  const recordElementTypes = await taskAll(recordSubstrucutres, substructureTypeMap);
+
+  for (const { type, name } of recordElementTypes) {
+    fields.push({ type, name });
     collectTypeIdentifiers(type, usedTypeIdentifiers, inferredTypeParametersCount);
   }
 
@@ -557,12 +588,27 @@ function parseEnumStructure(enumStructure: Structure): EnumType {
   };
 }
 
-function parseModuleStructure(
+function sortModuleClassDeclaration(moduleClassDeclaration: ModuleClassDeclaration) {
+  const cmp = (obj0: DefinitionOffset, obj1: DefinitionOffset): number =>
+    obj0.definitionOffset - obj1.definitionOffset;
+
+  moduleClassDeclaration.asyncFunctions.sort(cmp);
+  moduleClassDeclaration.classes.sort(cmp);
+  moduleClassDeclaration.constants.sort(cmp);
+  moduleClassDeclaration.events.sort();
+  moduleClassDeclaration.functions.sort(cmp);
+  moduleClassDeclaration.properties.sort(cmp);
+  moduleClassDeclaration.props.sort(cmp);
+  moduleClassDeclaration.views.sort(cmp);
+}
+
+async function parseModuleStructure(
   moduleStructure: Structure[],
   file: FileType,
-  name: string
-): ModuleClassDeclaration {
-  const mcd: ModuleClassDeclaration = {
+  name: string,
+  definitionOffset: number
+): Promise<ModuleClassDeclaration> {
+  const moduleClassDeclaration: ModuleClassDeclaration = {
     name,
     constants: [],
     constructor: null,
@@ -573,58 +619,74 @@ function parseModuleStructure(
     props: [],
     views: [],
     events: [],
+    definitionOffset,
   };
 
-  for (const md of moduleStructure) {
-    switch (md['key.name']) {
+  await taskAll(moduleStructure, async (structure, index) => {
+    switch (structure['key.name']) {
       case 'Name':
-        const nameSubstrucutre = md['key.substructure']?.[0];
+        const nameSubstrucutre = structure['key.substructure']?.[0];
         if (nameSubstrucutre) {
-          mcd.name = getIdentifierFromOffsetObject(nameSubstrucutre, file);
+          moduleClassDeclaration.name = getIdentifierFromOffsetObject(nameSubstrucutre, file);
         }
         break;
       case 'Function':
-        mcd.functions.push(parseModuleFunctionSubstructure(md, file));
+        moduleClassDeclaration.functions.push(
+          await parseModuleFunctionSubstructure(structure, file)
+        );
         break;
       case 'Constant':
-        const constantDeclaration = parseModuleConstantSubstructure(md, file);
+        const constantDeclaration = await parseModuleConstantSubstructure(structure, file);
         if (constantDeclaration) {
-          mcd.constants.push(constantDeclaration);
+          moduleClassDeclaration.constants.push(constantDeclaration);
         }
         break;
       case 'Class':
-        mcd.classes.push(parseModuleClassSubstructure(md, file));
+        moduleClassDeclaration.classes.push(await parseModuleClassSubstructure(structure, file));
         break;
       case 'Property':
-        const propertyDeclaration = parseModulePropertySubstructure(md, file);
+        const propertyDeclaration = await parseModulePropertySubstructure(structure, file);
         if (propertyDeclaration) {
-          mcd.properties.push(propertyDeclaration);
+          moduleClassDeclaration.properties.push(propertyDeclaration);
         }
         break;
       case 'AsyncFunction':
-        mcd.asyncFunctions.push(parseModuleFunctionSubstructure(md, file));
+        moduleClassDeclaration.asyncFunctions.push(
+          await parseModuleFunctionSubstructure(structure, file)
+        );
         break;
       case 'Constructor':
-        mcd.constructor = parseModuleConstructorDeclaration(md, file);
+        moduleClassDeclaration.constructor = await parseModuleConstructorDeclaration(
+          structure,
+          file
+        );
         break;
       case 'Prop':
-        mcd.props.push(parseModulePropDeclaration(md, file));
+        moduleClassDeclaration.props.push(await parseModulePropDeclaration(structure, file));
         break;
       case 'View':
-        const viewDeclaration = parseModuleViewDeclaration(md, file);
+        const viewDeclaration = await parseModuleViewDeclaration(structure, file);
         if (viewDeclaration) {
-          mcd.views.push(viewDeclaration);
+          moduleClassDeclaration.views.push(viewDeclaration);
         }
         break;
       case 'Events':
-        parseModuleEventDeclaration(md, file, mcd.events);
+        parseModuleEventDeclaration(structure, file, moduleClassDeclaration.events);
         break;
       default:
         console.warn('Module substructure not supported');
     }
-  }
+  });
 
-  return mcd;
+  // As we parse the module structure concurrently the order of for example functions is nondeterministic.
+  // We want to make it deterministic -- better for testing and usage.
+  //
+  // To make it deterministic a `definitionOffset` was added to each declaration.
+  // We sort declaration by this `definitionOffset` which additionally preserves the in file ordering.
+  //
+  // This may not be as useful if we get to merging type informations from multiple files as the `definitionOffset` will not be comparable.
+  sortModuleClassDeclaration(moduleClassDeclaration);
+  return moduleClassDeclaration;
 }
 
 function parseStructure(
@@ -762,7 +824,9 @@ function collectModuleTypeIdentifiers(
   });
 }
 
-export function getSwiftFileTypeInformation(filePath: string): FileTypeInformation | null {
+export async function getSwiftFileTypeInformation(
+  filePath: string
+): Promise<FileTypeInformation | null> {
   const file = { path: filePath, content: fs.readFileSync(filePath, 'utf8') };
 
   const modulesStructures: { name: string; structure: Structure }[] = [];
@@ -783,9 +847,21 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
   const recordTypeIdentifiers: Set<string> = new Set<string>();
   const typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap = new Map();
   const enums: EnumType[] = enumsStructures.map(parseEnumStructure);
-  const recordMap = (rd: Structure) =>
-    parseRecordStructure(rd, recordTypeIdentifiers, inferredTypeParametersCount, file);
-  const records = recordsStructures.map(recordMap);
+  const recordMap = (rd: Structure) => {
+    return parseRecordStructure(rd, recordTypeIdentifiers, inferredTypeParametersCount, file);
+  };
+
+  const recordsPromise = taskAll(recordsStructures, recordMap);
+  const moduleClassDeclarationsPromise = taskAll(
+    modulesStructures.filter(({ structure }) => hasSubstructure(structure)),
+    ({ structure, name }) =>
+      parseModuleStructure(structure['key.substructure'], file, name, structure['key.offset'])
+  );
+
+  const [records, moduleClassDeclarations] = await Promise.all([
+    recordsPromise,
+    moduleClassDeclarationsPromise,
+  ]);
 
   enums.forEach(({ name }) => {
     declaredTypeIdentifiers.add(name);
@@ -805,11 +881,7 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     typeIdentifierDefinitionMap,
   };
 
-  for (const { structure, name } of modulesStructures) {
-    if (!hasSubstructure(structure)) {
-      continue;
-    }
-    const moduleClassDeclaration = parseModuleStructure(structure['key.substructure'], file, name);
+  for (const moduleClassDeclaration of moduleClassDeclarations) {
     moduleClasses.push(moduleClassDeclaration);
     collectModuleTypeIdentifiers(moduleClassDeclaration, fileTypeInformation);
   }

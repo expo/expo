@@ -342,6 +342,7 @@ async function getGeneratedJSXIntrinsicsViewDeclaration(file, fileTypeInformatio
 async function getGeneratedModuleTypesFileContent(file, fileTypeInformation) {
     const moduleClassDeclaration = fileTypeInformation.moduleClasses.at(0) ?? {
         name: 'EmptyModule',
+        constructor: null,
         asyncFunctions: [],
         functions: [],
         properties: [],
@@ -350,6 +351,7 @@ async function getGeneratedModuleTypesFileContent(file, fileTypeInformation) {
         constants: [],
         props: [],
         events: [],
+        definitionOffset: 0,
     };
     return prettyPrintTSNodesToString(file, getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, fileTypeInformation.records, fileTypeInformation.enums, fileTypeInformation.usedTypeIdentifiers
         .difference(fileTypeInformation.declaredTypeIdentifiers)
