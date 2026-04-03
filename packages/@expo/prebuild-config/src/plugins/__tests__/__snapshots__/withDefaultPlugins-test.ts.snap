@@ -1033,6 +1033,18 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
+                      "name": "android:statusBarColor",
+                    },
+                    "_": "@android:color/transparent",
+                  },
+                  {
+                    "$": {
+                      "name": "android:navigationBarColor",
+                    },
+                    "_": "@android:color/transparent",
+                  },
+                  {
+                    "$": {
                       "name": "android:windowBackground",
                     },
                     "_": "@color/activityBackground",
@@ -1908,6 +1920,18 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                       "name": "colorPrimary",
                     },
                     "_": "@color/colorPrimary",
+                  },
+                  {
+                    "$": {
+                      "name": "android:statusBarColor",
+                    },
+                    "_": "@android:color/transparent",
+                  },
+                  {
+                    "$": {
+                      "name": "android:navigationBarColor",
+                    },
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {
