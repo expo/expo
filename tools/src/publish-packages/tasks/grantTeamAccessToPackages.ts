@@ -42,11 +42,7 @@ export const grantTeamAccessToPackages = new Task<TaskArgs>(
       for (const packageName of packagesToGrantAccess) {
         try {
           const grantFn = () =>
-            Npm.grantReadWriteAccessAsync(
-              packageName,
-              Npm.EXPO_DEVELOPERS_TEAM_NAME,
-              inheritStdio
-            );
+            Npm.grantReadWriteAccessAsync(packageName, Npm.EXPO_DEVELOPERS_TEAM_NAME, inheritStdio);
           if (options.skipOtp) {
             await grantFn();
           } else {
