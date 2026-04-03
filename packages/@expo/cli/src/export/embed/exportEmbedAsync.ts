@@ -278,9 +278,9 @@ export async function exportEmbedBundleAndAssetsAsync(
     return {
       files,
       bundle: {
-        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0].source,
+        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0]?.source!,
         // Can be optional when source maps aren't enabled.
-        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString(),
+        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString()!,
       },
       assets: bundles.assets,
     };

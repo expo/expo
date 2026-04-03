@@ -72,7 +72,7 @@ describe('exports with serializer plugins', () => {
     expect(files).not.toEqual([]);
 
     // Load the sourcemap and parse it as JSON
-    const rawmap = await JsonFile.readAsync(path.resolve(outputDir, files[0]));
+    const rawmap = await JsonFile.readAsync(path.resolve(outputDir, files[0] ?? ''));
     const sourcemap = rawmap as unknown as BasicSourceMap;
 
     // Ensure the sourcemap does not contain absolute paths to the project directory

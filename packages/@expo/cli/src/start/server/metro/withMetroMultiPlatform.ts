@@ -592,8 +592,8 @@ export function withExtendedResolver(
     function requestAlias(context: ResolutionContext, moduleName: string, platform: string | null) {
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
-      if (platform && platform in aliases && aliases[platform][moduleName]) {
-        const redirectedModuleName = aliases[platform][moduleName];
+      if (platform && platform in aliases && aliases[platform]![moduleName]) {
+        const redirectedModuleName = aliases[platform]![moduleName];
         return getStrictResolver(context, platform)(redirectedModuleName);
       }
 
@@ -824,7 +824,7 @@ export function withExtendedResolver(
         // Non-server changes
 
         if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
-          context.mainFields = preferredMainFields[platform];
+          context.mainFields = preferredMainFields[platform]!;
         }
       }
 
