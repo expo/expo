@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [web] Added a warning when setting volume in browsers on iOS, where Apple does not allow programmatic volume control. ([#44474](https://github.com/expo/expo/pull/44474) by [@vonovak](https://github.com/vonovak))
+
 ## 56.0.10 — 2026-05-23
 
 ### 🐛 Bug fixes
