@@ -14,6 +14,7 @@
 
 ### 💡 Others
 
+- Use `OkHttpClientProvider` instead of raw `OkHttpClient` ([#44416](https://github.com/expo/expo/pull/44416)) by [@cortinico](https://github.com/cortinico)
 - Stop @expo/log-box from rebuilding on every pnpm install ([#44330](https://github.com/expo/expo/pull/44330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### ⚠️ Notices
