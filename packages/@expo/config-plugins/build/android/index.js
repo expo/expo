@@ -251,19 +251,6 @@ Object.defineProperty(exports, "Scheme", {
     return Scheme();
   }
 });
-function SystemBars() {
-  const data = _interopRequireWildcard(require("./SystemBars"));
-  SystemBars = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "SystemBars", {
-  enumerable: true,
-  get: function () {
-    return SystemBars();
-  }
-});
 function Strings() {
   const data = _interopRequireWildcard(require("./Strings"));
   Strings = function () {
@@ -288,6 +275,19 @@ Object.defineProperty(exports, "Styles", {
   enumerable: true,
   get: function () {
     return Styles();
+  }
+});
+function SystemBars() {
+  const data = _interopRequireWildcard(require("./SystemBars"));
+  SystemBars = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "SystemBars", {
+  enumerable: true,
+  get: function () {
+    return SystemBars();
   }
 });
 function Updates() {
