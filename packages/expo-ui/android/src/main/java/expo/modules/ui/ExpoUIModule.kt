@@ -407,6 +407,14 @@ class ExpoUIModule : Module() {
       ListItemContent(props)
     }
 
+    ExpoUIView("BadgeView") { props: BadgeProps ->
+      BadgeContent(props)
+    }
+
+    ExpoUIView("BadgedBoxView") { props: BadgedBoxProps ->
+      BadgedBoxContent(props)
+    }
+
     ExpoUIView("SpacerView") { props: SpacerProps ->
       SpacerContent(props)
     }
