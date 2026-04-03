@@ -17,6 +17,8 @@ function ensurePWAOrientation(orientation?: string) {
 }
 
 const RESTRICTED_MANIFEST_FIELDS: (keyof ExpoConfig)[] = [
+  'androidNavigationBar',
+  'androidStatusBar',
   'privacy',
   // Remove iOS and Android.
   'ios',
