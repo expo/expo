@@ -66,7 +66,7 @@ function ISODateString(d: Date): string {
 const toString = Object.prototype.toString;
 function type(obj: object): string | null {
   const m = toString.call(obj).match(/\[object (.*)\]/);
-  return m ? m[1] : m;
+  return m?.[1] ?? null;
 }
 
 /**

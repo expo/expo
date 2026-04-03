@@ -77,7 +77,11 @@ export function createRequestHandler(
 function convertRawHeaders(requestHeaders: readonly string[]): Headers {
   const headers = new Headers();
   for (let index = 0; index < requestHeaders.length; index += 2) {
-    headers.append(requestHeaders[index], requestHeaders[index + 1]);
+    const name = requestHeaders[index];
+    const value = requestHeaders[index + 1];
+    if (name != null && value != null) {
+      headers.append(name, value);
+    }
   }
   return headers;
 }
@@ -122,7 +126,9 @@ const assignOutgoingMessageHeaders = (outgoing: http.OutgoingMessage, headers: H
   }
   // We don't use `setHeaders` due to a Bun bug (Fix: https://github.com/oven-sh/bun/pull/27050)
   for (const key in collection) {
-    outgoing.setHeader(key, collection[key]);
+    if (collection[key] != null) {
+      outgoing.setHeader(key, collection[key]);
+    }
   }
 };
 

@@ -146,7 +146,7 @@ function addMetaDataItemToMainApplication(mainApplication, itemName, itemValue, 
   };
   if (mainApplication['meta-data']) {
     existingMetaDataItem = mainApplication['meta-data'].filter(e => e.$['android:name'] === itemName);
-    if (existingMetaDataItem.length) {
+    if (existingMetaDataItem[0] != null) {
       existingMetaDataItem[0].$[`android:${itemType}`] = itemValue;
     } else {
       mainApplication['meta-data'].push(newItem);
@@ -192,7 +192,7 @@ function addUsesLibraryItemToMainApplication(mainApplication, item) {
   };
   if (mainApplication['uses-library']) {
     existingMetaDataItem = mainApplication['uses-library'].filter(e => e.$['android:name'] === item.name);
-    if (existingMetaDataItem.length) {
+    if (existingMetaDataItem[0] != null) {
       existingMetaDataItem[0].$ = newItem.$;
     } else {
       mainApplication['uses-library'].push(newItem);

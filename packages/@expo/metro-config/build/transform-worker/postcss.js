@@ -143,22 +143,25 @@ function pluginFactory() {
                 else if (plugin && typeof plugin === 'function') {
                     listOfPlugins.set(plugin, undefined);
                 }
-                else if (plugin &&
-                    Object.keys(plugin).length === 1 &&
-                    (typeof plugin[Object.keys(plugin)[0]] === 'object' ||
-                        typeof plugin[Object.keys(plugin)[0]] === 'boolean') &&
-                    plugin[Object.keys(plugin)[0]] !== null) {
-                    const [name] = Object.keys(plugin);
-                    const options = plugin[name];
-                    if (options === false) {
-                        listOfPlugins.delete(name);
+                else if (plugin) {
+                    const pluginKeys = Object.keys(plugin);
+                    if (pluginKeys.length === 1 &&
+                        pluginKeys[0] != null &&
+                        (typeof plugin[pluginKeys[0]] === 'object' ||
+                            typeof plugin[pluginKeys[0]] === 'boolean') &&
+                        plugin[pluginKeys[0]] !== null) {
+                        const [name] = pluginKeys;
+                        const options = plugin[name];
+                        if (options === false) {
+                            listOfPlugins.delete(name);
+                        }
+                        else {
+                            listOfPlugins.set(name, options);
+                        }
                     }
                     else {
-                        listOfPlugins.set(name, options);
+                        listOfPlugins.set(plugin, undefined);
                     }
-                }
-                else if (plugin) {
-                    listOfPlugins.set(plugin, undefined);
                 }
             }
         }
