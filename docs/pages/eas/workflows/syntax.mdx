@@ -365,17 +365,17 @@ Default working directory to run the scripts in. Relative paths like "./assets" 
 
 Specific versions of tools that should be used for jobs defined in this workflow configuration. Follow each tool's documentation for available values.
 
-| Tool        | Description                                                                                                                              |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `node`      | Version of Node.js installed via `nvm`.                                                                                                  |
-| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                  |
+| Tool        | Description                                                                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node`      | Version of Node.js installed via `nvm`.                                                                                                       |
+| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                       |
 | `corepack`  | If set to `true`, [corepack](https://github.com/nodejs/corepack#readme) will be enabled at the beginning of build process. Defaults to false. |
-| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                  |
-| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                               |
-| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                   |
-| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                              |
-| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                             |
-| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                            |
+| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                       |
+| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                                    |
+| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                        |
+| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                                   |
+| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                                  |
+| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                                 |
 
 Example of workflow using `defaults.tools`:
 
@@ -1669,7 +1669,7 @@ jobs:
 | Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                                                            |
-| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://docs.slack.dev/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                           |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://docs.slack.dev/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                          |
 | `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use [EAS Environment Variables](/eas/environment-variables/#managing-environment-variables) like `slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` Environment Variable, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink
