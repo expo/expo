@@ -1539,13 +1539,14 @@ export async function test({ describe, expect, it, ...t }) {
       });
 
       it('can cancel a download with AbortSignal', async () => {
-        // Use a large file to ensure we have time to cancel
-        const url = 'https://httpbingo.org/bytes/5242880';
+        // Use a slow-streaming endpoint to ensure the download is still in-flight when we cancel.
+        // Note: httpbingo.org/bytes has a 524288 byte limit and returns 400 for larger values.
+        const url = 'https://httpbingo.org/drip?numbytes=51200&duration=5&delay=0';
         const file = new File(testDirectory, 'cancel_test.bin');
         const controller = new AbortController();
 
-        // Cancel after a short delay
-        setTimeout(() => controller.abort(), 50);
+        // Cancel after a short delay — the /drip endpoint streams over 5s so this is safe.
+        setTimeout(() => controller.abort(), 100);
 
         let error: any;
         try {
@@ -1582,7 +1583,8 @@ export async function test({ describe, expect, it, ...t }) {
       });
 
       it('can use onProgress and signal together', async () => {
-        const url = 'https://httpbingo.org/bytes/524288';
+        // /drip streams data over 5s, so progress events fire before the download completes.
+        const url = 'https://httpbingo.org/drip?numbytes=51200&duration=5&delay=0';
         const file = new File(testDirectory, 'progress_and_cancel.bin');
         const controller = new AbortController();
         const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
