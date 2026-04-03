@@ -63,6 +63,11 @@ export type TokenRequestConfig = {
    * [Section 3.3](https://tools.ietf.org/html/rfc6749#section-3.3)
    */
   scopes?: string[];
+  /**
+   * Timeout for the token request in milliseconds. If the request takes longer than this,
+   * it will be aborted and the promise will reject with a `TimeoutError`.
+   */
+  timeout?: number;
 };
 
 // @needsAudit

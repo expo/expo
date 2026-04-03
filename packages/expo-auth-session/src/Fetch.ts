@@ -9,6 +9,7 @@ export type FetchRequest = {
   body?: Record<string, string>;
   dataType?: string;
   method?: string;
+  signal?: AbortSignal;
 };
 
 export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T> {
@@ -20,6 +21,7 @@ export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchReq
     method: fetchRequest.method,
     mode: 'cors',
     headers,
+    signal: fetchRequest.signal,
   };
 
   const isJsonDataType = fetchRequest.dataType?.toLowerCase() === 'json';

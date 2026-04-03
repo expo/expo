@@ -157,6 +157,15 @@ export class Request<T, B> {
     throw new Error('getQueryBody must be extended');
   }
 }
+function createTimeoutSignal(timeout?: number): AbortSignal | undefined {
+  if (!timeout) {
+    return undefined;
+  }
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), timeout);
+  return controller.signal;
+}
+
 function sanitizeExtraHeaders(
   extra: Record<string, string> | undefined,
   hasClientSecret: boolean
@@ -187,6 +196,7 @@ export class TokenRequest<T extends TokenRequestConfig>
   readonly scopes?: string[];
   readonly extraParams?: Record<string, string>;
   readonly extraHeaders?: Record<string, string>;
+  readonly timeout?: number;
 
   constructor(
     request: T,
@@ -197,6 +207,7 @@ export class TokenRequest<T extends TokenRequestConfig>
     this.clientSecret = request.clientSecret;
     this.extraParams = request.extraParams;
     this.scopes = request.scopes;
+    this.timeout = request.timeout;
     this.extraHeaders = sanitizeExtraHeaders(
       request.extraHeaders,
       typeof request.clientSecret !== 'undefined'
@@ -233,6 +244,7 @@ export class TokenRequest<T extends TokenRequestConfig>
         method: 'POST',
         headers: this.getHeaders(),
         body: this.getQueryBody(),
+        signal: createTimeoutSignal(this.timeout),
       }
     );
 
@@ -397,6 +409,7 @@ export class RevokeTokenRequest
   readonly token: string;
   readonly tokenTypeHint?: TokenTypeHint;
   readonly extraHeaders?: Record<string, string>;
+  readonly timeout?: number;
 
   constructor(request: RevokeTokenRequestConfig) {
     super(request);
@@ -405,6 +418,7 @@ export class RevokeTokenRequest
     this.clientSecret = request.clientSecret;
     this.token = request.token;
     this.tokenTypeHint = request.tokenTypeHint;
+    this.timeout = request.timeout;
     this.extraHeaders = sanitizeExtraHeaders(
       request.extraHeaders,
       typeof request.clientSecret !== 'undefined'
@@ -442,6 +456,7 @@ export class RevokeTokenRequest
       method: 'POST',
       headers: this.getHeaders(),
       body: this.getQueryBody(),
+      signal: createTimeoutSignal(this.timeout),
     });
 
     return true;
