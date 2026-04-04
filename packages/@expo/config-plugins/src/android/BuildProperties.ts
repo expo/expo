@@ -112,7 +112,7 @@ export function updateAndroidBuildProperty(
     gradleProperties.push(newProp);
     return gradleProperties;
   }
-  if (options?.removePropWhenValueIsNull && oldPropIndex >= 0) {
+  if (oldPropIndex >= 0) {
     gradleProperties.splice(oldPropIndex, 1);
     return gradleProperties;
   }
