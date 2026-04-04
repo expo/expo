@@ -76,7 +76,7 @@ export function updateIosBuildProperty(
 ) {
   if (value) {
     podfileProperties[name] = value;
-  } else if (options?.removePropWhenValueIsNull) {
+  } else {
     delete podfileProperties[name];
   }
   return podfileProperties;

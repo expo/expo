@@ -106,18 +106,27 @@ describe(updateIosBuildProperty, () => {
     });
   });
 
-  it('should keep original property when `value` is null by default', () => {
+  it('should remove property when value is null', () => {
     const podfileProperties = {
       foo: 'foo',
       bar: 'bar',
     };
     expect(updateIosBuildProperty(podfileProperties, 'bar', null)).toEqual({
       foo: 'foo',
-      bar: 'bar',
     });
   });
 
-  it('should remove original property when `value` is null when `removePropWhenValueIsNull` is true', () => {
+  it('should remove property when value is undefined', () => {
+    const podfileProperties = {
+      'expo.useHermesV1': 'true',
+      other: 'value',
+    };
+    expect(updateIosBuildProperty(podfileProperties, 'expo.useHermesV1', undefined)).toEqual({
+      other: 'value',
+    });
+  });
+
+  it('should still remove property when removePropWhenValueIsNull is passed (backwards compat)', () => {
     const podfileProperties = {
       foo: 'foo',
       bar: 'bar',

@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `updateIosBuildProperty` and `updateAndroidBuildProperty` not cleaning up stale properties when config value is removed. ([#44495](https://github.com/expo/expo/pull/44495) by [@chownation](https://github.com/chownation))
+
 ### 💡 Others
 
 ## 55.0.6 — 2026-02-25
