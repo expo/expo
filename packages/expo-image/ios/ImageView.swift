@@ -91,6 +91,11 @@ public final class ImageView: ExpoView {
    */
   var imageIdealSize: CGSize = .zero
 
+  /**
+   `idealSize` before rounding, used only for `contentPosition` math so alignment matches true cover/contain geometry.
+   */
+  var imageLayoutSize: CGSize = .zero
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -139,7 +144,7 @@ public final class ImageView: ExpoView {
     if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
       // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
       // After that we have to recalculate the mask layer in `applyContentPosition`.
-      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     }
   }
 
@@ -266,15 +271,16 @@ public final class ImageView: ExpoView {
       ])
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
-      imageIdealSize = idealSize(
+      imageLayoutSize = idealSize(
         contentPixelSize: image.size * image.scale,
         containerSize: frame.size,
         scale: scale,
         contentFit: contentFit
-      ).rounded(.up)
+      )
+      imageIdealSize = imageLayoutSize.rounded(.up)
 
       let image = processImage(image, idealSize: imageIdealSize, scale: scale)
-      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
       renderSourceImage(image)
     } else {
       displayPlaceholderIfNecessary()
@@ -310,14 +316,15 @@ public final class ImageView: ExpoView {
     ])
 
     let scale = window?.screen.scale ?? UIScreen.main.scale
-    imageIdealSize = idealSize(
+    imageLayoutSize = idealSize(
       contentPixelSize: image.size * image.scale,
       containerSize: frame.size,
       scale: scale,
       contentFit: contentFit
-    ).rounded(.up)
+    )
+    imageIdealSize = imageLayoutSize.rounded(.up)
 
-    applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     renderSFSymbolImage(image)
   }
 
