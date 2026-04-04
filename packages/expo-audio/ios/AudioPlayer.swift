@@ -97,9 +97,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     registerTimeObserver()
     ref.playImmediately(atRate: rate)
 
-    if isActiveForLockScreen {
-      MediaController.shared.updateNowPlayingInfo(for: self)
-    }
+    MediaController.shared.updateNowPlayingInfo(for: self)
   }
 
   func setSamplingEnabled(enabled: Bool) {
@@ -156,9 +154,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     }
     self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
 
-    if isActiveForLockScreen {
-      MediaController.shared.updateNowPlayingInfo(for: self)
-    }
+    MediaController.shared.updateNowPlayingInfo(for: self)
   }
 
   func seekTo(seconds: Double, toleranceMillisBefore: Double? = nil, toleranceMillisAfter: Double? = nil) async {
