@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.PredictiveBackGesture = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.Locales = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.CodeMod = exports.BuildProperties = exports.AllowBackup = void 0;
+exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.SystemBars = exports.Styles = exports.Strings = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.PredictiveBackGesture = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.Locales = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.CodeMod = exports.BuildProperties = exports.AllowBackup = void 0;
 function AllowBackup() {
   const data = _interopRequireWildcard(require("./AllowBackup"));
   AllowBackup = function () {
@@ -251,19 +251,6 @@ Object.defineProperty(exports, "Scheme", {
     return Scheme();
   }
 });
-function StatusBar() {
-  const data = _interopRequireWildcard(require("./StatusBar"));
-  StatusBar = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "StatusBar", {
-  enumerable: true,
-  get: function () {
-    return StatusBar();
-  }
-});
 function Strings() {
   const data = _interopRequireWildcard(require("./Strings"));
   Strings = function () {
@@ -288,6 +275,19 @@ Object.defineProperty(exports, "Styles", {
   enumerable: true,
   get: function () {
     return Styles();
+  }
+});
+function SystemBars() {
+  const data = _interopRequireWildcard(require("./SystemBars"));
+  SystemBars = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "SystemBars", {
+  enumerable: true,
+  get: function () {
+    return SystemBars();
   }
 });
 function Updates() {

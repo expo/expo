@@ -1,4 +1,3 @@
-import { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
   ConfigPlugin,
@@ -11,7 +10,6 @@ import {
 
 const pkg = require('../../package.json');
 
-type LegacyStatusBarStyle = NonNullable<NonNullable<ExpoConfig['androidStatusBar']>['barStyle']>;
 type StatusBarStyle = 'light' | 'dark';
 
 export type Props = {
@@ -24,25 +22,27 @@ export type Props = {
 // strings.xml keys, this should not change.
 const VISIBILITY_KEY = 'expo_status_bar_visibility';
 
-const LEGACY_BAR_STYLE_MAP: Record<LegacyStatusBarStyle, StatusBarStyle> = {
-  'dark-content': 'dark',
-  'light-content': 'light',
-};
-
 const IOS_BAR_STYLE_MAP: Record<StatusBarStyle, string> = {
   dark: 'UIStatusBarStyleDarkContent',
   light: 'UIStatusBarStyleLightContent',
 };
 
-export const resolveAndroidLegacyProps = (config: Pick<ExpoConfig, 'androidStatusBar'>): Props => {
-  const { androidStatusBar = {} } = config;
-  const { barStyle, hidden } = androidStatusBar;
+export function resolveProps(props: Props | undefined): Props | undefined {
+  if (props == null) {
+    return;
+  }
 
-  return {
-    style: barStyle != null ? LEGACY_BAR_STYLE_MAP[barStyle] : undefined,
-    hidden,
+  const { hidden, style } = props;
+
+  const resolvedProps: Props = {
+    ...(style != null && { style }),
+    ...(hidden != null && { hidden }),
   };
-};
+
+  if (Object.keys(resolvedProps).length > 0) {
+    return resolvedProps;
+  }
+}
 
 export const setAndroidStatusBarStyles = (
   styles: AndroidConfig.Resources.ResourceXML,
@@ -51,15 +51,13 @@ export const setAndroidStatusBarStyles = (
   AndroidConfig.Styles.assignStylesValue(styles, {
     // Adding means the buttons will be darker to account for a light background color.
     // `setStyle('dark')` should do the same thing.
-    add: style === 'dark',
+    add: style != null,
     parent: AndroidConfig.Styles.getAppThemeGroup(),
     name: 'android:windowLightStatusBar',
-    value: 'true',
+    value: String(style === 'dark'),
   });
 
-const withAndroidStatusBarStyles: ConfigPlugin<Props | undefined> = (config, _props) => {
-  const props = _props ?? resolveAndroidLegacyProps(config);
-
+const withAndroidStatusBarStyles: ConfigPlugin<Props> = (config, props) => {
   return withAndroidStyles(config, (config) => {
     config.modResults = setAndroidStatusBarStyles(config.modResults, props);
     return config;
@@ -84,9 +82,7 @@ export const setAndroidStrings = (
   return AndroidConfig.Strings.setStringItem([item], strings);
 };
 
-const withAndroidStatusBarStringsXml: ConfigPlugin<Props | undefined> = (config, _props) => {
-  const props = _props ?? resolveAndroidLegacyProps(config);
-
+const withAndroidStatusBarStringsXml: ConfigPlugin<Props> = (config, props) => {
   return withStringsXml(config, (config) => {
     config.modResults = setAndroidStrings(config.modResults, props);
     return config;
@@ -106,43 +102,26 @@ export const setIOSStatusBarInfoPlist = (
   return plist;
 };
 
-const withIOSStatusBarInfoPlist: ConfigPlugin<Props | undefined> = (config, props) =>
+const withIOSStatusBarInfoPlist: ConfigPlugin<Props> = (config, props) =>
   withInfoPlist(config, (config) => {
     config.modResults = setIOSStatusBarInfoPlist(config.modResults, props);
     return config;
   });
 
-/**
- * Ensure the Expo Go manifest is updated when the project is using config plugin properties instead
- * of the static values that Expo Go reads from (`androidStatusBar`).
- */
-export const withStatusBarExpoGoManifest: ConfigPlugin<Props | undefined> = (config, _props) => {
-  const props = _props ?? resolveAndroidLegacyProps(config);
+const withStatusBar: ConfigPlugin<Props | undefined> = (config, _props) => {
+  const props = resolveProps(_props);
 
-  // TODO: Read this from Expo Go instead of `androidStatusBar`.
+  if (props == null) {
+    return config;
+  }
+
   // Elevate props to a static value on extra so Expo Go can read it.
   config.extra ??= {};
   config.extra[pkg.name] = props;
 
-  if (config.androidStatusBar != null) {
-    return config;
-  }
-
-  const barStyle = Object.entries(LEGACY_BAR_STYLE_MAP).find(
-    ([, value]) => value === props.style
-  )?.[0] as LegacyStatusBarStyle;
-
-  // Remap the config plugin props so Expo Go knows how to apply them.
-  config.androidStatusBar = { barStyle, hidden: props.hidden };
-
-  return config;
-};
-
-const withStatusBar: ConfigPlugin<Props | undefined> = (config, props) => {
   config = withAndroidStatusBarStyles(config, props);
   config = withAndroidStatusBarStringsXml(config, props);
-  config = withIOSStatusBarInfoPlist(config, props);
-  return withStatusBarExpoGoManifest(config, props);
+  return withIOSStatusBarInfoPlist(config, props);
 };
 
 export default createRunOncePlugin(withStatusBar, pkg.name, pkg.version);

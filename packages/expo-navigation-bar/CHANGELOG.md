@@ -16,6 +16,7 @@
 
 ### 💡 Others
 
+- Removed `androidNavigationBar` config overwrite (for Expo Go sync). ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
 - Deprecated `setVisibilityAsync`, `getVisibilityAsync`, `useVisibility`, `addVisibilityListener`, and top-level `setStyle` in favor of the `NavigationBar` component and its static methods. ([#44327](https://github.com/expo/expo/pull/44327) by [@zoontek](https://github.com/zoontek))
 - Removed `react-native-is-edge-to-edge` dependency. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
 - Deprecated `barStyle` and `visibility` config plugin properties in favor of `style` and `hidden`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
