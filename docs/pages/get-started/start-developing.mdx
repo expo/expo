@@ -1,96 +1,139 @@
----
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
+import React, { useState } from 'react';
+import {
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Linking,
+  ScrollView
+} from 'react-native';
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+export default function App() {
 
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
+  const products = [
+    {
+      id: '1',
+      name: 'Solar Inverter',
+      price: '1299 SAR',
+      image: 'https://via.placeholder.com/150'
+    },
+    {
+      id: '2',
+      name: 'LED Flood Light',
+      price: '250 SAR',
+      image: 'https://via.placeholder.com/150'
+    },
+    {
+      id: '3',
+      name: 'Power Bank',
+      price: '99 SAR',
+      image: 'https://via.placeholder.com/150'
+    },
+    {
+      id: '4',
+      name: 'Battery',
+      price: '800 SAR',
+      image: 'https://via.placeholder.com/150'
+    }
+  ];
 
-<Terminal cmd={['$ npx expo start']} />
+  const [request, setRequest] = useState('');
 
-</Step>
+  const orderOnWhatsApp = (product) => {
+    const message = `Hello, I want to order: ${product.name} - ${product.price}`;
+    Linking.openURL(`https://wa.me/923415725431?text=${encodeURIComponent(message)}`);
+  };
 
-<Step label="2">
-## Open the app on your device
+  const sendRequest = () => {
+    const message = `Customer Request: ${request}`;
+    Linking.openURL(`https://wa.me/923415725431?text=${encodeURIComponent(message)}`);
+  };
 
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
+  return (
+    <ScrollView style={{ padding: 15, marginTop: 40 }}>
 
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
+      <Text style={{ fontSize: 26, fontWeight: 'bold', textAlign: 'center' }}>
+        COFT PRIME
+      </Text>
 
-<Collapsible summary="Having problems?">
+      <Text style={{ textAlign: 'center', marginBottom: 20 }}>
+        Solar & Multi Products Store
+      </Text>
 
-Make sure you are on the same Wi-Fi network on your computer and your device.
+      {/* PRODUCT LIST */}
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.id}
+        scrollEnabled={false}
+        renderItem={({ item }) => (
+          <View style={{
+            backgroundColor: '#fff',
+            padding: 10,
+            marginBottom: 10,
+            borderRadius: 10,
+            elevation: 3
+          }}>
+            <Image
+              source={{ uri: item.image }}
+              style={{ height: 120, borderRadius: 10 }}
+            />
 
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
+            <Text style={{ fontSize: 18, marginTop: 5 }}>
+              {item.name}
+            </Text>
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+            <Text style={{ fontWeight: 'bold' }}>
+              {item.price}
+            </Text>
 
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
+            <TouchableOpacity
+              onPress={() => orderOnWhatsApp(item)}
+              style={{
+                backgroundColor: 'green',
+                padding: 10,
+                marginTop: 10,
+                borderRadius: 5
+              }}
+            >
+              <Text style={{ color: '#fff', textAlign: 'center' }}>
+                Order on WhatsApp
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
 
-</Collapsible>
+      {/* REQUEST SECTION */}
+      <Text style={{ marginTop: 20 }}>Request Any Product:</Text>
 
-</Step>
+      <TextInput
+        placeholder="Type your product..."
+        value={request}
+        onChangeText={setRequest}
+        style={{
+          borderWidth: 1,
+          padding: 10,
+          marginTop: 10,
+          borderRadius: 5
+        }}
+      />
 
-<Step label="3">
+      <TouchableOpacity
+        onPress={sendRequest}
+        style={{
+          backgroundColor: 'orange',
+          padding: 12,
+          marginTop: 10,
+          borderRadius: 5
+        }}
+      >
+        <Text style={{ textAlign: 'center', color: '#fff' }}>
+          Send Request
+        </Text>
+      </TouchableOpacity>
 
-## Make your first change
-
-Open the **src/app/index.tsx** file in your code editor and make a change.
-
-<DiffBlock
-  raw={`diff --git a/src/app/index.tsx b/src/app/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/src/app/index.tsx
-+++ b/src/app/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
--           Welcome to&nbsp;Expo
-+           Hello World!
-          </ThemedText>
-        </ThemedView>
-  `}
-/>
-
-<Collapsible summary="Changes not showing up on your device?">
-
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
-
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. Press <kbd>Cmd ⌘</kbd> + <kbd>D</kbd>.
-- If you see **Fast Refresh** enabled, toggle it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
-
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
-
-</Collapsible>
-
-</Step>
-
----
-
-## File structure
-
-Below, you can get familiar with the default project's file structure:
-
-<ProjectStructure />
-
-## Features
-
-The default project template has the following features:
-
-<TemplateFeatures />
+    </ScrollView>
+  );
+}
