@@ -32,18 +32,32 @@ export type SimpleTypes = 'array' | 'boolean' | 'integer' | 'null' | 'number' | 
 
 /**
  * Core schema meta-schema
+ *
+ * Supports both Draft 04 (`id`, boolean `exclusiveMinimum`/`exclusiveMaximum`) and
+ * Draft 06+ (`$id`, numeric `exclusiveMinimum`/`exclusiveMaximum`) for backward compatibility.
  */
 export interface JSONSchema<_SchemaType = unknown> {
+  /** Draft 04: schema identifier */
   id?: string;
+  /** Draft 06+: schema identifier (replaces `id`) */
+  $id?: string;
   $schema?: string;
   title?: string;
   description?: string;
   default?: unknown;
   multipleOf?: number;
   maximum?: number;
-  exclusiveMaximum?: boolean;
+  /**
+   * Draft 04: boolean flag (used together with `maximum`).
+   * Draft 06+: exclusive upper bound as a number (standalone, no need for `maximum`).
+   */
+  exclusiveMaximum?: boolean | number;
   minimum?: number;
-  exclusiveMinimum?: boolean;
+  /**
+   * Draft 04: boolean flag (used together with `minimum`).
+   * Draft 06+: exclusive lower bound as a number (standalone, no need for `minimum`).
+   */
+  exclusiveMinimum?: boolean | number;
   maxLength?: PositiveInteger;
   minLength?: PositiveIntegerDefault0;
   pattern?: string;

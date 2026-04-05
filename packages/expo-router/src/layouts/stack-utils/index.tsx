@@ -11,6 +11,7 @@ export {
   StackScreen,
   appendScreenStackPropsToOptions,
   validateStackPresentation,
+  type ExtendedStackNavigationOptions,
   type StackScreenProps,
 } from './StackScreen';
 

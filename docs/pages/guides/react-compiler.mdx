@@ -65,17 +65,47 @@ Toggle on the React Compiler experiment in your app config file:
 
 Additionally, you should use the ESLint plugin to continuously enforce the rules of React in your project.
 
+> **Note:** As of React Compiler 1.0, the compiler's lint rules have been merged into `eslint-plugin-react-hooks`. If you are using React Compiler 1.0 or later, follow the updated instructions below. For older setups (React Compiler beta / SDK 53 and earlier), use `eslint-plugin-react-compiler` instead.
+
 <Step label="1">
 
-Run [`npx expo lint`](/guides/using-eslint/#eslint) to ensure ESLint is setup in your app, then install the ESLint plugin for React Compiler:
+Run [`npx expo lint`](/guides/using-eslint/#eslint) to ensure ESLint is setup in your app, then install the ESLint plugin:
 
-<Terminal cmd={['$ npx expo install eslint-plugin-react-compiler -- -D']} />
+<Tabs tabs={['React Compiler 1.0+ (SDK 54 and later)', 'React Compiler beta (SDK 53 and earlier)']}>
+  <Tab>
+    <Terminal cmd={['$ npx expo install eslint-plugin-react-hooks -- -D']} />
+  </Tab>
+  <Tab>
+    <Terminal cmd={['$ npx expo install eslint-plugin-react-compiler -- -D']} />
+  </Tab>
+</Tabs>
 
 </Step>
 
 <Step label="2">
 
 Update your [ESLint configuration](/guides/using-eslint/) to include the plugin:
+
+<Tabs tabs={['React Compiler 1.0+ (SDK 54 and later)', 'React Compiler beta (SDK 53 and earlier)']}>
+  <Tab>
+
+```js .eslintrc.js
+// https://docs.expo.dev/guides/using-eslint/
+const { defineConfig } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+const reactHooks = require('eslint-plugin-react-hooks');
+
+module.exports = defineConfig([
+  expoConfig,
+  reactHooks.configs['recommended-latest'],
+  {
+    ignores: ['dist/*'],
+  },
+]);
+```
+
+  </Tab>
+  <Tab>
 
 ```js .eslintrc.js
 // https://docs.expo.dev/guides/using-eslint/
@@ -91,6 +121,9 @@ module.exports = defineConfig([
   },
 ]);
 ```
+
+  </Tab>
+</Tabs>
 
 </Step>
 
