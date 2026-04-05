@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Stack.Screen` `options` prop not accepting `webModalStyle` and other `ExtendedStackNavigationOptions` fields. ([#44509](https://github.com/expo/expo/pull/44509) by [@Nedunchezhiyan-M](https://github.com/Nedunchezhiyan-M))
+
 ### 💡 Others
 
 ## 55.0.10 — 2026-04-02
