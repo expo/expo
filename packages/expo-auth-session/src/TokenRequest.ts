@@ -162,7 +162,8 @@ function createTimeoutSignal(timeout?: number): AbortSignal | undefined {
     return undefined;
   }
   const controller = new AbortController();
-  setTimeout(() => controller.abort(), timeout);
+  const timer = setTimeout(() => controller.abort(), timeout);
+  controller.signal.addEventListener('abort', () => clearTimeout(timer), { once: true });
   return controller.signal;
 }
 
