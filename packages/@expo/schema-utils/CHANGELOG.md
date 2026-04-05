@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update `JSONSchema` interface to accept `$id` (Draft 06 replacement for `id`) and change `exclusiveMinimum`/`exclusiveMaximum` to `boolean | number` to match the Draft 06 spec. The runtime validator already handled both forms; only the TypeScript types were wrong. ([#44510](https://github.com/expo/expo/pull/44510) by [@Nedunchezhiyan-M](https://github.com/Nedunchezhiyan-M))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26
