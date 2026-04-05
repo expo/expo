@@ -65,11 +65,11 @@ Toggle on the React Compiler experiment in your app config file:
 
 Additionally, you should use the ESLint plugin to continuously enforce the rules of React in your project.
 
-> **Note:** As of React Compiler 1.0, the compiler's lint rules have been merged into `eslint-plugin-react-hooks`. If you are on an older beta version of the compiler (SDK 53 and earlier), use `eslint-plugin-react-compiler` instead.
+> **Note:** React Compiler 1.0 moved its lint rules into `eslint-plugin-react-hooks`. If you are on an older beta version of the compiler (SDK 53 and earlier), use `eslint-plugin-react-compiler` instead.
 
 <Step label="1">
 
-Run [`npx expo lint`](/guides/using-eslint/#eslint) to ensure ESLint is setup in your app, then install the ESLint plugin:
+Run [`npx expo lint`](/guides/using-eslint/#eslint) to ensure ESLint is set up in your app, then install the ESLint plugin:
 
 <Terminal cmd={['$ npx expo install eslint-plugin-react-hooks -- -D']} />
 
