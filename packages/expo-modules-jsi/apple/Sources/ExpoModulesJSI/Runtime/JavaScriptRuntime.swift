@@ -152,6 +152,28 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     return JavaScriptObject(self, hostObject)
   }
 
+  // MARK: - Creating array buffers
+
+  /**
+   Creates a new array buffer of the given size with zero-initialized memory.
+   */
+  public func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size)
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+  }
+
+  /**
+   Creates a new array buffer that wraps the given native data pointer.
+   The cleanup closure is called when the array buffer is garbage collected.
+   */
+  public func createArrayBuffer(data: UnsafeMutablePointer<UInt8>, size: Int, cleanup: @escaping @Sendable () -> Void) -> JavaScriptArrayBuffer {
+    let context = Unmanaged.passRetained(CleanupContext(cleanup)).toOpaque()
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, data, size, context) { context in
+      Unmanaged<CleanupContext>.fromOpaque(context).release()
+    }
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+  }
+
   // MARK: - Creating arrays
 
   /**
