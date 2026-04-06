@@ -28,7 +28,7 @@ type KeyboardTypeOption =
 type ImeActionOption = 'default' | 'done' | 'go' | 'search' | 'send' | 'next' | 'previous';
 type CapitalizationOption = 'none' | 'characters' | 'words' | 'sentences';
 
-export default function TextInputScreen() {
+export default function TextFieldScreen() {
   const [textValue, setTextValue] = React.useState('');
   const [focusedState, setFocusedState] = React.useState(false);
   const [lastAction, setLastAction] = React.useState('');
@@ -255,6 +255,6 @@ function ChipGroup<T extends string>({
   );
 }
 
-TextInputScreen.navigationOptions = {
+TextFieldScreen.navigationOptions = {
   title: 'TextField',
 };

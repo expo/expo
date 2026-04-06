@@ -167,7 +167,7 @@ export const UIScreens = [
     route: 'ui/textInput',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./TextInputScreen'));
+      return optionalRequire(() => require('./TextFieldScreen'));
     },
   },
   {

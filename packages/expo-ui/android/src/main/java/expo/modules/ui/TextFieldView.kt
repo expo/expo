@@ -224,7 +224,6 @@ class TextFieldView(context: Context, appContext: AppContext) :
   private val textState = mutableStateOf<String?>(null)
   private val focusRequester = FocusRequester()
   private var focusManager: FocusManager? = null
-  private var isFocused = false
 
   var text: String?
     get() = textState.value
@@ -280,11 +279,7 @@ class TextFieldView(context: Context, appContext: AppContext) :
     val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
       .focusRequester(focusRequester)
       .onFocusChanged { focusState ->
-        val wasFocused = isFocused
-        isFocused = focusState.isFocused
-        if (wasFocused != isFocused) {
-          onFocusChanged(mapOf("value" to isFocused))
-        }
+        onFocusChanged(mapOf("value" to focusState.isFocused))
       }
 
     val isOutlined = props.variant.value == TextFieldVariant.OUTLINED
