@@ -84,7 +84,7 @@ function onContextCreate(gl) {
 Since the WebGL API is quite low-level, it can be helpful to use higher-level graphics APIs rendering through a `GLView` underneath. The following libraries integrate popular graphics APIs:
 
 - [expo-three](https://github.com/expo/expo-three) for [three.js](https://threejs.org)
-- [expo-processing](https://github.com/expo/expo-processing) for [processing.js](http://processingjs.org)
+- [expo-processing](https://github.com/expo/expo-processing) for [Processing](https://processing.org/reference)
 
 Any WebGL-supporting library that expects a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) could be used. Some times such libraries assume a web JavaScript context (such as assuming `document`). Usually this is for resource loading or event handling, with the main rendering logic still only using pure WebGL. So these libraries can usually still be used with a couple workarounds. The Expo-specific integrations above include workarounds for some popular libraries.
 
