@@ -78,13 +78,13 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **android** project manually, then you need to add the following configuration to your native project:
 
-- To hide the status bar on **Android**, add `expo_navigation_bar_visibility` to **android/app/src/main/res/values/strings.xml**:
+- To hide the navigation bar on **Android**, add `expoNavigationBarHidden` to **android/app/src/main/res/values/styles.xml**:
 
   ```xml
-  <resources>
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
     <!-- ... -->
-    <string name="expo_navigation_bar_visibility" translatable="false">hidden</string>
-  </resources>
+    <item name="expoNavigationBarHidden">true</item>
+  </style>
   ```
 
 </ConfigReactNative>
