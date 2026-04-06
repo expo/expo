@@ -2,7 +2,7 @@ import {
   applyEnforceNavigationBarContrast,
   resolveProps,
   ResourceXMLConfig,
-  setStrings,
+  setNavigationBarStyles,
 } from '../withNavigationBar';
 
 const exportedConfigWithPopsCommon = (modName: string = 'styles') => ({
@@ -22,18 +22,18 @@ const exportedConfigWithPopsCommon = (modName: string = 'styles') => ({
 });
 
 describe(resolveProps, () => {
-  it(`returns undefined for nullish or empty props`, () => {
+  it('returns undefined for nullish or empty props', () => {
     expect(resolveProps(undefined)).toBeUndefined();
     expect(resolveProps({})).toBeUndefined();
-    expect(resolveProps({ style: null })).toBeUndefined();
+    expect(resolveProps({ style: undefined })).toBeUndefined();
   });
 
-  it(`resolves props`, () => {
+  it('resolves props', () => {
     expect(resolveProps({ style: 'dark' })).toStrictEqual({ style: 'dark' });
     expect(resolveProps({ hidden: true })).toStrictEqual({ hidden: true });
   });
 
-  it(`maps deprecated props, preferring new ones`, () => {
+  it('maps deprecated props, preferring new ones', () => {
     expect(resolveProps({ barStyle: 'dark' })).toStrictEqual({ style: 'dark' });
     expect(resolveProps({ visibility: 'hidden' })).toStrictEqual({ hidden: true });
     expect(resolveProps({ visibility: 'visible' })).toStrictEqual({ hidden: false });
@@ -43,73 +43,70 @@ describe(resolveProps, () => {
   });
 });
 
-describe(setStrings, () => {
-  const getAllProps = () => ({ hidden: true, style: 'dark' }) as const;
+describe(setNavigationBarStyles, () => {
+  const parent = 'Theme.AppCompat.DayNight.NoActionBar';
 
-  it(`sets all strings`, () => {
-    expect(setStrings({ resources: {} }, getAllProps())).toStrictEqual({
-      resources: {
-        string: [
-          {
-            $: {
-              name: 'expo_navigation_bar_visibility',
-              translatable: 'false',
-            },
-            _: 'hidden',
-          },
-        ],
-      },
-    });
+  const baseStyles = () => ({
+    resources: { style: [{ $: { name: 'AppTheme', parent }, item: [] }] },
   });
 
-  it(`sets no strings`, () => {
-    expect(
-      setStrings(
-        {
-          resources: {
-            string: [],
-          },
-        },
-        {}
-      )
-    ).toStrictEqual({
-      resources: {
-        string: [],
-      },
-    });
+  const appTheme = (items: { name: string; value: string }[]) => ({
+    $: { name: 'AppTheme', parent },
+    item: items.map(({ name, value }) => ({ $: { name }, _: value })),
   });
 
-  it(`unsets string`, () => {
-    // Set all strings
-    const strings = setStrings({ resources: {} }, getAllProps());
+  it('sets all styles', () => {
+    const result = setNavigationBarStyles({ hidden: true, style: 'dark' }, baseStyles());
 
-    // Unset all strings
-    expect(setStrings(strings, {})).toStrictEqual({
-      resources: {
-        string: [],
-      },
-    });
+    expect(result.resources.style).toStrictEqual([
+      appTheme([
+        { name: 'expoNavigationBarHidden', value: 'true' },
+        { name: 'android:windowLightNavigationBar', value: 'true' },
+      ]),
+    ]);
   });
 
-  it(`redefines duplicates`, () => {
-    // Set all strings
-    const strings = setStrings({ resources: {} }, { hidden: true });
+  it('sets light style', () => {
+    const result = setNavigationBarStyles({ style: 'light' }, baseStyles());
 
-    expect(strings.resources.string).toStrictEqual([
-      {
-        $: { name: 'expo_navigation_bar_visibility', translatable: 'false' },
-        // Test an initial value
-        _: 'hidden',
-      },
+    expect(result.resources.style).toStrictEqual([
+      appTheme([{ name: 'android:windowLightNavigationBar', value: 'false' }]),
+    ]);
+  });
+
+  it('sets hidden only', () => {
+    const result = setNavigationBarStyles({ hidden: true }, baseStyles());
+
+    expect(result.resources.style).toStrictEqual([
+      appTheme([{ name: 'expoNavigationBarHidden', value: 'true' }]),
+    ]);
+  });
+
+  it('does nothing with empty props', () => {
+    const result = setNavigationBarStyles({}, baseStyles());
+
+    expect(result).toStrictEqual(baseStyles());
+  });
+
+  it('redefines duplicates', () => {
+    const styles = setNavigationBarStyles({ hidden: true }, baseStyles());
+
+    expect(styles.resources.style).toStrictEqual([
+      appTheme([{ name: 'expoNavigationBarHidden', value: 'true' }]),
     ]);
 
-    expect(setStrings(strings, { hidden: false }).resources.string).toStrictEqual([
-      {
-        $: { name: 'expo_navigation_bar_visibility', translatable: 'false' },
-        // Test a redefined value
-        _: 'visible',
-      },
+    const updated = setNavigationBarStyles({ hidden: false }, styles);
+
+    expect(updated.resources.style).toStrictEqual([
+      appTheme([{ name: 'expoNavigationBarHidden', value: 'false' }]),
     ]);
+  });
+
+  it('removes style when prop is unset', () => {
+    const styles = setNavigationBarStyles({ hidden: true, style: 'dark' }, baseStyles());
+    const result = setNavigationBarStyles({}, styles);
+
+    expect(result.resources.style).toStrictEqual([appTheme([])]);
   });
 });
 

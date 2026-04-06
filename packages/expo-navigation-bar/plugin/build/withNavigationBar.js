@@ -2,12 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setNavigationBarStyles = void 0;
 exports.resolveProps = resolveProps;
-exports.setStrings = setStrings;
 exports.applyEnforceNavigationBarContrast = applyEnforceNavigationBarContrast;
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('../../package.json');
-// strings.xml keys, this should not change.
-const VISIBILITY_KEY = 'expo_navigation_bar_visibility';
 function resolveProps(props) {
     if (props == null) {
         return;
@@ -39,38 +36,31 @@ const withNavigationBar = (config, _props) => {
     config.extra ??= {};
     config.extra[pkg.name] = props;
     // Use built-in styles instead of Expo custom properties, this makes the project hopefully a bit more predictable for bare users.
-    config = withNavigationBarStyles(config, props);
-    return (0, config_plugins_1.withStringsXml)(config, (config) => {
-        config.modResults = setStrings(config.modResults, props);
-        return config;
-    });
+    return withNavigationBarStyles(config, props);
 };
-function setStrings(strings, { hidden }) {
-    if (hidden == null) {
-        // Since we're using custom strings, we can remove them for convenience between prebuilds.
-        return config_plugins_1.AndroidConfig.Strings.removeStringItem(VISIBILITY_KEY, strings);
-    }
-    const item = config_plugins_1.AndroidConfig.Resources.buildResourceItem({
-        name: VISIBILITY_KEY,
-        value: hidden ? 'hidden' : 'visible',
-        translatable: false,
-    });
-    return config_plugins_1.AndroidConfig.Strings.setStringItem([item], strings);
-}
 const withNavigationBarStyles = (config, props) => {
     return (0, config_plugins_1.withAndroidStyles)(config, (config) => {
         config.modResults = (0, exports.setNavigationBarStyles)(props, config.modResults);
         return applyEnforceNavigationBarContrast(config, props.enforceContrast !== false);
     });
 };
-const setNavigationBarStyles = ({ style }, styles) => config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
-    // Adding means the buttons will be darker to account for a light background color.
-    // `setStyle('dark')` should do the same thing.
-    add: style != null,
-    parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
-    name: 'android:windowLightNavigationBar',
-    value: String(style === 'dark'),
-});
+const setNavigationBarStyles = ({ hidden, style }, styles) => {
+    styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
+        add: hidden != null,
+        parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
+        name: 'expoNavigationBarHidden',
+        value: String(hidden),
+    });
+    styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
+        // Adding means the buttons will be darker to account for a light background color.
+        // `setStyle('dark')` should do the same thing.
+        add: style != null,
+        parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
+        name: 'android:windowLightNavigationBar',
+        value: String(style === 'dark'),
+    });
+    return styles;
+};
 exports.setNavigationBarStyles = setNavigationBarStyles;
 function applyEnforceNavigationBarContrast(config, enforceNavigationBarContrast) {
     const enforceNavigationBarContrastItem = {
