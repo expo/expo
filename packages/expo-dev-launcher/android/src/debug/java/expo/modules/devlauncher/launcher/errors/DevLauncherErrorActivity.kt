@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import expo.modules.devlauncher.compose.models.ErrorViewModel
 import expo.modules.devlauncher.compose.screens.ErrorScreen
 import expo.modules.devlauncher.helpers.enableEdgeToEdge
+import expo.modules.devmenu.compose.newtheme.AppTheme
 import java.lang.ref.WeakReference
 
 class DevLauncherErrorActivity : AppCompatActivity() {
@@ -38,10 +39,12 @@ class DevLauncherErrorActivity : AppCompatActivity() {
     viewModel.setError(error)
 
     setContent {
-      ErrorScreen(
-        stack = viewModel.appError?.error?.stackTraceToString() ?: "No stack trace available",
-        onAction = viewModel::onAction
-      )
+      AppTheme {
+        ErrorScreen(
+          stack = viewModel.appError?.error?.stackTraceToString() ?: "No stack trace available",
+          onAction = viewModel::onAction
+        )
+      }
     }
   }
 
