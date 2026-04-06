@@ -153,7 +153,7 @@ import { GLView } from 'expo-gl';
 
 ## WebGL API
 
-Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the `onContextCreate` prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec.
+Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the `onContextCreate` prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://registry.khronos.org/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec.
 
 Some older Android devices may not support WebGL2 features. To check whether the device supports WebGL2 it's recommended to use `gl instanceof WebGL2RenderingContext`.
 
