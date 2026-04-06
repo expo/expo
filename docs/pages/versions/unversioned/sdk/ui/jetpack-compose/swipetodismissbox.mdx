@@ -60,7 +60,7 @@ export default function SwipeToDelete() {
           <AnimatedVisibility
             key={item.id}
             visible={!item.dismissed}
-            exitTransition={ExitTransition.fadeOut().plus(ExitTransition.shrinkVertically())}>
+            exitTransition={ExitTransition.shrinkVertically()}>
             <SwipeToDismissBox
               enableDismissFromStartToEnd={false}
               onEndToStart={() =>
@@ -132,7 +132,7 @@ export default function SwipeBothWays() {
           <AnimatedVisibility
             key={item.id}
             visible={!item.dismissed}
-            exitTransition={ExitTransition.fadeOut().plus(ExitTransition.shrinkVertically())}>
+            exitTransition={ExitTransition.shrinkVertically()}>
             <SwipeToDismissBox
               onStartToEnd={() =>
                 setItems(prev => prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i)))
