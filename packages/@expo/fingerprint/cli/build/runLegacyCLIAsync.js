@@ -7,11 +7,11 @@ exports.runLegacyCLIAsync = runLegacyCLIAsync;
 const readFingerprintFileAsync_js_1 = __importDefault(require("./utils/readFingerprintFileAsync.js"));
 const index_js_1 = require("../../build/index.js");
 async function runLegacyCLIAsync(args) {
-    if (args.length !== 1 && args.length !== 2 && args.length !== 3) {
+    const projectRoot = args[0];
+    if (projectRoot == null || (args.length !== 1 && args.length !== 2 && args.length !== 3)) {
         console.log(`Usage: npx @expo/fingerprint <projectRoot> [fingerprintFile1ToDiff] [fingerprintFile2ToDiff]`);
         process.exit(1);
     }
-    const projectRoot = args[0];
     const fingerprintFile1ToDiff = args[1];
     const fingerprintFile2ToDiff = args[2];
     const [fingerprint1ToDiff, fingerprint2ToDiff] = await Promise.all([

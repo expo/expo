@@ -12,6 +12,7 @@ declare class ExpoMediaLibraryNextModule extends NativeModule {
     createAlbum(name: string, assetsRefs: string[] | Asset[], moveAssets?: boolean): Promise<Album>;
     deleteAlbums(albums: Album[], deleteAssets?: boolean): Promise<void>;
     getAlbum(title: string): Promise<Album | null>;
+    getPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
     requestPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
 }
 declare const _default: ExpoMediaLibraryNextModule;

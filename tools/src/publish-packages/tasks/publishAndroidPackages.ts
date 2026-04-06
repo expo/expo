@@ -199,7 +199,7 @@ async function removeExistingPublications(pkg: Package) {
   const stringifyConfig = JSON.stringify(pkg.expoModuleConfig, null, 2);
 
   await fs.writeFile(pkg.expoModulesConfigPath, stringifyConfig, 'utf-8');
-  return spawnAsync('yarn', ['prettier', '--write', pkg.expoModulesConfigPath], {
+  return spawnAsync('pnpm', ['prettier', '--write', pkg.expoModulesConfigPath], {
     cwd: pkg.path,
   });
 }

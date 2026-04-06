@@ -1,9 +1,9 @@
-import { InitialState } from '@react-navigation/native';
 import escape from 'escape-string-regexp';
 import * as queryString from 'query-string';
 
 import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
+import { InitialState } from '../react-navigation/native';
 import { parseUrlUsingCustomBase } from '../utils/url';
 
 export type ExpoOptions = {

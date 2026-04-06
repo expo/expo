@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import { DependencyResolutionSource } from '../../dependencies/types';
 import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
 import { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
 import { loadConfigAsync } from '../config';
@@ -353,6 +354,7 @@ describe(resolveReactNativeModule, () => {
         version: '',
         path: '/app/node_modules/react-native-test',
         originPath: '/app/node_modules/react-native-test',
+        source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
         duplicates: null,
         depth: 0,
       },
@@ -383,6 +385,7 @@ describe(resolveReactNativeModule, () => {
         version: '',
         path: '/app/node_modules/react-native-test',
         originPath: '/app/node_modules/react-native-test',
+        source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
         duplicates: null,
         depth: 0,
       },
@@ -416,6 +419,7 @@ describe(resolveReactNativeModule, () => {
         version: '',
         path: '/app/node_modules/react-native-test',
         originPath: '/app/node_modules/react-native-test',
+        source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
         duplicates: null,
         depth: 0,
       },
@@ -463,6 +467,7 @@ describe(resolveReactNativeModule, () => {
           version: '',
           path: '/app/node_modules/react-native-test',
           originPath: '/app/node_modules/react-native-test',
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
           duplicates: null,
           depth: 0,
         },
@@ -488,6 +493,7 @@ describe(resolveReactNativeModule, () => {
           version: '',
           path: '/app/node_modules/react-native',
           originPath: '/app/node_modules/react-native',
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
           duplicates: null,
           depth: 0,
         },
@@ -496,6 +502,119 @@ describe(resolveReactNativeModule, () => {
         new Set()
       );
       expect(result).toBe(null);
+    }
+  );
+
+  itWithMemoize(
+    'should use originPath on Android when path contains = and .pnpm (workaround for https://github.com/google/prefab/issues/187)',
+    async () => {
+      const androidResolver = require('../androidResolver');
+      const mockPlatformResolverAndroid = jest.spyOn(
+        androidResolver,
+        'resolveDependencyConfigImplAndroidAsync'
+      );
+
+      mockPlatformResolverAndroid.mockResolvedValueOnce({
+        sourceDir: '/app/node_modules/react-native-reanimated/android',
+        packageImportPath: 'import com.swmansion.reanimated.ReanimatedPackage;',
+        packageInstance: 'new ReanimatedPackage()',
+        buildTypes: [],
+      });
+
+      const result = await resolveReactNativeModule(
+        {
+          name: 'react-native-reanimated',
+          version: '4.2.1',
+          path: '/app/node_modules/.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated',
+          originPath: '/app/node_modules/react-native-reanimated',
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+          duplicates: null,
+          depth: 0,
+        },
+        null,
+        'android',
+        new Set()
+      );
+
+      expect(result).toMatchObject({
+        name: 'react-native-reanimated',
+        root: '/app/node_modules/react-native-reanimated',
+      });
+
+      mockPlatformResolverAndroid.mockRestore();
+    }
+  );
+
+  itWithMemoize(
+    'should use real path on iOS even when path contains = and .pnpm (iOS does not need the workaround)',
+    async () => {
+      mockPlatformResolverIos.mockResolvedValueOnce({
+        podspecPath:
+          '/app/node_modules/.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated/RNReanimated.podspec',
+        version: '4.2.1',
+        configurations: [],
+        scriptPhases: [],
+      });
+
+      const result = await resolveReactNativeModule(
+        {
+          name: 'react-native-reanimated',
+          version: '4.2.1',
+          path: '/app/node_modules/.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated',
+          originPath: '/app/node_modules/react-native-reanimated',
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+          duplicates: null,
+          depth: 0,
+        },
+        null,
+        'ios',
+        new Set()
+      );
+
+      expect(result).toMatchObject({
+        name: 'react-native-reanimated',
+        root: '/app/node_modules/.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated',
+      });
+    }
+  );
+
+  itWithMemoize(
+    'should use real path on Android when path does not contain = (workaround only applies when = is present)',
+    async () => {
+      const androidResolver = require('../androidResolver');
+      const mockPlatformResolverAndroid = jest.spyOn(
+        androidResolver,
+        'resolveDependencyConfigImplAndroidAsync'
+      );
+
+      mockPlatformResolverAndroid.mockResolvedValueOnce({
+        sourceDir: '/app/node_modules/react-native-test/android',
+        packageImportPath: 'import com.test.TestPackage;',
+        packageInstance: 'new TestPackage()',
+        buildTypes: [],
+      });
+
+      const result = await resolveReactNativeModule(
+        {
+          name: 'react-native-test',
+          version: '1.0.0',
+          path: '/app/node_modules/.pnpm/react-native-test@1.0.0/node_modules/react-native-test',
+          originPath: '/app/node_modules/react-native-test',
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+          duplicates: null,
+          depth: 0,
+        },
+        null,
+        'android',
+        new Set()
+      );
+
+      expect(result).toMatchObject({
+        name: 'react-native-test',
+        root: '/app/node_modules/.pnpm/react-native-test@1.0.0/node_modules/react-native-test',
+      });
+
+      mockPlatformResolverAndroid.mockRestore();
     }
   );
 });

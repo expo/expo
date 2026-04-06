@@ -193,7 +193,7 @@ export const createMutateResolutionError =
         return true;
       }
 
-      const stackOrigin = stack.frames[stack.frames.length - 1].origin;
+      const stackOrigin = stack.frames[stack.frames.length - 1]?.origin;
 
       if (
         stackOrigin &&

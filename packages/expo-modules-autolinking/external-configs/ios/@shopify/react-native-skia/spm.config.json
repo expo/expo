@@ -1,0 +1,209 @@
+{
+    "$schema": "../../../../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "RNSkia",
+            "podName": "react-native-skia",
+            "codegenName": "rnskia",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes"
+            ],
+            "targets": [
+                {
+                    "type": "framework",
+                    "name": "libskia",
+                    "path": "libs/apple/ios/libskia.xcframework"
+                },
+                {
+                    "type": "framework",
+                    "name": "libsvg",
+                    "path": "libs/apple/ios/libsvg.xcframework"
+                },
+                {
+                    "type": "framework",
+                    "name": "libskshaper",
+                    "path": "libs/apple/ios/libskshaper.xcframework"
+                },
+                {
+                    "type": "framework",
+                    "name": "libskparagraph",
+                    "path": "libs/apple/ios/libskparagraph.xcframework"
+                },
+                {
+                    "type": "framework",
+                    "name": "libskunicode_core",
+                    "path": "libs/apple/ios/libskunicode_core.xcframework"
+                },
+                {
+                    "type": "framework",
+                    "name": "libskunicode_libgrapheme",
+                    "path": "libs/apple/ios/libskunicode_libgrapheme.xcframework"
+                },
+                {
+                    "type": "framework",
+                    "name": "libskottie",
+                    "path": "libs/apple/ios/libskottie.xcframework"
+                },
+                {
+                    "type": "framework",
+                    "name": "libsksg",
+                    "path": "libs/apple/ios/libsksg.xcframework"
+                },
+                {
+                    "type": "objc",
+                    "name": "rnskia_codegen_modules",
+                    "moduleName": "rnskia",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/rnskia",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ ".." ]
+                },
+                {
+                    "type": "cpp",
+                    "name": "rnskia_codegen_components",
+                    "moduleName": "rnskia",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/rnskia",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ "../../../.." ],
+                    "compilerFlags": {
+                        "common": {
+                            "cxx": [ "-fno-cxx-modules" ]
+                        }
+                    }
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNSkia_cpp",
+                    "moduleName": "rnskia",
+                    "path": "cpp",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "exclude": [
+                        "rnskia/RNDawnContext.h",
+                        "rnskia/RNDawnUtils.h",
+                        "rnskia/RNDawnWindowContext.h",
+                        "rnskia/RNDawnWindowContext.cpp",
+                        "rnskia/RNImageProvider.h",
+                        "rnwgpu/**",
+                        "skia/include/**",
+                        "skia/modules/skottie/**",
+                        "skia/modules/skparagraph/**",
+                        "skia/modules/sksg/**",
+                        "skia/modules/skshaper/**",
+                        "skia/modules/skunicode/**",
+                        "skia/modules/svg/**",
+                        "skia/src/**"
+                    ],
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "Hermes",
+                        "libskia",
+                        "libsvg",
+                        "libskshaper",
+                        "libskparagraph",
+                        "libskunicode_core",
+                        "libskunicode_libgrapheme",
+                        "libskottie",
+                        "libsksg"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "api",
+                        "skia",
+                        "../.build/codegen/build/generated/ios/ReactCodegen"
+                    ],
+                    "compilerFlags": {
+                        "common": {
+                            "c": [
+                                "-DSK_METAL=1",
+                                "-DSK_GANESH=1",
+                                "-DSK_IMAGE_READ_PIXELS_DISABLE_LEGACY_API=1",
+                                "-DSK_DISABLE_LEGACY_SHAPER_FACTORY=1"
+                            ],
+                            "cxx": [
+                                "-fno-cxx-modules",
+                                "-DSK_METAL=1",
+                                "-DSK_GANESH=1",
+                                "-DSK_IMAGE_READ_PIXELS_DISABLE_LEGACY_API=1",
+                                "-DSK_DISABLE_LEGACY_SHAPER_FACTORY=1"
+                            ]
+                        },
+                        "debug": [ "-DHERMES_ENABLE_DEBUGGER=1" ]
+                    },
+                    "publicHeaders": false
+                },
+                {
+                    "type": "objc",
+                    "name": "RNSkia",
+                    "path": "apple",
+                    "pattern": "**/*.{m,mm}",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "libskia",
+                        "libsvg",
+                        "libskshaper",
+                        "libskparagraph",
+                        "libskunicode_core",
+                        "libskunicode_libgrapheme",
+                        "libskottie",
+                        "libsksg",
+                        "rnskia_codegen_modules",
+                        "rnskia_codegen_components",
+                        "RNSkia_cpp"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../cpp",
+                        "../cpp/rnskia",
+                        "../cpp/jsi",
+                        "../cpp/api",
+                        "../cpp/utils",
+                        "../cpp/skia",
+                        "../.build/codegen/build/generated/ios/ReactCodegen"
+                    ],
+                    "linkedFrameworks": [
+                        "Foundation",
+                        "UIKit",
+                        "Metal",
+                        "MetalKit",
+                        "AVFoundation",
+                        "AVKit",
+                        "CoreMedia",
+                        "QuartzCore",
+                        "CoreGraphics",
+                        "CoreText",
+                        "CoreVideo",
+                        "CoreImage",
+                        "IOSurface"
+                    ],
+                    "compilerFlags": [
+                        "-include", "Foundation/Foundation.h",
+                        "-include", "UIKit/UIKit.h",
+                        "-DSK_METAL=1",
+                        "-DSK_GANESH=1",
+                        "-DSK_IMAGE_READ_PIXELS_DISABLE_LEGACY_API=1",
+                        "-DSK_DISABLE_LEGACY_SHAPER_FACTORY=1"
+                    ]
+                }
+            ]
+        }
+    ]
+}

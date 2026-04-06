@@ -2,7 +2,7 @@ import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 import { withAppleAuthIOS } from './withAppleAuthIOS';
 
-const pkg = require('expo-apple-authentication/package.json');
+const pkg = require('../../package.json');
 
 const withAppleAuth: ConfigPlugin = (config) => {
   config = withAppleAuthIOS(config);

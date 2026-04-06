@@ -104,8 +104,7 @@ export async function scanDependenciesInSearchPath(
     });
   }
 
-  for (let idx = 0; idx < resolvedDependencies.length; idx++) {
-    const resolution = resolvedDependencies[idx];
+  for (const resolution of resolvedDependencies) {
     const prevEntry = searchResults[resolution.name];
     if (prevEntry != null && resolution.path !== prevEntry.path) {
       (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push({

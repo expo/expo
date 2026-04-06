@@ -3,7 +3,7 @@ import type { ViewProps } from 'react-native';
 // -- Public types matching @react-native-community/datetimepicker ----------
 
 /**
- * @deprecated used with the deprecated `onChange` prop
+ * @deprecated Used with the deprecated `onChange` prop.
  * */
 export type DateTimePickerEvent = {
   /**
@@ -30,11 +30,11 @@ export type DateTimePickerProps = {
    */
   value: Date;
   /**
-   * @deprecated Use `onValueChange` and `onDismiss` instead.
-   *
    * Called when the user changes the date/time or dismisses the picker.
    * The event type is encoded in `event.type`.
    * If the new specific listeners are provided, they take precedence.
+   *
+   * @deprecated Use `onValueChange` and `onDismiss` instead.
    */
   onChange?: (event: DateTimePickerEvent, date?: Date) => void;
   /**

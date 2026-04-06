@@ -91,7 +91,7 @@ async function determinePatchFilePathAsync(
 
   const patchFiles = await getPatchFilesAsync(patchRoot, platform);
   const patchExists = patchFiles.includes(path.basename(patchFilePath));
-  if (patchFiles.length > 0 && !patchExists) {
+  if (patchFiles[0] != null && !patchExists) {
     const firstPatchFilePath = path.join(patchRoot, patchFiles[0]);
     WarningAggregator.addWarningForPlatform(
       platform,

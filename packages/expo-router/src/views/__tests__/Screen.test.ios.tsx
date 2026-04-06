@@ -1,8 +1,8 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { screen } from '@testing-library/react-native';
 import { View } from 'react-native';
 
 import Stack from '../../layouts/Stack';
+import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 import { renderRouter } from '../../testing-library';
 
 type HeaderTitleFunction = Extract<

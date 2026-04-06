@@ -35,11 +35,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLinking = useLinking;
 exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
-const native_1 = require("@react-navigation/native");
 const ExpoLinking = __importStar(require("expo-linking"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("./extractPathFromURL");
+const native_1 = require("../react-navigation/native");
 const linkingHandlers = [];
 function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialURL = () => getInitialURLWithTimeout(), subscribe = (listener) => {
     const callback = ({ url }) => listener(url);
@@ -66,6 +66,7 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
             return undefined;
         }
         if (enabled !== false && linkingHandlers.length && process.env.EXPO_OS !== 'android') {
+            // TODO(@ubax): This check should be removed
             if (linkingHandlers.length > 1) {
                 console.error([
                     'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',

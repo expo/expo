@@ -436,13 +436,15 @@ export function importExportLiveBindingsPlugin({
                   : assignExportHelper;
               const exportBindings = t.getBindingIdentifiers(declaration, false, true);
               for (const exportName in exportBindings) {
-                state.exportDeclarations.push({
-                  statement: withLocation(
-                    exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)),
-                    exportStatement.loc
-                  ),
-                  local: undefined,
-                });
+                if (exportBindings[exportName] != null) {
+                  state.exportDeclarations.push({
+                    statement: withLocation(
+                      exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)),
+                      exportStatement.loc
+                    ),
+                    local: undefined,
+                  });
+                }
               }
             }
           }

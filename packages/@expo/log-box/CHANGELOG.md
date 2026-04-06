@@ -4,11 +4,18 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Add native no-op for `renderInShadowRoot` to avoid `react-dom` resolution errors on native platforms. ([#43893](https://github.com/expo/expo/issues/43893)) ([#44190](https://github.com/expo/expo/pull/44190) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
+
+- Use `OkHttpClientProvider` instead of raw `OkHttpClient` ([#44416](https://github.com/expo/expo/pull/44416)) by [@cortinico](https://github.com/cortinico)
+- Stop @expo/log-box from rebuilding on every pnpm install ([#44330](https://github.com/expo/expo/pull/44330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### ⚠️ Notices
 

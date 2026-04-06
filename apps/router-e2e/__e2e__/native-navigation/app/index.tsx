@@ -30,6 +30,8 @@ const HomeIndex = () => {
       <CaseLink href="/composition-rerenders" text="Composition Rerenders" />
       <CaseLink href="/modals" text="Modals" />
       <CaseLink href="/params" text="Params" />
+      <CaseLink href="/js-stack" text="JS Stack" />
+      <CaseLink href="/js-tabs" text="JS Tabs" />
     </ScrollView>
   );
 };

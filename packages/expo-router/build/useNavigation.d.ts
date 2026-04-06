@@ -1,4 +1,4 @@
-import { NavigationProp, NavigationState } from '@react-navigation/native';
+import { NavigationProp, NavigationState } from './react-navigation/native';
 import { Href } from './types';
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)

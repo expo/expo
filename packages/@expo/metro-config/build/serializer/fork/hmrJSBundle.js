@@ -62,7 +62,7 @@ function prepareModule(module, graph, options) {
     // Transform the inverse dependency paths to ids.
     const inverseDependenciesById = Object.create(null);
     Object.keys(inverseDependencies).forEach((path) => {
-        inverseDependenciesById[options.createModuleId(path)] = inverseDependencies[path].map(options.createModuleId);
+        inverseDependenciesById[options.createModuleId(path)] = inverseDependencies[path]?.map(options.createModuleId);
     });
     return (0, metro_transform_plugins_1.addParamsToDefineCall)(code.src, inverseDependenciesById);
 }

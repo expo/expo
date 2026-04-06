@@ -1,0 +1,57 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoFileSystem",
+      "podName": "ExpoFileSystem",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoFileSystem_ios_objc",
+          "moduleName": "ExpoFileSystem",
+          "path": "ios",
+          "pattern": "**/*.m",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ],
+          "includeDirectories": [
+            "."
+          ]
+        },
+        {
+          "type": "swift",
+          "name": "ExpoFileSystem",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoFileSystem_ios_objc"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ]
+        }
+      ]
+    }
+  ]
+}

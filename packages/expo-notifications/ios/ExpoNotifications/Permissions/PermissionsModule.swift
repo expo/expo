@@ -21,7 +21,7 @@ public class PermissionsModule: Module {
         .permissions?
         .getPermissionUsingRequesterClass(
           ExpoNotificationsPermissionsRequester.self,
-          resolve: promise.resolver,
+          resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
     }
@@ -39,7 +39,7 @@ public class PermissionsModule: Module {
       // Expo Go notifications permissions are not scoped
       let resolver: EXPromiseResolveBlock = { result in
         if let permission = result as? [AnyHashable: Any] {
-          promise.resolver(EXPermissionsService.parsePermission(fromRequester: permission))
+          promise.legacyResolver(EXPermissionsService.parsePermission(fromRequester: permission))
         } else {
           promise.legacyRejecter("ERR_PERMISSIONS_REQUEST_NOTIFICATIONS", "Unexpected permission result type", nil)
         }

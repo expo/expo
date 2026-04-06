@@ -1,13 +1,13 @@
 'use client';
+
+import { getRootStackRouteNames } from './global-state/utils';
+import { resolveHref } from './link/href';
 import {
   useNavigation as useUpstreamNavigation,
   NavigationProp,
   NavigationState,
   useStateForPath,
-} from '@react-navigation/native';
-
-import { getRootStackRouteNames } from './global-state/utils';
-import { resolveHref } from './link/href';
+} from './react-navigation/native';
 import { Href } from './types';
 
 /**

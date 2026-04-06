@@ -3,6 +3,9 @@
 This is a sample application used to test brownfield integration with Expo modules.
 It uses the "integrated" approach to load JS code of the `minimal-tester` app by configuring a custom project root.
 
+> [!WARNING]
+> This app redirects its build and project root to `../expo-app`. This should not be done and is an invalid project setup, that needs to be refactored. Please don't replicate this to other tests or E2E setups.
+
 ## Android App
 
 The Android app was initialized by creating a new Empty Activity project in Android Studio 2025.1.3 and following the [Brownfield Integration](https://docs.expo.dev/brownfield/get-started/) guide to integrate Expo modules. As a final step, due to the React Native targeting Java 17 we removed the default `compileOptions` from `app/build.gradle.kts` and removed `dependencyResolutionManagement` `repositoriesMode` from `settings.gradle.kts` because the `react-native` plugin configures the maven repo.

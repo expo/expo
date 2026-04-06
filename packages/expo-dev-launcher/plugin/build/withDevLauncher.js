@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const pluginConfig_1 = require("./pluginConfig");
-const pkg = require('expo-dev-launcher/package.json');
+const pkg = require('../../package.json');
 /**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys
  * from non-Debug builds. This keeps the keys in Debug builds (where dev-launcher is active)
@@ -102,6 +102,20 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
             return config;
         });
     }
+    const iOSToolsButton = props.ios?.toolsButton ?? props.toolsButton;
+    if (iOSToolsButton !== undefined) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults['EXDevMenuShowFloatingActionButton'] = iOSToolsButton;
+            return config;
+        });
+    }
+    const iOSEmbeddedBundle = props.ios?.embeddedBundle ?? props.embeddedBundle;
+    if (iOSEmbeddedBundle) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults['EXDevClientEmbeddedBundle'] = true;
+            return config;
+        });
+    }
     const androidLaunchMode = props.android?.launchMode ??
         props.launchMode ??
         props.android?.launchModeExperimental ??
@@ -110,6 +124,22 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
             const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE', false?.toString());
+            return config;
+        });
+    }
+    const androidToolsButton = props.android?.toolsButton ?? props.toolsButton;
+    if (androidToolsButton !== undefined) {
+        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevMenuShowFloatingActionButton', String(androidToolsButton));
+            return config;
+        });
+    }
+    const androidEmbeddedBundle = props.android?.embeddedBundle ?? props.embeddedBundle;
+    if (androidEmbeddedBundle) {
+        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevClientEmbeddedBundle', String(true));
             return config;
         });
     }

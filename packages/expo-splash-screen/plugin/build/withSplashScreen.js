@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const withAndroidSplashScreen_1 = require("@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/withAndroidSplashScreen");
 const withIosSplashScreen_1 = require("@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/withIosSplashScreen");
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-splash-screen/package.json');
+const pkg = require('../../package.json');
 const withSplashScreen = (config, props) => {
     let android = null;
     let ios = null;

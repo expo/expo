@@ -12,7 +12,7 @@ on:
       - packages/expo-dev-menu/**
       - packages/expo-manifests/**
       - packages/expo-updates/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
@@ -25,7 +25,7 @@ on:
       - packages/expo-dev-menu/**
       - packages/expo-manifests/**
       - packages/expo-updates/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
@@ -33,11 +33,6 @@ on:
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
   cancel_in_progress: true
-
-defaults:
-  tools:
-    node: 22.14.0
-    yarn: 1.22.22
 
 jobs:
   detect_platform:
@@ -72,7 +67,7 @@ jobs:
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
       - name: Build Expo CLI
-        run: yarn workspace @expo/cli prepare
+        run: pnpm --filter @expo/cli prepare
       - name: Build and publish Android brownfield artifacts
         working_directory: ../brownfield-tester/expo-app
         run: |
@@ -95,7 +90,7 @@ jobs:
         with:
           platform: ios
       - name: Build Expo CLI
-        run: yarn workspace @expo/cli prepare
+        run: pnpm --filter @expo/cli prepare
       - name: Build iOS artifacts (Release)
         working_directory: ../brownfield-tester/expo-app
         run: |

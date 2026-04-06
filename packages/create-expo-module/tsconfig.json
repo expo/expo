@@ -6,18 +6,10 @@
     "outDir": "./build",
     "module": "commonjs",
     "moduleResolution": "node",
-    "types": [],
-    "typeRoots": ["./ts-declarations", "node_modules/@types"],
     "sourceMap": true,
     "declaration": true,
     "inlineSources": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
     "skipLibCheck": true,
-    "noImplicitAny": false,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true
   }
 }

@@ -1,12 +1,5 @@
 'use client';
 
-import {
-  createNavigatorFactory,
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
-  useNavigationBuilder,
-} from '@react-navigation/native';
 import React, { use, useCallback, useMemo } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
@@ -22,6 +15,13 @@ import type {
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import { getPathFromState } from '../link/linking';
+import {
+  createNavigatorFactory,
+  ParamListBase,
+  TabNavigationState,
+  TabRouterOptions,
+  useNavigationBuilder,
+} from '../react-navigation/native';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.

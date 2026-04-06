@@ -1,3 +1,13 @@
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
+import * as React from 'react';
+
+import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
+import { DescriptorsContext } from './descriptors-context';
+import { usePreviewTransition } from './usePreviewTransition';
+import {
+  INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
+  type InternalNavigationOptions,
+} from '../../navigationParams';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -11,24 +21,14 @@ import {
   type StaticConfig,
   type TypedNavigator,
   useNavigationBuilder,
-} from '@react-navigation/native';
+} from '../../react-navigation/native';
 import {
   type NativeStackNavigationEventMap,
   type NativeStackNavigationOptions,
   type NativeStackNavigationProp,
   NativeStackView,
   type NativeStackNavigatorProps,
-} from '@react-navigation/native-stack';
-import { isLiquidGlassAvailable } from 'expo-glass-effect';
-import * as React from 'react';
-
-import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
-import { DescriptorsContext } from './descriptors-context';
-import { usePreviewTransition } from './usePreviewTransition';
-import {
-  INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
-  type InternalNavigationOptions,
-} from '../../navigationParams';
+} from '../../react-navigation/native-stack';
 
 const GLASS = isLiquidGlassAvailable();
 

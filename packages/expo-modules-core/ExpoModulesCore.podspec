@@ -51,14 +51,12 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '15.1',
-    :osx => '11.0',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :osx => '13.4',
+    :tvos => '16.4'
   }
   s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.static_framework = true
-  s.header_dir     = 'ExpoModulesCore'
 
   header_search_paths = []
   if ENV['USE_FRAMEWORKS']
@@ -106,7 +104,7 @@ Pod::Spec.new do |s|
     s.dependency 'React-jsc'
   end
 
-  s.dependency 'ExpoModulesJSI'
+  s.dependency 'ExpoModulesMacros'
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
@@ -115,10 +113,15 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s)
 
-  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-  s.exclude_files = ['ios/JSI', 'ios/Tests', 'ios/Worklets', 'common/cpp/JSI']
-  s.compiler_flags = compiler_flags
-  s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
+  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
+    s.dependency 'ExpoModulesJSI'
+    s.static_framework = true
+    s.header_dir     = 'ExpoModulesCore'
+    s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
+    s.exclude_files = ['ios/JSI', 'ios/Tests', 'ios/Worklets', 'common/cpp/JSI']
+    s.compiler_flags = compiler_flags
+    s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
+  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'

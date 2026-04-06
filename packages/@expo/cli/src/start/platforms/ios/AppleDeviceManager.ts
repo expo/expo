@@ -219,6 +219,12 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   async ensureExpoGoAsync(sdkVersion: string): Promise<boolean> {
+    if (this.device.osType === 'watchOS') {
+      throw new CommandError(
+        'UNSUPPORTED_DEVICE',
+        `Expo Go is not supported on Apple Watch. Please select an iPhone or iPad simulator instead.`
+      );
+    }
     const installer = new ExpoGoInstaller('ios', EXPO_GO_BUNDLE_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);
   }

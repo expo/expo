@@ -71,10 +71,11 @@ export class PeerDependencyChecks implements DoctorCheck<DoctorCache> {
 
     const groupedByMissingPeerDependency = filteredPeerDependencyIssues.reduce(
       (acc, issue) => {
-        if (acc[issue.missingPeerDependency]) {
-          acc[issue.missingPeerDependency].push(issue.requiredBy);
+        const { missingPeerDependency } = issue;
+        if (acc[missingPeerDependency]) {
+          acc[missingPeerDependency].push(issue.requiredBy);
         } else {
-          acc[issue.missingPeerDependency] = [issue.requiredBy];
+          acc[missingPeerDependency] = [issue.requiredBy];
         }
         return acc;
       },

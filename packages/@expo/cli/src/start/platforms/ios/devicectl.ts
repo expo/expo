@@ -291,7 +291,7 @@ async function installAppWithDeviceCtlInternalAsync(
 
         const match = str.match(/(\d+)%\.\.\./);
         if (match) {
-          updateProgress(parseInt(match[1], 10));
+          updateProgress(parseInt(match[1]!, 10));
         } else if (hasStarted) {
           updateProgress(100);
         }
@@ -345,7 +345,7 @@ export async function launchAppWithDeviceCtl(deviceId: string, bundleId: string)
 
 /** Find all error codes from the output log */
 function getDeviceCtlErrorCodes(log: string): string[] {
-  return [...log.matchAll(/BSErrorCodeDescription\s+=\s+(.*)$/gim)].map(([_line, code]) => code);
+  return [...log.matchAll(/BSErrorCodeDescription\s+=\s+(.*)$/gim)].map(([_line, code]) => code!);
 }
 
 let hasEverBeenInstalled: boolean | undefined;

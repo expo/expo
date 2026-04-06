@@ -11,6 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.io.File
 
@@ -45,7 +46,7 @@ class CopyMoveOperationsTest {
   private fun File.toUri(): Uri = Uri.parse(this.toURI().toString())
 
   @Test
-  fun testCopyLocalFile_ToLocalFile() {
+  fun testCopyLocalFile_ToLocalFile() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("test content") }
@@ -62,7 +63,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopyLocalFile_ToLocalDirectory() {
+  fun testCopyLocalFile_ToLocalDirectory() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("test content") }
@@ -79,7 +80,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopyLocalDirectory_ToLocalDirectory() {
+  fun testCopyLocalDirectory_ToLocalDirectory() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcDir = File(localTestDir, "srcDir").apply { mkdirs() }
@@ -101,7 +102,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopySAFFile_ToSAFFile() {
+  fun testCopySAFFile_ToSAFFile() = runBlocking {
     val safRootDir = getSAFRootDir()
 
     val srcDoc = safRootDir.createFile("text/plain", "source.txt")
@@ -123,7 +124,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopySAFFile_ToSAFDirectory() {
+  fun testCopySAFFile_ToSAFDirectory() = runBlocking {
     val safRootDir = getSAFRootDir()
 
     val srcDoc = safRootDir.createFile("text/plain", "source.txt")!!
@@ -143,7 +144,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopySAFDirectory_ToSAFDirectory() {
+  fun testCopySAFDirectory_ToSAFDirectory() = runBlocking {
     val safRootDir = getSAFRootDir()
 
     val srcDir = safRootDir.createDirectory("srcDir")!!
@@ -168,7 +169,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopySAFFile_ToLocalFile() {
+  fun testCopySAFFile_ToLocalFile() = runBlocking {
     val safRootDir = getSAFRootDir()
     val localTestDir = getLocalTestDir()
 
@@ -187,7 +188,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopySAFFile_ToLocalDirectory() {
+  fun testCopySAFFile_ToLocalDirectory() = runBlocking {
     val safRootDir = getSAFRootDir()
     val localTestDir = getLocalTestDir()
 
@@ -207,7 +208,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopyLocalFile_ToSAFDirectory() {
+  fun testCopyLocalFile_ToSAFDirectory() = runBlocking {
     val safRootDir = getSAFRootDir()
     val localTestDir = getLocalTestDir()
 
@@ -226,7 +227,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopyLocalDirectory_ToSAFDirectory() {
+  fun testCopyLocalDirectory_ToSAFDirectory() = runBlocking {
     val safRootDir = getSAFRootDir()
     val localTestDir = getLocalTestDir()
 
@@ -251,7 +252,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testMoveLocalFile_ToLocalFile() {
+  fun testMoveLocalFile_ToLocalFile() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("move content") }
@@ -269,7 +270,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testMoveLocalFile_ToLocalDirectory() {
+  fun testMoveLocalFile_ToLocalDirectory() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("move content") }
@@ -287,7 +288,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testMoveSAFFile_ToLocalDirectory() {
+  fun testMoveSAFFile_ToLocalDirectory() = runBlocking {
     val safRootDir = getSAFRootDir()
     val localTestDir = getLocalTestDir()
 
@@ -311,7 +312,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testMoveLocalFile_ToSAFDirectory() {
+  fun testMoveLocalFile_ToSAFDirectory() = runBlocking {
     val safRootDir = getSAFRootDir()
     val localTestDir = getLocalTestDir()
 
@@ -331,7 +332,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopy_ThrowsWhenDestinationExists_AndOverwriteIsFalse() {
+  fun testCopy_ThrowsWhenDestinationExists_AndOverwriteIsFalse() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("source") }
@@ -350,7 +351,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopy_OverwritesDestination_WhenOverwriteIsTrue() {
+  fun testCopy_OverwritesDestination_WhenOverwriteIsTrue() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("new content") }
@@ -365,7 +366,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testMove_ThrowsWhenDestinationExists_AndOverwriteIsFalse() {
+  fun testMove_ThrowsWhenDestinationExists_AndOverwriteIsFalse() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("source") }
@@ -384,7 +385,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testMove_OverwritesDestination_WhenOverwriteIsTrue() {
+  fun testMove_OverwritesDestination_WhenOverwriteIsTrue() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("new content") }
@@ -400,7 +401,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopy_ThrowsWhenCopyingDirectoryToFile() {
+  fun testCopy_ThrowsWhenCopyingDirectoryToFile() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcDir = File(localTestDir, "srcDir").apply { mkdirs() }
@@ -418,7 +419,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopy_ThrowsWhenDestinationParentDoesNotExist() {
+  fun testCopy_ThrowsWhenDestinationParentDoesNotExist() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("content") }
@@ -436,7 +437,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopy_FileToNonexistentDirectory_Throws() {
+  fun testCopy_FileToNonexistentDirectory_Throws() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcFile = File(localTestDir, "source.txt").apply { writeText("content") }
@@ -454,7 +455,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopyDirectory_ToExistingDirectory_CreatesChildDirectory() {
+  fun testCopyDirectory_ToExistingDirectory_CreatesChildDirectory() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcDir = File(localTestDir, "srcDir").apply { mkdirs() }
@@ -473,7 +474,7 @@ class CopyMoveOperationsTest {
   }
 
   @Test
-  fun testCopyDirectory_ToNonexistentDirectory_RenamesIfParentExists() {
+  fun testCopyDirectory_ToNonexistentDirectory_RenamesIfParentExists() = runBlocking {
     val localTestDir = getLocalTestDir()
 
     val srcDir = File(localTestDir, "srcDir").apply { mkdirs() }

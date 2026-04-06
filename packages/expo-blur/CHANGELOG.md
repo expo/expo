@@ -4,11 +4,14 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 - [Android] Fix Fabric mount/detach mismatch in `BlurTargetView` that could trigger `view already removed from parent` errors during root tree transitions. ([#43595](https://github.com/expo/expo/pull/43595) by [@stathis](https://github.com/efstathiosntonas))
+- [Android] Fix the initial blur value not taking the `blurReductionFactor` into account. ([#43814](https://github.com/expo/expo/pull/43814) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

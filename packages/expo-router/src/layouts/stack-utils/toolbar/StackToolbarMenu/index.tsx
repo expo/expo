@@ -1,15 +1,15 @@
 'use client';
-import type {
-  NativeStackHeaderItemMenu,
-  NativeStackHeaderItemMenuAction,
-  NativeStackHeaderItemMenuSubmenu,
-} from '@react-navigation/native-stack';
 import { Children, useMemo, type ReactNode } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { PlatformIconIOS } from 'react-native-screens';
 
 import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
 import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
+import type {
+  NativeStackHeaderItemMenu,
+  NativeStackHeaderItemMenuAction,
+  NativeStackHeaderItemMenuSubmenu,
+} from '../../../../react-navigation/native-stack';
 import {
   filterAllowedChildrenElements,
   getFirstChildOfType,
@@ -78,13 +78,14 @@ function computeMenuLabelAndTitle(
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
+ * @platform android
  * @platform ios
  */
 export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement !== 'bottom') {
-    // For placement other than bottom, this component will not render, and should be
+  if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
+    // On ios, for placement other than bottom, this component will not render, and should be
     // converted to RN header item using convertStackToolbarMenuPropsToRNHeaderItem.
     // So if we reach here, it means we're not inside a toolbar or something else is wrong.
     throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
@@ -270,12 +271,13 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement !== 'bottom') {
+  if (process.env.EXPO_OS === 'ios' && placement !== 'bottom') {
     throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
   }
 

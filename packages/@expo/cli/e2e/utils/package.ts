@@ -7,6 +7,11 @@ import { toPosixPath } from '../../src/utils/filePath';
 
 export const EXPO_MONOREPO_ROOT = path.resolve(__dirname, '../../../../..');
 
+export function createPackageLink(_fixtureRoot: string, packagePath: string) {
+  const absolutePath = path.resolve(EXPO_MONOREPO_ROOT, packagePath);
+  return `link:${toPosixPath(absolutePath)}`;
+}
+
 /**
  * Create a tarball from a package within the Expo monorepo.
  * This creates the tarball from source, and moves it within the fixture directory using `.tarball`.
@@ -27,7 +32,7 @@ export async function createPackageTarball(fixtureRoot: string, packagePath: str
   const { stdout } = await execa(
     'npm',
     // Run `npm pack --json` without the script logging (see: https://github.com/npm/cli/issues/7354)
-    ['--foreground-scripts=false', 'pack', '--json', '--pack-destination', outputDir],
+    ['--foreground-scripts=false', '--ignore-scripts', 'pack', '--json', '--pack-destination', outputDir],
     { cwd: packageDir, stdio: boolish('CI', false) ? 'pipe' : undefined }
   );
 

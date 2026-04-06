@@ -76,15 +76,30 @@ export type TextInputProps = {
      */
     autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
     /**
-     * Modifiers for the component.
+     * Placeholder text shown inside the field when empty and focused.
+     *
      */
+    placeholder?: string;
+    /** Modifiers for the component */
     modifiers?: ExpoModifier[];
+    /**
+     * Slot children (e.g. `TextInput.Label`).
+     */
+    children?: React.ReactNode;
 };
-export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
+export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText' | 'children'> & {
+    children?: React.ReactNode;
+} & ViewEvent<'onValueChanged', {
     value: string;
 }>;
 /**
  * Renders a `TextInput` component.
  */
-export declare function TextInput(props: TextInputProps): import("react").JSX.Element;
+declare function TextInputComponent(props: TextInputProps): import("react").JSX.Element;
+declare namespace TextInputComponent {
+    var Label: (props: {
+        children: React.ReactNode;
+    }) => import("react").JSX.Element;
+}
+export { TextInputComponent as TextInput };
 //# sourceMappingURL=index.d.ts.map

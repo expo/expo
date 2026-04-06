@@ -438,7 +438,7 @@ export function resolveXcodeBuildSetting(
 ): string {
   const parsedValue = value?.replace(/\$\(([^()]*|\([^)]*\))\)/g, (match) => {
     // Remove the `$(` and `)`, then split modifier(s) from the variable name.
-    const [variable, ...transformations] = match.slice(2, -1).split(':');
+    const [variable = '', ...transformations] = match.slice(2, -1).split(':');
     // Resolve the variable recursively.
     let lookedUp = lookup(variable);
     if (lookedUp) {
