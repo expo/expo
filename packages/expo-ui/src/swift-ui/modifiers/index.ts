@@ -608,6 +608,24 @@ export const defaultScrollAnchorForRole = (
 ) => createModifier('defaultScrollAnchorForRole', { anchor, role });
 
 /**
+ * Sets the scroll snapping behavior for scrollable views.
+ * Use with `scrollTargetLayout` on the content container.
+ * @param behavior - `'paging'` for container-aligned snapping, `'viewAligned'` for view-aligned snapping.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetbehavior(_:)).
+ */
+export const scrollTargetBehavior = (behavior: 'paging' | 'viewAligned') =>
+  createModifier('scrollTargetBehavior', { behavior });
+
+/**
+ * Configures a layout container as a scroll target layout for view-aligned snapping.
+ * Apply to `VStack` or `HStack` inside a `ScrollView`.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetlayout(isenabled:)).
+ */
+export const scrollTargetLayout = () => createModifier('scrollTargetLayout', {});
+
+/**
  * Disables the move action for a view in a list.
  * Apply to items within a `ForEach` to prevent them from being moved.
  * @param disabled - Whether moving should be disabled
@@ -1130,6 +1148,8 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
+  | ReturnType<typeof scrollTargetBehavior>
+  | ReturnType<typeof scrollTargetLayout>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
