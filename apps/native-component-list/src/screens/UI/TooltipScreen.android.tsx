@@ -45,9 +45,7 @@ export default function TooltipScreen() {
                   <ComposeText>Camera</ComposeText>
                 </TooltipBox.RichTooltip.Title>
                 <TooltipBox.RichTooltip.Text>
-                  <ComposeText>
-                    Take photos and record videos with your device camera.
-                  </ComposeText>
+                  <ComposeText>Take photos and record videos with your device camera.</ComposeText>
                 </TooltipBox.RichTooltip.Text>
               </TooltipBox.RichTooltip>
               <Button onClick={() => {}}>
