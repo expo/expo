@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VALE_VERSION="3.12.0"
+VALE_VERSION="3.14.1"
 
 # Resolve docs/ root regardless of where the script is invoked from
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -30,7 +30,7 @@ case "${OS}_${ARCH}" in
     ;;
 esac
 
-URL="https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_${PLATFORM}.tar.gz"
+URL="https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_${PLATFORM}.tar.gz"
 
 echo "Downloading Vale ${VALE_VERSION} for ${PLATFORM}..."
 mkdir -p "$INSTALL_DIR"
