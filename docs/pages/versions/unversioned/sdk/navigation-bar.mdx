@@ -15,9 +15,7 @@ import {
 } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-navigation-bar` enables you to modify and observe the native navigation bar on Android devices. Due to some Android platform restrictions, parts of this API overlap with the `expo-status-bar` API.
-
-The APIs in this package have no impact when "Gesture Navigation" is enabled on the Android device. There is currently no native Android API to detect if "Gesture Navigation" is enabled or not.
+`expo-navigation-bar` provides a component and an imperative API for controlling the app's navigation bar on Android devices, allowing you to change the color of its buttons or hide it.
 
 ## Installation
 
@@ -53,7 +51,7 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
     {
       name: 'enforceContrast',
       description:
-        'Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content.',
+        'Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content. Has no effect on Android 9 and below.',
       default: 'true',
       platform: 'android',
     },
