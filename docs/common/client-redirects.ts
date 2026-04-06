@@ -606,4 +606,10 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/latest/sdk/ui/jetpack-compose/progress/',
   '/versions/latest/sdk/ui/jetpack-compose/circularprogress/':
     '/versions/latest/sdk/ui/jetpack-compose/progress/',
+
+  // Based on Algolia 404 report 2026-04-01
+  '/versions/latest/sdk/secure-store/': '/versions/latest/sdk/securestore/',
+  '/versions/latest/sdk/av/': '/versions/latest/sdk/audio/',
+  '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
 };

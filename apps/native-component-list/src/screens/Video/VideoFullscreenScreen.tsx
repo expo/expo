@@ -26,16 +26,21 @@ export default function VideoFullscreenScreen() {
   });
 
   const toggleFullscreen = useCallback(() => {
-    if (!isFullscreen) {
-      ref.current?.enterFullscreen();
+    const current = ref.current;
+    if (current) {
+      if (!isFullscreen) {
+        ref.current?.enterFullscreen().catch(addNewHistoryEntry);
+      } else {
+        ref.current?.exitFullscreen().catch(addNewHistoryEntry);
+      }
     } else {
-      ref.current?.exitFullscreen();
+      addNewHistoryEntry('current video ref was null!');
     }
   }, [player]);
 
   const addNewHistoryEntry = (entry: string) => {
     const newIdx = Object.keys(eventHistory).length;
-    const history = eventHistory;
+    const history = { ...eventHistory };
     history[newIdx] = entry;
     setEventHistory(history);
   };

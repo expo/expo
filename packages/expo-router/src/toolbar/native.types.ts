@@ -7,6 +7,7 @@ import type { BasicTextStyle } from '../utils/font';
 export interface RouterToolbarHostProps {
   children?: React.ReactNode;
   withImePadding?: boolean;
+  backgroundColor?: ColorValue;
 }
 
 export interface RouterToolbarItemProps {

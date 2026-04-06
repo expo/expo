@@ -5,7 +5,7 @@ import { Device } from './adb';
 
 const debug = require('debug')('expo:start:platforms:android:activateWindow') as typeof console.log;
 
-function getUnixPID(port: number | string): string {
+function getUnixPID(port: number | string): string | undefined {
   // Runs like `lsof -i:8081 -P -t -sTCP:LISTEN`
   const args = [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'];
   debug('lsof ' + args.join(' '));

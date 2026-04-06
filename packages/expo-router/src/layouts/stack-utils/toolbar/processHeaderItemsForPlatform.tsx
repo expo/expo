@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { ToolbarPlacement } from './context';
+import type { ToolbarColors, ToolbarPlacement } from './context';
 import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 
 /**
@@ -10,7 +10,8 @@ import type { NativeStackNavigationOptions } from '../../../react-navigation/nat
  */
 export function processHeaderItemsForPlatform(
   _children: ReactNode,
-  _placement: ToolbarPlacement
+  _placement: ToolbarPlacement,
+  _colors?: ToolbarColors
 ): NativeStackNavigationOptions | null {
   return null;
 }

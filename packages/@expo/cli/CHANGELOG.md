@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Allow `expo start`, `expo export`, and `expo config` to work without `react-native` installed for web-only projects. ([#44294](https://github.com/expo/expo/pull/44294) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass optional name to metro require for async modules. ([#44224](https://github.com/expo/expo/pull/44224) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `--output` option to `expo run:ios` to copy built app binary to a specified directory. ([#43529](https://github.com/expo/expo/pull/43529) by [@evanbacon](https://github.com/evanbacon))
 - Add `--device generic` support to `expo run:ios` for build-only workflows without targeting a specific device. ([#43529](https://github.com/expo/expo/pull/43529) by [@evanbacon](https://github.com/evanbacon))
@@ -14,10 +15,10 @@
 
 ### 🐛 Bug fixes
 
+- Prevent opening Expo Go on Apple Watch. ([#44147](https://github.com/expo/expo/pull/44147) by [@EvanBacon](https://github.com/EvanBacon))
 - Support files >= 2 GiB in AFC device upload ([#43755](https://github.com/expo/expo/pull/43755) by [@yocontra](https://github.com/yocontra))
 - Revert the `-quiet` change to ensure build env vars are always printed. ([#43906](https://github.com/expo/expo/pull/43906) by [@EvanBacon](https://github.com/EvanBacon))
 - Avoid `ERR_TTY_INIT_FAILED` when `LOG_EVENTS=1` or `LOG_EVENTS=2` is used in non-interactive terminals. ([#43796](https://github.com/expo/expo/pull/43796) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))
 - Prevent hanging when installing iOS apps on device. ([#43618](https://github.com/expo/expo/pull/43618) by [@EvanBacon](https://github.com/EvanBacon))
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))
 - Fix server being started before Metro is ready, or, if it's started, status middleware responding too soon ([#43557](https://github.com/expo/expo/pull/43557) by [@kitten](https://github.com/kitten))
@@ -28,9 +29,13 @@
 - Add fallback resolution for `../../App` in `expo/AppEntry.js` ([#44084](https://github.com/expo/expo/pull/44084) by [@kitten](https://github.com/kitten))
 - Prevent out-of-monorepo `expo/expo` CLI detection to not mistrigger for user monorepos and update for pnpm compatibility ([#44101](https://github.com/expo/expo/pull/44101) by [@kitten](https://github.com/kitten))
 - Fix device being incorrectly tracked for `run:ios --device` invocation ([#43673](https://github.com/expo/expo/pull/43673) by [@kitten](https://github.com/kitten))
+- Fall back to name-based `.MainActivity` lookup when no runnable activity with `MAIN`/`LAUNCHER` intent filters exists in the manifest. ([#43702](https://github.com/expo/expo/pull/43702) by [@hwhh](https://github.com/hwhh))
+- Fix `react-native-web` install check being unconditional ([#44450](https://github.com/expo/expo/pull/44450) by [@kitten](https://github.com/kitten))
+- Fix mangled async chunk filenames for catch-all routes ([#43547](https://github.com/expo/expo/pull/43547) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
+- Remove react-native-web requirement for `expo start`. ([#44300](https://github.com/expo/expo/pull/44300) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove dom components warning. ([#44253](https://github.com/expo/expo/pull/44253) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `@react-navigation/core` and `@react-navigation/native` to autolinking resolution ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
 - Drop `expo-router/doctor` install check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))

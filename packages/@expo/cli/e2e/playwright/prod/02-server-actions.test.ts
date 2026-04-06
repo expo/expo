@@ -136,7 +136,7 @@ test.describe(inputDir, () => {
     await serverActionRequest;
     const response = await serverResponsePromise;
 
-    const rscPayload = new TextDecoder().decode(await response.body());
+    const rscPayload = await response.text();
 
     expect(sanitizeRSCPayloadString(rscPayload))
       .toBe(`1:I["node_modules/react-native-web/dist/exports/Text/index.js",[],"",1]

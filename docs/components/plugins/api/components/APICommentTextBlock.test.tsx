@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 
-import { APICommentTextBlock } from './APICommentTextBlock';
 import type { CommentData } from '../APIDataTypes';
+import { APICommentTextBlock } from './APICommentTextBlock';
 
 describe(APICommentTextBlock, () => {
   test('no comment', () => {

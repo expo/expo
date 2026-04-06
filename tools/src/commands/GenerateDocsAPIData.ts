@@ -64,6 +64,8 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
 
   // Jetpack Compose
+  'expo-ui/jetpack-compose/badge': ['jetpack-compose/Badge/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/badgedbox': ['jetpack-compose/BadgedBox/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/alertdialog': ['jetpack-compose/AlertDialog/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/basicalertdialog': [
     'jetpack-compose/BasicAlertDialog/index.tsx',

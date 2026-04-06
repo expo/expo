@@ -18,24 +18,28 @@ class DevMenuPackagerConnectionHandler {
 #if DEBUG
     self.swizzleRCTDevMenuShow()
 
-    let devSettings: RCTDevSettings? = self.manager?.currentAppContext?.nativeModule(named: "DevSettings")
+    DispatchQueue.main.async { [weak self] in
+      guard let self, let manager = self.manager else { return }
+
+      let devSettings: RCTDevSettings? = manager.currentAppContext?.nativeModule(named: "DevSettings")
 // TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
 #if !os(macOS)
-    let packagerConnection = devSettings?.packagerConnection
+      let packagerConnection = devSettings?.packagerConnection
 #else
-    let packagerConnection: RCTPackagerConnection? = RCTPackagerConnection.shared()
+      let packagerConnection: RCTPackagerConnection? = RCTPackagerConnection.shared()
 #endif
-    packagerConnection?.addNotificationHandler(
-      self.sendDevCommandNotificationHandler,
-      queue: DispatchQueue.main,
-      forMethod: "sendDevCommand"
-    )
+      packagerConnection?.addNotificationHandler(
+        self.sendDevCommandNotificationHandler,
+        queue: DispatchQueue.main,
+        forMethod: "sendDevCommand"
+      )
 
-    packagerConnection?.addNotificationHandler(
-      self.devMenuNotificationHanlder,
-      queue: DispatchQueue.main,
-      forMethod: "devMenu"
-    )
+      packagerConnection?.addNotificationHandler(
+        self.devMenuNotificationHanlder,
+        queue: DispatchQueue.main,
+        forMethod: "devMenu"
+      )
+    }
 #endif
   }
 

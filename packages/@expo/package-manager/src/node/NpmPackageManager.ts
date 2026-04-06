@@ -132,7 +132,10 @@ export class NpmPackageManager extends BasePackageManager {
       .sort((a, b) => a.localeCompare(b, 'en'))
       .reduce(
         (res, key) => {
-          res[key] = deps[key];
+          const dep = deps[key];
+          if (dep != null) {
+            res[key] = dep;
+          }
           return res;
         },
         {} as Record<string, string>

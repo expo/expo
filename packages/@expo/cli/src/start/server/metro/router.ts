@@ -102,7 +102,7 @@ export function getMiddlewareForDirectory(cwd: string): string | null {
     }
   }
 
-  return files[0];
+  return files[0]!;
 }
 
 // Used to emulate a context module, but way faster. TODO: May need to adjust the extensions to stay in sync with Metro.

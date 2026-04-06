@@ -63,7 +63,7 @@ export function createMetadataJson({
           [platform]: {
             // Get the filename for each platform's bundle.
             // TODO: Add multi-bundle support to EAS Update!!
-            bundle: fileNames[platform][0],
+            bundle: fileNames[platform]?.[0],
             assets,
           },
         };

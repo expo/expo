@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import type { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { type Route } from '../../native';
 type Props = {
     /**
@@ -15,7 +15,7 @@ type Props = {
      */
     label: string | ((props: {
         focused: boolean;
-        color: string;
+        color: ColorValue;
     }) => React.ReactNode);
     /**
      * Icon to display for the `DrawerItem`.
@@ -23,7 +23,7 @@ type Props = {
     icon?: (props: {
         focused: boolean;
         size: number;
-        color: string;
+        color: ColorValue;
     }) => React.ReactNode;
     /**
      * Whether to highlight the drawer item as active.
@@ -36,26 +36,26 @@ type Props = {
     /**
      * Color for the icon and label when the item is active.
      */
-    activeTintColor?: string;
+    activeTintColor?: ColorValue;
     /**
      * Color for the icon and label when the item is inactive.
      */
-    inactiveTintColor?: string;
+    inactiveTintColor?: ColorValue;
     /**
      * Background color for item when its active.
      */
-    activeBackgroundColor?: string;
+    activeBackgroundColor?: ColorValue;
     /**
      * Background color for item when its inactive.
      */
-    inactiveBackgroundColor?: string;
+    inactiveBackgroundColor?: ColorValue;
     /**
      * Color of the touchable effect on press.
      * Only supported on Android.
      *
      * @platform android
      */
-    pressColor?: string;
+    pressColor?: ColorValue;
     /**
      * Opacity of the touchable effect on press.
      * Only supported on iOS.

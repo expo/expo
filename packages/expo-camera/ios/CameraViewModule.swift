@@ -355,7 +355,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -364,7 +364,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -373,7 +373,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -382,7 +382,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }

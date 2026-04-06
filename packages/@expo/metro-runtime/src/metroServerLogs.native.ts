@@ -31,7 +31,8 @@ export function captureStackForServerLogs() {
     const hasComponentStack = data.some(
       (item) =>
         (typeof item === 'string' && isComponentStack(withoutANSIColorStyles(item))) ||
-        (hasStringKey(item, 'message') && isComponentStack(withoutANSIColorStyles(item.message)))
+        (hasStringKey(item, 'message') &&
+          isComponentStack(withoutANSIColorStyles(item.message ?? '')))
     );
 
     // This is not an Expo error. It's used only to capture the stack trace of the log call.

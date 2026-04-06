@@ -24,7 +24,8 @@ function isCodeSigningConfigured(projectRoot: string): boolean {
 
   if (allTargetsHaveTeams) {
     const teamList = Object.values(signingInfo).reduce<string[]>((prev, curr) => {
-      return prev.concat([curr.developmentTeams[0]]);
+      const team = curr.developmentTeams[0];
+      return team ? [...prev, team] : prev;
     }, []);
     Log.log(chalk.dim`\u203A Auto signing app using team(s): ${teamList.join(', ')}`);
     return true;

@@ -28,9 +28,6 @@
     "web": {
       "bundler": "metro"
     },
-    "androidStatusBar": {
-      "backgroundColor": "#4630eb"
-    },
     "newArchEnabled": true,
     "android": {
       "package": "host.exp.nclexp",

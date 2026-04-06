@@ -13,14 +13,33 @@ const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const BARCODE_SCANNER_KEY = 'expo.camera.barcode-scanner-enabled';
 
-const withCamera: ConfigPlugin<
-  {
-    cameraPermission?: string | false;
-    microphonePermission?: string | false;
-    recordAudioAndroid?: boolean;
-    barcodeScannerEnabled?: boolean;
-  } | void
-> = (
+export type Props = {
+  /**
+   * A string to set the `NSCameraUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to access your camera"
+   * @platform ios
+   */
+  cameraPermission?: string | false;
+  /**
+   * A string to set the `NSMicrophoneUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to access your microphone"
+   * @platform ios
+   */
+  microphonePermission?: string | false;
+  /**
+   * Whether to enable the `RECORD_AUDIO` permission on Android.
+   * @default true
+   * @platform android
+   */
+  recordAudioAndroid?: boolean;
+  /**
+   * Whether to enable barcode scanning support. Disabling this reduces app size.
+   * @default true
+   */
+  barcodeScannerEnabled?: boolean;
+};
+
+const withCamera: ConfigPlugin<Props | void> = (
   config,
   {
     cameraPermission,

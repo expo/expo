@@ -18,7 +18,7 @@ export function expoImportMetaTransformPluginFactory(pluginEnabled: boolean) {
             if (!pluginEnabled) {
               if (platform !== 'web') {
                 throw path.buildCodeFrameError(
-                  '`import.meta` is not supported in Hermes. Enable the polyfill `unstable_transformImportMeta` in babel-preset-expo to use this syntax.'
+                  '`import.meta` is not supported in Hermes. Enable the polyfill `transformImportMeta` in babel-preset-expo to use this syntax.'
                 );
               }
               return;

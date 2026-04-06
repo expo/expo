@@ -29,6 +29,7 @@ export type { StackToolbarViewProps, NativeToolbarViewProps } from './types';
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarView: React.FC<StackToolbarViewProps>;

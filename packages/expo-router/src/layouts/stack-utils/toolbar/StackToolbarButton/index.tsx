@@ -51,6 +51,7 @@ export type { StackToolbarButtonProps, NativeToolbarButtonProps } from './types'
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => {
@@ -82,7 +83,7 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
     }
   }
 
-  if (placement !== 'bottom') {
+  if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
     throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
   }
 

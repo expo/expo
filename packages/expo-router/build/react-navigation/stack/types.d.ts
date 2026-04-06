@@ -1,5 +1,5 @@
 import type * as React from 'react';
-import type { Animated, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { Animated, ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { HeaderBackButton, HeaderBackButtonDisplayMode, HeaderBackButtonProps, HeaderOptions, HeaderTitleProps } from '../elements';
 import type { DefaultNavigatorOptions, Descriptor, LocaleDirection, NavigationHelpers, NavigationProp, ParamListBase, Route, RouteProp, StackActionHelpers, StackNavigationState, StackRouterOptions, Theme } from '../native';
 export type StackNavigationEventMap = {
@@ -200,11 +200,11 @@ export type StackHeaderRightProps = {
     /**
      * Tint color for the header button.
      */
-    tintColor?: string;
+    tintColor?: ColorValue;
     /**
      * Color for material ripple (Android >= 5.0 only).
      */
-    pressColor?: string;
+    pressColor?: ColorValue;
     /**
      * Opacity when the button is pressed, used when ripple is not supported.
      */

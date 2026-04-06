@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Native interface access to state machine context. ([#44361](https://github.com/expo/expo/pull/44361) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

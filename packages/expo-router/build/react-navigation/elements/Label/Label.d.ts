@@ -1,6 +1,6 @@
-import { type StyleProp, type TextProps, type TextStyle } from 'react-native';
+import { type ColorValue, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 type Props = Omit<TextProps, 'style'> & {
-    tintColor?: string;
+    tintColor?: ColorValue;
     children?: string;
     style?: StyleProp<TextStyle>;
 };

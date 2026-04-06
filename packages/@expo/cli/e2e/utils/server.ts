@@ -117,7 +117,7 @@ export function createBackgroundServer({
       spawnOptions.env ??= {};
       spawnOptions.env.PORT = String(port);
 
-      child = spawn(bin, commandOrFlags, {
+      child = spawn(bin!, commandOrFlags, {
         shell: false,
         stdio: ['ignore', 'pipe', 'pipe'],
         ...spawnOptions,

@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { Animated, type GestureResponderEvent, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, type ColorValue, type GestureResponderEvent, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 type HoverEffectProps = {
-    color?: string;
+    color?: ColorValue;
     hoverOpacity?: number;
     activeOpacity?: number;
 };
 export type Props = Omit<PressableProps, 'style' | 'onPress'> & {
     ref?: React.Ref<React.ComponentRef<typeof AnimatedPressable>>;
     href?: string;
-    pressColor?: string;
+    pressColor?: ColorValue;
     pressOpacity?: number;
     hoverEffect?: HoverEffectProps;
     style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;

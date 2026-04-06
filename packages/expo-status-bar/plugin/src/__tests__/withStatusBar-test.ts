@@ -1,29 +1,4 @@
-import {
-  resolveAndroidLegacyProps,
-  setAndroidStrings,
-  setIOSStatusBarInfoPlist,
-  withStatusBarExpoGoManifest,
-} from '../withStatusBar';
-
-describe(resolveAndroidLegacyProps, () => {
-  it(`resolves no legacy props`, () => {
-    expect(resolveAndroidLegacyProps({})).toStrictEqual({
-      hidden: undefined,
-      style: undefined,
-    });
-  });
-
-  it(`resolves legacy props`, () => {
-    expect(
-      resolveAndroidLegacyProps({
-        androidStatusBar: { hidden: true, barStyle: 'light-content' },
-      })
-    ).toStrictEqual({
-      hidden: true,
-      style: 'light',
-    });
-  });
-});
+import { resolveProps, setAndroidStrings, setIOSStatusBarInfoPlist } from '../withStatusBar';
 
 describe(setIOSStatusBarInfoPlist, () => {
   it(`sets hidden and style`, () => {
@@ -71,59 +46,16 @@ describe(setIOSStatusBarInfoPlist, () => {
   });
 });
 
-describe(withStatusBarExpoGoManifest, () => {
-  it(`ensures manifest values (using plugin props)`, () => {
-    expect(
-      withStatusBarExpoGoManifest(
-        { name: '', slug: '' },
-        {
-          hidden: true,
-          style: 'dark',
-        }
-      )
-    ).toStrictEqual({
-      name: expect.any(String),
-      slug: expect.any(String),
-      androidStatusBar: {
-        barStyle: 'dark-content',
-        hidden: true,
-      },
-      extra: {
-        'expo-status-bar': {
-          hidden: true,
-          style: 'dark',
-        },
-      },
-    });
+describe(resolveProps, () => {
+  it(`returns undefined for nullish or empty props`, () => {
+    expect(resolveProps(undefined)).toBeUndefined();
+    expect(resolveProps({})).toBeUndefined();
+    expect(resolveProps({ style: null })).toBeUndefined();
   });
 
-  it(`ensures manifest values (using android legacy props)`, () => {
-    expect(
-      withStatusBarExpoGoManifest(
-        {
-          name: '',
-          slug: '',
-          androidStatusBar: {
-            barStyle: 'dark-content',
-            hidden: true,
-          },
-        },
-        undefined
-      )
-    ).toStrictEqual({
-      name: expect.any(String),
-      slug: expect.any(String),
-      androidStatusBar: {
-        barStyle: 'dark-content',
-        hidden: true,
-      },
-      extra: {
-        'expo-status-bar': {
-          hidden: true,
-          style: 'dark',
-        },
-      },
-    });
+  it(`resolves props`, () => {
+    expect(resolveProps({ style: 'dark' })).toStrictEqual({ style: 'dark' });
+    expect(resolveProps({ hidden: true })).toStrictEqual({ hidden: true });
   });
 });
 

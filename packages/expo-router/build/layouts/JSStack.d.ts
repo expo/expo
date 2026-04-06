@@ -3,7 +3,7 @@ import { ParamListBase, StackNavigationState } from '../react-navigation/native'
 import { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-declare const JSStack: React.ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/stack").StackNavigatorProps, "children" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
+declare const JSStack: React.ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/stack").StackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -52,7 +52,7 @@ declare const JSStack: React.ForwardRefExoticComponent<Omit<Omit<import("../reac
     id?: undefined;
 } | {
     id: string;
-})), "children"> & Partial<Pick<Omit<import("../react-navigation/stack").StackNavigatorProps, "children" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
+})), "children"> & Partial<Pick<Omit<import("../react-navigation/stack").StackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;

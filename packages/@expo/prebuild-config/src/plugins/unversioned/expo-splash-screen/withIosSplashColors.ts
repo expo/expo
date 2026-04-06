@@ -36,7 +36,7 @@ async function configureColorAssets({
   darkBackgroundColor,
 }: {
   iosNamedProjectRoot: string;
-  backgroundColor: string;
+  backgroundColor?: string;
   darkBackgroundColor?: string | null;
 }) {
   const colorsetPath = path.resolve(iosNamedProjectRoot, SPLASHSCREEN_COLORSET_PATH);

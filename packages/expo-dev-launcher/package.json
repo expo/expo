@@ -8,6 +8,10 @@
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-dev-launcher"
   },
+  "scripts": {
+    "build:plugin": "expo-module build plugin",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native"
   ],
@@ -19,11 +23,11 @@
     "expo-dev-menu": "workspace:55.0.9",
     "expo-manifests": "workspace:~55.0.9"
   },
-  "devDepecencies": {
-    "@types/node": "^22.14.0"
-  },
   "peerDependencies": {
     "expo": "workspace:*",
     "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0"
   }
 }

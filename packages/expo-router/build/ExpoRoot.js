@@ -49,7 +49,6 @@ const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
 const primitives_1 = require("./primitives");
 const native_1 = require("./react-navigation/native");
 const screensFeatureFlags_1 = require("./screensFeatureFlags");
-const statusbar_1 = require("./utils/statusbar");
 const url_1 = require("./utils/url");
 const Sitemap_1 = require("./views/Sitemap");
 const SplashScreen = __importStar(require("./views/Splash"));
@@ -80,17 +79,12 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
               <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-                {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
                 {children}
               </react_native_safe_area_context_1.SafeAreaProvider>
             </LinkPreviewContext_1.LinkPreviewContextProvider>
           </ParentWrapper>);
     }, [ParentWrapper]);
     return <ContextNavigator {...props} wrapper={wrapper}/>;
-}
-function AutoStatusBar() {
-    return <react_native_1.StatusBar barStyle={(0, react_native_1.useColorScheme)() === 'light' ? 'dark-content' : 'light-content'}/>;
 }
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)

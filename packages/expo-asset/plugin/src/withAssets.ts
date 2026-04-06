@@ -6,6 +6,7 @@ import { withAssetsIos } from './withAssetsIos';
 const pkg = require('../../package.json');
 
 export type AssetProps = {
+  /** An array of asset files or directories to link to the native project, relative to the project root. */
   assets?: string[];
 };
 

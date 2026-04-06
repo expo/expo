@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [android] Match `Icon` API to native: renamed `tintColor` to `tint`. Match `ListItem` API to native: replaced string props with slot sub-components (`HeadlineContent`, `SupportingContent`, `OverlineContent`, `LeadingContent`, `TrailingContent`). Renamed color props to match `ListItemDefaults.colors()`. Added `tonalElevation`, `shadowElevation`. Removed `color`, `onPress`. ([#44054](https://github.com/expo/expo/pull/44054) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `PullToRefreshBox` indicator props: replaced `loadingIndicatorModifiers` with nested `indicator` prop containing `color`, `containerColor`, and `modifiers`. Added `contentAlignment` prop. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `Divider` into `HorizontalDivider` and `VerticalDivider` matching native Compose components. Added `thickness` and `color` props. ([#44035](https://github.com/expo/expo/pull/44035) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `AlertDialog` API to native Compose: replaced string props (`title`, `text`, `confirmButtonText`, `dismissButtonText`) with slot sub-components (`AlertDialog.Title`, `AlertDialog.Text`, `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`). Removed `visible` prop (use conditional rendering), `onConfirmPressed`/`onDismissPressed` (renamed to `onDismissRequest`), and `confirmButtonColors`/`dismissButtonColors` (replaced with dialog-level `colors`). ([#43997](https://github.com/expo/expo/pull/43997) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -26,6 +27,7 @@
 ### 🎉 New features
 
 - [android] Added `TooltipBox`, `PlainTooltip`, and `RichTooltip` components matching native Compose Tooltip API. Supports plain and rich tooltips with slot-based content, programmatic show/dismiss via ref, and `isPersistent`, `hasAction`, `enableUserInput`, `focusable` props. ([#44373](https://github.com/expo/expo/pull/44373) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `Badge` and `BadgedBox` components wrapping Jetpack Compose's Badge API for status indicators and count overlays. ([#44139](https://github.com/expo/expo/pull/44139) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `shape`, `border`, `selected`, `checked`, `onClick`, and `onCheckedChange` props to `Surface`, supporting clickable, selectable, and toggleable variants. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added nested text support for Compose `Text` with style inheritance, custom fonts via `expo-font`, `background`, `shadow`, and `lineBreak` properties. ([#44094](https://github.com/expo/expo/pull/44094) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `outlined` variant to `TextInput` component. ([#43719](https://github.com/expo/expo/pull/43719) by [@benjaminkomen](https://github.com/benjaminkomen))
@@ -59,6 +61,7 @@
 - [iOS] Fix `Slider` thumb snapping back during drag by guarding `.onReceive` with `isEditing` state. ([#43701](https://github.com/expo/expo/issues/43701) by [@fedeciancaglini](https://github.com/fedeciancaglini)) ([#43797](https://github.com/expo/expo/pull/43797) by [@fedeciancaglini](https://github.com/fedeciancaglini))
 - [Android] Fix touch events for RN views inside Compose BottomSheet. ([#43716](https://github.com/expo/expo/pull/43716) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `RNHostView` child parent related crash. ([#43691](https://github.com/expo/expo/pull/43691) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `foregroundStyle` typings and runtime narrowing so React Native color values like `PlatformColor()` work in color and gradient styles. ([#44349](https://github.com/expo/expo/pull/44349) by [@eliotgevers](https://github.com/eliotgevers))
 - [Android] Added `RNHostView` to improve RN component layout inside Compose views. ([#43495](https://github.com/expo/expo/pull/43495) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43592](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] fix modifiers export ([#43639](https://github.com/expo/expo/pull/43639) by [@Ubax](https://github.com/Ubax))

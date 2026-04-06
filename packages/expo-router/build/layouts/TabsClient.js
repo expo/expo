@@ -6,7 +6,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
-const TabRouter_1 = require("./TabRouter");
 const withLayoutContext_1 = require("./withLayoutContext");
 const Link_1 = require("../link/Link");
 const bottom_tabs_1 = require("../react-navigation/bottom-tabs");
@@ -48,7 +47,7 @@ const ExpoTabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, 
  * @hideType
  */
 const Tabs = Object.assign((props) => {
-    return <ExpoTabs {...props} UNSTABLE_router={TabRouter_1.tabRouterOverride}/>;
+    return <ExpoTabs {...props}/>;
 }, {
     Screen: ExpoTabs.Screen,
     Protected: Protected_1.Protected,

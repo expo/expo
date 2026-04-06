@@ -1,6 +1,16 @@
 import ExpoModulesCore
 
 public final class BenchmarkingExpoModule: Module {
+  @OptimizedFunction
+  private func addNumbersOptimized(a: Double, b: Double) throws -> Double {
+    return a + b
+  }
+
+  @OptimizedFunction
+  private func addNumbersAsyncOptimized(a: Double, b: Double) throws -> Double {
+    return a + b
+  }
+
   public func definition() -> ModuleDefinition {
     Name("BenchmarkingExpoModule")
 
@@ -10,6 +20,8 @@ public final class BenchmarkingExpoModule: Module {
       return a + b
     }
 
+    Function("addNumbersOptimized", addNumbersOptimized())
+
     Function("addStrings") { (a: String, b: String) in
       return a + b
     }
@@ -17,5 +29,11 @@ public final class BenchmarkingExpoModule: Module {
     Function("foldArray") { (array: [Double]) in
       return array.reduce(0.0, +)
     }
+
+    AsyncFunction("addNumbersAsync") { (a: Double, b: Double) in
+      return a + b
+    }
+
+    AsyncFunction("addNumbersAsyncOptimized", addNumbersAsyncOptimized())
   }
 }

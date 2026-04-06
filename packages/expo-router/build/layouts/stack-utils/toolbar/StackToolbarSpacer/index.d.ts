@@ -43,6 +43,7 @@ export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types'
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarSpacer: React.FC<StackToolbarSpacerProps>;

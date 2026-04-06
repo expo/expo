@@ -39,3 +39,8 @@ patchedDependencies:
 preferWorkspacePackages: true
 
 minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - '@expo/*'
+  - '@react-native/*'
+  - 'react-native'

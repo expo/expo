@@ -1,0 +1,57 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoLocation",
+      "podName": "ExpoLocation",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoLocation_ios_objc",
+          "moduleName": "ExpoLocation",
+          "path": "ios",
+          "pattern": "**/*.m",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ],
+          "includeDirectories": [
+            "."
+          ]
+        },
+        {
+          "type": "swift",
+          "name": "ExpoLocation",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoLocation_ios_objc"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ]
+        }
+      ]
+    }
+  ]
+}

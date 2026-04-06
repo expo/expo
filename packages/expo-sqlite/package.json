@@ -20,7 +20,8 @@
     "./localStorage/install": {
       "default": "./localStorage/install.js"
     },
-    "./app.plugin.js": "./app.plugin.js"
+    "./app.plugin.js": "./app.plugin.js",
+    "./plugin": "./plugin/build/index.js"
   },
   "scripts": {
     "build": "expo-module build",

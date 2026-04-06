@@ -74,7 +74,7 @@
     "jose": "^5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.0-rc.5",
+    "react-native": "0.85.0-rc.7",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.24.0",
@@ -82,9 +82,11 @@
     "react-native-webview": "13.16.0"
   },
   "devDependencies": {
+    "@types/react": "~19.2.0",
     "compression": "^1.8.0",
     "esbuild": "^0.25.8",
     "express": "^5.1.0",
+    "getenv": "^2.0.0",
     "morgan": "^1.10.0",
     "tailwindcss": "^3.3.5",
     "tiny": "^0.0.10",

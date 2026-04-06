@@ -1,9 +1,15 @@
-import { type StyleProp, StyleSheet, type TextProps, type TextStyle } from 'react-native';
+import {
+  type ColorValue,
+  type StyleProp,
+  StyleSheet,
+  type TextProps,
+  type TextStyle,
+} from 'react-native';
 
 import { Text } from '../Text';
 
 type Props = Omit<TextProps, 'style'> & {
-  tintColor?: string;
+  tintColor?: ColorValue;
   children?: string;
   style?: StyleProp<TextStyle>;
 };
