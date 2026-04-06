@@ -1,11 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VALE_VERSION="3.14.1"
-
 # Resolve docs/ root regardless of where the script is invoked from
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DOCS_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+VALE_VERSION_FILE="$DOCS_ROOT/.vale-version"
+
+if [[ ! -f "$VALE_VERSION_FILE" ]]; then
+  echo "Vale version file not found: $VALE_VERSION_FILE" >&2
+  exit 1
+fi
+
+VALE_VERSION="$(tr -d '[:space:]' < "$VALE_VERSION_FILE")"
+
+if [[ -z "$VALE_VERSION" ]]; then
+  echo "Vale version file is empty: $VALE_VERSION_FILE" >&2
+  exit 1
+fi
 
 INSTALL_DIR="$DOCS_ROOT/.vale/bin"
 VALE_BIN="$INSTALL_DIR/vale"
