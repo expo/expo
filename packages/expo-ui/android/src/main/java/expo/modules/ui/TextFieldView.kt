@@ -230,7 +230,6 @@ class TextFieldView(context: Context, appContext: AppContext) :
     get() = textState.value
     set(value) {
       textState.value = value
-      onValueChange(mapOf("value" to (value ?: "")))
     }
 
   fun focus() = focusRequester.requestFocus()
