@@ -63,7 +63,7 @@
     "@expo/dom-webview": "55.0.5",
     "@expo/vector-icons": "^15.0.2",
     "expo": "~55.0.11",
-    "expo-haptics": "~55.0.11",
+    "expo-haptics": "~55.0.12",
     "expo-linking": "~55.0.11",
     "expo-router": "^55.0.10",
     "expo-speech": "~55.0.11",
