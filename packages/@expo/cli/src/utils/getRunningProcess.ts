@@ -12,7 +12,7 @@ export async function getPID(port: number): Promise<number | null> {
     const { stdout } = await spawnAsync('lsof', [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'], {
       timeout,
     });
-    const pid = Number(stdout.split('\n', 1)[0].trim());
+    const pid = Number(stdout.split('\n', 1)[0]!.trim());
     debug(`pid: ${pid} for port: ${port}`);
     return Number.isSafeInteger(pid) ? pid : null;
   } catch (error: any) {

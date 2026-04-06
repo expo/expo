@@ -5,8 +5,8 @@
   "author": "Expo",
   "license": "MIT",
   "scripts": {
-    "setup:docs": "./scripts/download-dependencies.sh",
-    "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
+    "setup:docs": "./scripts/download-dependencies.sh --docs",
+    "setup:native": "./scripts/download-dependencies.sh --native && ./scripts/setup-react-android.sh",
     "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true)) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
@@ -22,7 +22,7 @@
   "resolutions": {
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.0-rc.5",
+    "react-native": "0.85.0-rc.7",
     "@types/babel__core": "^7.20.5",
     "@types/babel__code-frame": "^7.27.0",
     "@types/babel__generator": "^7.27.0",

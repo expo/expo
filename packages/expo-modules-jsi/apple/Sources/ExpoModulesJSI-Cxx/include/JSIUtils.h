@@ -7,6 +7,7 @@
 #include <hermes/hermes.h>
 #include "HostFunctionClosure.h"
 #include "CppError.h"
+#include "MemoryBuffer.h"
 #include "NativeState.h"
 
 namespace jsi = facebook::jsi;
@@ -102,12 +103,56 @@ inline jsi::Value callAsConstructor(jsi::Runtime &runtime, const jsi::Function &
 
 // MARK: - ArrayBuffer
 
+/**
+ * Converts a `jsi::ArrayBuffer` to a `jsi::Value`. Needed because Swift/C++ interop
+ * does not implicitly upcast `ArrayBuffer` to `Object` for the `Value` constructor.
+ */
+inline jsi::Value valueFromArrayBuffer(jsi::Runtime &runtime, const jsi::ArrayBuffer &arrayBuffer) {
+  return jsi::Value(runtime, arrayBuffer);
+}
+
+/**
+ * Returns the size of the array buffer storage in bytes.
+ */
 inline size_t arrayBufferSize(jsi::Runtime &runtime, const jsi::ArrayBuffer &arrayBuffer) {
   return arrayBuffer.size(runtime);
 }
 
+/**
+ * Returns a pointer to the underlying data of the array buffer.
+ */
 inline uint8_t *arrayBufferData(jsi::Runtime &runtime, const jsi::ArrayBuffer &arrayBuffer) {
   return arrayBuffer.data(runtime);
+}
+
+/**
+ * Creates a new array buffer of the given size with zero-initialized memory.
+ */
+inline jsi::ArrayBuffer createArrayBuffer(jsi::Runtime &runtime, size_t size) {
+  uint8_t *data = new uint8_t[size]();
+  auto buffer = std::make_shared<MemoryBuffer>(data, size, [data]() { delete[] data; });
+  return jsi::ArrayBuffer(runtime, std::move(buffer));
+}
+
+/**
+ * Creates a new array buffer that wraps the given native data pointer.
+ * The cleanup function is called (with the cleanup context) when the ArrayBuffer is deallocated.
+ */
+inline jsi::ArrayBuffer createArrayBuffer(
+  jsi::Runtime &runtime,
+  uint8_t *data,
+  size_t size,
+  void *_Nonnull cleanupContext,
+  void (* _Nonnull cleanupFunction)(void * _Nonnull)
+) {
+  // The cleanup context must not be null — the cleanup function is never called without it,
+  // which would leak the data. The Swift caller always provides a retained Unmanaged pointer.
+  assert(cleanupContext != nullptr && "cleanupContext must not be null; cleanup would be skipped and data leaked");
+
+  auto buffer = std::make_shared<MemoryBuffer>(data, size, [cleanupContext, cleanupFunction]() {
+    cleanupFunction(cleanupContext);
+  });
+  return jsi::ArrayBuffer(runtime, std::move(buffer));
 }
 
 // MARK: - Native state

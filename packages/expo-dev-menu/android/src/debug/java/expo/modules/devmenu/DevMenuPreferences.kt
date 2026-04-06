@@ -57,7 +57,8 @@ class DevMenuDefaultPreferences(
 
   private val fabDefault: Boolean = try {
     val ai = application.packageManager.getApplicationInfo(
-      application.packageName, PackageManager.GET_META_DATA
+      application.packageName,
+      PackageManager.GET_META_DATA
     )
     ai.metaData?.getString("EXDevMenuShowFloatingActionButton")?.toBoolean() ?: true
   } catch (_: Exception) {

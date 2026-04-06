@@ -143,7 +143,7 @@ export function createAutolinkingModuleResolver(
     const moduleMatch = moduleDescription.moduleTestRe.exec(moduleName);
     if (moduleMatch) {
       const resolvedModulePath =
-        moduleDescription.resolvedModulePaths[moduleMatch[1]] || moduleName;
+        moduleDescription.resolvedModulePaths[moduleMatch[1]!] || moduleName;
       // We instead resolve as if it was a dependency from within the module (self-require/import)
       const context: ResolutionContext = {
         ...immutableContext,

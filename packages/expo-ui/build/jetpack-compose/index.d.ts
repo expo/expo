@@ -1,5 +1,7 @@
 import './MaterialSymbolsAssetsTransformer.fx';
 export * from './AlertDialog';
+export * from './Badge';
+export * from './BadgedBox';
 export { BasicAlertDialog, type BasicAlertDialogProps } from './BasicAlertDialog';
 export * from './Card';
 export * from './Checkbox';
@@ -33,6 +35,7 @@ export * from './RadioButton';
 export * from './Surface';
 export * from './SwipeToDismissBox';
 export { type TextProps, Text } from './Text';
+export * from './Tooltip';
 export * from './AnimatedVisibility';
 export * from './Box';
 export * from './Row';

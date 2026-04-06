@@ -108,3 +108,9 @@ internal final class FeatureNotAvailableOnPlatformException: Exception {
     "This feature is not available on this platform"
   }
 }
+
+internal final class DownloadCancelledException: Exception {
+  override var reason: String {
+    "Download was cancelled"
+  }
+}

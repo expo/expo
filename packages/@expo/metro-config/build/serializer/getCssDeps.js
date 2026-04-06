@@ -102,13 +102,16 @@ function getCssMetadata(module) {
     }
     return null;
 }
+// TODO(@hassankhan): Move this function into its own file
 function fileNameFromContents({ filepath, src }) {
     // TODO(@kitten): As of metro@0.83.2 but maybe before, this does not look correct. Encoding has changed, see: https://github.com/facebook/metro/commit/cb02cdb
     // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
     const decoded = decodeURIComponent(filepath).replace(/\\/g, '/');
     return getFileName(decoded) + '-' + (0, hash_1.hashString)(src);
 }
+// TODO(@hassankhan): Move this function into its own file
+// TODO(@hassankhan): Investigate why we don't always pass the filename with extension here
 function getFileName(module) {
-    return path_1.default.basename(module).replace(/\.[^.]+$/, '');
+    return path_1.default.basename(module).replace(/\.\w+$/, '');
 }
 //# sourceMappingURL=getCssDeps.js.map

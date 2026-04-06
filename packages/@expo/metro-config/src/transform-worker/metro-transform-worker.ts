@@ -104,8 +104,11 @@ export class InvalidRequireCallError extends Error {
   }
 }
 
-// asserts non-null
-function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
+function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
+  return input;
+}
+
+function nullthrows<T extends object>(x: T | null | undefined, message?: string): NonNullable<T> {
   assert(x != null, message);
   return x;
 }
@@ -172,7 +175,7 @@ export const minifyCode = async (
   }
 };
 
-function applyUseStrictDirective(ast: t.File | ParseResult) {
+function applyUseStrictDirective(ast: t.File) {
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
   const { directives } = ast.program;
@@ -255,8 +258,7 @@ export function applyImportSupport<TFile extends t.File>(
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
   if (plugins.length) {
-    return nullthrows<{ ast: TFile; metadata?: any }>(
-      // @ts-expect-error
+    const result = nullthrows(
       transformFromAstSync(ast, '', {
         ast: true,
         babelrc: false,
@@ -278,6 +280,10 @@ export function applyImportSupport<TFile extends t.File>(
         cloneInputAst: false,
       })
     );
+    return {
+      ast: result.ast as TFile,
+      metadata: result.metadata,
+    };
   }
   return { ast };
 }
@@ -300,25 +306,23 @@ function performConstantFolding(ast: t.File | ParseResult, { filename }: { filen
   // Run the constant folding plugin in its own pass, avoiding race conditions
   // with other plugins that have exit() visitors on Program (e.g. the ESM
   // transform).
-  ast = nullthrows<ParseResult>(
-    // @ts-expect-error
-    transformFromAstSync(ast, '', {
-      ast: true,
-      babelrc: false,
-      code: false,
-      configFile: false,
-      comments: true,
-      filename,
-      plugins: [clearProgramScopePlugin, metroTransformPlugins.constantFoldingPlugin],
-      sourceMaps: false,
+  const result = transformFromAstSync(ast, '', {
+    ast: true,
+    babelrc: false,
+    code: false,
+    configFile: false,
+    comments: true,
+    filename,
+    plugins: [clearProgramScopePlugin, metroTransformPlugins.constantFoldingPlugin],
+    sourceMaps: false,
 
-      // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
-      // running with `cloneInputAst: true`.
-      // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
-      cloneInputAst: false,
-    }).ast
-  );
-  return ast;
+    // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
+    // running with `cloneInputAst: true`.
+    // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
+    cloneInputAst: false,
+  })?.ast;
+
+  return nullthrows(result) as ParseResult;
 }
 
 async function transformJS(
@@ -377,7 +381,7 @@ async function transformJS(
 
   let dependencyMapName: string = '';
   let dependencies: readonly Dependency[];
-  let wrappedAst: t.File | undefined;
+  let wrappedAst: t.File;
 
   // If the module to transform is a script (meaning that is not part of the
   // dependency graph and it code will just be prepended to the bundle modules),
@@ -492,8 +496,8 @@ async function transformJS(
     file.code
   );
 
-  // @ts-expect-error: incorrectly typed upstream
-  let map = result.rawMappings ? result.rawMappings.map(toSegmentTuple) : [];
+  // NOTE: incorrectly typed upstream
+  let map = (result as any)?.rawMappings.map(toSegmentTuple) ?? [];
   let code = result.code;
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
@@ -562,7 +566,11 @@ async function transformJS(
   ];
 
   if (possibleReconcile) {
-    const reactCompilerFlag = options.customTransformOptions?.reactCompiler;
+    // TODO(@kitten): Check why `reactCompilerFlag === true` is checked below
+    const reactCompilerFlag = options.customTransformOptions?.reactCompiler as
+      | 'true'
+      | true
+      | undefined;
     if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
       try {
         return {
@@ -624,10 +632,13 @@ async function transformJSWithBabel(
   // a malformed state. For now, we'll enable the experimental import support which compiles import statements
   // outside of the standard Babel process.
   if (!context.options.experimentalImportSupport) {
-    const reactCompilerFlag = context.options.customTransformOptions?.reactCompiler;
+    // TODO(@kitten): Check why `reactCompilerFlag === true` is checked below
+    const reactCompilerFlag = context.options.customTransformOptions?.reactCompiler as
+      | 'true'
+      | true
+      | undefined;
     if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
-      // @ts-expect-error: readonly.
-      context.options.experimentalImportSupport = true;
+      asWritable(context.options).experimentalImportSupport = true;
     }
   }
 
@@ -833,12 +844,11 @@ const disabledDependencyTransformer: DependencyTransformer = {
   transformImportCall: (path: NodePath, dependency: InternalDependency, state: State) => {
     // TODO: Prevent extraneous includes of the async require for normal imports.
     // HACK: Ensure the async import code is included in the bundle when an import() call is found.
-    let topParent = path;
+    let topParent: NodePath & { _handled?: true } = path;
     while (topParent.parentPath) {
       topParent = topParent.parentPath;
     }
 
-    // @ts-expect-error
     if (topParent._handled) {
       return;
     }
@@ -848,7 +858,6 @@ const disabledDependencyTransformer: DependencyTransformer = {
         ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
       })
     );
-    // @ts-expect-error: Prevent recursive loop
     topParent._handled = true;
   },
   transformPrefetch: () => {},

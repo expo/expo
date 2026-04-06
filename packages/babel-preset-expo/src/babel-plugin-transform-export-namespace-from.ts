@@ -57,7 +57,9 @@ export default ({ types: t }: ConfigAPI & typeof import('@babel/core')): PluginO
       }
 
       const [importDeclaration] = path.replaceWithMultiple(nodes);
-      path.scope.registerDeclaration(importDeclaration);
+      if (importDeclaration != null) {
+        path.scope.registerDeclaration(importDeclaration);
+      }
     },
   },
 });

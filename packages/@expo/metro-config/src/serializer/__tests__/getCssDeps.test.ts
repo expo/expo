@@ -13,6 +13,11 @@ describe(fileNameFromContents, () => {
       fileNameFromContents({ filepath: 'node_modules%5Cexpo-router%5Centry.js', src: 'foo' })
     ).toBe('entry-acbd18db4cc2f85cedef654fccc4a4d8');
   });
+  it('preserves catch-all route segment name', () => {
+    expect(fileNameFromContents({ filepath: 'app/[...post]', src: 'foo' })).toBe(
+      '[...post]-acbd18db4cc2f85cedef654fccc4a4d8'
+    );
+  });
 });
 
 const fooModule: JSModule = {

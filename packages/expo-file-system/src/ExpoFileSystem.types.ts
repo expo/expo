@@ -154,12 +154,22 @@ export declare class Directory {
   /**
    * Copies a directory.
    */
-  copy(destination: Directory | File, options?: RelocationOptions): void;
+  copy(destination: Directory | File, options?: RelocationOptions): Promise<void>;
+
+  /**
+   * Copies a directory synchronously.
+   */
+  copySync(destination: Directory | File, options?: RelocationOptions): void;
 
   /**
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
-  move(destination: Directory | File, options?: RelocationOptions): void;
+  move(destination: Directory | File, options?: RelocationOptions): Promise<void>;
+
+  /**
+   * Moves a directory synchronously. Updates the `uri` property that now points to the new location.
+   */
+  moveSync(destination: Directory | File, options?: RelocationOptions): void;
 
   /**
    * Renames a directory.
@@ -203,6 +213,20 @@ export declare class Directory {
   static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
 
+/**
+ * Data provided to the `onProgress` callback during a file download.
+ */
+export type DownloadProgress = {
+  /**
+   * The number of bytes written so far.
+   */
+  bytesWritten: number;
+  /**
+   * The total number of bytes expected to be downloaded. `-1` if the server did not provide a `Content-Length` header.
+   */
+  totalBytes: number;
+};
+
 export type DownloadOptions = {
   /**
    * The headers to send with the request.
@@ -220,6 +244,15 @@ export type DownloadOptions = {
    * @default false
    */
   idempotent?: boolean;
+  /**
+   * A callback that is invoked with progress updates during the download.
+   */
+  onProgress?: (data: DownloadProgress) => void;
+  /**
+   * An `AbortSignal` that can be used to cancel the download.
+   * When the signal is aborted, the download is cancelled and the promise rejects with an `AbortError`.
+   */
+  signal?: AbortSignal;
 };
 
 /**
@@ -316,12 +349,22 @@ export declare class File {
   /**
    * Copies a file.
    */
-  copy(destination: Directory | File, options?: RelocationOptions): void;
+  copy(destination: Directory | File, options?: RelocationOptions): Promise<void>;
+
+  /**
+   * Copies a file synchronously.
+   */
+  copySync(destination: Directory | File, options?: RelocationOptions): void;
 
   /**
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
-  move(destination: Directory | File, options?: RelocationOptions): void;
+  move(destination: Directory | File, options?: RelocationOptions): Promise<void>;
+
+  /**
+   * Moves a file synchronously. Updates the `uri` property that now points to the new location.
+   */
+  moveSync(destination: Directory | File, options?: RelocationOptions): void;
 
   /**
    * Renames a file.

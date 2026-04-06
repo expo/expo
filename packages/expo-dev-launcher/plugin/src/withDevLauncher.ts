@@ -138,6 +138,14 @@ export default createRunOncePlugin<PluginConfigType>(
       });
     }
 
+    const iOSEmbeddedBundle = props.ios?.embeddedBundle ?? props.embeddedBundle;
+    if (iOSEmbeddedBundle) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['EXDevClientEmbeddedBundle'] = true;
+        return config;
+      });
+    }
+
     const androidLaunchMode =
       props.android?.launchMode ??
       props.launchMode ??
@@ -165,6 +173,20 @@ export default createRunOncePlugin<PluginConfigType>(
           mainApplication,
           'EXDevMenuShowFloatingActionButton',
           String(androidToolsButton)
+        );
+        return config;
+      });
+    }
+
+    const androidEmbeddedBundle = props.android?.embeddedBundle ?? props.embeddedBundle;
+    if (androidEmbeddedBundle) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'EXDevClientEmbeddedBundle',
+          String(true)
         );
         return config;
       });

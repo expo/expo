@@ -40,7 +40,7 @@ The next step is to disable the default behavior of `expo-updates` to automatica
 
 ### Disable automatic setup on Android
 
-Modify **android/settings.gradle** to set the property that disables automatic updates initialization, as in the example below:
+Modify **android/gradle.properties** to set the property that disables automatic updates initialization, as in the example below:
 
 <DiffBlock source="/static/diffs/eas-update-custom-initialization.diff" />
 
@@ -59,7 +59,7 @@ The next step is to integrate `expo-updates` into your Android and iOS projects 
 1. Ensure that your Metro config extends the Expo config, as in this example:
 
    ```js metro.config.js
-   // Learn more https://docs.expo.io/guides/customizing-metro
+   // Learn more https://docs.expo.dev/guides/customizing-metro
    const { getDefaultConfig } = require('expo/metro-config');
 
    /** @type {import('expo/metro-config').MetroConfig} */

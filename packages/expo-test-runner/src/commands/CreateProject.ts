@@ -12,14 +12,14 @@ interface CreateProjectOptions extends DefaultOptions {
 async function createProjectAsync(config: Config, options: CreateProjectOptions) {
   const app = config.applications[options.app];
 
-  if (app.preset === 'detox') {
+  if (app?.preset === 'detox') {
     console.log(`Using ${chalk.green('detox')} preset.`);
     const preset = new TemplateProject(app, options.app, options.platform, options.configFile);
 
     console.log(`Creating test app in ${chalk.green(options.path)}.`);
     await preset.createApplicationAsync(options.path);
   } else {
-    throw new Error(`Unknown preset: ${app.preset}`);
+    throw new Error(`Unknown preset: ${app?.preset}`);
   }
 }
 

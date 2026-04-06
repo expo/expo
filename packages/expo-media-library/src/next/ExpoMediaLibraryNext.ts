@@ -17,6 +17,10 @@ declare class ExpoMediaLibraryNextModule extends NativeModule {
   deleteAlbums(albums: Album[], deleteAssets?: boolean): Promise<void>;
   getAlbum(title: string): Promise<Album | null>;
 
+  getPermissionsAsync(
+    writeOnly?: boolean,
+    granularPermissions?: GranularPermission[]
+  ): Promise<PermissionResponse>;
   requestPermissionsAsync(
     writeOnly?: boolean,
     granularPermissions?: GranularPermission[]

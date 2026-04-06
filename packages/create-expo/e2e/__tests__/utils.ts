@@ -47,7 +47,10 @@ export function ensureFolderExists(folder: string) {
 }
 
 /** Run `create-expo` asynchronously, with default settings */
-export function execute(args: string[], { env = {}, cwd = projectRoot }: SpawnOptions = {}) {
+export function execute(
+  args: string[],
+  { env = { NODE_ENV: 'test', EXPO_PUBLIC_TEST: '' }, cwd = projectRoot }: SpawnOptions = {}
+) {
   return spawnAsync('node', [bin, ...args], {
     cwd,
     env: {
@@ -72,8 +75,14 @@ export async function executePassing(args: string[], options?: SpawnOptions) {
 }
 
 /** Generate a fake `npm_config_user_agent` environment variable, to force `create-expo` using this package manager */
-export function forcePackageManagerEnv(packageManager: NodePackageManager['name']) {
-  return { npm_config_user_agent: `${packageManager}/x.x.x` };
+export function forcePackageManagerEnv(
+  packageManager: NodePackageManager['name']
+): NodeJS.ProcessEnv {
+  return {
+    NODE_ENV: 'test',
+    EXPO_PUBLIC_TEST: '',
+    npm_config_user_agent: `${packageManager}/x.x.x`,
+  };
 }
 
 /** Expect the received spawn result to be ok or "passing" */

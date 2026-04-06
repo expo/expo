@@ -43,7 +43,9 @@ function patchMetroGraphToSupportUncachedModules() {
             this.dependencies.forEach((dependency) => {
                 // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
                 // `skipCache` is set when a CSS module is found by PostCSS.
-                if (dependency.output.find((file) => file.data.css?.skipCache) &&
+                if (
+                // TODO(@kitten): MixedOutput needs to be upcast, but `data` isn't defined in `JSFile`?
+                dependency.output.find((file) => file.data.css?.skipCache) &&
                     !paths.includes(dependency.path)) {
                     // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
                     // the Graph._processModule method.

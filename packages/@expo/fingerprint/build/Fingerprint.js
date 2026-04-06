@@ -78,34 +78,34 @@ async function diffFingerprintChangesAsync(fingerprint, projectRoot, options) {
 function diffFingerprints(fingerprint1, fingerprint2) {
     let index1 = 0;
     let index2 = 0;
+    let source1 = fingerprint1.sources[index1];
+    let source2 = fingerprint2.sources[index2];
     const diff = [];
-    while (index1 < fingerprint1.sources.length && index2 < fingerprint2.sources.length) {
-        const source1 = fingerprint1.sources[index1];
-        const source2 = fingerprint2.sources[index2];
+    while (source1 != null && source2 != null) {
         const compareResult = (0, Sort_1.compareSource)(source1, source2);
         if (compareResult === 0) {
             if (source1.hash !== source2.hash) {
                 diff.push({ op: 'changed', beforeSource: source1, afterSource: source2 });
             }
-            ++index1;
-            ++index2;
+            source1 = fingerprint1.sources[++index1];
+            source2 = fingerprint2.sources[++index2];
         }
         else if (compareResult < 0) {
             diff.push({ op: 'removed', removedSource: source1 });
-            ++index1;
+            source1 = fingerprint1.sources[++index1];
         }
         else {
             diff.push({ op: 'added', addedSource: source2 });
-            ++index2;
+            source2 = fingerprint2.sources[++index2];
         }
     }
-    while (index1 < fingerprint1.sources.length) {
-        diff.push({ op: 'removed', removedSource: fingerprint1.sources[index1] });
-        ++index1;
+    while (source1 != null) {
+        diff.push({ op: 'removed', removedSource: source1 });
+        source1 = fingerprint1.sources[++index1];
     }
-    while (index2 < fingerprint2.sources.length) {
-        diff.push({ op: 'added', addedSource: fingerprint2.sources[index2] });
-        ++index2;
+    while (source2 != null) {
+        diff.push({ op: 'added', addedSource: source2 });
+        source2 = fingerprint2.sources[++index2];
     }
     return diff;
 }

@@ -68,12 +68,12 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   if (isNested) {
     const trailingIcon = (
       <DropdownMenuItem.TrailingIcon>
-        <Icon source={arrowRightIcon} tintColor={tintColor} size={24} />
+        <Icon source={arrowRightIcon} tint={tintColor} size={24} />
       </DropdownMenuItem.TrailingIcon>
     );
     const leadingIcon = props.source ? (
       <DropdownMenuItem.LeadingIcon>
-        <Icon source={props.source} tintColor={tintColor} size={24} />
+        <Icon source={props.source} tint={tintColor} size={24} />
       </DropdownMenuItem.LeadingIcon>
     ) : null;
     return (
@@ -130,7 +130,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
             onClick={() => setExpanded(true)}
             enabled={!props.disabled}
             modifiers={[background(backgroundColor)]}>
-            <Icon source={props.source} tintColor={tintColor} size={24} />
+            <Icon source={props.source} tint={tintColor} size={24} />
           </IconButton>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>
@@ -179,12 +179,12 @@ export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (
       </DropdownMenuItem.Text>
       {props.source && (
         <DropdownMenuItem.LeadingIcon>
-          <Icon source={props.source} tintColor={tintColor} size={24} />
+          <Icon source={props.source} tint={tintColor} size={24} />
         </DropdownMenuItem.LeadingIcon>
       )}
       {props.isOn && (
         <DropdownMenuItem.TrailingIcon>
-          <Icon source={checkmarkIcon} tintColor={tintColor} size={24} />
+          <Icon source={checkmarkIcon} tint={tintColor} size={24} />
         </DropdownMenuItem.TrailingIcon>
       )}
     </DropdownMenuItem>

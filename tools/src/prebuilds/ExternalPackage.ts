@@ -38,6 +38,18 @@ export interface SPMPackageSource {
   packageVersion: string;
 
   /**
+   * Optional version prefix inserted into output paths for 3rd-party packages.
+   * When set, output paths become:
+   *   <buildPath>/output/<versionPrefix>/<flavor>/xcframeworks/
+   * instead of:
+   *   <buildPath>/output/<flavor>/xcframeworks/
+   *
+   * Format: "<packageVersion>/<reactNativeVersion>/<hermesVersion>"
+   * Set during pipeline prepare:inputs step after RN/Hermes versions are resolved.
+   */
+  outputVersionPrefix?: string;
+
+  /**
    * Returns the SPM configuration for this package
    */
   getSwiftPMConfiguration(): SPMConfig;
@@ -45,11 +57,11 @@ export interface SPMPackageSource {
 
 /**
  * Represents an external (third-party) package that has an SPM configuration
- * in packages/external/ but whose source code lives in node_modules/.
+ * in external-configs/ios/ but whose source code lives in node_modules/.
  */
 export class ExternalPackage implements SPMPackageSource {
   /**
-   * Path to the config directory (packages/external/<package-name>/)
+   * Path to the config directory (external-configs/ios/<package-name>/)
    */
   configPath: string;
 
@@ -73,6 +85,12 @@ export class ExternalPackage implements SPMPackageSource {
    * The package version from node_modules package.json
    */
   packageVersion: string;
+
+  /**
+   * Optional version prefix for versioned output paths.
+   * Set during pipeline prepare:inputs step.
+   */
+  outputVersionPrefix?: string;
 
   /**
    * The parsed SPM configuration
@@ -135,7 +153,7 @@ export class ExternalPackage implements SPMPackageSource {
 
 /**
  * Discovers all external packages that have spm.config.json files
- * in the packages/external/ directory.
+ * in the external-configs/ios/ directory.
  */
 export async function discoverExternalPackagesAsync(): Promise<ExternalPackage[]> {
   const externalDir = getExternalPackagesDir();
@@ -145,7 +163,7 @@ export async function discoverExternalPackagesAsync(): Promise<ExternalPackage[]
     return [];
   }
 
-  // Find all spm.config.json files in packages/external/
+  // Find all spm.config.json files in external-configs/ios/
   // Pattern matches both regular packages and scoped packages:
   // - react-native-svg/spm.config.json
   // - @shopify/react-native-skia/spm.config.json
@@ -162,7 +180,7 @@ export async function discoverExternalPackagesAsync(): Promise<ExternalPackage[]
 }
 
 /**
- * Gets an external package by name from packages/external/
+ * Gets an external package by name from external-configs/ios/
  * @param packageName The npm package name (e.g., 'react-native-svg')
  */
 export function getExternalPackageByName(packageName: string): ExternalPackage | null {
@@ -226,7 +244,7 @@ export function getExternalPackageByProductName(productName: string): ExternalPa
     return null;
   }
 
-  // Get all subdirectories in packages/external/
+  // Get all subdirectories in external-configs/ios/
   const entries = fs.readdirSync(externalDir, { withFileTypes: true });
 
   for (const entry of entries) {

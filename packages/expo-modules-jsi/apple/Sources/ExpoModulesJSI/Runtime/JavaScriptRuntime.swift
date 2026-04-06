@@ -59,11 +59,20 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   /**
-   Raw pointer to the underlying JSI runtime. DO NOT USE IT!
+   Creates a runtime from a raw pointer to the underlying `facebook.jsi.Runtime`.
    */
-  @_spi(Unsafe)
-  public var unsafe_pointee: UnsafeMutableRawPointer {
-    return Unmanaged<facebook.jsi.Runtime>.passUnretained(pointee).toOpaque()
+  public init(unsafePointer: UnsafeMutableRawPointer) {
+    let runtime = unsafeBitCast(unsafePointer, to: facebook.jsi.Runtime.self)
+    self.pointee = runtime
+    self.scheduler = expo.RuntimeScheduler(runtime)
+  }
+
+  /**
+   Provides scoped access to a raw pointer to the underlying `facebook.jsi.Runtime`.
+   The pointer is valid only for the duration of the closure and must not be stored or escaped.
+   */
+  public func withUnsafePointee<R>(_ body: (UnsafeMutableRawPointer) throws -> R) rethrows -> R {
+    return try body(Unmanaged<facebook.jsi.Runtime>.passUnretained(pointee).toOpaque())
   }
 
   /**
@@ -141,6 +150,28 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     let hostObject = expo.HostObject.makeObject(pointee, consume callbacks)
 
     return JavaScriptObject(self, hostObject)
+  }
+
+  // MARK: - Creating array buffers
+
+  /**
+   Creates a new array buffer of the given size with zero-initialized memory.
+   */
+  public func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size)
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+  }
+
+  /**
+   Creates a new array buffer that wraps the given native data pointer.
+   The cleanup closure is called when the array buffer is garbage collected.
+   */
+  public func createArrayBuffer(data: UnsafeMutablePointer<UInt8>, size: Int, cleanup: @escaping @Sendable () -> Void) -> JavaScriptArrayBuffer {
+    let context = Unmanaged.passRetained(CleanupContext(cleanup)).toOpaque()
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, data, size, context) { context in
+      Unmanaged<CleanupContext>.fromOpaque(context).release()
+    }
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
   }
 
   // MARK: - Creating arrays

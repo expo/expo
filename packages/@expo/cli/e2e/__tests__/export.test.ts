@@ -306,7 +306,7 @@ describe('server', () => {
     const bundlePath = globSync('**/*.js', {
       cwd: path.join(outputDir, '_expo'),
       absolute: true,
-    })[0];
+    })[0]!;
 
     const bundle = await fs.readFile(bundlePath, 'utf8');
 

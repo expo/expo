@@ -293,17 +293,24 @@ export const validateAllPodNamesAsync = async (
  * If no package names are provided, discovers all packages with spm.config.json.
  * @param packageNames Names of packages to verify (if empty, discovers all SPM packages)
  * @param includeExternal Whether to include external packages in discovery (default: true)
+ * @param externalOnly Whether to only include external packages (default: false)
  * @returns Parsed SPMPackageSources that were verified
  */
 export const verifyAllPackagesAsync = async (
   packageNames: string[],
-  includeExternal: boolean = true
+  includeExternal: boolean = true,
+  externalOnly: boolean = false
 ): Promise<SPMPackageSource[]> => {
   // If no package names provided, discover all packages with spm.config.json
   if (packageNames.length === 0) {
-    const packages = includeExternal
-      ? await discoverAllSPMPackagesAsync()
-      : await discoverPackagesWithSPMConfigAsync();
+    let packages: SPMPackageSource[];
+    if (externalOnly) {
+      packages = await discoverExternalPackagesAsync();
+    } else if (includeExternal) {
+      packages = await discoverAllSPMPackagesAsync();
+    } else {
+      packages = await discoverPackagesWithSPMConfigAsync();
+    }
 
     if (packages.length === 0) {
       throw new Error('No packages with spm.config.json found.');
@@ -347,7 +354,7 @@ export const verifyAllPackagesAsync = async (
 
       throw new Error(
         `Package not found: ${chalk.red(name)}. ` +
-          `Make sure it exists in packages/ or has a config in packages/external/.`
+          `Make sure it exists in packages/ or has a config in external-configs/ios/.`
       );
     })
   );

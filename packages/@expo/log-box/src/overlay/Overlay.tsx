@@ -143,7 +143,9 @@ function LogBoxContent({
     if (logs.length - 1 <= 0) {
       // Only one log, minimize the overlay and dismiss (remove) the log.
       onMinimize(() => {
-        LogBoxData.dismiss(logs[0]);
+        if (logs[0] != null) {
+          LogBoxData.dismiss(logs[0]);
+        }
       });
     } else if (selectedLogIndex <= logs.length - 1) {
       // Multiple logs, calculate the new selected, select it and dismiss (remove) the previously selected.
@@ -154,7 +156,9 @@ function LogBoxContent({
       if (toDismissIndex !== 0) {
         LogBoxData.setSelectedLog(toDismissIndex - 1);
       }
-      LogBoxData.dismiss(logs[toDismissIndex]);
+      if (logs[toDismissIndex] != null) {
+        LogBoxData.dismiss(logs[toDismissIndex]);
+      }
     }
   };
 
@@ -177,8 +181,12 @@ function LogBoxContent({
       const prevIndex = selected - 1 < 0 ? lastIndex : selected - 1;
       const nextIndex = selected + 1 > lastIndex ? 0 : selected + 1;
       for (const type of ['component', 'stack'] as const) {
-        LogBoxData.symbolicateLogLazy(type, logs[prevIndex]);
-        LogBoxData.symbolicateLogLazy(type, logs[nextIndex]);
+        if (logs[prevIndex] != null) {
+          LogBoxData.symbolicateLogLazy(type, logs[prevIndex]);
+        }
+        if (logs[nextIndex] != null) {
+          LogBoxData.symbolicateLogLazy(type, logs[nextIndex]);
+        }
       }
     }
   }, [logs, selectedLogIndex]);

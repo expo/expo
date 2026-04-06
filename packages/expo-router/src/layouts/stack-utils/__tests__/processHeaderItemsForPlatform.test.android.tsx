@@ -363,7 +363,7 @@ describe('processHeaderItemsForPlatform', () => {
     render(<HeaderLeft canGoBack={false} />);
 
     expect(MockedIcon).toHaveBeenCalledWith(
-      expect.objectContaining({ tintColor: 'custom-tint' }),
+      expect.objectContaining({ tint: 'custom-tint' }),
       undefined
     );
   });
@@ -389,7 +389,7 @@ describe('processHeaderItemsForPlatform', () => {
     render(<HeaderLeft canGoBack={false} />);
 
     expect(MockedIcon).toHaveBeenCalledWith(
-      expect.objectContaining({ tintColor: 'prop-tint' }),
+      expect.objectContaining({ tint: 'prop-tint' }),
       undefined
     );
   });
@@ -410,7 +410,7 @@ describe('processHeaderItemsForPlatform', () => {
     render(<HeaderLeft canGoBack={false} />);
 
     expect(MockedIcon).toHaveBeenCalledWith(
-      expect.objectContaining({ tintColor: 'dynamic:onSurface' }),
+      expect.objectContaining({ tint: 'dynamic:onSurface' }),
       undefined
     );
   });
@@ -458,7 +458,7 @@ describe('processHeaderItemsForPlatform', () => {
     render(<HeaderRight canGoBack={false} />);
 
     expect(MockedIcon).toHaveBeenCalledWith(
-      expect.objectContaining({ tintColor: 'custom-tint' }),
+      expect.objectContaining({ tint: 'custom-tint' }),
       undefined
     );
   });

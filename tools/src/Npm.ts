@@ -127,7 +127,7 @@ export async function packToTarballAsync(packageDir: string): Promise<PackResult
 
 type PublishOptions = {
   source?: string;
-  tagName?: string | null;
+  tagName?: string;
   dryRun?: boolean;
   spawnOptions?: SpawnOptions;
 };
@@ -139,11 +139,15 @@ export async function publishPackageAsync(
   packageDir: string,
   options: PublishOptions = {}
 ): Promise<void> {
-  const args = ['publish', options.source ?? '.', '--access', 'public'];
-
-  if (options.tagName != null) {
-    args.push('--tag', options.tagName ?? 'latest');
-  }
+  const args = [
+    'publish',
+    options.source ?? '.',
+    // omitting the tag parameter, will make npm publish and mark the as "latest"
+    '--tag',
+    options.tagName ?? 'latest',
+    '--access',
+    'public',
+  ];
 
   if (options.dryRun) {
     args.push('--dry-run');

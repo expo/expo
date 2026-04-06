@@ -211,6 +211,7 @@ const schema = {
                     nullable: true,
                 },
                 useHermesV1: { type: 'boolean', nullable: true },
+                usePrecompiledModules: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },

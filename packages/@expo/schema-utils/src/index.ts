@@ -25,8 +25,8 @@ const flattenValidationResults = (
     keyword: input.keyword,
     value: input.value,
   });
-  for (let idx = 0; input.cause && idx < input.cause.length; idx++) {
-    flattenValidationResults(input.cause[idx], output);
+  for (const cause of input.cause ?? []) {
+    flattenValidationResults(cause, output);
   }
   return output;
 };

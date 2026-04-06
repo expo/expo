@@ -3,7 +3,7 @@ import { MaterialTopTabNavigationEventMap, MaterialTopTabNavigationOptions } fro
 import { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-declare const MaterialTopTabs: React.ForwardRefExoticComponent<Omit<import("..").PickPartial<Omit<import("../react-navigation/material-top-tabs").MaterialTopTabNavigatorProps, "children" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
+declare const MaterialTopTabs: React.ForwardRefExoticComponent<Omit<import("..").PickPartial<Omit<import("../react-navigation/material-top-tabs").MaterialTopTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;

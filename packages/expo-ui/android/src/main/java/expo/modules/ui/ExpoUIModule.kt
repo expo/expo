@@ -415,6 +415,14 @@ class ExpoUIModule : Module() {
       SwipeToDismissBoxContent(props, { onStartToEnd(Unit) }, { onEndToStart(Unit) })
     }
 
+    ExpoUIView("BadgeView") { props: BadgeProps ->
+      BadgeContent(props)
+    }
+
+    ExpoUIView("BadgedBoxView") { props: BadgedBoxProps ->
+      BadgedBoxContent(props)
+    }
+
     ExpoUIView("SpacerView") { props: SpacerProps ->
       SpacerContent(props)
     }
@@ -436,6 +444,19 @@ class ExpoUIModule : Module() {
 
     ExpoUIView("AnimatedVisibilityView") { props: AnimatedVisibilityProps ->
       AnimatedVisibilityContent(props)
+    }
+
+    // Class-based views so TooltipBoxView can detect them by type via findChildOfType
+    View(PlainTooltipView::class)
+    View(RichTooltipView::class)
+
+    View(TooltipBoxView::class) {
+      AsyncFunction("show") Coroutine { view: TooltipBoxView ->
+        view.show()
+      }
+      AsyncFunction("dismiss") Coroutine { view: TooltipBoxView ->
+        view.dismiss()
+      }
     }
 
     ExpoUIView("RadioButtonView", events = {

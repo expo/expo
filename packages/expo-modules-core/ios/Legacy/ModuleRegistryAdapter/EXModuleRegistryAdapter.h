@@ -4,6 +4,7 @@
 // to a header that never had one breaks Xcode's module validation for prebuilt React.xcframework.
 // The RCTBridgeModule protocol is resolved from other umbrella headers (EXNativeModulesProxy.h).
 @class RCTBridge;
+@protocol RCTBridgeModule;
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 

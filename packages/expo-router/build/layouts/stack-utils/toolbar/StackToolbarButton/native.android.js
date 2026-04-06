@@ -23,7 +23,7 @@ const NativeToolbarButton = (props) => {
         : (props.tintColor ?? toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)());
     return (<AnimatedItemContainer_1.AnimatedItemContainer visible={!props.hidden}>
       <jetpack_compose_1.IconButton onClick={props.onPress} enabled={!props.disabled}>
-        <jetpack_compose_1.Icon source={props.source} tintColor={tintColor} size={24}/>
+        <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
       </jetpack_compose_1.IconButton>
     </AnimatedItemContainer_1.AnimatedItemContainer>);
 };

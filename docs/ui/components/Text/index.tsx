@@ -30,11 +30,12 @@ export const createPermalinkedComponent = (
   return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = Children.map(children, child => {
       if (isValidElement<PropsWithChildren<{ href: string }>>(child) && child?.props?.href) {
-        isDev &&
+        if (isDev) {
           console.warn(
             `It looks like the header on this page includes a link, this is an invalid pattern, nested link will be removed!`,
             child?.props?.href
           );
+        }
         return child?.props?.children;
       }
       return child;
@@ -195,7 +196,10 @@ export const RawH5 = createTextComponent(
   )
 );
 
-export const P = createTextComponent(TextElement.P, 'font-normal text-base [&_strong]:break-words');
+export const P = createTextComponent(
+  TextElement.P,
+  'font-normal text-base [&_strong]:wrap-break-word'
+);
 export const CODE = createTextComponent(
   TextElement.CODE,
   mergeClasses(

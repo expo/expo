@@ -62,12 +62,12 @@ describe('Export DOM Components', () => {
     const nativeBundlePath = globSync('**/*.{hbc,js}', {
       cwd: path.join(outputDir, '_expo/static/js/ios'),
       absolute: true,
-    })[0];
+    })[0]!;
     const domEntry = await fs.readFile(
       globSync('www.bundle/**/*.html', {
         cwd: outputDir,
         absolute: true,
-      })[0],
+      })[0]!,
       'utf8'
     );
     const md5HtmlBundle = crypto.createHash('md5').update(domEntry).digest('hex');
@@ -79,7 +79,7 @@ describe('Export DOM Components', () => {
       globSync('www.bundle/**/*.js', {
         cwd: outputDir,
         absolute: true,
-      })[0],
+      })[0]!,
       'utf8'
     );
     const md5DomJsBundle = crypto.createHash('md5').update(domJsBundleContent).digest('hex');
