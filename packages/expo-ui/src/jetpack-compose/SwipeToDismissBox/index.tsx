@@ -10,6 +10,7 @@ type NativeSwipeToDismissBoxProps = {
   enableDismissFromStartToEnd?: boolean;
   enableDismissFromEndToStart?: boolean;
   gesturesEnabled?: boolean;
+  positionalThreshold?: number;
   modifiers?: ModifierConfig[];
   children?: React.ReactNode;
 } & StartToEndEvent &
@@ -31,6 +32,11 @@ export type SwipeToDismissBoxProps = {
    * @default true
    */
   gesturesEnabled?: boolean;
+  /**
+   * Fraction of the total swipe distance (0.0–1.0) the user must drag before the dismiss action triggers.
+   * @default 0.5
+   */
+  positionalThreshold?: number;
   /**
    * Callback when the item is swiped from start to end.
    */

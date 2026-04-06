@@ -24,6 +24,8 @@ Swipe right-to-left to delete an item. The background grows with the swipe gestu
 ```tsx SwipeToDelete.tsx
 import { useState } from 'react';
 import {
+  AnimatedVisibility,
+  ExitTransition,
   Host,
   LazyColumn,
   ListItem,
@@ -46,37 +48,45 @@ const deleteIcon = require('./assets/delete.xml');
 
 export default function SwipeToDelete() {
   const [items, setItems] = useState([
-    { id: '1', title: 'First item' },
-    { id: '2', title: 'Second item' },
-    { id: '3', title: 'Third item' },
+    { id: '1', title: 'First item', dismissed: false },
+    { id: '2', title: 'Second item', dismissed: false },
+    { id: '3', title: 'Third item', dismissed: false },
   ]);
 
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn modifiers={[fillMaxWidth()]}>
         {items.map(item => (
-          <SwipeToDismissBox
+          <AnimatedVisibility
             key={item.id}
-            enableDismissFromStartToEnd={false}
-            onEndToStart={() => setItems(prev => prev.filter(i => i.id !== item.id))}>
-            <SwipeToDismissBox.BackgroundContent>
-              <Box
-                contentAlignment="center"
-                modifiers={[
-                  fillMaxSize(),
-                  clip(Shapes.RoundedCorner(24)),
-                  background('#EF5350'),
-                  paddingAll(16),
-                ]}>
-                <Icon source={deleteIcon} size={24} tint="#FFFFFF" />
-              </Box>
-            </SwipeToDismissBox.BackgroundContent>
-            <ListItem modifiers={[fillMaxWidth()]}>
-              <ListItem.HeadlineContent>
-                <Text>{item.title}</Text>
-              </ListItem.HeadlineContent>
-            </ListItem>
-          </SwipeToDismissBox>
+            visible={!item.dismissed}
+            exitTransition={ExitTransition.fadeOut().plus(ExitTransition.shrinkVertically())}>
+            <SwipeToDismissBox
+              enableDismissFromStartToEnd={false}
+              onEndToStart={() =>
+                setItems(prev =>
+                  prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i))
+                )
+              }>
+              <SwipeToDismissBox.BackgroundContent>
+                <Box
+                  contentAlignment="center"
+                  modifiers={[
+                    fillMaxSize(),
+                    clip(Shapes.RoundedCorner(24)),
+                    background('#EF5350'),
+                    paddingAll(16),
+                  ]}>
+                  <Icon source={deleteIcon} size={24} tint="#FFFFFF" />
+                </Box>
+              </SwipeToDismissBox.BackgroundContent>
+              <ListItem modifiers={[fillMaxWidth()]}>
+                <ListItem.HeadlineContent>
+                  <Text>{item.title}</Text>
+                </ListItem.HeadlineContent>
+              </ListItem>
+            </SwipeToDismissBox>
+          </AnimatedVisibility>
         ))}
       </LazyColumn>
     </Host>
@@ -91,6 +101,8 @@ Use `BackgroundStartToEnd` and `BackgroundEndToStart` to show different backgrou
 ```tsx SwipeBothWays.tsx
 import { useState } from 'react';
 import {
+  AnimatedVisibility,
+  ExitTransition,
   Host,
   LazyColumn,
   ListItem,
@@ -113,46 +125,58 @@ const archiveIcon = require('./assets/archive.xml');
 const deleteIcon = require('./assets/delete.xml');
 
 export default function SwipeBothWays() {
-  const [items, setItems] = useState([{ id: '1', title: 'Swipe either way' }]);
+  const [items, setItems] = useState([{ id: '1', title: 'Swipe either way', dismissed: false }]);
 
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn modifiers={[fillMaxWidth()]}>
         {items.map(item => (
-          <SwipeToDismissBox
+          <AnimatedVisibility
             key={item.id}
-            onStartToEnd={() => setItems(prev => prev.filter(i => i.id !== item.id))}
-            onEndToStart={() => setItems(prev => prev.filter(i => i.id !== item.id))}>
-            <SwipeToDismissBox.BackgroundStartToEnd>
-              <Box
-                contentAlignment="center"
-                modifiers={[
-                  fillMaxSize(),
-                  clip(Shapes.RoundedCorner(24)),
-                  background('#4CAF50'),
-                  paddingAll(16),
-                ]}>
-                <Icon source={archiveIcon} size={24} tint="#FFFFFF" />
-              </Box>
-            </SwipeToDismissBox.BackgroundStartToEnd>
-            <SwipeToDismissBox.BackgroundEndToStart>
-              <Box
-                contentAlignment="center"
-                modifiers={[
-                  fillMaxSize(),
-                  clip(Shapes.RoundedCorner(24)),
-                  background('#EF5350'),
-                  paddingAll(16),
-                ]}>
-                <Icon source={deleteIcon} size={24} tint="#FFFFFF" />
-              </Box>
-            </SwipeToDismissBox.BackgroundEndToStart>
-            <ListItem modifiers={[fillMaxWidth()]}>
-              <ListItem.HeadlineContent>
-                <Text>{item.title}</Text>
-              </ListItem.HeadlineContent>
-            </ListItem>
-          </SwipeToDismissBox>
+            visible={!item.dismissed}
+            exitTransition={ExitTransition.fadeOut().plus(ExitTransition.shrinkVertically())}>
+            <SwipeToDismissBox
+              onStartToEnd={() =>
+                setItems(prev =>
+                  prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i))
+                )
+              }
+              onEndToStart={() =>
+                setItems(prev =>
+                  prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i))
+                )
+              }>
+              <SwipeToDismissBox.BackgroundStartToEnd>
+                <Box
+                  contentAlignment="center"
+                  modifiers={[
+                    fillMaxSize(),
+                    clip(Shapes.RoundedCorner(24)),
+                    background('#4CAF50'),
+                    paddingAll(16),
+                  ]}>
+                  <Icon source={archiveIcon} size={24} tint="#FFFFFF" />
+                </Box>
+              </SwipeToDismissBox.BackgroundStartToEnd>
+              <SwipeToDismissBox.BackgroundEndToStart>
+                <Box
+                  contentAlignment="center"
+                  modifiers={[
+                    fillMaxSize(),
+                    clip(Shapes.RoundedCorner(24)),
+                    background('#EF5350'),
+                    paddingAll(16),
+                  ]}>
+                  <Icon source={deleteIcon} size={24} tint="#FFFFFF" />
+                </Box>
+              </SwipeToDismissBox.BackgroundEndToStart>
+              <ListItem modifiers={[fillMaxWidth()]}>
+                <ListItem.HeadlineContent>
+                  <Text>{item.title}</Text>
+                </ListItem.HeadlineContent>
+              </ListItem>
+            </SwipeToDismissBox>
+          </AnimatedVisibility>
         ))}
       </LazyColumn>
     </Host>

@@ -5,25 +5,24 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import kotlin.math.abs
-import kotlinx.coroutines.flow.filter
 
 data class SwipeToDismissBoxProps(
   val enableDismissFromStartToEnd: Boolean = true,
   val enableDismissFromEndToStart: Boolean = true,
   val gesturesEnabled: Boolean = true,
+  val positionalThreshold: Float? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -33,19 +32,38 @@ fun FunctionalComposableScope.SwipeToDismissBoxContent(
   onStartToEnd: () -> Unit,
   onEndToStart: () -> Unit
 ) {
-  val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
+  val currentThreshold = rememberUpdatedState(props.positionalThreshold ?: 0.5f)
+  val currentOnStartToEnd = rememberUpdatedState(onStartToEnd)
+  val currentOnEndToStart = rememberUpdatedState(onEndToStart)
 
-  // Fire events after the dismiss animation completes, not during the gesture
-  LaunchedEffect(Unit) {
-    snapshotFlow { swipeToDismissBoxState.currentValue }
-      .filter { it != SwipeToDismissBoxValue.Settled }
-      .collect { value ->
-        when (value) {
-          SwipeToDismissBoxValue.StartToEnd -> onStartToEnd()
-          SwipeToDismissBoxValue.EndToStart -> onEndToStart()
-          SwipeToDismissBoxValue.Settled -> {}
-        }
+  val density = LocalDensity.current
+
+  // We use the deprecated SwipeToDismissBoxState constructor because:
+  // 1. The non-deprecated constructor sets velocityThreshold = 0f, which causes ANY
+  //    release velocity to bypass positionalThreshold (settling via closestAnchor at ~50%).
+  // 2. Even the deprecated constructor's velocityThreshold (125.dp) is too low — most
+  //    finger releases exceed it, so closestAnchor still wins over positionalThreshold.
+  // 3. Therefore we use confirmValueChange to enforce the threshold: it checks the actual
+  //    drag offset at the moment of release and rejects the dismiss if below threshold.
+  val stateRef = remember { arrayOfNulls<SwipeToDismissBoxState>(1) }
+  var anchorDistance = remember { floatArrayOf(0f) }
+
+  @Suppress("DEPRECATION")
+  val swipeToDismissBoxState = remember {
+    SwipeToDismissBoxState(
+      initialValue = SwipeToDismissBoxValue.Settled,
+      density = density,
+      confirmValueChange = { newValue ->
+        if (newValue == SwipeToDismissBoxValue.Settled) return@SwipeToDismissBoxState true
+        val state = stateRef[0] ?: return@SwipeToDismissBoxState true
+        val offset = try { state.requireOffset() } catch (_: IllegalStateException) { 0f }
+        abs(offset) >= anchorDistance[0] * currentThreshold.value
+      },
+      positionalThreshold = { totalDistance ->
+        anchorDistance[0] = totalDistance
+        totalDistance * currentThreshold.value
       }
+    ).also { stateRef[0] = it }
   }
 
   val backgroundSlot = findChildSlotView(view, "backgroundContent")
@@ -90,7 +108,14 @@ fun FunctionalComposableScope.SwipeToDismissBoxContent(
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     enableDismissFromStartToEnd = props.enableDismissFromStartToEnd,
     enableDismissFromEndToStart = props.enableDismissFromEndToStart,
-    gesturesEnabled = props.gesturesEnabled
+    gesturesEnabled = props.gesturesEnabled,
+    onDismiss = { direction ->
+      when (direction) {
+        SwipeToDismissBoxValue.StartToEnd -> currentOnStartToEnd.value()
+        SwipeToDismissBoxValue.EndToStart -> currentOnEndToStart.value()
+        else -> {}
+      }
+    }
   ) {
     Children(ComposableScope()) { !isSlotView(it) }
   }
