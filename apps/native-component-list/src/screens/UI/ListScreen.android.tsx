@@ -27,13 +27,18 @@ const wifiIcon = require('../../../assets/icons/ui/wifi.xml');
 
 export default function ListScreen() {
   const [deleteItems, setDeleteItems] = React.useState([
-    { id: 'del1', title: 'Swipe left to delete', subtitle: 'End-to-start only', dismissed: false },
+    {
+      id: 'del1',
+      title: 'Swipe left to delete',
+      subtitle: 'End-to-start only, at least 30%',
+      dismissed: false,
+    },
   ]);
   const [archiveItems, setArchiveItems] = React.useState([
     {
       id: 'arc1',
       title: 'Swipe right to archive',
-      subtitle: 'Start-to-end only',
+      subtitle: 'Start-to-end only, at least 80%',
       dismissed: false,
     },
   ]);
@@ -58,7 +63,7 @@ export default function ListScreen() {
             visible={!item.dismissed}
             exitTransition={ExitTransition.shrinkVertically()}>
             <SwipeToDismissBox
-              positionalThreshold={0.8}
+              positionalThreshold={0.3}
               enableDismissFromStartToEnd={false}
               onEndToStart={() =>
                 setDeleteItems((prev) =>
@@ -134,7 +139,6 @@ export default function ListScreen() {
             visible={!item.dismissed}
             exitTransition={ExitTransition.shrinkVertically()}>
             <SwipeToDismissBox
-              positionalThreshold={0.8}
               onStartToEnd={() =>
                 setBiItems((prev) =>
                   prev.map((i) => (i.id === item.id ? { ...i, dismissed: true } : i))
