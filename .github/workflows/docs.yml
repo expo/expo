@@ -79,7 +79,7 @@ jobs:
           files: '["docs/pages", "docs/scenes", "docs/README.md"]'
           vale_flags: --config=./docs/.vale.ini --glob=!{docs/pages/versions/latest,docs/pages/versions/latest/**,docs/pages/internal,docs/pages/internal/**}
           fail_on_error: true
-          # Override vale-action's older bundled reviewdog to avoid large-diff limits; see #42191.
+          # Override vale-action's older bundled reviewdog to avoid large-diff limits.
           reviewdog_url: https://github.com/reviewdog/reviewdog/releases/download/v0.21.0/reviewdog_0.21.0_Linux_x86_64.tar.gz
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
