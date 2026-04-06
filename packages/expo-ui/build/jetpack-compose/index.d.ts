@@ -34,6 +34,7 @@ export * from './PullToRefreshBox';
 export * from './RadioButton';
 export * from './Surface';
 export { type TextProps, Text } from './Text';
+export * from './Tooltip';
 export * from './AnimatedVisibility';
 export * from './Box';
 export * from './Row';

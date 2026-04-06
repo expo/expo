@@ -65,6 +65,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [android] Added `TooltipBox`, `PlainTooltip`, and `RichTooltip` components matching native Compose Tooltip API. Supports plain and rich tooltips with slot-based content, programmatic show/dismiss via ref, and `isPersistent`, `hasAction`, `enableUserInput`, `focusable` props. ([#44373](https://github.com/expo/expo/pull/44373) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `Badge` and `BadgedBox` components wrapping Jetpack Compose's Badge API for status indicators and count overlays. ([#44139](https://github.com/expo/expo/pull/44139) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `shape`, `border`, `selected`, `checked`, `onClick`, and `onCheckedChange` props to `Surface`, supporting clickable, selectable, and toggleable variants. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added nested text support for Compose `Text` with style inheritance, custom fonts via `expo-font`, `background`, `shadow`, and `lineBreak` properties. ([#44094](https://github.com/expo/expo/pull/44094) by [@nishan](https://github.com/intergalacticspacehighway))
