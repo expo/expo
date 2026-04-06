@@ -71,15 +71,16 @@ class ExpoUIModule : Module() {
 
     View(RNHostView::class)
 
-    View(TextInputView::class) {
-      Events("onValueChanged")
-      Prop("defaultValue", "") { view: TextInputView, text: String ->
-        if (view.text == null) {
-          view.text = text
-        }
-      }
-      AsyncFunction("setText") { view: TextInputView, text: String ->
+    View(TextFieldView::class) {
+      Events("onValueChange", "onFocusChanged", "onKeyboardAction")
+      AsyncFunction("setText") { view: TextFieldView, text: String ->
         view.text = text
+      }
+      AsyncFunction("focus") { view: TextFieldView ->
+        view.focus()
+      }
+      AsyncFunction("blur") { view: TextFieldView ->
+        view.blur()
       }
     }
 

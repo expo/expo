@@ -1,0 +1,267 @@
+import { requireNativeView } from 'expo';
+import { Ref } from 'react';
+import { ColorValue } from 'react-native';
+
+import { ModifierConfig, ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
+
+type SlotNativeViewProps = {
+  slotName: string;
+  children: React.ReactNode;
+};
+
+const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
+
+// region Types
+
+/**
+ * Can be used for imperatively setting text and focus on the `TextField` component.
+ */
+export type TextFieldRef = {
+  setText: (newText: string) => Promise<void>;
+  focus: () => Promise<void>;
+  blur: () => Promise<void>;
+};
+
+/**
+ * Keyboard options matching Compose `KeyboardOptions`.
+ */
+export type TextFieldKeyboardOptions = {
+  /** @default 'none' */
+  capitalization?: 'none' | 'characters' | 'words' | 'sentences';
+  /** @default true */
+  autoCorrectEnabled?: boolean;
+  /** @default 'text' */
+  keyboardType?:
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'phone'
+    | 'decimal'
+    | 'password'
+    | 'ascii'
+    | 'uri'
+    | 'numberPassword';
+  /** @default 'default' */
+  imeAction?: 'default' | 'none' | 'go' | 'search' | 'send' | 'previous' | 'next' | 'done';
+};
+
+/**
+ * Keyboard actions matching Compose `KeyboardActions`.
+ * The triggered callback depends on the `imeAction` in `keyboardOptions`.
+ */
+export type TextFieldKeyboardActions = {
+  onDone?: (value: string) => void;
+  onGo?: (value: string) => void;
+  onNext?: (value: string) => void;
+  onPrevious?: (value: string) => void;
+  onSearch?: (value: string) => void;
+  onSend?: (value: string) => void;
+};
+
+/**
+ * Colors for `TextField` and `OutlinedTextField`.
+ * Maps to `TextFieldColors` in Compose, shared by both variants.
+ */
+export type TextFieldColors = {
+  focusedTextColor?: ColorValue;
+  unfocusedTextColor?: ColorValue;
+  disabledTextColor?: ColorValue;
+  errorTextColor?: ColorValue;
+  focusedContainerColor?: ColorValue;
+  unfocusedContainerColor?: ColorValue;
+  disabledContainerColor?: ColorValue;
+  errorContainerColor?: ColorValue;
+  cursorColor?: ColorValue;
+  errorCursorColor?: ColorValue;
+  focusedIndicatorColor?: ColorValue;
+  unfocusedIndicatorColor?: ColorValue;
+  disabledIndicatorColor?: ColorValue;
+  errorIndicatorColor?: ColorValue;
+  focusedLeadingIconColor?: ColorValue;
+  unfocusedLeadingIconColor?: ColorValue;
+  disabledLeadingIconColor?: ColorValue;
+  errorLeadingIconColor?: ColorValue;
+  focusedTrailingIconColor?: ColorValue;
+  unfocusedTrailingIconColor?: ColorValue;
+  disabledTrailingIconColor?: ColorValue;
+  errorTrailingIconColor?: ColorValue;
+  focusedLabelColor?: ColorValue;
+  unfocusedLabelColor?: ColorValue;
+  disabledLabelColor?: ColorValue;
+  errorLabelColor?: ColorValue;
+  focusedPlaceholderColor?: ColorValue;
+  unfocusedPlaceholderColor?: ColorValue;
+  disabledPlaceholderColor?: ColorValue;
+  errorPlaceholderColor?: ColorValue;
+  focusedSupportingTextColor?: ColorValue;
+  unfocusedSupportingTextColor?: ColorValue;
+  disabledSupportingTextColor?: ColorValue;
+  errorSupportingTextColor?: ColorValue;
+  focusedPrefixColor?: ColorValue;
+  unfocusedPrefixColor?: ColorValue;
+  disabledPrefixColor?: ColorValue;
+  errorPrefixColor?: ColorValue;
+  focusedSuffixColor?: ColorValue;
+  unfocusedSuffixColor?: ColorValue;
+  disabledSuffixColor?: ColorValue;
+  errorSuffixColor?: ColorValue;
+};
+
+/** Shared props between `TextField` and `OutlinedTextField`. */
+type BaseTextFieldProps = {
+  ref?: Ref<TextFieldRef>;
+  /** @default true */
+  enabled?: boolean;
+  /** @default false */
+  readOnly?: boolean;
+  /** @default false */
+  isError?: boolean;
+  /** @default false */
+  singleLine?: boolean;
+  maxLines?: number;
+  minLines?: number;
+  keyboardOptions?: TextFieldKeyboardOptions;
+  keyboardActions?: TextFieldKeyboardActions;
+  /** A callback triggered when user types text. */
+  onValueChange?: (value: string) => void;
+  /** A callback triggered when the field gains or loses focus. */
+  onFocusChanged?: (focused: boolean) => void;
+  shape?: object;
+  modifiers?: ModifierConfig[];
+  /** Slot children (e.g. `TextField.Label`, `TextField.Placeholder`). */
+  children?: React.ReactNode;
+};
+
+export type TextFieldProps = BaseTextFieldProps & {
+  colors?: TextFieldColors;
+};
+
+export type OutlinedTextFieldProps = BaseTextFieldProps & {
+  colors?: TextFieldColors;
+};
+
+// endregion Types
+
+// region Native
+
+type NativeTextFieldProps = Omit<
+  BaseTextFieldProps,
+  'onValueChange' | 'onFocusChanged' | 'keyboardActions' | 'children' | 'shape'
+> & {
+  variant: 'filled' | 'outlined';
+  colors?: TextFieldColors;
+  shape?: object;
+  children?: React.ReactNode;
+} & ViewEvent<'onValueChange', { value: string }> &
+  ViewEvent<'onFocusChanged', { value: boolean }> &
+  ViewEvent<'onKeyboardAction', { action: string; value: string }>;
+
+const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
+  'ExpoUI',
+  'TextFieldView'
+);
+
+function transformProps(
+  props: TextFieldProps | OutlinedTextFieldProps,
+  variant: 'filled' | 'outlined'
+): NativeTextFieldProps {
+  const { modifiers, children, keyboardActions, onValueChange, onFocusChanged, ...restProps } =
+    props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+    variant,
+    children,
+    onValueChange: onValueChange ? (event) => onValueChange(event.nativeEvent.value) : undefined,
+    onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
+    onKeyboardAction: keyboardActions
+      ? (event) => {
+          const { action, value } = event.nativeEvent;
+          const actionMap: Record<string, ((v: string) => void) | undefined> = {
+            done: keyboardActions.onDone,
+            go: keyboardActions.onGo,
+            next: keyboardActions.onNext,
+            previous: keyboardActions.onPrevious,
+            search: keyboardActions.onSearch,
+            send: keyboardActions.onSend,
+          };
+          actionMap[action]?.(value);
+        }
+      : undefined,
+  };
+}
+
+// endregion Native
+
+// region Slot components
+
+function Label(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+function Placeholder(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="placeholder">{props.children}</SlotNativeView>;
+}
+
+function LeadingIcon(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="leadingIcon">{props.children}</SlotNativeView>;
+}
+
+function TrailingIcon(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
+}
+
+function Prefix(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="prefix">{props.children}</SlotNativeView>;
+}
+
+function Suffix(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="suffix">{props.children}</SlotNativeView>;
+}
+
+function SupportingText(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="supportingText">{props.children}</SlotNativeView>;
+}
+
+// endregion Slot components
+
+// region Components
+
+/**
+ * A Material3 `TextField`.
+ */
+function TextFieldComponent(props: TextFieldProps) {
+  return <TextFieldNativeView {...transformProps(props, 'filled')} />;
+}
+
+TextFieldComponent.Label = Label;
+TextFieldComponent.Placeholder = Placeholder;
+TextFieldComponent.LeadingIcon = LeadingIcon;
+TextFieldComponent.TrailingIcon = TrailingIcon;
+TextFieldComponent.Prefix = Prefix;
+TextFieldComponent.Suffix = Suffix;
+TextFieldComponent.SupportingText = SupportingText;
+
+/**
+ * A Material3 `OutlinedTextField` with a transparent background and border outline.
+ */
+function OutlinedTextFieldComponent(props: OutlinedTextFieldProps) {
+  return <TextFieldNativeView {...transformProps(props, 'outlined')} />;
+}
+
+OutlinedTextFieldComponent.Label = Label;
+OutlinedTextFieldComponent.Placeholder = Placeholder;
+OutlinedTextFieldComponent.LeadingIcon = LeadingIcon;
+OutlinedTextFieldComponent.TrailingIcon = TrailingIcon;
+OutlinedTextFieldComponent.Prefix = Prefix;
+OutlinedTextFieldComponent.Suffix = Suffix;
+OutlinedTextFieldComponent.SupportingText = SupportingText;
+
+// endregion Components
+
+export { TextFieldComponent as TextField, OutlinedTextFieldComponent as OutlinedTextField };
