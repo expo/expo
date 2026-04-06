@@ -332,15 +332,6 @@ export interface IOS {
      */
     config?: {
         /**
-         * [Branch](https://branch.io/) key to hook up Branch linking services.
-         */
-        branch?: {
-            /**
-             * Your Branch API key
-             */
-            apiKey?: string;
-        };
-        /**
          * Sets `ITSAppUsesNonExemptEncryption` in the standalone ipa's Info.plist to the given boolean value.
          */
         usesNonExemptEncryption?: boolean;
@@ -541,15 +532,6 @@ export interface Android {
      * Note: This property key is not included in the production manifest and will evaluate to `undefined`. It is used internally only in the build process, because it contains API keys that some may want to keep private.
      */
     config?: {
-        /**
-         * [Branch](https://branch.io/) key to hook up Branch linking services.
-         */
-        branch?: {
-            /**
-             * Your Branch API key
-             */
-            apiKey?: string;
-        };
         /**
          * [Google Maps Android SDK](https://developers.google.com/maps/documentation/android-api/signup) configuration for your standalone app.
          */
