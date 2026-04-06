@@ -64,9 +64,7 @@ export default function SwipeToDelete() {
             <SwipeToDismissBox
               enableDismissFromStartToEnd={false}
               onEndToStart={() =>
-                setItems(prev =>
-                  prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i))
-                )
+                setItems(prev => prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i)))
               }>
               <SwipeToDismissBox.BackgroundContent>
                 <Box
@@ -137,14 +135,10 @@ export default function SwipeBothWays() {
             exitTransition={ExitTransition.fadeOut().plus(ExitTransition.shrinkVertically())}>
             <SwipeToDismissBox
               onStartToEnd={() =>
-                setItems(prev =>
-                  prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i))
-                )
+                setItems(prev => prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i)))
               }
               onEndToStart={() =>
-                setItems(prev =>
-                  prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i))
-                )
+                setItems(prev => prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i)))
               }>
               <SwipeToDismissBox.BackgroundStartToEnd>
                 <Box
