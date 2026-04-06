@@ -2078,12 +2078,21 @@ importers:
 
   packages/@expo/config-types:
     devDependencies:
+      chalk:
+        specifier: ^4.1.2
+        version: 4.1.2
+      commander:
+        specifier: ^12.1.0
+        version: 12.1.0
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       json-schema-to-typescript:
         specifier: ^15.0.0
         version: 15.0.4
+      semver:
+        specifier: ^7.7.4
+        version: 7.7.4
 
   packages/@expo/devtools:
     dependencies:
