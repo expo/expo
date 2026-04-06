@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `setStyle` on Android < Q by setting an explicit navigation bar color for proper button contrast. ([#44477](https://github.com/expo/expo/pull/44477) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 - Replaced `expo_navigation_bar_visibility` string resource with `expoNavigationBarHidden` boolean theme attribute. ([#44536](https://github.com/expo/expo/pull/44536) by [@zoontek](https://github.com/zoontek))
