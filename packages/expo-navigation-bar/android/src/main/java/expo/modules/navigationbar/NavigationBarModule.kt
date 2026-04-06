@@ -54,6 +54,7 @@ class NavigationBarModule : Module() {
       }
     }
 
+    @Suppress("DEPRECATION")
     AsyncFunction("setStyle") { style: String ->
       // isAppearanceLightNavigationBars is not available below Android O.
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -61,17 +62,17 @@ class NavigationBarModule : Module() {
       }
 
       val window = currentActivity.window
-      val light = style == "dark" // dark content -> light background
+      val hasLightBackground = style == "dark" // dark content -> light background
 
       // android:enforceNavigationBarContrast is not available below Android Q.
       // This means the button style is not automatically adjusted for contrast,
       // so we set an explicit navigation bar color to avoid invisible buttons.
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-        window.navigationBarColor = if (light) LightNavigationBarColor else DarkNavigationBarColor
+        window.navigationBarColor = if (hasLightBackground) LightNavigationBarColor else DarkNavigationBarColor
       }
 
       WindowInsetsControllerCompat(window, window.decorView).run {
-        isAppearanceLightNavigationBars = light
+        isAppearanceLightNavigationBars = hasLightBackground
       }
 
       return@AsyncFunction
