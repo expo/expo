@@ -8,12 +8,13 @@
  */
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
+const unwrapESModule_1 = require("../../lib/unwrapESModule");
 const dependencyExtractor_1 = require("./dependencyExtractor");
 class DependencyExtractorWorker {
     #dependencyExtractor;
     constructor({ dependencyExtractor }) {
         if (dependencyExtractor != null) {
-            this.#dependencyExtractor = require(dependencyExtractor);
+            this.#dependencyExtractor = (0, unwrapESModule_1.unwrapESModuleDefault)(require(dependencyExtractor));
         }
     }
     processFile(data, utils) {

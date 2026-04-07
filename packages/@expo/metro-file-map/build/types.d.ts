@@ -70,7 +70,13 @@ export interface ChangeEvent {
     readonly logger: RootPerfLogger | undefined | null;
     readonly changes: ReadonlyFileSystemChanges<ChangedFileMetadata>;
     readonly rootDir: string;
+    readonly eventsQueue: EventsQueue;
 }
+export type EventsQueue = Array<{
+    filePath: Path;
+    metadata: ChangeEventMetadata;
+    type: string;
+}>;
 export interface ChangeEventMetadata {
     modifiedTime: number | undefined | null;
     size: number | undefined | null;
@@ -170,7 +176,7 @@ export interface FileMapPlugin<SerializableState extends undefined | V8Serializa
     getCacheKey(): string;
     getWorker(): FileMapPluginWorker | undefined | null;
 }
-export type InputFileMapPlugin = FileMapPlugin<never, never>;
+export type InputFileMapPlugin = FileMapPlugin;
 export interface MetadataWorkerParams {
     getContent(): Buffer;
 }

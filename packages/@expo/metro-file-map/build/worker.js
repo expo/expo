@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Worker = void 0;
 exports.setup = setup;
 exports.processFile = processFile;
+const unwrapESModule_1 = require("./lib/unwrapESModule");
 const crypto_1 = require("crypto");
 const graceful_fs_1 = __importDefault(require("graceful-fs"));
 function sha1hex(content) {
@@ -24,7 +25,7 @@ class Worker {
     #plugins;
     constructor({ plugins = [] }) {
         this.#plugins = plugins.map(({ modulePath, setupArgs }) => {
-            const PluginWorker = require(modulePath);
+            const PluginWorker = (0, unwrapESModule_1.unwrapESModuleDefault)(require(modulePath));
             return new PluginWorker(setupArgs);
         });
     }

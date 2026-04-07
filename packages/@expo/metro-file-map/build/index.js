@@ -162,6 +162,8 @@ const WATCHMAN_REQUIRED_CAPABILITIES = [
  *
  */
 class FileMap extends events_1.default {
+    // NOTE(@kitten): Expo brand to recognize patched metro-file-map
+    __patched = true;
     #buildPromise;
     #cacheManager;
     #canUseWatchmanPromise;
@@ -555,7 +557,7 @@ class FileMap extends events_1.default {
                 nextEmit = null;
                 return;
             }
-            const _netChange = changeAggregator.getView();
+            const netChange = changeAggregator.getView();
             this.#plugins.forEach(({ plugin, dataIdx }) => {
                 plugin.onChanged(changeAggregator.getMappedView(dataIdx != null ? (metadata) => metadata[dataIdx] : () => null));
             });
@@ -576,8 +578,12 @@ class FileMap extends events_1.default {
                 hmrPerfLogger.annotate({ int: { changeSize } });
                 hmrPerfLogger.point('fileChange_start');
             }
+            // @deprecated - Synthesise eventsQueue for backwards compatibility.
+            // See: https://github.com/facebook/metro/commit/e23bad71bc808e89966ed787c4e1e9905c9f3db4
+            const eventsQueue = eventsQueueFromChanges(netChange, this.#pathUtils);
             const changeEvent = {
                 changes: changesWithMetadata,
+                eventsQueue,
                 logger: hmrPerfLogger,
                 rootDir: this.#options.rootDir,
             };
@@ -704,8 +710,12 @@ class FileMap extends events_1.default {
                         modifiedTime: metadata[constants_1.default.MTIME] ?? null,
                     });
                     const changesWithMetadata = recrawlChangeAggregator.getMappedView(toPublicMetadata);
+                    // @deprecated - Synthesise eventsQueue for backwards compatibility.
+                    // See: https://github.com/facebook/metro/commit/e23bad71bc808e89966ed787c4e1e9905c9f3db4
+                    const recrawlEventsQueue = eventsQueueFromChanges(recrawlChangeAggregator.getView(), this.#pathUtils);
                     const changeEvent = {
                         changes: changesWithMetadata,
+                        eventsQueue: recrawlEventsQueue,
                         logger: null,
                         rootDir: this.#options.rootDir,
                     };
@@ -803,4 +813,45 @@ function mapIterable(it, fn) {
             yield fn(item);
         }
     })();
+}
+// @deprecated - Synthesise an eventsQueue array from a ReadonlyFileSystemChanges
+// for backwards compatibility with consumers that haven't migrated to `changes`.
+// Remove when Metro's DependencyGraph and all Expo CLI consumers use `changes`.
+// See: https://github.com/facebook/metro/commit/e23bad71bc808e89966ed787c4e1e9905c9f3db4
+function eventsQueueFromChanges(changes, pathUtils) {
+    const eventsQueue = [];
+    for (const [canonicalPath, metadata] of changes.removedFiles) {
+        eventsQueue.push({
+            type: 'delete',
+            filePath: pathUtils.normalToAbsolute(canonicalPath),
+            metadata: {
+                size: null,
+                modifiedTime: null,
+                type: metadata[constants_1.default.SYMLINK] === 0 ? 'f' : 'l',
+            },
+        });
+    }
+    for (const [canonicalPath, metadata] of changes.addedFiles) {
+        eventsQueue.push({
+            type: 'add',
+            filePath: pathUtils.normalToAbsolute(canonicalPath),
+            metadata: {
+                size: metadata[constants_1.default.SIZE],
+                modifiedTime: metadata[constants_1.default.MTIME],
+                type: metadata[constants_1.default.SYMLINK] === 0 ? 'f' : 'l',
+            },
+        });
+    }
+    for (const [canonicalPath, metadata] of changes.modifiedFiles) {
+        eventsQueue.push({
+            type: 'change',
+            filePath: pathUtils.normalToAbsolute(canonicalPath),
+            metadata: {
+                size: metadata[constants_1.default.SIZE],
+                modifiedTime: metadata[constants_1.default.MTIME],
+                type: metadata[constants_1.default.SYMLINK] === 0 ? 'f' : 'l',
+            },
+        });
+    }
+    return eventsQueue;
 }

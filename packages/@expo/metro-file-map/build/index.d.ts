@@ -42,7 +42,7 @@ export { HasteConflictsError } from './plugins/haste/HasteConflictsError';
 export { default as HastePlugin } from './plugins/HastePlugin';
 export type { HasteMap } from './types';
 export type { HealthCheckResult } from './Watcher';
-export type { CacheManager, CacheManagerFactory, CacheManagerFactoryOptions, CacheManagerWriteOptions, ChangeEvent, DependencyExtractor, WatcherStatus, } from './types';
+export type { CacheManager, CacheManagerFactory, CacheManagerFactoryOptions, CacheManagerWriteOptions, ChangeEvent, DependencyExtractor, EventsQueue, WatcherStatus, } from './types';
 /**
  * FileMap includes a JavaScript implementation of Facebook's haste module system.
  *
@@ -124,6 +124,7 @@ export type { CacheManager, CacheManagerFactory, CacheManagerFactoryOptions, Cac
  */
 export default class FileMap extends EventEmitter {
     #private;
+    readonly __patched = true;
     static create(options: InputOptions): FileMap;
     constructor(options: InputOptions);
     build(): Promise<BuildResult>;
