@@ -45,4 +45,16 @@ struct ConstantsTests {
       #expect(mirror.displayStyle != .optional, "Value for key '\(key)' is a wrapped Optional — will bridge as null to JS")
     }
   }
+
+  @Test
+  func `nested constants provider values are not double-wrapped optionals`() {
+    let constants = ConstantsProvider.shared.constants()
+    if let platform = constants["platform"] as? [String: Any],
+      let ios = platform["ios"] as? [String: Any] {
+      for (key, value) in ios {
+        let mirror = Mirror(reflecting: value)
+        #expect(mirror.displayStyle != .optional, "Value for key 'platform.ios.\(key)' is a wrapped Optional — will bridge as null to JS")
+      }
+    }
+  }
 }
