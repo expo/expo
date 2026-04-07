@@ -18,6 +18,7 @@
 
 ### 💡 Others
 
+- [web] Added a warning when setting volume in browsers on iOS, where Apple does not allow programmatic volume control. (by [@vonovak](https://github.com/vonovak))
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.8 — 2026-02-25
