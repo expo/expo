@@ -1,10 +1,12 @@
 import fs from 'fs';
+import path from 'path';
 
 import {
   createTestPath,
   ensureFolderExists,
   executePassing,
   expectFileExists,
+  getTemporaryPath,
   getTestPath,
   projectRoot,
   readJson,
@@ -30,6 +32,7 @@ describe('CLI flags', () => {
     expect(result.stdout).toMatch(/--description/);
     expect(result.stdout).toMatch(/--package/);
     expect(result.stdout).toMatch(/--author-name/);
+    expect(result.stdout).toMatch(/--barrel/);
   });
 
   it('shows version with --version flag', async () => {
@@ -105,5 +108,83 @@ describe('non-interactive module creation', () => {
 
     // Should still create the module
     expectFileExists(projectName, 'package.json');
+  });
+});
+
+describe('--barrel option', () => {
+  const localTemplatePath = path.resolve(
+    __dirname,
+    '../../../../packages/expo-module-template-local'
+  );
+  let localProjectRoot: string;
+
+  beforeAll(() => {
+    localProjectRoot = getTemporaryPath();
+    fs.mkdirSync(localProjectRoot, { recursive: true });
+    // Minimal package.json so the CLI can locate the project root when walking upward
+    fs.writeFileSync(
+      path.join(localProjectRoot, 'package.json'),
+      JSON.stringify({ name: 'test-app', version: '1.0.0' })
+    );
+  });
+
+  afterAll(async () => {
+    if (fs.existsSync(localProjectRoot)) {
+      await fs.promises.rm(localProjectRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('does not generate index.ts barrel file by default', async () => {
+    const slug = 'no-barrel-module';
+
+    await executePassing([slug, '--local', '--source', localTemplatePath], {
+      cwd: localProjectRoot,
+    });
+
+    const indexPath = path.join(localProjectRoot, 'modules', slug, 'index.ts');
+    expect({ [indexPath]: fs.existsSync(indexPath) }).toEqual({ [indexPath]: false });
+  });
+
+  it('generates index.ts barrel file with correct re-exports when --barrel is set', async () => {
+    const slug = 'barrel-module';
+
+    await executePassing([slug, '--local', '--barrel', '--source', localTemplatePath], {
+      cwd: localProjectRoot,
+    });
+
+    const indexPath = path.join(localProjectRoot, 'modules', slug, 'index.ts');
+    expect({ [indexPath]: fs.existsSync(indexPath) }).toEqual({ [indexPath]: true });
+
+    const content = fs.readFileSync(indexPath, 'utf8');
+    // Re-exports the native module as default
+    expect(content).toMatch(/export \{ default \} from '\.\/src\//);
+    // Re-exports the view with its name
+    expect(content).toMatch(/export \{ default as \w+View \} from '\.\/src\//);
+    // Re-exports all types
+    expect(content).toMatch(/export \* from '\.\/src\//);
+  });
+
+  it('shows a single barrel-style import path in success output when --barrel is set', async () => {
+    const slug = 'barrel-message-module';
+
+    const result = await executePassing(
+      [slug, '--local', '--barrel', '--source', localTemplatePath],
+      { cwd: localProjectRoot }
+    );
+
+    // The success message should point to the module root (no /src/ sub-path)
+    expect(result.stdout).toMatch(new RegExp(`from './modules/${slug}'`));
+    expect(result.stdout).not.toMatch(new RegExp(`from './modules/${slug}/src/`));
+  });
+
+  it('shows direct src/ import paths in success output without --barrel', async () => {
+    const slug = 'no-barrel-message-module';
+
+    const result = await executePassing([slug, '--local', '--source', localTemplatePath], {
+      cwd: localProjectRoot,
+    });
+
+    // The success message should include a direct src/ path
+    expect(result.stdout).toMatch(new RegExp(`from './modules/${slug}/src/`));
   });
 });

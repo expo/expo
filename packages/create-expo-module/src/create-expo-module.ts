@@ -158,7 +158,7 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   const packageManager = resolvePackageManager();
   const packagePath = options.source
-    ? path.join(CWD, options.source)
+    ? path.resolve(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
 
   await logEventAsync(eventCreateExpoModule(packageManager, options));
@@ -167,6 +167,18 @@ async function main(target: string | undefined, options: CommandOptions) {
     await createModuleFromTemplate(packagePath, targetDir, data);
     step.succeed('Created the module from template files');
   });
+  if (options.local && options.barrel) {
+    await newStep('Generating barrel file', async (step) => {
+      await generateBarrelFileAsync(targetDir, data as LocalSubstitutionData);
+      step.succeed('Generated barrel file (index.ts)');
+    });
+  } else if (!options.local && options.barrel) {
+    console.warn(
+      chalk.yellow(
+        'Warning: The --barrel flag only applies to local modules (--local). It will be ignored.'
+      )
+    );
+  }
   if (!options.local) {
     await newStep('Installing module dependencies', async (step) => {
       await installDependencies(packageManager, targetDir);
@@ -219,7 +231,13 @@ async function main(target: string | undefined, options: CommandOptions) {
   console.log();
   if (options.local) {
     console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(`modules/${slug}`)}`);
-    printFurtherLocalInstructions(slug, data.project.moduleName);
+    printFurtherLocalInstructions(
+      slug,
+      data.project.moduleName,
+      data.project.viewName,
+      data.project.name,
+      options.barrel
+    );
   } else {
     console.log('✅ Successfully created Expo module');
     printFurtherInstructions(targetDir, packageManager, options.example);
@@ -680,6 +698,25 @@ async function confirmTargetDirAsync(targetDir: string, options: CommandOptions)
 }
 
 /**
+ * Generates an `index.ts` barrel file that re-exports the module and view for local modules.
+ */
+async function generateBarrelFileAsync(
+  targetPath: string,
+  data: LocalSubstitutionData
+): Promise<void> {
+  const { moduleName, viewName, name } = data.project;
+  const content = [
+    `// Re-export the native module. On web, it will be resolved to ${moduleName}.web.ts`,
+    `// and on native platforms to ${moduleName}.ts`,
+    `export { default } from './src/${moduleName}';`,
+    `export { default as ${viewName} } from './src/${viewName}';`,
+    `export * from './src/${name}.types';`,
+    '',
+  ].join('\n');
+  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), content, 'utf8');
+}
+
+/**
  * Prints how the user can follow up once the script finishes creating the module.
  */
 function printFurtherInstructions(
@@ -704,11 +741,31 @@ function printFurtherInstructions(
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
 }
 
-function printFurtherLocalInstructions(slug: string, name: string) {
+function printFurtherLocalInstructions(
+  slug: string,
+  moduleName: string,
+  viewName: string,
+  name: string,
+  barrel: boolean
+) {
   console.log();
   console.log(`You can now import this module inside your application.`);
-  console.log(`For example, you can add this line to your App.tsx or App.js file:`);
-  console.log(`${chalk.gray.italic(`import ${name} from './modules/${slug}';`)}`);
+  console.log(`For example, you can add these lines to your App.tsx or App.js file:`);
+  if (barrel) {
+    console.log(
+      chalk.gray.italic(`import ${moduleName}, { ${viewName} } from './modules/${slug}';`)
+    );
+  } else {
+    console.log(
+      chalk.gray.italic(`import ${moduleName} from './modules/${slug}/src/${moduleName}';`)
+    );
+    console.log(
+      chalk.gray.italic(
+        `import { default as ${viewName} } from './modules/${slug}/src/${viewName}';`
+      )
+    );
+    console.log(chalk.gray.italic(`import type { } from './modules/${slug}/src/${name}.types';`));
+  }
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
@@ -735,6 +792,11 @@ program
   .option(
     '--local',
     'Whether to create a local module in the current project, skipping installing node_modules and creating the example directory.',
+    false
+  )
+  .option(
+    '--barrel',
+    'Whether to generate an index.ts barrel file for the local module. Only applies to local modules',
     false
   )
   // Module configuration options (skip prompts when provided)
