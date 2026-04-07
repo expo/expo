@@ -111,7 +111,6 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'jetpack-compose/PullToRefreshBox/index.tsx',
     'expo-ui',
   ],
-  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/RadioButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/radiobutton': ['jetpack-compose/RadioButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/rnhostview': ['jetpack-compose/RNHostView/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/searchbar': ['jetpack-compose/SearchBar/index.tsx', 'expo-ui'],
