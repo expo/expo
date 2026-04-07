@@ -48,14 +48,14 @@ If you're using EAS Build, you can do most of your Stripe setup using the `@stri
 }
 ```
 
-- **merchantIdentifier**: iOS only. This is the [Apple merchant ID obtained here](https://stripe.com/docs/apple-pay?platform=react-native). Otherwise, Apple Pay will not work as expected. If you have multiple merchantIdentifiers, you can set them in an array.
+- **merchantIdentifier**: iOS only. This is the [Apple merchant ID obtained here](https://docs.stripe.com/apple-pay?platform=react-native). Otherwise, Apple Pay will not work as expected. If you have multiple merchantIdentifiers, you can set them in an array.
 - **enableGooglePay**: Android only. Boolean indicating whether or not Google Pay is enabled. Defaults to `false`.
 
 ## Example
 
 Trying out Stripe takes just a few seconds. Connect to [this Snack](https://snack.expo.dev/@charliecruzan/stripe-react-native-example?platform=mydevice) on your device.
 
-Under the hood, that example connects to [this Glitch server code](https://glitch.com/edit/#!/expo-stripe-server-example), so you'll need to open that page to spin up the server. Feel free to run your own Glitch server and copy that code!
+Under the hood, that example connects to a Glitch server for payment processing.
 
 ## Usage
 
