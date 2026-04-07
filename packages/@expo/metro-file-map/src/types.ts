@@ -239,11 +239,11 @@ export interface FileMapPlugin<
 export type InputFileMapPlugin = FileMapPlugin;
 
 export interface MetadataWorkerParams {
-  getContent(): Buffer;
+  getContent(): Promise<Buffer>;
 }
 
 export interface MetadataWorker {
-  processFile(message: WorkerMessage, params: MetadataWorkerParams): V8Serializable;
+  processFile(message: WorkerMessage, params: MetadataWorkerParams): V8Serializable | Promise<V8Serializable>;
 }
 
 export type IgnoreMatcher = (item: string) => boolean;
@@ -484,7 +484,7 @@ export type ProcessFileFunction = (
   normalPath: string,
   metadata: FileMetadata,
   request: Readonly<{ computeSha1: boolean }>
-) => Buffer | undefined | null;
+) => Promise<Buffer | undefined | null>;
 
 export type RawMockMap = {
   /** posix-separated mock name to posix-separated project-relative paths */

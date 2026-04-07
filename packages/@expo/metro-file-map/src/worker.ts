@@ -13,11 +13,11 @@ import type {
 } from './types';
 import { unwrapESModuleDefault } from './lib/unwrapESModule';
 
-import { createHash } from 'crypto';
-import fs from 'graceful-fs';
+import { hash } from 'crypto';
+import fs from 'fs';
 
 function sha1hex(content: string | Buffer): string {
-  return createHash('sha1').update(content).digest('hex');
+  return hash('sha1', content, 'hex');
 }
 
 /**
@@ -33,45 +33,52 @@ export class Worker {
     });
   }
 
-  processFile(data: WorkerMessage): WorkerMetadata {
-    let content: Buffer | undefined;
-    let sha1: WorkerMetadata['sha1'];
-    let mtime: WorkerMetadata['mtime'];
-    let size: WorkerMetadata['size'];
+  async processFile(data: WorkerMessage): Promise<WorkerMetadata> {
+    let contentPromise: Promise<Buffer> | undefined;
+    let sha1Promise: Promise<WorkerMetadata['sha1']> | undefined;
+    let mtimePromise: Promise<WorkerMetadata['mtime']> | undefined;
+    let sizePromise: Promise<WorkerMetadata['size']> | undefined;
 
     const { computeSha1, computeMtime, filePath, pluginsToRun } = data;
 
-    const getContent = (): Buffer => {
-      if (content == null) {
-        content = fs.readFileSync(filePath) as Buffer;
+    const getContent = (): Promise<Buffer> => {
+      if (contentPromise == null) {
+        contentPromise  = fs.promises.readFile(filePath);
       }
-
-      return content!;
+      return contentPromise;
     };
 
     if (computeMtime) {
       try {
-        const stat = fs.statSync(filePath);
-        mtime = stat.mtime.getTime();
-        size = stat.size;
+        const statPromise = fs.promises.stat(filePath).catch(() => undefined);
+        mtimePromise = statPromise.then((stat) => stat?.mtime.getTime());
+        sizePromise = statPromise.then((stat) => stat?.size);
       } catch {
         // Will be caught as ENOENT by the caller
       }
     }
 
     const workerUtils = { getContent };
-    const pluginData = pluginsToRun.map((pluginIdx) =>
-      this.#plugins[pluginIdx]!.processFile(data, workerUtils)
+    const pluginDataPromise = Promise.all(
+      pluginsToRun.map((pluginIdx) =>
+        this.#plugins[pluginIdx]!.processFile(data, workerUtils)
+      )
     );
 
     // If a SHA-1 is requested on update, compute it.
     if (computeSha1) {
-      sha1 = sha1hex(getContent());
+      sha1Promise = getContent().then(sha1hex);
     }
 
-    return content && data.maybeReturnContent
-      ? { content, pluginData, sha1, mtime, size }
-      : { pluginData, sha1, mtime, size };
+    return {
+      content: contentPromise != null && data.maybeReturnContent
+        ? await contentPromise
+        : undefined,
+      pluginData: await pluginDataPromise,
+      sha1: await sha1Promise,
+      mtime: (await mtimePromise) ?? undefined,
+      size: (await sizePromise) ?? undefined,
+    };
   }
 }
 
@@ -91,7 +98,7 @@ export function setup(args: WorkerSetupArgs): void {
 /**
  * Called by jest-worker with each workload
  */
-export function processFile(data: WorkerMessage): WorkerMetadata {
+export async function processFile(data: WorkerMessage): Promise<WorkerMetadata> {
   if (!singletonWorker) {
     throw new Error('metro-file-map: setup() must be called before processFile()');
   }
