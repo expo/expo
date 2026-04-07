@@ -376,7 +376,7 @@ export declare class File {
    *
    * @param mode - The {@link FileMode} to use.
    * - **Android**: Supports all `FileMode` values, but SAF `content://` URIs do not support `ReadWrite` mode.
-   * - **iOS**: Defaults to `FileMode.ReadWrite`; explicitly passing other modes will be ignored.
+   * - **iOS**: Supports all `FileMode` values.
    * - **Defaults**:
    *   - For SAF `content://` URIs, the default is `FileMode.ReadOnly`.
    *   - For standard `file://` URIs, the default is `FileMode.ReadWrite`.
