@@ -159,7 +159,7 @@ export default function KeyboardActionsExample() {
         singleLine
         keyboardOptions={{ imeAction: 'search' }}
         keyboardActions={{
-          onSearch: (text) => setSubmitted(text),
+          onSearch: text => setSubmitted(text),
         }}>
         <TextField.Label>
           <Text>Search</Text>
