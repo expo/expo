@@ -1,0 +1,206 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lints with the typescript-analysis config: fixtures/typescript-analysis-00.ts 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "eslint(no-unused-expressions)",
+      "help": "Consider using this expression or removing it",
+      "labels": [
+        {
+          "span": {
+            "column": 3,
+            "line": 24,
+          },
+        },
+      ],
+      "message": "Expected expression to be used",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(prefer-optional-chain)",
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 10,
+            "line": 20,
+          },
+        },
+      ],
+      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(prefer-optional-chain)",
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 3,
+            "line": 24,
+          },
+        },
+      ],
+      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 3,
+}
+`;
+
+exports[`lints with the typescript-analysis config: fixtures/typescript-analysis-01.ts 1`] = `
+{
+  "errorCount": 1,
+  "messages": [
+    {
+      "code": "typescript-eslint(no-for-in-array)",
+      "help": "Use a more robust iteration method such as for-of or array.forEach instead.",
+      "labels": [
+        {
+          "span": {
+            "column": 1,
+            "line": 4,
+          },
+        },
+      ],
+      "message": "For-in loops over arrays skips holes, returns indices as strings, and may visit the prototype chain or other enumerable properties.",
+      "severity": "error",
+    },
+  ],
+  "warningCount": 0,
+}
+`;
+
+exports[`lints with the typescript-analysis config: fixtures/typescript-analysis-02.ts 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "typescript-eslint(prefer-nullish-coalescing)",
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 12,
+            "line": 4,
+          },
+        },
+      ],
+      "message": "Prefer using nullish coalescing operator (\`??\`) instead of a logical or (\`||\`), as it is a safer operator.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 1,
+}
+`;
+
+exports[`lints with the typescript-analysis config: fixtures/typescript-analysis-03.ts 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "typescript-eslint(only-throw-error)",
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 9,
+            "line": 2,
+          },
+        },
+      ],
+      "message": "Expected an error object to be thrown.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 1,
+}
+`;
+
+exports[`lints with the typescript-analysis config: fixtures/typescript-analysis-04.ts 1`] = `
+{
+  "errorCount": 2,
+  "messages": [
+    {
+      "code": "typescript-eslint(return-await)",
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 10,
+            "line": 2,
+          },
+        },
+      ],
+      "message": "Returning an awaited promise is required in this context.",
+      "severity": "error",
+    },
+    {
+      "code": "typescript-eslint(await-thenable)",
+      "help": "Remove \`await\` if the value is synchronous, or change the expression to return a Promise or Thenable before awaiting it.",
+      "labels": [
+        {
+          "span": {
+            "column": 9,
+            "line": 8,
+          },
+        },
+        {
+          "span": {
+            "column": 3,
+            "line": 8,
+          },
+        },
+      ],
+      "message": "Unexpected \`await\` of a non-Promise (non-"Thenable") value.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(no-confusing-void-expression)",
+      "help": "Move it to its own statement instead.",
+      "labels": [
+        {
+          "span": {
+            "column": 15,
+            "line": 11,
+          },
+        },
+      ],
+      "message": "Placing a void expression inside another expression is forbidden.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(no-misused-promises)",
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 7,
+            "line": 15,
+          },
+        },
+      ],
+      "message": "Expected non-Promise value in a boolean conditional.",
+      "severity": "error",
+    },
+    {
+      "code": "typescript-eslint(no-floating-promises)",
+      "help": "The promise must end with a call to .catch, or end with a call to .then with a rejection handler, or be explicitly marked as ignored with the \`void\` operator.",
+      "labels": [
+        {
+          "span": {
+            "column": 5,
+            "line": 21,
+          },
+        },
+      ],
+      "message": "Promises must be awaited, add void operator to ignore.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 3,
+}
+`;

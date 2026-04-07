@@ -44,3 +44,7 @@ minimumReleaseAgeExclude:
   - '@expo/*'
   - '@react-native/*'
   - 'react-native'
+  - 'oxfmt'
+  - 'oxlint'
+  - '@oxfmt/*'
+  - '@oxlint/*'

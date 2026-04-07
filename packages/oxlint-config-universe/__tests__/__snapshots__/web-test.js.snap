@@ -1,0 +1,527 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lints with the web config: fixtures/all-00.js 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "eslint(no-unused-private-class-members)",
+      "help": "Remove the declaration or use it in the code.",
+      "labels": [
+        {
+          "span": {
+            "column": 3,
+            "line": 19,
+          },
+        },
+      ],
+      "message": "'n' is defined but never used.",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider handling this error.",
+      "labels": [
+        {
+          "span": {
+            "column": 14,
+            "line": 30,
+          },
+        },
+      ],
+      "message": "Catch parameter 'e' is caught but never used. Unused caught errors should start with a '_'.",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint(prefer-const)",
+      "help": "Use \`const\` instead.",
+      "labels": [
+        {
+          "span": {
+            "column": 9,
+            "line": 44,
+          },
+        },
+      ],
+      "message": "\`f\` is never reassigned.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 3,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-01.ts 1`] = `
+{
+  "errorCount": 1,
+  "messages": [
+    {
+      "code": undefined,
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 3,
+            "line": 17,
+          },
+        },
+        {
+          "span": {
+            "column": 3,
+            "line": 18,
+          },
+        },
+      ],
+      "message": "Identifier \`m\` has already been declared",
+      "severity": "error",
+    },
+  ],
+  "warningCount": 0,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-02.js 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider removing this declaration.",
+      "labels": [
+        {
+          "span": {
+            "column": 7,
+            "line": 1,
+          },
+        },
+      ],
+      "message": "Variable 'unused1' is declared but never used.",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider removing this declaration.",
+      "labels": [
+        {
+          "span": {
+            "column": 10,
+            "line": 3,
+          },
+        },
+      ],
+      "message": "Function 'unused2' is declared but never used.",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider removing this declaration.",
+      "labels": [
+        {
+          "span": {
+            "column": 9,
+            "line": 4,
+          },
+        },
+      ],
+      "message": "Variable 'unused3' is declared but never used.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 3,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-03.ts 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider removing this declaration.",
+      "labels": [
+        {
+          "span": {
+            "column": 7,
+            "line": 1,
+          },
+        },
+      ],
+      "message": "Variable 'tsUnused1' is declared but never used.",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider removing this declaration.",
+      "labels": [
+        {
+          "span": {
+            "column": 10,
+            "line": 3,
+          },
+        },
+      ],
+      "message": "Function 'tsUnused2' is declared but never used.",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider removing this declaration.",
+      "labels": [
+        {
+          "span": {
+            "column": 9,
+            "line": 5,
+          },
+        },
+      ],
+      "message": "Variable 'asCast' is declared but never used.",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider removing this declaration.",
+      "labels": [
+        {
+          "span": {
+            "column": 9,
+            "line": 6,
+          },
+        },
+      ],
+      "message": "Variable 'angleBracketCast' is declared but never used.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(consistent-type-assertions)",
+      "help": "Replace \`<string>x\` with \`x as string\`.",
+      "labels": [
+        {
+          "span": {
+            "column": 28,
+            "line": 6,
+          },
+        },
+      ],
+      "message": "Use \`as string\` instead of \`<string>\`.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 5,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-04.ts 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "typescript-eslint(array-type)",
+      "help": "Replace \`Array<string>\` with \`string[]\`.",
+      "labels": [
+        {
+          "span": {
+            "column": 25,
+            "line": 1,
+          },
+        },
+      ],
+      "message": "Array type using 'Array<string>' is forbidden. Use 'string[]' instead.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 1,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-05.ts 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "typescript-eslint(no-extra-non-null-assertion)",
+      "help": "Remove the redundant non-null assertion operator (\`!\`).",
+      "labels": [
+        {
+          "span": {
+            "column": 22,
+            "line": 1,
+          },
+        },
+      ],
+      "message": "extra non-null assertion",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 1,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-06.ts 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "typescript-eslint(no-empty-object-type)",
+      "help": "To avoid confusion around the {} type allowing any non-nullish value, this rule bans usage of the {} type.",
+      "labels": [
+        {
+          "span": {
+            "column": 35,
+            "line": 6,
+          },
+        },
+      ],
+      "message": "Do not use the empty object type literal.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(no-wrapper-object-types)",
+      "help": "Replace \`Number\` with \`number\`.",
+      "labels": [
+        {
+          "span": {
+            "column": 26,
+            "line": 1,
+          },
+        },
+      ],
+      "message": "Do not use wrapper object types.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(no-wrapper-object-types)",
+      "help": "Replace \`Boolean\` with \`boolean\`.",
+      "labels": [
+        {
+          "span": {
+            "column": 27,
+            "line": 2,
+          },
+        },
+      ],
+      "message": "Do not use wrapper object types.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(no-wrapper-object-types)",
+      "help": "Replace \`Symbol\` with \`symbol\`.",
+      "labels": [
+        {
+          "span": {
+            "column": 26,
+            "line": 3,
+          },
+        },
+      ],
+      "message": "Do not use wrapper object types.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(no-wrapper-object-types)",
+      "help": "Replace \`Object\` with \`object\`.",
+      "labels": [
+        {
+          "span": {
+            "column": 26,
+            "line": 4,
+          },
+        },
+      ],
+      "message": "Do not use wrapper object types.",
+      "severity": "warning",
+    },
+    {
+      "code": "typescript-eslint(no-wrapper-object-types)",
+      "help": "Replace \`String\` with \`string\`.",
+      "labels": [
+        {
+          "span": {
+            "column": 26,
+            "line": 5,
+          },
+        },
+      ],
+      "message": "Do not use wrapper object types.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 6,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-07.js 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "eslint-plugin-import(first)",
+      "help": "Move import statement to the top of the file",
+      "labels": [
+        {
+          "span": {
+            "column": 1,
+            "line": 2,
+          },
+        },
+      ],
+      "message": "Import statements must come first",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint-plugin-import(first)",
+      "help": "Move import statement to the top of the file",
+      "labels": [
+        {
+          "span": {
+            "column": 1,
+            "line": 4,
+          },
+        },
+      ],
+      "message": "Import statements must come first",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint-plugin-import(first)",
+      "help": "Move import statement to the top of the file",
+      "labels": [
+        {
+          "span": {
+            "column": 1,
+            "line": 5,
+          },
+        },
+      ],
+      "message": "Import statements must come first",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 3,
+}
+`;
+
+exports[`lints with the web config: fixtures/web-native-00.js 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "eslint-plugin-unicorn(no-useless-spread)",
+      "help": "Consider removing the spread operator.",
+      "labels": [
+        {
+          "span": {
+            "column": 5,
+            "line": 6,
+          },
+        },
+      ],
+      "message": "Using a spread operator here creates a new object unnecessarily.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 1,
+}
+`;
+
+exports[`lints with the web config: fixtures/web-native-01.js 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "eslint-plugin-react(no-did-mount-set-state)",
+      "help": "Updating state after a component mount triggers a second render() call and can lead to property/layout thrashing.",
+      "labels": [
+        {
+          "span": {
+            "column": 5,
+            "line": 8,
+          },
+        },
+      ],
+      "message": "Do not use \`setState\` in \`componentDidMount\`.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 1,
+}
+`;
+
+exports[`lints with the web config: fixtures/web-native-03.js 1`] = `
+{
+  "errorCount": 0,
+  "messages": [
+    {
+      "code": "eslint-plugin-react(jsx-curly-brace-presence)",
+      "help": "Replace \`{'test'}\` with \`"test"\`.",
+      "labels": [
+        {
+          "span": {
+            "column": 24,
+            "line": 5,
+          },
+        },
+      ],
+      "message": "Curly braces are unnecessary here.",
+      "severity": "warning",
+    },
+  ],
+  "warningCount": 1,
+}
+`;
+
+exports[`lints with the web config: fixtures/web-native-04.js 1`] = `
+{
+  "errorCount": 2,
+  "messages": [
+    {
+      "code": "eslint(no-unused-vars)",
+      "help": "Consider removing this declaration.",
+      "labels": [
+        {
+          "span": {
+            "column": 10,
+            "line": 14,
+          },
+        },
+      ],
+      "message": "Function 'notAHook' is declared but never used.",
+      "severity": "warning",
+    },
+    {
+      "code": "eslint-plugin-react-hooks(rules-of-hooks)",
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 5,
+            "line": 10,
+          },
+        },
+      ],
+      "message": "React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render.",
+      "severity": "error",
+    },
+    {
+      "code": "eslint-plugin-react-hooks(rules-of-hooks)",
+      "help": undefined,
+      "labels": [
+        {
+          "span": {
+            "column": 3,
+            "line": 15,
+          },
+        },
+        {
+          "span": {
+            "column": 10,
+            "line": 14,
+          },
+        },
+      ],
+      "message": "React Hook "useEffect" is called in function "notAHook" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".",
+      "severity": "error",
+    },
+  ],
+  "warningCount": 1,
+}
+`;
