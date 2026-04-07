@@ -10,6 +10,7 @@
 'use strict';
 
 import { extract } from './dependencyExtractor';
+import { unwrapESModuleDefault } from '../../lib/unwrapESModule';
 import type {
   DependencyExtractor,
   MetadataWorker,
@@ -22,7 +23,7 @@ export default class DependencyExtractorWorker implements MetadataWorker {
 
   constructor({ dependencyExtractor }: Readonly<{ dependencyExtractor: string | null }>) {
     if (dependencyExtractor != null) {
-      this.#dependencyExtractor = require(dependencyExtractor);
+      this.#dependencyExtractor = unwrapESModuleDefault(require(dependencyExtractor));
     }
   }
 

@@ -8,6 +8,7 @@
 import { createHash } from 'crypto';
 import fs from 'graceful-fs';
 
+import { unwrapESModuleDefault } from './lib/unwrapESModule';
 import type { MetadataWorker, WorkerMessage, WorkerMetadata, WorkerSetupArgs } from './types';
 
 function sha1hex(content: string | Buffer): string {
@@ -22,7 +23,7 @@ export class Worker {
 
   constructor({ plugins = [] }: WorkerSetupArgs) {
     this.#plugins = plugins.map(({ modulePath, setupArgs }) => {
-      const PluginWorker = require(modulePath);
+      const PluginWorker = unwrapESModuleDefault(require(modulePath));
       return new PluginWorker(setupArgs);
     });
   }
