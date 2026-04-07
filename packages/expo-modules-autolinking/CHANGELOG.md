@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active.
+- [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active. ([#44554](https://github.com/expo/expo/pull/44554) by [@chrfalch](https://github.com/chrfalch))
 - Fix regression that caused `pod install` to fail with `no implicit conversion of nil into String` due to an off-by-one in the depth limit check. ([#43731](https://github.com/expo/expo/pull/43731) by [@zoontek](https://github.com/zoontek))
 - Stop dependency resolution at depth limit and increase max depth limit to 9 ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
 - Sort on unresolved path and load `version` for duplicate dependencies ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
