@@ -36,8 +36,11 @@
     "build"
   ],
   "devDependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
-    "json-schema-to-typescript": "^15.0.0"
+    "json-schema-to-typescript": "^15.0.0",
+    "semver": "^7.7.4"
   },
   "publishConfig": {
     "access": "public"

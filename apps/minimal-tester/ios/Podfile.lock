@@ -3118,10 +3118,10 @@ SPEC CHECKSUMS:
   EXConstants: ed3e09607493bb717a7932f0e6786846169692a2
   EXJSONUtils: 475f1af3d20fbd99268694df81d096817092aa89
   EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: 18407eebd4439c75e15e2e3459a1089b6f682daf
+  Expo: 3800142b9a533102b0c9703e58c9e547b9ba74f5
   expo-dev-client: 929c5e873b07c54035ab42aa165f095f74478d6c
   expo-dev-launcher: beec62251a0fb1770d2c9537bacc645f00ab6b8d
-  expo-dev-menu: 7ef610a0676655fbb220952b3018e3ef833a75f4
+  expo-dev-menu: ed1afb93264b206819cd58891acd748e9a05afe6
   expo-dev-menu-interface: 58beb5e831034c20466d8c26ba679b0aa385abd2
   ExpoAppleAuthentication: c8096cd35e4e4f88aec34fcbfcd9deae7cea04d3
   ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27

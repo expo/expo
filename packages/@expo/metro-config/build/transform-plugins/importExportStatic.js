@@ -388,11 +388,13 @@ function importExportPlugin({ types: t, }) {
                         if (getArray(state.importNamedFrom, module.value).length === 1) {
                             // import { one as two } from 'module' -> var two = require('module').one;
                             const importNamed = getArray(state.importNamedFrom, module.value)[0];
-                            imports.push((0, helpers_1.withLocation)(requireNameTemplate({
-                                moduleStr: t.cloneNode(resolved),
-                                nameId: t.identifier(importNamed.name),
-                                asId: t.identifier(importNamed.as),
-                            }), getArray(state.importNamedFrom, module.value)[0].loc));
+                            if (importNamed != null) {
+                                imports.push((0, helpers_1.withLocation)(requireNameTemplate({
+                                    moduleStr: t.cloneNode(resolved),
+                                    nameId: t.identifier(importNamed.name),
+                                    asId: t.identifier(importNamed.as),
+                                }), getArray(state.importNamedFrom, module.value)[0]?.loc));
+                            }
                         }
                         else {
                             // import { one as two, three as four } from 'module'

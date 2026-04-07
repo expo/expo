@@ -190,10 +190,9 @@ export async function runOnDevice({
       onProgress
     );
 
-    const {
-      // TODO(EvanBacon): This can be undefined when querying App Clips.
-      [bundleId]: appInfo,
-    } = await installer.lookupApp([bundleId]);
+    // NOTE(EvanBacon): This can be undefined when querying App Clips.
+    const lookupResult = await installer.lookupApp([bundleId]);
+    const appInfo = lookupResult?.[bundleId];
 
     if (appInfo) {
       // launch fails with EBusy or ENotFound if you try to launch immediately after install

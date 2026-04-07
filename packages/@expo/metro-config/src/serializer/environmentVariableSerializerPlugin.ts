@@ -19,7 +19,7 @@ const debug = require('debug')('expo:metro-config:serializer:env-var') as typeof
 
 export function getTransformEnvironment(url: string): string | null {
   const match = url.match(/[&?]transform\.environment=([^&]+)/);
-  return match ? match[1] : null;
+  return match?.[1] ?? null;
 }
 
 function getAllExpoPublicEnvVars(
@@ -62,7 +62,7 @@ export function serverPreludeSerializerPlugin(
     if (prelude) {
       debug('Stripping environment variable polyfill in server environment.');
       // TODO: The module output type should be upcast
-      const data = prelude.output[0].data as any;
+      const data = prelude.output[0]?.data as any;
       data.code = data.code
         .replace(/process=this\.process\|\|{},/, '')
         .replace(
@@ -102,7 +102,7 @@ export function environmentVariableSerializerPlugin(
     debug('Injecting environment variables in virtual module.');
 
     // TODO: The module type should be upcast
-    const data = prelude.output[0].data as any;
+    const data = prelude.output[0]?.data as any;
     // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
     data.code = code;
     return [entryPoint, preModules, graph, options];

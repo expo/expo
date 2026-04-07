@@ -102,10 +102,10 @@ export async function getOptionalDevClientSchemeAsync(
 
   // Allow for only one native project to exist.
   if (!hasIos) {
-    return { scheme: android[0], resolution: 'android' };
+    return { scheme: android[0]!, resolution: 'android' };
   } else if (!hasAndroid) {
-    return { scheme: ios[0], resolution: 'ios' };
+    return { scheme: ios[0]!, resolution: 'ios' };
   } else {
-    return { scheme: intersecting(ios, android)[0], resolution: 'shared' };
+    return { scheme: intersecting(ios, android)[0]!, resolution: 'shared' };
   }
 }

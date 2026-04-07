@@ -45,8 +45,10 @@ export class FileSystemFile {
   write(content: string | TypedArray): any {}
   delete(): any {}
   create(options: CreateOptions | undefined): any {}
-  copy(to: FileSystemPath): any {}
-  move(to: FileSystemPath): any {}
+  async copy(to: FileSystemPath): Promise<any> {}
+  copySync(to: FileSystemPath): any {}
+  async move(to: FileSystemPath): Promise<any> {}
+  moveSync(to: FileSystemPath): any {}
   rename(newName: string): any {}
   async text(): Promise<any> {}
   async base64(): Promise<any> {}
@@ -69,8 +71,10 @@ export class FileSystemDirectory {
   validatePath(): any {}
   delete(): any {}
   create(options: CreateOptions | undefined): any {}
-  copy(to: FileSystemPath): any {}
-  move(to: FileSystemPath): any {}
+  async copy(to: FileSystemPath): Promise<any> {}
+  copySync(to: FileSystemPath): any {}
+  async move(to: FileSystemPath): Promise<any> {}
+  moveSync(to: FileSystemPath): any {}
   rename(newName: string): any {}
   listAsRecords(): any {}
   createFile(name: string, mimeType: string | null): any {}

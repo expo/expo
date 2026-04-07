@@ -181,7 +181,7 @@ async function generateImagesAssetsAsync({
     [darkItem, DARK_PNG_FILENAME],
     [tabletItem, TABLET_PNG_FILENAME],
     [darkTabletItem, DARK_TABLET_PNG_FILENAME],
-  ].filter(([item]) => !!item) as unknown as [string, string];
+  ].filter((tuple): tuple is [string, string] => tuple[0] != null);
 
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }

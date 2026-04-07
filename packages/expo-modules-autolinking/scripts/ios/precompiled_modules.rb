@@ -158,19 +158,45 @@ module Expo
       # Cache management
       # ──────────────────────────────────────────────────────────────────────
 
-      # Clears the CocoaPods external download cache for precompiled pods.
-      # Prevents stale cache entries (from previous failed installs) from persisting.
+      # Clears CocoaPods caches for precompiled pods to ensure specs are re-fetched
+      # and patched on every `pod install`. Without this, incremental installs reuse
+      # stale unpatched specs from `Pods/Local Podspecs/` and the external download
+      # cache, causing precompiled pods to fall back to source builds.
       def clear_cocoapods_cache
         return unless enabled?
 
         cache_root = File.join(Dir.home, 'Library', 'Caches', 'CocoaPods', 'Pods', 'External')
-        return unless File.directory?(cache_root)
+        pods_root = Pod::Config.instance.sandbox_root rescue nil
+        local_podspecs_dir = pods_root ? File.join(pods_root, 'Local Podspecs') : nil
 
         pod_lookup_map.each_key do |pod_name|
           next unless has_prebuilt_xcframework?(pod_name)
 
-          cache_dir = File.join(cache_root, pod_name)
-          FileUtils.rm_rf(cache_dir) if File.directory?(cache_dir)
+          # Clear the external download cache
+          if cache_root && File.directory?(cache_root)
+            cache_dir = File.join(cache_root, pod_name)
+            FileUtils.rm_rf(cache_dir) if File.directory?(cache_dir)
+          end
+
+          # Clear cached podspecs so store_podspec is called again on the next install,
+          # allowing the spec to be patched for precompiled xcframework usage.
+          if local_podspecs_dir && File.directory?(local_podspecs_dir)
+            cached_spec = File.join(local_podspecs_dir, "#{pod_name}.podspec.json")
+            FileUtils.rm_f(cached_spec) if File.exist?(cached_spec)
+          end
+
+          # Clear the pod's installed directory so CocoaPods re-downloads from the
+          # patched spec's source tarball instead of reusing stale source-build artifacts.
+          if pods_root
+            pod_dir = File.join(pods_root, pod_name)
+            if File.directory?(pod_dir)
+              product_name = pod_lookup_map[pod_name]&.dig(:product_name) || pod_name
+              xcfw_info = File.join(pod_dir, "#{product_name}.xcframework", 'Info.plist')
+              unless File.exist?(xcfw_info)
+                FileUtils.rm_rf(pod_dir)
+              end
+            end
+          end
         end
       end
 

@@ -20,6 +20,8 @@ class AudioPlaybackServiceConnection(
   var playbackServiceBinder: AudioPlaybackServiceBinder? = null
     private set
 
+  var playsInSilentMode: Boolean = true
+
   @Volatile
   private var isReleased = false
 
@@ -65,6 +67,7 @@ class AudioPlaybackServiceConnection(
 
     playbackServiceBinder = serviceBinder
     serviceBinder.service.appContext = appContext
+    serviceBinder.service.playsInSilentMode = playsInSilentMode
 
     if (player.isActiveForLockScreen) {
       serviceBinder.service.setPlayerOptions(player, player.metadata, player.lockScreenOptions)

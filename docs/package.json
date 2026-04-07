@@ -11,6 +11,7 @@
     "export-prep": "node ./scripts/export-prep.js",
     "export-server": "wrangler pages dev --port 8000",
     "test:worker": "node --experimental-strip-types scripts/test-worker.ts",
+    "format": "oxfmt --write .",
     "lint": "NODE_OPTIONS='--no-warnings' node scripts/lint.js --max-warnings 0",
     "lint-links": "remark -u validate-links ./pages",
     "lint-prose": "yarn vale --config='.vale.ini' --glob='*.{md,mdx}' .",
@@ -105,21 +106,23 @@
     "acorn": "^8.16.0",
     "cheerio": "^1.2.0",
     "eslint": "^9.39.2",
-    "eslint-config-next": "^16.1.6",
     "eslint-config-universe": "^15.0.3",
-    "eslint-plugin-better-tailwindcss": "^4.0.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-better-tailwindcss": "^4.3.2",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-mdx": "^3.6.2",
-    "eslint-plugin-testing-library": "^7.13.4",
+    "eslint-plugin-oxlint": "^1.57.0",
+    "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-unicorn": "^62.0.0",
     "fs-extra": "^11.3.4",
     "http-server": "^14.1.1",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "next-router-mock": "^0.9.13",
+    "oxfmt": "0.43.0",
+    "oxlint": "^1.58.0",
+    "oxlint-tsgolint": "^0.19.0",
     "postcss": "^8.5.6",
-    "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.7.2",
     "react-test-renderer": "^19.2.4",
     "rehype-slug": "^6.0.0",
     "remark-cli": "^12.0.1",
@@ -135,20 +138,6 @@
     "unist-util-visit": "^5.1.0",
     "user-agent-data-types": "^0.4.2",
     "wrangler": "^4.63.0"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "tabWidth": 2,
-    "singleQuote": true,
-    "bracketSameLine": true,
-    "trailingComma": "es5",
-    "arrowParens": "avoid",
-    "plugins": [
-      "prettier-plugin-tailwindcss"
-    ],
-    "tailwindFunctions": [
-      "mergeClasses"
-    ]
   },
   "browserslist": [
     ">0.3%",

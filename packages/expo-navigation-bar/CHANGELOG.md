@@ -14,8 +14,12 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `setStyle` on Android < Q by setting an explicit navigation bar color for proper button contrast. ([#44477](https://github.com/expo/expo/pull/44477) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
+- Replaced `expo_navigation_bar_visibility` string resource with `expoNavigationBarHidden` boolean theme attribute. ([#44536](https://github.com/expo/expo/pull/44536) by [@zoontek](https://github.com/zoontek))
+- Removed `androidNavigationBar` config overwrite (for Expo Go sync). ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
 - Deprecated `setVisibilityAsync`, `getVisibilityAsync`, `useVisibility`, `addVisibilityListener`, and top-level `setStyle` in favor of the `NavigationBar` component and its static methods. ([#44327](https://github.com/expo/expo/pull/44327) by [@zoontek](https://github.com/zoontek))
 - Removed `react-native-is-edge-to-edge` dependency. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
 - Deprecated `barStyle` and `visibility` config plugin properties in favor of `style` and `hidden`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))

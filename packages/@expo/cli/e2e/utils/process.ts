@@ -29,7 +29,7 @@ export async function executeAsync(
   const { npm_config_minimum_release_age, ...processEnv } = process.env;
   const [bin, ...flags] = command ? command.concat(commandOrFlags) : commandOrFlags;
 
-  const child = execa(bin, flags, {
+  const child = execa(bin!, flags, {
     ...spawnOptions,
     cwd,
     env: { ...processEnv, ...env },

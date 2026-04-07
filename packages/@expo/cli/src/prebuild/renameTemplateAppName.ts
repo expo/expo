@@ -97,7 +97,9 @@ export async function getTemplateFilesToRenameAsync(
   let config = userConfig ?? defaultRenameConfig;
 
   // Strip comments, trim whitespace, and remove empty lines.
-  config = config.map((line) => line.split(/(?<!\\)#/, 2)[0].trim()).filter((line) => line !== '');
+  config = config
+    .map((line) => line.split(/(?<!\\)#/, 3)[0]?.trim())
+    .filter((line): line is string => !!line);
 
   return await glob(config, {
     cwd,

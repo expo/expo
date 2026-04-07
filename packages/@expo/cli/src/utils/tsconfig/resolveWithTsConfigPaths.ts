@@ -36,7 +36,8 @@ export function resolveWithTsConfigPaths(
 
   const matched = matchTsConfigPathAlias(aliases, request.moduleName);
   if (matched) {
-    for (const alias of config.paths[matched.text]) {
+    const pathsOfMatch = config.paths[matched.text] ?? [];
+    for (const alias of pathsOfMatch) {
       const nextModuleName = matched.star ? alias.replace('*', matched.star) : alias;
 
       if (/\.d\.ts$/.test(nextModuleName)) continue;

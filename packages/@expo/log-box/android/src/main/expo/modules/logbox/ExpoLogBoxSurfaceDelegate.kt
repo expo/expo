@@ -6,11 +6,11 @@ import android.widget.FrameLayout
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.SurfaceDelegate
+import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
@@ -103,7 +103,7 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
       onResult: (String) -> Unit,
       onFailure: (Exception) -> Unit
     ->
-    val client = OkHttpClient()
+    val client = OkHttpClientProvider.getOkHttpClient()
 
     val requestBody = if (method.uppercase() != "GET") {
       body.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())

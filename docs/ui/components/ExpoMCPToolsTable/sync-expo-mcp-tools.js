@@ -123,7 +123,7 @@ async function fetchServerTools() {
     .map(tool => ({
       name: tool.name,
       description: ensureTrailingPeriod(tool.description),
-      examplePrompt: SERVER_EXAMPLE_PROMPTS[tool.name] || '',
+      examplePrompt: SERVER_EXAMPLE_PROMPTS[tool.name] ?? '',
       availability: 'Server',
     }));
 }
@@ -184,7 +184,7 @@ async function main() {
     );
     const localTools = localToolResults.flat().map(tool => ({
       ...tool,
-      examplePrompt: LOCAL_EXAMPLE_PROMPTS[tool.name] || '',
+      examplePrompt: LOCAL_EXAMPLE_PROMPTS[tool.name] ?? '',
       availability: 'Local',
       ...(LOCAL_REQUIREMENTS[tool.name] && { requirements: LOCAL_REQUIREMENTS[tool.name] }),
     }));

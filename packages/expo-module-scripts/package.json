@@ -91,7 +91,7 @@
     "typescript": "^5.9.2"
   },
   "devDependencies": {
-    "@expo/metro": "55.0.0-rc.0",
+    "@expo/metro": "56.0.0-rc.0",
     "@babel/core": "^7.26.0"
   }
 }

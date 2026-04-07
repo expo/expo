@@ -97,7 +97,7 @@ export const SnackInline = ({
               )}
             />
           )}
-          <CopyAction text={cleanCopyValue(value)} />
+          <CopyAction text={cleanCopyValue(value, context.version)} />
           <SnippetAction
             disabled={!isReady}
             rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}

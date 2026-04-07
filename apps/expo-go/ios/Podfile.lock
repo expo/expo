@@ -55,6 +55,7 @@ PODS:
     - boost
     - DoubleConversion
     - ExpoModulesCore
+    - ExpoModulesTestCore
     - fast_float
     - fmt
     - glog
@@ -4564,7 +4565,7 @@ SPEC CHECKSUMS:
   EXConstants: ed3e09607493bb717a7932f0e6786846169692a2
   EXJSONUtils: 475f1af3d20fbd99268694df81d096817092aa89
   EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: 19ae43e70ca3814d8efb9f36e2789b29cfa022be
+  Expo: afa1e57c45ee9b2b4d2b048df78f1de8849eb507
   ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27
   ExpoAudio: 40c883c60ed3bb17ecb3744a00732fb47029535b
   ExpoBackgroundFetch: ee315c8d1a54a3f358fc0cedb68e808e95935c57

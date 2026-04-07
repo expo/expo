@@ -66,7 +66,7 @@ export const mdComponents: Components = {
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE className="inline! py-0 break-words">{children}</CODE>
+      <CODE className="inline! py-0 wrap-break-word">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,

@@ -84,7 +84,11 @@ export function convertHeaders(requestHeaders: http.IncomingMessage['headers']):
 function convertRawHeaders(requestHeaders: readonly string[]): Headers {
   const headers = new Headers();
   for (let index = 0; index < requestHeaders.length; index += 2) {
-    headers.append(requestHeaders[index], requestHeaders[index + 1]);
+    const name = requestHeaders[index];
+    const value = requestHeaders[index + 1];
+    if (name != null && value != null) {
+      headers.append(name, value);
+    }
   }
   return headers;
 }

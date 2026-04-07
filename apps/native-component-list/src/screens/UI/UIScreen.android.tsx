@@ -11,6 +11,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Badge component',
+    route: 'ui/badge',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BadgeScreen'));
+    },
+  },
+  {
     name: 'AlertDialog component',
     route: 'ui/alert-dialog',
     options: {},
@@ -272,6 +280,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./SurfaceScreen'));
+    },
+  },
+  {
+    name: 'Tooltip component',
+    route: 'ui/tooltip',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TooltipScreen'));
     },
   },
 ];
