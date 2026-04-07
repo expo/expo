@@ -361,3 +361,8 @@
 /versions/latest/sdk/secure-store /versions/latest/sdk/securestore 301
 /versions/latest/sdk/av /versions/latest/sdk/audio 301
 /versions/latest/sdk/ui/jetpack-compose/floatingactionbutton /versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton 301
+
+# TextInput renamed to TextField
+/versions/latest/sdk/ui/jetpack-compose/textinput /versions/latest/sdk/ui/jetpack-compose/textfield 301
+/versions/unversioned/sdk/ui/jetpack-compose/textinput /versions/unversioned/sdk/ui/jetpack-compose/textfield 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/textinput /versions/v55.0.0/sdk/ui/jetpack-compose/textfield 301
