@@ -608,6 +608,24 @@ export const defaultScrollAnchorForRole = (
 ) => createModifier('defaultScrollAnchorForRole', { anchor, role });
 
 /**
+ * Sets the scroll snapping behavior for scrollable views.
+ * Use with `scrollTargetLayout` on the content container.
+ * @param behavior - `'paging'` for container-aligned snapping, `'viewAligned'` for view-aligned snapping.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetbehavior(_:)).
+ */
+export const scrollTargetBehavior = (behavior: 'paging' | 'viewAligned') =>
+  createModifier('scrollTargetBehavior', { behavior });
+
+/**
+ * Configures a layout container as a scroll target layout for view-aligned snapping.
+ * Apply to `VStack` or `HStack` inside a `ScrollView`.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetlayout(isenabled:)).
+ */
+export const scrollTargetLayout = () => createModifier('scrollTargetLayout', {});
+
+/**
  * Disables the move action for a view in a list.
  * Apply to items within a `ForEach` to prevent them from being moved.
  * @param disabled - Whether moving should be disabled
@@ -1053,6 +1071,16 @@ export const onSubmit = (handler: () => void) =>
   createModifierWithEventListener('onSubmit', handler);
 
 /**
+ * Sets how often the shift key in the keyboard is automatically enabled.
+ * @param autocapitalization - The autocapitalization behavior.
+ * @platform ios 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textinputautocapitalization(_:)).
+ */
+export const textInputAutocapitalization = (
+  autocapitalization: 'never' | 'words' | 'sentences' | 'characters'
+) => createModifier('textInputAutocapitalization', { autocapitalization });
+
+/**
  * Sets the content transition type for a view.
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
@@ -1183,6 +1211,8 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
+  | ReturnType<typeof scrollTargetBehavior>
+  | ReturnType<typeof scrollTargetLayout>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1212,6 +1242,7 @@ export type BuiltInModifier =
   | ReturnType<typeof keyboardType>
   | ReturnType<typeof autocorrectionDisabled>
   | ReturnType<typeof onSubmit>
+  | ReturnType<typeof textInputAutocapitalization>
   | ReturnType<typeof datePickerStyle>
   | ReturnType<typeof progressViewStyle>
   | ReturnType<typeof gaugeStyle>

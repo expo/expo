@@ -59,3 +59,11 @@ fun findChildSlotView(viewGroup: ViewGroup, slotName: String): SlotView? {
   }
   return null
 }
+
+inline fun <reified T> findChildOfType(viewGroup: ViewGroup): T? {
+  for (index in 0..<viewGroup.size) {
+    val child = viewGroup.getChildAt(index)
+    if (child is T) return child
+  }
+  return null
+}
