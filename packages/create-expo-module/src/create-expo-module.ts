@@ -172,6 +172,12 @@ async function main(target: string | undefined, options: CommandOptions) {
       await generateBarrelFileAsync(targetDir, data as LocalSubstitutionData);
       step.succeed('Generated barrel file (index.ts)');
     });
+  } else if (!options.local && options.barrel) {
+    console.warn(
+      chalk.yellow(
+        'Warning: The --barrel flag only applies to local modules (--local). It will be ignored.'
+      )
+    );
   }
   if (!options.local) {
     await newStep('Installing module dependencies', async (step) => {
@@ -229,6 +235,7 @@ async function main(target: string | undefined, options: CommandOptions) {
       slug,
       data.project.moduleName,
       data.project.viewName,
+      data.project.name,
       options.barrel
     );
   } else {
@@ -699,7 +706,7 @@ async function generateBarrelFileAsync(
 ): Promise<void> {
   const { moduleName, viewName, name } = data.project;
   const content = [
-    `// Reexport the native module. On web, it will be resolved to ${moduleName}.web.ts`,
+    `// Re-export the native module. On web, it will be resolved to ${moduleName}.web.ts`,
     `// and on native platforms to ${moduleName}.ts`,
     `export { default } from './src/${moduleName}';`,
     `export { default as ${viewName} } from './src/${viewName}';`,
@@ -738,15 +745,29 @@ function printFurtherLocalInstructions(
   slug: string,
   moduleName: string,
   viewName: string,
+  name: string,
   barrel: boolean
 ) {
-  const importMessage = barrel
-    ? `${chalk.gray.italic(`import ${moduleName}, { ${viewName} } from './modules/${slug}';`)}`
-    : `${chalk.gray.italic(`import ${moduleName} from './modules/${slug}/src/${moduleName}';`)}`;
   console.log();
   console.log(`You can now import this module inside your application.`);
   console.log(`For example, you can add these lines to your App.tsx or App.js file:`);
-  console.log(importMessage);
+  if (barrel) {
+    console.log(
+      chalk.gray.italic(`import ${moduleName}, { ${viewName} } from './modules/${slug}';`)
+    );
+  } else {
+    console.log(
+      chalk.gray.italic(`import ${moduleName} from './modules/${slug}/src/${moduleName}';`)
+    );
+    console.log(
+      chalk.gray.italic(
+        `import { default as ${viewName} } from './modules/${slug}/src/${viewName}';`
+      )
+    );
+    console.log(
+      chalk.gray.italic(`import type { } from './modules/${slug}/src/${name}.types';`)
+    );
+  }
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
