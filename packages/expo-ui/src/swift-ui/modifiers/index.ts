@@ -853,17 +853,21 @@ export const lineSpacing = (value: number) => createModifier('lineSpacing', { va
 /**
  * Sets the line limit for text in the view.
  *
- * Three variants matching SwiftUI:
+ * Four variants matching SwiftUI:
+ * - `lineLimit()` — no line limit (unlimited lines)
  * - `lineLimit(5)` — max 5 lines
  * - `lineLimit(5, { reservesSpace: true })` — max 5 lines, reserves height even when empty (iOS 16+, tvOS 16+)
  * - `lineLimit({ min: 3, max: 8 })` — range of 3 to 8 lines (iOS 16+, tvOS 16+)
  *
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linelimit(_:)).
  */
-export const lineLimit = (
+export function lineLimit(): ModifierConfig;
+export function lineLimit(limit: number, options?: { reservesSpace?: boolean }): ModifierConfig;
+export function lineLimit(range: { min: number; max: number }): ModifierConfig;
+export function lineLimit(
   limitOrRange?: number | { min: number; max: number },
   options?: { reservesSpace?: boolean }
-) => {
+): ModifierConfig {
   if (typeof limitOrRange === 'object' && limitOrRange !== null) {
     return createModifier('lineLimit', { min: limitOrRange.min, max: limitOrRange.max });
   }
@@ -871,7 +875,7 @@ export const lineLimit = (
     limit: limitOrRange,
     reservesSpace: options?.reservesSpace,
   });
-};
+}
 /**
  * Sets the header prominence for this view.
  * @param prominence - The prominence to apply.
