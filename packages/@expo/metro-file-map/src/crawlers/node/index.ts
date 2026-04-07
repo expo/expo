@@ -7,7 +7,7 @@
  * @format
  */
 
-import * as fs from 'graceful-fs';
+import * as fs from 'fs';
 import * as path from 'path';
 
 import { RootPathUtils } from '../../lib/RootPathUtils';
@@ -27,8 +27,14 @@ function find(
   const result: FileData = new Map();
   let activeCalls = 0;
   const pathUtils = new RootPathUtils(rootDir);
+  const visited = new Set<string>();
 
   function search(directory: string): void {
+    if (visited.has(directory)) {
+      return;
+    } else {
+      visited.add(directory);
+    }
     activeCalls++;
     fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
       activeCalls--;
