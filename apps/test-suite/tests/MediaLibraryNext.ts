@@ -274,8 +274,8 @@ export async function test(t) {
     });
   });
 
-  t.describe('Remove assets from album', () => {
-    if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios') {
+    t.describe('Remove assets from album', () => {
       t.it('removes an asset from an album without deleting it from the library', async () => {
         const albumName = createAlbumName('remove asset');
         const album = await Album.create(albumName, [jpgFile.localUri], true);
@@ -292,9 +292,7 @@ export async function test(t) {
         t.expect(allAssets.find((a) => a.id === assetToRemove.id)).not.toBeUndefined();
         assetsContainer.push(assetToRemove);
       });
-    }
 
-    if (Platform.OS === 'ios') {
       t.it('removes only specified assets, leaving others in the album', async () => {
         const albumName = createAlbumName('remove partial');
         const album = await Album.create(albumName, [jpgFile.localUri], true);
@@ -313,8 +311,8 @@ export async function test(t) {
         t.expect(assetsAfter.length).toBe(1);
         t.expect(assetsAfter.find((a) => a.id === newAsset.id)).toBeUndefined();
       });
-    }
-  });
+    });
+  }
 
   t.describe('Image asset properties', () => {
     let asset: Asset;
