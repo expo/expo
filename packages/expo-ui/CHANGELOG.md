@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [android] Match `TextField` API to native Compose: renamed `TextInput` to `TextField`/`OutlinedTextField`, replaced individual keyboard props with `keyboardOptions`/`keyboardActions` matching `KeyboardOptions`/`KeyboardActions`, added `enabled`, `readOnly`, `isError`, `singleLine`, `maxLines`, `minLines`, `shape`, `colors`. Added composable slots: `placeholder`, `leadingIcon`, `trailingIcon`, `prefix`, `suffix`, `supportingText`. Added imperative `focus()`/`blur()` and `onFocusChanged` event. ([#44545](https://github.com/expo/expo/pull/44545) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
