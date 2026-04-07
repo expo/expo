@@ -933,6 +933,13 @@ export async function withMetroMultiPlatformAsync(
   const metroRequirePolyfill = require.resolve('@expo/cli/build/metro-require/require');
   asWritable(metroDefaults).moduleSystem = metroRequirePolyfill;
 
+  // NOTE(@kitten): This is experimental and temporary!
+  // We can skip most crawling if we never intend to watch for any changes
+  if (isExporting) {
+    watchFolders.length = 0;
+    watchFolders.push(projectRoot);
+  }
+
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
