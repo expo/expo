@@ -36,6 +36,11 @@ function find(
   const pathUtils = new RootPathUtils(rootDir);
   const visited = new Set<string>();
 
+  const exts = extensions.reduce((acc, ext) => {
+    acc[ext] = true;
+    return acc;
+  }, {} as Record<string, true | undefined>);
+
   function search(directory: string): void {
     if (visited.has(directory)) {
       return;
@@ -50,20 +55,15 @@ function find(
           `Error "${(err as any).code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
         );
       } else {
-        entries.forEach((entry: fs.Dirent) => {
+        for (let idx = 0; idx < entries.length; idx++) {
+          const entry = entries[idx]!;
           const file = path.join(directory, entry.name.toString());
 
-          if (ignore(file)) {
-            return;
-          }
-
-          if (entry.isSymbolicLink() && !includeSymlinks) {
-            return;
-          }
-
-          if (entry.isDirectory()) {
+          if (ignore(file) || (!includeSymlinks && entry.isSymbolicLink())) {
+            continue;
+          } else if (entry.isDirectory()) {
             search(file);
-            return;
+            continue;
           }
 
           activeCalls++;
@@ -72,8 +72,8 @@ function find(
             activeCalls--;
 
             if (!err && stat) {
-              const ext = path.extname(file).substr(1);
-              if (stat.isSymbolicLink() || extensions.includes(ext)) {
+              const ext = path.extname(file).slice(1);
+              if (stat.isSymbolicLink() || exts[ext]) {
                 result.set(pathUtils.absoluteToNormal(file), [
                   stat.mtime.getTime(),
                   stat.size,
@@ -89,7 +89,7 @@ function find(
               callback(result);
             }
           });
-        });
+        }
       }
 
       if (activeCalls === 0) {
@@ -119,6 +119,11 @@ function findWithoutStat(
   const pathUtils = new RootPathUtils(rootDir);
   const visited: Set<string> = new Set();
 
+  const exts = extensions.reduce((acc, ext) => {
+    acc[ext] = true;
+    return acc;
+  }, {} as Record<string, true | undefined>);
+
   function search(directory: string, dirNormal: string): void {
     if (visited.has(directory)) {
       return;
@@ -132,16 +137,13 @@ function findWithoutStat(
           `Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`,
         );
       } else {
-        entries.forEach((entry: fs.Dirent) => {
+        for (let idx = 0; idx < entries.length; idx++) {
+          const entry = entries[idx]!;
           const name = entry.name.toString();
           const file = directory + path.sep + name;
 
-          if (ignore(file)) {
-            return;
-          }
-
-          if (entry.isSymbolicLink() && !includeSymlinks) {
-            return;
+          if (ignore(file) || (!includeSymlinks && entry.isSymbolicLink())) {
+            continue;
           }
 
           // Build the normal path incrementally — avoids calling
@@ -151,12 +153,12 @@ function findWithoutStat(
 
           if (entry.isDirectory()) {
             search(file, fileNormal);
-            return;
+            continue;
           }
 
           const isSymlink = entry.isSymbolicLink();
-          const ext = path.extname(name).substr(1);
-          if (isSymlink || extensions.includes(ext)) {
+          const ext = path.extname(name).slice(1);
+          if (isSymlink || exts[ext]) {
             result.set(fileNormal, [
               null, // deferred to getDifference
               0, // unknown
@@ -166,7 +168,7 @@ function findWithoutStat(
               null,
             ]);
           }
-        });
+        }
       }
 
       if (activeCalls === 0) {
