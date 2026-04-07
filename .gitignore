@@ -4,6 +4,9 @@ __generated__
 web-build
 bare-apps
 
+# Claude Code
+.claude/settings.local.json
+
 # macOS
 .DS_Store
 
