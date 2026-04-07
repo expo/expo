@@ -7,18 +7,12 @@
  * @format
  */
 
-import type {
-  Console,
-  CrawlerOptions,
-  CrawlResult,
-  FileData,
-  IgnoreMatcher,
-} from '../../types';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import H from '../../constants';
 import { RootPathUtils } from '../../lib/RootPathUtils';
-import * as fs from 'fs';
-import * as path from 'path';
+import type { Console, CrawlerOptions, CrawlResult, FileData, IgnoreMatcher } from '../../types';
 
 type Callback = (result: FileData) => void;
 
@@ -35,10 +29,13 @@ function find(
   let activeCalls = 0;
   const pathUtils = new RootPathUtils(rootDir);
 
-  const exts = extensions.reduce((acc, ext) => {
-    acc[ext] = true;
-    return acc;
-  }, {} as Record<string, true | undefined>);
+  const exts = extensions.reduce(
+    (acc, ext) => {
+      acc[ext] = true;
+      return acc;
+    },
+    {} as Record<string, true | undefined>
+  );
 
   function search(directory: string): void {
     activeCalls++;
@@ -100,23 +97,26 @@ function find(
 }
 
 function findWithoutStat(
-  roots: ReadonlyArray<string>,
-  extensions: ReadonlyArray<string>,
+  roots: readonly string[],
+  extensions: readonly string[],
   ignore: IgnoreMatcher,
   includeSymlinks: boolean,
   rootDir: string,
   console: Console,
-  callback: Callback,
+  callback: Callback
 ): void {
   const result: FileData = new Map();
   let activeCalls = 0;
   const pathUtils = new RootPathUtils(rootDir);
   const visited: Set<string> = new Set();
 
-  const exts = extensions.reduce((acc, ext) => {
-    acc[ext] = true;
-    return acc;
-  }, {} as Record<string, true | undefined>);
+  const exts = extensions.reduce(
+    (acc, ext) => {
+      acc[ext] = true;
+      return acc;
+    },
+    {} as Record<string, true | undefined>
+  );
 
   function search(directory: string, dirNormal: string): void {
     if (visited.has(directory)) {
@@ -124,11 +124,11 @@ function findWithoutStat(
     }
     visited.add(directory);
     activeCalls++;
-    fs.readdir(directory, {withFileTypes: true}, (err, entries) => {
+    fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
       activeCalls--;
       if (err) {
         console.warn(
-          `Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`,
+          `Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
         );
       } else {
         for (let idx = 0; idx < entries.length; idx++) {
@@ -142,8 +142,7 @@ function findWithoutStat(
 
           // Build the normal path incrementally — avoids calling
           // absoluteToNormal per file.
-          const fileNormal =
-            dirNormal === '' ? name : dirNormal + path.sep + name;
+          const fileNormal = dirNormal === '' ? name : dirNormal + path.sep + name;
 
           if (entry.isDirectory()) {
             search(file, fileNormal);
@@ -172,7 +171,7 @@ function findWithoutStat(
   }
 
   if (roots.length > 0) {
-    roots.forEach(root => search(root, pathUtils.absoluteToNormal(root)));
+    roots.forEach((root) => search(root, pathUtils.absoluteToNormal(root)));
   } else {
     callback(result);
   }
@@ -181,10 +180,10 @@ function findWithoutStat(
 async function asyncStatKnownFiles(
   fileData: FileData,
   previousFileSystem: CrawlerOptions['previousState']['fileSystem'],
-  rootDir: string,
+  rootDir: string
 ): Promise<void> {
   const pathUtils = new RootPathUtils(rootDir);
-  const promises: Array<Promise<void>> = [];
+  const promises: Promise<void>[] = [];
 
   const externalPrefix = '..' + path.sep;
   for (const [normalPath, metadata] of fileData) {
@@ -210,8 +209,8 @@ async function asyncStatKnownFiles(
         },
         () => {
           fileData.delete(normalPath);
-        },
-      ),
+        }
+      )
     );
   }
 
@@ -239,7 +238,7 @@ export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlR
   const crawlFn = skipStat ? findWithoutStat : find;
 
   // (1): Discover files
-  const fileData = await new Promise<FileData>(resolve => {
+  const fileData = await new Promise<FileData>((resolve) => {
     crawlFn(roots, extensions, ignore, includeSymlinks, rootDir, console, resolve);
   });
 

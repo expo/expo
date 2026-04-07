@@ -9,15 +9,14 @@
 
 'use strict';
 
+import { extract } from './dependencyExtractor';
+import { unwrapESModuleDefault } from '../../lib/unwrapESModule';
 import type {
   DependencyExtractor,
   MetadataWorker,
   V8Serializable,
   WorkerMessage,
 } from '../../types';
-
-import { unwrapESModuleDefault } from '../../lib/unwrapESModule';
-import { extract } from './dependencyExtractor';
 
 export default class DependencyExtractorWorker implements MetadataWorker {
   readonly #dependencyExtractor: DependencyExtractor | undefined | null;
@@ -43,4 +42,4 @@ export default class DependencyExtractorWorker implements MetadataWorker {
     // Return as array (PerFileData type)
     return Array.from(dependencies);
   }
-};
+}

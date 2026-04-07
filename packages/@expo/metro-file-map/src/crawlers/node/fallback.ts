@@ -1,20 +1,16 @@
-import type {
-  FallbackFilesystem,
-  FileMetadata,
-  IgnoreMatcher,
-} from '../../types';
-
 import fs from 'fs';
 import path from 'path';
+
+import type { FallbackFilesystem, FileMetadata, IgnoreMatcher } from '../../types';
 
 type DirectoryNode = Map<string, MixedNode | null>;
 type FileNode = FileMetadata;
 type MixedNode = FileNode | DirectoryNode;
 
 type FallbackFilesystemOptions = {
-  extensions: ReadonlyArray<string>,
-  ignore: IgnoreMatcher,
-  includeSymlinks: boolean,
+  extensions: readonly string[];
+  ignore: IgnoreMatcher;
+  includeSymlinks: boolean;
 };
 
 const readdirMarker = Symbol.for('fallbackDir');
@@ -41,20 +37,20 @@ function isDirectory(node: MixedNode | null | undefined): node is DirectoryNode 
  * extension filtering, and symlink inclusion.
  */
 export default function createFallbackFilesystem(
-  opts: FallbackFilesystemOptions,
+  opts: FallbackFilesystemOptions
 ): FallbackFilesystem {
-  const {extensions, ignore, includeSymlinks} = opts;
+  const { extensions, ignore, includeSymlinks } = opts;
 
   function readdir(
     absolutePath: string,
-    dirNode: DirectoryNode | null | undefined,
+    dirNode: DirectoryNode | null | undefined
   ): DirectoryNode | null {
     if (dirNode != null && isMarkedDir(dirNode)) {
       return dirNode;
     }
     let dirEntries;
     try {
-      dirEntries = fs.readdirSync(absolutePath, {withFileTypes: true});
+      dirEntries = fs.readdirSync(absolutePath, { withFileTypes: true });
     } catch {
       return null;
     }
@@ -96,10 +92,7 @@ export default function createFallbackFilesystem(
   return {
     readdir,
 
-    lookup(
-      absolutePath: string,
-      prevNode: MixedNode | null | undefined,
-    ): MixedNode | null {
+    lookup(absolutePath: string, prevNode: MixedNode | null | undefined): MixedNode | null {
       if (ignore(absolutePath)) {
         return null;
       }
@@ -115,7 +108,7 @@ export default function createFallbackFilesystem(
         const dirNode = isDirectory(prevNode) ? prevNode : null;
         return shouldFallbackCrawlDir(absolutePath)
           ? readdir(absolutePath, dirNode)
-          : dirNode ?? new Map();
+          : (dirNode ?? new Map());
       } else if (stat.isSymbolicLink()) {
         if (!includeSymlinks) {
           return null;

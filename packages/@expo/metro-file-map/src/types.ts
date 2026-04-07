@@ -102,12 +102,11 @@ export interface ChangeEvent {
 }
 
 // @deprecated - See `ChangeEvent.eventsQueue`.
-export type EventsQueue = Array<{
+export type EventsQueue = {
   filePath: Path;
   metadata: ChangeEventMetadata;
   type: string;
-}>;
-
+}[];
 
 export interface ChangeEventMetadata {
   modifiedTime: number | undefined | null; // Epoch ms
@@ -244,7 +243,10 @@ export interface MetadataWorkerParams {
 }
 
 export interface MetadataWorker {
-  processFile(message: WorkerMessage, params: MetadataWorkerParams): V8Serializable | Promise<V8Serializable>;
+  processFile(
+    message: WorkerMessage,
+    params: MetadataWorkerParams
+  ): V8Serializable | Promise<V8Serializable>;
 }
 
 export type IgnoreMatcher = (item: string) => boolean;

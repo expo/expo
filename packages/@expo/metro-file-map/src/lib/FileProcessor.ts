@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { Worker as JestWorker } from 'jest-worker';
+import { sep } from 'path';
+
+import H from '../constants';
 import type {
   FileMapPluginWorker,
   FileMetadata,
@@ -13,12 +17,8 @@ import type {
   WorkerMetadata,
   WorkerSetupArgs,
 } from '../types';
-
-import H from '../constants';
 import { Worker } from '../worker';
 import { RootPathUtils } from './RootPathUtils';
-import { Worker as JestWorker } from 'jest-worker';
-import { sep } from 'path';
 
 const debug = require('debug')('Metro:FileMap');
 
@@ -77,12 +77,12 @@ export class FileProcessor {
     files: readonly [relativePath: string, FileMetadata][],
     req: ProcessFileRequest
   ): Promise<{
-    errors: Array<{
+    errors: {
       normalFilePath: string;
       error: MaybeCodedError;
-    }>;
+    }[];
   }> {
-    const errors: Array<{ normalFilePath: string; error: MaybeCodedError }> = [];
+    const errors: { normalFilePath: string; error: MaybeCodedError }[] = [];
 
     const workerJobs = files
       .map(([normalFilePath, fileMetadata]): [WorkerMessage, FileMetadata] | null => {
@@ -154,21 +154,17 @@ export class FileProcessor {
     const nodeModulesIdx = normalPath.indexOf(NODE_MODULES_SEP);
     // Path may begin 'node_modules/' or contain '/node_modules/'.
     const isNodeModules =
-      nodeModulesIdx === 0 ||
-      (nodeModulesIdx > 0 && normalPath[nodeModulesIdx - 1] === sep);
+      nodeModulesIdx === 0 || (nodeModulesIdx > 0 && normalPath[nodeModulesIdx - 1] === sep);
 
     // Indices of plugins with a passing filter
     const pluginsToRun =
-      this.#pluginWorkers?.reduce(
-        (prev, plugin, idx) => {
-          if (plugin.filter({ isNodeModules, normalPath })) {
-            prev.push(idx);
-          }
-          return prev;
-        },
-        [] as number[]
-      ) ?? [];
-    
+      this.#pluginWorkers?.reduce((prev, plugin, idx) => {
+        if (plugin.filter({ isNodeModules, normalPath })) {
+          prev.push(idx);
+        }
+        return prev;
+      }, [] as number[]) ?? [];
+
     const computeMtime = fileMetadata[H.MTIME] == null || fileMetadata[H.MTIME] === 0;
 
     if (!computeSha1 && !computeMtime && pluginsToRun.length === 0) {

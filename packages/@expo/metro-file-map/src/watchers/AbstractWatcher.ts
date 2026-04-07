@@ -5,15 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type {
-  WatcherBackend,
-  WatcherBackendChangeEvent,
-  WatcherBackendOptions,
-} from '../types';
-
-import { posixPathMatchesPattern } from './common';
 import EventEmitter from 'events';
 import * as path from 'path';
+
+import type { WatcherBackend, WatcherBackendChangeEvent, WatcherBackendOptions } from '../types';
+import { posixPathMatchesPattern } from './common';
 
 // Distributive Omit that works correctly with union types
 type EachOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;

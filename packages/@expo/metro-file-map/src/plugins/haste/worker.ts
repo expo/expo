@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { MetadataWorker, V8Serializable, WorkerMessage } from '../../types';
+import path from 'path';
 
 import { unwrapESModuleDefault } from '../../lib/unwrapESModule';
+import type { MetadataWorker, V8Serializable, WorkerMessage } from '../../types';
 import excludedExtensions from '../../workerExclusionList';
-import path from 'path';
 
 const PACKAGE_JSON: string = path.sep + 'package.json';
 

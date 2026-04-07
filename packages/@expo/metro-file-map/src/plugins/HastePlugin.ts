@@ -5,6 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import path from 'path';
+
+import H from '../constants';
+import { RootPathUtils } from '../lib/RootPathUtils';
+import { chainComparators, compareStrings } from '../lib/sorting';
 import type {
   Console,
   DuplicatesIndex,
@@ -21,14 +26,9 @@ import type {
   PerfLogger,
   ReadonlyFileSystemChanges,
 } from '../types';
-
-import H from '../constants';
-import { RootPathUtils } from '../lib/RootPathUtils';
-import { chainComparators, compareStrings } from '../lib/sorting';
 import { DuplicateHasteCandidatesError } from './haste/DuplicateHasteCandidatesError';
-import getPlatformExtension from './haste/getPlatformExtension';
 import { HasteConflictsError } from './haste/HasteConflictsError';
-import path from 'path';
+import getPlatformExtension from './haste/getPlatformExtension';
 
 const EMPTY_OBJ: Readonly<{ [key: string]: HasteMapItemMetadata }> = {};
 const EMPTY_MAP: ReadonlyMap<string, DuplicatesSet> = new Map();
@@ -74,16 +74,10 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
     this.#failValidationOnConflicts = options.failValidationOnConflicts;
   }
 
-  async initialize({
-    files,
-  }: FileMapPluginInitOptions<null, string | null>): Promise<void> {
+  async initialize({ files }: FileMapPluginInitOptions<null, string | null>): Promise<void> {
     this.#perfLogger?.point('constructHasteMap_start');
     let hasteFiles = 0;
-    for (const {
-      baseName,
-      canonicalPath,
-      pluginData: hasteId,
-    } of files.fileIterator({
+    for (const { baseName, canonicalPath, pluginData: hasteId } of files.fileIterator({
       // Symlinks and node_modules are never Haste modules or packages.
       includeNodeModules: false,
       includeSymlinks: false,
@@ -93,9 +87,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
       }
       this.setModule(hasteId, [
         canonicalPath,
-        this.#enableHastePackages && baseName === 'package.json'
-          ? H.PACKAGE
-          : H.MODULE,
+        this.#enableHastePackages && baseName === 'package.json' ? H.PACKAGE : H.MODULE,
       ]);
       if (++hasteFiles % YIELD_EVERY_NUM_HASTE_FILES === 0) {
         await new Promise(setImmediate);
@@ -243,8 +235,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
       hasteMapItem = Object.create(null) as HasteMapItem;
       this.#map.set(id, hasteMapItem);
     }
-    const platform =
-      getPlatformExtension(module[H.PATH], this.#platforms) || H.GENERIC_PLATFORM;
+    const platform = getPlatformExtension(module[H.PATH], this.#platforms) || H.GENERIC_PLATFORM;
 
     const existingModule = hasteMapItem[platform];
 
@@ -301,8 +292,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
       return;
     }
 
-    const platform =
-      getPlatformExtension(canonicalPath, this.#platforms) || H.GENERIC_PLATFORM;
+    const platform = getPlatformExtension(canonicalPath, this.#platforms) || H.GENERIC_PLATFORM;
 
     const hasteMapItem = this.#map.get(moduleName);
     if (hasteMapItem != null) {
@@ -341,8 +331,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
       return;
     }
 
-    const platform =
-      getPlatformExtension(relativeFilePath, this.#platforms) || H.GENERIC_PLATFORM;
+    const platform = getPlatformExtension(relativeFilePath, this.#platforms) || H.GENERIC_PLATFORM;
     let dups = dupsByPlatform.get(platform);
     if (dups == null) {
       return;
@@ -378,8 +367,8 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
     }
   }
 
-  computeConflicts(): Array<HasteConflict> {
-    const conflicts: Array<HasteConflict> = [];
+  computeConflicts(): HasteConflict[] {
+    const conflicts: HasteConflict[] = [];
 
     // Add literal duplicates tracked in the #duplicates map
     for (const [id, dupsByPlatform] of this.#duplicates.entries()) {
@@ -413,10 +402,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
         // Given that X.(specific platform).js > x.native.js > X.js
         // and basePlatform is either 'native' or generic (no platform).
         for (const platform of Object.keys(data)) {
-          if (
-            platform === basePlatform ||
-            platform === H.GENERIC_PLATFORM /* lowest priority */
-          ) {
+          if (platform === basePlatform || platform === H.GENERIC_PLATFORM /* lowest priority */) {
             continue;
           }
           const platformPath = data[platform]![0];
@@ -453,9 +439,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
   getCacheKey(): string {
     return JSON.stringify([
       this.#enableHastePackages,
-      this.#hasteImplModulePath != null
-        ? require(this.#hasteImplModulePath).getCacheKey()
-        : null,
+      this.#hasteImplModulePath != null ? require(this.#hasteImplModulePath).getCacheKey() : null,
       [...this.#platforms].sort(),
     ]);
   }

@@ -5,6 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { promises as fsPromises } from 'fs';
+import { tmpdir } from 'os';
+import path from 'path';
+import { clearTimeout, setTimeout } from 'timers';
+import { deserialize, serialize } from 'v8';
+
+import rootRelativeCacheKeys from '../lib/rootRelativeCacheKeys';
 import type {
   BuildParameters,
   CacheData,
@@ -12,13 +19,6 @@ import type {
   CacheManagerFactoryOptions,
   CacheManagerWriteOptions,
 } from '../types';
-
-import rootRelativeCacheKeys from '../lib/rootRelativeCacheKeys';
-import { promises as fsPromises } from 'fs';
-import { tmpdir } from 'os';
-import path from 'path';
-import { clearTimeout, setTimeout } from 'timers';
-import { deserialize, serialize } from 'v8';
 
 const debug = require('debug')('Metro:FileMapCache');
 
@@ -98,6 +98,7 @@ export class DiskCacheManager implements CacheManager {
   ): Promise<void> {
     // Initialise a writer function using a promise queue to ensure writes are
     // sequenced.
+    // eslint-disable-next-line no-multi-assign
     const tryWrite = (this.#tryWrite = () => {
       this.#writePromise = this.#writePromise
         .then(async () => {

@@ -5,6 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import type { FileChange, WatchProjectResponse } from 'fb-watchman';
+import watchman from 'fb-watchman';
+import invariant from 'invariant';
+import * as path from 'path';
+import { performance } from 'perf_hooks';
+
+import { planQuery } from './planQuery';
+import { RootPathUtils } from '../../lib/RootPathUtils';
+import normalizePathSeparatorsToPosix from '../../lib/normalizePathSeparatorsToPosix';
+import normalizePathSeparatorsToSystem from '../../lib/normalizePathSeparatorsToSystem';
 import type {
   WatchmanClockSpec,
   CanonicalPath,
@@ -14,16 +24,6 @@ import type {
   FileMetadata,
   Path,
 } from '../../types';
-import type { FileChange, WatchProjectResponse } from 'fb-watchman';
-
-import normalizePathSeparatorsToPosix from '../../lib/normalizePathSeparatorsToPosix';
-import normalizePathSeparatorsToSystem from '../../lib/normalizePathSeparatorsToSystem';
-import { RootPathUtils } from '../../lib/RootPathUtils';
-import { planQuery } from './planQuery';
-import watchman from 'fb-watchman';
-import invariant from 'invariant';
-import * as path from 'path';
-import { performance } from 'perf_hooks';
 
 // NOTE(@kitten): Not exported by @types/fb-watchman
 interface WatchmanWatchResponse extends WatchProjectResponse {
@@ -39,7 +39,7 @@ interface WatchmanQueryResponse {
 }
 
 /** Posix-separated absolute path as key */
-type WatchmanRoots = Map<string, { readonly directoryFilters: Array<string>; readonly watcher: string }>;
+type WatchmanRoots = Map<string, { readonly directoryFilters: string[]; readonly watcher: string }>;
 
 const WATCHMAN_WARNING_INITIAL_DELAY_MILLISECONDS = 10000;
 const WATCHMAN_WARNING_INTERVAL_MILLISECONDS = 20000;
@@ -81,10 +81,7 @@ export default async function watchmanCrawl({
   });
 
   // TODO: Fix to use fb-watchman types
-  const cmd = async <T>(
-    command: 'watch-project' | 'query',
-    ...args: any[]
-  ): Promise<T> => {
+  const cmd = async <T>(command: 'watch-project' | 'query', ...args: any[]): Promise<T> => {
     let didLogWatchmanWaitMessage = false;
     const startTime = performance.now();
     const logWatchmanWaitMessage = () => {

@@ -11,14 +11,14 @@
  * Originally vendored from https://github.com/amasad/sane/blob/64ff3a870c42e84f744086884bf55a4f9c22d376/src/node_watcher.js
  */
 
-import type { ChangeEventMetadata } from '../types';
 import type { FSWatcher, Stats } from 'fs';
-
-import { AbstractWatcher, type WatcherBackendChangeEventWithoutRoot } from './AbstractWatcher';
-import * as common from './common';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+
+import { AbstractWatcher, type WatcherBackendChangeEventWithoutRoot } from './AbstractWatcher';
+import * as common from './common';
+import type { ChangeEventMetadata } from '../types';
 
 // NOTE(@kitten): No typings
 const walker = require('walker');
@@ -121,7 +121,7 @@ export default class FallbackWatcher extends AbstractWatcher {
    * Removes a dir from the registry, returning all files that were registered
    * under it (recursively).
    */
-  #unregisterDir(dirpath: string): Array<string> {
+  #unregisterDir(dirpath: string): string[] {
     const removedFiles: string[] = [];
 
     // Find and remove all entries under this directory
@@ -247,13 +247,13 @@ export default class FallbackWatcher extends AbstractWatcher {
       this.#detectChangedFile(dir, event, (actualFile) => {
         if (actualFile) {
           this.#processChange(dir, event, actualFile).catch((error) => {
-            this.emitError(error)
+            this.emitError(error);
           });
         }
       });
     } else {
       this.#processChange(dir, event, path.normalize(file)).catch((error) => {
-        this.emitError(error)
+        this.emitError(error);
       });
     }
   }
@@ -424,9 +424,7 @@ function recReaddir(
 ) {
   const walk = walker(dir);
   if (ignored) {
-    walk.filterDir(
-      (currentDir: string) => !common.posixPathMatchesPattern(ignored, currentDir)
-    );
+    walk.filterDir((currentDir: string) => !common.posixPathMatchesPattern(ignored, currentDir));
   }
   walk
     .on('dir', normalizeProxy(dirCallback))

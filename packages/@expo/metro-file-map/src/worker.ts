@@ -5,16 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type {
-  MetadataWorker,
-  WorkerMessage,
-  WorkerMetadata,
-  WorkerSetupArgs,
-} from './types';
-import { unwrapESModuleDefault } from './lib/unwrapESModule';
-
 import { hash } from 'crypto';
 import fs from 'fs';
+
+import { unwrapESModuleDefault } from './lib/unwrapESModule';
+import type { MetadataWorker, WorkerMessage, WorkerMetadata, WorkerSetupArgs } from './types';
 
 function sha1hex(content: string | Buffer): string {
   return hash('sha1', content, 'hex');
@@ -43,7 +38,7 @@ export class Worker {
 
     const getContent = (): Promise<Buffer> => {
       if (contentPromise == null) {
-        contentPromise  = fs.promises.readFile(filePath);
+        contentPromise = fs.promises.readFile(filePath);
       }
       return contentPromise;
     };
@@ -60,9 +55,7 @@ export class Worker {
 
     const workerUtils = { getContent };
     const pluginDataPromise = Promise.all(
-      pluginsToRun.map((pluginIdx) =>
-        this.#plugins[pluginIdx]!.processFile(data, workerUtils)
-      )
+      pluginsToRun.map((pluginIdx) => this.#plugins[pluginIdx]!.processFile(data, workerUtils))
     );
 
     // If a SHA-1 is requested on update, compute it.
@@ -71,9 +64,7 @@ export class Worker {
     }
 
     return {
-      content: contentPromise != null && data.maybeReturnContent
-        ? await contentPromise
-        : undefined,
+      content: contentPromise != null && data.maybeReturnContent ? await contentPromise : undefined,
       pluginData: await pluginDataPromise,
       sha1: await sha1Promise,
       mtime: (await mtimePromise) ?? undefined,

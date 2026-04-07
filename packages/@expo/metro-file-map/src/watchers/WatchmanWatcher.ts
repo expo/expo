@@ -5,31 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { WatcherOptions } from './common';
-import type {
-  Client,
-  FileChange,
-  SubscribeResponse,
-  WatchProjectResponse,
-} from 'fb-watchman';
-
-import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
-import { AbstractWatcher } from './AbstractWatcher';
-import * as common from './common';
-import RecrawlWarning from './RecrawlWarning';
 import assert from 'assert';
 import { createHash } from 'crypto';
+import type { Client, FileChange, SubscribeResponse, WatchProjectResponse } from 'fb-watchman';
 import watchman from 'fb-watchman';
 import invariant from 'invariant';
+
+import { AbstractWatcher } from './AbstractWatcher';
+import RecrawlWarning from './RecrawlWarning';
+import * as common from './common';
+import type { WatcherOptions } from './common';
+import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
 
 // NOTE(@kitten): Local type aliases for Watchman types not exported by @types/fb-watchman
 interface WatchmanClockResponse {
   clock: string;
-  warning?: string
-};
+  warning?: string;
+}
 
 interface WatchmanFileChange extends FileChange {
-  new?: boolean
+  new?: boolean;
 }
 
 interface WatchmanQuery {
@@ -85,7 +80,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
     // Use a unique subscription name per process per watched directory
     const watchKey = createHash('md5').update(this.root).digest('hex');
     const readablePath = this.root
-      .replace(/[\/\\]/g, '-') // \ and / to -
+      .replace(/[/\\]/g, '-') // \ and / to -
       .replace(/[^\-\w]/g, ''); // Remove non-word/hyphen
     this.subscriptionName = `${SUB_PREFIX}-${process.pid}-${readablePath}-${watchKey}`;
   }
@@ -111,9 +106,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
       this.#handleChangeEvent(changeEvent)
     );
     this.#client.on('end', () => {
-      console.warn(
-        '[metro-file-map] Warning: Lost connection to Watchman, reconnecting..'
-      );
+      console.warn('[metro-file-map] Warning: Lost connection to Watchman, reconnecting..');
       self.#init(
         () => {},
         (error) => self.emitError(error)
@@ -126,10 +119,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
       return self.#watchProjectInfo ? self.#watchProjectInfo.root : self.root;
     }
 
-    function onWatchProject(
-      error: Error | null | undefined,
-      resp: WatchProjectResponse
-    ) {
+    function onWatchProject(error: Error | null | undefined, resp: WatchProjectResponse) {
       if (error) {
         onError(error);
         return;
@@ -141,9 +131,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
       // NB: Watchman outputs posix-separated paths even on Windows, convert
       // them to system-native separators.
       self.#watchProjectInfo = {
-        relativePath: resp.relative_path
-          ? normalizePathSeparatorsToSystem(resp.relative_path)
-          : '',
+        relativePath: resp.relative_path ? normalizePathSeparatorsToSystem(resp.relative_path) : '',
         root: normalizePathSeparatorsToSystem(resp.watch),
       };
 
@@ -191,10 +179,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
       );
     }
 
-    const onSubscribe = (
-      error: Error | null | undefined,
-      resp: WatchmanSubscribeResponse
-    ) => {
+    const onSubscribe = (error: Error | null | undefined, resp: WatchmanSubscribeResponse) => {
       if (error) {
         onError(error);
         return;
@@ -230,22 +215,18 @@ export default class WatchmanWatcher extends AbstractWatcher {
     assert.equal(resp.subscription, this.subscriptionName, 'Invalid subscription event.');
 
     if (Array.isArray(resp.files)) {
-      resp.files.forEach((change: WatchmanFileChange) => this.#handleFileChange(change, resp.clock));
+      resp.files.forEach((change: WatchmanFileChange) =>
+        this.#handleFileChange(change, resp.clock)
+      );
     }
     const { 'state-enter': stateEnter, 'state-leave': stateLeave } = resp;
     if (stateEnter != null && (this.#watchmanDeferStates ?? []).includes(stateEnter)) {
       this.#deferringStates?.add(stateEnter);
-      debug(
-        'Watchman reports "%s" just started. Filesystem notifications are paused.',
-        stateEnter
-      );
+      debug('Watchman reports "%s" just started. Filesystem notifications are paused.', stateEnter);
     }
     if (stateLeave != null && (this.#watchmanDeferStates ?? []).includes(stateLeave)) {
       this.#deferringStates?.delete(stateLeave);
-      debug(
-        'Watchman reports "%s" ended. Filesystem notifications resumed.',
-        stateLeave
-      );
+      debug('Watchman reports "%s" ended. Filesystem notifications resumed.', stateLeave);
     }
   }
 

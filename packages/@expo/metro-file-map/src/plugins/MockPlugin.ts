@@ -5,6 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import path from 'path';
+
+import { RootPathUtils } from '../lib/RootPathUtils';
+import normalizePathSeparatorsToPosix from '../lib/normalizePathSeparatorsToPosix';
+import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
 import type {
   Console,
   FileMapPlugin,
@@ -15,12 +20,7 @@ import type {
   RawMockMap,
   ReadonlyFileSystemChanges,
 } from '../types';
-
-import normalizePathSeparatorsToPosix from '../lib/normalizePathSeparatorsToPosix';
-import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
-import { RootPathUtils } from '../lib/RootPathUtils';
 import getMockName from './mocks/getMockName';
-import path from 'path';
 
 export const CACHE_VERSION = 2;
 
@@ -80,14 +80,11 @@ export default class MockPlugin implements FileMapPlugin<RawMockMap, undefined>,
   }
 
   getMockModule(name: string): Path | undefined | null {
-    const mockPosixRelativePath =
-      this.#raw.mocks.get(name) || this.#raw.mocks.get(name + '/index');
+    const mockPosixRelativePath = this.#raw.mocks.get(name) || this.#raw.mocks.get(name + '/index');
     if (typeof mockPosixRelativePath !== 'string') {
       return null;
     }
-    return this.#pathUtils.normalToAbsolute(
-      normalizePathSeparatorsToSystem(mockPosixRelativePath)
-    );
+    return this.#pathUtils.normalToAbsolute(normalizePathSeparatorsToSystem(mockPosixRelativePath));
   }
 
   onChanged(delta: ReadonlyFileSystemChanges<undefined | null>): void {

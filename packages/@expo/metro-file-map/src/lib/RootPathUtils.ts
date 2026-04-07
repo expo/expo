@@ -315,10 +315,7 @@ export function getAncestorOfRootIdx(normalPath: string): number {
   return pos / UP_FRAGMENT_SEP_LENGTH;
 }
 
-export function pathsToPattern(
-  paths: ReadonlyArray<string>,
-  pathUtils: RootPathUtils,
-): RegExp | null {
+export function pathsToPattern(paths: readonly string[], pathUtils: RootPathUtils): RegExp | null {
   if (paths.length === 0) {
     // Return a pattern that never matches.
     return null;
@@ -337,8 +334,9 @@ export function pathsToPattern(
     // Escape all regex-special characters. The string inputs are supposed to
     // match literally.
     return pattern.replace(
+      // eslint-disable-next-line no-useless-escape
       /[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g,
-      '\\$&',
+      '\\$&'
     );
   });
   return new RegExp(`^(?:${pathsPatterns.join('|')})`);

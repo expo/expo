@@ -6,13 +6,13 @@
  */
 
 import type { FSWatcher } from 'fs';
-import type { WatcherBackendOptions } from '../types';
-
-import { AbstractWatcher } from './AbstractWatcher';
-import { includedByGlob, typeFromStat } from './common';
 import { promises as fsPromises, watch } from 'fs';
 import { platform } from 'os';
 import * as path from 'path';
+
+import type { WatcherBackendOptions } from '../types';
+import { AbstractWatcher } from './AbstractWatcher';
+import { includedByGlob, typeFromStat } from './common';
 
 const debug = require('debug')('Metro:NativeWatcher');
 
@@ -47,6 +47,7 @@ export default class NativeWatcher extends AbstractWatcher {
     return platform() === 'darwin';
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(dir: string, opts: WatcherBackendOptions) {
     // NOTE(@kitten): `!NativeWatcher.isSupported` was always truthy, so omitting check here
 

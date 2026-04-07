@@ -9,7 +9,6 @@
  */
 
 import type { Stats } from 'fs';
-
 import micromatch from 'micromatch';
 import path from 'path';
 

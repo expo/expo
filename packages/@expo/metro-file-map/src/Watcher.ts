@@ -5,6 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import EventEmitter from 'events';
+import fs from 'fs';
+import path from 'path';
+import { performance } from 'perf_hooks';
+
+import nodeCrawl from './crawlers/node';
+import watchmanCrawl from './crawlers/watchman';
 import type {
   Console,
   CrawlerOptions,
@@ -14,18 +21,11 @@ import type {
   WatcherBackend,
   WatcherBackendChangeEvent,
 } from './types';
-import type { WatcherOptions as WatcherBackendOptions } from './watchers/common';
-
-import nodeCrawl from './crawlers/node';
-import watchmanCrawl from './crawlers/watchman';
-import { TOUCH_EVENT } from './watchers/common';
 import FallbackWatcher from './watchers/FallbackWatcher';
 import NativeWatcher from './watchers/NativeWatcher';
 import WatchmanWatcher from './watchers/WatchmanWatcher';
-import EventEmitter from 'events';
-import fs from 'fs';
-import path from 'path';
-import { performance } from 'perf_hooks';
+import { TOUCH_EVENT } from './watchers/common';
+import type { WatcherOptions as WatcherBackendOptions } from './watchers/common';
 
 const debug = require('debug')('Metro:Watcher');
 
@@ -80,8 +80,7 @@ export class Watcher extends EventEmitter {
   readonly #instanceId: number;
   #nextHealthCheckId: number = 0;
   readonly #options: WatcherOptions;
-  readonly #pendingHealthChecks: Map</* basename */ string, /* resolve */ () => void> =
-    new Map();
+  readonly #pendingHealthChecks: Map</* basename */ string, /* resolve */ () => void> = new Map();
 
   constructor(options: WatcherOptions) {
     super();
@@ -192,13 +191,14 @@ export class Watcher extends EventEmitter {
     const { extensions, ignorePatternForWatch, useWatchman } = this.#options;
 
     // WatchmanWatcher > NativeWatcher > FallbackWatcher
-    const WatcherImpl = (
-      useWatchman
-        ? WatchmanWatcher
-        : NativeWatcher.isSupported()
-          ? NativeWatcher
-          : FallbackWatcher
-    ) as unknown as new (root: string, opts: WatcherBackendOptions) => WatcherBackend;
+    const WatcherImpl = (useWatchman
+      ? WatchmanWatcher
+      : NativeWatcher.isSupported()
+        ? NativeWatcher
+        : FallbackWatcher) as unknown as new (
+      root: string,
+      opts: WatcherBackendOptions
+    ) => WatcherBackend;
 
     let watcher = 'fallback';
     if (WatcherImpl === (WatchmanWatcher as unknown)) {
@@ -236,11 +236,7 @@ export class Watcher extends EventEmitter {
           const basename = path.basename(change.relativePath);
           if (basename.startsWith(this.#options.healthCheckFilePrefix)) {
             if (change.event === TOUCH_EVENT) {
-              debug(
-                'Observed possible health check cookie: %s in %s',
-                change.relativePath,
-                root
-              );
+              debug('Observed possible health check cookie: %s in %s', change.relativePath, root);
               this.#handleHealthCheckObservation(basename);
             }
             return;
@@ -294,9 +290,7 @@ export class Watcher extends EventEmitter {
       healthCheckId;
     const healthCheckPath = path.join(this.#options.rootDir, basename);
     let result: HealthCheckResult | undefined | null;
-    const timeoutPromise = new Promise<void>((resolve) =>
-      setTimeout(resolve, timeout)
-    ).then(() => {
+    const timeoutPromise = new Promise<void>((resolve) => setTimeout(resolve, timeout)).then(() => {
       if (!result) {
         result = {
           type: 'timeout',

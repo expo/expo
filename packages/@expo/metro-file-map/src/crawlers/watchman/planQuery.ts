@@ -57,14 +57,8 @@ export function planQuery({
     fields.push('type');
   }
 
-  const allOfTerms: Array<WatchmanExpression> = includeSymlinks
-    ? [
-        [
-          'anyof',
-          ['allof', ['type', 'f'], ['suffix', extensions]],
-          ['type', 'l'],
-        ],
-      ]
+  const allOfTerms: WatchmanExpression[] = includeSymlinks
+    ? [['anyof', ['allof', ['type', 'f'], ['suffix', extensions]], ['type', 'l']]]
     : [['type', 'f']];
 
   const query: WatchmanQuery = { fields };
@@ -131,8 +125,7 @@ export function planQuery({
   // If we only have one "all of" expression we can use it directly, otherwise
   // wrap in ['allof', ...expressions]. By construction we should never have
   // length 0.
-  query.expression =
-    allOfTerms.length === 1 ? allOfTerms[0] : ['allof', ...allOfTerms];
+  query.expression = allOfTerms.length === 1 ? allOfTerms[0] : ['allof', ...allOfTerms];
 
   return { query, queryGenerator };
 }

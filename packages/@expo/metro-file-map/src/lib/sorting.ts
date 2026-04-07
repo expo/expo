@@ -19,7 +19,7 @@ export function compareStrings(a: null | string, b: null | string): number {
 
 export function chainComparators<T>(
   ...comparators: ((a: T, b: T) => number)[]
-): ((a: T, b: T) => number) {
+): (a: T, b: T) => number {
   return (a, b) => {
     for (const comparator of comparators) {
       const result = comparator(a, b);

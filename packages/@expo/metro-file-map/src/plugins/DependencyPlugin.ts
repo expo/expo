@@ -5,13 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type {
-  FileMapPlugin,
-  FileMapPluginInitOptions,
-  FileMapPluginWorker,
-  Path,
-} from '../types';
-
+import type { FileMapPlugin, FileMapPluginInitOptions, FileMapPluginWorker, Path } from '../types';
 import excludedExtensions from '../workerExclusionList';
 
 export interface DependencyPluginOptions {
@@ -22,9 +16,7 @@ export interface DependencyPluginOptions {
   readonly rootDir: Path;
 }
 
-export default class DependencyPlugin
-  implements FileMapPlugin<null, readonly string[] | null>
-{
+export default class DependencyPlugin implements FileMapPlugin<null, readonly string[] | null> {
   readonly name: 'dependencies' = 'dependencies';
 
   #dependencyExtractor: string | undefined | null;
