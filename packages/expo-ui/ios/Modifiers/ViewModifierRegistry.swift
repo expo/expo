@@ -1842,6 +1842,10 @@ extension ViewModifierRegistry {
       return try SubmitLabelModifier(from: params, appContext: appContext)
     }
 
+    register("textInputAutocapitalization") { params, appContext, _ in
+      return try TextInputAutocapitalizationModifier(from: params, appContext: appContext)
+    }
+
     register("datePickerStyle") { params, appContext, _ in
       return try DatePickerStyleModifier(from: params, appContext: appContext)
     }
