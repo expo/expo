@@ -20,6 +20,7 @@ import type {
   Console,
   CrawlerOptions,
   CrawlResult,
+  EventsQueue,
   FileData,
   FileMapPlugin,
   FileMapPluginWorker,
@@ -34,6 +35,7 @@ import type {
   PerfLogger,
   PerfLoggerFactory,
   ProcessFileFunction,
+  ReadonlyFileSystemChanges,
   WatcherBackendChangeEvent,
   WatchmanClocks,
 } from './types';
@@ -142,6 +144,7 @@ export type {
   CacheManagerWriteOptions,
   ChangeEvent,
   DependencyExtractor,
+  EventsQueue,
   WatcherStatus,
 } from './types';
 
@@ -750,7 +753,7 @@ export default class FileMap extends EventEmitter {
         return;
       }
 
-      const _netChange = changeAggregator.getView();
+      const netChange = changeAggregator.getView();
       this.#plugins.forEach(({ plugin, dataIdx }) => {
         plugin.onChanged(
           changeAggregator.getMappedView(
@@ -778,8 +781,12 @@ export default class FileMap extends EventEmitter {
         hmrPerfLogger.annotate({ int: { changeSize } });
         hmrPerfLogger.point('fileChange_start');
       }
+      // @deprecated - Synthesise eventsQueue for backwards compatibility.
+      // See: https://github.com/facebook/metro/commit/e23bad71bc808e89966ed787c4e1e9905c9f3db4
+      const eventsQueue = eventsQueueFromChanges(netChange, this.#pathUtils);
       const changeEvent: ChangeEvent = {
         changes: changesWithMetadata,
+        eventsQueue,
         logger: hmrPerfLogger,
         rootDir: this.#options.rootDir,
       };
@@ -943,8 +950,15 @@ export default class FileMap extends EventEmitter {
 
             const changesWithMetadata = recrawlChangeAggregator.getMappedView(toPublicMetadata);
 
+            // @deprecated - Synthesise eventsQueue for backwards compatibility.
+            // See: https://github.com/facebook/metro/commit/e23bad71bc808e89966ed787c4e1e9905c9f3db4
+            const recrawlEventsQueue = eventsQueueFromChanges(
+              recrawlChangeAggregator.getView(),
+              this.#pathUtils,
+            );
             const changeEvent: ChangeEvent = {
               changes: changesWithMetadata,
+              eventsQueue: recrawlEventsQueue,
               logger: null,
               rootDir: this.#options.rootDir,
             };
@@ -1059,4 +1073,49 @@ function mapIterable<T, S>(it: Iterable<T>, fn: (item: T) => S): Iterable<S> {
       yield fn(item);
     }
   })();
+}
+
+// @deprecated - Synthesise an eventsQueue array from a ReadonlyFileSystemChanges
+// for backwards compatibility with consumers that haven't migrated to `changes`.
+// Remove when Metro's DependencyGraph and all Expo CLI consumers use `changes`.
+// See: https://github.com/facebook/metro/commit/e23bad71bc808e89966ed787c4e1e9905c9f3db4
+function eventsQueueFromChanges(
+  changes: ReadonlyFileSystemChanges<FileMetadata>,
+  pathUtils: RootPathUtils,
+): EventsQueue {
+  const eventsQueue: EventsQueue = [];
+  for (const [canonicalPath, metadata] of changes.removedFiles) {
+    eventsQueue.push({
+      type: 'delete',
+      filePath: pathUtils.normalToAbsolute(canonicalPath),
+      metadata: {
+        size: null,
+        modifiedTime: null,
+        type: metadata[H.SYMLINK] === 0 ? 'f' : 'l',
+      },
+    });
+  }
+  for (const [canonicalPath, metadata] of changes.addedFiles) {
+    eventsQueue.push({
+      type: 'add',
+      filePath: pathUtils.normalToAbsolute(canonicalPath),
+      metadata: {
+        size: metadata[H.SIZE],
+        modifiedTime: metadata[H.MTIME],
+        type: metadata[H.SYMLINK] === 0 ? 'f' : 'l',
+      },
+    });
+  }
+  for (const [canonicalPath, metadata] of changes.modifiedFiles) {
+    eventsQueue.push({
+      type: 'change',
+      filePath: pathUtils.normalToAbsolute(canonicalPath),
+      metadata: {
+        size: metadata[H.SIZE],
+        modifiedTime: metadata[H.MTIME],
+        type: metadata[H.SYMLINK] === 0 ? 'f' : 'l',
+      },
+    });
+  }
+  return eventsQueue;
 }

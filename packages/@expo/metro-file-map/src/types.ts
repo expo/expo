@@ -93,7 +93,20 @@ export interface ChangeEvent {
   readonly logger: RootPerfLogger | undefined | null;
   readonly changes: ReadonlyFileSystemChanges<ChangedFileMetadata>;
   readonly rootDir: string;
+  // @deprecated - Provided for backwards compatibility with metro-file-map
+  // consumers that haven't migrated to the `changes` API. Remove this when
+  // Metro's `DependencyGraph` and all Expo CLI consumers use `changes`.
+  // See: https://github.com/facebook/metro/commit/e23bad71bc808e89966ed787c4e1e9905c9f3db4
+  readonly eventsQueue: EventsQueue;
 }
+
+// @deprecated - See `ChangeEvent.eventsQueue`.
+export type EventsQueue = Array<{
+  filePath: Path;
+  metadata: ChangeEventMetadata;
+  type: string;
+}>;
+
 
 export interface ChangeEventMetadata {
   modifiedTime: number | undefined | null; // Epoch ms
@@ -223,7 +236,7 @@ export interface FileMapPlugin<
   getWorker(): FileMapPluginWorker | undefined | null;
 }
 
-export type InputFileMapPlugin = FileMapPlugin<never, never>;
+export type InputFileMapPlugin = FileMapPlugin;
 
 export interface MetadataWorkerParams {
   getContent(): Buffer;
