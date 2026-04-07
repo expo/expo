@@ -41,6 +41,7 @@ import type {
 } from './types';
 
 import { DiskCacheManager } from './cache/DiskCacheManager';
+import createFallbackFilesystem from './crawlers/node/fallback';
 import H from './constants';
 import checkWatchmanCapabilities from './lib/checkWatchmanCapabilities';
 import { FileProcessor } from './lib/FileProcessor';
@@ -73,6 +74,7 @@ export type {
 
 export interface InputOptions {
   readonly computeSha1?: boolean | undefined | null;
+  readonly enableFallback?: boolean | undefined | null;
   readonly enableSymlinks?: boolean | undefined | null;
   readonly skipStat?: boolean | undefined | null;
   readonly extensions: readonly string[];
@@ -82,6 +84,7 @@ export interface InputOptions {
   readonly rootDir: string;
   readonly roots: readonly string[];
 
+  readonly serverRoot?: string | undefined | null;
   readonly cacheManagerFactory?: CacheManagerFactory | undefined | null;
   readonly console?: Console;
   readonly healthCheck: HealthCheckOptions;
@@ -102,6 +105,8 @@ interface HealthCheckOptions {
 }
 
 interface InternalOptions extends BuildParameters {
+  readonly enableFallback: boolean;
+  readonly serverRoot: string | undefined | null;
   readonly healthCheck: HealthCheckOptions;
   readonly perfLoggerFactory: PerfLoggerFactory | undefined | null;
   readonly resetCache: boolean | undefined | null;
@@ -331,6 +336,8 @@ export default class FileMap extends EventEmitter {
       useWatchman: options.useWatchman == null ? true : options.useWatchman,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
+      enableFallback: options.enableFallback ?? true,
+      serverRoot: options.serverRoot,
     };
 
     const cacheFactoryOptions: CacheManagerFactoryOptions = {
@@ -381,6 +388,14 @@ export default class FileMap extends EventEmitter {
           this.emit('metadata');
           return result?.content;
         };
+        const fallbackFilesystem = this.#options.enableFallback
+          ? createFallbackFilesystem({
+              extensions: this.#options.extensions,
+              ignore: (filePath) => this.#options.ignorePattern.test(filePath),
+              includeSymlinks: this.#options.enableSymlinks,
+            })
+          : null;
+        const { roots, serverRoot } = this.#options;
         const fileSystem =
           initialData != null
             ? TreeFS.fromDeserializedSnapshot({
@@ -390,8 +405,17 @@ export default class FileMap extends EventEmitter {
                 fileSystemData: initialData.fileSystemData as any,
                 processFile,
                 rootDir,
+                fallbackFilesystem,
+                roots,
+                serverRoot,
               })
-            : new TreeFS({ processFile, rootDir });
+            : new TreeFS({
+                processFile,
+                rootDir,
+                fallbackFilesystem,
+                roots,
+                serverRoot,
+              });
         this.#startupPerfLogger?.point('constructFileSystem_end');
 
         const plugins = this.#plugins;

@@ -299,3 +299,47 @@ export class RootPathUtils {
     }
   }
 }
+
+export function getAncestorOfRootIdx(normalPath: string): number {
+  let pos = 0;
+  while (normalPath.startsWith(UP_FRAGMENT_SEP, pos)) {
+    pos += UP_FRAGMENT_SEP_LENGTH;
+  }
+  if (
+    normalPath.length === pos + 2 &&
+    normalPath.charCodeAt(pos) === 46 &&
+    normalPath.charCodeAt(pos + 1) === 46
+  ) {
+    return pos / UP_FRAGMENT_SEP_LENGTH + 1;
+  }
+  return pos / UP_FRAGMENT_SEP_LENGTH;
+}
+
+export function pathsToPattern(
+  paths: ReadonlyArray<string>,
+  pathUtils: RootPathUtils,
+): RegExp | null {
+  if (paths.length === 0) {
+    // Return a pattern that never matches.
+    return null;
+  }
+  const pathsPatterns = paths.map((input) => {
+    let pattern = pathUtils.absoluteToNormal(input);
+    // When pattern is '' (root === rootDir), match any normal path that
+    // doesn't escape the root via '..' indirections.
+    if (pattern === '') {
+      return `(?!\\.\\.(?:\\${path.sep}|$))`;
+    }
+    // Append separator so that 'src' matches 'src/foo' but not 'src2'.
+    if (!pattern.endsWith(path.sep)) {
+      pattern += path.sep;
+    }
+    // Escape all regex-special characters. The string inputs are supposed to
+    // match literally.
+    return pattern.replace(
+      /[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g,
+      '\\$&',
+    );
+  });
+  return new RegExp(`^(?:${pathsPatterns.join('|')})`);
+}
