@@ -35,6 +35,7 @@ export default function rootRelativeCacheKeys(buildParameters: BuildParameters):
         case 'enableSymlinks':
         case 'retainAllFiles':
         case 'skipStat':
+        case 'scopeFallback':
           return buildParameters[key] ?? null;
         case 'ignorePattern':
           return buildParameters[key].toString();

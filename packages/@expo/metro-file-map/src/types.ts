@@ -18,6 +18,7 @@ export type { PerfLoggerFactory, PerfLogger } from '@expo/metro/metro-config';
 export interface BuildParameters {
   readonly computeSha1: boolean;
   readonly enableSymlinks: boolean;
+  readonly scopeFallback: boolean;
   readonly skipStat: boolean;
   readonly extensions: readonly string[];
   readonly ignorePattern: RegExp;
