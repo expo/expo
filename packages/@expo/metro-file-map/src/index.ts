@@ -75,6 +75,7 @@ export type {
 export interface InputOptions {
   readonly computeSha1?: boolean | undefined | null;
   readonly enableFallback?: boolean | undefined | null;
+  readonly scopeFallback?: boolean | undefined | null;
   readonly enableSymlinks?: boolean | undefined | null;
   readonly skipStat?: boolean | undefined | null;
   readonly extensions: readonly string[];
@@ -106,6 +107,7 @@ interface HealthCheckOptions {
 
 interface InternalOptions extends BuildParameters {
   readonly enableFallback: boolean;
+  readonly scopeFallback: boolean;
   readonly serverRoot: string | undefined | null;
   readonly healthCheck: HealthCheckOptions;
   readonly perfLoggerFactory: PerfLoggerFactory | undefined | null;
@@ -315,12 +317,16 @@ export default class FileMap extends EventEmitter {
     }
     this.#plugins = indexedPlugins;
 
+    const enableFallback = options.enableFallback ?? true;
+    const scopeFallback = options.scopeFallback ?? true;
+
     const buildParameters: BuildParameters = {
       cacheBreaker: CACHE_BREAKER,
       computeSha1: options.computeSha1 || false,
       enableSymlinks: options.enableSymlinks || false,
       extensions: options.extensions,
       skipStat: options.skipStat ?? true,
+      scopeFallback: enableFallback && scopeFallback,
       ignorePattern,
       plugins,
       retainAllFiles: options.retainAllFiles,
@@ -336,7 +342,8 @@ export default class FileMap extends EventEmitter {
       useWatchman: options.useWatchman == null ? true : options.useWatchman,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
-      enableFallback: options.enableFallback ?? true,
+      enableFallback,
+      scopeFallback,
       serverRoot: options.serverRoot,
     };
 
@@ -395,7 +402,8 @@ export default class FileMap extends EventEmitter {
               includeSymlinks: this.#options.enableSymlinks,
             })
           : null;
-        const { roots, serverRoot } = this.#options;
+        const { roots } = this.#options;
+        const serverRoot = this.#options.scopeFallback ? this.#options.serverRoot : null;
         const fileSystem =
           initialData != null
             ? TreeFS.fromDeserializedSnapshot({
