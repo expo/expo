@@ -1838,6 +1838,10 @@ extension ViewModifierRegistry {
       return try TextInputAutocapitalizationModifier(from: params, appContext: appContext)
     }
 
+    register("textContentType") { params, appContext, _ in
+      return try TextContentTypeModifier(from: params, appContext: appContext)
+    }
+
     register("datePickerStyle") { params, appContext, _ in
       return try DatePickerStyleModifier(from: params, appContext: appContext)
     }

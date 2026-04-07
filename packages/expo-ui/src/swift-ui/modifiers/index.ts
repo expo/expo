@@ -1081,6 +1081,62 @@ export const textInputAutocapitalization = (
 ) => createModifier('textInputAutocapitalization', { autocapitalization });
 
 /**
+ * Sets the text content type for input text, which the system uses to offer
+ * suggestions (like autofill) while the user enters text.
+ * @param textContentType - The semantic meaning of the text input area.
+ * @platform ios 13.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textcontenttype(_:)-ufdv).
+ */
+export const textContentType = (
+  textContentType:
+    | 'URL'
+    | 'namePrefix'
+    | 'name'
+    | 'nameSuffix'
+    | 'givenName'
+    | 'middleName'
+    | 'familyName'
+    | 'nickname'
+    | 'organizationName'
+    | 'jobTitle'
+    | 'location'
+    | 'fullStreetAddress'
+    | 'streetAddressLine1'
+    | 'streetAddressLine2'
+    | 'addressCity'
+    | 'addressCityAndState'
+    | 'addressState'
+    | 'postalCode'
+    | 'sublocality'
+    | 'countryName'
+    | 'username'
+    | 'password'
+    | 'newPassword'
+    | 'oneTimeCode'
+    | 'emailAddress'
+    | 'telephoneNumber'
+    | 'cellularEID'
+    | 'cellularIMEI'
+    | 'creditCardNumber'
+    | 'creditCardExpiration'
+    | 'creditCardExpirationMonth'
+    | 'creditCardExpirationYear'
+    | 'creditCardSecurityCode'
+    | 'creditCardType'
+    | 'creditCardName'
+    | 'creditCardGivenName'
+    | 'creditCardMiddleName'
+    | 'creditCardFamilyName'
+    | 'birthdate'
+    | 'birthdateDay'
+    | 'birthdateMonth'
+    | 'birthdateYear'
+    | 'dateTime'
+    | 'flightNumber'
+    | 'shipmentTrackingNumber'
+) => createModifier('textContentType', { textContentType });
+
+/**
  * Sets the content transition type for a view.
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
@@ -1243,6 +1299,7 @@ export type BuiltInModifier =
   | ReturnType<typeof autocorrectionDisabled>
   | ReturnType<typeof onSubmit>
   | ReturnType<typeof textInputAutocapitalization>
+  | ReturnType<typeof textContentType>
   | ReturnType<typeof datePickerStyle>
   | ReturnType<typeof progressViewStyle>
   | ReturnType<typeof gaugeStyle>

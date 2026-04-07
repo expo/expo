@@ -264,6 +264,23 @@ struct ClassDefinitionTests {
       #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
     }
 
+    @Test
+    func `initializes the shared object from static concurrent function`() async throws {
+      let initialValue = Int.random(in: 1..<100)
+      try runtime
+        .eval(
+          "expo.modules.TestModule.Counter.createConcurrently(\(initialValue)).then((result) => { globalThis.result = result; })"
+        )
+
+      try await waitUntil(timeout: 4.0) {
+        safeBoolEval("globalThis.result != null")
+      }
+      let object = try runtime.eval("object = globalThis.result")
+
+      #expect(object.kind == .object)
+      #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
+    }
+
     private func safeBoolEval(_ js: String) -> Bool {
       var result = false
       do {
@@ -392,6 +409,10 @@ fileprivate final class ModuleWithCounterClass: Module {
 
       StaticAsyncFunction("createAsync") { (initialValue: Int, p: Promise) in
         p.resolve(Counter(initialValue: initialValue))
+      }
+
+      StaticAsyncFunction("createConcurrently") { (initialValue: Int) async throws in
+        Counter(initialValue: initialValue)
       }
 
       Function("increment") { (counter, value: Int) in

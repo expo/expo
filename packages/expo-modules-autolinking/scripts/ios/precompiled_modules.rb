@@ -130,6 +130,7 @@ module Expo
       #
       # @param installer [Pod::Installer] The CocoaPods installer instance
       def perform_pre_install(installer)
+        return unless enabled?
         return unless prebuilt_react_active?
         return if linkage(installer).nil?
 
