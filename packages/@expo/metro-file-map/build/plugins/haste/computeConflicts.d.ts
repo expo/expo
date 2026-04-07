@@ -8,7 +8,7 @@ import type { HasteMapItem } from '../../types';
 interface Conflict {
     id: string;
     platform: string | null;
-    absolutePaths: Array<string>;
+    absolutePaths: string[];
     type: 'duplicate' | 'shadowing';
 }
 export declare function computeHasteConflicts(options: {

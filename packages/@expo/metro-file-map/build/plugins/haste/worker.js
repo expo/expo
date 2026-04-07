@@ -9,9 +9,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(require("path"));
 const unwrapESModule_1 = require("../../lib/unwrapESModule");
 const workerExclusionList_1 = __importDefault(require("../../workerExclusionList"));
-const path_1 = __importDefault(require("path"));
 const PACKAGE_JSON = path_1.default.sep + 'package.json';
 class Worker {
     #hasteImpl = null;
@@ -20,13 +20,13 @@ class Worker {
             this.#hasteImpl = (0, unwrapESModule_1.unwrapESModuleDefault)(require(hasteImplModulePath));
         }
     }
-    processFile(data, utils) {
+    async processFile(data, utils) {
         let hasteName = null;
         const { filePath } = data;
         if (filePath.endsWith(PACKAGE_JSON)) {
             // Process a package.json that is returned as a PACKAGE type with its name.
             try {
-                const fileData = JSON.parse(utils.getContent().toString());
+                const fileData = JSON.parse((await utils.getContent()).toString());
                 if (fileData.name) {
                     hasteName = fileData.name;
                 }

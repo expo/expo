@@ -10,9 +10,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.computeHasteConflicts = computeHasteConflicts;
+const path_1 = __importDefault(require("path"));
 const constants_1 = __importDefault(require("../../constants"));
 const sorting_1 = require("../../lib/sorting");
-const path_1 = __importDefault(require("path"));
 function computeHasteConflicts(options) {
     const { duplicates, map, rootDir } = options;
     const conflicts = [];

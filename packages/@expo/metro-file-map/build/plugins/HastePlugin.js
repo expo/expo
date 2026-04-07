@@ -9,13 +9,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(require("path"));
 const constants_1 = __importDefault(require("../constants"));
 const RootPathUtils_1 = require("../lib/RootPathUtils");
 const sorting_1 = require("../lib/sorting");
 const DuplicateHasteCandidatesError_1 = require("./haste/DuplicateHasteCandidatesError");
-const getPlatformExtension_1 = __importDefault(require("./haste/getPlatformExtension"));
 const HasteConflictsError_1 = require("./haste/HasteConflictsError");
-const path_1 = __importDefault(require("path"));
+const getPlatformExtension_1 = __importDefault(require("./haste/getPlatformExtension"));
 const EMPTY_OBJ = {};
 const EMPTY_MAP = new Map();
 const PACKAGE_JSON = /(?:[/\\]|^)package\.json$/;
@@ -45,10 +45,10 @@ class HastePlugin {
         this.#pathUtils = new RootPathUtils_1.RootPathUtils(options.rootDir);
         this.#failValidationOnConflicts = options.failValidationOnConflicts;
     }
-    async initialize({ files, }) {
+    async initialize({ files }) {
         this.#perfLogger?.point('constructHasteMap_start');
         let hasteFiles = 0;
-        for (const { baseName, canonicalPath, pluginData: hasteId, } of files.fileIterator({
+        for (const { baseName, canonicalPath, pluginData: hasteId } of files.fileIterator({
             // Symlinks and node_modules are never Haste modules or packages.
             includeNodeModules: false,
             includeSymlinks: false,
@@ -58,9 +58,7 @@ class HastePlugin {
             }
             this.setModule(hasteId, [
                 canonicalPath,
-                this.#enableHastePackages && baseName === 'package.json'
-                    ? constants_1.default.PACKAGE
-                    : constants_1.default.MODULE,
+                this.#enableHastePackages && baseName === 'package.json' ? constants_1.default.PACKAGE : constants_1.default.MODULE,
             ]);
             if (++hasteFiles % YIELD_EVERY_NUM_HASTE_FILES === 0) {
                 await new Promise(setImmediate);
@@ -307,8 +305,7 @@ class HastePlugin {
                 // Given that X.(specific platform).js > x.native.js > X.js
                 // and basePlatform is either 'native' or generic (no platform).
                 for (const platform of Object.keys(data)) {
-                    if (platform === basePlatform ||
-                        platform === constants_1.default.GENERIC_PLATFORM /* lowest priority */) {
+                    if (platform === basePlatform || platform === constants_1.default.GENERIC_PLATFORM /* lowest priority */) {
                         continue;
                     }
                     const platformPath = data[platform][0];
@@ -336,9 +333,7 @@ class HastePlugin {
     getCacheKey() {
         return JSON.stringify([
             this.#enableHastePackages,
-            this.#hasteImplModulePath != null
-                ? require(this.#hasteImplModulePath).getCacheKey()
-                : null,
+            this.#hasteImplModulePath != null ? require(this.#hasteImplModulePath).getCacheKey() : null,
             [...this.#platforms].sort(),
         ]);
     }

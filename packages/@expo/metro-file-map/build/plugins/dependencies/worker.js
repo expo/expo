@@ -8,8 +8,8 @@
  */
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const unwrapESModule_1 = require("../../lib/unwrapESModule");
 const dependencyExtractor_1 = require("./dependencyExtractor");
+const unwrapESModule_1 = require("../../lib/unwrapESModule");
 class DependencyExtractorWorker {
     #dependencyExtractor;
     constructor({ dependencyExtractor }) {
@@ -17,8 +17,8 @@ class DependencyExtractorWorker {
             this.#dependencyExtractor = (0, unwrapESModule_1.unwrapESModuleDefault)(require(dependencyExtractor));
         }
     }
-    processFile(data, utils) {
-        const content = utils.getContent().toString();
+    async processFile(data, utils) {
+        const content = (await utils.getContent()).toString();
         const { filePath } = data;
         const dependencies = this.#dependencyExtractor != null
             ? this.#dependencyExtractor.extract(content, filePath, dependencyExtractor_1.extract)
@@ -28,4 +28,3 @@ class DependencyExtractorWorker {
     }
 }
 exports.default = DependencyExtractorWorker;
-;

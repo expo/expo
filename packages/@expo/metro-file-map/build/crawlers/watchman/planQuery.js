@@ -29,13 +29,7 @@ function planQuery({ since, directoryFilters, extensions, includeSha1, includeSy
         fields.push('type');
     }
     const allOfTerms = includeSymlinks
-        ? [
-            [
-                'anyof',
-                ['allof', ['type', 'f'], ['suffix', extensions]],
-                ['type', 'l'],
-            ],
-        ]
+        ? [['anyof', ['allof', ['type', 'f'], ['suffix', extensions]], ['type', 'l']]]
         : [['type', 'f']];
     const query = { fields };
     /**
@@ -100,7 +94,6 @@ function planQuery({ since, directoryFilters, extensions, includeSha1, includeSy
     // If we only have one "all of" expression we can use it directly, otherwise
     // wrap in ['allof', ...expressions]. By construction we should never have
     // length 0.
-    query.expression =
-        allOfTerms.length === 1 ? allOfTerms[0] : ['allof', ...allOfTerms];
+    query.expression = allOfTerms.length === 1 ? allOfTerms[0] : ['allof', ...allOfTerms];
     return { query, queryGenerator };
 }

@@ -4,4 +4,4 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-export default function hasNativeFindSupport(): Promise<boolean>;
+export default function removeOverlappingRoots(roots: readonly string[]): readonly string[];

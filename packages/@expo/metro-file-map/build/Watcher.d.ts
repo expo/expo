@@ -4,15 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Console, CrawlerOptions, CrawlResult, PerfLogger, WatcherBackendChangeEvent } from './types';
 import EventEmitter from 'events';
+import type { Console, CrawlerOptions, CrawlResult, PerfLogger, WatcherBackendChangeEvent } from './types';
 interface WatcherOptions {
     abortSignal: AbortSignal;
     computeSha1: boolean;
     console: Console;
     enableSymlinks: boolean;
     extensions: readonly string[];
-    forceNodeFilesystemAPI: boolean;
     healthCheckFilePrefix: string;
     ignoreForCrawl: (filePath: string) => boolean;
     ignorePatternForWatch: RegExp;

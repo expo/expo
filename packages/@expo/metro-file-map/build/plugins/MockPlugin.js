@@ -10,11 +10,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CACHE_VERSION = void 0;
+const path_1 = __importDefault(require("path"));
+const RootPathUtils_1 = require("../lib/RootPathUtils");
 const normalizePathSeparatorsToPosix_1 = __importDefault(require("../lib/normalizePathSeparatorsToPosix"));
 const normalizePathSeparatorsToSystem_1 = __importDefault(require("../lib/normalizePathSeparatorsToSystem"));
-const RootPathUtils_1 = require("../lib/RootPathUtils");
 const getMockName_1 = __importDefault(require("./mocks/getMockName"));
-const path_1 = __importDefault(require("path"));
 exports.CACHE_VERSION = 2;
 class MockPlugin {
     name = 'mocks';

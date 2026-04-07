@@ -44,11 +44,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const AbstractWatcher_1 = require("./AbstractWatcher");
-const common = __importStar(require("./common"));
 const fs_1 = __importDefault(require("fs"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
+const AbstractWatcher_1 = require("./AbstractWatcher");
+const common = __importStar(require("./common"));
 // NOTE(@kitten): No typings
 const walker = require('walker');
 const platform = os_1.default.platform();

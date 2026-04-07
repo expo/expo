@@ -39,11 +39,11 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-const AbstractWatcher_1 = require("./AbstractWatcher");
-const common_1 = require("./common");
 const fs_1 = require("fs");
 const os_1 = require("os");
 const path = __importStar(require("path"));
+const AbstractWatcher_1 = require("./AbstractWatcher");
+const common_1 = require("./common");
 const debug = require('debug')('Metro:NativeWatcher');
 const TOUCH_EVENT = 'touch';
 const DELETE_EVENT = 'delete';
@@ -73,6 +73,7 @@ class NativeWatcher extends AbstractWatcher_1.AbstractWatcher {
     static isSupported() {
         return (0, os_1.platform)() === 'darwin';
     }
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(dir, opts) {
         // NOTE(@kitten): `!NativeWatcher.isSupported` was always truthy, so omitting check here
         super(dir, opts);

@@ -42,15 +42,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const normalizePathSeparatorsToSystem_1 = __importDefault(require("../lib/normalizePathSeparatorsToSystem"));
-const AbstractWatcher_1 = require("./AbstractWatcher");
-const common = __importStar(require("./common"));
-const RecrawlWarning_1 = __importDefault(require("./RecrawlWarning"));
 const assert_1 = __importDefault(require("assert"));
 const crypto_1 = require("crypto");
 const fb_watchman_1 = __importDefault(require("fb-watchman"));
 const invariant_1 = __importDefault(require("invariant"));
-;
+const AbstractWatcher_1 = require("./AbstractWatcher");
+const RecrawlWarning_1 = __importDefault(require("./RecrawlWarning"));
+const common = __importStar(require("./common"));
+const normalizePathSeparatorsToSystem_1 = __importDefault(require("../lib/normalizePathSeparatorsToSystem"));
 const debug = require('debug')('Metro:WatchmanWatcher');
 const DELETE_EVENT = common.DELETE_EVENT;
 const TOUCH_EVENT = common.TOUCH_EVENT;
@@ -71,7 +70,7 @@ class WatchmanWatcher extends AbstractWatcher_1.AbstractWatcher {
         // Use a unique subscription name per process per watched directory
         const watchKey = (0, crypto_1.createHash)('md5').update(this.root).digest('hex');
         const readablePath = this.root
-            .replace(/[\/\\]/g, '-') // \ and / to -
+            .replace(/[/\\]/g, '-') // \ and / to -
             .replace(/[^\-\w]/g, ''); // Remove non-word/hyphen
         this.subscriptionName = `${SUB_PREFIX}-${process.pid}-${readablePath}-${watchKey}`;
     }
@@ -109,9 +108,7 @@ class WatchmanWatcher extends AbstractWatcher_1.AbstractWatcher {
             // NB: Watchman outputs posix-separated paths even on Windows, convert
             // them to system-native separators.
             self.#watchProjectInfo = {
-                relativePath: resp.relative_path
-                    ? (0, normalizePathSeparatorsToSystem_1.default)(resp.relative_path)
-                    : '',
+                relativePath: resp.relative_path ? (0, normalizePathSeparatorsToSystem_1.default)(resp.relative_path) : '',
                 root: (0, normalizePathSeparatorsToSystem_1.default)(resp.watch),
             };
             self.#client.command(['clock', getWatchRoot()], onClock);

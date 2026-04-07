@@ -4,19 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { BuildParameters, BuildResult, CacheData, CacheManagerFactory, ChangeEventMetadata, Console, FileData, FileSystem, HasteMapData, HasteMapItem, HType, InputFileMapPlugin, PerfLoggerFactory } from './types';
 import EventEmitter from 'events';
+import type { BuildParameters, BuildResult, CacheData, CacheManagerFactory, ChangeEventMetadata, Console, FileData, FileSystem, HasteMapData, HasteMapItem, HType, InputFileMapPlugin, PerfLoggerFactory } from './types';
 export type { BuildParameters, BuildResult, CacheData, ChangeEventMetadata, FileData, FileMap, FileSystem, HasteMapData, HasteMapItem, InputFileMapPlugin, };
 export interface InputOptions {
     readonly computeSha1?: boolean | undefined | null;
+    readonly enableFallback?: boolean | undefined | null;
+    readonly scopeFallback?: boolean | undefined | null;
     readonly enableSymlinks?: boolean | undefined | null;
     readonly extensions: readonly string[];
-    readonly forceNodeFilesystemAPI?: boolean | undefined | null;
     readonly ignorePattern?: RegExp | undefined | null;
     readonly plugins?: readonly InputFileMapPlugin[] | undefined;
     readonly retainAllFiles: boolean;
     readonly rootDir: string;
     readonly roots: readonly string[];
+    readonly serverRoot?: string | undefined | null;
     readonly cacheManagerFactory?: CacheManagerFactory | undefined | null;
     readonly console?: Console;
     readonly healthCheck: HealthCheckOptions;

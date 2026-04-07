@@ -10,16 +10,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Watcher = void 0;
-const node_1 = __importDefault(require("./crawlers/node"));
-const watchman_1 = __importDefault(require("./crawlers/watchman"));
-const common_1 = require("./watchers/common");
-const FallbackWatcher_1 = __importDefault(require("./watchers/FallbackWatcher"));
-const NativeWatcher_1 = __importDefault(require("./watchers/NativeWatcher"));
-const WatchmanWatcher_1 = __importDefault(require("./watchers/WatchmanWatcher"));
 const events_1 = __importDefault(require("events"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const perf_hooks_1 = require("perf_hooks");
+const node_1 = __importDefault(require("./crawlers/node"));
+const watchman_1 = __importDefault(require("./crawlers/watchman"));
+const FallbackWatcher_1 = __importDefault(require("./watchers/FallbackWatcher"));
+const NativeWatcher_1 = __importDefault(require("./watchers/NativeWatcher"));
+const WatchmanWatcher_1 = __importDefault(require("./watchers/WatchmanWatcher"));
+const common_1 = require("./watchers/common");
 const debug = require('debug')('Metro:Watcher');
 const MAX_WAIT_TIME = 240000;
 let nextInstanceId = 0;
@@ -71,7 +71,6 @@ class Watcher extends events_1.default {
             console: options.console,
             includeSymlinks: options.enableSymlinks,
             extensions: options.extensions,
-            forceNodeFilesystemAPI: options.forceNodeFilesystemAPI,
             ignore: ignoreForCrawl,
             onStatus: (status) => {
                 this.emit('status', status);

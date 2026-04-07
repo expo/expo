@@ -12,7 +12,7 @@ export default class DependencyExtractorWorker implements MetadataWorker {
     constructor({ dependencyExtractor }: Readonly<{
         dependencyExtractor: string | null;
     }>);
-    processFile(data: WorkerMessage, utils: Readonly<{
-        getContent: () => Buffer;
-    }>): V8Serializable;
+    processFile(data: WorkerMessage, utils: {
+        readonly getContent: () => Promise<Buffer>;
+    }): Promise<V8Serializable>;
 }

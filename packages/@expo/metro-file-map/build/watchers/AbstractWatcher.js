@@ -43,9 +43,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AbstractWatcher = void 0;
-const common_1 = require("./common");
 const events_1 = __importDefault(require("events"));
 const path = __importStar(require("path"));
+const common_1 = require("./common");
 class AbstractWatcher {
     root;
     ignored;

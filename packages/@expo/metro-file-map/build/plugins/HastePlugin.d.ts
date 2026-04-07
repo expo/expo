@@ -18,7 +18,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
     #private;
     readonly name: 'haste';
     constructor(options: HasteMapOptions);
-    initialize({ files, }: FileMapPluginInitOptions<null, string | null>): Promise<void>;
+    initialize({ files }: FileMapPluginInitOptions<null, string | null>): Promise<void>;
     getSerializableSnapshot(): null;
     getModule(name: string, platform?: string | undefined | null, supportsNativePlatform?: boolean | undefined | null, type?: HTypeValue | undefined | null): Path | undefined | null;
     getModuleNameByPath(mixedPath: Path): string | undefined | null;
@@ -26,7 +26,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
     onChanged(delta: ReadonlyFileSystemChanges<string | null | undefined>): void;
     setModule(id: string, module: HasteMapItemMetadata): void;
     assertValid(): void;
-    computeConflicts(): Array<HasteConflict>;
+    computeConflicts(): HasteConflict[];
     getCacheKey(): string;
     getWorker(): FileMapPluginWorker;
 }

@@ -43,14 +43,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = watchmanCrawl;
-const normalizePathSeparatorsToPosix_1 = __importDefault(require("../../lib/normalizePathSeparatorsToPosix"));
-const normalizePathSeparatorsToSystem_1 = __importDefault(require("../../lib/normalizePathSeparatorsToSystem"));
-const RootPathUtils_1 = require("../../lib/RootPathUtils");
-const planQuery_1 = require("./planQuery");
 const fb_watchman_1 = __importDefault(require("fb-watchman"));
 const invariant_1 = __importDefault(require("invariant"));
 const path = __importStar(require("path"));
 const perf_hooks_1 = require("perf_hooks");
+const planQuery_1 = require("./planQuery");
+const RootPathUtils_1 = require("../../lib/RootPathUtils");
+const normalizePathSeparatorsToPosix_1 = __importDefault(require("../../lib/normalizePathSeparatorsToPosix"));
+const normalizePathSeparatorsToSystem_1 = __importDefault(require("../../lib/normalizePathSeparatorsToSystem"));
 const WATCHMAN_WARNING_INITIAL_DELAY_MILLISECONDS = 10000;
 const WATCHMAN_WARNING_INTERVAL_MILLISECONDS = 20000;
 const watchmanURL = 'https://facebook.github.io/watchman/docs/troubleshooting';
@@ -258,6 +258,10 @@ async function watchmanCrawl({ abortSignal, computeSha1, extensions, ignore, inc
                 let symlinkInfo = 0;
                 if (fileData.type === 'l') {
                     symlinkInfo = fileData['symlink_target'] ?? 1;
+                    if (typeof symlinkInfo === 'string') {
+                        // Cached value should be in posix format
+                        symlinkInfo = (0, normalizePathSeparatorsToPosix_1.default)(pathUtils.resolveSymlinkToNormal(relativeFilePath, symlinkInfo));
+                    }
                 }
                 const nextData = [mtime, size, 0, sha1hex ?? null, symlinkInfo, null];
                 // If watchman is fresh, the removed files map starts with all files

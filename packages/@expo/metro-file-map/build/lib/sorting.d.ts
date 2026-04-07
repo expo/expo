@@ -5,4 +5,4 @@
  * LICENSE file in the root directory of this source tree.
  */
 export declare function compareStrings(a: null | string, b: null | string): number;
-export declare function chainComparators<T>(...comparators: ((a: T, b: T) => number)[]): ((a: T, b: T) => number);
+export declare function chainComparators<T>(...comparators: ((a: T, b: T) => number)[]): (a: T, b: T) => number;

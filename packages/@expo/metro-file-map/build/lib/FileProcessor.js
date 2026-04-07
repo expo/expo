@@ -10,11 +10,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileProcessor = void 0;
+const jest_worker_1 = require("jest-worker");
+const path_1 = require("path");
 const constants_1 = __importDefault(require("../constants"));
 const worker_1 = require("../worker");
 const RootPathUtils_1 = require("./RootPathUtils");
-const jest_worker_1 = require("jest-worker");
-const path_1 = require("path");
 const debug = require('debug')('Metro:FileMap');
 const NODE_MODULES_SEP = 'node_modules' + path_1.sep;
 const MAX_FILES_PER_WORKER = 100;
@@ -63,11 +63,11 @@ class FileProcessor {
         await batchWorker.end();
         return { errors };
     }
-    processRegularFile(normalPath, fileMetadata, req) {
+    async processRegularFile(normalPath, fileMetadata, req) {
         const workerInput = this.#getWorkerInput(normalPath, fileMetadata, req);
         return workerInput
             ? {
-                content: processWorkerReply(this.#inBandWorker.processFile(workerInput), workerInput.pluginsToRun, fileMetadata),
+                content: processWorkerReply(await this.#inBandWorker.processFile(workerInput), workerInput.pluginsToRun, fileMetadata),
             }
             : null;
     }
@@ -80,8 +80,7 @@ class FileProcessor {
         const { maybeReturnContent } = req;
         const nodeModulesIdx = normalPath.indexOf(NODE_MODULES_SEP);
         // Path may begin 'node_modules/' or contain '/node_modules/'.
-        const isNodeModules = nodeModulesIdx === 0 ||
-            (nodeModulesIdx > 0 && normalPath[nodeModulesIdx - 1] === path_1.sep);
+        const isNodeModules = nodeModulesIdx === 0 || (nodeModulesIdx > 0 && normalPath[nodeModulesIdx - 1] === path_1.sep);
         // Indices of plugins with a passing filter
         const pluginsToRun = this.#pluginWorkers?.reduce((prev, plugin, idx) => {
             if (plugin.filter({ isNodeModules, normalPath })) {
@@ -101,7 +100,7 @@ class FileProcessor {
         if (isNodeModules) {
             if (computeSha1) {
                 return {
-                    computeSha1: true,
+                    computeSha1,
                     filePath: this.#rootPathUtils.normalToAbsolute(normalPath),
                     maybeReturnContent,
                     pluginsToRun,

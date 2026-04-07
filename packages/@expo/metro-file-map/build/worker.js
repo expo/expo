@@ -12,11 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Worker = void 0;
 exports.setup = setup;
 exports.processFile = processFile;
-const unwrapESModule_1 = require("./lib/unwrapESModule");
 const crypto_1 = require("crypto");
-const graceful_fs_1 = __importDefault(require("graceful-fs"));
+const fs_1 = __importDefault(require("fs"));
+const unwrapESModule_1 = require("./lib/unwrapESModule");
 function sha1hex(content) {
-    return (0, crypto_1.createHash)('sha1').update(content).digest('hex');
+    return (0, crypto_1.hash)('sha1', content, 'hex');
 }
 /**
  * Exposed for use outside a jest-worker context, ie when processing in-band.
@@ -29,25 +29,27 @@ class Worker {
             return new PluginWorker(setupArgs);
         });
     }
-    processFile(data) {
-        let content;
-        let sha1;
+    async processFile(data) {
+        let contentPromise;
+        let sha1Promise;
         const { computeSha1, filePath, pluginsToRun } = data;
         const getContent = () => {
-            if (content == null) {
-                content = graceful_fs_1.default.readFileSync(filePath);
+            if (contentPromise == null) {
+                contentPromise = fs_1.default.promises.readFile(filePath);
             }
-            return content;
+            return contentPromise;
         };
         const workerUtils = { getContent };
-        const pluginData = pluginsToRun.map((pluginIdx) => this.#plugins[pluginIdx].processFile(data, workerUtils));
+        const pluginDataPromise = Promise.all(pluginsToRun.map((pluginIdx) => this.#plugins[pluginIdx].processFile(data, workerUtils)));
         // If a SHA-1 is requested on update, compute it.
         if (computeSha1) {
-            sha1 = sha1hex(getContent());
+            sha1Promise = getContent().then(sha1hex);
         }
-        return content && data.maybeReturnContent
-            ? { content, pluginData, sha1 }
-            : { pluginData, sha1 };
+        return {
+            content: contentPromise != null && data.maybeReturnContent ? await contentPromise : undefined,
+            pluginData: await pluginDataPromise,
+            sha1: await sha1Promise,
+        };
     }
 }
 exports.Worker = Worker;
@@ -65,7 +67,7 @@ function setup(args) {
 /**
  * Called by jest-worker with each workload
  */
-function processFile(data) {
+async function processFile(data) {
     if (!singletonWorker) {
         throw new Error('metro-file-map: setup() must be called before processFile()');
     }

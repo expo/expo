@@ -29,14 +29,14 @@ export declare class FileProcessor {
         rootDir: string;
     }>);
     processBatch(files: readonly [relativePath: string, FileMetadata][], req: ProcessFileRequest): Promise<{
-        errors: Array<{
+        errors: {
             normalFilePath: string;
             error: MaybeCodedError;
-        }>;
+        }[];
     }>;
-    processRegularFile(normalPath: string, fileMetadata: FileMetadata, req: ProcessFileRequest): {
+    processRegularFile(normalPath: string, fileMetadata: FileMetadata, req: ProcessFileRequest): Promise<{
         content: Buffer | undefined | null;
-    } | null;
+    } | null>;
     end(): Promise<void>;
 }
 export {};

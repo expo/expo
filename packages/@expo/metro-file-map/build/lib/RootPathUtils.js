@@ -10,8 +10,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RootPathUtils = void 0;
+exports.getAncestorOfRootIdx = getAncestorOfRootIdx;
+exports.pathsToPattern = pathsToPattern;
 const invariant_1 = __importDefault(require("invariant"));
 const path_1 = __importDefault(require("path"));
+const normalizePathSeparatorsToSystem_1 = __importDefault(require("./normalizePathSeparatorsToSystem"));
 /**
  * This module provides path utility functions - similar to `node:path` -
  * optimised for Metro's use case (many paths, few roots) under assumptions
@@ -128,6 +131,24 @@ class RootPathUtils {
     relativeToNormal(relativePath) {
         return (this.#tryCollapseIndirectionsInSuffix(relativePath, 0, 0)?.collapsedPath ??
             path_1.default.relative(this.#rootDir, path_1.default.join(this.#rootDir, relativePath)));
+    }
+    resolveSymlinkToNormal(symlinkNormalPath, readlinkResult) {
+        readlinkResult = (0, normalizePathSeparatorsToSystem_1.default)(readlinkResult);
+        // NOTE(@kitten): This is a Node 20 only case, where the value is completely
+        // unnormalized and a trailing slash can be returned on Windows
+        if (readlinkResult[readlinkResult.length - 1] === path_1.default.sep) {
+            readlinkResult = readlinkResult.slice(0, -1);
+        }
+        if (path_1.default.isAbsolute(readlinkResult)) {
+            return this.absoluteToNormal(readlinkResult);
+        }
+        // Resolve relative to the symlink's containing directory, expressed as
+        // a root-relative (possibly non-normal) path, then normalise.
+        const sepIdx = symlinkNormalPath.lastIndexOf(path_1.default.sep);
+        const rootRelativeTarget = sepIdx === -1
+            ? readlinkResult
+            : symlinkNormalPath.slice(0, sepIdx) + path_1.default.sep + readlinkResult;
+        return this.relativeToNormal(rootRelativeTarget);
     }
     // If a path is a direct ancestor of the project root (or the root itself),
     // return a number with the degrees of separation, e.g. root=0, parent=1,..
@@ -257,3 +278,39 @@ class RootPathUtils {
     }
 }
 exports.RootPathUtils = RootPathUtils;
+function getAncestorOfRootIdx(normalPath) {
+    let pos = 0;
+    while (normalPath.startsWith(UP_FRAGMENT_SEP, pos)) {
+        pos += UP_FRAGMENT_SEP_LENGTH;
+    }
+    if (normalPath.length === pos + 2 &&
+        normalPath.charCodeAt(pos) === 46 &&
+        normalPath.charCodeAt(pos + 1) === 46) {
+        return pos / UP_FRAGMENT_SEP_LENGTH + 1;
+    }
+    return pos / UP_FRAGMENT_SEP_LENGTH;
+}
+function pathsToPattern(paths, pathUtils) {
+    if (paths.length === 0) {
+        // Return a pattern that never matches.
+        return null;
+    }
+    const pathsPatterns = paths.map((input) => {
+        let pattern = pathUtils.absoluteToNormal(input);
+        // When pattern is '' (root === rootDir), match any normal path that
+        // doesn't escape the root via '..' indirections.
+        if (pattern === '') {
+            return `(?!\\.\\.(?:\\${path_1.default.sep}|$))`;
+        }
+        // Append separator so that 'src' matches 'src/foo' but not 'src2'.
+        if (!pattern.endsWith(path_1.default.sep)) {
+            pattern += path_1.default.sep;
+        }
+        // Escape all regex-special characters. The string inputs are supposed to
+        // match literally.
+        return pattern.replace(
+        // eslint-disable-next-line no-useless-escape
+        /[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g, '\\$&');
+    });
+    return new RegExp(`^(?:${pathsPatterns.join('|')})`);
+}
