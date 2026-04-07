@@ -1,8 +1,7 @@
-import { useMemo } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
-import { useCompositionOption } from '../../../fork/native-stack/composition-options';
+import { useStableCompositionOption } from '../../../fork/native-stack/composition-options';
 import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 
 export interface StackScreenBackButtonProps {
@@ -81,19 +80,14 @@ export function StackScreenBackButton({
   hidden,
   src,
 }: StackScreenBackButtonProps) {
-  const options = useMemo(
-    () =>
-      appendStackScreenBackButtonPropsToOptions(
-        {},
-        // satisfies ensures every prop is listed here
-        { children, style, withMenu, displayMode, hidden, src } satisfies Record<
-          keyof StackScreenBackButtonProps,
-          unknown
-        >
-      ),
-    [children, style, withMenu, displayMode, hidden, src]
+  useStableCompositionOption(
+    // satisfies ensures every prop is listed here
+    { children, style, withMenu, displayMode, hidden, src } satisfies Record<
+      keyof StackScreenBackButtonProps,
+      unknown
+    >,
+    (input) => appendStackScreenBackButtonPropsToOptions({}, input)
   );
-  useCompositionOption(options);
   return null;
 }
 

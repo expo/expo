@@ -527,4 +527,152 @@ describe('Stack composition components render count', () => {
     // BackButton unmounted — backTitle should be cleared
     expect(lastDetailCall![0].headerConfig?.backTitle).toBeUndefined();
   });
+
+  // Regression suite for the bug class fixed by useStableCompositionOption.
+  // Each caller below previously dispatched on every parent render when its
+  // useMemo deps included an unstable value (inline style, JSX-array
+  // children, inline callback). On a real device this cascades through the
+  // navigator and crashes with "Maximum update depth exceeded"; in jest the
+  // ScreenStackItem mock severs the cascade so we only see the symptom (one
+  // extra ScreenStackItem call after a setState that didn't change any
+  // composition input). The helper absorbs the memoization so these all
+  // become no-ops. These tests live on both platforms because the helper is
+  // platform-agnostic JS.
+
+  it('Stack.Header with inline style does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.Header style={{ backgroundColor: '#fff' }} />
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.Screen.Title with inline style does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.Screen.Title style={{ fontSize: 18 }}>Static</Stack.Screen.Title>
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.Screen.Title with JSX-array children does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      const name = 'Ray';
+      return (
+        <>
+          {/* Two-child JSX produces a new array reference on every render */}
+          <Stack.Screen.Title>Hello {name}</Stack.Screen.Title>
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.SearchBar with inline onChangeText does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.SearchBar
+            placeholder="Search..."
+            // Inline arrow: new identity every render. Mirrors the docs
+            // example at native-tabs.mdx and is the trigger for the bug class.
+            onChangeText={(_text) => undefined}
+          />
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.Screen.BackButton with inline style does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.Screen.BackButton style={{ fontSize: 14 }}>Back</Stack.Screen.BackButton>
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
 });

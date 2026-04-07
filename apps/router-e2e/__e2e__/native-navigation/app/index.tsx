@@ -28,6 +28,7 @@ const HomeIndex = () => {
       <CaseLink href="/composition-lifecycle" text="Composition Lifecycle" />
       <CaseLink href="/composition-conflicts" text="Composition Conflicts" />
       <CaseLink href="/composition-rerenders" text="Composition Rerenders" />
+      <CaseLink href="/composition-stability" text="Composition Stability" />
       <CaseLink href="/modals" text="Modals" />
       <CaseLink href="/params" text="Params" />
       <CaseLink href="/js-stack" text="JS Stack" />

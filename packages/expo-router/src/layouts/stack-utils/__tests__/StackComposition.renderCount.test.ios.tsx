@@ -273,6 +273,240 @@ describe('Stack composition components render count', () => {
     expect(ScreenStackItem).not.toHaveBeenCalled();
   });
 
+  it('Stack.Toolbar item structure changes DO trigger re-registration', () => {
+    // Dual of the no-loop test: confirm we don't over-correct. Adding a
+    // toolbar item must still rebuild the header.
+    function Index() {
+      const [showSecond, setShowSecond] = useState(false);
+      return (
+        <>
+          <Stack.Toolbar placement="right">
+            <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+            {showSecond && <Stack.Toolbar.Button icon="ellipsis.circle" onPress={() => {}} />}
+          </Stack.Toolbar>
+          <Button testID="toggle" title="Toggle" onPress={() => setShowSecond((v) => !v)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    // Initial: one button
+    const initialProps = ScreenStackItem.mock.calls[1][0];
+    expect(initialProps.headerConfig?.headerRightBarButtonItems).toHaveLength(1);
+
+    jest.clearAllMocks();
+
+    // Toggle: now two buttons. Structural change, must re-register.
+    act(() => {
+      fireEvent.press(screen.getByTestId('toggle'));
+    });
+
+    expect(ScreenStackItem).toHaveBeenCalled();
+    const updatedProps = ScreenStackItem.mock.calls[ScreenStackItem.mock.calls.length - 1][0];
+    expect(updatedProps.headerConfig?.headerRightBarButtonItems).toHaveLength(2);
+  });
+
+  it('local state changes do not infinite-loop with Stack.Toolbar', () => {
+    // Regression test: JSX `children` is a new array every parent render, so
+    // depending on it directly inside `useCompositionOption` re-dispatched on
+    // every render, which re-rendered the navigator, which re-rendered the
+    // screen, which created new children, an infinite loop.
+    const indexRender = jest.fn();
+
+    function Index() {
+      indexRender();
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.Toolbar placement="left">
+            <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+          </Stack.Toolbar>
+          <Stack.Toolbar placement="right">
+            <Stack.Toolbar.Button icon="ellipsis.circle" onPress={() => {}} />
+          </Stack.Toolbar>
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+
+    // Clear after initial settle
+    jest.clearAllMocks();
+
+    // Increment counter, triggers rerender of screen component
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+
+    // Screen render fn IS called once (state changed, expected)
+    expect(indexRender).toHaveBeenCalledTimes(1);
+
+    // ScreenStackItem should NOT be called: toolbar items are structurally
+    // unchanged so the registered options object stays reference-stable.
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.Toolbar item reordering DOES trigger re-registration', () => {
+    // Proves the structural fingerprint captures element order. Two buttons
+    // swapped via state must produce a different fingerprint and re-register.
+    // Using an array (not a Fragment) so React.Children.toArray flattens it
+    // into the toolbar's child list correctly.
+    function Index() {
+      const [reversed, setReversed] = useState(false);
+      return (
+        <>
+          <Stack.Toolbar placement="right">
+            {reversed
+              ? [
+                  <Stack.Toolbar.Button key="b" icon="ellipsis.circle" onPress={() => {}} />,
+                  <Stack.Toolbar.Button key="a" icon="star" onPress={() => {}} />,
+                ]
+              : [
+                  <Stack.Toolbar.Button key="a" icon="star" onPress={() => {}} />,
+                  <Stack.Toolbar.Button key="b" icon="ellipsis.circle" onPress={() => {}} />,
+                ]}
+          </Stack.Toolbar>
+          <Button testID="reverse" title="rev" onPress={() => setReversed((v) => !v)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    // Initial: [star, ellipsis.circle]
+    const initialItems = ScreenStackItem.mock.calls[1][0].headerConfig?.headerRightBarButtonItems;
+    expect(initialItems).toHaveLength(2);
+
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('reverse'));
+    });
+
+    // After reverse: re-registration must have fired AND the items array must
+    // be in the swapped order. JSON-comparing the items proves both at once
+    // (re-registration happened and the order actually changed).
+    expect(ScreenStackItem).toHaveBeenCalled();
+    const finalItems =
+      ScreenStackItem.mock.calls[ScreenStackItem.mock.calls.length - 1][0].headerConfig
+        ?.headerRightBarButtonItems;
+    expect(finalItems).toHaveLength(2);
+    expect(JSON.stringify(finalItems)).not.toEqual(JSON.stringify(initialItems));
+  });
+
+  it('Stack.Toolbar visual prop changes DO trigger re-registration', () => {
+    // Proves serializable props are captured in the fingerprint. Same button,
+    // same handler, only the icon string changes via state.
+    function Index() {
+      const [filled, setFilled] = useState(false);
+      return (
+        <>
+          <Stack.Toolbar placement="right">
+            <Stack.Toolbar.Button icon={filled ? 'star.fill' : 'star'} onPress={() => {}} />
+          </Stack.Toolbar>
+          <Button testID="toggle" title="toggle" onPress={() => setFilled((v) => !v)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('toggle'));
+    });
+
+    expect(ScreenStackItem).toHaveBeenCalled();
+  });
+
+  it('Stack.Toolbar nested menu action changes DO trigger re-registration', () => {
+    // Proves the fingerprint recurses into the `children` prop of nested
+    // elements. Adding a MenuAction inside a Menu must change the fingerprint
+    // even though the outer Menu's other props are unchanged.
+    function Index() {
+      const [showExtra, setShowExtra] = useState(false);
+      return (
+        <>
+          <Stack.Toolbar placement="right">
+            <Stack.Toolbar.Menu icon="ellipsis.circle">
+              <Stack.Toolbar.MenuAction onPress={() => {}}>First</Stack.Toolbar.MenuAction>
+              {showExtra && (
+                <Stack.Toolbar.MenuAction onPress={() => {}}>Second</Stack.Toolbar.MenuAction>
+              )}
+            </Stack.Toolbar.Menu>
+          </Stack.Toolbar>
+          <Button testID="toggle" title="toggle" onPress={() => setShowExtra((v) => !v)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('toggle'));
+    });
+
+    expect(ScreenStackItem).toHaveBeenCalled();
+  });
+
+  it('Stack.Toolbar handlers reading state via closure do not retrigger registration', () => {
+    // Strengthens the no-loop test: the in-toolbar `onPress` actually closes
+    // over `count` (a new closure on every render), but function-typed props
+    // are skipped by the fingerprint, so re-registration must NOT fire.
+    function Index() {
+      const [count, setCount] = useState(0);
+      // Closes over `count` so the closure is genuinely a different identity
+      // on every render. The fingerprint must still treat it as unchanged.
+      const handleStarPress = () => count;
+      return (
+        <>
+          <Stack.Toolbar placement="right">
+            <Stack.Toolbar.Button icon="star" onPress={handleStarPress} />
+          </Stack.Toolbar>
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
   it('changed composition options DO trigger ScreenStackItem update', () => {
     const indexRender = jest.fn();
 
@@ -519,5 +753,152 @@ describe('Stack composition components render count', () => {
     expect(lastDetailCall![0].headerConfig?.blurEffect).toBe('prominent');
     // BackButton unmounted — backTitle should be cleared
     expect(lastDetailCall![0].headerConfig?.backTitle).toBeUndefined();
+  });
+
+  // Regression suite for the bug class fixed by useStableCompositionOption.
+  // Each caller below previously dispatched on every parent render when its
+  // useMemo deps included an unstable value (inline style, JSX-array
+  // children, inline callback). On a real device this cascades through the
+  // navigator and crashes with "Maximum update depth exceeded"; in jest the
+  // ScreenStackItem mock severs the cascade so we only see the symptom (one
+  // extra ScreenStackItem call after a setState that didn't change any
+  // composition input). The helper absorbs the memoization so these all
+  // become no-ops.
+
+  it('Stack.Header with inline style does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.Header style={{ backgroundColor: '#fff' }} />
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.Screen.Title with inline style does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.Screen.Title style={{ fontSize: 18 }}>Static</Stack.Screen.Title>
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.Screen.Title with JSX-array children does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      const name = 'Ray';
+      return (
+        <>
+          {/* Two-child JSX produces a new array reference on every render */}
+          <Stack.Screen.Title>Hello {name}</Stack.Screen.Title>
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.SearchBar with inline onChangeText does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.SearchBar
+            placeholder="Search..."
+            // Inline arrow: new identity every render. Mirrors the docs
+            // example at native-tabs.mdx and is the trigger for the bug class.
+            onChangeText={(_text) => undefined}
+          />
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
+  });
+
+  it('Stack.Screen.BackButton with inline style does not retrigger registration on parent state change', () => {
+    function Index() {
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <Stack.Screen.BackButton style={{ fontSize: 14 }}>Back</Stack.Screen.BackButton>
+          <Text testID="count">{count}</Text>
+          <Button testID="increment" title="+" onPress={() => setCount((c) => c + 1)} />
+        </>
+      );
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: Index,
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+    jest.clearAllMocks();
+    act(() => {
+      fireEvent.press(screen.getByTestId('increment'));
+    });
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(ScreenStackItem).not.toHaveBeenCalled();
   });
 });

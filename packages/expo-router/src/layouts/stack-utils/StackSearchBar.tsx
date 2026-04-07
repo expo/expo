@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
 import type { SearchBarProps } from 'react-native-screens';
 
-import { useCompositionOption } from '../../fork/native-stack/composition-options';
+import { useStableCompositionOption } from '../../fork/native-stack/composition-options';
 import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 
 // TODO: Discuss adding SearchBarSlot to react-native-screens header items
@@ -62,40 +61,9 @@ export function StackSearchBar({
   headerIconColor,
   shouldShowHintSearchIcon,
 }: StackSearchBarProps) {
-  const options = useMemo(
-    () =>
-      appendStackSearchBarPropsToOptions(
-        {},
-        // satisfies ensures every prop is listed here
-        {
-          ref,
-          autoCapitalize,
-          autoFocus,
-          barTintColor,
-          tintColor,
-          cancelButtonText,
-          disableBackButtonOverride,
-          hideNavigationBar,
-          hideWhenScrolling,
-          inputType,
-          obscureBackground,
-          onBlur,
-          onCancelButtonPress,
-          onChangeText,
-          onClose,
-          onFocus,
-          onOpen,
-          onSearchButtonPress,
-          placeholder,
-          placement,
-          allowToolbarIntegration,
-          textColor,
-          hintTextColor,
-          headerIconColor,
-          shouldShowHintSearchIcon,
-        } satisfies Record<keyof StackSearchBarProps, unknown>
-      ),
-    [
+  useStableCompositionOption(
+    // satisfies ensures every prop is listed here
+    {
       ref,
       autoCapitalize,
       autoFocus,
@@ -121,9 +89,9 @@ export function StackSearchBar({
       hintTextColor,
       headerIconColor,
       shouldShowHintSearchIcon,
-    ]
+    } satisfies Record<keyof StackSearchBarProps, unknown>,
+    (input) => appendStackSearchBarPropsToOptions({}, input)
   );
-  useCompositionOption(options);
   return null;
 }
 

@@ -98,7 +98,7 @@ const StackToolbarHeader = ({ children, placement, asChild, disableImePadding, t
     if (placement !== 'left' && placement !== 'right') {
         throw new Error(`Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`);
     }
-    const options = (0, react_2.useMemo)(() => appendStackToolbarPropsToOptions({}, 
+    (0, composition_options_1.useStableCompositionOption)(
     // satisfies ensures every prop is listed here
     {
         children,
@@ -107,8 +107,7 @@ const StackToolbarHeader = ({ children, placement, asChild, disableImePadding, t
         disableImePadding,
         tintColor,
         backgroundColor,
-    }), [children, placement, asChild, disableImePadding, tintColor, backgroundColor]);
-    (0, composition_options_1.useCompositionOption)(options);
+    }, (input) => appendStackToolbarPropsToOptions({}, input));
     return null;
 };
 function appendStackToolbarPropsToOptions(options, props) {

@@ -16,7 +16,7 @@ import {
 } from './context';
 import { processHeaderItemsForPlatform } from './processHeaderItemsForPlatform';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
-import { useCompositionOption } from '../../../fork/native-stack/composition-options';
+import { useStableCompositionOption } from '../../../fork/native-stack/composition-options';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
 import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { RouterToolbarHost } from '../../../toolbar/native';
@@ -183,23 +183,18 @@ const StackToolbarHeader = ({
     );
   }
 
-  const options = useMemo(
-    () =>
-      appendStackToolbarPropsToOptions(
-        {},
-        // satisfies ensures every prop is listed here
-        {
-          children,
-          placement,
-          asChild,
-          disableImePadding,
-          tintColor,
-          backgroundColor,
-        } satisfies Record<keyof StackToolbarProps, unknown>
-      ),
-    [children, placement, asChild, disableImePadding, tintColor, backgroundColor]
+  useStableCompositionOption(
+    // satisfies ensures every prop is listed here
+    {
+      children,
+      placement,
+      asChild,
+      disableImePadding,
+      tintColor,
+      backgroundColor,
+    } satisfies Record<keyof StackToolbarProps, unknown>,
+    (input) => appendStackToolbarPropsToOptions({}, input)
   );
-  useCompositionOption(options);
 
   return null;
 };

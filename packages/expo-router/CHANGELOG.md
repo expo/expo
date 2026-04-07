@@ -31,6 +31,7 @@
 - Fix `Stack.Screen.Title` string/number concatenation. ([#44213](https://github.com/expo/expo/pull/44213) by [@jakex7](https://github.com/jakex7))
 - [android] Use `tint` prop name instead of `tintColor` for Jetpack Compose icons ([#44427](https://github.com/expo/expo/pull/44427) by [@hassankhan](https://github.com/hassankhan))
 - Disable touch events on unfocused native tab screens ([#44778](https://github.com/expo/expo/pull/44778) by [@cortinico](https://github.com/cortinico))
+- Fix `Stack.Toolbar`, `Stack.Header`, `Stack.Screen.Title`, `Stack.SearchBar`, and `Stack.Screen.BackButton` retriggering composition registration on every parent render when their props include unstable references (inline styles, inline callbacks, JSX children). On stateful screens this previously cascaded into a `Maximum update depth exceeded` crash. Adds `useStableCompositionOption` which absorbs the memoization burden by structurally fingerprinting its input, and migrates all five callers to use it. ([#44563](https://github.com/expo/expo/pull/44563) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 

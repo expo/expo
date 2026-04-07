@@ -1,8 +1,8 @@
-import { useMemo, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
-import { useCompositionOption } from '../../fork/native-stack/composition-options';
+import { useStableCompositionOption } from '../../fork/native-stack/composition-options';
 import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 
 export interface StackHeaderProps {
@@ -116,19 +116,14 @@ export function StackHeaderComponent({
   style,
   largeStyle,
 }: StackHeaderProps) {
-  const options = useMemo(
-    () =>
-      appendStackHeaderPropsToOptions(
-        {},
-        // satisfies ensures every prop is listed here
-        { children, hidden, asChild, transparent, blurEffect, style, largeStyle } satisfies Record<
-          keyof StackHeaderProps,
-          unknown
-        >
-      ),
-    [children, hidden, asChild, transparent, blurEffect, style, largeStyle]
+  useStableCompositionOption(
+    // satisfies ensures every prop is listed here
+    { children, hidden, asChild, transparent, blurEffect, style, largeStyle } satisfies Record<
+      keyof StackHeaderProps,
+      unknown
+    >,
+    (input) => appendStackHeaderPropsToOptions({}, input)
   );
-  useCompositionOption(options);
   return null;
 }
 

@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackScreenTitle = StackScreenTitle;
 exports.appendStackScreenTitlePropsToOptions = appendStackScreenTitlePropsToOptions;
 const jsx_runtime_1 = require("react/jsx-runtime");
-const react_1 = require("react");
 const react_native_1 = require("react-native");
 const composition_options_1 = require("../../../fork/native-stack/composition-options");
 const style_1 = require("../../../utils/style");
@@ -66,10 +65,9 @@ const shared_1 = require("../toolbar/shared");
  * the last one rendered in the component tree takes precedence.
  */
 function StackScreenTitle({ children, asChild, style, largeStyle, large, }) {
-    const options = (0, react_1.useMemo)(() => appendStackScreenTitlePropsToOptions({}, 
+    (0, composition_options_1.useStableCompositionOption)(
     // satisfies ensures every prop is listed here
-    { children, asChild, style, largeStyle, large }), [children, asChild, style, largeStyle, large]);
-    (0, composition_options_1.useCompositionOption)(options);
+    { children, asChild, style, largeStyle, large }, (input) => appendStackScreenTitlePropsToOptions({}, input));
     return null;
 }
 function appendStackScreenTitlePropsToOptions(options, props) {

@@ -1,7 +1,7 @@
-import { useMemo, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { type ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
-import { useCompositionOption } from '../../../fork/native-stack/composition-options';
+import { useStableCompositionOption } from '../../../fork/native-stack/composition-options';
 import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { convertFontWeightToStringFontWeight } from '../../../utils/style';
 import { areAllChildrenPrimitiveValues, convertChildrenToString } from '../toolbar/shared';
@@ -113,19 +113,14 @@ export function StackScreenTitle({
   largeStyle,
   large,
 }: StackScreenTitleProps) {
-  const options = useMemo(
-    () =>
-      appendStackScreenTitlePropsToOptions(
-        {},
-        // satisfies ensures every prop is listed here
-        { children, asChild, style, largeStyle, large } satisfies Record<
-          keyof StackScreenTitleProps,
-          unknown
-        >
-      ),
-    [children, asChild, style, largeStyle, large]
+  useStableCompositionOption(
+    // satisfies ensures every prop is listed here
+    { children, asChild, style, largeStyle, large } satisfies Record<
+      keyof StackScreenTitleProps,
+      unknown
+    >,
+    (input) => appendStackScreenTitlePropsToOptions({}, input)
   );
-  useCompositionOption(options);
   return null;
 }
 

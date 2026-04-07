@@ -76,7 +76,19 @@ export function useCompositionRegistry() {
  * Hook used by composition components to register their options in the composition registry.
  *
  * Registers options on mount/update via useSafeLayoutEffect, and unregisters on unmount.
- * Callers should memoize the options object to avoid unnecessary re-registrations.
+ *
+ * The `options` argument MUST be referentially stable across renders that
+ * do not intend to re-register. The hook compares by identity, not by
+ * structure: passing a fresh object every render causes the effect to
+ * re-fire on every parent render, which dispatches into the registry, which
+ * re-renders the navigator, which re-renders the parent screen, and so on.
+ * On a screen with state this loops until React aborts with
+ * "Maximum update depth exceeded".
+ *
+ * For callers whose options derive from JSX children, inline style objects,
+ * inline color values, or inline event handlers, prefer
+ * `useStableCompositionOption`. It absorbs the memoization burden by
+ * structurally fingerprinting its input.
  */
 export function useCompositionOption(options: Partial<NativeStackNavigationOptions>) {
   const context = use(CompositionContext);
