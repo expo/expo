@@ -83,9 +83,7 @@ private func getDeviceName() -> String {
 }
 
 private func getManifest() -> [String: Any]? {
-  let frameworkBundle = Bundle(for: ConstantsProvider.self)
-
-  guard let bundleUrl = frameworkBundle.resourceURL?.appendingPathComponent("EXConstants.bundle"),
+  guard let bundleUrl = Bundle.main.resourceURL?.appendingPathComponent("EXConstants.bundle"),
         let bundle = Bundle(url: bundleUrl),
         let url = bundle.url(forResource: "app", withExtension: "config") else {
     log.error("Unable to find the embedded app config")
