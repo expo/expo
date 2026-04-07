@@ -36,4 +36,13 @@ struct ConstantsTests {
     #expect(consts["test"] as? Int == 123)
     #expect(consts["test2"] as? Int == 789)
   }
+
+  @Test
+  func `constants provider values are not double-wrapped optionals`() {
+    let constants = ConstantsProvider.shared.constants()
+    for (key, value) in constants {
+      let mirror = Mirror(reflecting: value)
+      #expect(mirror.displayStyle != .optional, "Value for key '\(key)' is a wrapped Optional — will bridge as null to JS")
+    }
+  }
 }
