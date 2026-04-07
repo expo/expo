@@ -26,6 +26,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `ObservableState` shared object and `useNativeState` hook for controlling native SwiftUI state from JS. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add shared object worklet support with `.value` property API for `ObservableState`. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `TooltipBox`, `PlainTooltip`, and `RichTooltip` components matching native Compose Tooltip API. Supports plain and rich tooltips with slot-based content, programmatic show/dismiss via ref, and `isPersistent`, `hasAction`, `enableUserInput`, `focusable` props. ([#44373](https://github.com/expo/expo/pull/44373) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `Badge` and `BadgedBox` components wrapping Jetpack Compose's Badge API for status indicators and count overlays. ([#44139](https://github.com/expo/expo/pull/44139) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `shape`, `border`, `selected`, `checked`, `onClick`, and `onCheckedChange` props to `Surface`, supporting clickable, selectable, and toggleable variants. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
