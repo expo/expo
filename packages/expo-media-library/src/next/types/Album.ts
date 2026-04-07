@@ -74,6 +74,10 @@ export declare class Album {
 
   /**
    * Removes assets from the album without deleting them from the library.
+   * This is supported only on iOS.
+   *
+   * On Android, an asset can belong to only one album. To remove it from an album,
+   * delete it or add it to another album.
    * @platform ios
    * @param assets - An array of {@link Asset} objects to remove from the album.
    * @returns A promise that resolves once the assets have been removed.

@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [next] Add `album.removeAssets()` ([#44455](https://github.com/expo/expo/pull/44455) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add usePermissions ([#44403](https://github.com/expo/expo/pull/44403) by [@Wenszel](https://github.com/Wenszel))
 - [next][iOS] Fixed `Query.limit(0)` returning all assets instead of an empty array ([#44245](https://github.com/expo/expo/pull/44245) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add getPermissionsAsync ([#44244](https://github.com/expo/expo/pull/44244) by [@Wenszel](https://github.com/Wenszel))
