@@ -18,10 +18,7 @@ enum KeyboardType: String, Enumerable {
   case asciiCapableNumberPad = "ascii-capable-number-pad"
 }
 
-func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
-  guard let keyboardType = keyboardType else {
-    return .default
-  }
+func getKeyboardType(_ keyboardType: KeyboardType) -> UIKeyboardType {
   switch keyboardType {
   case .defaultKeyboard:
     return .default
