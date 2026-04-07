@@ -19,6 +19,7 @@ import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addTemplateTarball } from './addTemplateTarball';
+import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
 const { cyan } = chalk;
@@ -35,16 +36,23 @@ export const prepareCanaries = new Task<TaskArgs>(
     const canarySuffix = await getCurrentCanaryVersionSuffix();
     const currentSdkVersion = await sdkVersionAsync();
     const currentSdkMajor = semver.major(currentSdkVersion);
-    const nextSdkVersion = await getNextSdkVersion();
+    const currentBranch = await Git.getCurrentBranchNameAsync();
+    const isMain = currentBranch === 'main';
 
     for (const parcel of parcels) {
       const { pkg, state, pkgView } = parcel;
-      // Packages whose major version matches the current SDK should be bumped
-      // to the next SDK version for canary releases (e.g. 55.0.2 → 56.0.0-canary-...).
+      // On `main`, SDK-versioned packages are bumped to the next major for canary releases
+      // (e.g. 55.0.2 → 56.0.0-canary-...) since main represents next-SDK development.
+      // On `sdk-*` branches, they get a patch bump (e.g. 55.0.2 → 55.0.3-canary-...)
+      // since these are fixes for an already-released SDK.
+      const sdkBaseVersion = computeCanaryVersion(
+        pkg.packageVersion,
+        currentSdkMajor,
+        isMain,
+        await getNextSdkVersion()
+      );
       const baseVersion =
-        semver.major(pkg.packageVersion) === currentSdkMajor
-          ? nextSdkVersion
-          : (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
+        sdkBaseVersion ?? (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
 
       // Strip any pre-release tag from the baseVersion
       // For example, convert "5.0.0-rc.0" or "5.0.0-preview.0" to "5.0.0"
@@ -57,8 +65,14 @@ export const prepareCanaries = new Task<TaskArgs>(
       );
     }
 
-    // Override the tag option – canary releases should always use `canary` tag
-    options.tag = 'canary';
+    // Only use the `canary` tag when publishing from `main` or the latest `sdk-*` branch.
+    // Other branches publish canary versions without the `canary` dist-tag so they
+    // don't overwrite the canary tag that points at main/latest-sdk builds.
+    if (await shouldUseCanaryTag(currentBranch)) {
+      options.tag = 'canary';
+    } else {
+      options.tag = `canary-sdk-${currentSdkMajor}`;
+    }
   }
 );
 
@@ -92,7 +106,12 @@ export const cleanWorkingTree = new Task<TaskArgs>(
         await Git.cleanAsync({
           recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'packages/**/local-maven-repo/**', 'templates/**/*.tgz'],
+          paths: [
+            'packages/**/*.tgz',
+            'packages/**/local-maven-repo/**',
+            'packages/**/prebuilds/**',
+            'templates/**/*.tgz',
+          ],
         });
       },
       'Cleaned up the working tree'
@@ -118,6 +137,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateAndroidProjects,
       publishAndroidArtifacts,
       addTemplateTarball,
+      bundleIOSPrebuilds,
       packPackageToTarball,
       publishPackages,
       cleanWorkingTree,
@@ -131,6 +151,43 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
     );
   }
 );
+
+/**
+ * Returns `true` if the current branch should publish with the `canary` dist-tag.
+ * Only `main` and the latest `sdk-*` branch qualify.
+ */
+async function shouldUseCanaryTag(currentBranch: string): Promise<boolean> {
+  if (currentBranch === 'main') {
+    return true;
+  }
+  const sdkMatch = currentBranch.match(/^sdk-(\d+)$/);
+  if (!sdkMatch) {
+    return false;
+  }
+  const latestSdkBranch = await getLatestRemoteSdkBranchAsync();
+  return currentBranch === latestSdkBranch;
+}
+
+/**
+ * Lists remote `sdk-*` branches and returns the name of the one with the highest number.
+ */
+async function getLatestRemoteSdkBranchAsync(): Promise<string | null> {
+  const { stdout } = await Git.runAsync(['branch', '-r', '--list', 'origin/sdk-*']);
+  let maxSdk = -1;
+  let latestBranch: string | null = null;
+
+  for (const line of stdout.split('\n')) {
+    const match = line.trim().match(/^origin\/sdk-(\d+)$/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (num > maxSdk) {
+        maxSdk = num;
+        latestBranch = `sdk-${num}`;
+      }
+    }
+  }
+  return latestBranch;
+}
 
 /**
  * Returns a canary version suffix for the current date and HEAD commit hash.
@@ -149,6 +206,32 @@ async function getCurrentCanaryVersionSuffix() {
   });
 
   return `canary-${year}${month}${day}-${shortCommitHash}`;
+}
+
+/**
+ * Computes the base version for a canary release of an SDK-versioned package.
+ * Returns `null` if the package is not SDK-versioned.
+ *
+ * - On `main`: bumps to the next major SDK version (e.g. 55.0.2 → 56.0.0)
+ * - On SDK branches: bumps the patch version (e.g. 55.0.2 → 55.0.3)
+ */
+export function computeCanaryVersion(
+  packageVersion: string,
+  currentSdkMajor: number,
+  isMainBranch: boolean,
+  nextSdkVersion: string
+): string | null {
+  if (semver.major(packageVersion) !== currentSdkMajor) {
+    return null;
+  }
+  if (isMainBranch) {
+    return nextSdkVersion;
+  }
+  const patchVersion = semver.inc(packageVersion, 'patch');
+  if (!patchVersion) {
+    throw new Error(`Unable to compute patch version for ${packageVersion}`);
+  }
+  return patchVersion;
 }
 
 /**

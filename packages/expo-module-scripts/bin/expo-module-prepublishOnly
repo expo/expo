@@ -2,7 +2,11 @@
 
 process.env.EXPO_NONINTERACTIVE = 1;
 
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { commandRunner } from '../utils/commandUtils.js';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function runAsync() {
   console.log('Preparing module for publishing');

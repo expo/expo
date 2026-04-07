@@ -4,6 +4,7 @@
 #import <RCTAppSetupUtils.h>
 #import <React/CoreModulesPlugins.h>
 #import <ExpoModulesCore/EXRuntime.h>
+#import <ExpoModulesCore/EXHostWrapper.h>
 #import <ExpoModulesCore-Swift.h>
 
 

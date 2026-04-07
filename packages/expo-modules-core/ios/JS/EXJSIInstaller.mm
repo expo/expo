@@ -2,6 +2,7 @@
 
 #import <ExpoModulesJSI/BridgelessJSCallInvoker.h>
 
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/LazyObject.h>
@@ -9,7 +10,6 @@
 #import <ExpoModulesCore/SharedRef.h>
 #import <ExpoModulesCore/EventEmitter.h>
 #import <ExpoModulesCore/NativeModule.h>
-#import <ExpoModulesCore/Swift.h>
 #import <ExpoModulesCore/EXRuntime.h>
 #import <ExpoModulesJSI/EXJSIUtils.h>
 
@@ -24,7 +24,8 @@ namespace jsi = facebook::jsi;
 NSString *const EXGlobalCoreObjectPropertyName = @"expo";
 
 /**
- Property name used to define the modules host object in the main object of the Expo JS runtime.
+ Property name used to define the modules host object in the main object of the
+ Expo JS runtime.
  */
 static NSString *modulesHostObjectPropertyName = @"modules";
 
@@ -49,7 +50,7 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 
 #pragma mark - Installing JSI bindings
 
-+ (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
++ (BOOL)installExpoModulesHostObject:(nonnull id<EXAppContextProtocol>)appContext
 {
   EXRuntime *runtime = [appContext _runtime];
 
@@ -67,7 +68,11 @@ static NSString *modulesHostObjectPropertyName = @"modules";
     return false;
   }
 
-  std::shared_ptr<expo::ExpoModulesHostObject> modulesHostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(appContext);
+  // Cast protocol to EXAppContext* for the C++ ExpoModulesHostObject
+  // constructor This is safe because EXAppContext is the ObjC name for Swift's
+  // AppContext class
+  EXAppContext *appContextObj = (EXAppContext *)appContext;
+  std::shared_ptr<expo::ExpoModulesHostObject> modulesHostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(appContextObj);
   EXJavaScriptObject *modulesHostObject = [runtime createHostObject:modulesHostObjectPtr];
 
   // Define the `global.expo.modules` object as a non-configurable, read-only and enumerable property.

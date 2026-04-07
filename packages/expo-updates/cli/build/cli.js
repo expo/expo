@@ -99,7 +99,7 @@ if (args['--help']) {
 // Install exit hooks
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
-if (!(command in commands)) {
+if (!commands[command]) {
     console.error(`Invalid command: ${command}`);
     process.exit(1);
 }

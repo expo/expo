@@ -1826,12 +1826,28 @@ extension ViewModifierRegistry {
       return try TagModifier(from: params, appContext: appContext)
     }
 
+    register("scrollTargetBehavior") { params, appContext, _ in
+      return try ScrollTargetBehaviorModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollTargetLayout") { params, appContext, _ in
+      return try ScrollTargetLayoutModifier(from: params, appContext: appContext)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
 
     register("submitLabel") { params, appContext, _ in
       return try SubmitLabelModifier(from: params, appContext: appContext)
+    }
+
+    register("textInputAutocapitalization") { params, appContext, _ in
+      return try TextInputAutocapitalizationModifier(from: params, appContext: appContext)
+    }
+
+    register("textContentType") { params, appContext, _ in
+      return try TextContentTypeModifier(from: params, appContext: appContext)
     }
 
     register("datePickerStyle") { params, appContext, _ in

@@ -178,7 +178,7 @@ exports.discoverExpoModuleConfigAsync = (0, memoize_1.memoize)(async function di
     for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
         // TODO: Validate the raw config against a schema.
         // TODO: Support for `*.js` files, not only static `*.json`.
-        const targetPath = path_1.default.join(directoryPath, EXPO_MODULE_CONFIG_FILENAMES[idx]);
+        const targetPath = path_1.default.join(directoryPath, EXPO_MODULE_CONFIG_FILENAMES[idx] ?? '');
         let text;
         try {
             text = await fs_1.default.promises.readFile(targetPath, 'utf8');

@@ -184,7 +184,7 @@ async function generateImagesAssetsAsync({
   tabletItem,
   darkTabletItem
 }) {
-  const items = [[anyItem, PNG_FILENAME], [darkItem, DARK_PNG_FILENAME], [tabletItem, TABLET_PNG_FILENAME], [darkTabletItem, DARK_TABLET_PNG_FILENAME]].filter(([item]) => !!item);
+  const items = [[anyItem, PNG_FILENAME], [darkItem, DARK_PNG_FILENAME], [tabletItem, TABLET_PNG_FILENAME], [darkTabletItem, DARK_TABLET_PNG_FILENAME]].filter(tuple => tuple[0] != null);
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
 const darkAppearances = [{

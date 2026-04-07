@@ -3,9 +3,12 @@ import invariant from 'invariant';
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 function convertBufferToString(buffer) {
     const state = [];
-    for (let i = 0; i < buffer.byteLength; i += 1) {
-        const index = buffer[i] % CHARSET.length;
-        state.push(CHARSET[index]);
+    for (const byte of buffer) {
+        const index = byte % CHARSET.length;
+        const char = CHARSET[index];
+        if (char != null) {
+            state.push(char);
+        }
     }
     return state.join('');
 }

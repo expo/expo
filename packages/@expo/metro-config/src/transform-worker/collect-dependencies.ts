@@ -190,14 +190,14 @@ function collectDependencies<TAst extends t.File>(
             firstArg.callee.type === 'Identifier' &&
             firstArg.callee.name === 'URL' &&
             firstArg.arguments.length > 0 &&
-            firstArg.arguments[0].type === 'StringLiteral'
+            firstArg.arguments[0]?.type === 'StringLiteral'
           ) {
             const moduleName = firstArg.arguments[0].value;
 
             // Get the NodePath of the first argument of `new Worker(new URL())`
-            const urlArgPath = (path.get('arguments')[0].get('arguments') as NodePath[])[0];
+            const urlArgPath = (path.get('arguments')[0]?.get('arguments') as NodePath[])[0];
 
-            processResolveWorkerCallWithName(moduleName, urlArgPath, state);
+            processResolveWorkerCallWithName(moduleName, urlArgPath!, state);
 
             // Replace `new Worker` invocation with `asyncRequire.unstable_createWorker` helper call,
             // creating an Object URL with a shim script that remaps `importScripts` and `fetch`, while calling the entrypoint with `importScripts`.
@@ -368,7 +368,7 @@ function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, Requi
   if (!Array.isArray(args) || args.length < 1) {
     throw new InvalidRequireCallError(path);
   } else {
-    const result = args[0].evaluate() as { confident: boolean; value: any; deopt?: any };
+    const result = args[0]?.evaluate() as { confident: boolean; value: any; deopt?: any };
     if (result.confident && typeof result.value === 'string') {
       directory = result.value;
     } else {
@@ -382,7 +382,7 @@ function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, Requi
   // Default to requiring through all directories.
   let recursive: boolean = true;
   if (args.length > 1) {
-    const result = args[1].evaluate() as { confident: boolean; value: any; deopt?: any };
+    const result = args[1]?.evaluate() as { confident: boolean; value: any; deopt?: any };
     if (result.confident && typeof result.value === 'boolean') {
       recursive = result.value;
     } else if (!(result.confident && typeof result.value === 'undefined')) {
@@ -398,18 +398,18 @@ function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, Requi
   if (args.length > 2) {
     // evaluate() to check for undefined (because it's technically a scope lookup)
     // but check the AST for the regex literal, since evaluate() doesn't do regex.
-    const result = args[2].evaluate();
-    const argNode = args[2].node;
-    if (argNode.type === 'RegExpLiteral') {
+    const result = args[2]?.evaluate();
+    const argNode = args[2]?.node;
+    if (argNode?.type === 'RegExpLiteral') {
       // TODO: Handle `new RegExp(...)` -- `argNode.type === 'NewExpression'`
       filter = {
         pattern: argNode.pattern,
         flags: argNode.flags || '',
       };
-    } else if (!(result.confident && typeof result.value === 'undefined')) {
+    } else if (!(result?.confident && typeof result.value === 'undefined')) {
       throw new InvalidRequireCallError(
-        args[2],
-        `Third argument of \`require.context\` should be an optional RegExp pattern matching all of the files to import, instead found node of type: ${argNode.type}.`
+        args[2]!,
+        `Third argument of \`require.context\` should be an optional RegExp pattern matching all of the files to import, instead found node of type: ${argNode?.type}.`
       );
     }
   }
@@ -417,9 +417,9 @@ function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, Requi
   // Default to `sync`.
   let mode: ContextMode = 'sync';
   if (args.length > 3) {
-    const result = args[3].evaluate() as { confident: boolean; value: any; deopt?: any };
+    const result = args[3]?.evaluate() as { confident: boolean; value: any; deopt?: any };
     if (result.confident && typeof result.value === 'string') {
-      mode = getContextMode(args[3], result.value);
+      mode = getContextMode(args[3]!, result.value);
     } else if (!(result.confident && typeof result.value === 'undefined')) {
       throw new InvalidRequireCallError(
         result.deopt ?? args[3],
@@ -793,9 +793,9 @@ function getModuleNameFromCallArgs(path: NodePath<t.CallExpression>): string | n
     throw new InvalidRequireCallError(path);
   }
 
-  const result = args[0].evaluate();
+  const result = args[0]?.evaluate();
 
-  if (result.confident && typeof result.value === 'string') {
+  if (result?.confident && typeof result.value === 'string') {
     return result.value;
   }
 

@@ -7,7 +7,7 @@
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepublishOnly": "yarn run clean && yarn run build",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },
@@ -32,10 +32,10 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-plugins": "~55.0.6",
-    "@expo/config-types": "^55.0.5",
-    "@expo/json-file": "^10.0.12",
-    "@expo/require-utils": "^55.0.2",
+    "@expo/config-plugins": "workspace:~55.0.6",
+    "@expo/config-types": "workspace:^55.0.5",
+    "@expo/json-file": "workspace:^10.0.12",
+    "@expo/require-utils": "workspace:^55.0.2",
     "deepmerge": "^4.3.1",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
@@ -48,7 +48,7 @@
     "@types/babel__code-frame": "^7.27.0",
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

@@ -4,16 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.delay = void 0;
-exports.yarnInstall = yarnInstall;
 exports.killEmulatorAsync = killEmulatorAsync;
 exports.killSimulatorAsync = killSimulatorAsync;
 exports.killVirtualDevicesAsync = killVirtualDevicesAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
-const child_process_1 = require("child_process");
 const Platform_1 = require("./Platform");
-function yarnInstall(path) {
-    (0, child_process_1.spawnSync)('yarn', ['install', '--silent'], { stdio: 'inherit', cwd: path });
-}
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 exports.delay = delay;
 async function killEmulatorAsync() {

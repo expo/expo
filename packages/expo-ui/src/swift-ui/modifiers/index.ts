@@ -168,7 +168,7 @@ export const onLongPressGesture = (handler: () => void, minimumDuration?: number
 /**
  * Adds an onAppear modifier that calls a function when the view appears.
  * @param handler - Function to call when the view appears.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onlongpressgesture(minimumduration:perform:onpressingchanged:)).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onappear(perform:)).
  */
 export const onAppear = (handler: () => void) =>
   createModifierWithEventListener('onAppear', handler);
@@ -280,13 +280,14 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  *
  * @param style - The foreground style configuration. Can be:
  *
- * **Simple Color (string):**
+ * **Simple Color (`Color`):**
  * - Hex colors: `'#FF0000'`, `'#RGB'`, `'#RRGGBB'`, `'#AARRGGBB'`
  * - Named colors: `'red'`, `'blue'`, `'green'`, and so on.
+ * - React Native color values like `PlatformColor('label')`
  *
  * **Explicit Color Object:**
  * ```ts
- * { type: 'color', color: '#FF0000' }
+ * { type: 'color', color: PlatformColor('label') }
  * ```
  *
  * **Hierarchical Styles (Semantic):**
@@ -303,7 +304,7 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  * ```ts
  * {
  *   type: 'linearGradient',
- *   colors: ['#FF0000', '#0000FF', '#00FF00'],
+ *   colors: [PlatformColor('systemPink'), '#0000FF', '#00FF00'],
  *   startPoint: { x: 0, y: 0 },    // Top-left
  *   endPoint: { x: 1, y: 1 }       // Bottom-right
  * }
@@ -313,7 +314,7 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  * ```ts
  * {
  *   type: 'radialGradient',
- *   colors: ['#FF0000', '#0000FF'],
+ *   colors: [PlatformColor('systemPink'), '#0000FF'],
  *   center: { x: 0.5, y: 0.5 },    // Center of view
  *   startRadius: 0,                // Inner radius
  *   endRadius: 100                 // Outer radius
@@ -324,7 +325,7 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  * ```ts
  * {
  *   type: 'angularGradient',
- *   colors: ['#FF0000', '#00FF00', '#0000FF'],
+ *   colors: [PlatformColor('systemPink'), '#00FF00', '#0000FF'],
  *   center: { x: 0.5, y: 0.5 }     // Rotation center
  * }
  * ```
@@ -356,32 +357,32 @@ export const foregroundColor = (color: Color) => createModifier('foregroundColor
  */
 export const foregroundStyle = (
   style:
-    | string // Simple color (hex string, color name, or Apple system color name)
-    | { type: 'color'; color: string }
+    | Color // Simple color (hex string, color name, or React Native ColorValue)
+    | { type: 'color'; color: Color }
     | {
         type: 'hierarchical';
         style: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
       }
     | {
         type: 'linearGradient';
-        colors: string[];
+        colors: Color[];
         startPoint: { x: number; y: number };
         endPoint: { x: number; y: number };
       }
     | {
         type: 'radialGradient';
-        colors: string[];
+        colors: Color[];
         center: { x: number; y: number };
         startRadius: number;
         endRadius: number;
       }
     | {
         type: 'angularGradient';
-        colors: string[];
+        colors: Color[];
         center: { x: number; y: number };
       }
 ) => {
-  if (typeof style === 'string') {
+  if (style == null || typeof style !== 'object' || !('type' in style)) {
     return createModifier('foregroundStyle', { styleType: 'color', color: style });
   }
   if (style.type === 'hierarchical') {
@@ -495,7 +496,7 @@ export const grayscale = (amount: number) => createModifier('grayscale', { amoun
 
 /**
  * Sets the button style for button views.
- * @param style - The button style.
+ * @param style - The button style. `'glass'` and `'glassProminent'` are available on iOS 26+ and tvOS 26+ only.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonstyle(_:)).
  */
 export const buttonStyle = (
@@ -605,6 +606,24 @@ export const defaultScrollAnchorForRole = (
   anchor: UnitPointValue | null,
   role: 'initialOffset' | 'sizeChanges' | 'alignment'
 ) => createModifier('defaultScrollAnchorForRole', { anchor, role });
+
+/**
+ * Sets the scroll snapping behavior for scrollable views.
+ * Use with `scrollTargetLayout` on the content container.
+ * @param behavior - `'paging'` for container-aligned snapping, `'viewAligned'` for view-aligned snapping.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetbehavior(_:)).
+ */
+export const scrollTargetBehavior = (behavior: 'paging' | 'viewAligned') =>
+  createModifier('scrollTargetBehavior', { behavior });
+
+/**
+ * Configures a layout container as a scroll target layout for view-aligned snapping.
+ * Apply to `VStack` or `HStack` inside a `ScrollView`.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetlayout(isenabled:)).
+ */
+export const scrollTargetLayout = () => createModifier('scrollTargetLayout', {});
 
 /**
  * Disables the move action for a view in a list.
@@ -999,6 +1018,72 @@ export const submitLabel = (
 ) => createModifier('submitLabel', { submitLabel });
 
 /**
+ * Sets how often the shift key in the keyboard is automatically enabled.
+ * @param autocapitalization - The autocapitalization behavior.
+ * @platform ios 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textinputautocapitalization(_:)).
+ */
+export const textInputAutocapitalization = (
+  autocapitalization: 'never' | 'words' | 'sentences' | 'characters'
+) => createModifier('textInputAutocapitalization', { autocapitalization });
+
+/**
+ * Sets the text content type for input text, which the system uses to offer
+ * suggestions (like autofill) while the user enters text.
+ * @param textContentType - The semantic meaning of the text input area.
+ * @platform ios 13.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textcontenttype(_:)-ufdv).
+ */
+export const textContentType = (
+  textContentType:
+    | 'URL'
+    | 'namePrefix'
+    | 'name'
+    | 'nameSuffix'
+    | 'givenName'
+    | 'middleName'
+    | 'familyName'
+    | 'nickname'
+    | 'organizationName'
+    | 'jobTitle'
+    | 'location'
+    | 'fullStreetAddress'
+    | 'streetAddressLine1'
+    | 'streetAddressLine2'
+    | 'addressCity'
+    | 'addressCityAndState'
+    | 'addressState'
+    | 'postalCode'
+    | 'sublocality'
+    | 'countryName'
+    | 'username'
+    | 'password'
+    | 'newPassword'
+    | 'oneTimeCode'
+    | 'emailAddress'
+    | 'telephoneNumber'
+    | 'cellularEID'
+    | 'cellularIMEI'
+    | 'creditCardNumber'
+    | 'creditCardExpiration'
+    | 'creditCardExpirationMonth'
+    | 'creditCardExpirationYear'
+    | 'creditCardSecurityCode'
+    | 'creditCardType'
+    | 'creditCardName'
+    | 'creditCardGivenName'
+    | 'creditCardMiddleName'
+    | 'creditCardFamilyName'
+    | 'birthdate'
+    | 'birthdateDay'
+    | 'birthdateMonth'
+    | 'birthdateYear'
+    | 'dateTime'
+    | 'flightNumber'
+    | 'shipmentTrackingNumber'
+) => createModifier('textContentType', { textContentType });
+
+/**
  * Sets the content transition type for a view.
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
@@ -1129,6 +1214,8 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
+  | ReturnType<typeof scrollTargetBehavior>
+  | ReturnType<typeof scrollTargetLayout>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1155,6 +1242,8 @@ export type BuiltInModifier =
   | ReturnType<typeof gridColumnAlignment>
   | ReturnType<typeof gridCellAnchor>
   | ReturnType<typeof submitLabel>
+  | ReturnType<typeof textInputAutocapitalization>
+  | ReturnType<typeof textContentType>
   | ReturnType<typeof datePickerStyle>
   | ReturnType<typeof progressViewStyle>
   | ReturnType<typeof gaugeStyle>

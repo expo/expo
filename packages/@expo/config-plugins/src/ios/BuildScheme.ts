@@ -62,10 +62,10 @@ export function getRunnableSchemesFromXcodeproj(
           const xcBuildConfiguration =
             project.hash.project.objects.XCBuildConfiguration?.[buildConfiguration.value];
 
-          const buildSdkRoot = xcBuildConfiguration.buildSettings.SDKROOT;
+          const buildSdkRoot = xcBuildConfiguration?.buildSettings.SDKROOT;
           if (
             buildSdkRoot === 'appletvos' ||
-            'TVOS_DEPLOYMENT_TARGET' in xcBuildConfiguration.buildSettings
+            'TVOS_DEPLOYMENT_TARGET' in xcBuildConfiguration?.buildSettings
           ) {
             // Is a TV app...
             osType = 'tvOS';

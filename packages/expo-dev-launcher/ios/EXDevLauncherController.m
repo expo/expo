@@ -507,6 +507,36 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   });
 }
 
+- (void)loadLocalBundleOnSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+{
+  NSNumber *embeddedBundleEnabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"EXDevClientEmbeddedBundle"];
+  if (![embeddedBundleEnabled boolValue]) {
+    if (onError) {
+      onError([NSError errorWithDomain:@"DevelopmentClient"
+                                  code:1
+                              userInfo:@{NSLocalizedDescriptionKey: @"Embedded bundle loading is not enabled. Set 'embeddedBundle: true' in your dev-client plugin config."}]);
+    }
+    return;
+  }
+
+  NSURL *bundleUrl = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  if (!bundleUrl) {
+    if (onError) {
+      onError([NSError errorWithDomain:@"DevelopmentClient"
+                                  code:1
+                              userInfo:@{NSLocalizedDescriptionKey: @"No embedded bundle found. Make sure a 'main.jsbundle' is included in the app bundle."}]);
+    }
+    return;
+  }
+
+  RCTDevLoadingViewSetEnabled(NO);
+  [self _initAppWithUrl:bundleUrl bundleUrl:bundleUrl manifest:nil];
+  self.manifestURL = nil;
+  if (onSuccess) {
+    onSuccess();
+  }
+}
+
 - (BOOL)isAppRunning
 {
   if([_appBridge isProxy]){

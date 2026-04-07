@@ -1,5 +1,5 @@
-import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import type { StackToolbarButtonProps } from './types';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 export type { StackToolbarButtonProps, NativeToolbarButtonProps } from './types';
 /**
  * A button used inside `Stack.Toolbar`.
@@ -37,6 +37,7 @@ export type { StackToolbarButtonProps, NativeToolbarButtonProps } from './types'
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarButton: React.FC<StackToolbarButtonProps>;

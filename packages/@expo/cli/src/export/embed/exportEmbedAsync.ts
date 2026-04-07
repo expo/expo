@@ -229,14 +229,17 @@ export async function exportEmbedBundleAndAssetsAsync(
       });
     }
 
-    // TODO: Remove duplicates...
-    const expoDomComponentReferences = bundles.artifacts
-      .map((artifact) =>
-        Array.isArray(artifact.metadata.expoDomComponentReferences)
-          ? artifact.metadata.expoDomComponentReferences
-          : []
-      )
-      .flat();
+    const expoDomComponentReferences = [
+      ...new Set(
+        bundles.artifacts
+          .map((artifact) =>
+            Array.isArray(artifact.metadata.expoDomComponentReferences)
+              ? artifact.metadata.expoDomComponentReferences
+              : []
+          )
+          .flat()
+      ),
+    ];
     if (expoDomComponentReferences.length > 0) {
       await Promise.all(
         // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
@@ -275,9 +278,9 @@ export async function exportEmbedBundleAndAssetsAsync(
     return {
       files,
       bundle: {
-        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0].source,
+        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0]?.source!,
         // Can be optional when source maps aren't enabled.
-        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString(),
+        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString()!,
       },
       assets: bundles.assets,
     };

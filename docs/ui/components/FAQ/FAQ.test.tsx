@@ -40,7 +40,7 @@ describe('FAQ', () => {
     );
 
     const el = screen.getByTestId('faq');
-    const data = JSON.parse(el.textContent!);
+    const data = JSON.parse(el.textContent ?? '');
 
     expect(data['@type']).toBe('FAQPage');
     expect(data.mainEntity).toHaveLength(2);
@@ -64,7 +64,7 @@ describe('FAQ', () => {
     );
 
     const el = screen.getByTestId('faq');
-    const data = JSON.parse(el.textContent!);
+    const data = JSON.parse(el.textContent ?? '');
 
     expect(data.mainEntity[0].name).toBe('Can I use expo-camera?');
   });

@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+// TODO: Remove this import, please don't use internals
 import * as XcodeBuild from '@expo/cli/build/src/run/ios/XcodeBuild.js';
 import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';

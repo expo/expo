@@ -2,7 +2,6 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HrefPreview = HrefPreview;
-const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const PreviewRouteContext_1 = require("./PreviewRouteContext");
@@ -11,6 +10,7 @@ const composition_options_1 = require("../../fork/native-stack/composition-optio
 const router_store_1 = require("../../global-state/router-store");
 const utils_1 = require("../../global-state/utils");
 const hooks_1 = require("../../hooks");
+const native_1 = require("../../react-navigation/native");
 const useNavigation_1 = require("../../useNavigation");
 const useScreens_1 = require("../../useScreens");
 const linking_1 = require("../linking");

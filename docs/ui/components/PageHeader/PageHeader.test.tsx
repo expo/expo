@@ -74,7 +74,7 @@ describe(PageHeader, () => {
     expect(linkElement).toBe(undefined);
   });
 
-  test('displays bundled version when packageName provided', () => {
+  test('displays bundled version when packageName provided', async () => {
     renderWithHeadings(
       <PageHeader
         title="test-title"
@@ -83,7 +83,7 @@ describe(PageHeader, () => {
         testRequire={require}
       />
     );
-    void screen.findByText(/bundled version:/i);
+    await screen.findByText(/bundled version:/i);
   });
 
   test('displays edit page link for non-API docs', () => {

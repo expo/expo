@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add `resolveFrom` utility that supports custom extensions and not following symlinks ([#44114](https://github.com/expo/expo/pull/44114) by [@kitten](https://github.com/kitten))
+- Add `resolveGlobal` utility for sharp and ngrok resolution ([#44236](https://github.com/expo/expo/pull/44236) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 

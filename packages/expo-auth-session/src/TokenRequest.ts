@@ -271,7 +271,11 @@ export class TokenRequest<T extends TokenRequestConfig>
     if (this.extraParams) {
       for (const extra in this.extraParams) {
         if (extra in this.extraParams && !(extra in queryBody)) {
-          queryBody[extra] = this.extraParams[extra];
+          const param = this.extraParams[extra];
+
+          if (param != null) {
+            queryBody[extra] = param;
+          }
         }
       }
     }

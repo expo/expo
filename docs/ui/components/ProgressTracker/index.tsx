@@ -5,9 +5,9 @@ import { useTutorialChapterCompletion } from '~/providers/TutorialChapterComplet
 import { BoxLink } from '~/ui/components/BoxLink';
 import { P } from '~/ui/components/Text';
 
+import { Checkbox } from '../Form/Checkbox';
 import { SuccessCheckmark } from './SuccessCheckmark';
 import { Chapter } from './TutorialData';
-import { Checkbox } from '../Form/Checkbox';
 
 type ProgressTrackerProps = {
   currentChapterIndex: number;

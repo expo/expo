@@ -1,5 +1,5 @@
-import type { NativeStackHeaderItemSpacing } from '@react-navigation/native-stack';
 import type { StackToolbarSpacerProps } from './types';
+import type { NativeStackHeaderItemSpacing } from '../../../../react-navigation/native-stack';
 export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types';
 /**
  * A spacing helper used inside `Stack.Toolbar` to create empty space between toolbar items.
@@ -43,6 +43,7 @@ export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types'
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarSpacer: React.FC<StackToolbarSpacerProps>;

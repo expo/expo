@@ -47,11 +47,12 @@ const context_1 = require("../context");
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarSpacer = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement !== 'bottom') {
+    if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
         throw new Error('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
     }
     return <native_1.NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;

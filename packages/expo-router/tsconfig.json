@@ -7,20 +7,11 @@
     "moduleResolution": "node10",
     "noEmit": false,
     "resolveJsonModule": true,
-    "types": [
-      "jest",
-      "jest-require",
-      "node"
-    ]
+    "types": ["jest", "node"],
+
+    // TODO: Enable in the future
+    "noUncheckedIndexedAccess": false
   },
-  "include": [
-    "./src",
-    "./types/expect.d.ts",
-    "../@expo/cli/ts-declarations",
-    "../expo/src/ts-declarations"
-  ],
-  "exclude": [
-    "**/__tests__/",
-    "**/__rsc_tests__/"
-  ]
+  "include": ["./src"],
+  "exclude": ["**/__tests__/", "**/__rsc_tests__/"]
 }

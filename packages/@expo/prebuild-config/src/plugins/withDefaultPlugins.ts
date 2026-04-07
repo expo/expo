@@ -111,7 +111,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     AndroidConfig.GoogleServices.withGoogleServicesFile,
 
     // Modify colors.xml and styles.xml
-    AndroidConfig.StatusBar.withStatusBar,
+    AndroidConfig.SystemBars.withSystemBars,
     AndroidConfig.PrimaryColor.withPrimaryColor,
     withEdgeToEdge,
 

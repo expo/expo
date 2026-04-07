@@ -1,5 +1,5 @@
-import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '@react-navigation/native-stack';
 import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
+import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '../../../../react-navigation/native-stack';
 export type { StackToolbarMenuProps, NativeToolbarMenuProps, StackToolbarMenuActionProps, NativeToolbarMenuActionProps, } from './types';
 /**
  * Use as `Stack.Toolbar.Menu` to provide menus in iOS toolbar.
@@ -30,6 +30,7 @@ export type { StackToolbarMenuProps, NativeToolbarMenuProps, StackToolbarMenuAct
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarMenu: React.FC<StackToolbarMenuProps>;
@@ -57,6 +58,7 @@ export declare function convertStackToolbarMenuPropsToRNHeaderItem(props: StackT
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps>;

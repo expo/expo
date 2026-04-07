@@ -1,4 +1,5 @@
-import { ExpoModifier } from '../../types';
+import * as React from 'react';
+import { type ModifierConfig } from '../../types';
 /**
  * Font weight options for text styling.
  */
@@ -17,30 +18,56 @@ export type TextAlign = 'left' | 'right' | 'center' | 'justify' | 'start' | 'end
 export type TextDecoration = 'none' | 'underline' | 'lineThrough';
 /**
  * Text overflow behavior options.
+ * - 'clip': Clips the overflowing text to fit its container
+ * - 'ellipsis': Uses an ellipsis to indicate that the text has overflowed
+ * - 'visible': Renders overflow text outside its container
  */
 export type TextOverflow = 'clip' | 'ellipsis' | 'visible';
+/**
+ * Line break strategy options.
+ * - 'simple': Basic line breaking.
+ * - 'heading': Optimized for short text like headings.
+ * - 'paragraph': Produces more balanced line lengths for body text.
+ */
+export type TextLineBreak = 'simple' | 'heading' | 'paragraph';
+/**
+ * Font family for text styling.
+ * Built-in system families: 'default', 'sansSerif', 'serif', 'monospace', 'cursive'.
+ * Custom font families loaded via expo-font can be referenced by name (for example, 'Inter-Bold').
+ */
+export type TextFontFamily = 'default' | 'sansSerif' | 'serif' | 'monospace' | 'cursive' | (string & {});
+/**
+ * Text shadow configuration.
+ * Corresponds to Jetpack Compose's Shadow class.
+ */
+export type TextShadow = {
+    /**
+     * The color of the shadow.
+     */
+    color?: string;
+    /**
+     * The horizontal offset of the shadow in dp.
+     */
+    offsetX?: number;
+    /**
+     * The vertical offset of the shadow in dp.
+     */
+    offsetY?: number;
+    /**
+     * The blur radius of the shadow in dp.
+     */
+    blurRadius?: number;
+};
 /**
  * Material 3 Typography scale styles.
  * Corresponds to MaterialTheme.typography in Jetpack Compose.
  */
 export type TypographyStyle = 'displayLarge' | 'displayMedium' | 'displaySmall' | 'headlineLarge' | 'headlineMedium' | 'headlineSmall' | 'titleLarge' | 'titleMedium' | 'titleSmall' | 'bodyLarge' | 'bodyMedium' | 'bodySmall' | 'labelLarge' | 'labelMedium' | 'labelSmall';
 /**
- * Text style properties that can be applied to text.
- * Corresponds to Jetpack Compose's TextStyle.
+ * Shared span-level style properties used by both `TextStyle` and `TextSpanRecord`.
+ * Adding a property here ensures it's available on both parent text and nested spans.
  */
-export type TextStyle = {
-    /**
-     * Material 3 Typography style to use as the base style.
-     * When specified, applies the predefined Material 3 typography style.
-     * Other properties in this style object will override specific values from the typography.
-     *
-     * @example
-     * ```tsx
-     * style={{ typography: "bodyLarge" }}
-     * style={{ typography: "headlineMedium", fontWeight: "bold" }}
-     * ```
-     */
-    typography?: TypographyStyle;
+export type TextSpanStyleBase = {
     /**
      * The font size in sp (scale-independent pixels).
      */
@@ -54,9 +81,9 @@ export type TextStyle = {
      */
     fontStyle?: TextFontStyle;
     /**
-     * The text alignment.
+     * The font family.
      */
-    textAlign?: TextAlign;
+    fontFamily?: TextFontFamily;
     /**
      * The text decoration.
      */
@@ -66,13 +93,42 @@ export type TextStyle = {
      */
     letterSpacing?: number;
     /**
+     * The background color behind the text.
+     */
+    background?: string;
+    /**
+     * The shadow applied to the text.
+     */
+    shadow?: TextShadow;
+};
+/**
+ * Text style properties that can be applied to text.
+ * Corresponds to Jetpack Compose's `TextStyle`.
+ */
+export type TextStyle = TextSpanStyleBase & {
+    /**
+     * Material 3 Typography style to use as the base style.
+     * When specified, applies the predefined Material 3 typography style.
+     * Other properties in this style object will override specific values from the typography.
+     */
+    typography?: TypographyStyle;
+    /**
+     * The text alignment.
+     */
+    textAlign?: TextAlign;
+    /**
      * The line height in sp.
      */
     lineHeight?: number;
+    /**
+     * The line break strategy.
+     */
+    lineBreak?: TextLineBreak;
 };
 export type TextProps = {
     /**
-     * The text content to display.
+     * The text content to display. Can be a string, number, or nested `Text` components
+     * for inline styled spans.
      */
     children?: React.ReactNode;
     /**
@@ -81,9 +137,6 @@ export type TextProps = {
     color?: string;
     /**
      * How visual overflow should be handled.
-     * - 'clip': Clips the overflowing text to fix its container
-     * - 'ellipsis': Uses an ellipsis to indicate that the text has overflowed
-     * - 'visible': Renders overflow text outside its container
      */
     overflow?: TextOverflow;
     /**
@@ -108,75 +161,10 @@ export type TextProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * Renders a Text component using Jetpack Compose.
- *
- * The Text component provides comprehensive text styling capabilities.
- * The API is aligned with Jetpack Compose's Text composable, where:
- * - Top-level props (color, maxLines, etc.) match Compose's Text parameters
- * - `style` object corresponds to TextStyle, including typography, fontSize, fontWeight, textAlign, etc.
- * - `style.typography` applies Material 3 typography styles (like MaterialTheme.typography)
- *
- * @example
- * Basic usage:
- * ```tsx
- * import { Text } from 'expo-ui';
- *
- * <Text>Hello World</Text>
- * ```
- *
- * @example
- * Using Material 3 Typography (matches Jetpack Compose MaterialTheme.typography):
- * ```tsx
- * <Text style={{ typography: "bodyLarge" }}>Body text</Text>
- * <Text style={{ typography: "headlineMedium" }}>Headline</Text>
- * <Text style={{ typography: "titleSmall" }}>Small title</Text>
- * ```
- *
- * @example
- * Typography with style overrides:
- * ```tsx
- * <Text
- *   color="#007AFF"
- *   style={{
- *     typography: "bodyLarge",
- *     fontWeight: "bold"  // Override the typography's font weight
- *   }}
- * >
- *   Custom styled body text
- * </Text>
- * ```
- *
- * @example
- * With custom style object (matches Jetpack Compose TextStyle):
- * ```tsx
- * <Text
- *   color="#007AFF"
- *   style={{
- *     fontSize: 18,
- *     fontWeight: "bold",
- *     textAlign: "center",
- *     letterSpacing: 1.2
- *   }}
- *   modifiers={[ExpoUI.padding(16)]}
- * >
- *   Styled text
- * </Text>
- * ```
- *
- * @example
- * Text truncation with ellipsis:
- * ```tsx
- * <Text
- *   maxLines={2}
- *   overflow="ellipsis"
- * >
- *   This is a very long text that will be truncated after two lines
- *   with an ellipsis at the end to indicate there's more content...
- * </Text>
- * ```
  */
-export declare function Text(props: TextProps): import("react").JSX.Element;
+export declare function Text(props: TextProps): React.JSX.Element;
 //# sourceMappingURL=index.d.ts.map

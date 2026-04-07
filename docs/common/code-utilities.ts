@@ -2,7 +2,68 @@ import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import { Children, ReactElement, ReactNode, PropsWithChildren, isValidElement } from 'react';
 
+import sdkVersions from '~/ui/components/SDKTables/sdk-versions.json';
+
 import { toString } from './utilities';
+
+/**
+ * Build the code block variables map for a given SDK version entry.
+ * Variables can be used in fenced code blocks with the `{{variableName}}` syntax.
+ */
+function buildVariablesForSdk(sdk: (typeof sdkVersions.sdkVersions)[0]): Record<string, string> {
+  return {
+    '{{iosDeploymentTarget}}': sdk.ios.replace('+', ''),
+    '{{androidVersion}}': sdk.android.replace('+', ''),
+    '{{compileSdkVersion}}': sdk.compileSdkVersion,
+    '{{targetSdkVersion}}': sdk.targetSdkVersion,
+    '{{buildToolsVersion}}': sdk.buildToolsVersion,
+    '{{reactNativeVersion}}': sdk['react-native'],
+    '{{xcodeVersion}}': sdk.xcode.replace('+', ''),
+    '{{nodeVersion}}': sdk.node,
+    '{{reactVersion}}': sdk.react,
+    '{{expoSdkVersion}}': sdk.sdk,
+    '{{expoSdkMajorVersion}}': sdk.sdk.split('.')[0],
+  };
+}
+
+const variablesCache = new Map<string, Record<string, string>>();
+
+function getVariablesForVersion(version?: string): Record<string, string> {
+  const cacheKey = version ?? 'latest';
+  const cached = variablesCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  let sdk = sdkVersions.sdkVersions[0];
+  if (version && version !== 'latest' && version !== 'unversioned') {
+    const normalized = version.replace(/^v/, '');
+    const match = sdkVersions.sdkVersions.find(s => s.sdk === normalized);
+    if (match) {
+      sdk = match;
+    }
+  }
+
+  const variables = buildVariablesForSdk(sdk);
+  variablesCache.set(cacheKey, variables);
+  return variables;
+}
+
+function replaceCodeBlockVariables(value: string, version?: string): string {
+  const variables = getVariablesForVersion(version);
+  let result = value;
+  for (const [key, val] of Object.entries(variables)) {
+    result = result.replaceAll(key, val);
+  }
+  const unreplaced = result.match(/{{[A-Za-z]+}}/g);
+  if (unreplaced) {
+    throw new Error(
+      `Unknown code block variable(s): ${[...new Set(unreplaced)].join(', ')}. ` +
+        `Available: ${Object.keys(variables).join(', ')}`
+    );
+  }
+  return result;
+}
 
 // Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
 async function initPrismAsync() {
@@ -28,8 +89,8 @@ export const LANGUAGES_REMAP: Record<string, string> = {
   rb: 'ruby',
 };
 
-export function cleanCopyValue(value: string) {
-  return value
+export function cleanCopyValue(value: string, version?: string) {
+  return replaceCodeBlockVariables(value, version)
     .replace(/\/\*\s?@(info[^*]+|end|hide[^*]+).?\*\//g, '')
     .replace(/#\s?@(info[^#]+|end|hide[^#]+).?#/g, '')
     .replace(/<!--\s?@(info[^<>]+|end|hide[^<>]+).?-->/g, '')
@@ -221,7 +282,7 @@ export function getCollapseHeight(params?: Record<string, string>) {
   return customCollapseHeight ? Number(customCollapseHeight) : EXPAND_SNIPPET_BOUND;
 }
 
-export function getCodeData(value: string, className?: string) {
+export function getCodeData(value: string, className?: string, version?: string) {
   // mdx will add the class `language-foo` to codeblocks with the tag `foo`
   // if this class is present, we want to slice out `language-`
   let lang = className?.split('-').at(-1)?.toLowerCase();
@@ -238,7 +299,8 @@ export function getCodeData(value: string, className?: string) {
     throw new Error(`docs currently do not support language: ${lang}`);
   }
 
-  const rawHtml = Prism.highlight(value, grammar, lang);
+  const processedValue = replaceCodeBlockVariables(value, version);
+  const rawHtml = Prism.highlight(processedValue, grammar, lang);
   if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
     return replaceHashCommentsWithAnnotations(rawHtml);
   } else if (['xml', 'html'].includes(lang)) {

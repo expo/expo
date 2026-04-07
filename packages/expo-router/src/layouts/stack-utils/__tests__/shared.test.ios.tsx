@@ -1,4 +1,5 @@
 import {
+  areAllChildrenPrimitiveValues,
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
   extractXcassetName,
@@ -8,6 +9,49 @@ import {
   StackToolbarIcon,
   StackToolbarBadge,
 } from '../toolbar/toolbar-primitives';
+
+describe(areAllChildrenPrimitiveValues, () => {
+  it('returns true for a single string child', () => {
+    expect(areAllChildrenPrimitiveValues('hello')).toBe(true);
+  });
+
+  it('returns true for a single number child', () => {
+    expect(areAllChildrenPrimitiveValues(42)).toBe(true);
+  });
+
+  it('returns true for mixed string and number children', () => {
+    expect(areAllChildrenPrimitiveValues(['hello', 42, 'world'])).toBe(true);
+  });
+
+  it('returns false when children contain a JSX element', () => {
+    expect(
+      areAllChildrenPrimitiveValues([
+        'hello',
+        <StackToolbarLabel key="label">Label</StackToolbarLabel>,
+      ])
+    ).toBe(false);
+  });
+
+  it('returns false for a single JSX element child', () => {
+    expect(areAllChildrenPrimitiveValues(<StackToolbarLabel>Label</StackToolbarLabel>)).toBe(false);
+  });
+
+  it('returns true for empty children array', () => {
+    expect(areAllChildrenPrimitiveValues([])).toBe(true);
+  });
+
+  it('returns true for null children', () => {
+    expect(areAllChildrenPrimitiveValues(null)).toBe(true);
+  });
+
+  it('returns true for undefined children', () => {
+    expect(areAllChildrenPrimitiveValues(undefined)).toBe(true);
+  });
+
+  it('filters out null/undefined/boolean values and checks remaining', () => {
+    expect(areAllChildrenPrimitiveValues(['hello', null, 'world'])).toBe(true);
+  });
+});
 
 describe(convertStackHeaderSharedPropsToRNSharedHeaderItem, () => {
   describe('label extraction', () => {

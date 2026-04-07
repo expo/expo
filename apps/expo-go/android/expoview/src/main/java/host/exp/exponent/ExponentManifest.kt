@@ -170,19 +170,6 @@ class ExponentManifest @Inject constructor(
     const val MANIFEST_ANDROID_INFO_KEY = "android"
     const val MANIFEST_KEYBOARD_LAYOUT_MODE_KEY = "softwareKeyboardLayoutMode"
 
-    // Statusbar
-    const val MANIFEST_STATUS_BAR_KEY = "androidStatusBar"
-    const val MANIFEST_STATUS_BAR_APPEARANCE = "barStyle"
-    const val MANIFEST_STATUS_BAR_BACKGROUND_COLOR = "backgroundColor"
-    const val MANIFEST_STATUS_BAR_HIDDEN = "hidden"
-    const val MANIFEST_STATUS_BAR_TRANSLUCENT = "translucent"
-
-    // NavigationBar
-    const val MANIFEST_NAVIGATION_BAR_KEY = "androidNavigationBar"
-    const val MANIFEST_NAVIGATION_BAR_VISIBILITY = "visible"
-    const val MANIFEST_NAVIGATION_BAR_APPEARANCE = "barStyle"
-    const val MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR = "backgroundColor"
-
     // Debugging
     const val MANIFEST_DEBUGGER_HOST_KEY = "debuggerHost"
     const val MANIFEST_MAIN_MODULE_NAME_KEY = "mainModuleName"

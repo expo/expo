@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- [android] Match `Icon` API to native: renamed `tintColor` to `tint`. Match `ListItem` API to native: replaced string props with slot sub-components (`HeadlineContent`, `SupportingContent`, `OverlineContent`, `LeadingContent`, `TrailingContent`). Renamed color props to match `ListItemDefaults.colors()`. Added `tonalElevation`, `shadowElevation`. Removed `color`, `onPress`. ([#44054](https://github.com/expo/expo/pull/44054) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Refactored `PullToRefreshBox` indicator props: replaced `loadingIndicatorModifiers` with nested `indicator` prop containing `color`, `containerColor`, and `modifiers`. Added `contentAlignment` prop. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Split `Divider` into `HorizontalDivider` and `VerticalDivider` matching native Compose components. Added `thickness` and `color` props. ([#44035](https://github.com/expo/expo/pull/44035) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `AlertDialog` API to native Compose: replaced string props (`title`, `text`, `confirmButtonText`, `dismissButtonText`) with slot sub-components (`AlertDialog.Title`, `AlertDialog.Text`, `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`). Removed `visible` prop (use conditional rendering), `onConfirmPressed`/`onDismissPressed` (renamed to `onDismissRequest`), and `confirmButtonColors`/`dismissButtonColors` (replaced with dialog-level `colors`). ([#43997](https://github.com/expo/expo/pull/43997) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `Carousel` into `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel` matching native Compose components. Added `HorizontalCenteredHeroCarousel`. ([#44034](https://github.com/expo/expo/pull/44034) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Renamed Stepper `defaultValue` to `value` and `onValueChanged` to `onValueChange`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -23,6 +26,10 @@
 
 ### 🎉 New features
 
+- [android] Added `TooltipBox`, `PlainTooltip`, and `RichTooltip` components matching native Compose Tooltip API. Supports plain and rich tooltips with slot-based content, programmatic show/dismiss via ref, and `isPersistent`, `hasAction`, `enableUserInput`, `focusable` props. ([#44373](https://github.com/expo/expo/pull/44373) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `Badge` and `BadgedBox` components wrapping Jetpack Compose's Badge API for status indicators and count overlays. ([#44139](https://github.com/expo/expo/pull/44139) by [@benjaminkomen](https://github.com/benjaminkomen))
+- [android] Added `shape`, `border`, `selected`, `checked`, `onClick`, and `onCheckedChange` props to `Surface`, supporting clickable, selectable, and toggleable variants. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added nested text support for Compose `Text` with style inheritance, custom fonts via `expo-font`, `background`, `shadow`, and `lineBreak` properties. ([#44094](https://github.com/expo/expo/pull/44094) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `outlined` variant to `TextInput` component. ([#43719](https://github.com/expo/expo/pull/43719) by [@benjaminkomen](https://github.com/benjaminkomen))
 - Added `@expo/ui/datetimepicker` — a cross-platform `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`. ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `locale` and `timeZone` support to `modifiers`. ([#44013](https://github.com/expo/expo/pull/44013) by [@vonovak](https://github.com/vonovak))
@@ -36,6 +43,9 @@
 - [Android] Added border color customization for `Switch` and `Checkbox` components. ([#43770](https://github.com/expo/expo/pull/43770) by [@liestig](https://github.com/liestig))
 - [iOS] Added `defaultScrollAnchor` modifier for controlling initial scroll position (iOS 17+). ([#43914](https://github.com/expo/expo/pull/43914) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added `defaultScrollAnchorForRole` modifier for per-role scroll anchor control (iOS 18+). ([#43923](https://github.com/expo/expo/pull/43923) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Added `scrollTargetBehavior` and `scrollTargetLayout` modifiers for scroll target configuration (iOS 17+). ([#43955](https://github.com/expo/expo/pull/43955) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Added `textInputAutocapitalization` modifier for controlling keyboard autocapitalization behavior (iOS 15+). ([#44547](https://github.com/expo/expo/pull/44547) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Added `textContentType` modifier for enabling autofill and semantic text input hints (iOS 13+). ([#44548](https://github.com/expo/expo/pull/44548) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] detect FAB in HorizontalFloatingToolbar ([#43601](https://github.com/expo/expo/pull/43601) by [@Ubax](https://github.com/Ubax))
@@ -54,15 +64,18 @@
 - [iOS] Fix `Slider` thumb snapping back during drag by guarding `.onReceive` with `isEditing` state. ([#43701](https://github.com/expo/expo/issues/43701) by [@fedeciancaglini](https://github.com/fedeciancaglini)) ([#43797](https://github.com/expo/expo/pull/43797) by [@fedeciancaglini](https://github.com/fedeciancaglini))
 - [Android] Fix touch events for RN views inside Compose BottomSheet. ([#43716](https://github.com/expo/expo/pull/43716) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `RNHostView` child parent related crash. ([#43691](https://github.com/expo/expo/pull/43691) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `foregroundStyle` typings and runtime narrowing so React Native color values like `PlatformColor()` work in color and gradient styles. ([#44349](https://github.com/expo/expo/pull/44349) by [@eliotgevers](https://github.com/eliotgevers))
 - [Android] Added `RNHostView` to improve RN component layout inside Compose views. ([#43495](https://github.com/expo/expo/pull/43495) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43592](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] fix modifiers export ([#43639](https://github.com/expo/expo/pull/43639) by [@Ubax](https://github.com/Ubax))
+- [jetpack-compose] Fixed `RNHostView` re-parenting exception. ([#44522](https://github.com/expo/expo/pull/44522) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - [iOS] Add `AsyncFunction` support in `ExpoUIView` definition function. ([#43669](https://github.com/expo/expo/pull/43669) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
+- [jetpack-compose] Use view hash code as key for `Children`. ([#44521](https://github.com/expo/expo/pull/44521) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-02-25
 

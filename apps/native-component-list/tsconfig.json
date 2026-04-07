@@ -12,12 +12,11 @@
       "test-expo-ui": ["../bare-expo/modules/test-expo-ui"]
     },
     "types": ["jest"],
-    "typeRoots": ["./ts-declarations", "./node_modules/@types", "../../node_modules/@types"],
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "noImplicitReturns": true
   },
-  "include": ["App.tsx", "src/**/*", "ts-declarations/**/*"]
+  "include": ["./App.tsx", "./src", "./ts-declarations"]
 }

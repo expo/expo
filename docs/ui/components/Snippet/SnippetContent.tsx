@@ -19,7 +19,7 @@ export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
         data-md={alwaysDark ? 'code-block' : undefined}
         className={mergeClasses(
           preferredTheme === Themes.DARK && 'dark-theme',
-          wordWrap && 'break-words! whitespace-pre-wrap!',
+          wordWrap && 'wrap-break-word! whitespace-pre-wrap!',
           'border-default bg-subtle text-default relative overflow-x-auto rounded-b-md border p-4 leading-[18px]!',
           'prose-code:px-0!',
           alwaysDark && 'dark-theme bg-palette-black border-transparent whitespace-nowrap',

@@ -37,7 +37,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsContext = void 0;
 exports.NativeTabsNavigator = NativeTabsNavigator;
 exports.NativeTabsNavigatorWrapper = NativeTabsNavigatorWrapper;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const NativeBottomTabsRouter_1 = require("./NativeBottomTabsRouter");
 const NativeTabTrigger_1 = require("./NativeTabTrigger");
@@ -45,6 +44,7 @@ const NativeTabsView_1 = require("./NativeTabsView");
 const utils_1 = require("./utils");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const linking_1 = require("../link/linking");
+const native_1 = require("../react-navigation/native");
 const children_1 = require("../utils/children");
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';

@@ -24,7 +24,7 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
-    "prepublishOnly": "yarn run clean && yarn run build"
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/create-expo-nightly#readme",
   "bugs": {
@@ -40,6 +40,6 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.3",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   }
 }

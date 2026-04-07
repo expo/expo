@@ -16,7 +16,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "typecheck": "expo-module typecheck"
   },
@@ -40,11 +39,12 @@
     "build"
   ],
   "dependencies": {
-    "@expo/config": "~55.0.8",
+    "@expo/config": "workspace:~55.0.8",
     "chalk": "^4.1.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   }
 }

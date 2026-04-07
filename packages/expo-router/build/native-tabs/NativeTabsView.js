@@ -34,7 +34,6 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -44,9 +43,10 @@ const appearance_1 = require("./appearance");
 const color_1 = require("../color");
 const elements_1 = require("./common/elements");
 const types_1 = require("./types");
+const native_1 = require("../react-navigation/native");
+const bottomAccessory_1 = require("./utils/bottomAccessory");
 const icon_1 = require("./utils/icon");
 const children_1 = require("../utils/children");
-const bottomAccessory_1 = require("./utils/bottomAccessory");
 function NativeTabsView(props) {
     const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable, nonTriggerChildren, } = props;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);

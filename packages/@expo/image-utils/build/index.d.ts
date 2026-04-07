@@ -4,6 +4,6 @@ import { ImageFormat, ImageOptions, ResizeMode } from './Image.types';
 import { jimpAsync, createSquareAsync } from './jimp';
 import { findSharpInstanceAsync, isAvailableAsync, sharpAsync } from './sharp';
 import { SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
-export declare function imageAsync(options: SharpGlobalOptions, commands?: SharpCommandOptions[]): Promise<Buffer<ArrayBufferLike> | string[]>;
+export declare function imageAsync(options: SharpGlobalOptions, commands?: SharpCommandOptions[]): Promise<string[] | Buffer<ArrayBufferLike>>;
 export { jimpAsync, createSquareAsync, findSharpInstanceAsync, isAvailableAsync, sharpAsync, generateImageAsync, generateImageBackgroundAsync, generateFaviconAsync, Cache, compositeImagesAsync, getPngInfo, };
 export { SharpGlobalOptions, SharpCommandOptions, ResizeMode, ImageFormat, ImageOptions };

@@ -152,7 +152,7 @@ available via the provided properties.
           href="#appleauthenticationisavailableasync"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.isAvailableAsync()
@@ -161,7 +161,7 @@ available via the provided properties.
         
 resolves to 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           true
@@ -169,7 +169,7 @@ resolves to
         . This component will render nothing if it is not available, and you will get
 a warning in development mode (
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           __DEV__ === true
@@ -184,7 +184,7 @@ a warning in development mode (
       >
         The properties of this component extend from 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           View
@@ -192,21 +192,21 @@ a warning in development mode (
         ; however, you should not attempt to set
 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           backgroundColor
         </code>
          or 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           borderRadius
         </code>
          with the 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           style
@@ -214,7 +214,7 @@ a warning in development mode (
          property. This will not work and is against
 the App Store Guidelines. Instead, you should use the 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           buttonStyle
@@ -222,7 +222,7 @@ the App Store Guidelines. Instead, you should use the
          property to choose one of the
 predefined color styles and the 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           cornerRadius
@@ -586,7 +586,7 @@ for more details.
             The border radius to use when rendering the button. This works similarly to
 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               style.borderRadius
@@ -684,7 +684,7 @@ for more details.
               href="#appleauthenticationisavailableasync"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthentication.signInAsync
@@ -828,14 +828,14 @@ in here.
           >
             The custom style to apply to the button. Should not include 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               backgroundColor
             </code>
              or 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               borderRadius
@@ -1319,7 +1319,7 @@ This should come from the user field of an
                     href="#appleauthenticationcredentialstate"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       AppleAuthenticationCredential
@@ -1476,7 +1476,7 @@ This should come from the user field of an
               href="#appleauthenticationcredentialstate"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthenticationCredentialState
@@ -1621,14 +1621,14 @@ value depending on the state of the credential.
           >
             A promise that fulfills with 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               true
             </code>
              if the system supports Apple authentication, and 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               false
@@ -1766,7 +1766,7 @@ value depending on the state of the credential.
                     href="#appleauthenticationrefreshoptions"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       AppleAuthenticationRefreshOptions
@@ -1871,7 +1871,7 @@ Calling this method will show the sign in modal before actually refreshing the u
               href="#appleauthenticationcredential"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthenticationCredential
@@ -1880,7 +1880,7 @@ Calling this method will show the sign in modal before actually refreshing the u
             
 object after a successful authentication, and rejects with 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               ERR_REQUEST_CANCELED
@@ -2024,7 +2024,7 @@ refresh operation.
                     href="#appleauthenticationsigninoptions"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       AppleAuthenticationSignInOptions
@@ -2081,7 +2081,7 @@ You can use
           href="#appleauthenticationcredential"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthenticationCredential.user
@@ -2170,7 +2170,7 @@ the user, since this remains the same for apps released by the same developer.
               href="#appleauthenticationcredential"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthenticationCredential
@@ -2179,7 +2179,7 @@ the user, since this remains the same for apps released by the same developer.
             
 object after a successful authentication, and rejects with 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               ERR_REQUEST_CANCELED
@@ -2318,7 +2318,7 @@ sign-in operation.
                     href="#appleauthenticationsignoutoptions"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       AppleAuthenticationSignOutOptions
@@ -2357,7 +2357,7 @@ from using
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             signInAsync
@@ -2369,7 +2369,7 @@ from using
           href="#appleauthenticationrefreshasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             refreshAsync
@@ -2457,7 +2457,7 @@ from using
               href="#appleauthenticationcredential"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthenticationCredential
@@ -2466,7 +2466,7 @@ from using
             
 object after a successful authentication, and rejects with 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               ERR_REQUEST_CANCELED
@@ -3030,7 +3030,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signInAsync()
@@ -3043,7 +3043,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationrefreshasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.refreshAsync()
@@ -3055,7 +3055,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationsignoutasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signOutAsync()
@@ -3202,7 +3202,7 @@ for more details.
                   A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     user
@@ -3257,7 +3257,7 @@ the app's server counterpart. Unlike
                 >
                   The user's email address. Might not be present if you didn't request the 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     EMAIL
@@ -3320,21 +3320,21 @@ an Apple domain.
                 >
                   The user's name. May be 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
                   </code>
                    or contain 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
                   </code>
                    values if you didn't request the 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     FULL_NAME
@@ -3482,7 +3482,7 @@ your app.
                 >
                   An arbitrary string that your app provided as 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     state
@@ -3491,7 +3491,7 @@ your app.
 credential. Used to verify that the response was from the request you made. Can be used to
 avoid replay attacks. If you did not provide 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     state
@@ -3499,7 +3499,7 @@ avoid replay attacks. If you did not provide
                    when making the sign-in request, this field
 will be 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
@@ -3616,7 +3616,7 @@ developers.
         An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           null
@@ -4178,7 +4178,7 @@ for more details.
           href="#appleauthenticationrefreshasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.refreshAsync()
@@ -4327,7 +4327,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
@@ -4336,14 +4336,14 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
                   </code>
                   . Defaults to 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     []
@@ -4510,7 +4510,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signInAsync()
@@ -4712,7 +4712,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
@@ -4721,14 +4721,14 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
                   </code>
                   . Defaults to 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     []
@@ -4862,7 +4862,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationsignoutasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signOutAsync()
@@ -5160,7 +5160,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationbutton"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthenticationButton
@@ -5442,7 +5442,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationbutton"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthenticationButton
@@ -5760,7 +5760,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationgetcredentialstateasyncuser"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.getCredentialStateAsync()
@@ -6452,7 +6452,7 @@ for more details.
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signInAsync()
@@ -7490,7 +7490,7 @@ exports[`APISection expo-pedometer 1`] = `
               href="#pedometerresult"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 PedometerResult
@@ -7699,7 +7699,7 @@ a start date that is more than seven days in the past returns only the available
           >
             Returns a promise that fulfills with a 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               boolean
@@ -7961,7 +7961,7 @@ provided with a single argument that is
                     href="#pedometerresult"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       PedometerResult
@@ -8040,7 +8040,7 @@ provided with a single argument that is
               href="#subscription"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 Subscription
@@ -8049,7 +8049,7 @@ provided with a single argument that is
              that enables you to call
 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               remove()
@@ -8106,7 +8106,7 @@ provided with a single argument that is
                   target="_blank"
                 >
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     Health Connect API
@@ -8115,7 +8115,7 @@ provided with a single argument that is
                 .
 On iOS, the 
                 <code
-                  class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+                  class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                   data-text="true"
                 >
                   getStepCountAsync
@@ -9385,7 +9385,7 @@ in order to enable/disable the permission.
 exports[`APISection no data 1`] = `
 <div>
   <p
-    class="text-inherit font-normal text-base [&_strong]:break-words"
+    class="text-inherit font-normal text-base [&_strong]:wrap-break-word"
     data-text="true"
   >
     No API data file found, sorry!

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const withWebBrowserAndroid_1 = require("./withWebBrowserAndroid");
-const pkg = require('expo-web-browser/package.json');
+const pkg = require('../../package.json');
 const withWebBrowser = (config, props) => {
     if (!props) {
         return config;

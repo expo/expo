@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [android] Add `clickCoordinates` to `onCircleClick` callback. ([#43835](https://github.com/expo/expo/pull/43835) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42189](https://github.com/expo/expo/pull/42189) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))
@@ -17,6 +18,8 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.9 — 2026-02-25
 

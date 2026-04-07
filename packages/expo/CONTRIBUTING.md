@@ -4,9 +4,9 @@ We've set up the Expo SDK to help us keep it reliable and clean and be confident
 
 Make sure you can run the unit tests, lint and TypeScript:
 ```sh
-yarn test  # This starts the test watcher
-yarn lint
-yarn tsc
+pnpm test  # This starts the test watcher
+pnpm lint
+pnpm tsc
 ```
 
 ## Testing in an App
@@ -17,7 +17,7 @@ The Expo repository is carefully configured so changes to the `expo` package sho
 
 The first thing we do when working on the Expo SDK is to start the unit test watcher:
 ```sh
-yarn test
+pnpm test
 ```
 
 This starts Jest, the test runner we use. Jest looks at the files you've modified and runs tests that may be affected. Jest also watches your filesystem and re-runs affected tests when you make a change. As we develop in the Expo SDK, we get quick feedback on the effect of our changes.
@@ -52,7 +52,7 @@ When a PR to Universe or a commit to the main branch contains changes to the Exp
 
 ## Linting
 
-We use ESLint with Prettier to detect some bugs and apply some of our style and formatting conventions. Before sending a PR, run `yarn lint` to make sure the Expo SDK stays clean. You also can run `yarn lint --fix` to automatically fix several lint errors and warnings and run Prettier.
+We use ESLint with Prettier to detect some bugs and apply some of our style and formatting conventions. Before sending a PR, run `pnpm lint` to make sure the Expo SDK stays clean. You also can run `pnpm lint --fix` to automatically fix several lint errors and warnings and run Prettier.
 
 Most popular editors have ESLint plugins. They show errors and warnings inline and add commands to auto-fix them.
 
@@ -60,6 +60,6 @@ Each of us is responsible for keeping the Expo SDK clean, like how we're respons
 
 ## TypeScript type checking
 
-We use TypeScript to add types to the Expo SDK, primarily for Expo developers using the SDK. TypeScript types also can add more confidence in the correctness of our implementation. Run TypeScript with `yarn tsc`. You also can run `watch -t yarn tsc` to re-run TypeScript when you make changes.
+We use TypeScript to add types to the Expo SDK, primarily for Expo developers using the SDK. TypeScript types also can add more confidence in the correctness of our implementation. Run TypeScript with `pnpm tsc`. You also can run `watch -t pnpm tsc` to re-run TypeScript when you make changes.
 
-When you use TypeScript in a file, use a `.ts` or `.tsx` file extension, add type hints, and make sure that `yarn tsc` passes on your file.
+When you use TypeScript in a file, use a `.ts` or `.tsx` file extension, add type hints, and make sure that `pnpm tsc` passes on your file.

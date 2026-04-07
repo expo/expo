@@ -92,7 +92,9 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
             if (input.files?.length) {
                 const files = allowsMultipleSelection ? input.files : [input.files[0]];
                 try {
-                    const assets = await Promise.all(Array.from(files).map((file) => readFile(file, { base64 })));
+                    const assets = await Promise.all(Array.from(files)
+                        .filter((file) => file != null)
+                        .map((file) => readFile(file, { base64 })));
                     resolve({ canceled: false, assets });
                 }
                 catch (error) {
@@ -162,7 +164,7 @@ async function readFileAsBase64(file) {
                 return;
             }
             // Remove the data URL prefix to get just the base64 data
-            resolve(result.split(',')[1]);
+            resolve(result.split(',')?.[1] ?? '');
         };
         reader.readAsDataURL(file);
     });

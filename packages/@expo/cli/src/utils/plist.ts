@@ -30,9 +30,7 @@ export function parsePlistBuffer(contents: Buffer) {
     if (Array.isArray(info)) return info[0];
     return info;
   } else {
-    throw new CommandError(
-      'PLIST',
-      `Cannot parse plist of type byte (0x${contents[0].toString(16)})`
-    );
+    const hex = contents[0] ? `0x${contents[0].toString(16) ?? '00'}` : '<EOF>';
+    throw new CommandError('PLIST', `Cannot parse plist of type byte (${hex})`);
   }
 }

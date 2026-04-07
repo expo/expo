@@ -96,7 +96,7 @@ if (args['--help']) {
 // Install exit hooks
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
-if (!(command in commands)) {
+if (!commands[command]) {
     (0, runLegacyCLIAsync_1.runLegacyCLIAsync)(args._).catch(errors_1.logCmdError);
 }
 else {
