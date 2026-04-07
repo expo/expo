@@ -82,6 +82,11 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
   });
   plugins.push(hasteMap);
 
+  const projectRoot = config.projectRoot;
+  const serverRoot = config.server.unstable_serverRoot;
+  // NOTE(@kitten): When we're using the CLI from `expo/expo`, allow the fallback crawler to escape the server root
+  const isExpoDevelopment = !isDirectoryIn(__dirname, serverRoot ?? projectRoot);
+
   const fileMap = new FileMap({
     // NOTE(@kitten): Dropped `config.unstable_fileMapCacheManagerFactory`
     cacheManagerFactory: (factoryParams: any) => {
@@ -94,6 +99,10 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
     perfLoggerFactory: config.unstable_perfLoggerFactory,
     computeSha1: !config.watcher.unstable_lazySha1,
     enableSymlinks: true,
+    // NOTE: (@expo/metro-file-map fork) Allows reading files outside of crawled/watched folders
+    enableFallback: true,
+    // NOTE: (@expo/metro-file-map fork) Allows `enableFallback` to read files outside of server root
+    scopeFallback: !isExpoDevelopment,
     extensions: Array.from(
       new Set([
         ...config.resolver.sourceExts,
@@ -101,18 +110,19 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
         ...config.watcher.additionalExts,
       ])
     ),
-    forceNodeFilesystemAPI: !config.resolver.useWatchman,
     healthCheck: config.watcher.healthCheck,
     ignorePattern: getIgnorePattern(config),
     maxWorkers: config.maxWorkers,
     plugins,
     retainAllFiles: true,
     resetCache: config.resetCache,
-    rootDir: config.projectRoot,
+    rootDir: projectRoot,
     roots: config.watchFolders,
     useWatchman: config.resolver.useWatchman,
     watch,
     watchmanDeferStates: config.watcher.watchman.deferStates,
+    // NOTE: (@expo/metro-file-map fork) New option is required for `scopeFallback: true` checks
+    serverRoot,
   });
 
   return {
@@ -120,6 +130,10 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
     hasteMap,
     dependencyPlugin,
   };
+}
+
+function isDirectoryIn(targetPath: string, rootPath: string) {
+  return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
 }
 
 function assertMetroFileMapPatched(metro: { getBundler(): any }): void {
