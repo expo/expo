@@ -1,0 +1,12 @@
+{
+  "name": "deep-code-review",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "post": "bun run post-review.ts post",
+    "preview": "bun run post-review.ts preview",
+    "close": "bun run post-review.ts close"
+  }
+}
+
