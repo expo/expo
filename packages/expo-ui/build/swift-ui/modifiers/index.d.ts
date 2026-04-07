@@ -675,8 +675,8 @@ export declare const lineSpacing: (value: number) => ModifierConfig;
  *
  * Three variants matching SwiftUI:
  * - `lineLimit(5)` — max 5 lines
- * - `lineLimit(5, { reservesSpace: true })` — max 5 lines, reserves height even when empty (iOS 16+)
- * - `lineLimit({ min: 3, max: 8 })` — range of 3 to 8 lines (iOS 16+)
+ * - `lineLimit(5, { reservesSpace: true })` — max 5 lines, reserves height even when empty (iOS 16+, tvOS 16+)
+ * - `lineLimit({ min: 3, max: 8 })` — range of 3 to 8 lines (iOS 16+, tvOS 16+)
  *
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linelimit(_:)).
  */
