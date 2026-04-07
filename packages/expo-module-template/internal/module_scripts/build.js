@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { spawnSync } = require('child_process');
+const { spawnSyncWithAutoShell } = require('./util');
 const fs = require('fs');
 const path = require('path');
 
@@ -28,5 +28,5 @@ if (
   tscArgs.push('--watch');
 }
 
-const result = spawnSync('tsc', tscArgs, { stdio: 'inherit', shell: true });
+const result = spawnSyncWithAutoShell('tsc', tscArgs, { stdio: 'inherit' });
 process.exit(result.status ?? 0);
