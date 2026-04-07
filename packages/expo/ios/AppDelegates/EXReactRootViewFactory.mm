@@ -52,7 +52,7 @@
                  launchOptions:(nullable NSDictionary *)launchOptions
 {
   if (self.reactDelegate != nil) {
-    return [self.reactDelegate createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+    return [((id<EXReactDelegateProtocol>)self.reactDelegate) createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
   }
   return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
 }
