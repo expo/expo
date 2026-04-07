@@ -74,6 +74,7 @@ export type {
 export interface InputOptions {
   readonly computeSha1?: boolean | undefined | null;
   readonly enableSymlinks?: boolean | undefined | null;
+  readonly skipStat?: boolean | undefined | null;
   readonly extensions: readonly string[];
   readonly ignorePattern?: RegExp | undefined | null;
   readonly plugins?: readonly InputFileMapPlugin[] | undefined;
@@ -314,6 +315,7 @@ export default class FileMap extends EventEmitter {
       computeSha1: options.computeSha1 || false,
       enableSymlinks: options.enableSymlinks || false,
       extensions: options.extensions,
+      skipStat: options.skipStat ?? true,
       ignorePattern,
       plugins,
       retainAllFiles: options.retainAllFiles,
@@ -487,6 +489,7 @@ export default class FileMap extends EventEmitter {
     const {
       computeSha1,
       enableSymlinks,
+      skipStat,
       extensions,
       ignorePattern,
       retainAllFiles,
@@ -501,6 +504,7 @@ export default class FileMap extends EventEmitter {
       computeSha1,
       console: this.#console,
       enableSymlinks,
+      skipStat,
       extensions,
       healthCheckFilePrefix: this.#options.healthCheck.filePrefix,
       // TODO: Refactor out the two different ignore strategies here.

@@ -36,8 +36,10 @@ export class Worker {
   processFile(data: WorkerMessage): WorkerMetadata {
     let content: Buffer | undefined;
     let sha1: WorkerMetadata['sha1'];
+    let mtime: WorkerMetadata['mtime'];
+    let size: WorkerMetadata['size'];
 
-    const { computeSha1, filePath, pluginsToRun } = data;
+    const { computeSha1, computeMtime, filePath, pluginsToRun } = data;
 
     const getContent = (): Buffer => {
       if (content == null) {
@@ -46,6 +48,16 @@ export class Worker {
 
       return content!;
     };
+
+    if (computeMtime) {
+      try {
+        const stat = fs.statSync(filePath);
+        mtime = stat.mtime.getTime();
+        size = stat.size;
+      } catch {
+        // Will be caught as ENOENT by the caller
+      }
+    }
 
     const workerUtils = { getContent };
     const pluginData = pluginsToRun.map((pluginIdx) =>
@@ -58,8 +70,8 @@ export class Worker {
     }
 
     return content && data.maybeReturnContent
-      ? { content, pluginData, sha1 }
-      : { pluginData, sha1 };
+      ? { content, pluginData, sha1, mtime, size }
+      : { pluginData, sha1, mtime, size };
   }
 }
 

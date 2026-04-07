@@ -6,6 +6,7 @@
  */
 
 import invariant from 'invariant';
+import fs from 'fs';
 import path from 'path';
 
 import H from '../constants';
@@ -203,8 +204,7 @@ export default class TreeFS implements MutableFileSystem {
         }
         if (
           newMetadata[H.MTIME] != null &&
-          // TODO: Remove when mtime is null if not populated
-          newMetadata[H.MTIME] != 0 &&
+          newMetadata[H.MTIME]! > 0 &&
           newMetadata[H.MTIME] === metadata[H.MTIME]
         ) {
           // Types and modified time match - not changed.
@@ -246,7 +246,21 @@ export default class TreeFS implements MutableFileSystem {
     }
     const { canonicalPath, node: fileMetadata } = result;
 
-    // Empty strings
+    if (fileMetadata[H.MTIME] != null && fileMetadata[H.MTIME]! > 0) {
+      const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
+      try {
+        const stat = await fs.promises.lstat(absolutePath);
+        const diskMtime = stat.mtime.getTime();
+        if (diskMtime !== fileMetadata[H.MTIME]) {
+          fileMetadata[H.SHA1] = null;
+          fileMetadata[H.MTIME] = diskMtime;
+          fileMetadata[H.SIZE] = stat.size;
+        }
+      } catch {
+        fileMetadata[H.SHA1] = null;
+      }
+    }
+
     const existing = fileMetadata[H.SHA1];
     if (existing != null && existing.length > 0) {
       return { sha1: existing };

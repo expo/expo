@@ -168,8 +168,10 @@ export class FileProcessor {
         },
         [] as number[]
       ) ?? [];
+    
+    const computeMtime = fileMetadata[H.MTIME] == null || fileMetadata[H.MTIME] === 0;
 
-    if (!computeSha1 && pluginsToRun.length === 0) {
+    if (!computeSha1 && !computeMtime && pluginsToRun.length === 0) {
       // Nothing to process
       return null;
     }
@@ -180,9 +182,10 @@ export class FileProcessor {
     // Note that we'd only expect node_modules files to reach this point if
     // retainAllFiles is true, or they're touched during watch mode.
     if (isNodeModules) {
-      if (computeSha1) {
+      if (computeSha1 || computeMtime) {
         return {
-          computeSha1: true,
+          computeSha1,
+          computeMtime,
           filePath: this.#rootPathUtils.normalToAbsolute(normalPath),
           maybeReturnContent,
           pluginsToRun,
@@ -193,6 +196,7 @@ export class FileProcessor {
 
     return {
       computeSha1,
+      computeMtime,
       filePath: this.#rootPathUtils.normalToAbsolute(normalPath),
       maybeReturnContent,
       pluginsToRun,
@@ -254,6 +258,12 @@ function processWorkerReply(
 
   if (metadata.sha1 != null) {
     fileMetadata[H.SHA1] = metadata.sha1;
+  }
+  if (metadata.mtime != null) {
+    fileMetadata[H.MTIME] = metadata.mtime;
+  }
+  if (metadata.size != null) {
+    fileMetadata[H.SIZE] = metadata.size;
   }
 
   return metadata.content;
