@@ -81,8 +81,9 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     props.axis == .vertical ? .vertical : .horizontal
   }
 
-  var text: some View {
-    let text = if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
+  @ViewBuilder
+  var textField: some View {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
 #if !os(tvOS)
       TextField(
         props.placeholder,
@@ -90,12 +91,14 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
         selection: $textManager.selection,
         axis: swiftUIAxis
       )
+      .focused($isFocused)
 #else
       TextField(
         props.placeholder,
         text: $textManager.text,
         axis: swiftUIAxis
       )
+      .focused($isFocused)
 #endif
     } else if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
@@ -103,18 +106,18 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
         text: $textManager.text,
         axis: swiftUIAxis
       )
+      .focused($isFocused)
     } else {
       TextField(
         props.placeholder,
         text: $textManager.text
       )
-    }
-    return text
       .focused($isFocused)
+    }
   }
 
   var body: some View {
-    let baseView = text
+    let baseView = textField
       .onAppear {
         textManager.text = props.defaultValue
         if props.autoFocus {
