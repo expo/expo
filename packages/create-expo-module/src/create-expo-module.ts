@@ -764,9 +764,7 @@ function printFurtherLocalInstructions(
         `import { default as ${viewName} } from './modules/${slug}/src/${viewName}';`
       )
     );
-    console.log(
-      chalk.gray.italic(`import type { } from './modules/${slug}/src/${name}.types';`)
-    );
+    console.log(chalk.gray.italic(`import type { } from './modules/${slug}/src/${name}.types';`));
   }
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
