@@ -3,8 +3,8 @@ import { Ref } from 'react';
 import { ColorValue } from 'react-native';
 
 import { ModifierConfig, ViewEvent } from '../../types';
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { Slot } from '../SlotView';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 // region Types
 
