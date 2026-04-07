@@ -30,10 +30,13 @@ function find(
   const pathUtils = new RootPathUtils(rootDir);
   const visited = new Set<string>();
 
-  const exts = extensions.reduce((acc, ext) => {
-    acc[ext] = true;
-    return acc;
-  }, {} as Record<string, true | undefined>);
+  const exts = extensions.reduce(
+    (acc, ext) => {
+      acc[ext] = true;
+      return acc;
+    },
+    {} as Record<string, true | undefined>
+  );
 
   function search(directory: string): void {
     if (visited.has(directory)) {
@@ -113,10 +116,13 @@ function findWithoutStat(
   const pathUtils = new RootPathUtils(rootDir);
   const visited: Set<string> = new Set();
 
-  const exts = extensions.reduce((acc, ext) => {
-    acc[ext] = true;
-    return acc;
-  }, {} as Record<string, true | undefined>);
+  const exts = extensions.reduce(
+    (acc, ext) => {
+      acc[ext] = true;
+      return acc;
+    },
+    {} as Record<string, true | undefined>
+  );
 
   function search(directory: string, dirNormal: string): void {
     if (visited.has(directory)) {
