@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.os.IBinder
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
+import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.CommandButton
@@ -213,6 +214,21 @@ class AudioControlsService : MediaSessionService() {
     postOrStartForegroundNotification(startInForegroundRequired)
   }
 
+  private fun resolveSessionPlayer(player: AudioPlayer, options: AudioLockScreenOptions?): Player {
+    val isLive = options?.isLiveStream ?: player.isLive
+    if (!isLive) {
+      return player.ref
+    }
+
+    return object : ForwardingPlayer(player.ref) {
+      override fun getAvailableCommands(): Player.Commands {
+        return super.getAvailableCommands().buildUpon()
+          .remove(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM)
+          .build()
+      }
+    }
+  }
+
   private fun setActivePlayerInternal(
     player: AudioPlayer?,
     metadata: Metadata? = null,
@@ -244,7 +260,8 @@ class AudioControlsService : MediaSessionService() {
 
       appContext?.mainQueue?.launch {
         val context = appContext?.reactContext ?: return@launch
-        val session = MediaSession.Builder(context, player.ref)
+        val sessionPlayer = resolveSessionPlayer(player, options)
+        val session = MediaSession.Builder(context, sessionPlayer)
           .setCallback(AudioMediaSessionCallback())
           .build()
 
@@ -319,6 +336,24 @@ class AudioControlsService : MediaSessionService() {
       currentMetadata = metadata
       currentOptions = options
 
+      mediaSession?.release()
+      appContext?.mainQueue?.launch {
+        val context = appContext?.reactContext ?: return@launch
+        val sessionPlayer = resolveSessionPlayer(player, options)
+        val session = MediaSession.Builder(context, sessionPlayer)
+          .setCallback(AudioMediaSessionCallback())
+          .build()
+
+        player.mediaSession.release()
+        player.mediaSession = session
+
+        addSession(session)
+        mediaSession = session
+
+        updateSessionCustomLayout(player.ref.isPlaying)
+        postOrStartForegroundNotification(startInForeground = false)
+      }
+
       // Reload artwork if metadata has changed
       metadata?.artworkUrl?.let {
         loadArtworkFromUrl(it) { bitmap ->
@@ -326,9 +361,6 @@ class AudioControlsService : MediaSessionService() {
           postOrStartForegroundNotification(startInForeground = false)
         }
       }
-
-      updateSessionCustomLayout(player.ref.isPlaying)
-      postOrStartForegroundNotification(startInForeground = false)
     } else {
       setActivePlayerInternal(player, metadata, options)
     }

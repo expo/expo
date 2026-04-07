@@ -73,6 +73,9 @@ export function getStatusFromMedia(media: HTMLMediaElement, id: string): AudioSt
     shouldCorrectPitch: true,
     mute: media.muted,
     loop: media.loop,
+    isLive: media.duration === Infinity,
+    currentOffsetFromLive: null,
+    error: null,
   };
 
   return status;
