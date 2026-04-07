@@ -8,13 +8,9 @@ const ExpoUI = requireNativeModule('ExpoUI');
  */
 export type ObservableState<T> = SharedObject & {
   /**
-   * Returns the current value.
+   * The current value. Read or write directly.
    */
-  getValue(): T;
-  /**
-   * Sets a new value, triggering SwiftUI updates.
-   */
-  setValue(value: T): void;
+  value: T;
 };
 
 /**
@@ -23,9 +19,23 @@ export type ObservableState<T> = SharedObject & {
 export function useNativeState<T>(initialValue: T): ObservableState<T> {
   return useReleasingSharedObject(() => {
     const state = new ExpoUI.ObservableState({ value: initialValue });
-    state.setValue = (v: T) => state._setValue({ value: v });
+    defineValueProperty(state);
     return state;
   }, [JSON.stringify(initialValue)]) as ObservableState<T>;
+}
+
+/**
+ * Adds a `value` property that delegates to the native `getValue`/`setValue` functions.
+ */
+function defineValueProperty(state: any): void {
+  Object.defineProperty(state, 'value', {
+    get() {
+      return state.getValue();
+    },
+    set(v: any) {
+      state.setValue({ value: v });
+    },
+  });
 }
 
 /**
@@ -37,4 +47,61 @@ export function getStateId(state?: object): number | undefined {
     return undefined;
   }
   return (state as { __expo_shared_object_id__?: number }).__expo_shared_object_id__;
+}
+
+// MARK: - Worklet support
+
+let _serializerRegistered = false;
+
+/**
+ * Registers a custom serializer so SharedObjects automatically work in worklets.
+ * Call it after `installOnUIRuntime()`.
+ */
+export function registerSharedObjectSerializer(): void {
+  if (_serializerRegistered) {
+    return;
+  }
+  _serializerRegistered = true;
+
+  const { registerCustomSerializable } = require('react-native-worklets') as {
+    registerCustomSerializable: (data: {
+      name: string;
+      determine: (value: object) => boolean;
+      pack: (value: any) => any;
+      unpack: (value: any) => any;
+    }) => void;
+  };
+
+  registerCustomSerializable({
+    name: 'ExpoSharedObject',
+    determine: (value: object) => {
+      'worklet';
+      return (
+        value != null &&
+        typeof value === 'object' &&
+        '__expo_shared_object_id__' in value &&
+        (value as any).__expo_shared_object_id__ !== 0
+      );
+    },
+    pack: (value: any) => {
+      'worklet';
+      return { objectId: value.__expo_shared_object_id__ };
+    },
+    unpack: (packed: any) => {
+      'worklet';
+      const obj = (globalThis as any).expo.SharedObject.__resolveInWorklet(packed.objectId);
+      // Define .value property if the object has getValue/setValue (e.g. ObservableState)
+      if (typeof obj.getValue === 'function' && typeof obj.setValue === 'function') {
+        Object.defineProperty(obj, 'value', {
+          get() {
+            return obj.getValue();
+          },
+          set(v: any) {
+            obj.setValue({ value: v });
+          },
+        });
+      }
+      return obj;
+    },
+  });
 }
