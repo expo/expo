@@ -9,18 +9,21 @@ export type TextFieldRef = {
     focus: () => Promise<void>;
     blur: () => Promise<void>;
 };
+export type TextFieldCapitalization = 'none' | 'characters' | 'words' | 'sentences';
+export type TextFieldKeyboardType = 'text' | 'number' | 'email' | 'phone' | 'decimal' | 'password' | 'ascii' | 'uri' | 'numberPassword';
+export type TextFieldImeAction = 'default' | 'none' | 'go' | 'search' | 'send' | 'previous' | 'next' | 'done';
 /**
  * Keyboard options matching Compose `KeyboardOptions`.
  */
 export type TextFieldKeyboardOptions = {
     /** @default 'none' */
-    capitalization?: 'none' | 'characters' | 'words' | 'sentences';
+    capitalization?: TextFieldCapitalization;
     /** @default true */
     autoCorrectEnabled?: boolean;
     /** @default 'text' */
-    keyboardType?: 'text' | 'number' | 'email' | 'phone' | 'decimal' | 'password' | 'ascii' | 'uri' | 'numberPassword';
+    keyboardType?: TextFieldKeyboardType;
     /** @default 'default' */
-    imeAction?: 'default' | 'none' | 'go' | 'search' | 'send' | 'previous' | 'next' | 'done';
+    imeAction?: TextFieldImeAction;
 };
 /**
  * Keyboard actions matching Compose `KeyboardActions`.

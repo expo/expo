@@ -225,7 +225,7 @@ class TextFieldView(context: Context, appContext: AppContext) :
   private val onKeyboardAction by EventDispatcher()
 
   private val textState = mutableStateOf<String?>(null)
-  private val focusRequester = FocusRequester()
+  private val focusRequester by lazy { FocusRequester() }
   private var focusManager: FocusManager? = null
 
   var text: String?

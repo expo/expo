@@ -1,6 +1,9 @@
 import {
   TextField,
   TextFieldRef,
+  TextFieldKeyboardType,
+  TextFieldImeAction,
+  TextFieldCapitalization,
   OutlinedTextField,
   Button,
   Host,
@@ -15,18 +18,6 @@ import {
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, padding, weight } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
-
-type KeyboardTypeOption =
-  | 'text'
-  | 'number'
-  | 'email'
-  | 'phone'
-  | 'decimal'
-  | 'password'
-  | 'ascii'
-  | 'uri';
-type ImeActionOption = 'default' | 'done' | 'go' | 'search' | 'send' | 'next' | 'previous';
-type CapitalizationOption = 'none' | 'characters' | 'words' | 'sentences';
 
 export default function TextFieldScreen() {
   const [textValue, setTextValue] = React.useState('');
@@ -49,9 +40,9 @@ export default function TextFieldScreen() {
   const [showPrefix, setShowPrefix] = React.useState(false);
   const [showSuffix, setShowSuffix] = React.useState(false);
 
-  const [keyboardType, setKeyboardType] = React.useState<KeyboardTypeOption>('text');
-  const [imeAction, setImeAction] = React.useState<ImeActionOption>('default');
-  const [capitalization, setCapitalization] = React.useState<CapitalizationOption>('none');
+  const [keyboardType, setKeyboardType] = React.useState<TextFieldKeyboardType>('text');
+  const [imeAction, setImeAction] = React.useState<TextFieldImeAction>('default');
+  const [capitalization, setCapitalization] = React.useState<TextFieldCapitalization>('none');
 
   const TextFieldComponent = outlined ? OutlinedTextField : TextField;
 

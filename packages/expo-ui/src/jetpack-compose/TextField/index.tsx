@@ -4,16 +4,7 @@ import { ColorValue } from 'react-native';
 
 import { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
-
-type SlotNativeViewProps = {
-  slotName: string;
-  children: React.ReactNode;
-};
-
-const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
-  'ExpoUI',
-  'SlotView'
-);
+import { Slot } from '../SlotView';
 
 // region Types
 
@@ -26,27 +17,41 @@ export type TextFieldRef = {
   blur: () => Promise<void>;
 };
 
+export type TextFieldCapitalization = 'none' | 'characters' | 'words' | 'sentences';
+
+export type TextFieldKeyboardType =
+  | 'text'
+  | 'number'
+  | 'email'
+  | 'phone'
+  | 'decimal'
+  | 'password'
+  | 'ascii'
+  | 'uri'
+  | 'numberPassword';
+
+export type TextFieldImeAction =
+  | 'default'
+  | 'none'
+  | 'go'
+  | 'search'
+  | 'send'
+  | 'previous'
+  | 'next'
+  | 'done';
+
 /**
  * Keyboard options matching Compose `KeyboardOptions`.
  */
 export type TextFieldKeyboardOptions = {
   /** @default 'none' */
-  capitalization?: 'none' | 'characters' | 'words' | 'sentences';
+  capitalization?: TextFieldCapitalization;
   /** @default true */
   autoCorrectEnabled?: boolean;
   /** @default 'text' */
-  keyboardType?:
-    | 'text'
-    | 'number'
-    | 'email'
-    | 'phone'
-    | 'decimal'
-    | 'password'
-    | 'ascii'
-    | 'uri'
-    | 'numberPassword';
+  keyboardType?: TextFieldKeyboardType;
   /** @default 'default' */
-  imeAction?: 'default' | 'none' | 'go' | 'search' | 'send' | 'previous' | 'next' | 'done';
+  imeAction?: TextFieldImeAction;
 };
 
 /**
@@ -205,31 +210,31 @@ function transformProps(
 // region Slot components
 
 function Label(props: { children: React.ReactNode }) {
-  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+  return <Slot slotName="label">{props.children}</Slot>;
 }
 
 function Placeholder(props: { children: React.ReactNode }) {
-  return <SlotNativeView slotName="placeholder">{props.children}</SlotNativeView>;
+  return <Slot slotName="placeholder">{props.children}</Slot>;
 }
 
 function LeadingIcon(props: { children: React.ReactNode }) {
-  return <SlotNativeView slotName="leadingIcon">{props.children}</SlotNativeView>;
+  return <Slot slotName="leadingIcon">{props.children}</Slot>;
 }
 
 function TrailingIcon(props: { children: React.ReactNode }) {
-  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
+  return <Slot slotName="trailingIcon">{props.children}</Slot>;
 }
 
 function Prefix(props: { children: React.ReactNode }) {
-  return <SlotNativeView slotName="prefix">{props.children}</SlotNativeView>;
+  return <Slot slotName="prefix">{props.children}</Slot>;
 }
 
 function Suffix(props: { children: React.ReactNode }) {
-  return <SlotNativeView slotName="suffix">{props.children}</SlotNativeView>;
+  return <Slot slotName="suffix">{props.children}</Slot>;
 }
 
 function SupportingText(props: { children: React.ReactNode }) {
-  return <SlotNativeView slotName="supportingText">{props.children}</SlotNativeView>;
+  return <Slot slotName="supportingText">{props.children}</Slot>;
 }
 
 // endregion Slot components
