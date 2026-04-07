@@ -169,6 +169,14 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v55.0.0/sdk/ui/jetpack-compose/picker/':
     '/versions/v55.0.0/sdk/ui/jetpack-compose/segmentedbutton/',
 
+  // TextInput renamed to TextField
+  '/versions/latest/sdk/ui/jetpack-compose/textinput/':
+    '/versions/latest/sdk/ui/jetpack-compose/textfield/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/textinput/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/textfield/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textinput/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/textfield/',
+
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
