@@ -173,10 +173,9 @@ on:
 
 Runs your workflow when one of the selected App Store Connect events occurs.
 
-> **important** To use this trigger, configure your App Store Connect connection in your Expo project dashboard: **Project settings > General > Connections**.
+> **info** To use this trigger, configure your App Store Connect connection in the EAS dashboard. For setup steps, see the [App Store Connect trigger setup](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) section.
 
-When `on.app_store_connect` is present, you must specify at least one event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`).
-Within a configured event domain, you can specify which states should trigger your workflow.
+When `on.app_store_connect` is present, you must specify at least one event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`). Within a configured event domain, you can specify which states should trigger your workflow.
 
 #### `on.app_store_connect.app_version.states`
 
