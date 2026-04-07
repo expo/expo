@@ -1670,6 +1670,9 @@ importers:
       '@expo/metro-config':
         specifier: workspace:~55.0.9
         version: link:../metro-config
+      '@expo/metro-file-map':
+        specifier: workspace:55.0.0
+        version: link:../metro-file-map
       '@expo/osascript':
         specifier: workspace:^2.4.2
         version: link:../osascript
