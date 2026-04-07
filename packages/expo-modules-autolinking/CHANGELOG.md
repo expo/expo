@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active. ([#44554](https://github.com/expo/expo/pull/44554) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 55.0.15 — 2026-04-07
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active. ([#44554](https://github.com/expo/expo/pull/44554) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.14 — 2026-04-02
 

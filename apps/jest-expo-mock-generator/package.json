@@ -6,8 +6,8 @@
   "main": "index.js",
   "dependencies": {
     "@expo/mux": "^1.0.7",
-    "expo": "~55.0.11",
-    "expo-clipboard": "~55.0.11",
+    "expo": "~55.0.12",
+    "expo-clipboard": "~55.0.12",
     "react": "19.2.0",
     "react-native": "0.83.4"
   }
