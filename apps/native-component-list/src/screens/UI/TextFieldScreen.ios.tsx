@@ -27,11 +27,6 @@ import * as React from 'react';
 
 export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
-  // State
-  const [username, setUsername] = React.useState('');
-  const [bio, setBio] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [phone, setPhone] = React.useState('');
   const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
 
   // Submit label picker
@@ -58,18 +53,18 @@ export default function TextFieldScreen() {
             defaultValue="johndoe"
             placeholder="Username"
             modifiers={[autocorrectionDisabled()]}
-            onValueChange={setUsername}
+            onValueChange={(v) => console.log('username:', v)}
           />
           <TextField
             placeholder="Email"
             modifiers={[keyboardType('email-address'), autocorrectionDisabled()]}
-            onValueChange={setEmail}
+            onValueChange={(v) => console.log('email:', v)}
           />
           <TextField
             axis="vertical"
             placeholder="Tell us about yourself..."
             modifiers={[lineLimit(3, { reservesSpace: true })]}
-            onValueChange={setBio}
+            onValueChange={(v) => console.log('bio:', v)}
           />
         </Section>
 
@@ -84,7 +79,7 @@ export default function TextFieldScreen() {
           <TextField
             placeholder="Phone number"
             modifiers={[keyboardType('phone-pad')]}
-            onValueChange={setPhone}
+            onValueChange={(v) => console.log('phone:', v)}
           />
           <TextField
             placeholder="Website"
