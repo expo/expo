@@ -75,4 +75,9 @@ class Album: SharedObject {
 
     collection = fetchedAlbum
   }
+
+  static func getAll() async throws -> [Album] {
+    AssetCollectionRepository.shared.getAll()
+      .map { Album(id: $0.localIdentifier) }
+  }
 }

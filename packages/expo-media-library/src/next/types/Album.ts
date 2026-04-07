@@ -136,4 +136,15 @@ export declare class Album {
    * ```
    */
   static get(title: string): Promise<Album | null>;
+
+  /**
+   * A static function. Retrieves all albums on the device.
+   * @returns A promise resolving to an array of {@link Album} objects.
+   *
+   * @example
+   * ```ts
+   * const albums = await Album.getAll();
+   * ```
+   */
+  static getAll(): Promise<Album[]>;
 }
