@@ -11,6 +11,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusManager
@@ -159,6 +160,8 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
 // region Props
 
 data class TextFieldProps(
+  val defaultValue: MutableState<String> = mutableStateOf(""),
+  val autoFocus: MutableState<Boolean> = mutableStateOf(false),
   val variant: MutableState<TextFieldVariant> = mutableStateOf(TextFieldVariant.FILLED),
   val enabled: MutableState<Boolean> = mutableStateOf(true),
   val readOnly: MutableState<Boolean> = mutableStateOf(false),
@@ -237,7 +240,7 @@ class TextFieldView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     focusManager = LocalFocusManager.current
-    val value = textState.value ?: ""
+    val value = textState.value ?: props.defaultValue.value
     val onValueChange: (String) -> Unit = {
       textState.value = it
       onValueChange(mapOf("value" to it))
@@ -281,6 +284,10 @@ class TextFieldView(context: Context, appContext: AppContext) :
       .onFocusChanged { focusState ->
         onFocusChanged(mapOf("value" to focusState.isFocused))
       }
+
+    if (props.autoFocus.value) {
+      LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    }
 
     val isOutlined = props.variant.value == TextFieldVariant.OUTLINED
     val shape = shapeFromShapeRecord(props.shape.value)

@@ -114,6 +114,10 @@ export type TextFieldColors = {
 /** Shared props between `TextField` and `OutlinedTextField`. */
 type BaseTextFieldProps = {
   ref?: Ref<TextFieldRef>;
+  /** Initial value displayed when mounted. Uncontrolled — change `key` to reset. */
+  defaultValue?: string;
+  /** If true, the text field will be focused automatically when mounted. @default false */
+  autoFocus?: boolean;
   /** @default true */
   enabled?: boolean;
   /** @default false */

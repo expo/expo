@@ -73,6 +73,9 @@ class ExpoUIModule : Module() {
 
     View(TextFieldView::class) {
       Events("onValueChange", "onFocusChanged", "onKeyboardAction")
+      Prop("defaultValue", "") { view: TextFieldView, text: String ->
+        if (view.text == null) { view.text = text }
+      }
       AsyncFunction("setText") { view: TextFieldView, text: String ->
         view.text = text
       }
