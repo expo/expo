@@ -18,7 +18,7 @@ internal final class ConstantsProvider: EXConstantsInterface {
     let isDebugXcodeScheme = false
     #endif
 
-    return [
+    var result: [AnyHashable: Any] = [
       "sessionId": UUID().uuidString,
       "executionEnvironment": "bare",
       "statusBarHeight": statusBarHeight,
@@ -26,13 +26,18 @@ internal final class ConstantsProvider: EXConstantsInterface {
       "systemFonts": systemFonts,
       "debugMode": isDebugXcodeScheme,
       "isHeadless": false,
-      "manifest": getManifest(), // Deprecated, but still used internally.
       "platform": [
         "ios": [
-          "buildNumber": getBuildVersion()
+          "buildNumber": getBuildVersion() ?? ""
         ]
       ]
     ]
+    // Deprecated, but still used internally. We need to check if the manifest is set, otherwise it will result in 
+    // an error where the whole manifest is null since we cannot wrap an Optional null in JS correctly.
+    if let manifest = getManifest() {
+      result["manifest"] = manifest
+    }
+    return result
   }
 }
 
