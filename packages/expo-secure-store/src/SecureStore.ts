@@ -68,14 +68,15 @@ export type SecureStoreOptions = {
   keychainService?: string;
   /**
    * Determines the authentication method for this entry. Specify `false` for no authentication, `'biometry'` for biometric authentication only,
-   * or `'userPresence'` for biometric with fallback to device credentials (PIN, pattern, or password). Use `canUseDeviceCredentialsAuthentication()` to check if device credentials are available.
+   * or `'deviceCredentials'` for biometric with fallback to device credentials (PIN, pattern, or password).
+   * Use `canUseDeviceCredentialsAuthentication()` to check if device credentials are available.
    *
-   * For backward compatibility, passing `true` is still accepted and is treated as equivalent to `'biometry'`.
-   * New code should prefer the explicit `'biometry'` value instead of `true`.
+   * For backward compatibility, passing `true` is still accepted and treated as `'biometry'`.
    *
    * - Android: Equivalent to [`setUserAuthenticationRequired(true)`](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder#setUserAuthenticationRequired(boolean))
-   *   (requires API 23).
+   *   (requires API 23). `'deviceCredentials'` requires API 30+.
    * - iOS: Equivalent to [`biometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/2937192-biometrycurrentset) or [`userPresence`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags).
+   *
    * Complete functionality is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
    * value used for the others non-authenticated operations.
    *
@@ -87,7 +88,7 @@ export type SecureStoreOptions = {
    *
    * @default false
    */
-  requireAuthentication?: boolean | 'biometry' | 'userPresence';
+  requireAuthentication?: boolean | 'biometry' | 'deviceCredentials';
   /**
    * Custom message displayed to the user during authentication.
    */
@@ -231,21 +232,16 @@ export function canUseBiometricAuthentication(): boolean {
 }
 
 /**
- * Checks whether device credentials are configured on the device.
+ * Checks whether the device is secured with a PIN, pattern, or password.
  *
- * **Device credentials** are the lock screen authentication method (PIN, pattern, or password),
- * as opposed to biometrics only. **Configured** means the user has set a secure lock screen
- * (e.g. PIN, pattern, or password rather than swipe or none), so the device is considered secure.
- *
- * Use this to determine if the user can authenticate with `requireAuthentication: 'userPresence'`
+ * Use this to determine if the user can authenticate with `requireAuthentication: 'deviceCredentials'`
  * (biometric with fallback to device credentials).
  *
- * - **Android:** Uses [KeyguardManager.isDeviceSecure()](https://developer.android.com/reference/android/app/KeyguardManager#isDeviceSecure()) -
- *   returns true when the lock screen is set to PIN, pattern, or password.
- * - **iOS:** Uses [LAContext.canEvaluatePolicy](https://developer.apple.com/documentation/LocalAuthentication/LAContext/canEvaluatePolicy(_:error:))
- *   with device owner authentication - returns true when at least the passcode is set.
+ * > On Android, `requireAuthentication: 'deviceCredentials'` requires API 30+. On devices running
+ * > API 23-29 this method returns `false` because device credential authentication is not
+ * > supported there.
  *
- * @return `true` if the device has device credentials configured. Otherwise, returns `false`.
+ * @return `true` if the device has a secure lock screen configured. Otherwise, returns `false`.
  * @platform android
  * @platform ios
  */

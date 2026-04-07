@@ -10,7 +10,7 @@
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - Add `canUseDeviceCredentialsAuthentication` function. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
-- Add `requireAuthentication: 'userPresence'` for device credential fallback (on Android, requires API 30+). ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
+- Add `requireAuthentication: 'deviceCredentials'` for device credential fallback (on Android, requires API 30+). ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
 
 ### 🐛 Bug fixes
 

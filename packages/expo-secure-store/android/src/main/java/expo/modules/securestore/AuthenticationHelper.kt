@@ -22,8 +22,8 @@ class AuthenticationHelper(
 
   suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: String?, title: String): Cipher {
     if (requiresAuthentication != null) {
-      val isUserPresenceRequired = requiresAuthentication == "userPresence"
-      return openAuthenticationPrompt(cipher, title, isUserPresenceRequired).cryptoObject?.cipher
+      val isDeviceCredentialsRequired = requiresAuthentication == "deviceCredentials"
+      return openAuthenticationPrompt(cipher, title, isDeviceCredentialsRequired).cryptoObject?.cipher
         ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }
     return cipher
@@ -32,7 +32,7 @@ class AuthenticationHelper(
   private suspend fun openAuthenticationPrompt(
     cipher: Cipher,
     title: String,
-    isUserPresenceRequired: Boolean
+    isDeviceCredentialsRequired: Boolean
   ): BiometricPrompt.AuthenticationResult {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       throw AuthenticationException("Biometric authentication requires Android API 23")
@@ -44,7 +44,7 @@ class AuthenticationHelper(
     isAuthenticating = true
 
     try {
-      if (isUserPresenceRequired) {
+      if (isDeviceCredentialsRequired) {
         assertDeviceSecurity()
       } else {
         assertBiometricsSupport()
@@ -53,7 +53,7 @@ class AuthenticationHelper(
       val fragmentActivity = getCurrentActivity() as? FragmentActivity
         ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
 
-      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title, isUserPresenceRequired)
+      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title, isDeviceCredentialsRequired)
 
       return withContext(Dispatchers.Main.immediate) {
         return@withContext authenticationPrompt.authenticate(cipher)
@@ -66,8 +66,7 @@ class AuthenticationHelper(
 
   fun assertDeviceSecurity() {
     val manager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-    val isSecure = manager.isDeviceSecure
-    if (!isSecure) {
+    if (!manager.isDeviceSecure) {
       throw AuthenticationException(
         "A secure lock screen (PIN, pattern, or password) is required for device credential authentication. The device currently has no secure lock screen set."
       )

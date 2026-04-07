@@ -22,7 +22,14 @@ extension SecureStoreOptions {
     return requireAuthentication != nil
   }
 
-  var isUserPresenceRequired: Bool {
-    return requireAuthentication == "userPresence"
+  var isDeviceCredentialsRequired: Bool {
+    return requireAuthentication == "deviceCredentials"
+  }
+
+  var serviceSuffix: String {
+    if !isAuthenticationRequired {
+      return "no-auth"
+    }
+    return isDeviceCredentialsRequired ? "auth-deviceCredentials" : "auth"
   }
 }

@@ -13,6 +13,6 @@ class SecureStoreOptions(
   val isAuthenticationRequired: Boolean
     get() = requireAuthentication != null
 
-  val isUserPresenceRequired: Boolean
-    get() = requireAuthentication == "userPresence"
+  val isDeviceCredentialsRequired: Boolean
+    get() = requireAuthentication == "deviceCredentials"
 }

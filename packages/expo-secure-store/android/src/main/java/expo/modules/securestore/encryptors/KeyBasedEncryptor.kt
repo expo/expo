@@ -12,7 +12,7 @@ enum class KeyPurpose {
   DECRYPT
 }
 interface KeyBasedEncryptor<E : KeyStore.Entry> {
-  fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isUserPresenceRequired: Boolean): String
+  fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isDeviceCredentialsRequired: Boolean): String
 
   fun getKeyStoreAlias(options: SecureStoreOptions): String
 
@@ -26,7 +26,7 @@ interface KeyBasedEncryptor<E : KeyStore.Entry> {
     requireAuthentication: Boolean,
     authenticationPrompt: String,
     authenticationHelper: AuthenticationHelper,
-    isUserPresenceRequired: Boolean
+    isDeviceCredentialsRequired: Boolean
   ): JSONObject
 
   @Throws(GeneralSecurityException::class, JSONException::class)

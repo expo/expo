@@ -119,7 +119,7 @@ export function test(t) {
             try {
               await SecureStore.setItemAsync(key, value, {
                 keychainService: 'fallback_service',
-                requireAuthentication: 'userPresence',
+                requireAuthentication: 'deviceCredentials',
               });
               if (!canSave) {
                 t.fail('Expected SecureStore.setItemAsync to throw an error');

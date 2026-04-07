@@ -2,6 +2,7 @@ package expo.modules.securestore
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.preference.PreferenceManager
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.util.Log
@@ -76,6 +77,9 @@ open class SecureStoreModule : Module() {
     }
 
     Function("canUseDeviceCredentialsAuthentication") {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        return@Function false
+      }
       return@Function try {
         authenticationHelper.assertDeviceSecurity()
         true
@@ -200,7 +204,7 @@ open class SecureStoreModule : Module() {
       if (keyIsInvalidated) {
         // Invalidated keys will block writing even though it's not possible to re-validate them
         // so we remove them before saving.
-        val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isUserPresenceRequired)
+        val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
         removeKeyFromKeystore(alias, options.keychainService)
       }
 
@@ -209,8 +213,8 @@ open class SecureStoreModule : Module() {
        use in the encrypted JSON item so that we know how to decode and decrypt it when reading
        back a value.
        */
-      val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.isAuthenticationRequired, options.isUserPresenceRequired)
-      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.isAuthenticationRequired, options.authenticationPrompt, authenticationHelper, options.isUserPresenceRequired)
+      val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
+      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.isAuthenticationRequired, options.authenticationPrompt, authenticationHelper, options.isDeviceCredentialsRequired)
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
       saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
 
@@ -329,9 +333,9 @@ open class SecureStoreModule : Module() {
     encryptor: KeyBasedEncryptor<E>,
     options: SecureStoreOptions,
     requireAuthentication: Boolean,
-    isUserPresenceRequired: Boolean
+    isDeviceCredentialsRequired: Boolean
   ): E? {
-    val keystoreAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication, isUserPresenceRequired)
+    val keystoreAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication, isDeviceCredentialsRequired)
     return if (keyStore.containsAlias(keystoreAlias)) {
       val entry = keyStore.getEntry(keystoreAlias, null)
       if (!keyStoreEntryClass.isInstance(entry)) {
@@ -349,12 +353,12 @@ open class SecureStoreModule : Module() {
     encryptor: KeyBasedEncryptor<E>,
     options: SecureStoreOptions,
     requireAuthentication: Boolean,
-    isUserPresenceRequired: Boolean
+    isDeviceCredentialsRequired: Boolean
   ): E {
-    return getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication, isUserPresenceRequired) ?: run {
+    return getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication, isDeviceCredentialsRequired) ?: run {
       // Android won't allow us to generate the keys if the device doesn't support biometrics or no biometrics are enrolled
       if (requireAuthentication) {
-        if (options.isUserPresenceRequired) {
+        if (options.isDeviceCredentialsRequired) {
           authenticationHelper.assertDeviceSecurity()
         } else {
           authenticationHelper.assertBiometricsSupport()
@@ -372,18 +376,13 @@ open class SecureStoreModule : Module() {
     usesKeystoreSuffix: Boolean
   ): E? {
     return if (usesKeystoreSuffix) {
-      val (requireAuthBool, isUserPresenceRequired) = when (requireAuthentication) {
-        null, "" -> false to false
-        "biometry" -> true to false
-        "userPresence" -> true to true
-        else -> {
-          throw CodedException(
-            "Invalid value for requireAuthentication: \"$requireAuthentication\". " +
-              "Expected \"biometry\", \"userPresence\", or null."
-          )
-        }
+      val (requireAuthBool, isDeviceCredentialsRequired) = when (requireAuthentication) {
+        null, "", "false" -> false to false
+        "biometry", "true" -> true to false
+        "deviceCredentials" -> true to true
+        else -> throw InvalidAuthenticationOptionException(requireAuthentication)
       }
-      getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthBool, isUserPresenceRequired)
+      getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthBool, isDeviceCredentialsRequired)
     } else {
       getLegacyKeyEntry(keyStoreEntryClass, encryptor, options)
     }
@@ -410,7 +409,7 @@ open class SecureStoreModule : Module() {
     const val USES_KEYSTORE_SUFFIX_PROPERTY = "usesKeystoreSuffix"
     const val DEFAULT_KEYSTORE_ALIAS = "key_v1"
     const val AUTHENTICATED_KEYSTORE_SUFFIX = "keystoreAuthenticated"
-    const val USER_PRESENCE_KEYSTORE_SUFFIX = "keystoreUserPresence"
+    const val DEVICE_CREDENTIALS_KEYSTORE_SUFFIX = "keystoreDeviceCredentials"
     const val UNAUTHENTICATED_KEYSTORE_SUFFIX = "keystoreUnauthenticated"
   }
 }

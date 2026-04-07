@@ -8,6 +8,7 @@ import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
+import expo.modules.securestore.UnsupportedDeviceCredentialsException
 import org.json.JSONException
 import org.json.JSONObject
 import java.nio.charset.StandardCharsets
@@ -41,10 +42,10 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
    * different KeyGenParameterSpec (AUTH_BIOMETRIC_STRONG vs AUTH_DEVICE_CREDENTIAL) and are not
    * interchangeable.
    */
-  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isUserPresenceRequired: Boolean): String {
+  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isDeviceCredentialsRequired: Boolean): String {
     val suffix = when {
       !requireAuthentication -> SecureStoreModule.UNAUTHENTICATED_KEYSTORE_SUFFIX
-      isUserPresenceRequired -> SecureStoreModule.USER_PRESENCE_KEYSTORE_SUFFIX
+      isDeviceCredentialsRequired -> SecureStoreModule.DEVICE_CREDENTIALS_KEYSTORE_SUFFIX
       else -> SecureStoreModule.AUTHENTICATED_KEYSTORE_SUFFIX
     }
     return "${getKeyStoreAlias(options)}:$suffix"
@@ -52,7 +53,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
 
   @Throws(GeneralSecurityException::class)
   override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.SecretKeyEntry {
-    val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isUserPresenceRequired)
+    val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
     val keyPurposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
 
     val builder = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
@@ -64,15 +65,15 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     if (options.isAuthenticationRequired) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         val authType =
-          if (options.isUserPresenceRequired) {
+          if (options.isDeviceCredentialsRequired) {
             KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
           } else {
             KeyProperties.AUTH_BIOMETRIC_STRONG
           }
         builder.setUserAuthenticationParameters(0, authType)
       } else {
-        if (options.isUserPresenceRequired) {
-          throw UnsupportedOperationException("requireAuthentication: 'userPresence' (device credential fallback) requires Android API 30 or higher")
+        if (options.isDeviceCredentialsRequired) {
+          throw UnsupportedDeviceCredentialsException()
         }
         builder.setUserAuthenticationValidityDurationSeconds(-1)
       }
@@ -96,7 +97,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     requireAuthentication: Boolean,
     authenticationPrompt: String,
     authenticationHelper: AuthenticationHelper,
-    isUserPresenceRequired: Boolean
+    isDeviceCredentialsRequired: Boolean
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
     val cipher = Cipher.getInstance(AES_CIPHER)
@@ -104,7 +105,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
 
     val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
     val requireAuthenticationString = if (requireAuthentication) {
-      if (isUserPresenceRequired) "userPresence" else "biometry"
+      if (isDeviceCredentialsRequired) "deviceCredentials" else "biometry"
     } else {
       null
     }

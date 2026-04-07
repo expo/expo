@@ -64,7 +64,7 @@ function SecureStoreView() {
 
   const authMode = React.useMemo(() => {
     if (!requireAuth) return false;
-    return forceDeviceFallback || canUseFallback ? 'userPresence' : 'biometry';
+    return forceDeviceFallback || canUseFallback ? 'deviceCredentials' : 'biometry';
   }, [requireAuth, canUseFallback, forceDeviceFallback]);
 
   const storeOptions = React.useMemo<SecureStore.SecureStoreOptions>(

@@ -143,21 +143,16 @@ export function canUseBiometricAuthentication() {
     return ExpoSecureStore.canUseBiometricAuthentication();
 }
 /**
- * Checks whether device credentials are configured on the device.
+ * Checks whether the device is secured with a PIN, pattern, or password.
  *
- * **Device credentials** are the lock screen authentication method (PIN, pattern, or password),
- * as opposed to biometrics only. **Configured** means the user has set a secure lock screen
- * (e.g. PIN, pattern, or password rather than swipe or none), so the device is considered secure.
- *
- * Use this to determine if the user can authenticate with `requireAuthentication: 'userPresence'`
+ * Use this to determine if the user can authenticate with `requireAuthentication: 'deviceCredentials'`
  * (biometric with fallback to device credentials).
  *
- * - **Android:** Uses [KeyguardManager.isDeviceSecure()](https://developer.android.com/reference/android/app/KeyguardManager#isDeviceSecure()) -
- *   returns true when the lock screen is set to PIN, pattern, or password.
- * - **iOS:** Uses [LAContext.canEvaluatePolicy](https://developer.apple.com/documentation/LocalAuthentication/LAContext/canEvaluatePolicy(_:error:))
- *   with device owner authentication - returns true when at least the passcode is set.
+ * > On Android, `requireAuthentication: 'deviceCredentials'` requires API 30+. On devices running
+ * > API 23-29 this method returns `false` because device credential authentication is not
+ * > supported there.
  *
- * @return `true` if the device has device credentials configured. Otherwise, returns `false`.
+ * @return `true` if the device has a secure lock screen configured. Otherwise, returns `false`.
  * @platform android
  * @platform ios
  */
