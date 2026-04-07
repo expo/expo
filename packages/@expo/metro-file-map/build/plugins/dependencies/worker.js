@@ -17,8 +17,8 @@ class DependencyExtractorWorker {
             this.#dependencyExtractor = (0, unwrapESModule_1.unwrapESModuleDefault)(require(dependencyExtractor));
         }
     }
-    processFile(data, utils) {
-        const content = utils.getContent().toString();
+    async processFile(data, utils) {
+        const content = (await utils.getContent()).toString();
         const { filePath } = data;
         const dependencies = this.#dependencyExtractor != null
             ? this.#dependencyExtractor.extract(content, filePath, dependencyExtractor_1.extract)

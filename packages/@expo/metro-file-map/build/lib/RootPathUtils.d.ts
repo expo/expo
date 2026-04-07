@@ -12,6 +12,7 @@ export declare class RootPathUtils {
     absoluteToNormal(absolutePath: string): string;
     normalToAbsolute(normalPath: string): string;
     relativeToNormal(relativePath: string): string;
+    resolveSymlinkToNormal(symlinkNormalPath: string, readlinkResult: string): string;
     getAncestorOfRootIdx(normalPath: string): number | null;
     joinNormalToRelative(normalPath: string, relativePath: string): {
         normalPath: string;
@@ -19,3 +20,5 @@ export declare class RootPathUtils {
     };
     relative(from: string, to: string): string;
 }
+export declare function getAncestorOfRootIdx(normalPath: string): number;
+export declare function pathsToPattern(paths: readonly string[], pathUtils: RootPathUtils): RegExp | null;

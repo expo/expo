@@ -29,8 +29,8 @@ function rootRelativeCacheKeys(buildParameters) {
             case 'extensions':
             case 'computeSha1':
             case 'enableSymlinks':
-            case 'forceNodeFilesystemAPI':
             case 'retainAllFiles':
+            case 'scopeFallback':
                 return buildParameters[key] ?? null;
             case 'ignorePattern':
                 return buildParameters[key].toString();

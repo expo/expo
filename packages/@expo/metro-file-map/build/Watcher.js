@@ -71,7 +71,6 @@ class Watcher extends events_1.default {
             console: options.console,
             includeSymlinks: options.enableSymlinks,
             extensions: options.extensions,
-            forceNodeFilesystemAPI: options.forceNodeFilesystemAPI,
             ignore: ignoreForCrawl,
             onStatus: (status) => {
                 this.emit('status', status);

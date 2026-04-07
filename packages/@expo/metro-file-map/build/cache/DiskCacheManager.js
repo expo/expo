@@ -20,6 +20,8 @@ const debug = require('debug')('Metro:FileMapCache');
 const DEFAULT_PREFIX = 'metro-file-map';
 const DEFAULT_DIRECTORY = (0, os_1.tmpdir)();
 const DEFAULT_AUTO_SAVE_DEBOUNCE_MS = 5000;
+// NOTE(@kitten): We're incompatible with Metro, so need our own naming
+const FIXED_PREFIX = 'expo';
 class DiskCacheManager {
     #autoSaveOpts;
     #cachePath;
@@ -38,7 +40,7 @@ class DiskCacheManager {
     }
     static getCacheFilePath(buildParameters, cacheFilePrefix, cacheDirectory) {
         const { rootDirHash, relativeConfigHash } = (0, rootRelativeCacheKeys_1.default)(buildParameters);
-        return path_1.default.join(cacheDirectory ?? DEFAULT_DIRECTORY, `${cacheFilePrefix ?? DEFAULT_PREFIX}-${rootDirHash}-${relativeConfigHash}`);
+        return path_1.default.join(cacheDirectory ?? DEFAULT_DIRECTORY, `${cacheFilePrefix ?? DEFAULT_PREFIX}-${FIXED_PREFIX}-${rootDirHash}-${relativeConfigHash}`);
     }
     getCacheFilePath() {
         return this.#cachePath;

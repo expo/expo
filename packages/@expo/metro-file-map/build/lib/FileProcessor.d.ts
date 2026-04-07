@@ -34,9 +34,9 @@ export declare class FileProcessor {
             error: MaybeCodedError;
         }[];
     }>;
-    processRegularFile(normalPath: string, fileMetadata: FileMetadata, req: ProcessFileRequest): {
+    processRegularFile(normalPath: string, fileMetadata: FileMetadata, req: ProcessFileRequest): Promise<{
         content: Buffer | undefined | null;
-    } | null;
+    } | null>;
     end(): Promise<void>;
 }
 export {};
