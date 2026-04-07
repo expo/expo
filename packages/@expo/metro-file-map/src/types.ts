@@ -18,6 +18,7 @@ export type { PerfLoggerFactory, PerfLogger } from '@expo/metro/metro-config';
 export interface BuildParameters {
   readonly computeSha1: boolean;
   readonly enableSymlinks: boolean;
+  readonly skipStat: boolean;
   readonly extensions: readonly string[];
   readonly ignorePattern: RegExp;
   readonly plugins: readonly InputFileMapPlugin[];
@@ -118,6 +119,7 @@ export interface CrawlerOptions {
   previousState: CrawlerPreviousState;
   rootDir: string;
   roots: readonly string[];
+  skipStat: boolean;
   onStatus: (status: WatcherStatus) => void;
   // Only consider files under this normalized subdirectory when computing
   // removedFiles. If not provided, all files in the file system are considered.
@@ -521,6 +523,7 @@ export type WatchmanClocks = Map<Path, WatchmanClockSpec>;
 
 export interface WorkerMessage {
   readonly computeSha1: boolean;
+  readonly computeMtime: boolean;
   readonly filePath: string;
   readonly maybeReturnContent: boolean;
   readonly pluginsToRun: readonly number[];
@@ -528,6 +531,8 @@ export interface WorkerMessage {
 
 export interface WorkerMetadata {
   readonly sha1?: string | undefined | null;
+  readonly mtime?: number | undefined | null;
+  readonly size?: number | undefined | null;
   readonly content?: Buffer | undefined | null;
   readonly pluginData?: readonly V8Serializable[];
 }
