@@ -7,6 +7,7 @@
 
 import type { MetadataWorker, V8Serializable, WorkerMessage } from '../../types';
 
+import { unwrapESModuleDefault } from '../../lib/unwrapESModule';
 import excludedExtensions from '../../workerExclusionList';
 import path from 'path';
 
@@ -18,7 +19,7 @@ export default class Worker implements MetadataWorker {
 
   constructor({ hasteImplModulePath }: Readonly<{ hasteImplModulePath: string | null }>) {
     if (hasteImplModulePath != null) {
-      this.#hasteImpl = require(hasteImplModulePath);
+      this.#hasteImpl = unwrapESModuleDefault(require(hasteImplModulePath));
     }
   }
 

@@ -16,6 +16,7 @@ import type {
   WorkerMessage,
 } from '../../types';
 
+import { unwrapESModuleDefault } from '../../lib/unwrapESModule';
 import { extract } from './dependencyExtractor';
 
 export default class DependencyExtractorWorker implements MetadataWorker {
@@ -23,7 +24,7 @@ export default class DependencyExtractorWorker implements MetadataWorker {
 
   constructor({ dependencyExtractor }: Readonly<{ dependencyExtractor: string | null }>) {
     if (dependencyExtractor != null) {
-      this.#dependencyExtractor = require(dependencyExtractor);
+      this.#dependencyExtractor = unwrapESModuleDefault(require(dependencyExtractor));
     }
   }
 

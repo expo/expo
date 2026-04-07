@@ -11,6 +11,7 @@ import type {
   WorkerMetadata,
   WorkerSetupArgs,
 } from './types';
+import { unwrapESModuleDefault } from './lib/unwrapESModule';
 
 import { createHash } from 'crypto';
 import fs from 'graceful-fs';
@@ -27,7 +28,7 @@ export class Worker {
 
   constructor({ plugins = [] }: WorkerSetupArgs) {
     this.#plugins = plugins.map(({ modulePath, setupArgs }) => {
-      const PluginWorker = require(modulePath);
+      const PluginWorker = unwrapESModuleDefault(require(modulePath));
       return new PluginWorker(setupArgs);
     });
   }
