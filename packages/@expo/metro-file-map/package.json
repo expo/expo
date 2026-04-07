@@ -32,7 +32,6 @@
   ],
   "dependencies": {
     "debug": "^4.3.4",
-    "graceful-fs": "^4.2.4",
     "invariant": "^2.2.4",
     "jest-worker": "^29.7.0",
     "fb-watchman": "^2.0.2",
@@ -43,7 +42,6 @@
     "@expo/metro": "56.0.0-rc.0",
     "@types/debug": "^4.1.7",
     "@types/fb-watchman": "^2.0.6",
-    "@types/graceful-fs": "^4.1.9",
     "@types/invariant": "^2.2.37",
     "@types/micromatch": "^4.0.10",
     "@types/node": "^22.14.0",
