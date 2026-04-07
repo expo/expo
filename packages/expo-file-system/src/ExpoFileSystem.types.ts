@@ -68,7 +68,6 @@ export type DirectoryCreateOptions = {
 
 /**
  * Specifies the access mode when opening a file handle.
- * @platform android
  */
 export enum FileMode {
   /**
@@ -375,8 +374,7 @@ export declare class File {
    * Returns A `FileHandle` object that can be used to read and write data to the file.
    *
    * @param mode - The {@link FileMode} to use.
-   * - **Android**: Supports all `FileMode` values, but SAF `content://` URIs do not support `ReadWrite` mode.
-   * - **iOS**: Supports all `FileMode` values.
+   * - On **Android**, SAF `content://` URIs do not support `ReadWrite` mode.
    * - **Defaults**:
    *   - For SAF `content://` URIs, the default is `FileMode.ReadOnly`.
    *   - For standard `file://` URIs, the default is `FileMode.ReadWrite`.
