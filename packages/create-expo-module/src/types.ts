@@ -1,5 +1,7 @@
 import type { PromptObject } from 'prompts';
 
+import type { Platform } from './prompts';
+
 /**
  * Possible command options.
  */
@@ -19,7 +21,7 @@ export type CommandOptions = {
   authorEmail?: string;
   authorUrl?: string;
   repo?: string;
-  platform?: string[];
+  platform?: Platform[];
 };
 
 /**
@@ -34,7 +36,7 @@ export type SubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
-    platforms: string[];
+    platforms: Platform[];
   };
   author: string;
   license: string;
@@ -49,7 +51,7 @@ export type LocalSubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
-    platforms: string[];
+    platforms: Platform[];
   };
   type: 'local';
 };

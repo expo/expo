@@ -20,20 +20,6 @@ const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template
 /** Absolute path to the local expo-module-template-local package */
 const localTemplateLocalPath = path.resolve(__dirname, '../../../expo-module-template-local');
 
-/**
- * Creates a minimal project directory (with package.json) inside the shared
- * test root and returns its absolute path. Required for --local module tests
- * because create-expo-module walks up from INIT_CWD looking for package.json.
- */
-function createFakeProject(projectName: string): string {
-  const dir = createTestPath(projectName);
-  fs.writeFileSync(
-    path.join(dir, 'package.json'),
-    JSON.stringify({ name: projectName, version: '1.0.0' })
-  );
-  return dir;
-}
-
 beforeAll(async () => {
   ensureFolderExists(projectRoot);
 });

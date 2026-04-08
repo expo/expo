@@ -23,6 +23,7 @@ import {
   getPlatformPrompt,
   getSlugPrompt,
   getSubstitutionDataPrompts,
+  type Platform,
 } from './prompts';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
@@ -126,7 +127,7 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
  * and returns the `expo.platforms` list mapped to module platform names (`ios` → `apple`).
  * Returns `null` when `app.json` is absent or has no `expo.platforms` field.
  */
-async function getLocalAppJsonPlatforms(): Promise<string[] | null> {
+async function getLocalAppJsonPlatforms(): Promise<Platform[] | null> {
   let root: string | null = null;
   for (let dir = CWD; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
     if (fs.existsSync(path.resolve(dir, 'package.json'))) {
@@ -152,7 +153,7 @@ async function getLocalAppJsonPlatforms(): Promise<string[] | null> {
     const platformMap: Record<string, string> = { ios: 'apple', android: 'android', web: 'web' };
     const mapped = raw
       .map((p) => platformMap[p] ?? p)
-      .filter((p) => (ALL_PLATFORMS as readonly string[]).includes(p));
+      .filter((p): p is Platform => (ALL_PLATFORMS as readonly string[]).includes(p));
     return mapped.length > 0 ? mapped : null;
   } catch {
     debug('Failed to read or parse app.json for platform defaults');
@@ -173,9 +174,11 @@ async function resolvePlatformsAsync(
   isLocal: boolean,
   interactive: boolean,
   options: CommandOptions
-): Promise<string[]> {
+): Promise<Platform[]> {
   if (options.platform && options.platform.length > 0) {
-    const valid = options.platform.filter((p) => (ALL_PLATFORMS as readonly string[]).includes(p));
+    const valid = options.platform.filter((p): p is Platform =>
+      (ALL_PLATFORMS as readonly string[]).includes(p)
+    );
     const invalid = options.platform.filter(
       (p) => !(ALL_PLATFORMS as readonly string[]).includes(p)
     );
@@ -208,7 +211,7 @@ async function resolvePlatformsAsync(
     onCancel: () => process.exit(0),
   });
 
-  return platforms as string[];
+  return platforms as Platform[];
 }
 
 /**
@@ -487,7 +490,7 @@ function handleSuffix(name: string, suffix: string): string {
  * Maps template top-level directory names to the platform name in `expo-module.config.json`.
  * Files under these directories are only copied when the corresponding platform is selected.
  */
-const TEMPLATE_DIR_TO_PLATFORM: Record<string, string> = {
+const TEMPLATE_DIR_TO_PLATFORM: Record<string, Platform> = {
   ios: 'apple',
   android: 'android',
 };
@@ -505,7 +508,7 @@ async function createModuleFromTemplate(
   // Iterate through all template files.
   for (const file of files) {
     // Skip platform-specific directories when the platform was not selected.
-    const topLevelDir = file.split(path.sep)[0];
+    const topLevelDir = file.split(path.sep)[0] ?? '';
     const requiredPlatform = TEMPLATE_DIR_TO_PLATFORM[topLevelDir];
     if (requiredPlatform && !data.project.platforms.includes(requiredPlatform)) {
       continue;
@@ -715,7 +718,7 @@ async function getSubstitutionDataFromOptions(
   slug: string,
   isLocal: boolean,
   options: CommandOptions,
-  platforms: string[]
+  platforms: Platform[]
 ): Promise<SubstitutionData | LocalSubstitutionData> {
   const rawName = options.name ?? slugToModuleName(slug);
   const { name, wasRenamed } = ensureSafeModuleName(rawName);
