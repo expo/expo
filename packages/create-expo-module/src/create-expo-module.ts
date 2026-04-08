@@ -954,16 +954,22 @@ async function generateBarrelFileAsync(
   targetPath: string,
   data: LocalSubstitutionData
 ): Promise<void> {
-  const { moduleName, viewName, name } = data.project;
-  const content = [
+  const { moduleName, viewName, sharedObjectName, name, features } = data.project;
+  const lines = [
     `// Re-export the native module. On web, it will be resolved to ${moduleName}.web.ts`,
     `// and on native platforms to ${moduleName}.ts`,
     `export { default } from './src/${moduleName}';`,
-    `export { default as ${viewName} } from './src/${viewName}';`,
-    `export * from './src/${name}.types';`,
-    '',
-  ].join('\n');
-  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), content, 'utf8');
+  ];
+  if (features.includes('View')) {
+    lines.push(`export { default as ${viewName} } from './src/${viewName}';`);
+  }
+  if (features.includes('SharedObject')) {
+    lines.push(
+      `export { create${sharedObjectName}, use${sharedObjectName} } from './src/${sharedObjectName}';`
+    );
+  }
+  lines.push(`export * from './src/${name}.types';`, '');
+  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), lines.join('\n'), 'utf8');
 }
 
 /**
