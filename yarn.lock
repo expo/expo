@@ -10937,10 +10937,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-lan-network@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/lan-network/-/lan-network-0.2.0.tgz#2d0858ef8f909dff62f17e868bb31786def30a64"
-  integrity sha512-EZgbsXMrGS+oK+Ta12mCjzBFse+SIewGdwrSTr5g+MSymnjpox2x05ceI20PQejJOFvOgzcXrfDk/SdY7dSCtw==
+lan-network@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/lan-network/-/lan-network-0.2.1.tgz#e4764a0d17f6bd1f2794c838fa219526a1b756f8"
+  integrity sha512-ONPnazC96VKDntab9j9JKwIWhZ4ZUceB4A9Epu4Ssg0hYFmtHZSeQ+n15nIwTFmcBUKtExOer8WTJ4GF9MO64A==
 
 lazy-cache@^1.0.3:
   version "1.0.4"

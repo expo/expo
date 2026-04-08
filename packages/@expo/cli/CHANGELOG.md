@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update to `lan-network@^0.2.1` ([#44587](https://github.com/expo/expo/pull/44587) by [@kitten](https://github.com/kitten))
+
 ## 55.0.22 — 2026-04-07
 
 _This version does not introduce any user-facing changes._
