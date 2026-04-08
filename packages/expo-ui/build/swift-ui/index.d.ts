@@ -18,6 +18,8 @@ export * from './Image';
 export * from './Label';
 export * from './LabeledContent';
 export * from './HStack';
+export * from './LazyHStack';
+export * from './LazyVStack';
 export * from './VStack';
 export * from './ZStack';
 export * from './Group';
