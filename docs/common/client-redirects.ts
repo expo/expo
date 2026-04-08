@@ -617,7 +617,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Based on Algolia 404 report 2026-04-01
   '/versions/latest/sdk/secure-store/': '/versions/latest/sdk/securestore/',
-  '/versions/latest/sdk/av/': '/versions/latest/sdk/audio/',
+  '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
   '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
     '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
 };
