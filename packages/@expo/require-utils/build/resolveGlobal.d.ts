@@ -1,4 +1,4 @@
-declare module 'module' {
+declare module 'node:module' {
     namespace Module {
         const globalPaths: readonly string[] | void;
     }
