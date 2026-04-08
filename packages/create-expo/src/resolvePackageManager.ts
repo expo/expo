@@ -110,8 +110,12 @@ export async function configurePackageManager(
       break;
 
     case 'yarn': {
-      const yarnVersion = await manager.versionAsync();
-      const majorVersion = parseInt(yarnVersion.split('.')[0] ?? '', 10);
+      // Try to parse the yarn version from the user-agent to avoid spawning `yarn --version`
+      const userAgent = process.env.npm_config_user_agent ?? '';
+      const uaVersionMatch = userAgent.match(/^yarn\/(\d+)/);
+      const majorVersion = uaVersionMatch
+        ? parseInt(uaVersionMatch[1]!, 10)
+        : parseInt((await manager.versionAsync()).split('.')[0] ?? '', 10);
 
       if (majorVersion >= 2) {
         await manager.runAsync(['config', 'set', 'nodeLinker', 'node-modules']);

@@ -30,6 +30,7 @@ import {
 } from './telemetry';
 import { initGitRepoAsync } from './utils/git';
 import { withSectionLog } from './utils/log';
+import { profileAsync, profileSync } from './utils/profiler';
 
 export type Options = {
   install: boolean;
@@ -57,18 +58,24 @@ async function resolveProjectRootArgAsync(
 
 async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
   const shouldInstall = props.install;
-  const packageManager = resolvePackageManager();
+  const packageManager = profileSync('resolve-package-manager', () => resolvePackageManager());
 
   // Configure package manager, which is unrelated to installing or not
-  await configureNodeDependenciesAsync(projectRoot, packageManager);
+  await profileAsync('configure-package-manager', () =>
+    configureNodeDependenciesAsync(projectRoot, packageManager)
+  );
 
   // Install dependencies
   let podsInstalled: boolean = false;
   const needsPodsInstalled = await fs.existsSync(path.join(projectRoot, 'ios'));
   if (shouldInstall) {
-    await installNodeDependenciesAsync(projectRoot, packageManager);
+    await profileAsync('install-node-deps', () =>
+      installNodeDependenciesAsync(projectRoot, packageManager)
+    );
     if (needsPodsInstalled) {
-      podsInstalled = await installCocoaPodsAsync(projectRoot);
+      podsInstalled = await profileAsync('install-cocoapods', () =>
+        installCocoaPodsAsync(projectRoot)
+      );
     }
   }
   const cdPath = getChangeDirectoryPath(projectRoot);
@@ -113,30 +120,36 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     }
   }
 
-  const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
-  await fs.promises.mkdir(projectRoot, { recursive: true });
+  const projectRoot = await profileAsync('resolve-project-root', async () => {
+    const root = await resolveProjectRootArgAsync(inputPath, props);
+    await fs.promises.mkdir(root, { recursive: true });
+    return root;
+  });
 
   // Setup telemetry attempt after a reasonable point.
   // Telemetry is used to ensure safe feature deprecation since the command is unversioned.
   // All telemetry can be disabled across Expo tooling by using the env var $EXPO_NO_TELEMETRY.
-  await initializeAnalyticsIdentityAsync();
+  await profileAsync('telemetry:init-identity', () => initializeAnalyticsIdentityAsync());
   identify();
   track({
     event: AnalyticsEventTypes.CREATE_EXPO_APP,
     properties: { phase: AnalyticsEventPhases.ATTEMPT, template: resolvedTemplate },
   });
 
-  await withSectionLog(
-    () => Template.extractAndPrepareTemplateAppAsync(projectRoot, { npmPackage: resolvedTemplate }),
-    {
-      pending: chalk.bold('Locating project files.'),
-      success: 'Downloaded and extracted project files.',
-      error: (error) =>
-        `Something went wrong in downloading and extracting the project files: ${error.message}`,
-    }
+  await profileAsync('extract-template', () =>
+    withSectionLog(
+      () =>
+        Template.extractAndPrepareTemplateAppAsync(projectRoot, { npmPackage: resolvedTemplate }),
+      {
+        pending: chalk.bold('Locating project files.'),
+        success: 'Downloaded and extracted project files.',
+        error: (error) =>
+          `Something went wrong in downloading and extracting the project files: ${error.message}`,
+      }
+    )
   );
 
-  await setupDependenciesAsync(projectRoot, props);
+  await profileAsync('setup-dependencies', () => setupDependenciesAsync(projectRoot, props));
 
   // for now, we will just init a git repo if they have git installed and the
   // project is not inside an existing git tree, and do it silently. we should
@@ -145,7 +158,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
   try {
     // check if git is installed
     // check if inside git repo
-    await initGitRepoAsync(projectRoot);
+    await profileAsync('git-init', () => initGitRepoAsync(projectRoot));
   } catch (error) {
     debug(`Error initializing git: %O`, error);
     // todo: check if git is installed, bail out
@@ -201,27 +214,32 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
   // Log the status after aliases and deprecated examples are handled.
   console.log(chalk`Creating an Expo project using the {cyan ${resolvedExample}} example.\n`);
 
-  const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
-  await fs.promises.mkdir(projectRoot, { recursive: true });
+  const projectRoot = await profileAsync('resolve-project-root', async () => {
+    const root = await resolveProjectRootArgAsync(inputPath, props);
+    await fs.promises.mkdir(root, { recursive: true });
+    return root;
+  });
 
   // Setup telemetry attempt after a reasonable point.
   // Telemetry is used to ensure safe feature deprecation since the command is unversioned.
   // All telemetry can be disabled across Expo tooling by using the env var $EXPO_NO_TELEMETRY.
-  await initializeAnalyticsIdentityAsync();
+  await profileAsync('telemetry:init-identity', () => initializeAnalyticsIdentityAsync());
   identify();
   track({
     event: AnalyticsEventTypes.CREATE_EXPO_APP,
     properties: { phase: AnalyticsEventPhases.ATTEMPT, example: resolvedExample },
   });
 
-  await withSectionLog(() => downloadAndExtractExampleAsync(projectRoot, resolvedExample), {
-    pending: chalk.bold('Locating example files...'),
-    success: 'Downloaded and extracted example files.',
-    error: (error) =>
-      `Something went wrong in downloading and extracting the example files: ${error.message}`,
-  });
+  await profileAsync('extract-template', () =>
+    withSectionLog(() => downloadAndExtractExampleAsync(projectRoot, resolvedExample), {
+      pending: chalk.bold('Locating example files...'),
+      success: 'Downloaded and extracted example files.',
+      error: (error) =>
+        `Something went wrong in downloading and extracting the example files: ${error.message}`,
+    })
+  );
 
-  await setupDependenciesAsync(projectRoot, props);
+  await profileAsync('setup-dependencies', () => setupDependenciesAsync(projectRoot, props));
 
   // for now, we will just init a git repo if they have git installed and the
   // project is not inside an existing git tree, and do it silently. we should
@@ -230,7 +248,7 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
   try {
     // check if git is installed
     // check if inside git repo
-    await initGitRepoAsync(projectRoot);
+    await profileAsync('git-init', () => initGitRepoAsync(projectRoot));
   } catch (error) {
     debug(`Error initializing git: %O`, error);
     // todo: check if git is installed, bail out

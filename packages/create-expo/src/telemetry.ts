@@ -154,14 +154,18 @@ export async function flushAsync() {
       sentAt: new Date(),
     }),
   };
+  // clear array immediately so we don't resend events in subsequent flushes
+  messageBatch.splice(0, messageBatch.length);
   try {
     // Note(cedric): try to use the global fetch instance, but silently fail if its disabled in Node 18
-    await fetch(analyticsEndpoint, request);
+    // Timeout caps network wait to avoid hanging the process on slow/unreachable networks.
+    await fetch(analyticsEndpoint, {
+      ...request,
+      signal: AbortSignal.timeout(3000),
+    });
   } catch {
-    // supress errors - likely due to network connectivity or endpoint health
+    // suppress errors - likely due to network connectivity, timeout, or endpoint health
   }
-  // clear array so we don't resend events in subsequent flushes
-  messageBatch.splice(0, messageBatch.length);
 }
 //#endregion
 
@@ -204,11 +208,11 @@ export enum AnalyticsEventPhases {
 }
 
 async function getAnalyticsIdentityAsync(): Promise<AnalyticsIdentity | null> {
-  if (!fs.existsSync(dotExpoHomeDirectory())) {
-    fs.mkdirSync(dotExpoHomeDirectory(), { recursive: true });
-  }
-  if (!fs.existsSync(getStateJsonPath())) {
-    fs.writeFileSync(getStateJsonPath(), JSON.stringify({}));
+  await fs.promises.mkdir(dotExpoHomeDirectory(), { recursive: true });
+  try {
+    await fs.promises.access(getStateJsonPath());
+  } catch {
+    await fs.promises.writeFile(getStateJsonPath(), JSON.stringify({}));
   }
   const savedDeviceId = await JsonFile.getAsync(getStateJsonPath(), 'analyticsDeviceId', null);
   const deviceId = savedDeviceId ?? uuidv4();
