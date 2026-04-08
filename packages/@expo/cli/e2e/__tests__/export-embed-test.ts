@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { resolveEntryPoint } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 
@@ -48,7 +48,7 @@ it('runs `npx expo export:embed --help`', async () => {
 
       Options
         <dir>                                  Directory of the Expo project. Default: Current working directory
-        --entry-file <path>                    Path to the root JS file, either absolute or relative to JS root
+        --entry-file <path>                    Path to the root JS file, either absolute or relative to current working directory
         --platform <string>                    Either "ios" or "android" (default: "ios")
         --transformer <string>                 Specify a custom transformer to be used
         --dev [boolean]                        If false, warnings are disabled and the bundle is minified (default: true)
@@ -96,7 +96,7 @@ it('runs `npx expo export:embed`', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -155,7 +155,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -217,7 +217,7 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -278,7 +278,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'android' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -341,7 +341,7 @@ it('runs `npx expo export:embed --bytecode`', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',

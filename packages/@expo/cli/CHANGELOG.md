@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Consistently resolve `mainModuleName`s using `convertEntryPointToRelative` and fix relative path semantics of `--entry-file` argumnts, which was previously expected to be relative to the server root rather than the project root. This fixes build issues when using export commands for projects in monorepos on Windows ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Update to `lan-network@^0.2.1` ([#44587](https://github.com/expo/expo/pull/44587) by [@kitten](https://github.com/kitten))

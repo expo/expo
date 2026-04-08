@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve paths relative to project root instead of server root in `expo/scripts/resolveAppEntry.js` ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.12 — 2026-04-07

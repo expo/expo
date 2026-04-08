@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Switch to `@expo/require-utils`'s `resolveFrom` to resolve unresolved entrypoint ([#44114](https://github.com/expo/expo/pull/44114) by [@kitten](https://github.com/kitten))
+- Align `convertEntryPointToRelative` implementation with `@expo/cli`'s `mainModuleName` expectations, but mark as deprecated, since it shouldn't be reused in the future ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

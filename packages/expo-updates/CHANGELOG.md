@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Pass absolute path to CLI helpers when creating build manifest, since the underlying functions now handle entry file inputs properly, instead of applying `mainModuleName` semantics to them ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.19 — 2026-04-07
