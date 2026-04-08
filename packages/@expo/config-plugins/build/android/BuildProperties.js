@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.createBuildGradlePropsConfigPlugin = createBuildGradlePropsConfigPlugin;
 exports.updateAndroidBuildPropertiesFromConfig = updateAndroidBuildPropertiesFromConfig;
 exports.updateAndroidBuildProperty = updateAndroidBuildProperty;
-exports.withJsEngineGradleProps = void 0;
 function _androidPlugins() {
   const data = require("../plugins/android-plugins");
   _androidPlugins = function () {
@@ -41,14 +40,6 @@ function createBuildGradlePropsConfigPlugin(configToPropertyRules, name) {
   }
   return withUnknown;
 }
-
-/**
- * A config-plugin to update `android/gradle.properties` from the `jsEngine` in expo config
- */
-const withJsEngineGradleProps = exports.withJsEngineGradleProps = createBuildGradlePropsConfigPlugin([{
-  propName: 'hermesEnabled',
-  propValueGetter: config => ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString()
-}], 'withJsEngineGradleProps');
 function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {
     const value = configToProperty.propValueGetter(config);
