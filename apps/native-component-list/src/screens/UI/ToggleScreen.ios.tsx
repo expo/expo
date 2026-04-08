@@ -10,6 +10,7 @@ import {
 } from '@expo/ui/swift-ui';
 import { labelsHidden, tint, toggleStyle } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
+import { scheduleOnUI } from 'react-native-worklets';
 
 export default function ToggleScreen() {
   const [airplaneMode, setAirplaneMode] = useState(false);
@@ -66,10 +67,18 @@ export default function ToggleScreen() {
 function SharedStateToggle() {
   const isOn = useNativeState(false);
 
+  const toggleFromWorklet = () => {
+    scheduleOnUI(() => {
+      'worklet';
+      isOn.value = !isOn.value;
+    });
+  };
+
   return (
     <>
       <SyncToggle isOn={isOn} label="Shared State Toggle" />
-      <Button label="Toggle from JS" onPress={() => isOn.setValue(!isOn.getValue())} />
+      <Button label="Toggle from JS" onPress={() => (isOn.value = !isOn.value)} />
+      <Button label="Toggle from Worklet" onPress={toggleFromWorklet} />
     </>
   );
 }

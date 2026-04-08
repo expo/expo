@@ -5337,6 +5337,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      react-native-worklets:
+        specifier: '*'
+        version: 0.7.4(patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89c5962ecc6f2802f1)(@babel/core@7.29.0)(react-native@0.85.0-rc.7(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.7(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
 
   packages/expo-updates:
     dependencies:

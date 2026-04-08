@@ -4,13 +4,9 @@ import { type SharedObject } from 'expo-modules-core';
  */
 export type ObservableState<T> = SharedObject & {
     /**
-     * Returns the current value.
+     * The current value. Read or write directly.
      */
-    getValue(): T;
-    /**
-     * Sets a new value, triggering SwiftUI updates.
-     */
-    setValue(value: T): void;
+    value: T;
 };
 /**
  * Creates an observable native state that is automatically cleaned up when the component unmounts.
@@ -21,4 +17,9 @@ export declare function useNativeState<T>(initialValue: T): ObservableState<T>;
  * Used internally to pass SharedObject references as view props.
  */
 export declare function getStateId(state?: object): number | undefined;
+/**
+ * Registers a custom serializer so SharedObjects automatically work in worklets.
+ * Call it after `installOnUIRuntime()`.
+ */
+export declare function registerSharedObjectSerializer(): void;
 //# sourceMappingURL=index.d.ts.map

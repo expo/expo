@@ -10,6 +10,12 @@ protocol AnyPropertyDefinition {
    Creates the JavaScript object representing the property descriptor.
    */
   func buildDescriptor(appContext: AppContext) throws -> JavaScriptObject
+
+  /**
+   Creates the JavaScript property descriptor in a specific runtime.
+   Used to install property getters/setters in alternate runtimes (e.g. worklet runtime).
+   */
+  func buildDescriptor(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject
 }
 
 public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefinition, @unchecked Sendable {
@@ -137,8 +143,8 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
   /**
    Creates the JavaScript function that will be used as a getter of the property.
    */
-  internal func buildGetter(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createSyncFunction(name, argsCount: 0) { [weak appContext, weak self, name] this, arguments in
+  internal func buildGetter(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    return try runtime.createSyncFunction(name, argsCount: 0) { [weak appContext, weak self, name] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
@@ -155,8 +161,8 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
   /**
    Creates the JavaScript function that will be used as a setter of the property.
    */
-  internal func buildSetter(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createSyncFunction(name, argsCount: 1) { [weak appContext, weak self, name] this, arguments in
+  internal func buildSetter(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    return try runtime.createSyncFunction(name, argsCount: 1) { [weak appContext, weak self, name] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
@@ -174,15 +180,19 @@ public final class PropertyDefinition<OwnerType>: AnyDefinition, AnyPropertyDefi
    Creates the JavaScript object representing the property descriptor.
    */
   internal func buildDescriptor(appContext: AppContext) throws -> JavaScriptObject {
-    let descriptor = try appContext.runtime.createObject()
+    return try buildDescriptor(appContext: appContext, in: appContext.runtime)
+  }
+
+  internal func buildDescriptor(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    let descriptor = try runtime.createObject()
 
     descriptor.setProperty("enumerable", value: true)
 
     if getter != nil {
-      descriptor.setProperty("get", value: try buildGetter(appContext: appContext))
+      descriptor.setProperty("get", value: try buildGetter(appContext: appContext, in: runtime))
     }
     if setter != nil {
-      descriptor.setProperty("set", value: try buildSetter(appContext: appContext))
+      descriptor.setProperty("set", value: try buildSetter(appContext: appContext, in: runtime))
     }
     return descriptor
   }

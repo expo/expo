@@ -25,7 +25,7 @@ public final class ExpoUIModule: Module {
         return state.value ?? NSNull()
       }
 
-      Function("_setValue") { (state: ObservableState, wrapper: [String: Any]) in
+      Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
         state.value = wrapper["value"]
       }
     }
