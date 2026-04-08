@@ -12,13 +12,11 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
-import java.lang.ref.WeakReference
 
 object SplashScreenManager {
   private var keepSplashScreenOnScreen = true
   var preventAutoHideCalled: Boolean = false
   private lateinit var splashScreen: SplashScreen
-  private var splashScreenViewRef: WeakReference<View>? = null
 
   private val contentAppearedListener = ReactMarker.MarkerListener { name, _, _ ->
     if (name == ReactMarkerConstants.CONTENT_APPEARED) {
@@ -39,16 +37,12 @@ object SplashScreenManager {
 
     splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
       val splashScreenView = splashScreenViewProvider.view
-      splashScreenViewRef = WeakReference(splashScreenView)
-
       splashScreenView
         .animate()
         .setDuration(duration)
         .alpha(0.0f)
         .setInterpolator(AccelerateInterpolator())
         .withEndAction {
-          splashScreenViewRef = null
-
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             splashScreenViewProvider.remove()
           } else {
@@ -96,8 +90,6 @@ object SplashScreenManager {
         override fun onActivityStopped(activity: Activity) {
           if (activity == mainActivity) {
             runCatching { mainActivity.splashScreen.clearOnExitAnimationListener() }
-            splashScreenViewRef?.get()?.animate()?.cancel()
-            splashScreenViewRef = null
             application.unregisterActivityLifecycleCallbacks(this)
           }
         }
