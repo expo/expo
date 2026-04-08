@@ -5,8 +5,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 
 <% } -%>
 <% if (!hasEvent && !hasView) { -%>
-// No feature types selected.
-export {};
+// Define your exported module types here.
 <% } -%>
 <% if (hasEvent) { -%>
 export type <%- project.moduleName %>Events = {
