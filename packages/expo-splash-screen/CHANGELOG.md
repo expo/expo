@@ -12,7 +12,11 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Mitigate `SurfaceControl.checkNotReleased` crash on API 31-33 by cancelling splash exit animation on activity stop. ([#44584](https://github.com/expo/expo/pull/44584) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+- [Android] Updated `androidx.core:core-splashscreen` from `1.2.0-alpha02` to `1.2.0`. ([#44584](https://github.com/expo/expo/pull/44584) by [@zoontek](https://github.com/zoontek))
 
 - Make `backgroundColor` plugin prop optional, defaulting to `#ffffff`. ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [iOS] Use `internal import React` and reduce public API surface to internal access level. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
