@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Update to `lan-network@^0.2.1` ([#44587](https://github.com/expo/expo/pull/44587) by [@kitten](https://github.com/kitten))
+- Update to `fetch-nodeshim@^0.4.10` ([#44588](https://github.com/expo/expo/pull/44588) by [@kitten](https://github.com/kitten))
 
 ## 55.0.22 — 2026-04-07
 
