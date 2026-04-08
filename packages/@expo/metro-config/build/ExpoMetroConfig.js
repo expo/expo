@@ -18,7 +18,6 @@ const customizeFrame_1 = require("./customizeFrame");
 Object.defineProperty(exports, "INTERNAL_CALLSITES_REGEX", { enumerable: true, get: function () { return customizeFrame_1.INTERNAL_CALLSITES_REGEX; } });
 const env_1 = require("./env");
 const file_store_1 = require("./file-store");
-const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
 const sideEffects_1 = require("./serializer/sideEffects");
@@ -170,7 +169,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         }
     }
     const watchFolders = (0, getWatchFolders_1.getWatchFolders)(projectRoot);
-    const nodeModulesPaths = (0, getModulesPaths_1.getModulesPaths)(projectRoot);
     if (env_1.env.EXPO_DEBUG) {
         console.log();
         console.log(`Expo Metro config:`);
@@ -181,7 +179,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log(`- Extensions: ${sourceExts.join(', ')}`);
         console.log(`- React Native: ${reactNativePath}`);
         console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
-        console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
         console.log(`- Sass: ${sassVersion}`);
         console.log(`- Reanimated: ${reanimatedVersion}`);
         console.log(`- Worklets: ${workletsVersion}`);
@@ -220,7 +217,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             ['db'])
                 .filter((assetExt) => !sourceExts.includes(assetExt)),
             sourceExts,
-            nodeModulesPaths,
+            nodeModulesPaths: [],
             blockList: [
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.
                 // This prevents unwanted fast refresh on the declaration files changes.

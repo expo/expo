@@ -19,7 +19,6 @@ import resolveFrom from 'resolve-from';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
 import { FileStore } from './file-store';
-import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
@@ -252,7 +251,6 @@ export function getDefaultConfig(
   }
 
   const watchFolders = getWatchFolders(projectRoot);
-  const nodeModulesPaths = getModulesPaths(projectRoot);
   if (env.EXPO_DEBUG) {
     console.log();
     console.log(`Expo Metro config:`);
@@ -262,7 +260,6 @@ export function getDefaultConfig(
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
-    console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log(`- Worklets: ${workletsVersion}`);
@@ -307,7 +304,7 @@ export function getDefaultConfig(
         )
         .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
-      nodeModulesPaths,
+      nodeModulesPaths: [] as string[],
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
