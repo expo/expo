@@ -44,7 +44,7 @@
           ]
         }
       ],
-      "entryPoint": "cli/build/index.js"
+      "entryPoint": "cli/build/index.mjs"
     }
   }
 }
