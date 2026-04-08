@@ -31,7 +31,7 @@
     "eas-cli-sync": "node ./ui/components/EASCLIReference/eas-cli-rerference.js",
     "expo-skills-sync": "node --experimental-strip-types ./ui/components/ExpoSkillsTable/sync-expo-skills.js",
     "expo-mcp-sync": "node --experimental-strip-types --env-file=.env ./ui/components/ExpoMCPToolsTable/sync-expo-mcp-tools.js",
-    "install-vale": "bash scripts/install-vale.sh",
+    "install-vale": "node --experimental-strip-types scripts/install-vale.ts",
     "postinstall": "yarn copy-latest && yarn generate-static-resources && yarn install-vale"
   },
   "packageManager": "yarn@4.9.1",
