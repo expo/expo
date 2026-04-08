@@ -3,7 +3,7 @@ GEM
   specs:
     CFPropertyList (3.0.8)
     abbrev (0.1.2)
-    activesupport (7.2.3)
+    activesupport (7.2.3.1)
       base64
       benchmark (>= 0.3)
       bigdecimal
@@ -12,7 +12,7 @@ GEM
       drb
       i18n (>= 1.6, < 2)
       logger (>= 1.4.2)
-      minitest (>= 5.1)
+      minitest (>= 5.1, < 6)
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.9)
@@ -239,9 +239,7 @@ GEM
     logger (1.7.0)
     mini_magick (4.13.2)
     mini_mime (1.1.5)
-    minitest (6.0.2)
-      drb (~> 2.0)
-      prism (~> 1.5)
+    minitest (5.27.0)
     molinillo (0.8.0)
     multi_json (1.19.1)
     multipart-post (2.4.1)
@@ -255,7 +253,6 @@ GEM
     os (1.1.4)
     ostruct (0.6.3)
     plist (3.7.2)
-    prism (1.9.0)
     public_suffix (4.0.7)
     rake (13.3.1)
     representable (3.2.0)
