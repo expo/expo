@@ -29,12 +29,10 @@ class Album: SharedObject {
     return title
   }
 
-  func add(_ asset: Asset) async throws {
+  func add(_ assets: [Asset]) async throws {
     let collection = try await requirePHAssetCollection()
-    guard let phAsset = AssetRepository.shared.get(by: [asset.localIdentifier]).first else {
-      throw AssetCouldNotBeAddedToAlbumException("phAsset not found")
-    }
-    try await AssetCollectionRepository.shared.add(assets: [phAsset], to: collection)
+    let phAssets = try resolvePHAssets(from: assets)
+    try await AssetCollectionRepository.shared.add(assets: phAssets, to: collection)
   }
 
   func delete(deleteAssets: Bool = false) async throws {
@@ -74,6 +72,23 @@ class Album: SharedObject {
     }
 
     collection = fetchedAlbum
+  }
+
+  private func resolvePHAssets(from assets: [Asset]) throws -> [PHAsset] {
+    let localIdentifiers = assets.map(\.localIdentifier)
+    let fetchedAssets = AssetRepository.shared.get(by: localIdentifiers)
+    var assetsByIdentifier: [String: PHAsset] = [:]
+
+    for asset in fetchedAssets {
+      assetsByIdentifier[asset.localIdentifier] = asset
+    }
+
+    return try localIdentifiers.map { localIdentifier in
+      guard let phAsset = assetsByIdentifier[localIdentifier] else {
+        throw AssetCouldNotBeAddedToAlbumException("phAsset not found")
+      }
+      return phAsset
+    }
   }
 
   static func getAll() async throws -> [Album] {

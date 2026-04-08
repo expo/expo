@@ -14,6 +14,7 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
+import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import java.io.File
 import java.lang.ref.WeakReference
@@ -22,6 +23,7 @@ class Album(
   val id: String,
   val assetDeleter: AssetDeleter,
   val assetFactory: AssetFactory,
+  val assetMover: AssetMover,
   context: Context
 ) : SharedObject() {
   private val contextRef = WeakReference(context)
@@ -65,6 +67,6 @@ class Album(
       getAssets().map { it.contentUri }
     )
 
-  suspend fun add(asset: Asset) =
-    asset.move(getRelativePath())
+  suspend fun add(assets: List<Asset>) =
+    assetMover.moveAssets(assets, getRelativePath())
 }

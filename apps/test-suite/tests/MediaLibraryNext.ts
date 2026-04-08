@@ -301,6 +301,51 @@ export async function test(t) {
       }
       t.expect(assets.find((asset) => asset.id === newAsset.id)).not.toBe(null);
     });
+
+    t.it('adds an array of assets to an existing album', async () => {
+      // given
+      const albumName = createAlbumName('add asset array');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+
+      const newAssets = await Promise.all([
+        Asset.create(pngFile.localUri),
+        Asset.create(mp4File.localUri),
+      ]);
+      const oldUris = await Promise.all(newAssets.map((asset) => asset.getUri()));
+      assetsContainer.push(...newAssets);
+
+      // when
+      await album.add(newAssets);
+
+      // then
+      const albumAssets = await album.getAssets();
+      t.expect(albumAssets.length).toBe(3);
+      for (const newAsset of newAssets) {
+        t.expect(albumAssets.find((asset) => asset.id === newAsset.id)).not.toBe(null);
+      }
+      if (Platform.OS === 'android') {
+        const newUris = await Promise.all(newAssets.map((asset) => asset.getUri()));
+        for (const oldUri of oldUris) {
+          t.expect(newUris.findIndex((uri) => uri === oldUri)).toBe(-1);
+        }
+      }
+    });
+
+    t.it('does nothing when adding an empty array to an album', async () => {
+      // given
+      const albumName = createAlbumName('add empty array');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+      assetsContainer.push(...(await album.getAssets()));
+
+      // when
+      await album.add([]);
+
+      // then
+      const assets = await album.getAssets();
+      t.expect(assets.length).toBe(1);
+    });
   });
 
   if (Platform.OS === 'ios') {
