@@ -1,8 +1,7 @@
-import {
-  runCliExtension,
-  createCliDevToolsPluginClient,
-  sendDevToolsRequestAsync,
-} from '@expo/devtools';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const { runCliExtension, createCliDevToolsPluginClient, sendDevToolsRequestAsync } =
+  require('expo/devtools') as typeof import('expo/devtools.js');
 
 const PLUGIN_NAME = 'expo-background-task';
 
