@@ -6,7 +6,6 @@ import { join, resolve, dirname } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
-import { extract } from 'tar';
 
 const DOCS_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const VALE_VERSION_FILE = join(DOCS_ROOT, '.vale-version');
@@ -90,15 +89,11 @@ async function verifyChecksumAsync(
   }
 }
 
-async function extractTarGzAsync(tarballPath: string, destDir: string): Promise<void> {
-  await extract({
-    file: tarballPath,
-    cwd: destDir,
-    filter: (path: string) => path === 'vale' || path === 'vale.exe',
-  });
+function extractTarGz(tarballPath: string, destDir: string): void {
+  execSync(`tar -xzf "${tarballPath}" -C "${destDir}" vale`, { stdio: 'inherit' });
 }
 
-async function extractZipAsync(zipPath: string, destDir: string): Promise<void> {
+function extractZip(zipPath: string, destDir: string): void {
   if (process.platform === 'win32') {
     execSync(
       `powershell -Command "Expand-Archive -Path '${zipPath}' -DestinationPath '${destDir}' -Force"`,
@@ -133,9 +128,9 @@ async function installValeAsync() {
     mkdirSync(INSTALL_DIR, { recursive: true });
 
     if (ext === 'tar.gz') {
-      await extractTarGzAsync(archivePath, INSTALL_DIR);
+      extractTarGz(archivePath, INSTALL_DIR);
     } else {
-      await extractZipAsync(archivePath, INSTALL_DIR);
+      extractZip(archivePath, INSTALL_DIR);
     }
 
     if (process.platform !== 'win32') {
