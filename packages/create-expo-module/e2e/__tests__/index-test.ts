@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import {
+  createFakeProject,
   createTestPath,
   ensureFolderExists,
   executePassing,
@@ -186,5 +187,68 @@ describe('--barrel option', () => {
 
     // The success message should include a direct src/ path
     expect(result.stdout).toMatch(new RegExp(`from './modules/${slug}/src/`));
+  });
+});
+
+describe('CI mode detection', () => {
+  const localTemplatePath = path.resolve(
+    __dirname,
+    '../../../../packages/expo-module-template-local'
+  );
+  let ciProjectRoot: string;
+
+  beforeAll(() => {
+    ciProjectRoot = createFakeProject();
+  });
+
+  afterAll(async () => {
+    if (fs.existsSync(ciProjectRoot)) {
+      await fs.promises.rm(ciProjectRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('completes non-interactively with CI=1', async () => {
+    const result = await executePassing(
+      ['detect-ci-one', '--local', '--source', localTemplatePath],
+      {
+        cwd: ciProjectRoot,
+        env: { CI: '1' },
+      }
+    );
+    expect(result.stdout).toMatch(/Successfully created/);
+  });
+
+  it('completes non-interactively with CI=true', async () => {
+    const result = await executePassing(
+      ['detect-ci-true', '--local', '--source', localTemplatePath],
+      { cwd: ciProjectRoot, env: { CI: 'true' } }
+    );
+    expect(result.stdout).toMatch(/Successfully created/);
+  });
+
+  it('completes non-interactively with CI=TRUE (case-insensitive)', async () => {
+    const result = await executePassing(
+      ['detect-ci-true-upper', '--local', '--source', localTemplatePath],
+      { cwd: ciProjectRoot, env: { CI: 'TRUE' } }
+    );
+    expect(result.stdout).toMatch(/Successfully created/);
+  });
+
+  it('completes non-interactively when EXPO_NONINTERACTIVE=1 and CI is not set', async () => {
+    const result = await executePassing(
+      ['detect-expo-noninteractive', '--local', '--source', localTemplatePath],
+      { cwd: ciProjectRoot, env: { CI: '0', EXPO_NONINTERACTIVE: '1' } }
+    );
+    expect(result.stdout).toMatch(/Successfully created/);
+  });
+
+  it('completes non-interactively via non-TTY stdin when neither CI nor EXPO_NONINTERACTIVE is set', async () => {
+    // CI=0 and EXPO_NONINTERACTIVE unset — spawned processes always have non-TTY stdin,
+    // so isInteractive() falls through to the isTTY check and returns false
+    const result = await executePassing(
+      ['detect-non-tty', '--local', '--source', localTemplatePath],
+      { cwd: ciProjectRoot, env: { CI: '0' } }
+    );
+    expect(result.stdout).toMatch(/Successfully created/);
   });
 });
