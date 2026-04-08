@@ -48,7 +48,7 @@ export function PagePackageVersion({
       {versionRange && (
         <div
           data-md="skip"
-          className="text-secondary flex items-center justify-center gap-1.5 text-xs">
+          className="text-secondary flex items-center justify-center gap-1.5 text-sm">
           <PackageIcon className="icon-sm text-icon-secondary" />
           Bundled version:
           <Tag name={versionRange} className="select-auto" />

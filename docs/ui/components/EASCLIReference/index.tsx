@@ -34,7 +34,7 @@ const ListSection = ({ entries }: { entries: ListEntry[] }) => {
     <UL className="mb-4">
       {entries.map(entry => (
         <LI key={entry.name}>
-          <CODE className="text-3xs">{entry.name}</CODE>
+          <CODE className="text-xs">{entry.name}</CODE>
           {entry.description &&
             (() => {
               const parsed = parseSubItems(entry.description);
@@ -46,7 +46,7 @@ const ListSection = ({ entries }: { entries: ListEntry[] }) => {
                     <UL className="mt-2">
                       {parsed.items.map(item => (
                         <LI key={`${entry.name}-${item.name}`}>
-                          <CODE className="text-3xs">{item.name}</CODE>
+                          <CODE className="text-xs">{item.name}</CODE>
                           {item.description ? (
                             <span> {renderInlineContent(formatSentence(item.description))}</span>
                           ) : null}
