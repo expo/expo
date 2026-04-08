@@ -1,7 +1,7 @@
 import { AndroidSplashConfig } from '@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/getAndroidSplashConfig';
 import { IOSSplashConfig } from '@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/getIosSplashConfig';
 import { ConfigPlugin } from 'expo/config-plugins';
-export type PluginConfig = {
+export type Props = {
     /**
      * Hex color for the splash screen background.
      * @default "#ffffff"
@@ -44,5 +44,5 @@ export type PluginConfig = {
      */
     ios?: IOSSplashConfig;
 };
-declare const _default: ConfigPlugin<PluginConfig | null>;
+declare const _default: ConfigPlugin<Props | null>;
 export default _default;

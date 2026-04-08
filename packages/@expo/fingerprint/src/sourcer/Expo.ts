@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
-import type { PluginConfig as SplashConfig } from 'expo-splash-screen/plugin/build/withSplashScreen';
+import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import path from 'path';
 import semver from 'semver';
 
@@ -32,7 +32,7 @@ export async function getExpoConfigSourcesAsync(
   // external files in config
   const isAndroid = options.platforms.includes('android');
   const isIos = options.platforms.includes('ios');
-  const splashScreenPluginProps = getConfigPluginProps<SplashConfig>(
+  const splashScreenPluginProps = getConfigPluginProps<SplashProps>(
     expoConfig,
     'expo-splash-screen'
   );

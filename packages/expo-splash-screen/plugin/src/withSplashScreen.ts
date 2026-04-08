@@ -6,7 +6,7 @@ import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('../../package.json');
 
-export type PluginConfig = {
+export type Props = {
   /**
    * Hex color for the splash screen background.
    * @default "#ffffff"
@@ -50,13 +50,13 @@ export type PluginConfig = {
   ios?: IOSSplashConfig;
 };
 
-const withSplashScreen: ConfigPlugin<PluginConfig | null> = (config, props) => {
+const withSplashScreen: ConfigPlugin<Props | null> = (config, props) => {
   let android: AndroidSplashConfig | null = null;
   let ios: IOSSplashConfig | null = null;
 
   const resizeMode = props?.resizeMode || 'contain';
 
-  const { ios: iosProps, android: androidProps, ...otherProps } = props ?? ({} as PluginConfig);
+  const { ios: iosProps, android: androidProps, ...otherProps } = props ?? ({} as Props);
 
   const usesLegacySplashConfigIOS =
     !props || (androidProps && !iosProps && Object.keys(otherProps).length === 0);
