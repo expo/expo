@@ -67,9 +67,13 @@
     "expo": "workspace:*",
     "react": "*",
     "react-native": "*",
+    "react-native-reanimated": "*",
     "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
+    "react-native-reanimated": {
+      "optional": true
+    },
     "react-native-worklets": {
       "optional": true
     }

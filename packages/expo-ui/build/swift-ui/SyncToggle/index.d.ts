@@ -1,5 +1,5 @@
 import { type SFSymbol } from 'sf-symbols-typescript';
-import { type ObservableState } from '../State';
+import { type ObservableState } from '../State/useNativeState';
 import { type CommonViewModifierProps } from '../types';
 export type SyncToggleProps = {
     /**

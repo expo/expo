@@ -3,4 +3,4 @@
  */
 declare let worklets: undefined | typeof import('react-native-worklets');
 export { worklets };
-//# sourceMappingURL=worklets.d.ts.map
+//# sourceMappingURL=optionalWorklets.d.ts.map
