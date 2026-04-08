@@ -7,11 +7,18 @@ import {
   ensureFolderExists,
   executePassing,
   expectFileExists,
+  expectFileNotExists,
   getTemporaryPath,
   getTestPath,
   projectRoot,
   readJson,
 } from './utils';
+
+/** Absolute path to the local expo-module-template package */
+const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template');
+
+/** Absolute path to the local expo-module-template-local package */
+const localTemplateLocalPath = path.resolve(__dirname, '../../../expo-module-template-local');
 
 beforeAll(async () => {
   ensureFolderExists(projectRoot);
@@ -34,6 +41,7 @@ describe('CLI flags', () => {
     expect(result.stdout).toMatch(/--package/);
     expect(result.stdout).toMatch(/--author-name/);
     expect(result.stdout).toMatch(/--barrel/);
+    expect(result.stdout).toMatch(/--platform/);
   });
 
   it('shows version with --version flag', async () => {
@@ -41,6 +49,262 @@ describe('CLI flags', () => {
 
     // Should output a semver version
     expect(result.stdout).toMatch(/\d+\.\d+\.\d+/);
+  });
+});
+
+describe('--platform option', () => {
+  it('creates a module with --platform apple (single platform)', async () => {
+    const projectName = 'platform-apple-only';
+
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'PlatformTest',
+      '--package',
+      'com.test.platform',
+      '--platform',
+      'apple',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    expectFileExists(projectName, 'expo-module.config.json');
+    const moduleConfig = readJson(projectName, 'expo-module.config.json');
+    expect(moduleConfig.platforms).toEqual(['apple']);
+    expect(moduleConfig.apple).toBeDefined();
+    expect(moduleConfig.android).toBeUndefined();
+
+    // Platform directories should reflect the selected platforms
+    expectFileExists(projectName, 'ios');
+    expectFileNotExists(projectName, 'android');
+
+    // Web files should exist but contain the "not available" stub
+    expectFileExists(projectName, 'src/PlatformTestModule.web.ts');
+    expectFileExists(projectName, 'src/PlatformTestView.web.tsx');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/PlatformTestModule.web.ts'), 'utf8')
+    ).toContain('not available on the web platform');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/PlatformTestView.web.tsx'), 'utf8')
+    ).toContain('not available on the web platform');
+  });
+
+  it('creates a module with --platform apple android (multiple platforms)', async () => {
+    const projectName = 'platform-multi';
+
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'MultiPlatform',
+      '--package',
+      'com.test.multi',
+      '--platform',
+      'apple',
+      'android',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const moduleConfig = readJson(projectName, 'expo-module.config.json');
+    expect(moduleConfig.platforms).toEqual(['apple', 'android']);
+    expect(moduleConfig.apple).toBeDefined();
+    expect(moduleConfig.android).toBeDefined();
+
+    // Both platform directories should be present
+    expectFileExists(projectName, 'ios');
+    expectFileExists(projectName, 'android');
+
+    // Web files should exist but contain the "not available" stub
+    expectFileExists(projectName, 'src/MultiPlatformModule.web.ts');
+    expectFileExists(projectName, 'src/MultiPlatformView.web.tsx');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/MultiPlatformModule.web.ts'), 'utf8')
+    ).toContain('not available on the web platform');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/MultiPlatformView.web.tsx'), 'utf8')
+    ).toContain('not available on the web platform');
+  });
+
+  it('defaults to all platforms when --platform is not provided', async () => {
+    const projectName = 'platform-default';
+
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'DefaultPlatform',
+      '--package',
+      'com.test.default',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const moduleConfig = readJson(projectName, 'expo-module.config.json');
+    expect(moduleConfig.platforms).toEqual(['apple', 'android', 'web']);
+    expect(moduleConfig.apple).toBeDefined();
+    expect(moduleConfig.android).toBeDefined();
+
+    // Both platform directories should be present
+    expectFileExists(projectName, 'ios');
+    expectFileExists(projectName, 'android');
+
+    // Web files should exist with the full implementation
+    expectFileExists(projectName, 'src/DefaultPlatformModule.web.ts');
+    expectFileExists(projectName, 'src/DefaultPlatformView.web.tsx');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/DefaultPlatformModule.web.ts'), 'utf8')
+    ).not.toContain('not available on the web platform');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/DefaultPlatformView.web.tsx'), 'utf8')
+    ).not.toContain('not available on the web platform');
+  });
+
+  it('creates a web-only module with no apple/android sections', async () => {
+    const projectName = 'platform-web-only';
+
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'WebOnly',
+      '--package',
+      'com.test.webonly',
+      '--platform',
+      'web',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const moduleConfig = readJson(projectName, 'expo-module.config.json');
+    expect(moduleConfig.platforms).toEqual(['web']);
+    expect(moduleConfig.apple).toBeUndefined();
+    expect(moduleConfig.android).toBeUndefined();
+
+    // Neither platform directory should be present
+    expectFileNotExists(projectName, 'ios');
+    expectFileNotExists(projectName, 'android');
+
+    // Web files should exist with the full implementation
+    expectFileExists(projectName, 'src/WebOnlyModule.web.ts');
+    expectFileExists(projectName, 'src/WebOnlyView.web.tsx');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/WebOnlyModule.web.ts'), 'utf8')
+    ).not.toContain('not available on the web platform');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/WebOnlyView.web.tsx'), 'utf8')
+    ).not.toContain('not available on the web platform');
+  });
+
+  it('creates an android-only module', async () => {
+    const projectName = 'platform-android-only';
+
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'AndroidOnly',
+      '--package',
+      'com.test.androidonly',
+      '--platform',
+      'android',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const moduleConfig = readJson(projectName, 'expo-module.config.json');
+    expect(moduleConfig.platforms).toEqual(['android']);
+    expect(moduleConfig.android).toBeDefined();
+    expect(moduleConfig.apple).toBeUndefined();
+
+    // android/ should exist, ios/ should not
+    expectFileExists(projectName, 'android');
+    expectFileNotExists(projectName, 'ios');
+
+    // Web files should exist but contain the "not available" stub
+    expectFileExists(projectName, 'src/AndroidOnlyModule.web.ts');
+    expectFileExists(projectName, 'src/AndroidOnlyView.web.tsx');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/AndroidOnlyModule.web.ts'), 'utf8')
+    ).toContain('not available on the web platform');
+    expect(
+      fs.readFileSync(getTestPath(projectName, 'src/AndroidOnlyView.web.tsx'), 'utf8')
+    ).toContain('not available on the web platform');
+  });
+
+  it('warns and defaults to all platforms when only invalid values are given', async () => {
+    const fakeProject = createFakeProject('local-invalid-only');
+
+    // "ios" is not a valid platform value (the correct value is "apple")
+    const result = await executePassing(
+      ['my-module', '--local', '--platform', 'ios', '--source', localTemplateLocalPath],
+      { cwd: fakeProject }
+    );
+
+    // Should warn about the unknown platform and the fallback
+    expect(result.stderr).toMatch(/ios/);
+    expect(result.stderr).toMatch(/Defaulting to all platforms/i);
+
+    // Should have fallen back to all platforms
+    const moduleConfig = readJson(
+      'local-invalid-only/modules/my-module',
+      'expo-module.config.json'
+    );
+    expect(moduleConfig.platforms).toEqual(['apple', 'android', 'web']);
+    expect(moduleConfig.apple).toBeDefined();
+    expect(moduleConfig.android).toBeDefined();
+  });
+
+  it('warns about and ignores invalid values when mixed with valid ones', async () => {
+    const fakeProject = createFakeProject('local-mixed-invalid');
+
+    // "ios" is invalid; "apple" is the correct value — only apple should be used
+    const result = await executePassing(
+      ['my-module', '--local', '--platform', 'apple', 'ios', '--source', localTemplateLocalPath],
+      { cwd: fakeProject }
+    );
+
+    // Should warn about the unknown platform "ios"
+    expect(result.stderr).toMatch(/ios/);
+
+    // Should have used only the valid platform
+    const moduleConfig = readJson(
+      'local-mixed-invalid/modules/my-module',
+      'expo-module.config.json'
+    );
+    expect(moduleConfig.platforms).toEqual(['apple']);
+    expect(moduleConfig.apple).toBeDefined();
+    expect(moduleConfig.android).toBeUndefined();
+  });
+
+  it('creates a local module with --platform respecting the selected platforms', async () => {
+    const fakeProject = createFakeProject('local-platform-project');
+
+    await executePassing(
+      ['my-module', '--local', '--platform', 'android', '--source', localTemplateLocalPath],
+      { cwd: fakeProject }
+    );
+
+    const moduleConfig = readJson(
+      'local-platform-project/modules/my-module',
+      'expo-module.config.json'
+    );
+    expect(moduleConfig.platforms).toEqual(['android']);
+    expect(moduleConfig.android).toBeDefined();
+    expect(moduleConfig.apple).toBeUndefined();
+
+    // android/ should exist, ios/ should not
+    expectFileExists('local-platform-project/modules/my-module', 'android');
+    expectFileNotExists('local-platform-project/modules/my-module', 'ios');
+
+    // Web stub should be present
+    expect(
+      fs.readFileSync(
+        getTestPath('local-platform-project/modules/my-module', 'src/MyModule.web.ts'),
+        'utf8'
+      )
+    ).toContain('not available on the web platform');
   });
 });
 
