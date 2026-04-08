@@ -1746,8 +1746,8 @@ importers:
         specifier: workspace:^55.0.5
         version: link:../../expo-server
       fetch-nodeshim:
-        specifier: ^0.4.6
-        version: 0.4.9
+        specifier: ^0.4.10
+        version: 0.4.10
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
@@ -10959,8 +10959,8 @@ packages:
       picomatch:
         optional: true
 
-  fetch-nodeshim@0.4.9:
-    resolution: {integrity: sha512-XIQWlB2A4RZ7NebXWGxS0uDMdvRHkiUDTghBVJKFg9yEOd45w/PP8cZANuPf2H08W6Cor3+2n7Q6TTZgAS3Fkw==}
+  fetch-nodeshim@0.4.10:
+    resolution: {integrity: sha512-m6I8ALe4L4XpdETy7MJZWs6L1IVMbjs99bwbpIKphxX+0CTns4IKDWJY0LWfr4YsFjfg+z1TjzTMU8lKl8rG0w==}
 
   fetch-retry@4.1.1:
     resolution: {integrity: sha512-e6eB7zN6UBSwGVwrbWVH+gdLnkW9WwHhmq2YDK1Sh30pzx1onRVGBvogTlUeWxwTa+L86NYdo4hFkh7O8ZjSnA==}
@@ -21711,7 +21711,7 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.3
 
-  fetch-nodeshim@0.4.9: {}
+  fetch-nodeshim@0.4.10: {}
 
   fetch-retry@4.1.1: {}
 
