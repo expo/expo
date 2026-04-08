@@ -8,7 +8,7 @@ import ExpoModulesWorklets
  Passable as a view prop via integer ID — survives React's prop serialization.
  The view resolves it and executes the worklet on the UI runtime.
  */
-internal final class WorkletCallback: ObservableState {
+internal final class WorkletCallback: SharedObject {
   var worklet: Worklet?
 
   func invoke(arguments: [Any] = []) {
