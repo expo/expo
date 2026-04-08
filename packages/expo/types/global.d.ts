@@ -31,45 +31,42 @@ declare module '*.sass';
 declare module '*.scss';
 
 // Allow for image asset imports
-type ReactNativeImageSourcePropType =
-  import('react-native').ImageSourcePropType;
-
 declare module '*.png' {
-  const asset: ReactNativeImageSourcePropType;
+  const asset: number;
   export default asset;
 }
 
 declare module '*.jpg' {
-  const asset: ReactNativeImageSourcePropType;
+  const asset: number;
   export default asset;
 }
 
 declare module '*.jpeg' {
-  const asset: ReactNativeImageSourcePropType;
+  const asset: number;
   export default asset;
 }
 
 declare module '*.webp' {
-  const asset: ReactNativeImageSourcePropType;
+  const asset: number;
   export default asset;
 }
 
 declare module '*.avif' {
-  const asset: ReactNativeImageSourcePropType;
+  const asset: number;
   export default asset;
 }
 
 declare module '*.gif' {
-  const asset: ReactNativeImageSourcePropType;
+  const asset: number;
   export default asset;
 }
 
 declare module '*.ico' {
-  const asset: ReactNativeImageSourcePropType;
+  const asset: number;
   export default asset;
 }
 
 declare module '*.bmp' {
-  const asset: ReactNativeImageSourcePropType;
+  const asset: number;
   export default asset;
 }
