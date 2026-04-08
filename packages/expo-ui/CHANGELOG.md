@@ -28,6 +28,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add `ObservableState` shared object and `useNativeState` hook for controlling native SwiftUI state from JS. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add shared object worklet support with `.value` property API for `ObservableState`. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44216](https://github.com/expo/expo/pull/44216) by [@nishan](https://github.com/intergalacticspacehighway))
