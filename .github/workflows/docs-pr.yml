@@ -50,7 +50,7 @@ jobs:
         run: yarn lint --max-warnings 0
       - name: 📦 Read Vale version
         id: vale-version
-        run: echo "version=$(node -p "require('./docs/.vale-version.json').version")" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(node -p "require('./.vale-version.json').version")" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
         uses: vale-cli/vale-action@v2.1.1
         with:
