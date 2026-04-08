@@ -56,3 +56,57 @@ internal struct WidgetURLModifier: ViewModifier, Record {
 #endif
   }
 }
+
+internal struct ContainerBackgroundModifier: ViewModifier, Record {
+  @Field var color: Color?
+
+  func body(content: Content) -> some View {
+#if !os(tvOS)
+    if #available(iOS 17.0, *), let color {
+      content.containerBackground(color, for: .widget)
+    } else {
+      content
+    }
+#else
+    content
+#endif
+  }
+}
+
+internal struct InvalidatableContentModifier: ViewModifier, Record {
+  @Field var isInvalidatable: Bool?
+
+  func body(content: Content) -> some View {
+#if !os(tvOS)
+    if #available(iOS 17.0, *) {
+      content.invalidatableContent(isInvalidatable ?? true)
+    } else {
+      content
+    }
+#else
+    content
+#endif
+  }
+}
+
+internal struct ContentMarginsDisabledModifier: ViewModifier, Record {
+  @Field var disabled: Bool?
+
+  func body(content: Content) -> some View {
+#if !os(tvOS)
+    if #available(iOS 17.0, *), disabled ?? true {
+      content.contentMargins(.all, 0, for: .widget)
+    } else {
+      content
+    }
+#else
+    content
+#endif
+  }
+}
+
+internal struct UnredactedModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    content.unredacted()
+  }
+}

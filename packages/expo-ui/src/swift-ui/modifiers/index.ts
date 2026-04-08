@@ -15,7 +15,14 @@ import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
-import { widgetAccentedRenderingMode, widgetURL } from './widgets';
+import {
+  containerBackground,
+  contentMarginsDisabled,
+  invalidatableContent,
+  unredacted,
+  widgetAccentedRenderingMode,
+  widgetURL,
+} from './widgets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -1311,7 +1318,11 @@ export type BuiltInModifier =
   | ReturnType<typeof contentTransition>
   | ReturnType<typeof resizable>
   | ReturnType<typeof widgetAccentedRenderingMode>
-  | ReturnType<typeof widgetURL>;
+  | ReturnType<typeof widgetURL>
+  | ReturnType<typeof containerBackground>
+  | ReturnType<typeof invalidatableContent>
+  | ReturnType<typeof contentMarginsDisabled>
+  | ReturnType<typeof unredacted>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
