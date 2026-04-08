@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community SegmentedControl replacement',
+    route: 'ui/community-segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
     name: 'Toggle component',
     route: 'ui/toggle',
     options: {},
