@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add profiling and optimize CLI performance ([#44619](https://github.com/expo/expo/pull/44619) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.6.6 — 2026-02-25
 
 _This version does not introduce any user-facing changes._
