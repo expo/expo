@@ -61,6 +61,12 @@ internal final class UnableToReadHandleException: GenericException<String> {
   }
 }
 
+internal final class UnableToWriteHandleException: GenericException<String> {
+  override var reason: String {
+    "Unable to write to a file handle: \(param)"
+  }
+}
+
 internal final class UnableToGetInfoException: GenericException<String> {
   override var reason: String {
     "Unable to get info from a file: \(param)"
