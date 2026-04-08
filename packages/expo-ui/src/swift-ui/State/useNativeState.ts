@@ -24,15 +24,20 @@ export function useNativeState<T>(initialValue: T): ObservableState<T> {
   }, [JSON.stringify(initialValue)]) as ObservableState<T>;
 }
 
+type NativeObservableState = {
+  getValue(): unknown;
+  setValue(v: { value: unknown }): void;
+};
+
 /**
  * Adds a `value` property that delegates to the native `getValue`/`setValue` functions.
  */
-function defineValueProperty(state: any): void {
+function defineValueProperty(state: NativeObservableState): void {
   Object.defineProperty(state, 'value', {
     get() {
       return state.getValue();
     },
-    set(v: any) {
+    set(v: unknown) {
       state.setValue({ value: v });
     },
   });
