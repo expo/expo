@@ -1,18 +1,9 @@
 import type { PromptObject } from 'prompts';
 
+import type { Feature } from './features';
 import type { Platform } from './prompts';
 
-export const ALL_FEATURES = [
-  'Constant',
-  'Function',
-  'AsyncFunction',
-  'Event',
-  'View',
-  'ViewEvent',
-  'SharedObject',
-] as const;
-
-export type Feature = (typeof ALL_FEATURES)[number];
+export type { Feature };
 
 /**
  * Possible command options.
@@ -33,7 +24,7 @@ export type CommandOptions = {
   authorUrl?: string;
   repo?: string;
   platform?: Platform[];
-  features?: string[];
+  features?: Feature[];
   fullExample?: boolean;
 };
 
@@ -51,7 +42,7 @@ export type SubstitutionData = {
     viewName: string;
     sharedObjectName: string;
     platforms: Platform[];
-    features: string[];
+    features: Feature[];
   };
   author: string;
   license: string;
@@ -68,7 +59,7 @@ export type LocalSubstitutionData = {
     viewName: string;
     sharedObjectName: string;
     platforms: Platform[];
-    features: string[];
+    features: Feature[];
   };
   type: 'local';
 };

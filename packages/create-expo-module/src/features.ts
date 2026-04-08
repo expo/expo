@@ -1,5 +1,14 @@
-import { ALL_FEATURES } from './types';
-import type { Feature } from './types';
+export const ALL_FEATURES = [
+  'Constant',
+  'Function',
+  'AsyncFunction',
+  'Event',
+  'View',
+  'ViewEvent',
+  'SharedObject',
+] as const;
+
+export type Feature = (typeof ALL_FEATURES)[number];
 
 /**
  * Validates, deduplicates, and applies ViewEvent→View auto-include.

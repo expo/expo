@@ -8,7 +8,7 @@ export declare class <%- project.sharedObjectName %> extends SharedObject {
 
 /**
  * Creates a new <%- project.sharedObjectName %> instance.
- * You are responsible for releasing it by calling `release()` when done.
+ * You are responsible for releasing it from memory by calling `release()` when done.
  */
 export function create<%- project.sharedObjectName %>(): <%- project.sharedObjectName %> {
   return new <%- project.moduleName %>.<%- project.sharedObjectName %>();

@@ -9,7 +9,7 @@ import { <%- project.moduleName %>Events } from './<%- project.name %>.types';
 import type { <%- project.sharedObjectName %> } from './<%- project.sharedObjectName %>';
 <% } -%>
 
-declare class <%- project.moduleName %> extends NativeModule<<% if (project.features.includes('Event')) { %><%- project.moduleName %>Events<% } else { %>{}<% } %>> {
+declare class <%- project.moduleName %> extends NativeModule<<% if (project.features.includes('Event')) { %><%- project.moduleName %>Events<% } else { %>{}<% } %>><% if (['Constant', 'Function', 'AsyncFunction', 'SharedObject'].some((f) => project.features.includes(f))) { %> {
 <% if (project.features.includes('Constant')) { -%>
   PI: number;
 <% } -%>
@@ -22,6 +22,6 @@ declare class <%- project.moduleName %> extends NativeModule<<% if (project.feat
 <% if (project.features.includes('SharedObject')) { -%>
   <%- project.sharedObjectName %>: typeof <%- project.sharedObjectName %>;
 <% } -%>
-}
+}<% } else { %> {}<% } %>
 
 export default requireNativeModule<<%- project.moduleName %>>('<%- project.name %>');

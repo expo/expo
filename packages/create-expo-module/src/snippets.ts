@@ -102,7 +102,11 @@ export async function buildWebModuleSnippets(
   const parts = await Promise.all(
     selected.map((feature) => renderSnippet(snippetsDir, feature, 'web.module.ts.ejs', data))
   );
-  return parts.filter(Boolean).join('\n\n');
+  const result = parts
+    .filter(Boolean)
+    .map((p) => p.trimEnd())
+    .join('\n\n');
+  return result ? result + '\n' : '';
 }
 
 /**

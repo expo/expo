@@ -6,11 +6,15 @@ import { <%- project.viewName %>Props } from './<%- project.name %>.types';
 export default function <%- project.viewName %>(props: <%- project.viewName %>Props) {
   return (
     <div>
+<% if (project.features.includes('ViewEvent')) { -%>
       <iframe
         style={{ flex: 1 }}
         src={props.url}
-<% if (project.features.includes('ViewEvent')) { %>        onLoad={() => props.onLoad({ nativeEvent: { url: props.url } })}
-<% } %>      />
+        onLoad={() => props.onLoad({ nativeEvent: { url: props.url } })}
+      />
+<% } else { -%>
+      <iframe style={{ flex: 1 }} src={props.url} />
+<% } -%>
     </div>
   );
 }

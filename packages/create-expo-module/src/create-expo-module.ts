@@ -10,7 +10,7 @@ import validateNpmPackage from 'validate-npm-package-name';
 
 import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
-import { resolveFeatures } from './features';
+import { ALL_FEATURES, resolveFeatures } from './features';
 import {
   installDependencies,
   formatRunCommand,
@@ -35,7 +35,6 @@ import {
   copyFileSnippets,
 } from './snippets';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
-import { ALL_FEATURES } from './types';
 import type { CommandOptions, Feature, LocalSubstitutionData, SubstitutionData } from './types';
 import { env } from './utils/env';
 import { findGitHubEmail, findMyName } from './utils/git';
@@ -227,8 +226,14 @@ async function resolvePlatformsAsync(
 
 export { resolveFeatures };
 
+function warnIfViewAutoIncluded(rawFeatures: Feature[]): void {
+  if (rawFeatures.includes('ViewEvent') && !rawFeatures.includes('View')) {
+    console.log(chalk.yellow('⚠️  ViewEvent requires View — adding View automatically.'));
+  }
+}
+
 /**
- * Priority: --full-example flag → --features flag → interactive prompt → empty.
+ * Priority: --full-example flag → --features all → --features flag → interactive prompt → empty.
  */
 async function resolveFeaturesAsync(
   interactive: boolean,
@@ -239,12 +244,12 @@ async function resolveFeaturesAsync(
   }
 
   if (options.features && options.features.length > 0) {
-    const rawFeatures = options.features;
-    const resolved = resolveFeatures(rawFeatures);
-    if (rawFeatures.includes('ViewEvent') && !rawFeatures.includes('View')) {
-      console.log(chalk.yellow('⚠️  ViewEvent requires View — adding View automatically.'));
+    if (options.features.includes('all' as Feature)) {
+      return resolveFeatures([], true);
     }
-    return resolved;
+    const rawFeatures = options.features;
+    warnIfViewAutoIncluded(rawFeatures);
+    return resolveFeatures(rawFeatures);
   }
 
   if (!interactive) {
@@ -254,13 +259,27 @@ async function resolveFeaturesAsync(
   const { features } = await prompts(getFeaturesPrompt(), {
     onCancel: () => process.exit(0),
   });
-  const rawFeatures: string[] = features ?? [];
-  const resolved = resolveFeatures(rawFeatures);
+  const rawFeatures: Feature[] = features ?? [];
+  warnIfViewAutoIncluded(rawFeatures);
+  return resolveFeatures(rawFeatures);
+}
 
-  if (rawFeatures.includes('ViewEvent') && !rawFeatures.includes('View')) {
-    console.log(chalk.yellow('⚠️  ViewEvent requires View — adding View automatically.'));
+/**
+ * Returns a safe, capitalized module name and logs a warning if it was renamed
+ * to avoid conflicting with an Apple framework.
+ */
+function resolveModuleName(rawName: string): string {
+  const { name: safeName, wasRenamed } = ensureSafeModuleName(rawName);
+  const name = safeName.charAt(0).toUpperCase() + safeName.slice(1);
+  if (wasRenamed) {
+    console.log();
+    console.log(
+      chalk.yellow(
+        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
+      )
+    );
   }
-  return resolved;
+  return name;
 }
 
 /**
@@ -752,18 +771,8 @@ async function askForSubstitutionDataAsync(
 
   // Merge CLI-provided values with prompted values
   const rawName = options.name ?? promptedValues.name ?? slugToModuleName(slug);
-  const { name: safeName, wasRenamed } = ensureSafeModuleName(rawName);
-  const name = safeName.charAt(0).toUpperCase() + safeName.slice(1);
+  const name = resolveModuleName(rawName);
   const projectPackage = options.package ?? promptedValues.package ?? slugToAndroidPackage(slug);
-
-  if (wasRenamed) {
-    console.log();
-    console.log(
-      chalk.yellow(
-        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
-      )
-    );
-  }
 
   if (isLocal) {
     return {
@@ -846,18 +855,8 @@ async function getSubstitutionDataFromOptions(
   features: Feature[]
 ): Promise<SubstitutionData | LocalSubstitutionData> {
   const rawName = options.name ?? slugToModuleName(slug);
-  const { name: safeName, wasRenamed } = ensureSafeModuleName(rawName);
-  const name = safeName.charAt(0).toUpperCase() + safeName.slice(1);
+  const name = resolveModuleName(rawName);
   const projectPackage = options.package ?? slugToAndroidPackage(slug);
-
-  if (wasRenamed) {
-    console.log();
-    console.log(
-      chalk.yellow(
-        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
-      )
-    );
-  }
 
   debug(`Non-interactive mode: name="${name}", package="${projectPackage}"`);
 
@@ -1064,7 +1063,7 @@ program
   )
   .option(
     '--features <features...>',
-    `Feature examples to include in the module. Available: ${ALL_FEATURES.join(', ')}.`
+    `Feature examples to include in the module. Use "all" to include all features, or specify any of: ${ALL_FEATURES.join(', ')}.`
   )
   .option('--full-example', 'Include all available feature examples.', false)
   .action(main);

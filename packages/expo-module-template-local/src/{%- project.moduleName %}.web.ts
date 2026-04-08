@@ -1,8 +1,8 @@
 <% if (project.platforms.includes('web')) { -%>
 import { registerWebModule, NativeModule } from 'expo';
 <%- webEventImport %>
-class <%- project.moduleName %> extends NativeModule<<%- webEventType %>> {
-<%- webModuleSnippets %>}
+class <%- project.moduleName %> extends NativeModule<<%- webEventType %>><% if (webModuleSnippets) { %> {
+<%- webModuleSnippets %>}<% } else { %> {}<% } %>
 
 export default registerWebModule(<%- project.moduleName %>, '<%- project.moduleName %>');
 <% } else { -%>
