@@ -29,8 +29,8 @@ export type SyncToggleProps = {
 } & CommonViewModifierProps;
 
 type NativeSyncToggleProps = Omit<SyncToggleProps, 'isOn' | 'onIsOnChangeSync'> & {
-  isOn?: number;
-  onIsOnChangeSync?: number;
+  isOn?: number | null;
+  onIsOnChangeSync?: number | null;
 };
 
 const SyncToggleNativeView: React.ComponentType<NativeSyncToggleProps> = requireNativeView(

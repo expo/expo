@@ -15,10 +15,6 @@ import SwiftUI
 internal class ObservableState: SharedObject, ObservableObject {
   @Published var value: Any?
 
-  override init() {
-    super.init()
-  }
-
   init(value: Any?) {
     self.value = value
   }

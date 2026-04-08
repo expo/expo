@@ -12,7 +12,16 @@ internal final class WorkletCallback: SharedObject {
   var worklet: Worklet?
 
   func invoke(arguments: [Any] = []) {
-    guard let worklet, let runtime = appContext?._uiRuntime as? WorkletRuntime else {
+    guard let worklet else {
+      #if DEBUG
+      log.warn("WorkletCallback.invoke: worklet is nil, the callback will not run.")
+      #endif
+      return
+    }
+    guard let runtime = appContext?._uiRuntime as? WorkletRuntime else {
+      #if DEBUG
+      log.warn("WorkletCallback.invoke: UI worklet runtime is not available, the callback will not run.")
+      #endif
       return
     }
     worklet.execute(on: runtime, arguments: arguments)
