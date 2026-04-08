@@ -210,8 +210,8 @@ export async function loadMetroConfigAsync(
         nodeModulesPaths.push(serverRootNodeModules);
       }
     } else if (!nodeModulesPaths.length) {
-      // For non-monorepos, we still ensure that the project's node_modules are included
-      nodeModulesPaths.push(projectRootNodeModules);
+      // NOTE(@kitten): We don't add the `projectRootNodeModules` here, although this seems like something we should be doing (?)
+      // The `@expo/metro-config` never did this however, so it's left out
     }
   } else {
     // Otherwise, we should ensure that no redundant `nodeModulesPaths` are added, since
