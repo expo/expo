@@ -7,6 +7,7 @@ internal final class SyncToggleProps: UIBaseViewProps {
   @Field var isOn: ObservableState?
   @Field var label: String?
   @Field var systemImage: String?
+  @Field var onIsOnChangeSync: WorkletCallback?
 }
 
 internal struct SyncToggleView: ExpoSwiftUI.View {
@@ -29,10 +30,17 @@ private struct StatefulToggle: View {
 
   var body: some View {
     let isOn = state.binding(false)
-    if let systemImage = props.systemImage, let label = props.label {
-      Toggle(label, systemImage: systemImage, isOn: isOn)
-    } else {
-      Toggle(props.label ?? "", isOn: isOn)
+    Group {
+      if let systemImage = props.systemImage, let label = props.label {
+        Toggle(label, systemImage: systemImage, isOn: isOn)
+      } else {
+        Toggle(props.label ?? "", isOn: isOn)
+      }
+    }
+    .onChange(of: state.value as? Bool) { newValue in
+      if let newValue {
+        props.onIsOnChangeSync?.invoke(arguments: [newValue])
+      }
     }
   }
 }

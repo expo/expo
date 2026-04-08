@@ -15,6 +15,11 @@ export type SyncToggleProps = {
      * The name of the SF Symbol to display alongside the label.
      */
     systemImage?: SFSymbol;
+    /**
+     * A worklet callback that runs synchronously on the UI thread when the toggle changes.
+     * Must be marked with the `'worklet'` directive.
+     */
+    onIsOnChangeSync?: (isOn: boolean) => void;
 } & CommonViewModifierProps;
 /**
  * A toggle driven by observable native state.
