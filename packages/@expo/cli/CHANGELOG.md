@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Update to `lan-network@^0.2.1` ([#44587](https://github.com/expo/expo/pull/44587) by [@kitten](https://github.com/kitten))
+
 ## 0.24.24 — 2026-01-31
 
 ### 🐛 Bug fixes
