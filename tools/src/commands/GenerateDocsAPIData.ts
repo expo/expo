@@ -55,6 +55,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/rnhostview': ['swift-ui/RNHostView.tsx', 'expo-ui'],
   'expo-ui/swift-ui/scrollview': ['swift-ui/ScrollView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/section': ['swift-ui/Section/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
