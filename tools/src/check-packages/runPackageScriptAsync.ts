@@ -19,7 +19,7 @@ export default async function runPackageScriptAsync(
     logger.debug(`🤷‍♂️ ${cyan(scriptName)} script not found`);
     return;
   }
-  const spawnArgs = args.length > 0 ? [scriptName, '--', ...args] : [scriptName];
+  const spawnArgs = ['run', scriptName, ...args];
 
   logger.log(`🏃‍♀️ Running ${cyan.italic(`pnpm ${spawnArgs.join(' ')}`)}`);
 
