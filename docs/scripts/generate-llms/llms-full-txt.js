@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { home, learn, general } from '../../constants/navigation.js';
 import {
   OUTPUT_DIRECTORY_NAME,
   collectPageHrefs,
@@ -10,7 +11,6 @@ import {
   readUniqueMarkdownContent,
   uniqueInternalHrefs,
 } from './shared.js';
-import { home, learn, general } from '../../constants/navigation.js';
 
 const OUTPUT_FILENAME_EXPO_DOCS = 'llms-full.txt';
 const TITLE = 'Expo Documentation';

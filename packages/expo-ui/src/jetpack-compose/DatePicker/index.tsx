@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { ExpoModifier, ViewEvent } from '../../types';
+import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type AndroidVariant = 'picker' | 'input';
@@ -146,22 +146,39 @@ export type DateTimePickerProps = {
    */
   is24Hour?: boolean;
   /**
+   * Constrains which dates can be selected. Mirrors the native Compose `selectableDates` parameter.
+   * `start` is the earliest selectable date, `end` is the latest.
+   */
+  selectableDates?: { start?: Date; end?: Date };
+  /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 type NativeDatePickerProps = Omit<
   DateTimePickerProps,
-  'variant' | 'onDateSelected' | 'initialDate' | 'elementColors'
+  'variant' | 'onDateSelected' | 'initialDate' | 'elementColors' | 'selectableDates'
 > & {
   variant?: AndroidVariant;
   initialDate?: number | null;
+  selectableDates?: { start?: number | null; end?: number | null } | null;
   elementColors?: DatePickerElementColors & TimePickerElementColors;
 } & ViewEvent<'onDateSelected', { date: Date }>;
 
+function convertSelectableDates(selectableDates?: {
+  start?: Date;
+  end?: Date;
+}): { start?: number | null; end?: number | null } | null {
+  if (!selectableDates) return null;
+  return {
+    start: selectableDates.start ? selectableDates.start.getTime() : null,
+    end: selectableDates.end ? selectableDates.end.getTime() : null,
+  };
+}
+
 function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
-  const { modifiers, variant, initialDate, elementColors, color, ...rest } = props;
+  const { modifiers, variant, initialDate, selectableDates, elementColors, color, ...rest } = props;
 
   // Convert ISO string to timestamp for Android
   const initialDateTimestamp = initialDate ? new Date(initialDate).getTime() : null;
@@ -172,11 +189,12 @@ function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePic
     ...rest,
     color,
     initialDate: initialDateTimestamp,
+    selectableDates: convertSelectableDates(selectableDates),
     onDateSelected: ({ nativeEvent: { date } }) => {
-      props?.onDateSelected?.(new Date(date));
+      props.onDateSelected?.(new Date(date));
     },
     variant,
-    ...(elementColors != null ? { elementColors } : {}),
+    ...(elementColors != null ? { elementColors } : undefined),
   };
 }
 
@@ -186,8 +204,95 @@ const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = require
 );
 
 /**
- * Renders a `DateTimePicker` component.
+ * Renders an inline `DateTimePicker` component.
  */
 export function DateTimePicker(props: DateTimePickerProps) {
   return <DatePickerNativeView {...transformDateTimePickerProps(props)} />;
+}
+
+// -- Dialog views (used internally by the compat layer) ---------------------
+
+export type DatePickerDialogProps = {
+  initialDate?: string | null;
+  variant?: AndroidVariant;
+  showVariantToggle?: boolean;
+  confirmButtonLabel?: string;
+  dismissButtonLabel?: string;
+  color?: ColorValue;
+  elementColors?: DatePickerElementColors & TimePickerElementColors;
+  selectableDates?: { start?: Date; end?: Date };
+  onDateSelected?: (date: Date) => void;
+  onDismissRequest: () => void;
+};
+
+type NativeDatePickerDialogProps = Omit<
+  DatePickerDialogProps,
+  | 'variant'
+  | 'onDateSelected'
+  | 'onDismissRequest'
+  | 'initialDate'
+  | 'elementColors'
+  | 'selectableDates'
+> & {
+  variant?: AndroidVariant;
+  initialDate?: number | null;
+  selectableDates?: { start?: number | null; end?: number | null } | null;
+  elementColors?: DatePickerElementColors & TimePickerElementColors;
+} & ViewEvent<'onDateSelected', { date: Date }> &
+  ViewEvent<'onDismissRequest', void>;
+
+const DatePickerDialogNativeView: React.ComponentType<NativeDatePickerDialogProps> =
+  requireNativeView('ExpoUI', 'DatePickerDialogView');
+
+export function DatePickerDialog(props: DatePickerDialogProps) {
+  const { variant, initialDate, selectableDates, elementColors, onDismissRequest, ...rest } = props;
+  const nativeProps: NativeDatePickerDialogProps = {
+    ...rest,
+    variant,
+    initialDate: initialDate ? new Date(initialDate).getTime() : null,
+    selectableDates: convertSelectableDates(selectableDates),
+    onDateSelected: ({ nativeEvent: { date } }) => {
+      props.onDateSelected?.(new Date(date));
+    },
+    onDismissRequest,
+    ...(elementColors != null ? { elementColors } : undefined),
+  };
+  return <DatePickerDialogNativeView {...nativeProps} />;
+}
+
+export type TimePickerDialogProps = {
+  initialDate?: string | null;
+  is24Hour?: boolean;
+  confirmButtonLabel?: string;
+  dismissButtonLabel?: string;
+  color?: ColorValue;
+  elementColors?: DatePickerElementColors & TimePickerElementColors;
+  onDateSelected?: (date: Date) => void;
+  onDismissRequest: () => void;
+};
+
+type NativeTimePickerDialogProps = Omit<
+  TimePickerDialogProps,
+  'onDateSelected' | 'onDismissRequest' | 'initialDate' | 'elementColors'
+> & {
+  initialDate?: number | null;
+  elementColors?: DatePickerElementColors & TimePickerElementColors;
+} & ViewEvent<'onDateSelected', { date: Date }> &
+  ViewEvent<'onDismissRequest', void>;
+
+const TimePickerDialogNativeView: React.ComponentType<NativeTimePickerDialogProps> =
+  requireNativeView('ExpoUI', 'TimePickerDialogView');
+
+export function TimePickerDialog(props: TimePickerDialogProps) {
+  const { initialDate, elementColors, onDismissRequest, ...rest } = props;
+  const nativeProps: NativeTimePickerDialogProps = {
+    ...rest,
+    initialDate: initialDate ? new Date(initialDate).getTime() : null,
+    onDateSelected: ({ nativeEvent: { date } }) => {
+      props.onDateSelected?.(new Date(date));
+    },
+    onDismissRequest,
+    ...(elementColors != null ? { elementColors } : undefined),
+  };
+  return <TimePickerDialogNativeView {...nativeProps} />;
 }

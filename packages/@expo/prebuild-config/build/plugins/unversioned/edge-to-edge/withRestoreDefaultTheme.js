@@ -30,7 +30,7 @@ function restoreDefaultTheme(config) {
   if (mainThemeIndex === -1) {
     return config;
   }
-  if (style[mainThemeIndex].$?.parent.includes('EdgeToEdge')) {
+  if (style[mainThemeIndex]?.$?.parent.includes('EdgeToEdge')) {
     config.modResults.resources.style = [{
       $: {
         name: 'AppTheme',

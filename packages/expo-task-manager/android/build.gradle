@@ -17,4 +17,5 @@ android {
 dependencies {
   implementation project(':unimodules-app-loader')
   api "androidx.core:core:1.17.0"
+  compileOnly "com.facebook.react:react-android"
 }

@@ -6,7 +6,11 @@ import type { TelemetryRecordInternal } from '../types';
 const telemetryFile = process.argv[2];
 
 flush()
-  .catch(() => fs.promises.unlink(telemetryFile))
+  .catch(() => {
+    if (telemetryFile) {
+      fs.promises.unlink(telemetryFile);
+    }
+  })
   .finally(() => process.exit(0));
 
 async function flush() {

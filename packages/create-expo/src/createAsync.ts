@@ -177,17 +177,20 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
 
   if (metadata && metadata.aliases[resolvedExample]) {
     const alias = metadata.aliases[resolvedExample];
-    const destination = typeof alias === 'string' ? alias : alias.destination;
-    console.log(
-      chalk`{gray The {cyan ${resolvedExample}} example has been renamed to {cyan ${destination}}.}`
-    );
+    const destination = typeof alias === 'string' ? alias : alias?.destination;
+
+    if (destination != null) {
+      console.log(
+        chalk`{gray The {cyan ${resolvedExample}} example has been renamed to {cyan ${destination}}.}`
+      );
+
+      resolvedExample = destination;
+    }
 
     // Optional message to show when an example is aliased, in case additional context is required
     if (typeof alias === 'object' && alias.message) {
       console.log(chalk`{gray ${alias.message}}`);
     }
-
-    resolvedExample = destination;
   } else if (metadata && metadata.deprecated[resolvedExample]) {
     throw new Error(getDeprecatedExampleErrorMessage(resolvedExample, metadata));
   }
@@ -298,7 +301,7 @@ export function logNodeInstallWarning(
 }
 
 function getDeprecatedExampleErrorMessage(example: string, metadata: ExamplesMetadata) {
-  const { message, outdatedExampleHref } = metadata.deprecated[example];
+  const { message, outdatedExampleHref } = metadata.deprecated[example] ?? {};
   let output = `${example} is no longer available.`;
 
   if (message) {

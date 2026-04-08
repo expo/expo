@@ -14,5 +14,7 @@ export declare const maybeRealpath: (target: string) => Promise<string | null>;
 export type PackageJson = Record<string, unknown> & {
     name?: string;
     version?: string;
+    peerDependencies?: Record<string, string>;
+    codegenConfig?: Record<string, unknown>;
 };
 export declare const loadPackageJson: import("./memoize").MemoizableAsyncFn<any[], PackageJson | null>;

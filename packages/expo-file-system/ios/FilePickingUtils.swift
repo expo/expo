@@ -6,6 +6,7 @@ import UIKit
 import UniformTypeIdentifiers
 
 internal protocol FilePickingResultHandler {
+  func didPickFilesAt(urls: [URL])
   func didPickFileAt(url: URL)
   func didPickDirectoryAt(url: URL)
   func didCancelPicking()
@@ -14,8 +15,9 @@ internal protocol FilePickingResultHandler {
 internal struct FilePickingContext {
   let promise: Promise
   let initialUri: URL?
-  let mimeType: String?
+  let mimeTypes: [String]
   let isDirectory: Bool
+  let multipleDocuments: Bool
   let delegate: FilePickingDelegate
   var pickedUrl: URL?
 }
@@ -32,26 +34,28 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
   }
 
   func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-    guard let url = urls.first else {
+    guard let firstUrl = urls.first else {
       self.resultHandler.didCancelPicking()
       return
     }
 
     if isDirectory {
       // For directory access, we need to start accessing the security-scoped resource
-      let didStartAccessing = url.startAccessingSecurityScopedResource()
+      let didStartAccessing = firstUrl.startAccessingSecurityScopedResource()
       if didStartAccessing {
         // Store the picked URL for proper cleanup
         if let pickingHandler = pickingHandler {
-          pickingHandler.filePickingContext?.pickedUrl = url
+          pickingHandler.filePickingContext?.pickedUrl = firstUrl
         }
-        self.resultHandler.didPickDirectoryAt(url: url)
+        self.resultHandler.didPickDirectoryAt(url: firstUrl)
       } else {
         // If we can't access the directory, treat as cancellation
         self.resultHandler.didCancelPicking()
       }
+    } else if controller.allowsMultipleSelection {
+      self.resultHandler.didPickFilesAt(urls: urls)
     } else {
-      self.resultHandler.didPickFileAt(url: url)
+      self.resultHandler.didPickFileAt(url: firstUrl)
     }
   }
 
@@ -64,36 +68,15 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
   }
 }
 
-internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumentPickerViewController {
-  if #available(iOS 14.0, *) {
-    let utTypes: [UTType]
-    if let mimeType = mimeType {
-      if let utType = UTType(mimeType: mimeType) {
-        utTypes = [utType]
-      } else {
-        utTypes = [UTType.item]
-      }
-    } else {
-      utTypes = [UTType.item]
-    }
-
-    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: true)
-
-    if let initialUri = initialUri {
-      picker.directoryURL = initialUri
-    }
-
-    return picker
+internal func createFilePicker(initialUri: URL?, mimeTypes: [String]) -> UIDocumentPickerViewController {
+  var utTypes: [UTType] = mimeTypes.map { mimeType in
+    UTType(mimeType: mimeType) ?? UTType.item
+  }
+  if utTypes.isEmpty {
+    utTypes = [UTType.item]
   }
 
-  let utiTypes: [String]
-  if let mimeType = mimeType {
-    utiTypes = [toUTI(mimeType: mimeType)]
-  } else {
-    utiTypes = [kUTTypeItem as String]
-  }
-
-  let picker = UIDocumentPickerViewController(documentTypes: utiTypes, in: .import)
+  let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: true)
 
   if let initialUri = initialUri {
     picker.directoryURL = initialUri

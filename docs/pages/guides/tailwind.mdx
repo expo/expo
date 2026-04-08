@@ -113,6 +113,8 @@ import './global.css';
 
 > **info** If you are using [DOM components](/guides/dom-components), add this file import to each module using the `"use dom"` directive since they don't share globals.
 
+> **warning** Always import global CSS in your root **\_layout.tsx**, not in a nested layout. Expo Router traverses the dependency graph starting from the root layout. Importing CSS in a nested layout (for example, **app/blog/\_layout.tsx**) causes **node_modules** CSS to load before your custom styles, which can break your intended style order.
+
 </Step>
 
 <Step label="5">
@@ -185,6 +187,8 @@ import './global.css';
 </CodeBlocksTable>
 
 > **info** If you are using [DOM components](/guides/dom-components), add this file import to each module using the `"use dom"` directive since they don't share globals.
+
+> **warning** Always import global CSS in your root **\_layout.tsx** and not in a nested layout. Expo Router traverses the dependency graph starting from the root layout. Importing CSS in a nested layout (for example, **app/blog/\_layout.tsx**) causes **node_modules** CSS to load before your custom styles, which can break your intended style order.
 
 </Step>
 

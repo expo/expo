@@ -5,6 +5,8 @@
 
 // This has to be the string "expo-router/_ctx" as we resolve the exact string to
 // a different file in a custom resolver for bundle splitting in Node.js.
+//
+// @ts-ignore: Will not self-resolve without package.json:exports
 import { ctx } from 'expo-router/_ctx';
 import React from 'react';
 

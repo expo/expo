@@ -41,9 +41,22 @@ function extractDescription(body) {
   return lines[0] ?? '';
 }
 
+function shouldNormalizeWrappedExternalUrl(url) {
+  try {
+    const { hostname } = new URL(url);
+    return hostname !== 'docs.expo.dev' && !hostname.includes('.');
+  } catch {
+    return false;
+  }
+}
+
 function extractUsage(body) {
   const match = body.match(/```([\S\s]*?)```/);
-  return match ? match[1].trim() : '';
+  return match
+    ? match[1].trim().replace(/(https?:\/\/\S+)\n\s+(\S+)/g, (value, url, nextToken) => {
+        return shouldNormalizeWrappedExternalUrl(url) ? `${url}${nextToken}` : value;
+      })
+    : '';
 }
 
 function parseCommands(section) {

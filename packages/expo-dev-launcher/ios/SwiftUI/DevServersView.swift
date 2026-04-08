@@ -59,6 +59,9 @@ struct DevServersView: View {
             }
           }
         }
+        if viewModel.hasEmbeddedBundle {
+          embeddedBundleRow
+        }
         enterUrl
       }
     }
@@ -119,6 +122,32 @@ struct DevServersView: View {
       Color.expoSecondarySystemBackground :
       Color.expoSystemBackground)
     .clipShape(RoundedRectangle(cornerRadius: 12))
+  }
+
+  private var embeddedBundleRow: some View {
+    Button {
+      viewModel.loadLocalBundle()
+    } label: {
+      HStack {
+        Image(systemName: "doc.fill")
+          .foregroundColor(.blue)
+          .frame(width: 12)
+        Text("Load embedded bundle")
+          .foregroundColor(.primary)
+        Spacer()
+        if viewModel.isLoadingLocalBundle {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+    .buttonStyle(PlainButtonStyle())
   }
 
   private var header: some View {

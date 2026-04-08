@@ -4,15 +4,15 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptFunction
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 class JavaScriptFunctionTypeConverter<T : Any>(
-  val type: KType
+  val typeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<JavaScriptFunction<T>>() {
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): JavaScriptFunction<T> {
     @Suppress("UNCHECKED_CAST")
     val jsFunction = value as JavaScriptFunction<T>
-    jsFunction.returnType = requireNotNull(type.arguments.first().type)
+    jsFunction.returnType = requireNotNull(typeDescriptor.params.first())
     return jsFunction
   }
 

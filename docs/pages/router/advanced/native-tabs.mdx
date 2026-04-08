@@ -21,7 +21,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   className="mb-6"
 />
 
-> **important** Native tabs is in alpha and is available in SDK 54 and later. Its API is subject to change.
+> **important** Native tabs is in [alpha](/more/release-statuses/#alpha) and is available in SDK 54 and later. Its API is subject to change.
 
 Tabs are a common way to navigate between different sections of an app. In Expo Router, you can use different tab layouts, depending on your needs. This guide covers the native tabs. Unlike the [other tabs layout](/router/advanced/tabs/#multiple-tab-layouts), native tabs use the native system tab bar.
 
@@ -503,7 +503,7 @@ export default function TabLayout() {
 
 ## Customizing the tab bar
 
-Since the native tab layout's appearance varies by platform, the customization options are also different. For all customization options, see the [API reference for `NativeTabs`](/versions/latest/sdk/router-native-tabs/).
+Since the native tab layout's appearance varies by platform, the customization options are also different. For all customization options, see the [API reference for `NativeTabs`](/versions/latest/sdk/router/native-tabs/).
 
 ## Advanced
 
@@ -818,7 +818,7 @@ export default function SearchIndex() {
 />
 
 To implement the minimized behavior on the tab bar, you can use
-[`minimizeBehavior`](/versions/latest/sdk/router-native-tabs/#minimizebehavior) prop on
+[`minimizeBehavior`](/versions/latest/sdk/router/native-tabs/#minimizebehavior) prop on
 `NativeTabs`. In the example below, the tab bar is minimized when scrolling down.
 
 <Tabs>
@@ -1257,7 +1257,7 @@ The JavaScript `<Tabs />` have a mock stack header which is not present in the n
 
 On iOS 18 and earlier, the native tab bar becomes transparent when scrolling to the end of a scrollable content. This means that it will become transparent when you scroll to the end of a `ScrollView` or when you render a static `View`.
 
-You can use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router-native-tabs/#disabletransparentonscrolledge) prop to disable this behavior.
+You can use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router/native-tabs/#disabletransparentonscrolledge) prop to disable this behavior.
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -1335,7 +1335,7 @@ export default function TabLayout() {
 
 **Alternative for specific background colors:**
 
-If you need a specific background color that doesn't match the default themes, you can use the [`contentStyle`](/versions/latest/sdk/router-native-tabs/#contentstyle) prop on `NativeTabs.Trigger`:
+If you need a specific background color that doesn't match the default themes, you can use the [`contentStyle`](/versions/latest/sdk/router/native-tabs/#contentstyle) prop on `NativeTabs.Trigger`:
 
 ```tsx
 <NativeTabs.Trigger name="index" contentStyle={{ backgroundColor: '#1a1a2e' }}>
@@ -1433,7 +1433,7 @@ Native tabs cannot be nested inside other native tabs. You can still nest [JavaS
 
 <Collapsible summary="Limited support for FlatList">
 
-[FlatList](https://reactnative.dev/docs/flatlist) integration with native tabs has limitations. Features like scroll-to-top and minimize-on-scroll aren't supported. Additionally, detecting scroll edges may fail, causing the tab bar to appear transparent. To fix this, use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router-native-tabs/#disabletransparentonscrolledge) prop.
+[FlatList](https://reactnative.dev/docs/flatlist) integration with native tabs has limitations. Features like scroll-to-top and minimize-on-scroll aren't supported. Additionally, detecting scroll edges may fail, causing the tab bar to appear transparent. To fix this, use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router/native-tabs/#disabletransparentonscrolledge) prop.
 
 <Tabs>
 

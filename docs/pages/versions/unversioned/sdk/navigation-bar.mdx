@@ -13,10 +13,9 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-navigation-bar` enables you to modify and observe the native navigation bar on Android devices. Due to some Android platform restrictions, parts of this API overlap with the `expo-status-bar` API.
-
-The APIs in this package have no impact when "Gesture Navigation" is enabled on the Android device. There is currently no native Android API to detect if "Gesture Navigation" is enabled or not.
+`expo-navigation-bar` provides a component and an imperative API for controlling the app's navigation bar on Android devices, allowing you to change the color of its buttons or hide it.
 
 ## Installation
 
@@ -36,8 +35,8 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
         "expo-navigation-bar",
         {
           "enforceContrast": true,
-          "barStyle": "light",
-          "visibility": "visible"
+          "hidden": false,
+          "style": "light"
         }
       ]
     ]
@@ -52,44 +51,78 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
     {
       name: 'enforceContrast',
       description:
-        'Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content.',
+        'Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content. Has no effect on Android 9 and below.',
       default: 'true',
+      platform: 'android',
     },
     {
-      name: 'barStyle',
+      name: 'hidden',
       description:
-        'Controls whether Android renders light or dark navigation bar buttons. Accepts `light` and `dark` as values.',
+        'Determines whether the status bar starts hidden. Accepts `true` and `false` as values.',
       default: 'undefined',
+      platform: 'android',
     },
     {
-      name: 'visibility',
+      name: 'style',
       description:
-        'Determines whether the navigation bar starts visible or hidden. Accepts `visible` to show the bar immediately and `hidden` to hide it until the user reveals it with a system gesture.',
+        'Determines which style the navigation bar starts with. Accepts `light` and `dark` as values.',
       default: 'undefined',
+      platform: 'android',
     },
-
-]}
+  ]}
 />
 
 <ConfigReactNative>
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **android** project manually, then you need to add the following configuration to your native project:
 
-- To apply `visibility` to the navigation bar, add `expo_navigation_bar_visibility` to **android/app/src/main/res/values/strings.xml**:
+- To hide the navigation bar on **Android**, add `expoNavigationBarHidden` to **android/app/src/main/res/values/styles.xml**:
 
   ```xml
-  <resources>
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
     <!-- ... -->
-    <string name="expo_navigation_bar_visibility" translatable="false">visible</string>
-  </resources>
+    <item name="expoNavigationBarHidden">true</item>
+  </style>
   ```
 
 </ConfigReactNative>
 
+## Usage
+
+<SnackInline dependencies={["expo-navigation-bar"]}>
+
+```jsx collapseHeight=310
+import { StyleSheet, Text, View } from 'react-native';
+import { NavigationBar } from 'expo-navigation-bar';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Notice that the navigation bar has light buttons!</Text>
+      <NavigationBar style="light" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: '#fff',
+  },
+});
+```
+
+</SnackInline>
+
 ## API
 
 ```js
-import * as NavigationBar from 'expo-navigation-bar';
+import { NavigationBar } from 'expo-navigation-bar';
 ```
 
 <APISection packageName="expo-navigation-bar" apiName="NavigationBar" />

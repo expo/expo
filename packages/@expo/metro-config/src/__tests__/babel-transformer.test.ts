@@ -1,6 +1,8 @@
 import generate from '@babel/generator';
 import type { BabelTransformer } from '@expo/metro/metro-babel-transformer';
 import { vol } from 'memfs';
+import { getPkgVersionFromPath } from 'packages/@expo/metro-config/src/utils/getPkgVersion';
+import { transitiveResolveFrom } from 'packages/@expo/metro-config/src/utils/transitiveResolveFrom';
 
 import * as babel from '../babel-core';
 // eslint-disable-next-line import/namespace
@@ -169,9 +171,21 @@ describe('isHermesV1 detection', () => {
 
   function setupTransformerWithHermesVersion(version: string | null) {
     jest.resetModules();
-    if (version !== null) {
-      jest.doMock('hermes-compiler/package.json', () => ({ version }));
-    }
+    jest.doMock('../utils/transitiveResolveFrom', () => ({
+      transitiveResolveFrom: (projectRoot: string, moduleIds: string[]) => {
+        if (moduleIds.includes('hermes-compiler/package.json')) {
+          return version ? '/dummy/node_modules/hermes-compiler/package.json' : null;
+        }
+        return null;
+      },
+    }));
+    jest.doMock('../utils/getPkgVersion', () => ({
+      ...jest.requireActual('../utils/getPkgVersion'),
+      getPkgVersionFromPath: (packageJsonPath: string) => {
+        if (packageJsonPath.endsWith('hermes-compiler/package.json')) return version;
+        return null;
+      },
+    }));
     jest.doMock('../babel-core', () => {
       const actual = jest.requireActual('../babel-core');
       return {
@@ -225,7 +239,7 @@ describe('isHermesV1 detection', () => {
     );
   });
 
-  it('sets isHermesV1 to false when hermes-compiler is not installed', () => {
+  it('sets isHermesV1 to true when hermes-compiler is not installed', () => {
     vol.fromJSON({}, '/');
     const { babel: localBabel, transformer: localTransformer } =
       setupTransformerWithHermesVersion(null);
@@ -240,7 +254,7 @@ describe('isHermesV1 detection', () => {
     expect(localBabel.transformSync).toHaveBeenCalledWith(
       fixture,
       expect.objectContaining({
-        caller: expect.objectContaining({ isHermesV1: false }),
+        caller: expect.objectContaining({ isHermesV1: true }),
       })
     );
   });

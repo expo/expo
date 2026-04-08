@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Add web haptics for iOS Safari using checkbox. ([#44261](https://github.com/expo/expo/pull/44261) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

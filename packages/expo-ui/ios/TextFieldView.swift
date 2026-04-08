@@ -1,66 +1,19 @@
 import SwiftUI
 import ExpoModulesCore
 
-enum KeyboardType: String, Enumerable {
-  case defaultKeyboard = "default"
-  case emailAddress = "email-address"
-  case numeric = "numeric"
-  case phonePad = "phone-pad"
-  case asciiCapable = "ascii-capable"
-  case numbersAndPunctuation = "numbers-and-punctuation"
-  case url = "url"
-  case namePhonePad = "name-phone-pad"
-  case decimalPad = "decimal-pad"
-  case twitter = "twitter"
-  case webSearch = "web-search"
-  case asciiCapableNumberPad = "ascii-capable-number-pad"
+enum TextFieldAxis: String, Enumerable {
+  case horizontal
+  case vertical
 }
 
 final class TextFieldProps: UIBaseViewProps {
   @Field var defaultValue: String = ""
-  @Field var placeholder: String = ""
-  @Field var multiline: Bool = false
-  @Field var numberOfLines: Int?
-  @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
-  @Field var autocorrection: Bool = true
-  @Field var allowNewlines: Bool = true
   @Field var autoFocus: Bool = false
-  var onValueChanged = EventDispatcher()
-  var onFocusChanged = EventDispatcher()
-  var onSelectionChanged = EventDispatcher()
-  var onSubmit = EventDispatcher()
-}
-
-func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
-  guard let keyboardType = keyboardType else {
-    return .default
-  }
-  switch keyboardType {
-  case .defaultKeyboard:
-    return .default
-  case .emailAddress:
-    return .emailAddress
-  case .numeric:
-    return .numberPad
-  case .phonePad:
-    return .phonePad
-  case .asciiCapable:
-    return .asciiCapable
-  case .numbersAndPunctuation:
-    return .numbersAndPunctuation
-  case .url:
-    return .URL
-  case .namePhonePad:
-    return .namePhonePad
-  case .decimalPad:
-    return .decimalPad
-  case .twitter:
-    return .twitter
-  case .webSearch:
-    return .webSearch
-  case .asciiCapableNumberPad:
-    return .asciiCapableNumberPad
-  }
+  @Field var placeholder: String = ""
+  @Field var axis: TextFieldAxis = .horizontal
+  var onValueChange = EventDispatcher()
+  var onFocusChange = EventDispatcher()
+  var onSelectionChange = EventDispatcher()
 }
 
 class TextFieldManager: ObservableObject {
@@ -80,14 +33,6 @@ class TextFieldManager: ObservableObject {
     self.text = initialText
     self.isFocused = false
   }
-}
-
-func allowMultiLine() -> Bool {
-#if os(tvOS)
-  return false
-#else
-  return true
-#endif
 }
 
 struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
@@ -132,60 +77,47 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 #endif
   }
 
-  var text: some View {
-    let text = if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
+  private var swiftUIAxis: Axis {
+    props.axis == .vertical ? .vertical : .horizontal
+  }
+
+  @ViewBuilder
+  var textField: some View {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
 #if !os(tvOS)
       TextField(
         props.placeholder,
         text: $textManager.text,
         selection: $textManager.selection,
-        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
+        axis: swiftUIAxis
       )
+      .focused($isFocused)
 #else
       TextField(
         props.placeholder,
         text: $textManager.text,
-        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
+        axis: swiftUIAxis
       )
+      .focused($isFocused)
 #endif
     } else if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
         props.placeholder,
         text: $textManager.text,
-        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
+        axis: swiftUIAxis
       )
+      .focused($isFocused)
     } else {
       TextField(
         props.placeholder,
         text: $textManager.text
       )
-    }
-    return text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
-      .fixedSize(horizontal: false, vertical: true)
-      .keyboardType(getKeyboardType(props.keyboardType))
-      .autocorrectionDisabled(!props.autocorrection)
       .focused($isFocused)
-      .onSubmit({
-        if props.allowNewlines && props.multiline && allowMultiLine() {
-          if textManager.text.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
-            textManager.text.append("\n")
-
-            // when selection state is set, the cursor does not auto update to added newline
-#if !os(tvOS)
-            if #available(iOS 18.0, macOS 15.0, *) {
-              let cursorPosition = textManager.text.endIndex
-              textManager.selection = SwiftUI.TextSelection(range: cursorPosition..<cursorPosition)
-            }
-#endif
-          }
-          isFocused = true
-        }
-        props.onSubmit(["value": textManager.text])
-      })
+    }
   }
 
   var body: some View {
-    let baseView = text
+    let baseView = textField
       .onAppear {
         textManager.text = props.defaultValue
         if props.autoFocus {
@@ -193,14 +125,14 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
         }
       }
       .onChange(of: textManager.text) { newValue in
-        props.onValueChanged(["value": newValue])
+        props.onValueChange(["value": newValue])
       }
       .onChange(of: textManager.isFocused) { newValue in
         isFocused = newValue
       }
       .onChange(of: isFocused) { newValue in
         textManager.isFocused = newValue
-        props.onFocusChanged(["value": newValue])
+        props.onFocusChange(["value": newValue])
       }
 
 #if !os(tvOS)
@@ -213,7 +145,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 
             let start = textManager.text.distance(from: textManager.text.startIndex, to: clampedLower)
             let end = textManager.text.distance(from: textManager.text.startIndex, to: clampedUpper)
-            props.onSelectionChanged(["start": start, "end": end])
+            props.onSelectionChange(["start": start, "end": end])
           }
         }
       }

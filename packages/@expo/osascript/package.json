@@ -25,13 +25,12 @@
   ],
   "scripts": {
     "build": "expo-module tsc",
-    "prepare": "yarn run clean && yarn run build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "yarn run build --watch --preserveWatchOutput",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "watch": "pnpm run build --watch --preserveWatchOutput",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {
     "node": ">=12"
@@ -41,7 +40,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

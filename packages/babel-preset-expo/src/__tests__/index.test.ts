@@ -8,22 +8,28 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
   return props as unknown as babel.TransformCaller;
 }
 
-jest.mock('../common.ts', () => ({
-  ...jest.requireActual('../common.ts'),
-  hasModule: jest.fn((moduleId) => {
+jest.mock('../utils/resolveModule.ts', () => {
+  function resolveModule(_api: any, id: string): string | null {
     if (
       [
-        'react-native-worklets',
-        'react-native-reanimated',
-        'expo-router',
+        'react-native-worklets/plugin',
+        'react-native-reanimated/plugin',
+        'expo-router/package.json',
+        'expo-widgets/package.json',
         '@expo/vector-icons',
-      ].includes(moduleId)
+      ].includes(id)
     ) {
-      return true;
+      return id;
     }
-    return false;
-  }),
-}));
+    return null;
+  }
+
+  return {
+    ...jest.requireActual('../utils/resolveModule.ts'),
+    resolveModule: jest.fn(resolveModule),
+    hasModule: jest.fn((api, id) => !!resolveModule(api, id)),
+  };
+});
 
 describe('flow + esm', () => {
   const BABEL_OPTIONS = {
@@ -152,9 +158,11 @@ it(`compiles sample file with Metro targeting Hermes`, () => {
     caller: getCaller({ name: 'metro' }),
   })!;
 
+  expect(withHermes.code).not.toEqual(withoutHermes.code);
+
   // Hermes v1 supports most modern JS features natively, so the output
-  // is equivalent to the default profile when not in dev mode.
-  expect(withHermes.code).toEqual(withoutHermes.code);
+  // should be shorter than the default profile (fewer transforms applied).
+  expect(withHermes.code!.length).toBeLessThan(withoutHermes.code!.length);
 });
 
 it(`supports overwriting the default engine option`, () => {

@@ -1,5 +1,10 @@
 package expo.modules.devlauncher.compose.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,18 +13,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.composeunstyled.Button
-import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
+import expo.modules.devlauncher.compose.ui.AnimatedPackagerCard
 import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.ui.AppLoadingErrorDialog
+import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionActions
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionSection
+import expo.modules.devlauncher.compose.ui.EmbeddedBundleButton
+import expo.modules.devlauncher.compose.ui.PullToRefreshContainer
 import expo.modules.devlauncher.compose.ui.RunningAppCard
+import expo.modules.devlauncher.compose.ui.rememberAnimatedItemsState
 import expo.modules.devlauncher.compose.ui.rememberAppLoadingErrorDialogState
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
@@ -58,7 +68,6 @@ fun HomeScreen(
   onProfileClick: () -> Unit,
   onDevServersClick: () -> Unit
 ) {
-  val scrollState = rememberScrollState()
   val errorDialogState = rememberAppLoadingErrorDialogState(state, onAction)
 
   AppLoadingErrorDialog(
@@ -82,38 +91,59 @@ fun HomeScreen(
       }
     )
 
-    Column(
-      modifier = Modifier
-        .padding(vertical = NewAppTheme.spacing.`6`)
-        .verticalScroll(scrollState)
+    val runningPackagers = state.runningPackagers
+
+    PullToRefreshContainer(
+      isRefreshing = state.isRefreshing,
+      onRefresh = { onAction(HomeAction.RefreshServers) },
+      modifier = Modifier.weight(1f)
     ) {
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth()
-      ) {
-        Section.Header("DEVELOPMENT SERVERS")
+      AnimatedContent(
+        targetState = runningPackagers,
+        contentKey = { it.isNotEmpty() },
+        transitionSpec = {
+          fadeIn(tween(300)) togetherWith fadeOut(tween(300))
+        },
+        label = "packagers-transition"
+      ) { packagers ->
+        Column(
+          modifier = Modifier
+            .padding(vertical = NewAppTheme.spacing.`6`)
+            .verticalScroll(rememberScrollState())
+        ) {
+          Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+          ) {
+            Section.Header("DEVELOPMENT SERVERS")
 
-        Section.Button("INFO", onDevServersClick)
+            Section.Button("INFO", onDevServersClick)
+          }
+
+          Spacer(NewAppTheme.spacing.`3`)
+
+          if (packagers.isNotEmpty()) {
+            LocalPackagers(
+              packagers,
+              onAction
+            )
+          } else {
+            DevelopmentSessionSection(state.isRefreshing, onAction)
+          }
+
+          if (state.hasEmbeddedBundle) {
+            Spacer(NewAppTheme.spacing.`3`)
+            EmbeddedBundleButton(onAction)
+          }
+
+          Spacer(NewAppTheme.spacing.`6`)
+
+          RecentlyOpenedApps(
+            state.recentlyOpenedApps,
+            onAction
+          )
+        }
       }
-
-      Spacer(NewAppTheme.spacing.`3`)
-
-      val runningPackagers = state.runningPackagers
-      if (runningPackagers.isNotEmpty()) {
-        LocalPackagers(
-          runningPackagers,
-          onAction
-        )
-      } else {
-        DevelopmentSessionSection(onAction)
-      }
-
-      Spacer(NewAppTheme.spacing.`6`)
-
-      RecentlyOpenedApps(
-        state.recentlyOpenedApps,
-        onAction
-      )
     }
   }
 }
@@ -123,18 +153,24 @@ private fun LocalPackagers(
   runningPackagers: Set<PackagerInfo>,
   onAction: (HomeAction) -> Unit
 ) {
+  val animatedItems = rememberAnimatedItemsState(
+    items = runningPackagers,
+    key = { it.url }
+  )
+
   Column(
     verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
     ) {
-      for (packager in runningPackagers) {
-        RunningAppCard(
-          appIp = packager.url,
-          appName = packager.description
-        ) {
-          onAction(HomeAction.OpenApp(packager.url))
+      for ((packager, visibleState) in animatedItems) {
+        key(packager.url) {
+          AnimatedPackagerCard(
+            packager = packager,
+            visibleState = visibleState,
+            onAction = onAction
+          )
         }
       }
     }
@@ -145,7 +181,7 @@ private fun LocalPackagers(
       modifier = Modifier
         .fillMaxWidth()
     ) {
-      DevelopmentSessionActions(onAction)
+      DevelopmentSessionActions(onAction = onAction)
     }
   }
 }

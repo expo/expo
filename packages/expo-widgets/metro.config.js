@@ -1,11 +1,13 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
+const { resolveWorkspaceRoot } = require('resolve-workspace-root');
 
 const projectRoot = process.cwd();
 const config = getDefaultConfig(projectRoot);
 
 const expoStubPath = path.resolve(__dirname, './bundle/expo-module-stub.ts');
 const reactStubPath = path.resolve(__dirname, './bundle/react-stub.ts');
+const reactNativeStubPath = path.resolve(__dirname, './bundle/react-native-stub.ts');
 const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts');
 
 // The `projectRoot` won't be included by default, since we alter it to be `__dirname`
@@ -15,6 +17,15 @@ const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts
 const watchFolders = config.watchFolders;
 if (!watchFolders.some((entry) => !entry.startsWith(projectRoot))) {
   watchFolders.push(projectRoot);
+}
+// If expo-widgets is outside the user's project (e.g., symlinked, in a different monorepo,
+// or as an installed dependency), add its workspace root so Metro can resolve its dependencies.
+const rel = path.relative(projectRoot, __dirname);
+if (rel.startsWith('..') || path.isAbsolute(rel)) {
+  const widgetWorkspaceRoot = resolveWorkspaceRoot(__dirname);
+  if (widgetWorkspaceRoot && !watchFolders.includes(widgetWorkspaceRoot)) {
+    watchFolders.push(widgetWorkspaceRoot);
+  }
 }
 
 const buildConfig = {
@@ -37,7 +48,7 @@ const buildConfig = {
         case 'react/jsx-dev-runtime':
           return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
         case 'react-native':
-          return { type: 'empty' };
+          return { type: 'sourceFile', filePath: reactNativeStubPath };
         default:
           return context.resolveRequest(context, moduleName, platform);
       }

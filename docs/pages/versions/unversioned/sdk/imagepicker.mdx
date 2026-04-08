@@ -33,7 +33,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 #### Known issues&ensp;<PlatformTags platforms={['ios']} />
 
-On iOS, when an image (usually of a [higher resolution](http://www.openradar.me/49866214)) is picked from the camera roll, the result of the cropped image gives the wrong value for the cropped rectangle in some cases. Unfortunately, this issue is with the underlying `UIImagePickerController` due to a bug in the closed-source tools built into iOS.
+On iOS, when an image (usually of a [higher resolution](https://openradar.me/49866214)) is picked from the camera roll, the result of the cropped image gives the wrong value for the cropped rectangle in some cases. Unfortunately, this issue is with the underlying `UIImagePickerController` due to a bug in the closed-source tools built into iOS.
 
 ## Configuration in app config
 
@@ -43,6 +43,7 @@ By default `expo-image-picker` will add `RECORD_AUDIO` permission on Android. Yo
 
 <ConfigPluginExample>
 
+{/* prettier-ignore */}
 ```json app.json
 {
   "expo": {
@@ -50,13 +51,13 @@ By default `expo-image-picker` will add `RECORD_AUDIO` permission on Android. Yo
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "The app accesses your photos to let you share them with your friends.",
           "colors": {
-            "cropToolbarColor": "#000000",
+            "cropToolbarColor": "#000000"
           },
           "dark": {
             "colors": {
-              "cropToolbarColor": "#000000",
+              "cropToolbarColor": "#000000"
             }
           }
         }

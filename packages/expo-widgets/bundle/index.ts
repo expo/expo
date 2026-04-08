@@ -3,7 +3,9 @@
 import * as swiftUI from '@expo/ui/swift-ui';
 import * as modifiers from '@expo/ui/swift-ui/modifiers';
 
+import { decorateInteractiveTargets } from './decorator';
 import * as jsxRuntime from './jsx-runtime-stub';
+import * as ReactNative from './react-native-stub';
 import * as React from './react-stub';
 
 type Dictionary = Record<string, unknown>;
@@ -12,6 +14,7 @@ declare global {
   var __expoWidgetLayout: (props: Dictionary, environment: Dictionary) => Dictionary;
   var __expoWidgetRender: (props: Dictionary, environment: Dictionary) => Dictionary;
   var __expoWidgetHandlePress: (
+    props: Dictionary,
     environment: Dictionary & { target?: string }
   ) => Dictionary | undefined;
 }
@@ -23,7 +26,7 @@ const __expoWidgetRender = function (props: Dictionary, environment: Dictionary)
     decoratedEnvironment.date = new Date(timestamp as number);
   }
 
-  return globalThis.__expoWidgetLayout(props, decoratedEnvironment as any);
+  return decorateInteractiveTargets(globalThis.__expoWidgetLayout(props, decoratedEnvironment));
 };
 
 const __expoWidgetHandlePress = function (
@@ -42,12 +45,10 @@ const __expoWidgetHandlePress = function (
       return props.onButtonPress();
     }
 
-    if (props?.children && Array.isArray(props.children)) {
-      for (const child of props.children) {
-        const result = findAndCallOnPress(child as Dictionary);
-        if (result) {
-          return result;
-        }
+    for (const child of React.Children.toArray(props?.children)) {
+      const result = findAndCallOnPress(child as Dictionary);
+      if (result) {
+        return result;
       }
     }
   }
@@ -61,6 +62,7 @@ Object.assign(globalThis, {
   ...modifiers,
   ...jsxRuntime,
   ...React,
+  ...ReactNative,
   React,
   __expoWidgetRender,
   __expoWidgetHandlePress,

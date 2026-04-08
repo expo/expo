@@ -43,7 +43,7 @@ export type APISectionTypesProps = {
 const COLLAPSED_LITERAL_MESSAGE = 'Acceptable values are: See description for available values.';
 
 const renderTypeDeclarationTable = (
-  { children, indexSignature, comment }: TypeDeclarationContentData,
+  { children, indexSignatures, comment }: TypeDeclarationContentData,
   sdkVersion: string,
   index?: number
 ) => (
@@ -59,7 +59,11 @@ const renderTypeDeclarationTable = (
       <APIParamsTableHeadRow mainCellLabel="Property" />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
-        {indexSignature?.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+        {indexSignatures?.map(sig =>
+          sig.parameters?.map(param =>
+            renderTypePropertyRow({ ...param, type: sig.type ?? param.type }, sdkVersion)
+          )
+        )}
       </tbody>
     </Table>
   </Fragment>
@@ -193,7 +197,8 @@ const renderType = (
           includePlatforms={false}
           afterContent={defaultValueElement}
         />
-        {declaration.children && renderTypeDeclarationTable(declaration, sdkVersion)}
+        {(declaration.children || declaration.indexSignatures) &&
+          renderTypeDeclarationTable(declaration, sdkVersion)}
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />

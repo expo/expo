@@ -5,13 +5,12 @@
   "main": "build/index.js",
   "scripts": {
     "build": "expo-module tsc",
-    "prepare": "yarn run clean && yarn run build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "yarn run build --watch --preserveWatchOutput",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "watch": "pnpm run build --watch --preserveWatchOutput",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "repository": {
     "type": "git",
@@ -35,7 +34,8 @@
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2"
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

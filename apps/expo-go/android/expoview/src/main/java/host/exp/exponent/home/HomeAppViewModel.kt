@@ -29,6 +29,9 @@ import host.exp.exponent.graphql.ProjectsQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.home.auth.AuthRequestType
 import host.exp.exponent.kernel.ExpoViewKernel
+import host.exp.exponent.nsd.NsdDiscovery
+import host.exp.exponent.nsd.NsdPreferences
+import host.exp.exponent.nsd.PackagerInfo
 import host.exp.exponent.services.ApolloClientService
 import host.exp.exponent.services.ExponentHistoryService
 import host.exp.exponent.services.RESTApiClient
@@ -57,7 +60,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.util.Date
 import kotlin.reflect.typeOf
 import kotlin.time.DurationUnit
@@ -77,7 +79,7 @@ enum class DevSessionSource {
 data class DevSession(
   val description: String,
   val url: String,
-  val source: DevSessionSource,
+  val source: DevSessionSource?,
   val hostname: String? = null,
   val config: Map<String, Any>? = null,
   val platform: DevSessionPlatform? = null,
@@ -86,19 +88,6 @@ data class DevSession(
 
 data class DevSessionResponse(
   val data: List<DevSession>
-)
-
-private data class ManifestResponse(
-  val extra: ManifestExtra?
-)
-
-private data class ManifestExtra(
-  val expoClient: ManifestExpoClient?
-)
-
-private data class ManifestExpoClient(
-  val name: String?,
-  val iconUrl: String?
 )
 
 private const val USER_REVIEW_INFO_PREFS_KEY = "userReviewInfo"
@@ -238,62 +227,52 @@ class HomeAppViewModel(
 
   val feedbackState = MutableStateFlow(FeedbackState())
 
-  private suspend fun checkDevelopmentServer(host: String, port: String): DevSession? {
-    return withContext(Dispatchers.IO) {
-      runCatching {
-        val url = "http://$host:$port"
-        val request = Request.Builder().url("$url/status").build()
-        val response = client.newCall(request).execute()
+  private val nsdDiscovery = NsdDiscovery(application, client)
+  val nsdPreferences = NsdPreferences(application)
 
-        if (!response.isSuccessful || response.body?.string()?.contains("packager-status:running") != true) {
-          return@runCatching null
-        }
+  // Reactive trigger that re-emits whenever NSD preferences change
+  private val _nsdPreferencesTrigger = MutableStateFlow(0)
 
-        val manifestInfo = fetchLocalManifestInfo(url)
-        DevSession(
-          url = "exp://$host:$port",
-          description = manifestInfo?.extra?.expoClient?.name ?: "exp://$host:$port",
-          source = DevSessionSource.Desktop,
-          hostname = "exp://$host:$port",
-          platform = DevSessionPlatform.Native,
-          config = null,
-          iconUrl = manifestInfo?.extra?.expoClient?.iconUrl
-        )
-      }.getOrNull()
-    }
+  private val _isNsdRefreshing = MutableStateFlow(false)
+  val isNsdRefreshing: StateFlow<Boolean> = _isNsdRefreshing
+
+  private fun PackagerInfo.toDevSession(): DevSession {
+    val newUrl = url
+      .replace("https", "exps")
+      .replace("http", "exp")
+    return DevSession(
+      url = newUrl,
+      description = description,
+      source = DevSessionSource.Desktop,
+      hostname = newUrl,
+      platform = DevSessionPlatform.Native,
+      config = null,
+      iconUrl = null
+    )
   }
 
-  private suspend fun fetchLocalManifestInfo(baseUrl: String): ManifestResponse? {
-    return withContext(Dispatchers.IO) {
-      runCatching {
-        val manifestUrl = "$baseUrl/manifest"
-        val request = Request.Builder()
-          .url(manifestUrl)
-          .addHeader("Accept", "application/expo+json,application/json")
-          .addHeader("Expo-Platform", "android")
-          .build()
-
-        client.newCall(request).execute().use { response ->
-          if (response.isSuccessful) {
-            response.body?.string()?.let {
-              gson.fromJson(it, ManifestResponse::class.java)
-            }
-          } else {
-            null
-          }
-        }
-      }.getOrNull()
-    }
-  }
-
-  private val remoteDevelopmentServers: StateFlow<List<DevSession>> = flow {
+  private val remoteSnackSessions: StateFlow<List<DevSession>> = flow {
     while (true) {
       try {
         val sessions = restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
           "development-sessions",
           typeOf<DevSessionResponse>()
         )
-        emit(sessions.data)
+        emit(
+          sessions
+            .data
+            .map { session ->
+              session.copy(
+                // The `development-sessions` not always contains source, but we can infer it based on the URL
+                source = session.source ?: if (session.url.startsWith("exp://u.expo.dev")) {
+                  DevSessionSource.Snack
+                } else {
+                  DevSessionSource.Desktop
+                }
+              )
+            }
+            .filter { session -> session.source == DevSessionSource.Snack }
+        )
       } catch (_: Exception) {
         emit(emptyList())
       }
@@ -305,50 +284,25 @@ class HomeAppViewModel(
     initialValue = emptyList()
   )
 
-  private val localDevelopmentServers: StateFlow<List<DevSession>> = flow {
-    val portsToCheck = listOf(8081, 8082, 8083, 19000, 19001, 19002)
-    val baseAddress = if (isDevice) "localhost" else "10.0.2.2"
-    while (true) {
-      val discoveredServers = mutableListOf<DevSession>()
-      withContext(Dispatchers.IO) {
-        portsToCheck.map { port ->
-          launch {
-            checkDevelopmentServer(baseAddress, "$port")?.let {
-              synchronized(discoveredServers) {
-                discoveredServers.add(it)
-              }
-            }
-          }
-        }.forEach { it.join() }
-      }
-      emit(discoveredServers)
-      delay(3000)
+  private fun filterPackagers(packagers: Set<PackagerInfo>): Set<PackagerInfo> {
+    val slugFilter = nsdPreferences.filterBySlug
+    if (slugFilter.isNotBlank()) {
+      return packagers.filter { it.slug == slugFilter }.toSet()
     }
-  }.stateIn(
-    scope = viewModelScope,
-    started = SharingStarted.WhileSubscribed(5000),
-    initialValue = emptyList()
-  )
+
+    return packagers
+  }
 
   val developmentServers: StateFlow<List<DevSession>> =
     combine(
-      localDevelopmentServers,
-      remoteDevelopmentServers
-    ) { local, remote ->
-      val merged = mutableMapOf<String, DevSession>()
+      nsdDiscovery.discoveredPackagers,
+      remoteSnackSessions,
+      _nsdPreferencesTrigger
+    ) { nsdPackagers, snackSessions, _ ->
+      val nsdSessions = filterPackagers(nsdPackagers)
+        .map { it.toDevSession() }
 
-      // Add all local servers first
-      for (server in local) {
-        val key = normalizeUrl(server.url).lowercase()
-        merged[key] = server
-      }
-
-      // Add remote servers, preferring them over local ones if a conflict exists
-      for (server in remote) {
-        val key = normalizeUrl(server.url).lowercase()
-        merged[key] = server
-      }
-      merged.values.sortedBy { it.url }
+      (nsdSessions + snackSessions).sortedBy { it.url }
     }
       .stateIn(
         scope = viewModelScope,
@@ -441,6 +395,10 @@ class HomeAppViewModel(
     account.refresh()
   }
 
+  private val nsdPreferencesListener: () -> Unit = {
+    _nsdPreferencesTrigger.value++
+  }
+
   init {
     homeActivityEvents
       .onEach { event ->
@@ -459,6 +417,28 @@ class HomeAppViewModel(
     ) { appsList, snacksList ->
       updateUserReviewState(appsList.size, snacksList.size)
     }.launchIn(viewModelScope)
+
+    // Start NSD discovery and enable health checks
+    nsdDiscovery.start()
+    nsdDiscovery.resumeHealthCheck()
+
+    // Re-filter when NSD preferences change
+    nsdPreferences.addOnChangeListener(nsdPreferencesListener)
+  }
+
+  fun refreshNsd() {
+    viewModelScope.launch {
+      _isNsdRefreshing.value = true
+      nsdDiscovery.restart()
+      delay(2000) // Brief delay for UX so the refresh indicator is visible
+      _isNsdRefreshing.value = false
+    }
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    nsdPreferences.removeOnChangeListener(nsdPreferencesListener)
+    nsdDiscovery.stop()
   }
 
   val snacksPaginatorRefreshableFlow =
@@ -499,8 +479,8 @@ class HomeAppViewModel(
         }
 
         val metadata = mapOf(
-          "os" to "${android.os.Build.VERSION.RELEASE}",
-          "model" to android.os.Build.MODEL,
+          "os" to "${Build.VERSION.RELEASE}",
+          "model" to Build.MODEL,
           "expoGoVersion" to expoVersion
         )
 

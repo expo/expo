@@ -140,7 +140,7 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getAndroidStatusBarOptions(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.getNullable("androidStatusBar")
+    return expoClientConfig.getNullable<JSONObject>("extra")?.getNullable("expo-status-bar")
   }
 
   fun getAndroidBackgroundColor(): String? {
@@ -154,7 +154,7 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getAndroidNavigationBarOptions(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.getNullable("androidNavigationBar")
+    return expoClientConfig.getNullable<JSONObject>("extra")?.getNullable("expo-navigation-bar")
   }
 
   val jsEngine: String by lazy {

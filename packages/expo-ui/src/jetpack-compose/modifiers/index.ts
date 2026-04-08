@@ -105,6 +105,16 @@ export const wrapContentHeight = (alignment?: 'top' | 'centerVertically' | 'bott
   createModifier('wrapContentHeight', alignment ? { alignment } : {});
 
 // =============================================================================
+// Inset Modifiers
+// =============================================================================
+
+/**
+ * Adds padding to avoid the software keyboard (IME).
+ * When the keyboard is visible, padding is added to keep content above it.
+ */
+export const imePadding = () => createModifier('imePadding');
+
+// =============================================================================
 // Position Modifiers
 // =============================================================================
 
@@ -262,9 +272,33 @@ export const clickable = (handler: () => void, options?: { indication?: boolean 
  * Makes the view selectable, like a radio button row.
  * @param selected - Whether the item is currently selected.
  * @param handler - Function to call when the item is clicked.
+ * @param role - Optional semantic role for accessibility: 'radioButton', 'checkbox', 'switch', or 'tab'.
  */
-export const selectable = (selected: boolean, handler: () => void) =>
-  createModifierWithEventListener('selectable', handler, { selected });
+export const selectable = (
+  selected: boolean,
+  handler: () => void,
+  role?: 'radioButton' | 'checkbox' | 'switch' | 'tab'
+) => createModifierWithEventListener('selectable', handler, { selected, role });
+
+/**
+ * Marks a column/row as a selectable group for accessibility.
+ * Screen readers will treat the children as a group of selectable items.
+ */
+export const selectableGroup = () => createModifier('selectableGroup');
+
+/**
+ * Makes the view toggleable with accessibility semantics.
+ * Use this to make a row containing a checkbox or switch tappable as a whole.
+ * @param value - The current toggle state.
+ * @param handler - Function to call when toggled.
+ * @param options - Optional configuration.
+ * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`, `'switch'`, or `'tab'`.
+ */
+export const toggleable = (
+  value: boolean,
+  handler: () => void,
+  options?: { role?: 'checkbox' | 'radioButton' | 'switch' | 'tab' }
+) => createModifierWithEventListener('toggleable', handler, { value, role: options?.role });
 
 // =============================================================================
 // Utility Modifiers

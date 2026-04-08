@@ -200,7 +200,7 @@ describe('exports server', () => {
         .filter((script) => !!script.attributes.src)
         .forEach((script) => {
           const jsBundle = fs.readFileSync(
-            path.join(server.outputDir, 'client', script.attributes.src),
+            path.join(server.outputDir, 'client', script.attributes.src ?? ''),
             'utf8'
           );
 
@@ -276,7 +276,7 @@ describe('exports server', () => {
       if (globalPreload) {
         expect(
           fs.readFileSync(
-            path.join(server.outputDir, 'client', globalPreload.attributes.href),
+            path.join(server.outputDir, 'client', globalPreload.attributes.href ?? ''),
             'utf-8'
           )
         ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
@@ -284,7 +284,7 @@ describe('exports server', () => {
 
       // CSS Module
       expect(
-        fs.readFileSync(path.join(server.outputDir, 'client', links[2].attributes.href), 'utf-8')
+        fs.readFileSync(path.join(server.outputDir, 'client', links[2]?.attributes.href ?? ''), 'utf-8')
       ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
 
       const styledHtml = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
@@ -300,17 +300,17 @@ describe('exports server', () => {
 
       const links = indexHtml.querySelectorAll('html > head > link[as="font"]');
       expect(links.length).toBe(1);
-      expect(links[0].attributes.href).toBe(
+      expect(links[0]?.attributes.href).toBe(
         '/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
       );
 
-      expect(links[0].toString()).toMatch(
+      expect(links[0]?.toString()).toMatch(
         /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="" >/
       );
 
       expect(
         fs.readFileSync(
-          path.join(server.outputDir, 'client', links[0].attributes.href.replace(/\?.*$/, '')),
+          path.join(server.outputDir, 'client', links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''),
           'utf-8'
         )
       ).toBeDefined();

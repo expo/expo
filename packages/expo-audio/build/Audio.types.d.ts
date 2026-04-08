@@ -225,6 +225,22 @@ export type AudioStatus = {
      * @platform ios
      */
     mediaServicesDidReset?: boolean;
+    /**
+     * Whether the current audio source is a live stream with indefinite duration.
+     */
+    isLive: boolean;
+    /**
+     * Seconds behind the live edge, or `null` if not a live stream
+     * or if the offset cannot be determined.
+     * @platform ios
+     * @platform android
+     */
+    currentOffsetFromLive: number | null;
+    /**
+     * Playback error message, or `null` if no error.
+     * Cleared when a new source is loaded or playback resumes successfully.
+     */
+    error: string | null;
 };
 /**
  * Status information for recording operations from the event system.
@@ -486,8 +502,9 @@ export type RecordingOptionsAndroid = {
 export type AudioMode = {
     /**
      * Determines if audio playback is allowed when the device is in silent mode.
+     * On Android, when `false`, playback is suppressed when the ringer mode is silent or vibrate.
      *
-     * @platform ios
+     * @default true
      */
     playsInSilentMode: boolean;
     /**

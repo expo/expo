@@ -1,7 +1,24 @@
 #!/usr/bin/env node
 
-import { packageManagerExecAsync } from '../utils/commandUtils.js';
-
 process.env.EXPO_NONINTERACTIVE = 1;
 
-await packageManagerExecAsync(['proofread']);
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { commandRunner } from '../utils/commandUtils.js';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+async function runAsync() {
+  console.log('Preparing module for publishing');
+  await commandRunner(path.join(dirname, 'expo-module-clean'));
+  await commandRunner(path.join(dirname, 'expo-module-build'));
+}
+
+(async () => {
+  try {
+    await runAsync();
+  } catch (error) {
+    console.error(error);
+    process.exit(error.status || error.code || 1);
+  }
+})();

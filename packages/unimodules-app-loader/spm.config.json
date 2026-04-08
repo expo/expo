@@ -1,0 +1,30 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "UMAppLoader",
+      "podName": "UMAppLoader",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "UMAppLoader",
+          "path": "ios",
+          "pattern": "**/*.m",
+          "headerPattern": "**/*.h",
+          "dependencies": [],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ],
+          "includeDirectories": [
+            "."
+          ]
+        }
+      ]
+    }
+  ]
+}

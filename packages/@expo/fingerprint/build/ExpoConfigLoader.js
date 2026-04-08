@@ -15,7 +15,7 @@ const resolve_from_1 = __importDefault(require("resolve-from"));
 const Options_1 = require("./Options");
 const Path_1 = require("./utils/Path");
 async function runAsync(programName, args = []) {
-    if (args.length < 1) {
+    if (args[0] == null) {
         console.log(`Usage: ${programName} <projectRoot> [ignoredFile]`);
         return;
     }
@@ -46,8 +46,9 @@ async function runAsync(programName, args = []) {
 if (require.main?.filename === __filename) {
     (async () => {
         const programIndex = node_process_1.default.argv.findIndex((arg) => arg === __filename);
+        const programName = node_process_1.default.argv[programIndex] ?? __filename;
         try {
-            await runAsync(node_process_1.default.argv[programIndex], node_process_1.default.argv.slice(programIndex + 1));
+            await runAsync(programName, node_process_1.default.argv.slice(programIndex + 1));
         }
         catch (e) {
             console.error('Uncaught Error', e);

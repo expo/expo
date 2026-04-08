@@ -79,13 +79,22 @@ The `event` dictionary contains information about the state transition, matching
 
 ### UpdatesStateChangeSubscription
 
-Returned by `subscribeToUpdatesStateChanges`. Call `remove()` to unsubscribe and stop receiving state change events.
+Returned by `subscribeToUpdatesStateChanges`. Provides methods to unsubscribe from state change events and to read the current state machine context.
+
+#### `remove()`
+
+Call to unsubscribe and stop receiving state change events.
+
+#### `getContext()`
+
+Returns a read-only snapshot of the current state machine context as an `UpdatesNativeInterfaceStateContext` instance (returned as `Any?` on iOS for Objective-C compatibility). This allows querying the state of the updates system at any time, including information about events that occurred at startup before any state change listener was registered.
 
 **iOS:**
 
 ```swift
 public protocol UpdatesStateChangeSubscription {
   func remove()
+  func getContext() -> Any?
 }
 ```
 
@@ -94,8 +103,32 @@ public protocol UpdatesStateChangeSubscription {
 ```kotlin
 interface UpdatesStateChangeSubscription {
   fun remove()
+  fun getContext(): Any?
 }
 ```
+
+### UpdatesNativeInterfaceStateContext
+
+A read-only data structure exposing the state machine context through the native interface. Returned by `UpdatesStateChangeSubscription.getContext()`.
+
+| Property                | Type                      | Description                                                                                                        |
+| ----------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `isUpdateAvailable`     | `Bool` / `Boolean`        | Whether an update is available for download.                                                                       |
+| `isUpdatePending`       | `Bool` / `Boolean`        | Whether a downloaded update is pending (waiting for a restart to launch).                                          |
+| `isChecking`            | `Bool` / `Boolean`        | Whether the system is currently checking for an update.                                                            |
+| `isDownloading`         | `Bool` / `Boolean`        | Whether the system is currently downloading an update.                                                             |
+| `isRestarting`          | `Bool` / `Boolean`        | Whether the app is currently restarting.                                                                           |
+| `restartCount`          | `Int`                     | The number of restarts that have occurred.                                                                         |
+| `latestManifest`        | `[String: Any]?` / `Map?` | The manifest of the latest available update, if any.                                                               |
+| `downloadedManifest`    | `[String: Any]?` / `Map?` | The manifest of the most recently downloaded update, if any.                                                       |
+| `rollback`              | `Rollback?`               | If a rollback is available, contains the rollback commit time.                                                     |
+| `checkError`            | `[String: String]?` / `Map?` | Error information from the most recent update check, if it failed.                                              |
+| `downloadError`         | `[String: String]?` / `Map?` | Error information from the most recent update download, if it failed.                                           |
+| `downloadProgress`      | `Double`                  | The download progress of the current update download (0.0 to 1.0).                                                |
+| `lastCheckForUpdateTime`| `Date?`                   | The time of the most recent update check.                                                                          |
+| `sequenceNumber`        | `Int`                     | A monotonically increasing number tracking state transitions.                                                      |
+| `downloadStartTime`     | `Date?`                   | The time when the most recent successful update download started. Only non-null after a `downloadCompleteWithUpdate` event. |
+| `downloadFinishTime`    | `Date?`                   | The time when the most recent successful update download finished. Only non-null after a `downloadCompleteWithUpdate` event. |
 
 ### UpdatesDevLauncherInterface
 
@@ -140,6 +173,7 @@ if let controller = UpdatesControllerRegistry.sharedInstance.controller,
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
 
 val controller = UpdatesControllerRegistry.controller?.get() ?: return
 
@@ -148,6 +182,15 @@ val subscription = controller.subscribeToUpdatesStateChanges(object : UpdatesSta
     // Handle state change event
   }
 })
+
+// Read the current state context at any time:
+val context = subscription.getContext() as? UpdatesNativeInterfaceStateContext
+if (context != null) {
+  val isDownloading = context.isDownloading
+  val downloadStart = context.downloadStartTime
+  val downloadFinish = context.downloadFinishTime
+  // ...
+}
 
 // Later, to unsubscribe:
 subscription.remove()
@@ -167,6 +210,14 @@ class MyListener: NSObject, UpdatesStateChangeListener {
 let listener = MyListener()
 if let controller = UpdatesControllerRegistry.sharedInstance.controller {
   let subscription = controller.subscribeToUpdatesStateChanges(listener)
+
+  // Read the current state context at any time:
+  if let context = subscription.getContext() as? UpdatesNativeInterfaceStateContext {
+    let isDownloading = context.isDownloading
+    let downloadStart = context.downloadStartTime
+    let downloadFinish = context.downloadFinishTime
+    // ...
+  }
 
   // Later, to unsubscribe:
   subscription.remove()

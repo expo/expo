@@ -15,6 +15,7 @@
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTExceptionsManager.h>
+#import <React/RCTBundleURLProvider.h>
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTPackagerConnection.h>
@@ -31,7 +32,6 @@
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTReloadCommand.h>
 
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
@@ -70,7 +70,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 // Legacy
 @property (nonatomic, strong) EXModuleRegistry *legacyModuleRegistry;
-@property (nonatomic, strong) EXNativeModulesProxy *legacyModulesProxy;
 
 @end
 
@@ -117,6 +116,8 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if ([self _isDevModeEnabledForHost:bundleURL]) {
     // Set the bundle url for the packager connection manually
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
+    RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
+    settings.packagerScheme = ([bundleURL.scheme isEqualToString:@"https"] || [bundleURL.scheme isEqualToString:@"exps"]) ? @"https" : @"http";
     
     RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
     if (devSettings == nil) {

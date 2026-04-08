@@ -131,11 +131,11 @@ export function isWebKit() {
     return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
 }
 export function compareStreams(a, b) {
-    if (!a || !b) {
+    const settingsA = a?.getTracks()[0]?.getSettings();
+    const settingsB = b?.getTracks()[0]?.getSettings();
+    if (!settingsA || !settingsB) {
         return false;
     }
-    const settingsA = a.getTracks()[0].getSettings();
-    const settingsB = b.getTracks()[0].getSettings();
     return settingsA.deviceId === settingsB.deviceId;
 }
 export function capture(video, settings, config) {
@@ -223,8 +223,8 @@ export function setVideoSource(video, stream) {
 export function isCapabilityAvailable(video, keyName) {
     const stream = video.srcObject;
     if (stream instanceof MediaStream) {
-        const videoTrack = stream.getVideoTracks()[0];
-        return !!videoTrack.getCapabilities?.()?.[keyName];
+        const capability = stream.getVideoTracks()[0]?.getCapabilities()[keyName];
+        return !!capability;
     }
     return false;
 }

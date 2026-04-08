@@ -63,7 +63,7 @@ export class ExpoConfigCommonIssueCheck implements DoctorCheck {
 function getExpoSDKVersionFromPackage(projectRoot: string): string | undefined {
   const packageJsonPath = resolveFrom.silent(projectRoot, 'expo/package.json');
   if (!packageJsonPath) {
-    // (probably) technically impossible - if this happens, `getConfig` throws and Doctor crashes
+    // (probably) technically impossible - if this happens, `getProjectConfigAsync` throws and Doctor crashes
     return undefined;
   }
   const expoPackageJson = JsonFile.read(packageJsonPath, { json5: true });

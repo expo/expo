@@ -33,8 +33,8 @@ expo install expo-device
 
 To contribute a change and test it with a RNC CLI app, follow these steps:
 
-1. `yarn watch` to start building the project in watch mode.
+1. `pnpm watch` to start building the project in watch mode.
 2. make your changes.
-3. run `node path_to_expo/packages/install-expo-modules/build/index.js .` in your RNC CLI project.
+3. run `node path_to_expo/packages/install-expo-modules/bin/install-expo-modules.js .` in your RNC CLI project.
 
 Don't forget to write unit tests for your changes.

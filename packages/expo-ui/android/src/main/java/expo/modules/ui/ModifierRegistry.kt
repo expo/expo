@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +22,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -177,11 +181,24 @@ internal data class ClipParams(
 ) : Record
 
 internal data class SelectableParams(
-  @Field val selected: Boolean = false
+  @Field val selected: Boolean = false,
+  @Field val role: String? = null
 ) : Record
 
 internal data class ClickableParams(
   @Field val indication: Boolean = true
+) : Record
+
+internal enum class SemanticRoleType(val value: String) : Enumerable {
+  CHECKBOX("checkbox"),
+  RADIO_BUTTON("radioButton"),
+  SWITCH("switch"),
+  TAB("tab")
+}
+
+internal data class ToggleableParams(
+  @Field val value: Boolean = false,
+  @Field val role: SemanticRoleType? = null
 ) : Record
 
 // endregion
@@ -349,6 +366,11 @@ object ModifierRegistry {
       } ?: Modifier.wrapContentHeight()
     }
 
+    // Inset modifiers
+    register("imePadding") { _, _, _, _ ->
+      Modifier.imePadding()
+    }
+
     // Position modifiers
     register("offset") { map, _, _, _ ->
       val params = recordFromMap<OffsetParams>(map)
@@ -508,7 +530,34 @@ object ModifierRegistry {
       val params = recordFromMap<SelectableParams>(map)
       Modifier.selectable(
         selected = params.selected,
+        role = when (params.role) {
+          "radioButton" -> androidx.compose.ui.semantics.Role.RadioButton
+          "checkbox" -> androidx.compose.ui.semantics.Role.Checkbox
+          "switch" -> androidx.compose.ui.semantics.Role.Switch
+          "tab" -> androidx.compose.ui.semantics.Role.Tab
+          else -> null
+        },
         onClick = { eventDispatcher("selectable", emptyMap()) }
+      )
+    }
+
+    register("selectableGroup") { _, _, _, _ ->
+      Modifier.selectableGroup()
+    }
+
+    register("toggleable") { map, _, _, eventDispatcher ->
+      val params = recordFromMap<ToggleableParams>(map)
+      val role = when (params.role) {
+        SemanticRoleType.CHECKBOX -> Role.Checkbox
+        SemanticRoleType.RADIO_BUTTON -> Role.RadioButton
+        SemanticRoleType.SWITCH -> Role.Switch
+        SemanticRoleType.TAB -> Role.Tab
+        null -> null
+      }
+      Modifier.toggleable(
+        value = params.value,
+        role = role,
+        onValueChange = { eventDispatcher("toggleable", emptyMap()) }
       )
     }
   }

@@ -4,11 +4,20 @@
 
 ### 🛠 Breaking changes
 
+- Removed `setStatusBarBackgroundColor`, `setStatusBarNetworkActivityIndicatorVisible`, `setStatusBarTranslucent` functions and `backgroundColor`, `networkActivityIndicatorVisible`, `translucent` props from `StatusBarProps`. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
+
 ### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- Added config plugin for Android and iOS status bar configuration. ([#43968](https://github.com/expo/expo/pull/43968), [#44536](https://github.com/expo/expo/pull/44536) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Removed `androidStatusBar` config overwrite (for Expo Go sync). ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
+- Moved `setStatusBarStyle` and `setStatusBarHidden` to `StatusBar.setStyle` and `StatusBar.setHidden` static methods. The old named exports are still available but deprecated. ([#44172](https://github.com/expo/expo/pull/44172) by [@zoontek](https://github.com/zoontek))
+- Removed `react-native-is-edge-to-edge` dependency. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.4 — 2026-02-25
 

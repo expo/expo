@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
+import * as React from 'react';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { getTextFromChildren } from '../../utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -37,8 +38,55 @@ export type TextDecoration = 'none' | 'underline' | 'lineThrough';
 
 /**
  * Text overflow behavior options.
+ * - 'clip': Clips the overflowing text to fit its container
+ * - 'ellipsis': Uses an ellipsis to indicate that the text has overflowed
+ * - 'visible': Renders overflow text outside its container
  */
 export type TextOverflow = 'clip' | 'ellipsis' | 'visible';
+
+/**
+ * Line break strategy options.
+ * - 'simple': Basic line breaking.
+ * - 'heading': Optimized for short text like headings.
+ * - 'paragraph': Produces more balanced line lengths for body text.
+ */
+export type TextLineBreak = 'simple' | 'heading' | 'paragraph';
+
+/**
+ * Font family for text styling.
+ * Built-in system families: 'default', 'sansSerif', 'serif', 'monospace', 'cursive'.
+ * Custom font families loaded via expo-font can be referenced by name (for example, 'Inter-Bold').
+ */
+export type TextFontFamily =
+  | 'default'
+  | 'sansSerif'
+  | 'serif'
+  | 'monospace'
+  | 'cursive'
+  | (string & {});
+
+/**
+ * Text shadow configuration.
+ * Corresponds to Jetpack Compose's Shadow class.
+ */
+export type TextShadow = {
+  /**
+   * The color of the shadow.
+   */
+  color?: string;
+  /**
+   * The horizontal offset of the shadow in dp.
+   */
+  offsetX?: number;
+  /**
+   * The vertical offset of the shadow in dp.
+   */
+  offsetY?: number;
+  /**
+   * The blur radius of the shadow in dp.
+   */
+  blurRadius?: number;
+};
 
 /**
  * Material 3 Typography scale styles.
@@ -62,23 +110,10 @@ export type TypographyStyle =
   | 'labelSmall';
 
 /**
- * Text style properties that can be applied to text.
- * Corresponds to Jetpack Compose's TextStyle.
+ * Shared span-level style properties used by both `TextStyle` and `TextSpanRecord`.
+ * Adding a property here ensures it's available on both parent text and nested spans.
  */
-export type TextStyle = {
-  /**
-   * Material 3 Typography style to use as the base style.
-   * When specified, applies the predefined Material 3 typography style.
-   * Other properties in this style object will override specific values from the typography.
-   *
-   * @example
-   * ```tsx
-   * style={{ typography: "bodyLarge" }}
-   * style={{ typography: "headlineMedium", fontWeight: "bold" }}
-   * ```
-   */
-  typography?: TypographyStyle;
-
+export type TextSpanStyleBase = {
   /**
    * The font size in sp (scale-independent pixels).
    */
@@ -95,9 +130,9 @@ export type TextStyle = {
   fontStyle?: TextFontStyle;
 
   /**
-   * The text alignment.
+   * The font family.
    */
-  textAlign?: TextAlign;
+  fontFamily?: TextFontFamily;
 
   /**
    * The text decoration.
@@ -110,14 +145,59 @@ export type TextStyle = {
   letterSpacing?: number;
 
   /**
+   * The background color behind the text.
+   */
+  background?: string;
+
+  /**
+   * The shadow applied to the text.
+   */
+  shadow?: TextShadow;
+};
+
+/**
+ * Text style properties that can be applied to text.
+ * Corresponds to Jetpack Compose's `TextStyle`.
+ */
+export type TextStyle = TextSpanStyleBase & {
+  /**
+   * Material 3 Typography style to use as the base style.
+   * When specified, applies the predefined Material 3 typography style.
+   * Other properties in this style object will override specific values from the typography.
+   */
+  typography?: TypographyStyle;
+
+  /**
+   * The text alignment.
+   */
+  textAlign?: TextAlign;
+
+  /**
    * The line height in sp.
    */
   lineHeight?: number;
+
+  /**
+   * The line break strategy.
+   */
+  lineBreak?: TextLineBreak;
+};
+
+/**
+ * A record representing a styled text span, sent to the native side.
+ * Can be a leaf (has `text`) or a branch (has `children`).
+ * Style inheritance is handled natively via nested `withStyle` on the Kotlin side.
+ */
+type TextSpanRecord = TextSpanStyleBase & {
+  text?: string;
+  color?: string;
+  children?: TextSpanRecord[];
 };
 
 export type TextProps = {
   /**
-   * The text content to display.
+   * The text content to display. Can be a string, number, or nested `Text` components
+   * for inline styled spans.
    */
   children?: React.ReactNode;
 
@@ -128,9 +208,6 @@ export type TextProps = {
 
   /**
    * How visual overflow should be handled.
-   * - 'clip': Clips the overflowing text to fix its container
-   * - 'ellipsis': Uses an ellipsis to indicate that the text has overflowed
-   * - 'visible': Renders overflow text outside its container
    */
   overflow?: TextOverflow;
 
@@ -160,114 +237,107 @@ export type TextProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
-type NativeTextProps = Omit<TextProps, 'children' | 'style'> & {
-  text: string;
-  typography?: TypographyStyle;
-  fontSize?: number;
-  fontWeight?: TextFontWeight;
-  fontStyle?: TextFontStyle;
-  textAlign?: TextAlign;
-  textDecoration?: TextDecoration;
-  letterSpacing?: number;
-  lineHeight?: number;
-};
+type NativeTextProps = Omit<TextProps, 'children' | 'style'> &
+  TextSpanStyleBase & {
+    text?: string;
+    spans?: TextSpanRecord[];
+    typography?: TypographyStyle;
+    textAlign?: TextAlign;
+    lineHeight?: number;
+    lineBreak?: TextLineBreak;
+  };
 
 const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
   'ExpoUI',
   'TextView'
 );
 
+// Constructs tree of spans from nested Text components
+function collectSpans(children: React.ReactNode): TextSpanRecord[] | null {
+  if (children === undefined || children === null) return null;
+
+  const childArray = React.Children.toArray(children);
+  if (childArray.length === 0) return null;
+
+  const hasNestedText = childArray.some(
+    (child) => React.isValidElement(child) && child.type === Text
+  );
+
+  if (!hasNestedText) return null;
+
+  const spans: TextSpanRecord[] = [];
+
+  for (const child of childArray) {
+    if (typeof child === 'string') {
+      spans.push({ text: child });
+    } else if (typeof child === 'number') {
+      spans.push({ text: String(child) });
+    } else if (React.isValidElement(child) && child.type === Text) {
+      const childProps = child.props as TextProps;
+      const span: TextSpanRecord = {
+        color: childProps.color,
+        fontSize: childProps.style?.fontSize,
+        fontWeight: childProps.style?.fontWeight,
+        fontStyle: childProps.style?.fontStyle,
+        fontFamily: childProps.style?.fontFamily,
+        textDecoration: childProps.style?.textDecoration,
+        letterSpacing: childProps.style?.letterSpacing,
+        background: childProps.style?.background,
+        shadow: childProps.style?.shadow,
+      };
+
+      const nestedSpans = collectSpans(childProps.children);
+      if (nestedSpans) {
+        span.children = nestedSpans;
+      } else {
+        span.text = getTextFromChildren(childProps.children) ?? '';
+      }
+
+      spans.push(span);
+    } else if (__DEV__ && React.isValidElement(child)) {
+      console.warn(
+        'Text: Unsupported child element of type "%s" inside <Text>. Only <Text>, string, and number children are supported.',
+        typeof child.type === 'function' ? child.type.name || 'Unknown' : child.type
+      );
+    }
+  }
+
+  return spans.length > 0 ? spans : null;
+}
+
 function transformTextProps(props: TextProps): NativeTextProps {
   const { children, modifiers, style, ...restProps } = props;
+
+  const spans = collectSpans(children);
 
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    text: getTextFromChildren(children) ?? '',
+    // When spans are present, use them instead of flat text
+    ...(spans ? { spans } : { text: getTextFromChildren(children) ?? '' }),
     // Extract typography from style (used as base style)
     typography: style?.typography,
     // Flatten other style properties (these override the typography style)
     fontSize: style?.fontSize,
     fontWeight: style?.fontWeight,
     fontStyle: style?.fontStyle,
+    fontFamily: style?.fontFamily,
     textAlign: style?.textAlign,
     textDecoration: style?.textDecoration,
     letterSpacing: style?.letterSpacing,
     lineHeight: style?.lineHeight,
+    lineBreak: style?.lineBreak,
+    background: style?.background,
+    shadow: style?.shadow,
   };
 }
 
 /**
  * Renders a Text component using Jetpack Compose.
- *
- * The Text component provides comprehensive text styling capabilities.
- * The API is aligned with Jetpack Compose's Text composable, where:
- * - Top-level props (color, maxLines, etc.) match Compose's Text parameters
- * - `style` object corresponds to TextStyle, including typography, fontSize, fontWeight, textAlign, etc.
- * - `style.typography` applies Material 3 typography styles (like MaterialTheme.typography)
- *
- * @example
- * Basic usage:
- * ```tsx
- * import { Text } from 'expo-ui';
- *
- * <Text>Hello World</Text>
- * ```
- *
- * @example
- * Using Material 3 Typography (matches Jetpack Compose MaterialTheme.typography):
- * ```tsx
- * <Text style={{ typography: "bodyLarge" }}>Body text</Text>
- * <Text style={{ typography: "headlineMedium" }}>Headline</Text>
- * <Text style={{ typography: "titleSmall" }}>Small title</Text>
- * ```
- *
- * @example
- * Typography with style overrides:
- * ```tsx
- * <Text
- *   color="#007AFF"
- *   style={{
- *     typography: "bodyLarge",
- *     fontWeight: "bold"  // Override the typography's font weight
- *   }}
- * >
- *   Custom styled body text
- * </Text>
- * ```
- *
- * @example
- * With custom style object (matches Jetpack Compose TextStyle):
- * ```tsx
- * <Text
- *   color="#007AFF"
- *   style={{
- *     fontSize: 18,
- *     fontWeight: "bold",
- *     textAlign: "center",
- *     letterSpacing: 1.2
- *   }}
- *   modifiers={[ExpoUI.padding(16)]}
- * >
- *   Styled text
- * </Text>
- * ```
- *
- * @example
- * Text truncation with ellipsis:
- * ```tsx
- * <Text
- *   maxLines={2}
- *   overflow="ellipsis"
- * >
- *   This is a very long text that will be truncated after two lines
- *   with an ellipsis at the end to indicate there's more content...
- * </Text>
- * ```
  */
 export function Text(props: TextProps) {
   return <TextNativeView {...transformTextProps(props)} />;

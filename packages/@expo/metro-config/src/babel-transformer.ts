@@ -15,7 +15,8 @@ import resolveFrom from 'resolve-from';
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
-import { getPkgVersion } from './utils/getPkgVersion';
+import { getPkgVersionFromPath } from './utils/getPkgVersion';
+import { transitiveResolveFrom } from './utils/transitiveResolveFrom';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
   babelRuntimeVersion?: string;
@@ -63,11 +64,17 @@ const memoizeWarning = memoize((message: string) => {
 });
 
 function getIsHermesV1(projectRoot: string): boolean {
-  const reactNativePath = resolveFrom.silent(projectRoot, 'react-native/package.json');
-  if (!reactNativePath) return false;
-
-  const hermesVersion = getPkgVersion(path.dirname(reactNativePath), 'hermes-compiler');
-  return typeof hermesVersion === 'string' && hermesVersion.startsWith('250829098');
+  const hermesCompilerPackageJsonPath = transitiveResolveFrom(projectRoot, [
+    'react-native/package.json',
+    'hermes-compiler/package.json',
+  ]);
+  if (!hermesCompilerPackageJsonPath) {
+    return true;
+  }
+  const hermesVersion = getPkgVersionFromPath(hermesCompilerPackageJsonPath);
+  // hermes-compiler versions 250829098.x are Hermes V1, while 0.1.x are legacy Hermes.
+  const isLegacyHermes = typeof hermesVersion === 'string' && hermesVersion.startsWith('0.1');
+  return !isLegacyHermes;
 }
 
 function getBabelCaller({
@@ -229,7 +236,14 @@ const transform: BabelTransformer['transform'] = ({
     assert(result.ast);
     return { ast: result.ast, metadata: result.metadata };
   } finally {
-    if (OLD_BABEL_ENV) {
+    // Restore the old process.env.BABEL_ENV
+    if (OLD_BABEL_ENV != null) {
+      // We have to treat this as a special case because writing undefined to
+      // an environment variable coerces it to the string 'undefined'. To
+      // unset it, we must delete it.
+      // See https://github.com/facebook/metro/pull/446
+      delete process.env.BABEL_ENV;
+    } else {
       process.env.BABEL_ENV = OLD_BABEL_ENV;
     }
   }

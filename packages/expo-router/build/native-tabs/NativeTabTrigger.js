@@ -5,9 +5,9 @@ exports.NativeTabTrigger = void 0;
 exports.convertTabPropsToOptions = convertTabPropsToOptions;
 exports.appendIconOptions = appendIconOptions;
 exports.isNativeTabTrigger = isNativeTabTrigger;
-const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const native_1 = require("../react-navigation/native");
 const elements_1 = require("./common/elements");
 const icon_1 = require("./utils/icon");
 const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
@@ -211,7 +211,7 @@ function convertIconSrcToIconOption(icon) {
 function convertSrcOrComponentToSrc(src, options) {
     if (src) {
         if ((0, react_1.isValidElement)(src)) {
-            return (0, icon_1.convertComponentSrcToImageSource)(src);
+            return (0, icon_1.convertComponentSrcToImageSource)(src, options.renderingMode);
         }
         else {
             return { src, renderingMode: options.renderingMode };

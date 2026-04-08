@@ -35,7 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackRouter = exports.stackRouterOverride = void 0;
-const native_1 = require("@react-navigation/native");
 const non_secure_1 = require("nanoid/non-secure");
 const react_1 = __importStar(require("react"));
 const withLayoutContext_1 = require("./withLayoutContext");
@@ -44,6 +43,7 @@ const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
 const stack_utils_1 = require("./stack-utils");
+const native_1 = require("../react-navigation/native");
 const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
@@ -295,6 +295,7 @@ const stackRouterOverride = (original) => {
                     if (id !== undefined) {
                         route = state.routes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
                     }
+                    const preloadZoomTransitionId = getZoomTransitionIdFromAction(action);
                     if (route) {
                         return {
                             ...state,
@@ -302,29 +303,42 @@ const stackRouterOverride = (original) => {
                                 if (r.key !== route?.key) {
                                     return r;
                                 }
+                                const mergedParams = routeParamList[action.payload.name] !== undefined
+                                    ? {
+                                        ...routeParamList[action.payload.name],
+                                        ...action.payload.params,
+                                    }
+                                    : action.payload.params;
                                 return {
                                     ...r,
-                                    params: routeParamList[action.payload.name] !== undefined
+                                    params: preloadZoomTransitionId
                                         ? {
-                                            ...routeParamList[action.payload.name],
-                                            ...action.payload.params,
+                                            ...mergedParams,
+                                            [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
                                         }
-                                        : action.payload.params,
+                                        : mergedParams,
                                 };
                             }),
                         };
                     }
                     else {
                         // START FORK
+                        const preloadedRouteKey = `${action.payload.name}-${(0, non_secure_1.nanoid)()}`;
+                        const preloadedRouteParams = routeParamList[action.payload.name] !== undefined
+                            ? {
+                                ...routeParamList[action.payload.name],
+                                ...action.payload.params,
+                            }
+                            : action.payload.params;
                         const currentPreloadedRoute = {
-                            key: `${action.payload.name}-${(0, non_secure_1.nanoid)()}`,
+                            key: preloadedRouteKey,
                             name: action.payload.name,
-                            params: routeParamList[action.payload.name] !== undefined
+                            params: preloadZoomTransitionId
                                 ? {
-                                    ...routeParamList[action.payload.name],
-                                    ...action.payload.params,
+                                    ...preloadedRouteParams,
+                                    [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: preloadedRouteKey,
                                 }
-                                : action.payload.params,
+                                : preloadedRouteParams,
                         };
                         // END FORK
                         return {

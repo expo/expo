@@ -2,6 +2,7 @@ package expo.modules.filesystem.unifiedfile
 
 import android.content.Context
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import androidx.documentfile.provider.DocumentFile
 import expo.modules.filesystem.fsops.CopyMoveStrategy
 import expo.modules.kotlin.AppContext
@@ -81,6 +82,9 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
     return context.contentResolver.openInputStream(uri)
       ?: throw IllegalStateException("Unable to open input stream for URI: $uri")
   }
+
+  override fun openFileDescriptor(mode: String): ParcelFileDescriptor? =
+    runCatching { context.contentResolver.openFileDescriptor(uri, mode) }.getOrNull()
 
   override fun length(): Long {
     return documentFile?.length() ?: 0

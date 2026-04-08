@@ -35,13 +35,13 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RouterModalScreen = exports.RouterModal = void 0;
-const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
 const react_1 = __importStar(require("react"));
 const ModalStackRouteDrawer_1 = require("./ModalStackRouteDrawer");
 const TransparentModalStackRouteDrawer_1 = require("./TransparentModalStackRouteDrawer");
 const utils_1 = require("./utils");
 const withLayoutContext_1 = require("../../layouts/withLayoutContext");
+const native_1 = require("../../react-navigation/native");
+const native_stack_1 = require("../../react-navigation/native-stack");
 function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
     const { state, navigation, descriptors, NavigationContent, describe } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         children,

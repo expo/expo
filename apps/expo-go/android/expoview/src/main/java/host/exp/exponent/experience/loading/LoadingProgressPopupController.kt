@@ -62,13 +62,15 @@ class LoadingProgressPopupController(activity: Activity) {
     }
   }
 
-  fun updateProgress(status: String?, done: Int?, total: Int?) {
+  fun updateProgress(status: String?, done: Int?, total: Int?, percent: Int?) {
     show()
     mWeakActivity.get()?.runOnUiThread {
       mStatusTextView?.text = status ?: "Building JavaScript bundle..."
-      if (done != null && total != null && total > 0) {
-        val percent: Float = done.toFloat() / total * 100
-        mPercentageTextView?.text = String.format(Locale.getDefault(), "%.2f%%", percent)
+      if (percent != null) {
+        mPercentageTextView?.text = String.format(Locale.getDefault(), "%d%%", percent)
+      } else if (done != null && total != null && total > 0) {
+        val computedPercent: Float = done.toFloat() / total * 100
+        mPercentageTextView?.text = String.format(Locale.getDefault(), "%.2f%%", computedPercent)
       }
     }
   }

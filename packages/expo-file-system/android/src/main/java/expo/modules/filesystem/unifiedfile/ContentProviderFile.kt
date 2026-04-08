@@ -2,6 +2,7 @@ package expo.modules.filesystem.unifiedfile
 
 import android.content.Context
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import expo.modules.filesystem.fsops.CopyMoveStrategy
@@ -81,6 +82,9 @@ class ContentProviderFile(
     return context.contentResolver.openInputStream(uri)
       ?: throw Exceptions.IllegalStateException("Unable to open input stream for URI: $uri")
   }
+
+  override fun openFileDescriptor(mode: String): ParcelFileDescriptor? =
+    runCatching { context.contentResolver.openFileDescriptor(uri, mode) }.getOrNull()
 
   override fun length(): Long {
     queryColumn(OpenableColumns.SIZE)?.toLongOrNull()?.let { size ->

@@ -292,10 +292,14 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         media.onerror = () => {
             this.loaded = false;
             this.isPlaying = false;
+            const errorMessage = media.error
+                ? `Playback error (code ${media.error.code})`
+                : 'Unknown playback error';
             this.emit(PLAYBACK_STATUS_UPDATE, {
                 ...getStatusFromMedia(media, this.id),
                 isLoaded: false,
                 playing: false,
+                error: errorMessage,
             });
         };
         return media;

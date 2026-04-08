@@ -1,4 +1,4 @@
-import { File, Directory, Paths } from 'expo-file-system';
+import { File, Directory, Paths } from '../..';
 
 describe('expo-file-system new API', () => {
   it('exports File, Directory, and Paths classes', () => {
@@ -49,7 +49,9 @@ describe('expo-file-system new API', () => {
     expect(typeof file.delete).toBe('function');
     expect(typeof file.create).toBe('function');
     expect(typeof file.copy).toBe('function');
+    expect(typeof file.copySync).toBe('function');
     expect(typeof file.move).toBe('function');
+    expect(typeof file.moveSync).toBe('function');
     expect(typeof file.text).toBe('function');
     expect(typeof file.write).toBe('function');
   });
@@ -59,7 +61,25 @@ describe('expo-file-system new API', () => {
     expect(typeof dir.delete).toBe('function');
     expect(typeof dir.create).toBe('function');
     expect(typeof dir.copy).toBe('function');
+    expect(typeof dir.copySync).toBe('function');
     expect(typeof dir.move).toBe('function');
+    expect(typeof dir.moveSync).toBe('function');
+  });
+
+  it('File copy and move return promises', () => {
+    const file = new File(Paths.cache, 'test.txt');
+    const destination = new File(Paths.cache, 'destination.txt');
+
+    expect(file.copy(destination)).toBeInstanceOf(Promise);
+    expect(file.move(destination)).toBeInstanceOf(Promise);
+  });
+
+  it('Directory copy and move return promises', () => {
+    const dir = new Directory(Paths.document, 'subdir');
+    const destination = new Directory(Paths.document, 'destination');
+
+    expect(dir.copy(destination)).toBeInstanceOf(Promise);
+    expect(dir.move(destination)).toBeInstanceOf(Promise);
   });
 
   it('File.parentDirectory returns a Directory', () => {

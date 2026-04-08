@@ -42,11 +42,14 @@ export default function (
 
     // Per 4.3
     const bytes = hashfunc(namespace.concat(value));
+    // @ts-ignore
     bytes[6] = (bytes[6] & 0x0f) | version;
+    // @ts-ignore
     bytes[8] = (bytes[8] & 0x3f) | 0x80;
 
     if (buf) {
       for (let idx = 0; idx < 16; ++idx) {
+        // @ts-ignore
         buf[off + idx] = bytes[idx];
       }
     }

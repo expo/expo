@@ -8,14 +8,14 @@ const TemplateProject_1 = __importDefault(require("../TemplateProject"));
 const registerCommand_1 = require("../registerCommand");
 async function createProjectAsync(config, options) {
     const app = config.applications[options.app];
-    if (app.preset === 'detox') {
+    if (app?.preset === 'detox') {
         console.log(`Using ${chalk_1.default.green('detox')} preset.`);
         const preset = new TemplateProject_1.default(app, options.app, options.platform, options.configFile);
         console.log(`Creating test app in ${chalk_1.default.green(options.path)}.`);
         await preset.createApplicationAsync(options.path);
     }
     else {
-        throw new Error(`Unknown preset: ${app.preset}`);
+        throw new Error(`Unknown preset: ${app?.preset}`);
     }
 }
 exports.default = (program) => {
