@@ -2217,6 +2217,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      expo-splash-screen:
+        specifier: workspace:*
+        version: link:../../expo-splash-screen
       require-from-string:
         specifier: ^2.0.2
         version: 2.0.2
