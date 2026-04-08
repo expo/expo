@@ -70,7 +70,7 @@ jobs:
       - name: 📦 Read Vale version
         id: vale-version
         working-directory: docs
-        run: echo "version=$(tr -d '[:space:]' < .vale-version)" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(jq -r '.version' .vale-version.json)" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
         uses: vale-cli/vale-action@v2.1.1
         with:
