@@ -1,6 +1,7 @@
 // Side effect file to load shared object support in worklets
 
 import { installOnUIRuntime } from 'expo';
+
 import { worklets } from './optionalWorklets';
 
 type NativeSharedObject = { __expo_shared_object_id__: number };
@@ -63,6 +64,6 @@ try {
 
   installOnUIRuntime();
   registerSharedObjectSerializer();
-} catch (e) {
+} catch {
   // Fail silently as worklet support is currently optional in Expo UI
 }
