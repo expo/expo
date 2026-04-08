@@ -57,7 +57,8 @@
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "react-native-worklets": "*"
   },
   "jest": {
     "preset": "expo-module-scripts"

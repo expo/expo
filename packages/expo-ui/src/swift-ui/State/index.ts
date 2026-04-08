@@ -1,6 +1,8 @@
 import { requireNativeModule } from 'expo';
 import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
 
+import worklets from './worklets';
+
 const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
@@ -51,6 +53,9 @@ export function getStateId(state?: object): number | undefined {
 
 // MARK: - Worklet support
 
+type NativeSharedObject = { __expo_shared_object_id__: number };
+type PackedSharedObject = { objectId: number };
+
 let _serializerRegistered = false;
 
 /**
@@ -61,20 +66,17 @@ export function registerSharedObjectSerializer(): void {
   if (_serializerRegistered) {
     return;
   }
+
+  if (!worklets) {
+    return;
+  }
   _serializerRegistered = true;
 
-  const { registerCustomSerializable } = require('react-native-worklets') as {
-    registerCustomSerializable: (data: {
-      name: string;
-      determine: (value: object) => boolean;
-      pack: (value: any) => any;
-      unpack: (value: any) => any;
-    }) => void;
-  };
+  const { registerCustomSerializable } = worklets;
 
-  registerCustomSerializable({
+  registerCustomSerializable<NativeSharedObject, PackedSharedObject>({
     name: 'ExpoSharedObject',
-    determine: (value: object) => {
+    determine: (value): value is NativeSharedObject => {
       'worklet';
       return (
         value != null &&
@@ -83,11 +85,11 @@ export function registerSharedObjectSerializer(): void {
         (value as any).__expo_shared_object_id__ !== 0
       );
     },
-    pack: (value: any) => {
+    pack: (value) => {
       'worklet';
       return { objectId: value.__expo_shared_object_id__ };
     },
-    unpack: (packed: any) => {
+    unpack: (packed) => {
       'worklet';
       const obj = (globalThis as any).expo.SharedObject.__resolveInWorklet(packed.objectId);
       // Define .value property if the object has getValue/setValue (e.g. ObservableState)
