@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Generate `AGENTS.md`, `CLAUDE.md`, and `.claude/settings.json` for new projects to provide AI coding agents with Expo-specific guidance and the `expo` skills plugin. Use `--no-agents-md` to skip.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
