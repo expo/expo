@@ -31,7 +31,7 @@ export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
 export * from './Text';
-export * from './State';
+export { useNativeState } from './State/useNativeState';
 export * from './SyncToggle';
 export * from './Toggle';
 export * from './TextField';
