@@ -194,6 +194,38 @@ export async function loadMetroConfigAsync(
     asWritable(config.resolver).useWatchman = null as any;
   }
 
+  // NOTE(@kitten): This removes redundant `nodeModulesPaths` configurations or adds missing ones
+  const nodeModulesPaths = (config.resolver.nodeModulesPaths as string[]) || [];
+  const projectRootNodeModules = path.resolve(projectRoot, 'node_modules');
+  const serverRootNodeModules = path.resolve(serverRoot, 'node_modules');
+  asWritable(config.resolver).nodeModulesPaths = nodeModulesPaths;
+  if (config.resolver.disableHierarchicalLookup) {
+    // When hierarchical lookup is disabled, we need to ensure that the project's and workspace's
+    // node_modules are at least included in the `nodeModulesPaths` for monorepos
+    if (projectRoot !== serverRoot) {
+      if (!nodeModulesPaths.includes(projectRootNodeModules)) {
+        nodeModulesPaths.push(projectRootNodeModules);
+      }
+      if (!nodeModulesPaths.includes(serverRootNodeModules)) {
+        nodeModulesPaths.push(serverRootNodeModules);
+      }
+    } else if (!nodeModulesPaths.length) {
+      // For non-monorepos, we still ensure that the project's node_modules are included
+      nodeModulesPaths.push(projectRootNodeModules);
+    }
+  } else {
+    // Otherwise, we should ensure that no redundant `nodeModulesPaths` are added, since
+    // hierarchical lookup should be used to look up modules instead
+    const projectRootNodeModulesIdx = nodeModulesPaths.indexOf(projectRootNodeModules);
+    if (projectRootNodeModulesIdx > -1) {
+      nodeModulesPaths.splice(projectRootNodeModulesIdx, 1);
+    }
+    const serverRootNodeModulesIdx = nodeModulesPaths.indexOf(serverRootNodeModules);
+    if (serverRootNodeModulesIdx > -1) {
+      nodeModulesPaths.splice(serverRootNodeModulesIdx, 1);
+    }
+  }
+
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 
   if (isExporting) {
