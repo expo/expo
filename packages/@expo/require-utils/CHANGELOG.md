@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve realpath for evaluated modules' `node_modules` paths in `compileModule` ([#44599](https://github.com/expo/expo/pull/44599) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-03-17
