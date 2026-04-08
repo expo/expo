@@ -95,6 +95,7 @@ object SplashScreenManager {
 
         override fun onActivityStopped(activity: Activity) {
           if (activity == mainActivity) {
+            runCatching { mainActivity.splashScreen.clearOnExitAnimationListener() }
             splashScreenViewRef?.get()?.animate()?.cancel()
             splashScreenViewRef = null
             application.unregisterActivityLifecycleCallbacks(this)
