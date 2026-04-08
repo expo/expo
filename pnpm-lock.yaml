@@ -1755,8 +1755,8 @@ importers:
         specifier: ^13.0.0
         version: 13.0.6
       lan-network:
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.2.1
+        version: 0.2.1
       multitars:
         specifier: ^0.2.3
         version: 0.2.4
@@ -12230,8 +12230,8 @@ packages:
     resolution: {integrity: sha512-mnIlAEMu4OyEvUNdzco9xpuB9YVcPkQec+QsgycBCtPZvEqWPCDPfbAE4OJMdBBWpZWtpCn1xw9jJYlwjWI5zQ==}
     hasBin: true
 
-  lan-network@0.2.0:
-    resolution: {integrity: sha512-EZgbsXMrGS+oK+Ta12mCjzBFse+SIewGdwrSTr5g+MSymnjpox2x05ceI20PQejJOFvOgzcXrfDk/SdY7dSCtw==}
+  lan-network@0.2.1:
+    resolution: {integrity: sha512-ONPnazC96VKDntab9j9JKwIWhZ4ZUceB4A9Epu4Ssg0hYFmtHZSeQ+n15nIwTFmcBUKtExOer8WTJ4GF9MO64A==}
     hasBin: true
 
   lazy-cache@1.0.4:
@@ -23382,7 +23382,7 @@ snapshots:
 
   lan-network@0.1.7: {}
 
-  lan-network@0.2.0: {}
+  lan-network@0.2.1: {}
 
   lazy-cache@1.0.4: {}
 
