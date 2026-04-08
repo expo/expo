@@ -41,10 +41,26 @@ case "${OS}_${ARCH}" in
     ;;
 esac
 
-URL="https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_${PLATFORM}.tar.gz"
+TARBALL="vale_${VALE_VERSION}_${PLATFORM}.tar.gz"
+URL="https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/${TARBALL}"
+CHECKSUM_URL="https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_checksums.txt"
+
+TMPDIR="$(mktemp -d)"
+trap 'rm -rf "$TMPDIR"' EXIT
 
 echo "Downloading Vale ${VALE_VERSION} for ${PLATFORM}..."
+curl -fsSL "$URL" -o "$TMPDIR/$TARBALL"
+curl -fsSL "$CHECKSUM_URL" -o "$TMPDIR/checksums.txt"
+
+# Verify sha256 checksum before extracting
+echo "Verifying checksum..."
+cd "$TMPDIR"
+if ! grep "$TARBALL" checksums.txt | shasum -a 256 --check --status; then
+  echo "Checksum verification failed for $TARBALL" >&2
+  exit 1
+fi
+
 mkdir -p "$INSTALL_DIR"
-curl -fsSL "$URL" | tar -xz -C "$INSTALL_DIR" vale
+tar -xzf "$TMPDIR/$TARBALL" -C "$INSTALL_DIR" vale
 chmod +x "$VALE_BIN"
 echo "Vale ${VALE_VERSION} installed to ${VALE_BIN}"
