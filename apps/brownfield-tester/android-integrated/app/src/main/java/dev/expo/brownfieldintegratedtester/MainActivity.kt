@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
                 setPadding(dpToPx(16), dpToPx(24), dpToPx(16), dpToPx(24))
             }
 
-        val button =
+        val openRnButton =
             Button(this).apply {
                 text = "Open React Native app"
                 backgroundTintList = ContextCompat.getColorStateList(context, R.color.purple_500)
@@ -54,6 +54,25 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
                             ReactNativeActivity::class.java
                         )
                     )
+                }
+            }
+
+        val openStateButton =
+            Button(this).apply {
+                text = "Shared State"
+                backgroundTintList = ContextCompat.getColorStateList(context, R.color.purple_500)
+                id = R.id.openStateView
+                setTextColor(Color.WHITE)
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                    ).apply {
+                        setMargins(0, 0, 0, dpToPx(24))
+                    }
+
+                setOnClickListener {
+                    startActivity(Intent(context, StateActivity::class.java))
                 }
             }
 
@@ -78,7 +97,8 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
             }
         }
 
-        rootLayout.addView(button)
+        rootLayout.addView(openRnButton)
+        rootLayout.addView(openStateButton)
         rootLayout.addView(customComponent)
         setContentView(rootLayout)
     }

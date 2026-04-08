@@ -20,6 +20,7 @@ index 3cfc7c9a7e..c3f8cb6617 100644
    api("com.facebook.react:react-android")
    api("com.facebook.hermes:hermes-android")
    compileOnly("androidx.fragment:fragment-ktx:1.6.1")
+   compileOnly("androidx.compose.runtime:runtime:1.9.3")
 +
 +  debugOnly(project(":expo-brownfield"))
 +  debugOnly(project(":expo-dev-menu"))
