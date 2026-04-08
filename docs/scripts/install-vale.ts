@@ -8,16 +8,24 @@ import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
 
 const DOCS_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const VALE_VERSION_FILE = join(DOCS_ROOT, '.vale-version');
+const VALE_VERSION_FILE = join(DOCS_ROOT, '.vale-version.json');
 
 if (!existsSync(VALE_VERSION_FILE)) {
   console.error(`Vale version file not found: ${VALE_VERSION_FILE}`);
   process.exit(1);
 }
 
-const VALE_VERSION = readFileSync(VALE_VERSION_FILE, 'utf-8').trim();
+const valeVersionData = JSON.parse(readFileSync(VALE_VERSION_FILE, 'utf-8'));
+const VALE_VERSION: string = valeVersionData.version;
+const VALE_CHECKSUMS: Record<string, string> = valeVersionData.checksums;
+
 if (!VALE_VERSION) {
-  console.error(`Vale version file is empty: ${VALE_VERSION_FILE}`);
+  console.error(`Vale version not found in: ${VALE_VERSION_FILE}`);
+  process.exit(1);
+}
+
+if (!VALE_CHECKSUMS || Object.keys(VALE_CHECKSUMS).length === 0) {
+  console.error(`Vale checksums not found in: ${VALE_VERSION_FILE}`);
   process.exit(1);
 }
 
@@ -69,22 +77,13 @@ async function downloadToFileAsync(url: string, dest: string): Promise<void> {
   await pipeline(Readable.fromWeb(res.body as any), createWriteStream(dest));
 }
 
-async function verifyChecksumAsync(
-  filePath: string,
-  checksumFileContent: string,
-  filename: string
-): Promise<void> {
-  const line = checksumFileContent.split('\n').find(l => l.includes(filename));
-  if (!line) {
-    throw new Error(`No checksum found for ${filename} in checksums file`);
-  }
-  const expectedHash = line.split(/\s+/)[0];
+function verifyChecksum(filePath: string, expectedHash: string): void {
   const fileBuffer = readFileSync(filePath);
   const actualHash = createHash('sha256').update(fileBuffer).digest('hex');
 
   if (actualHash !== expectedHash) {
     throw new Error(
-      `Checksum verification failed for ${filename}\n  Expected: ${expectedHash}\n  Actual:   ${actualHash}`
+      `Checksum verification failed.\n  Expected: ${expectedHash}\n  Actual:   ${actualHash}`
     );
   }
 }
@@ -108,9 +107,16 @@ function extractZip(zipPath: string, destDir: string): void {
 
 async function installValeAsync() {
   const { platform, ext } = getPlatform();
+  const expectedHash = VALE_CHECKSUMS[platform];
+  if (!expectedHash) {
+    throw new Error(
+      `No checksum found for platform "${platform}" in ${VALE_VERSION_FILE}. ` +
+        `Available platforms: ${Object.keys(VALE_CHECKSUMS).join(', ')}`
+    );
+  }
+
   const filename = `vale_${VALE_VERSION}_${platform}.${ext}`;
   const downloadUrl = `https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/${filename}`;
-  const checksumUrl = `https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_checksums.txt`;
 
   const tmpDir = join(tmpdir(), `vale-install-${Date.now()}`);
   mkdirSync(tmpDir, { recursive: true });
@@ -119,11 +125,9 @@ async function installValeAsync() {
     console.log(`Downloading Vale ${VALE_VERSION} for ${platform}...`);
     const archivePath = join(tmpDir, filename);
     await downloadToFileAsync(downloadUrl, archivePath);
-    await downloadToFileAsync(checksumUrl, join(tmpDir, 'checksums.txt'));
 
     console.log('Verifying checksum...');
-    const checksumContent = readFileSync(join(tmpDir, 'checksums.txt'), 'utf-8');
-    await verifyChecksumAsync(archivePath, checksumContent, filename);
+    verifyChecksum(archivePath, expectedHash);
 
     mkdirSync(INSTALL_DIR, { recursive: true });
 
