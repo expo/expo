@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Auto-correct `config.resolver.nodeModulesPaths` in Metro config and remove redundant default paths when hierarchical `node_modules` lookups are enabled ([#44575](https://github.com/expo/expo/pull/44575) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 - Allow `expo start`, `expo export`, and `expo config` to work without `react-native` installed for web-only projects. ([#44294](https://github.com/expo/expo/pull/44294) by [@EvanBacon](https://github.com/EvanBacon))

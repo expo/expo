@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Empty out `nodeModulesPaths`, since this is now fixed up in the Expo CLI ([#44575](https://github.com/expo/expo/pull/44575) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 - Add Hermes V1 detection ([#43080](https://github.com/expo/expo/pull/43080) by [@gabrieldonadel](https://github.com/gabrieldonadel))
