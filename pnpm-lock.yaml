@@ -2631,6 +2631,9 @@ importers:
       '@babel/cli':
         specifier: ^7.23.4
         version: 7.28.6(@babel/core@7.29.0)
+      '@expo/plist':
+        specifier: workspace:*
+        version: link:../plist
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
@@ -2643,6 +2646,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.6.0
+        version: 3.6.0
 
   packages/@expo/require-utils:
     dependencies:
