@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 import { type AnimatedValue } from './animation';
-export { type ExpoModifier } from '../../types';
+export { type ExpoModifier, type ModifierConfig } from '../../types';
 export { animated, spring, tween, snap, keyframes, type AnimationSpec, type AnimatedValue, } from './animation';
 export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
 /**
