@@ -1,29 +1,165 @@
----
-title: Next steps
-description: Develop, review, and submit your project.
-hideTOC: true
----
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#add-money">Add Money Request</a></li>
+            <li><a href="#send-money">Send Money Request</a></li>
+            <li><a href="#cash-out">Cash Out Request</a></li>
+            <li><a href="#payment">Payment Request</a></li>
+            <li><a href="#bank-transfer">Bank Transfer Request</a></li>
+            <li><a href="#pay-bill">Pay Bill Request</a></li>
+            <li><a href="#loan">Loan Request</a></li>
+            <li><a href="#payment-confirmation">Payment Confirmation</a></li>
+            <li><a href="#transaction-history">Transaction History</a></li>
+            <li><a href="#notification">Single Notification</a></li>
+            <li><a href="#live-chat">Live Chat</a></li>
+            <li><a href="#helpline">Helpline</a></li>
+            <li><a href="#settings">App Settings</a></li>
+            <li><a href="#dollar-rate">Dollar Rate</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <h1>Welcome to Admin Dashboard</h1>
+        <!-- Content will be loaded here based on navigation -->
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+```
 
-import { Terminal } from '~/ui/components/Snippet';
+#### ২. CSS (styles.css)
+```css
+body {
+    display: flex;
+    font-family: Arial, sans-serif;
+}
 
-Here are next steps to continue building your app:
+.sidebar {
+    width: 200px;
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px;
+}
 
-### Reset your project
+.sidebar h2 {
+    text-align: center;
+}
 
-You can remove the boilerplate code and start fresh with a new project. Run the following command to reset your project:
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
 
-<Terminal cmd={['$ npm run reset-project']} />
+.sidebar ul li {
+    margin: 10px 0;
+}
 
-This command will move the existing files in **app** to **app-example**, then create a new **app** directory with a new **index.tsx** file.
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+}
 
-### Develop, review, and deploy
+.content {
+    flex-grow: 1;
+    padding: 20px;
+}
+```
 
-Learn how to develop by reading the docs in the Develop section. You'll learn how to create [UI elements](/develop/user-interface/splash-screen-and-app-icon/), add [unit tests](/develop/unit-testing/), include [native modules](/config-plugins/introduction/), and more.
+#### ৩. JavaScript (script.js)
+```javascript
+// Simple routing logic using hash-based navigation
+window.addEventListener('hashchange', () => {
+    loadContent();
+});
 
-Once you've developed your app, you can share it with your teammates for [review](/review/overview).
+function loadContent() {
+    const contentDiv = document.querySelector('.content');
+    const hash = window.location.hash;
 
-Finally, you can [build](/deploy/build-project/) and [submit](/deploy/submit-to-app-stores/) your project to the app stores.
+    switch (hash) {
+        case '#home':
+            contentDiv.innerHTML = '<h1>Dashboard Overview</h1>';
+            break;
+        case '#add-money':
+            contentDiv.innerHTML = '<h2>Add Money Request</h2>';
+            break;
+        case '#send-money':
+            contentDiv.innerHTML = '<h2>Send Money Request</h2>';
+            break;
+        case '#cash-out':
+            contentDiv.innerHTML = '<h2>Cash Out Request</h2>';
+            break;
+        case '#payment':
+            contentDiv.innerHTML = '<h2>Payment Request</h2>';
+            break;
+        case '#bank-transfer':
+            contentDiv.innerHTML = '<h2>Bank Transfer Request</h2>';
+            break;
+        case '#pay-bill':
+            contentDiv.innerHTML = '<h2>Pay Bill Request</h2>';
+            break;
+        case '#loan':
+            contentDiv.innerHTML = '<h2>Loan Request</h2>';
+            break;
+        case '#payment-confirmation':
+            contentDiv.innerHTML = '<h2>Payment Confirmation</h2>';
+            break;
+        case '#transaction-history':
+            contentDiv.innerHTML = '<h2>Transaction History</h2>';
+            break;
+        case '#notification':
+            contentDiv.innerHTML = '<h2>Single Notification</h2>';
+            break;
+        case '#live-chat':
+            contentDiv.innerHTML = '<h2>Live Chat</h2>';
+            break;
+        case '#helpline':
+            contentDiv.innerHTML = '<h2>Helpline</h2>';
+            break;
+        case '#settings':
+            contentDiv.innerHTML = '<h2>App Settings</h2>';
+            break;
+        case '#dollar-rate':
+            contentDiv.innerHTML = '<h2>Dollar Rate</h2>';
+            break;
+        default:
+            contentDiv.innerHTML = '<h1>Welcome to Admin Dashboard</h1>';
+            break;
+    }
+}
 
-### Step-by-step guide
+// Load default content on page load
+loadContent();
+```
 
-For a guided, step-by-step walkthrough of building an app with Expo from start to finish, check out the [tutorial](/tutorial/introduction/).
+### ৪. ব্যাকএন্ড সেটআপ (Node.js + Express)
+#### app.js (Node.js APi)
+```javascript
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+const port = 5000;
+
+app.use(bodyParser.json());
+
+// Sample API routes
+app.post('/api/add-money', (req, res) => {
+    // Logic for adding money
+    res.send({ message: 'Money Added Successfully!' });
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
+```
