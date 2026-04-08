@@ -75,7 +75,7 @@ async function verifyChecksumAsync(
   checksumFileContent: string,
   filename: string
 ): Promise<void> {
-  const line = checksumFileContent.split('\n').find((l) => l.includes(filename));
+  const line = checksumFileContent.split('\n').find(l => l.includes(filename));
   if (!line) {
     throw new Error(`No checksum found for ${filename} in checksums file`);
   }
@@ -94,7 +94,7 @@ async function extractTarGzAsync(tarballPath: string, destDir: string): Promise<
   await extract({
     file: tarballPath,
     cwd: destDir,
-    filter: (path) => path === 'vale' || path === 'vale.exe',
+    filter: (path: string) => path === 'vale' || path === 'vale.exe',
   });
 }
 
@@ -149,7 +149,7 @@ async function installValeAsync() {
   }
 }
 
-installValeAsync().catch((err) => {
+installValeAsync().catch(err => {
   console.error(err.message);
   process.exit(1);
 });
