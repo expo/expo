@@ -3897,9 +3897,6 @@ importers:
 
   packages/expo-doctor:
     devDependencies:
-      '@expo/cli':
-        specifier: workspace:*
-        version: link:../@expo/cli
       '@expo/config':
         specifier: workspace:*
         version: link:../@expo/config
