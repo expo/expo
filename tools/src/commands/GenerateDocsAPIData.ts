@@ -109,6 +109,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/flowrow': ['jetpack-compose/FlowRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/lazycolumn': ['jetpack-compose/LazyColumn/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/lazyrow': ['jetpack-compose/LazyRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
