@@ -1,3 +1,4 @@
+import { convertEntryPointToRelative } from '@expo/config/paths';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -23,14 +24,12 @@ const checkWebViewInstalled = memoize((projectRoot: string) => {
 });
 
 type CreateDomComponentsMiddlewareOptions = {
-  /** The absolute metro or server root, used to calculate the relative dom entry path */
-  metroRoot: string;
   /** The absolute project root, used to resolve the `expo/dom/entry.js` path */
   projectRoot: string;
 };
 
 export function createDomComponentsMiddleware(
-  { metroRoot, projectRoot }: CreateDomComponentsMiddlewareOptions,
+  { projectRoot }: CreateDomComponentsMiddlewareOptions,
   instanceMetroOptions: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'platform' | 'bytecode'>
 ) {
   return (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
@@ -54,19 +53,24 @@ export function createDomComponentsMiddleware(
 
     checkWebViewInstalled(projectRoot);
 
+    // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
     // Generate a unique entry file for the webview.
-    const generatedEntry = toPosixPath(file.startsWith('file://') ? fileURLToFilePath(file) : file);
-    const virtualEntry = toPosixPath(resolveFrom(projectRoot, 'expo/dom/entry.js'));
+    const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+    const generatedEntryPath = path.resolve(
+      file.startsWith('file://') ? fileURLToFilePath(file) : file
+    );
     // The relative import path will be used like URI so it must be POSIX.
-    const relativeImport = './' + path.posix.relative(path.dirname(virtualEntry), generatedEntry);
+    const relativeImport =
+      './' + toPosixPath(path.relative(path.dirname(virtualEntry), generatedEntryPath));
     // Create the script URL
     const requestUrlBase = `http://${req.headers.host}`;
+    // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
     const metroUrl = new URL(
       createBundleUrlPath({
         ...instanceMetroOptions,
         domRoot: encodeURI(relativeImport),
         baseUrl: '/',
-        mainModuleName: path.relative(metroRoot, virtualEntry),
+        mainModuleName: convertEntryPointToRelative(projectRoot, virtualEntry),
         bytecode: false,
         platform: 'web',
         isExporting: false,
