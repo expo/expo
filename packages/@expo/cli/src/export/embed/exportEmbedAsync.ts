@@ -21,6 +21,7 @@ import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompiler
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
+import { replaceMetroFileMap } from '../../start/server/metro/createFileMap-fork';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
@@ -333,7 +334,7 @@ export async function createMetroServerAndBundleRequestAsync(
       exp,
       isExporting: true,
       getMetroBundler() {
-        return server.getBundler().getBundler();
+        return metro.getBundler().getBundler();
       },
     }
   );
@@ -374,11 +375,13 @@ export async function createMetroServerAndBundleRequestAsync(
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
 
-  const server = new Server(config, {
-    watch: false,
-  });
+  const { metro } = await replaceMetroFileMap(() => ({
+    metro: new Server(config, {
+      watch: false,
+    }),
+  }));
 
-  return { server, bundleRequest };
+  return { server: metro, bundleRequest };
 }
 
 export async function exportEmbedAssetsAsync(
