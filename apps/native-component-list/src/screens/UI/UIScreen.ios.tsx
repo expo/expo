@@ -251,6 +251,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Overlay component',
+    route: 'ui/overlay',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./OverlayScreen'));
+    },
+  },
+  {
     name: 'Popover component',
     route: 'ui/popover',
     options: {},

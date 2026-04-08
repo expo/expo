@@ -1,0 +1,162 @@
+---
+title: Overlay
+description: A SwiftUI Overlay component for layering content on top of another view.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Overlay matches the official SwiftUI [overlay](<https://developer.apple.com/documentation/swiftui/view/overlay(alignment:content:)>) modifier and provides a way to layer secondary content on top of a view, positioned with a specified alignment.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Notification badge
+
+A common use case is overlaying a badge on an icon, such as an unread notification count.
+
+```tsx NotificationBadgeExample.tsx
+import { Host, Overlay, Text, Image } from '@expo/ui/swift-ui';
+import { foregroundStyle, frame, font, background, clipShape, offset } from '@expo/ui/swift-ui/modifiers';
+
+export default function NotificationBadgeExample() {
+  return (
+    <Host matchContents>
+      <Overlay alignment="topTrailing">
+        <Overlay.Trigger>
+          <Image
+            systemName="bell.fill"
+            modifiers={[frame({ width: 32, height: 32 }), foregroundStyle('#007AFF')]}
+          />
+        </Overlay.Trigger>
+        <Overlay.Content>
+          <Text
+            modifiers={[
+              font({ size: 12, weight: 'bold' }),
+              foregroundStyle('#FFFFFF'),
+              frame({ minWidth: 18, height: 18 }),
+              background('#FF3B30'),
+              clipShape('capsule'),
+              offset({ x: 6, y: -6 }),
+            ]}>
+            3
+          </Text>
+        </Overlay.Content>
+      </Overlay>
+    </Host>
+  );
+}
+```
+
+### Online status indicator
+
+Use `bottomTrailing` alignment to show a status dot on an avatar.
+
+```tsx OnlineStatusExample.tsx
+import { Host, Overlay, VStack, Image } from '@expo/ui/swift-ui';
+import { foregroundStyle, frame, font, background, clipShape, offset } from '@expo/ui/swift-ui/modifiers';
+
+export default function OnlineStatusExample() {
+  return (
+    <Host matchContents>
+      <Overlay alignment="bottomTrailing">
+        <Overlay.Trigger>
+          <Image
+            systemName="person.crop.circle.fill"
+            modifiers={[
+              frame({ width: 48, height: 48 }),
+              foregroundStyle('#8E8E93'),
+              font({ size: 48 }),
+            ]}
+          />
+        </Overlay.Trigger>
+        <Overlay.Content>
+          <VStack
+            modifiers={[
+              frame({ width: 14, height: 14 }),
+              background('#34C759'),
+              clipShape('circle'),
+              offset({ x: 2, y: 2 }),
+            ]}
+          />
+        </Overlay.Content>
+      </Overlay>
+    </Host>
+  );
+}
+```
+
+### Label overlay
+
+Use `topLeading` alignment to add a label tag on top of a card.
+
+```tsx LabelOverlayExample.tsx
+import { Host, Overlay, Text, HStack, VStack, Image } from '@expo/ui/swift-ui';
+import {
+  foregroundStyle,
+  frame,
+  padding,
+  background,
+  cornerRadius,
+  font,
+  bold,
+  clipShape,
+  offset,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function LabelOverlayExample() {
+  return (
+    <Host matchContents>
+      <Overlay alignment="topLeading">
+        <Overlay.Trigger>
+          <HStack
+            modifiers={[
+              frame({ maxWidth: Infinity }),
+              padding({ all: 16 }),
+              background('#F2F2F7'),
+              cornerRadius(12),
+            ]}>
+            <Image
+              systemName="sparkles"
+              modifiers={[foregroundStyle('#FF9500'), frame({ width: 24, height: 24 })]}
+            />
+            <VStack>
+              <Text modifiers={[bold()]}>Expo UI Components</Text>
+              <Text modifiers={[font({ size: 13 }), foregroundStyle('#8E8E93')]}>
+                Build native UIs with SwiftUI
+              </Text>
+            </VStack>
+          </HStack>
+        </Overlay.Trigger>
+        <Overlay.Content>
+          <Text
+            modifiers={[
+              font({ size: 10, weight: 'bold' }),
+              foregroundStyle('#FFFFFF'),
+              padding({ leading: 6, trailing: 6, top: 3, bottom: 3 }),
+              background('#FF9500'),
+              clipShape('capsule'),
+              offset({ x: -6, y: -6 }),
+            ]}>
+            NEW
+          </Text>
+        </Overlay.Content>
+      </Overlay>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Overlay } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/overlay" apiName="Overlay" />

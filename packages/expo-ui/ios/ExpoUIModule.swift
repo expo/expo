@@ -139,6 +139,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ConcentricRectangleView.self)
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
+    ExpoUIView(OverlayView.self)
     ExpoUIView(GridView.self)
     ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
