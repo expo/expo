@@ -31,47 +31,45 @@ declare module '*.sass';
 declare module '*.scss';
 
 // Allow for image asset imports
+type ReactNativeImageSourcePropType =
+  import('react-native').ImageSourcePropType;
+
 declare module '*.png' {
-  const path: string;
-  export default path;
+  const asset: ReactNativeImageSourcePropType;
+  export default asset;
 }
 
 declare module '*.jpg' {
-  const path: string;
-  export default path;
+  const asset: ReactNativeImageSourcePropType;
+  export default asset;
 }
 
 declare module '*.jpeg' {
-  const path: string;
-  export default path;
+  const asset: ReactNativeImageSourcePropType;
+  export default asset;
 }
 
 declare module '*.webp' {
-  const path: string;
-  export default path;
+  const asset: ReactNativeImageSourcePropType;
+  export default asset;
 }
 
 declare module '*.avif' {
-  const path: string;
-  export default path;
+  const asset: ReactNativeImageSourcePropType;
+  export default asset;
 }
 
 declare module '*.gif' {
-  const path: string;
-  export default path;
+  const asset: ReactNativeImageSourcePropType;
+  export default asset;
 }
 
 declare module '*.ico' {
-  const path: string;
-  export default path;
+  const asset: ReactNativeImageSourcePropType;
+  export default asset;
 }
 
 declare module '*.bmp' {
-  const path: string;
-  export default path;
-}
-
-declare module '*.svg' {
-  const path: string;
-  export default path;
+  const asset: ReactNativeImageSourcePropType;
+  export default asset;
 }
