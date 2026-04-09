@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Added `--skip-pod-install` option. ([#](https://github.com/expo/expo/pull/) by [@radoslawrolka](https://github.com/radoslawrolka))
+- Added `--skip-pod-install` option. ([#44633](https://github.com/expo/expo/pull/44633) by [@radoslawrolka](https://github.com/radoslawrolka))
 - Added react-native 0.83 support. ([#43855](https://github.com/expo/expo/pull/43855) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
