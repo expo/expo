@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add more files to the `.npmignore` template. ([#43327](https://github.com/expo/expo/pull/43327) by [@cornejobarraza](https://github.com/cornejobarraza))
+
 ## 55.0.2 — 2026-01-23
 
 _This version does not introduce any user-facing changes._
