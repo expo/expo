@@ -73,11 +73,11 @@ describe(diffFingerprintChangesAsync, () => {
       [
         {
           "addedSource": {
-            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":[],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
             "debugInfo": {
-              "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+              "hash": "55b200a492629973bfe3c9447b75231ae41e6944",
             },
-            "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+            "hash": "55b200a492629973bfe3c9447b75231ae41e6944",
             "id": "expoConfig",
             "reasons": [
               "expoConfig",
@@ -170,11 +170,11 @@ describe(diffFingerprintChangesAsync, () => {
       [
         {
           "afterSource": {
-            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"jsEngine":"jsc","name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"jsEngine":"jsc","name":"sdk47","orientation":"portrait","platforms":[],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
             "debugInfo": {
-              "hash": "7068a4234e7312c6ac54b776ea4dfad0ac789b2a",
+              "hash": "4a14a10587e054b2eaea5b7188f0fe905340f599",
             },
-            "hash": "7068a4234e7312c6ac54b776ea4dfad0ac789b2a",
+            "hash": "4a14a10587e054b2eaea5b7188f0fe905340f599",
             "id": "expoConfig",
             "reasons": [
               "expoConfig",
@@ -182,11 +182,11 @@ describe(diffFingerprintChangesAsync, () => {
             "type": "contents",
           },
           "beforeSource": {
-            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":[],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
             "debugInfo": {
-              "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+              "hash": "55b200a492629973bfe3c9447b75231ae41e6944",
             },
-            "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+            "hash": "55b200a492629973bfe3c9447b75231ae41e6944",
             "id": "expoConfig",
             "reasons": [
               "expoConfig",
