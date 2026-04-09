@@ -17,6 +17,7 @@ async function run() {
     // Types
     '--yes': Boolean,
     '--no-install': Boolean,
+    '--no-agents-md': Boolean,
     '--help': Boolean,
     '--version': Boolean,
     // Aliases
@@ -41,6 +42,7 @@ async function run() {
       [
         `-y, --yes             Use the default options for creating a project`,
         `    --no-install      Skip installing npm packages or CocoaPods`,
+        `    --no-agents-md    Skip generating AGENTS.md, CLAUDE.md, and .claude/settings.json`,
         chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,
         chalk`-e, --example {gray [name]}  Example name from {underline https://github.com/expo/examples}.`,
         `-v, --version         Version number`,
@@ -91,6 +93,7 @@ async function run() {
         template: parsed.args['--template'],
         example: parsed.args['--example'],
         install: !args['--no-install'],
+        agentsMd: !args['--no-agents-md'],
       })
     );
 
