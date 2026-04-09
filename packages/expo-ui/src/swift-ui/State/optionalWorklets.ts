@@ -5,6 +5,8 @@
 let worklets: undefined | typeof import('react-native-worklets');
 try {
   worklets = require('react-native-worklets');
-} catch {}
+} catch {
+  // Fail silently as worklet support is currently optional in Expo UI
+}
 
-export default worklets;
+export { worklets };

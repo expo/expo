@@ -5334,6 +5334,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      react-native-reanimated:
+        specifier: '*'
+        version: 4.2.2(patch_hash=540225f53885acdd1c5c55c971b8e8dc5e10aab438d8a95f42d0526e95deb5c1)(react-native-worklets@0.7.4(patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89c5962ecc6f2802f1)(@babel/core@7.29.0)(react-native@0.85.0-rc.7(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.7(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.85.0-rc.7(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.7(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-worklets:
         specifier: '*'
         version: 0.7.4(patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89c5962ecc6f2802f1)(@babel/core@7.29.0)(react-native@0.85.0(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
