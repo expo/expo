@@ -3336,8 +3336,8 @@ importers:
         specifier: 19.2.3
         version: 19.2.3
       react-native:
-        specifier: 0.85.0-rc.7
-        version: 0.85.0-rc.7(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.7(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+        specifier: 0.85.0
+        version: 0.85.0(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
       '@types/react':
         specifier: ~19.2.0
@@ -4775,8 +4775,8 @@ importers:
         specifier: workspace:*
         version: link:../expo-updates-interface
       react-native:
-        specifier: 0.85.0-rc.5
-        version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+        specifier: 0.85.0
+        version: 0.85.0(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
       expo-module-scripts:
         specifier: workspace:*
