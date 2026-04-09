@@ -60,6 +60,9 @@ class WorkletRuntime(
       jsiContext = WorkletRuntimeInstaller(this)
         .install(runtimePointer)
 
+      // Install `__resolveInWorklet` and shared object class definition in the worklet runtime
+      jsiContext.installModuleClasses()
+
       logger.info("✅ JSI interop was installed")
     }
   }

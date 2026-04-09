@@ -10,6 +10,7 @@
 #include "JSReferencesCache.h"
 #include "JNIDeallocator.h"
 #include "ThreadSafeJNIGlobalRef.h"
+#include "decorators/JSDecoratorsBridgingObject.h"
 #include "javaclasses/JSRunnable.h"
 
 #include <fbjni/fbjni.h>
@@ -129,10 +130,19 @@ public:
   std::unique_ptr<JSReferencesCache> jsRegistry;
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
 
+  // Used by the worklet runtime to keep class decorators alive
+  // so prototype host functions remain callable.
+  std::vector<std::unique_ptr<JSDecorator>> moduleClassDecorators;
+
   void registerClass(jni::local_ref<jclass> native,
                      jni::local_ref<JavaScriptObject::javaobject> jsClass);
 
   jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
+
+  /**
+   * Installs module class prototypes and `SharedObject.__resolveInWorklet` in this runtime.
+   */
+  void installModuleClasses();
 
   void prepareForDeallocation() noexcept;
 
