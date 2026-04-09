@@ -1,6 +1,11 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
 import type { AssetInfo, Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
-import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
+import type {
+  LoaderModule,
+  RenderOptions,
+  ServerRenderModule,
+  SsrRenderFn,
+} from '../../rendering';
 import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/matchers';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
@@ -53,6 +58,7 @@ export interface CommonEnvironment {
 export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
   // Cached manifest and SSR renderer, initialized on first request
   let cachedManifest: Manifest | null | undefined;
+  let cachedSsrModule: ServerRenderModule | null = null;
   let ssrRenderer: SsrRenderFn | null = null;
 
   async function getRoutesManifest(): Promise<Manifest | null> {
@@ -63,14 +69,23 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
     return cachedManifest;
   }
 
-  async function getServerRenderer(): Promise<SsrRenderFn | null> {
+  async function getServerRenderer(): Promise<{
+    renderer: SsrRenderFn | null;
+    module: ServerRenderModule | null;
+  }> {
     if (ssrRenderer && !input.isDevelopment) {
-      return ssrRenderer;
+      return {
+        renderer: ssrRenderer,
+        module: cachedSsrModule,
+      };
     }
 
     const manifest = await getRoutesManifest();
     if (manifest?.rendering?.mode !== 'ssr') {
-      return null;
+      return {
+        renderer: null,
+        module: null,
+      };
     }
 
     // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
@@ -84,6 +99,7 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
     }
 
     const topLevelAssets = manifest.assets;
+    cachedSsrModule = ssrModule;
     ssrRenderer = async (request, options) => {
       const url = new URL(request.url);
       const location = new URL(url.pathname + url.search, url.origin);
@@ -91,11 +107,15 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
 
       return ssrModule.getStreamingContent(location, {
         loader: options?.loader,
+        metadata: options?.metadata,
         request,
         assets,
       });
     };
-    return ssrRenderer;
+    return {
+      renderer: ssrRenderer,
+      module: ssrModule,
+    };
   }
 
   async function executeLoader(
@@ -120,17 +140,28 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
 
     async getHtml(request, route) {
       // SSR path: Render at runtime if SSR module is available
-      const renderer = await getServerRenderer();
+      const { renderer, module: ssrModule } = await getServerRenderer();
       if (renderer) {
         let renderOptions: RenderOptions = { assets: route.assets };
+        const params = parseParams(request, route);
 
         try {
+          if (ssrModule?.resolveMetadata) {
+            renderOptions.metadata = await ssrModule.resolveMetadata({
+              route: {
+                file: route.file,
+                page: route.page,
+              },
+              request,
+              params,
+            });
+          }
+
           if (route.loader) {
-            const params = parseParams(request, route);
             const result = await executeLoader(request, route, params);
             const data = isResponse(result) ? await result.json() : result;
             renderOptions = {
-              assets: route.assets,
+              ...renderOptions,
               loader: {
                 data: data ?? null,
                 key: resolveLoaderContextKey(route.page, params),
