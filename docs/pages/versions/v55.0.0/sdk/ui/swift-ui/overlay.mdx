@@ -32,12 +32,10 @@ export default function OverlayExample() {
   return (
     <Host style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Overlay alignment="topTrailing">
-        <Overlay.Trigger>
-          <Image
-            systemName="bell.fill"
-            modifiers={[font({ size: 28 }), foregroundStyle('#007AFF')]}
-          />
-        </Overlay.Trigger>
+        <Image
+          systemName="bell.fill"
+          modifiers={[font({ size: 28 }), foregroundStyle('#007AFF')]}
+        />
         <Overlay.Content>
           <Text
             modifiers={[

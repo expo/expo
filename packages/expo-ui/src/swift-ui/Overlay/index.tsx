@@ -7,7 +7,7 @@ import { type Alignment, type CommonViewModifierProps } from '../types';
 export type OverlayProps = {
   children: React.ReactNode;
   /**
-   * The alignment of the overlay content relative to the trigger view.
+   * The alignment of the overlay content relative to the base content.
    * @default 'center'
    */
   alignment?: Alignment;
@@ -18,15 +18,10 @@ const OverlayNativeView: React.ComponentType<OverlayProps> = requireNativeView(
   'OverlayView'
 );
 
-function OverlayTrigger(props: { children: React.ReactNode }) {
-  return <Slot name="trigger">{props.children}</Slot>;
-}
-
 function OverlayContent(props: { children: React.ReactNode }) {
   return <Slot name="content">{props.children}</Slot>;
 }
 
-Overlay.Trigger = OverlayTrigger;
 Overlay.Content = OverlayContent;
 
 export function Overlay(props: OverlayProps) {

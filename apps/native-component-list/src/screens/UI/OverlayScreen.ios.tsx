@@ -18,26 +18,24 @@ export default function OverlayScreen() {
       <Form>
         <Section title="NEW Tag">
           <Overlay alignment="topLeading">
-            <Overlay.Trigger>
-              <HStack
-                modifiers={[
-                  frame({ maxWidth: Infinity }),
-                  padding({ all: 16 }),
-                  background('#F2F2F7'),
-                  cornerRadius(12),
-                ]}>
-                <Image
-                  systemName="sparkles"
-                  modifiers={[foregroundStyle('#FF9500'), frame({ width: 24, height: 24 })]}
-                />
-                <VStack>
-                  <Text modifiers={[bold()]}>Expo UI Components</Text>
-                  <Text modifiers={[font({ size: 13 }), foregroundStyle('#8E8E93')]}>
-                    Build native UIs with SwiftUI
-                  </Text>
-                </VStack>
-              </HStack>
-            </Overlay.Trigger>
+            <HStack
+              modifiers={[
+                frame({ maxWidth: Infinity }),
+                padding({ all: 16 }),
+                background('#F2F2F7'),
+                cornerRadius(12),
+              ]}>
+              <Image
+                systemName="sparkles"
+                modifiers={[foregroundStyle('#FF9500'), frame({ width: 24, height: 24 })]}
+              />
+              <VStack>
+                <Text modifiers={[bold()]}>Expo UI Components</Text>
+                <Text modifiers={[font({ size: 13 }), foregroundStyle('#8E8E93')]}>
+                  Build native UIs with SwiftUI
+                </Text>
+              </VStack>
+            </HStack>
             <Overlay.Content>
               <Text
                 modifiers={[
