@@ -74,6 +74,7 @@
 - [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43592](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] fix modifiers export ([#43639](https://github.com/expo/expo/pull/43639) by [@Ubax](https://github.com/Ubax))
 - [jetpack-compose] Fixed `RNHostView` re-parenting exception. ([#44522](https://github.com/expo/expo/pull/44522) by [@kudo](https://github.com/kudo))
+- [iOS] Fix `matchContents` Host layout to propose `nil` for matching dimensions ([#44642](https://github.com/expo/expo/pull/44642) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
