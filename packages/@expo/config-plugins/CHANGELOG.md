@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `CFBundleTypeRole` to `URLScheme` type
+- Add missing `CFBundleTypeRole` to `URLScheme` type ([#44650](https://github.com/expo/expo/pull/44650) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
