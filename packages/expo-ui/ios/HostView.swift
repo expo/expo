@@ -45,8 +45,18 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   @ObservedObject var props: HostViewProps
 
   var body: some View {
-    let useViewportSizeMeasurement = props.useViewportSizeMeasurement
-    let needsCustomLayout = useViewportSizeMeasurement || props.matchContentsHorizontal || props.matchContentsVertical
+    var useViewportSizeMeasurement = props.useViewportSizeMeasurement
+    var matchContentsHorizontal = props.matchContentsHorizontal
+    var matchContentsVertical = props.matchContentsVertical
+    if #unavailable(iOS 16.0, tvOS 16.0, macOS 13.0) {
+      if useViewportSizeMeasurement || matchContentsHorizontal || matchContentsVertical {
+        log.warn("useViewportSizeMeasurement and matchContents require iOS/tvOS 16.0+")
+      }
+      useViewportSizeMeasurement = false
+      matchContentsHorizontal = false
+      matchContentsVertical = false
+    }
+    let needsCustomLayout = useViewportSizeMeasurement || matchContentsHorizontal || matchContentsVertical
 
     let layoutDirection = props.layoutDirection.toLayoutDirection()
     let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
@@ -56,8 +66,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       let HostLayout = needsCustomLayout
         ? AnyLayout(HostContentLayout(
             layoutDirection: layoutDirection,
-            matchContentsHorizontal: props.matchContentsHorizontal,
-            matchContentsVertical: props.matchContentsVertical,
+            matchContentsHorizontal: matchContentsHorizontal,
+            matchContentsVertical: matchContentsVertical,
             useViewportFallback: useViewportSizeMeasurement
           ))
         : AnyLayout(ZStackLayout(alignment: alignment))
