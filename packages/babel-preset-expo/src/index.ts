@@ -26,6 +26,7 @@ import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
+import { serverMetadataPlugin } from './server-metadata-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 import { hasModule, resolveModule } from './utils/resolveModule';
 import { widgetsPlugin } from './widgets-plugin';
@@ -291,6 +292,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (hasModule(api, 'expo-router/package.json')) {
     extraPlugins.push(expoRouterBabelPlugin);
+    extraPlugins.push(serverMetadataPlugin);
     // Process `loader()` functions for client, loader and server bundles (excluding RSC)
     // - Client bundles: Remove loader exports, they run on server only
     // - Server bundles: Keep loader exports (needed for SSG)
