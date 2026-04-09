@@ -478,8 +478,16 @@ type DirectoryNode = Map<string, MixedNode | null>;
 type MixedNode = FileMetadata | DirectoryNode;
 
 export interface FallbackFilesystem {
-  lookup(absolutePath: string, prevNode: MixedNode | null | undefined): MixedNode | null;
-  readdir(absolutePath: string, dirNode: DirectoryNode | null | undefined): DirectoryNode | null;
+  lookup(
+    normalPath: Path,
+    absolutePath: string,
+    prevNode: MixedNode | null | undefined
+  ): MixedNode | null;
+  readdir(
+    normalPath: Path,
+    absolutePath: string,
+    dirNode: DirectoryNode | null | undefined
+  ): DirectoryNode | null;
 }
 
 export type ProcessFileFunction = (

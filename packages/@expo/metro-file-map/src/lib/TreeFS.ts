@@ -131,7 +131,6 @@ interface MetadataIteratorOptions {
  *   a trailing slash
  */
 export default class TreeFS implements MutableFileSystem {
-  readonly #cachedNormalSymlinkTargets: WeakMap<FileNode, NormalizedSymlinkTarget> = new WeakMap();
   readonly #fallbackBoundaryDepth: number | null;
   readonly #fallbackFilesystem: FallbackFilesystem | null;
   readonly #pathUtils: RootPathUtils;
@@ -1268,39 +1267,30 @@ export default class TreeFS implements MutableFileSystem {
     symlinkNode: FileMetadata,
     canonicalPathOfSymlink: Path
   ): NormalizedSymlinkTarget | null {
-    const cachedResult = this.#cachedNormalSymlinkTargets.get(symlinkNode);
-    if (cachedResult != null) {
-      return cachedResult;
-    }
-
-    let literalSymlinkTarget: string;
+    let normalSymlinkTarget: string;
     if (symlinkNode[H.SYMLINK] === 1) {
       // Symlink target not yet resolved — read it lazily on first traversal
       const absoluteSymlink = this.#pathUtils.normalToAbsolute(canonicalPathOfSymlink);
       try {
-        literalSymlinkTarget = fs.readlinkSync(absoluteSymlink);
-        symlinkNode[H.SYMLINK] = literalSymlinkTarget;
+        const rawTarget = fs.readlinkSync(absoluteSymlink);
+        normalSymlinkTarget = this.#pathUtils.resolveSymlinkToNormal(
+          canonicalPathOfSymlink,
+          rawTarget
+        );
+        symlinkNode[H.SYMLINK] = normalSymlinkTarget;
         symlinkNode[H.VISITED] = 1;
       } catch {
         return null;
       }
     } else {
-      literalSymlinkTarget = symlinkNode[H.SYMLINK] as string;
+      // Already pre-normalised at ingestion or previous lazy resolution
+      normalSymlinkTarget = symlinkNode[H.SYMLINK] as string;
     }
-
-    const absoluteSymlinkTarget = path.resolve(
-      this.#rootDir,
-      canonicalPathOfSymlink,
-      '..', // Symlink target is relative to its containing directory.
-      literalSymlinkTarget // May be absolute, in which case the above are ignored
-    );
-    const normalSymlinkTarget = path.relative(this.#rootDir, absoluteSymlinkTarget);
     const result = {
       ancestorOfRootIdx: this.#pathUtils.getAncestorOfRootIdx(normalSymlinkTarget),
       normalPath: normalSymlinkTarget,
       startOfBasenameIdx: normalSymlinkTarget.lastIndexOf(path.sep) + 1,
     };
-    this.#cachedNormalSymlinkTargets.set(symlinkNode, result);
     return result;
   }
 
@@ -1371,7 +1361,7 @@ export default class TreeFS implements MutableFileSystem {
     } else {
       const parentAbsolute = this.#pathUtils.normalToAbsolute(parentCanonicalPath);
       const absolutePath = parentAbsolute + path.sep + segmentName;
-      const node = fallback.lookup(absolutePath, parentNode.get(segmentName));
+      const node = fallback.lookup(childCanonicalPath, absolutePath, parentNode.get(segmentName));
       parentNode.set(segmentName, node);
       return node;
     }
@@ -1399,7 +1389,7 @@ export default class TreeFS implements MutableFileSystem {
       return;
     }
     const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
-    const entries = fallback.readdir(absolutePath, dirNode);
+    const entries = fallback.readdir(canonicalPath, absolutePath, dirNode);
     if (entries != null && entries !== dirNode) {
       for (const [name, entry] of entries) {
         if (!dirNode.has(name)) {

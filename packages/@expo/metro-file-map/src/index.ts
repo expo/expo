@@ -158,7 +158,7 @@ export type {
 // This should be bumped whenever a code change to `metro-file-map` itself
 // would cause a change to the cache data structure and/or content (for a given
 // filesystem state and build parameters).
-const CACHE_BREAKER = '11';
+const CACHE_BREAKER = '12';
 
 const CHANGE_INTERVAL = 30;
 
@@ -395,6 +395,7 @@ export default class FileMap extends EventEmitter {
         };
         const fallbackFilesystem = this.#options.enableFallback
           ? createFallbackFilesystem({
+              rootPathUtils: this.#pathUtils,
               extensions: this.#options.extensions,
               ignore: (filePath) => this.#options.ignorePattern.test(filePath),
               includeSymlinks: this.#options.enableSymlinks,
@@ -564,7 +565,10 @@ export default class FileMap extends EventEmitter {
         .readlink(this.#pathUtils.normalToAbsolute(normalPath))
         .then((symlinkTarget) => {
           fileMetadata[H.VISITED] = 1;
-          fileMetadata[H.SYMLINK] = symlinkTarget;
+          fileMetadata[H.SYMLINK] = this.#pathUtils.resolveSymlinkToNormal(
+            normalPath,
+            symlinkTarget
+          );
         });
     }
     return null;
@@ -607,10 +611,7 @@ export default class FileMap extends EventEmitter {
 
       if (fileData[H.SYMLINK] === 0) {
         filesToProcess.push([normalFilePath, fileData]);
-      } else if (
-        fileData[H.MTIME] != null &&
-        fileData[H.MTIME] !== 0
-      ) {
+      } else if (fileData[H.MTIME] != null && fileData[H.MTIME] !== 0) {
         // Symlink was previously resolved and its mtime changed — resolve
         // eagerly to update the cached target. Symlinks with null mtime
         // (cold start or never accessed) are deferred to lazy resolution

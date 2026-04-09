@@ -2,12 +2,14 @@ import fs from 'fs';
 import path from 'path';
 
 import type { FallbackFilesystem, FileMetadata, IgnoreMatcher } from '../../types';
+import { RootPathUtils } from '../../lib/RootPathUtils';
 
 type DirectoryNode = Map<string, MixedNode | null>;
 type FileNode = FileMetadata;
 type MixedNode = FileNode | DirectoryNode;
 
 type FallbackFilesystemOptions = {
+  rootPathUtils: RootPathUtils;
   extensions: readonly string[];
   ignore: IgnoreMatcher;
   includeSymlinks: boolean;
@@ -39,9 +41,10 @@ function isDirectory(node: MixedNode | null | undefined): node is DirectoryNode 
 export default function createFallbackFilesystem(
   opts: FallbackFilesystemOptions
 ): FallbackFilesystem {
-  const { extensions, ignore, includeSymlinks } = opts;
+  const { rootPathUtils, extensions, ignore, includeSymlinks } = opts;
 
   function readdir(
+    normalPath: string,
     absolutePath: string,
     dirNode: DirectoryNode | null | undefined
   ): DirectoryNode | null {
@@ -57,9 +60,9 @@ export default function createFallbackFilesystem(
     const result = dirNode ?? new Map();
     for (const entry of dirEntries) {
       const name = entry.name.toString();
-      const childPath = absolutePath + path.sep + name;
+      const childAbsolutePath = absolutePath + path.sep + name;
 
-      if (ignore(childPath)) {
+      if (ignore(childAbsolutePath)) {
         continue;
       }
 
@@ -72,7 +75,9 @@ export default function createFallbackFilesystem(
           continue;
         }
         try {
-          const target = fs.readlinkSync(childPath);
+          const childNormalPath = normalPath === '' ? name : normalPath + path.sep + name;
+          const symlinkTarget = fs.readlinkSync(childAbsolutePath);
+          const target = rootPathUtils.resolveSymlinkToNormal(childNormalPath, symlinkTarget);
           result.set(name, [0, 0, 0, null, target, null]);
         } catch {
           // Can't read symlink target — skip
@@ -92,7 +97,11 @@ export default function createFallbackFilesystem(
   return {
     readdir,
 
-    lookup(absolutePath: string, prevNode: MixedNode | null | undefined): MixedNode | null {
+    lookup(
+      normalPath: string,
+      absolutePath: string,
+      prevNode: MixedNode | null | undefined
+    ): MixedNode | null {
       if (ignore(absolutePath)) {
         return null;
       }
@@ -107,14 +116,15 @@ export default function createFallbackFilesystem(
       if (stat.isDirectory()) {
         const dirNode = isDirectory(prevNode) ? prevNode : null;
         return shouldFallbackCrawlDir(absolutePath)
-          ? readdir(absolutePath, dirNode)
+          ? readdir(normalPath, absolutePath, dirNode)
           : (dirNode ?? new Map());
       } else if (stat.isSymbolicLink()) {
         if (!includeSymlinks) {
           return null;
         }
         try {
-          const target = fs.readlinkSync(absolutePath);
+          const symlinkTarget = fs.readlinkSync(absolutePath);
+          const target = rootPathUtils.resolveSymlinkToNormal(normalPath, symlinkTarget);
           return [stat.mtime.getTime(), stat.size, 0, null, target, null];
         } catch {
           return null;

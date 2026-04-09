@@ -159,6 +159,20 @@ export class RootPathUtils {
     );
   }
 
+  resolveSymlinkToNormal(symlinkNormalPath: string, readlinkResult: string): string {
+    if (path.isAbsolute(readlinkResult)) {
+      return this.absoluteToNormal(readlinkResult);
+    }
+    // Resolve relative to the symlink's containing directory, expressed as
+    // a root-relative (possibly non-normal) path, then normalise.
+    const sepIdx = symlinkNormalPath.lastIndexOf(path.sep);
+    const rootRelativeTarget =
+      sepIdx === -1
+        ? readlinkResult
+        : symlinkNormalPath.slice(0, sepIdx) + path.sep + readlinkResult;
+    return this.relativeToNormal(rootRelativeTarget);
+  }
+
   // If a path is a direct ancestor of the project root (or the root itself),
   // return a number with the degrees of separation, e.g. root=0, parent=1,..
   // or null otherwise.

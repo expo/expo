@@ -305,6 +305,9 @@ export default async function watchmanCrawl({
         let symlinkInfo: 0 | 1 | string = 0;
         if (fileData.type === 'l') {
           symlinkInfo = fileData['symlink_target'] ?? 1;
+          if (typeof symlinkInfo === 'string') {
+            symlinkInfo = pathUtils.resolveSymlinkToNormal(relativeFilePath, symlinkInfo);
+          }
         }
 
         const nextData: FileMetadata = [mtime, size, 0, sha1hex ?? null, symlinkInfo, null];
