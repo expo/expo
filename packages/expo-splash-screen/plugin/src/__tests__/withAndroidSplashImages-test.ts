@@ -1,19 +1,23 @@
 import { vol } from 'memfs';
 
-import fixtures from '../../../__tests__/fixtures/react-native-project';
 import { setSplashImageDrawablesAsync } from '../withAndroidSplashImages';
 
 jest.mock('fs');
+
+jest.mock('@expo/image-utils', () => ({
+  generateImageAsync: jest.fn().mockResolvedValue({ source: Buffer.from('...') }),
+  compositeImagesAsync: jest.fn().mockResolvedValue(Buffer.from('...')),
+  generateImageBackgroundAsync: jest.fn().mockResolvedValue(Buffer.from('...')),
+}));
 
 describe(setSplashImageDrawablesAsync, () => {
   beforeEach(async () => {
     vol.fromJSON(
       {
-        ...fixtures,
-        'assets/splash.png': '...',
-        'assets/splash-dark.png': '...',
+        '/assets/splash.png': '...',
+        '/assets/splash-dark.png': '...',
       },
-      './'
+      '/'
     );
   });
 
@@ -24,27 +28,22 @@ describe(setSplashImageDrawablesAsync, () => {
   it(`sets all images`, async () => {
     await setSplashImageDrawablesAsync(
       {
-        android: {
-          splash: {
-            resizeMode: 'contain',
-            backgroundColor: '#ff0000',
-            mdpi: './assets/splash.png',
-            hdpi: './assets/splash.png',
-            xhdpi: './assets/splash.png',
-            xxhdpi: './assets/splash.png',
-            xxxhdpi: './assets/splash.png',
-            dark: {
-              backgroundColor: '#ff00ff',
-              mdpi: './assets/splash-dark.png',
-              hdpi: './assets/splash-dark.png',
-              xhdpi: './assets/splash-dark.png',
-              xxhdpi: './assets/splash-dark.png',
-              xxxhdpi: './assets/splash-dark.png',
-            },
-          },
+        resizeMode: 'contain',
+        backgroundColor: '#ff0000',
+        mdpi: '/assets/splash.png',
+        hdpi: '/assets/splash.png',
+        xhdpi: '/assets/splash.png',
+        xxhdpi: '/assets/splash.png',
+        xxxhdpi: '/assets/splash.png',
+        dark: {
+          backgroundColor: '#ff00ff',
+          mdpi: '/assets/splash-dark.png',
+          hdpi: '/assets/splash-dark.png',
+          xhdpi: '/assets/splash-dark.png',
+          xxhdpi: '/assets/splash-dark.png',
+          xxxhdpi: '/assets/splash-dark.png',
         },
       },
-      null,
       '/',
       100
     );
@@ -71,19 +70,14 @@ describe(setSplashImageDrawablesAsync, () => {
   it(`sets minimal images`, async () => {
     await setSplashImageDrawablesAsync(
       {
-        android: {
-          splash: {
-            resizeMode: 'contain',
-            backgroundColor: '#ff0000',
-            image: './assets/splash.png',
-            dark: {
-              backgroundColor: '#ff00ff',
-              image: './assets/splash-dark.png',
-            },
-          },
+        resizeMode: 'contain',
+        backgroundColor: '#ff0000',
+        image: '/assets/splash.png',
+        dark: {
+          backgroundColor: '#ff00ff',
+          image: '/assets/splash-dark.png',
         },
       },
-      null,
       '/',
       100
     );
@@ -110,14 +104,9 @@ describe(setSplashImageDrawablesAsync, () => {
   it(`sets no images`, async () => {
     await setSplashImageDrawablesAsync(
       {
-        android: {
-          splash: {
-            resizeMode: 'contain',
-            backgroundColor: '#ff0000',
-          },
-        },
+        resizeMode: 'contain',
+        backgroundColor: '#ff0000',
       },
-      null,
       './',
       100
     );

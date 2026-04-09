@@ -7,7 +7,7 @@ export interface IOSSplashConfig {
   // tabletImage: string | null;
   backgroundColor?: string;
   enableFullScreenImage_legacy?: boolean;
-  resizeMode: 'cover' | 'contain';
+  resizeMode?: 'cover' | 'contain';
   tabletImage?: string;
   // TODO: These are here just to test the functionality, the API should be more robust and account for tablet images.
   tabletBackgroundColor?: string;

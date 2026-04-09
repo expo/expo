@@ -5,11 +5,12 @@ import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
-import projectFixtures from '../../../__tests__/fixtures/react-native-project';
-import { getDirFromFS } from '../../../__tests__/getDirFromFS';
+import projectFixtures from './fixtures/react-native-project';
 import { withIosSplashScreen } from '../withIosSplashScreen';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
+
+jest.mock('fs');
 
 jest.mock('expo/config-plugins', () => {
   const plugins = jest.requireActual('expo/config-plugins');
@@ -19,10 +20,29 @@ jest.mock('expo/config-plugins', () => {
   };
 });
 
-jest.mock('fs');
+jest.mock('@expo/image-utils', () => ({
+  generateImageAsync: jest.fn().mockResolvedValue({ source: Buffer.from('PNG') }),
+}));
+
+function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
+  return Object.entries(fsJSON)
+    .filter((entry): entry is [string, string] => {
+      const [path, value] = entry;
+      return value !== null && path.startsWith(rootDir);
+    })
+    .reduce<Record<string, string>>(
+      (acc, [path, fileContent]) => ({
+        ...acc,
+        [path.substring(rootDir.length).startsWith('/')
+          ? path.substring(rootDir.length + 1)
+          : path.substring(rootDir.length)]: fileContent,
+      }),
+      {}
+    );
+}
 
 describe(withIosSplashScreen, () => {
-  const iconPath = path.resolve(__dirname, '../../../__tests__/fixtures/icon.png');
+  const iconPath = path.resolve(__dirname, './fixtures/icon.png');
   const icon = fsReal.readFileSync(iconPath, 'utf8');
   const projectRoot = '/app';
   beforeEach(async () => {

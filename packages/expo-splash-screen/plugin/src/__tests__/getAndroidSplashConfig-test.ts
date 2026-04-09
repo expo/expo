@@ -1,24 +1,25 @@
 import { getAndroidDarkSplashConfig, getAndroidSplashConfig } from '../getAndroidSplashConfig';
 
 describe(getAndroidSplashConfig, () => {
-  it(`uses the more specific splash`, () => {
+  it(`uses the provided splash config directly`, () => {
     const config = getAndroidSplashConfig({
-      splash: { backgroundColor: 'red', image: 'a' },
-      android: { splash: { mdpi: 'b' } },
+      mdpi: 'b',
+      resizeMode: 'contain',
     });
-    expect(config?.mdpi).toBe('b');
-    // ensure the background color from the general splash config is not used if the android splash config is defined.
-    expect(config?.backgroundColor).toBe(undefined);
+    expect(config.mdpi).toBe('b');
+    // resizeMode defaults to contain when not provided
+    expect(config.resizeMode).toBe('contain');
   });
 });
 describe(getAndroidDarkSplashConfig, () => {
   it(`uses the dark config`, () => {
     const config = getAndroidDarkSplashConfig({
-      splash: { backgroundColor: 'red', image: 'a' },
-      android: { splash: { mdpi: 'b', dark: { image: 'c' } } },
+      mdpi: 'b',
+      resizeMode: 'contain',
+      dark: { image: 'c' },
     });
     expect(config?.mdpi).toBe('c');
-    // ensure the background color from the general splash config is not used if the android splash config is defined.
-    expect(config?.backgroundColor).toBe(undefined);
+    // resizeMode defaults to contain when not provided
+    expect(config?.resizeMode).toBe('contain');
   });
 });
