@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { parseColor } from './InterfaceBuilder';
-import { IOSSplashConfig } from './getIosSplashConfig';
+import { IOSSplashConfig } from './types';
 
 const debug = Debug('expo:expo-splash-screen:ios:splash-colorset');
 
@@ -27,9 +27,6 @@ interface ContentsJsonColor {
 }
 
 export const withIosSplashColors: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
-  if (!splash) {
-    return config;
-  }
   return withDangerousMod(config, [
     'ios',
     async (config) => {
@@ -51,8 +48,8 @@ async function configureColorAssets({
   darkBackgroundColor,
 }: {
   iosNamedProjectRoot: string;
-  backgroundColor?: string;
-  darkBackgroundColor?: string | null;
+  backgroundColor: string;
+  darkBackgroundColor: string | undefined;
 }) {
   const colorsetPath = path.resolve(iosNamedProjectRoot, SPLASHSCREEN_COLORSET_PATH);
 
@@ -62,7 +59,7 @@ async function configureColorAssets({
   await writeColorsContentsJsonFileAsync({
     assetPath: colorsetPath,
     backgroundColor,
-    darkBackgroundColor: darkBackgroundColor ?? null,
+    darkBackgroundColor,
   });
 }
 
@@ -73,10 +70,10 @@ async function writeColorsContentsJsonFileAsync({
 }: {
   assetPath: string;
   backgroundColor: string;
-  darkBackgroundColor: string | null;
+  darkBackgroundColor: string | undefined;
 }) {
   const color = parseColor(backgroundColor);
-  const darkColor = darkBackgroundColor ? parseColor(darkBackgroundColor) : null;
+  const darkColor = darkBackgroundColor ? parseColor(darkBackgroundColor) : undefined;
 
   const colors: ContentsJsonColor[] = [
     {

@@ -1,5 +1,5 @@
-import { Props } from './withSplashScreen';
+import { Props } from './types';
 
 export default (props: Props = {}): [string, Props] => ['expo-splash-screen', props];
 
-export type { Props } from './withSplashScreen';
+export type { Props } from './types';

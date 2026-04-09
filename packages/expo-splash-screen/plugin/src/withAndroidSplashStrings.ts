@@ -1,13 +1,12 @@
 import { AndroidConfig, ConfigPlugin, withStringsXml } from 'expo/config-plugins';
 
-import { AndroidSplashConfig, getAndroidSplashConfig } from './getAndroidSplashConfig';
+import { AndroidSplashConfig } from './types';
 
 const RESIZE_MODE_KEY = 'expo_splash_screen_resize_mode';
 
-export const withAndroidSplashStrings: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
+export const withAndroidSplashStrings: ConfigPlugin<AndroidSplashConfig> = (config, splash) => {
   return withStringsXml(config, (config) => {
-    const { resizeMode } = getAndroidSplashConfig(props);
-    config.modResults = setSplashStrings(config.modResults, resizeMode);
+    config.modResults = setSplashStrings(config.modResults, splash.resizeMode);
     return config;
   });
 };

@@ -1,6 +1,7 @@
 import { ExpoConfig } from 'expo/config';
 import { WarningAggregator } from 'expo/config-plugins';
 
+import { IOSSplashConfig } from '../types';
 import { setSplashInfoPlist } from '../withIosSplashInfoPlist';
 
 jest.mock('expo/config-plugins', () => {
@@ -11,23 +12,29 @@ jest.mock('expo/config-plugins', () => {
   };
 });
 
+const baseConfig: ExpoConfig = {
+  slug: '',
+  name: '',
+  userInterfaceStyle: 'light',
+};
+
+const baseSplash: IOSSplashConfig = {
+  backgroundColor: '#ffffff',
+  enableFullScreenImage_legacy: false,
+  imageWidth: 100,
+  resizeMode: 'contain',
+};
+
 describe(setSplashInfoPlist, () => {
   it(`skips warning if dark mode isn't defined`, () => {
     // @ts-ignore: jest
     WarningAggregator.addWarningIOS.mockImplementationOnce();
 
-    const config: ExpoConfig = {
-      slug: '',
-      name: '',
-      userInterfaceStyle: 'light',
-      ios: { splash: { image: 'b' } },
-    };
-
     const infoPlist = setSplashInfoPlist(
-      config,
+      baseConfig,
       {},
       {
-        userInterfaceStyle: 'light',
+        ...baseSplash,
         image: 'b',
       }
     );
@@ -43,19 +50,11 @@ describe(setSplashInfoPlist, () => {
     // @ts-ignore: jest
     WarningAggregator.addWarningIOS.mockImplementationOnce();
 
-    const config: ExpoConfig = {
-      slug: '',
-      name: '',
-      userInterfaceStyle: 'light',
-
-      ios: { splash: { image: 'b', dark: { image: 'v' } } },
-    };
-
     const infoPlist = setSplashInfoPlist(
-      config,
+      baseConfig,
       {},
       {
-        userInterfaceStyle: 'light',
+        ...baseSplash,
         image: 'b',
         dark: { image: 'v' },
       }

@@ -2,7 +2,7 @@ import Debug from 'debug';
 import { ExpoConfig } from 'expo/config';
 import { ConfigPlugin, InfoPlist, WarningAggregator, withInfoPlist } from 'expo/config-plugins';
 
-import { IOSSplashConfig } from './getIosSplashConfig';
+import { IOSSplashConfig } from './types';
 
 const debug = Debug('expo:expo-splash-screen:ios:infoPlist');
 
@@ -19,10 +19,10 @@ export function setSplashInfoPlist(
   splash: IOSSplashConfig
 ): InfoPlist {
   const isDarkModeEnabled = !!(
-    splash?.dark?.image ||
-    splash?.dark?.tabletImage ||
-    splash?.dark?.backgroundColor ||
-    splash?.dark?.tabletBackgroundColor
+    splash.dark?.image ||
+    splash.dark?.tabletImage ||
+    splash.dark?.backgroundColor ||
+    splash.dark?.tabletBackgroundColor
   );
   debug(`isDarkModeEnabled: `, isDarkModeEnabled);
 

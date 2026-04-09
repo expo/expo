@@ -4,16 +4,16 @@ exports.withIosSplashScreenImage = void 0;
 exports.applySplashScreenStoryboard = applySplashScreenStoryboard;
 const InterfaceBuilder_1 = require("./InterfaceBuilder");
 const withIosSplashScreenStoryboard_1 = require("./withIosSplashScreenStoryboard");
-const withIosSplashScreenImage = (config, props) => {
+const withIosSplashScreenImage = (config, splash) => {
     return (0, withIosSplashScreenStoryboard_1.withIosSplashScreenStoryboard)(config, (config) => {
-        config.modResults = applySplashScreenStoryboard(config.modResults, props);
+        config.modResults = applySplashScreenStoryboard(config.modResults, splash);
         return config;
     });
 };
 exports.withIosSplashScreenImage = withIosSplashScreenImage;
 function applySplashScreenStoryboard(obj, splash) {
-    const resizeMode = splash?.resizeMode;
-    const splashScreenImagePresent = Boolean(splash?.image);
+    const { resizeMode } = splash;
+    const splashScreenImagePresent = Boolean(splash.image);
     const imageName = splash.enableFullScreenImage_legacy ? 'SplashScreenLegacy' : 'SplashScreenLogo';
     // Only get the resize mode when the image is present.
     if (splashScreenImagePresent) {

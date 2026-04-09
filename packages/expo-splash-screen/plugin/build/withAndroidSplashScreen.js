@@ -9,13 +9,13 @@ const withAndroidSplashMainActivity_1 = require("./withAndroidSplashMainActivity
 const withAndroidSplashStrings_1 = require("./withAndroidSplashStrings");
 const withAndroidSplashStyles_1 = require("./withAndroidSplashStyles");
 const withAndroidSplashScreen = (config, props) => {
-    const splashConfig = (0, getAndroidSplashConfig_1.getAndroidSplashConfig)(props);
+    const splash = (0, getAndroidSplashConfig_1.getAndroidSplashConfig)(props);
     return (0, config_plugins_1.withPlugins)(config, [
         withAndroidSplashMainActivity_1.withAndroidSplashMainActivity,
-        [withAndroidSplashImages_1.withAndroidSplashImages, splashConfig],
-        [withAndroidSplashDrawables_1.withAndroidSplashDrawables, splashConfig],
-        [withAndroidSplashStyles_1.withAndroidSplashStyles, splashConfig],
-        [withAndroidSplashStrings_1.withAndroidSplashStrings, splashConfig],
+        [withAndroidSplashImages_1.withAndroidSplashImages, splash],
+        [withAndroidSplashDrawables_1.withAndroidSplashDrawables, splash],
+        [withAndroidSplashStyles_1.withAndroidSplashStyles, splash],
+        [withAndroidSplashStrings_1.withAndroidSplashStrings, splash],
     ]);
 };
 exports.withAndroidSplashScreen = withAndroidSplashScreen;

@@ -1,23 +1,18 @@
 import { AndroidConfig, ConfigPlugin, withDangerousMod, XML } from 'expo/config-plugins';
 
-import { SplashScreenConfig } from './getAndroidSplashConfig';
+import { AndroidSplashConfig } from './types';
 
-export const withAndroidSplashDrawables: ConfigPlugin<Pick<SplashScreenConfig, 'resizeMode'>> = (
-  config,
-  splash
-) => {
+export const withAndroidSplashDrawables: ConfigPlugin<AndroidSplashConfig> = (config, splash) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      if (splash) {
-        await setSplashDrawableAsync(splash, config.modRequest.projectRoot);
-      }
+      await setSplashDrawableAsync(splash, config.modRequest.projectRoot);
       return config;
     },
   ]);
 };
 
-export async function setSplashDrawableAsync({ image }: SplashScreenConfig, projectRoot: string) {
+export async function setSplashDrawableAsync({ image }: AndroidSplashConfig, projectRoot: string) {
   const filePath = (await AndroidConfig.Paths.getResourceXMLPathAsync(projectRoot, {
     name: 'ic_launcher_background',
     kind: 'drawable',

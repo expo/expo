@@ -66,7 +66,7 @@ describe(setSplashColorsForTheme, () => {
         AndroidConfig.Colors.getObjectAsColorsXml({
           splashscreen_background: '#fff000',
         }),
-        null
+        undefined
       )
     );
     expect(xml).toStrictEqual({});

@@ -1,41 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAndroidSplashConfig = getAndroidSplashConfig;
-exports.getAndroidDarkSplashConfig = getAndroidDarkSplashConfig;
-const defaultResizeMode = 'contain';
-function getAndroidSplashConfig(props) {
+function getAndroidSplashConfig({ android = {}, resizeMode = 'contain', ...rest }) {
     // Respect the splash screen object, don't mix and match across different splash screen objects
     // in case the user wants the top level splash to apply to every platform except android.
-    const splash = props;
-    return {
-        xxxhdpi: splash.xxxhdpi ?? splash.image,
-        xxhdpi: splash.xxhdpi ?? splash.image,
-        xhdpi: splash.xhdpi ?? splash.image,
-        hdpi: splash.hdpi ?? splash.image,
-        mdpi: splash.mdpi ?? splash.image,
-        backgroundColor: splash.backgroundColor,
-        resizeMode: splash.resizeMode ?? defaultResizeMode,
-        image: splash.image,
-        imageWidth: splash.imageWidth ?? 100,
-        dark: splash.dark,
-        drawable: splash.drawable,
+    const { dark, ...root } = {
+        ...rest,
+        ...android,
+        resizeMode: android.resizeMode ?? resizeMode,
+        dark: { ...rest.dark, ...android.dark },
     };
-}
-function getAndroidDarkSplashConfig(props) {
-    if (props.dark != null) {
-        const splash = props.dark;
-        const lightTheme = getAndroidSplashConfig(props);
-        return {
-            xxxhdpi: splash.xxxhdpi ?? splash.image,
-            xxhdpi: splash.xxhdpi ?? splash.image,
-            xhdpi: splash.xhdpi ?? splash.image,
-            hdpi: splash.hdpi ?? splash.image,
-            mdpi: splash.mdpi ?? splash.image,
-            image: splash.image,
-            backgroundColor: splash.backgroundColor,
-            resizeMode: lightTheme?.resizeMode ?? defaultResizeMode,
-            drawable: props.drawable,
-        };
-    }
-    return null;
+    return {
+        imageWidth: root.imageWidth ?? 100,
+        resizeMode: root.resizeMode,
+        backgroundColor: root.backgroundColor ?? '#ffffff',
+        image: root.image,
+        mdpi: root.mdpi ?? root.image,
+        hdpi: root.hdpi ?? root.image,
+        xhdpi: root.xhdpi ?? root.image,
+        xxhdpi: root.xxhdpi ?? root.image,
+        xxxhdpi: root.xxxhdpi ?? root.image,
+        dark: {
+            backgroundColor: dark.backgroundColor,
+            image: dark.image,
+            mdpi: dark.mdpi ?? dark.image,
+            hdpi: dark.hdpi ?? dark.image,
+            xhdpi: dark.xhdpi ?? dark.image,
+            xxhdpi: dark.xxhdpi ?? dark.image,
+            xxxhdpi: dark.xxxhdpi ?? dark.image,
+        },
+    };
 }

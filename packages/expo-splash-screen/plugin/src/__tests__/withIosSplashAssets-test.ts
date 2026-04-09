@@ -6,17 +6,17 @@ describe(buildContentsJsonImages, () => {
       buildContentsJsonImages({
         image: 'somn',
         darkImage: 'other',
-        tabletImage: null,
-        darkTabletImage: null,
+        tabletImage: undefined,
+        darkTabletImage: undefined,
       }).length
     ).toBe(6);
 
     expect(
       buildContentsJsonImages({
         image: 'somn',
-        darkImage: null,
-        tabletImage: null,
-        darkTabletImage: null,
+        darkImage: undefined,
+        tabletImage: undefined,
+        darkTabletImage: undefined,
       }).length
     ).toBe(3);
   });

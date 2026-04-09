@@ -7,9 +7,7 @@ const withAndroidSplashDrawables = (config, splash) => {
     return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
-            if (splash) {
-                await setSplashDrawableAsync(splash, config.modRequest.projectRoot);
-            }
+            await setSplashDrawableAsync(splash, config.modRequest.projectRoot);
             return config;
         },
     ]);

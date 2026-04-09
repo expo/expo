@@ -4,7 +4,7 @@ import { ConfigPlugin, IOSConfig, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
-import { IOSSplashConfig } from './getIosSplashConfig';
+import { IOSSplashConfig } from './types';
 
 const debug = Debug('expo:expo-splash-screen:ios:assets');
 
@@ -26,9 +26,6 @@ interface ContentsJsonImage {
 }
 
 export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
-  if (!splash) {
-    return config;
-  }
   return withDangerousMod(config, [
     'ios',
     async (config) => {
@@ -41,7 +38,7 @@ export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splas
         darkImage: splash.dark?.image,
         tabletImage: splash.tabletImage,
         darkTabletImage: splash.dark?.tabletImage,
-        imageWidth: splash.imageWidth ?? 100,
+        imageWidth: splash.imageWidth,
         enableFullScreenImage: splash.enableFullScreenImage_legacy,
       });
 
@@ -65,12 +62,12 @@ async function configureImageAssets({
 }: {
   projectRoot: string;
   iosNamedProjectRoot: string;
-  image?: string | null;
-  darkImage?: string | null;
-  tabletImage?: string;
-  darkTabletImage?: string | null;
+  image: string | undefined;
+  darkImage: string | undefined;
+  tabletImage: string | undefined;
+  darkTabletImage: string | undefined;
   imageWidth: number;
-  enableFullScreenImage?: boolean;
+  enableFullScreenImage: boolean;
 }) {
   const imagePath = enableFullScreenImage ? LEGACY_IMAGESET_PATH : IMAGESET_PATH;
   const imageSetPath = path.resolve(iosNamedProjectRoot, imagePath);
@@ -91,9 +88,9 @@ async function configureImageAssets({
   await writeContentsJsonAsync({
     assetPath: imageSetPath,
     image: PNG_FILENAME,
-    darkImage: darkImage ? DARK_PNG_FILENAME : null,
-    tabletImage: tabletImage ? TABLET_PNG_FILENAME : null,
-    darkTabletImage: darkTabletImage ? DARK_TABLET_PNG_FILENAME : null,
+    darkImage: darkImage ? DARK_PNG_FILENAME : undefined,
+    tabletImage: tabletImage ? TABLET_PNG_FILENAME : undefined,
+    darkTabletImage: darkTabletImage ? DARK_TABLET_PNG_FILENAME : undefined,
   });
 
   await copyImageFiles({
@@ -121,11 +118,11 @@ async function copyImageFiles({
   projectRoot: string;
   iosNamedProjectRoot: string;
   image: string;
-  darkImage?: string | null;
-  tabletImage?: string | null;
-  darkTabletImage?: string | null;
+  darkImage: string | undefined;
+  tabletImage: string | undefined;
+  darkTabletImage: string | undefined;
   imageWidth: number;
-  enableFullScreenImage?: boolean;
+  enableFullScreenImage: boolean;
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
@@ -175,9 +172,9 @@ async function generateImagesAssetsAsync({
 }: {
   generateImageAsset: (item: string, fileName: string) => Promise<void>;
   anyItem: string;
-  darkItem?: string | null;
-  tabletItem?: string | null;
-  darkTabletItem?: string | null;
+  darkItem: string | undefined;
+  tabletItem: string | undefined;
+  darkTabletItem: string | undefined;
 }) {
   const items = [
     [anyItem, PNG_FILENAME],
@@ -196,9 +193,9 @@ export function buildContentsJsonImages({
   darkTabletImage,
 }: {
   image: string;
-  tabletImage: string | null;
-  darkImage: string | null;
-  darkTabletImage: string | null;
+  tabletImage: string | undefined;
+  darkImage: string | undefined;
+  darkTabletImage: string | undefined;
 }): ContentsJsonImage[] {
   // Phone light
   const images: ContentsJsonImage[] = [
@@ -289,9 +286,9 @@ async function writeContentsJsonAsync({
 }: {
   assetPath: string;
   image: string;
-  darkImage: string | null;
-  tabletImage: string | null;
-  darkTabletImage: string | null;
+  darkImage: string | undefined;
+  tabletImage: string | undefined;
+  darkTabletImage: string | undefined;
 }) {
   const images = buildContentsJsonImages({ image, darkImage, tabletImage, darkTabletImage });
 

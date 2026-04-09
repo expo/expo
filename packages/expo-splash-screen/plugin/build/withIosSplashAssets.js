@@ -20,9 +20,6 @@ const TABLET_PNG_FILENAME = 'tablet_image';
 const DARK_TABLET_PNG_FILENAME = 'dark_tablet_image';
 const darkAppearances = [{ appearance: 'luminosity', value: 'dark' }];
 const withIosSplashAssets = (config, splash) => {
-    if (!splash) {
-        return config;
-    }
     return (0, config_plugins_1.withDangerousMod)(config, [
         'ios',
         async (config) => {
@@ -34,7 +31,7 @@ const withIosSplashAssets = (config, splash) => {
                 darkImage: splash.dark?.image,
                 tabletImage: splash.tabletImage,
                 darkTabletImage: splash.dark?.tabletImage,
-                imageWidth: splash.imageWidth ?? 100,
+                imageWidth: splash.imageWidth,
                 enableFullScreenImage: splash.enableFullScreenImage_legacy,
             });
             return config;
@@ -61,9 +58,9 @@ async function configureImageAssets({ projectRoot, iosNamedProjectRoot, image, d
     await writeContentsJsonAsync({
         assetPath: imageSetPath,
         image: PNG_FILENAME,
-        darkImage: darkImage ? DARK_PNG_FILENAME : null,
-        tabletImage: tabletImage ? TABLET_PNG_FILENAME : null,
-        darkTabletImage: darkTabletImage ? DARK_TABLET_PNG_FILENAME : null,
+        darkImage: darkImage ? DARK_PNG_FILENAME : undefined,
+        tabletImage: tabletImage ? TABLET_PNG_FILENAME : undefined,
+        darkTabletImage: darkTabletImage ? DARK_TABLET_PNG_FILENAME : undefined,
     });
     await copyImageFiles({
         projectRoot,

@@ -1,4 +1,4 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-import { SplashScreenConfig } from './getAndroidSplashConfig';
-export declare const withAndroidSplashDrawables: ConfigPlugin<Pick<SplashScreenConfig, 'resizeMode'>>;
-export declare function setSplashDrawableAsync({ image }: SplashScreenConfig, projectRoot: string): Promise<void>;
+import { AndroidSplashConfig } from './types';
+export declare const withAndroidSplashDrawables: ConfigPlugin<AndroidSplashConfig>;
+export declare function setSplashDrawableAsync({ image }: AndroidSplashConfig, projectRoot: string): Promise<void>;

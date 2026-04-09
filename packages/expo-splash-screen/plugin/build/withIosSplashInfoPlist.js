@@ -16,10 +16,10 @@ const withIosSplashInfoPlist = (config, splash) => {
 };
 exports.withIosSplashInfoPlist = withIosSplashInfoPlist;
 function setSplashInfoPlist(config, infoPlist, splash) {
-    const isDarkModeEnabled = !!(splash?.dark?.image ||
-        splash?.dark?.tabletImage ||
-        splash?.dark?.backgroundColor ||
-        splash?.dark?.tabletBackgroundColor);
+    const isDarkModeEnabled = !!(splash.dark?.image ||
+        splash.dark?.tabletImage ||
+        splash.dark?.backgroundColor ||
+        splash.dark?.tabletBackgroundColor);
     debug(`isDarkModeEnabled: `, isDarkModeEnabled);
     if (isDarkModeEnabled) {
         // IOSConfig.UserInterfaceStyle.getUserInterfaceStyle(config);

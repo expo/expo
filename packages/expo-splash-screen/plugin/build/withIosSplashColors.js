@@ -13,9 +13,6 @@ const debug = (0, debug_1.default)('expo:expo-splash-screen:ios:splash-colorset'
 exports.SPLASHSCREEN_COLORSET_PATH = 'Images.xcassets/SplashScreenBackground.colorset';
 const darkAppearances = [{ appearance: 'luminosity', value: 'dark' }];
 const withIosSplashColors = (config, splash) => {
-    if (!splash) {
-        return config;
-    }
     return (0, config_plugins_1.withDangerousMod)(config, [
         'ios',
         async (config) => {
@@ -37,12 +34,12 @@ async function configureColorAssets({ iosNamedProjectRoot, backgroundColor = '#f
     await writeColorsContentsJsonFileAsync({
         assetPath: colorsetPath,
         backgroundColor,
-        darkBackgroundColor: darkBackgroundColor ?? null,
+        darkBackgroundColor,
     });
 }
 async function writeColorsContentsJsonFileAsync({ assetPath, backgroundColor, darkBackgroundColor, }) {
     const color = (0, InterfaceBuilder_1.parseColor)(backgroundColor);
-    const darkColor = darkBackgroundColor ? (0, InterfaceBuilder_1.parseColor)(darkBackgroundColor) : null;
+    const darkColor = darkBackgroundColor ? (0, InterfaceBuilder_1.parseColor)(darkBackgroundColor) : undefined;
     const colors = [
         {
             color: {

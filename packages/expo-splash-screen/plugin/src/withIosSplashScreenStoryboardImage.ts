@@ -6,19 +6,19 @@ import {
   ImageContentMode,
   removeImageFromSplashScreen,
 } from './InterfaceBuilder';
-import { IOSSplashConfig } from './getIosSplashConfig';
+import { IOSSplashConfig } from './types';
 import { withIosSplashScreenStoryboard } from './withIosSplashScreenStoryboard';
 
-export const withIosSplashScreenImage: ConfigPlugin<IOSSplashConfig> = (config, props) => {
+export const withIosSplashScreenImage: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
   return withIosSplashScreenStoryboard(config, (config) => {
-    config.modResults = applySplashScreenStoryboard(config.modResults, props);
+    config.modResults = applySplashScreenStoryboard(config.modResults, splash);
     return config;
   });
 };
 
 export function applySplashScreenStoryboard(obj: IBSplashScreenDocument, splash: IOSSplashConfig) {
-  const resizeMode = splash?.resizeMode;
-  const splashScreenImagePresent = Boolean(splash?.image);
+  const { resizeMode } = splash;
+  const splashScreenImagePresent = Boolean(splash.image);
   const imageName = splash.enableFullScreenImage_legacy ? 'SplashScreenLegacy' : 'SplashScreenLogo';
   // Only get the resize mode when the image is present.
   if (splashScreenImagePresent) {

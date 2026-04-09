@@ -10,7 +10,6 @@ const image_utils_1 = require("@expo/image-utils");
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const getAndroidSplashConfig_1 = require("./getAndroidSplashConfig");
 const IMAGE_CACHE_NAME = 'splash-android';
 const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
 const SPLASH_SCREEN_DRAWABLE_NAME = 'splashscreen_logo.xml';
@@ -86,9 +85,7 @@ const withAndroidSplashImages = (config, splash) => {
     return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
-            if (splash) {
-                await setSplashImageDrawablesAsync(splash, config.modRequest.projectRoot, splash?.imageWidth ?? 200);
-            }
+            await setSplashImageDrawablesAsync(splash, config.modRequest.projectRoot);
             return config;
         },
     ]);
@@ -101,13 +98,11 @@ exports.withAndroidSplashImages = withAndroidSplashImages;
  *
  * @param androidMainPath Absolute path to the main directory containing code and resources in Android project. In general that would be `android/app/src/main`.
  */
-async function setSplashImageDrawablesAsync(props, projectRoot, imageWidth) {
+async function setSplashImageDrawablesAsync({ dark, ...root }, projectRoot) {
     await clearAllExistingSplashImagesAsync(projectRoot);
-    const splash = (0, getAndroidSplashConfig_1.getAndroidSplashConfig)(props);
-    const darkSplash = (0, getAndroidSplashConfig_1.getAndroidDarkSplashConfig)(props);
     await Promise.all([
-        setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, imageWidth),
-        setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, imageWidth),
+        setSplashImageDrawablesForThemeAsync(root, 'light', projectRoot, root.imageWidth),
+        setSplashImageDrawablesForThemeAsync(dark, 'dark', projectRoot, root.imageWidth),
     ]);
 }
 async function clearAllExistingSplashImagesAsync(projectRoot) {
@@ -121,14 +116,11 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
         }));
     }));
 }
-async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, imageWidth = 100) {
-    if (!config)
-        return;
-    const androidMainPath = path_1.default.join(projectRoot, 'android/app/src/main');
-    if (config.drawable) {
-        await writeSplashScreenDrawablesAsync(androidMainPath, projectRoot, config.drawable);
+async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, imageWidth) {
+    if (!config) {
         return;
     }
+    const androidMainPath = path_1.default.join(projectRoot, 'android/app/src/main');
     const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
     await Promise.all(sizes.map(async (imageKey) => {
         // @ts-ignore
@@ -165,21 +157,5 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
             await fs_1.default.promises.mkdir(folder, { recursive: true });
             await fs_1.default.promises.writeFile(outputPath, composedImage);
         }
-        return null;
     }));
-}
-async function writeSplashScreenDrawablesAsync(drawablePath, projectRoot, drawable) {
-    if (!drawable) {
-        return;
-    }
-    const lightDrawablePath = path_1.default.join(drawablePath, DRAWABLES_CONFIGS.default.modes.light.path);
-    const darkDrawablePath = path_1.default.join(drawablePath, DRAWABLES_CONFIGS.default.modes.dark.path);
-    const lightFolder = path_1.default.dirname(lightDrawablePath);
-    await fs_1.default.promises.mkdir(lightFolder, { recursive: true });
-    await fs_1.default.promises.copyFile(path_1.default.join(projectRoot, drawable.icon), lightDrawablePath);
-    if (drawable.darkIcon) {
-        const darkFolder = path_1.default.dirname(darkDrawablePath);
-        await fs_1.default.promises.mkdir(darkFolder, { recursive: true });
-        await fs_1.default.promises.copyFile(path_1.default.join(projectRoot, drawable.darkIcon), darkDrawablePath);
-    }
 }

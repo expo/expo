@@ -7,11 +7,7 @@ import {
   withAndroidStyles,
 } from 'expo/config-plugins';
 
-import {
-  AndroidSplashConfig,
-  getAndroidDarkSplashConfig,
-  getAndroidSplashConfig,
-} from './getAndroidSplashConfig';
+import { AndroidSplashConfig } from './types';
 
 const styleResourceGroup = {
   name: 'Theme.App.SplashScreen',
@@ -20,20 +16,13 @@ const styleResourceGroup = {
 
 const SPLASH_COLOR_NAME = 'splashscreen_background';
 
-export const withAndroidSplashStyles: ConfigPlugin<AndroidSplashConfig> = (
-  config,
-  splashConfig
-) => {
+export const withAndroidSplashStyles: ConfigPlugin<AndroidSplashConfig> = (config, splash) => {
   config = withAndroidColors(config, (config) => {
-    const backgroundColor = getSplashBackgroundColor(splashConfig);
-    if (!backgroundColor) {
-      return config;
-    }
-    config.modResults = setSplashColorsForTheme(config.modResults, backgroundColor);
+    config.modResults = setSplashColorsForTheme(config.modResults, splash.backgroundColor);
     return config;
   });
   config = withAndroidColorsNight(config, (config) => {
-    const backgroundColor = getSplashDarkBackgroundColor(splashConfig);
+    const backgroundColor = splash.dark?.backgroundColor;
     if (!backgroundColor) {
       return config;
     }
@@ -104,14 +93,6 @@ export function removeOldSplashStyleGroup(styles: AndroidConfig.Resources.Resour
   return styles;
 }
 
-export function getSplashBackgroundColor(props: AndroidSplashConfig): string | null {
-  return getAndroidSplashConfig(props).backgroundColor ?? null;
-}
-
-export function getSplashDarkBackgroundColor(props: AndroidSplashConfig): string | null {
-  return getAndroidDarkSplashConfig(props)?.backgroundColor ?? null;
-}
-
 export function setSplashStylesForTheme(styles: AndroidConfig.Resources.ResourceXML) {
   // Add splash screen image
   return AndroidConfig.Styles.assignStylesValue(styles, {
@@ -124,7 +105,7 @@ export function setSplashStylesForTheme(styles: AndroidConfig.Resources.Resource
 
 export function setSplashColorsForTheme(
   colors: AndroidConfig.Resources.ResourceXML,
-  backgroundColor: string | null
+  backgroundColor: string | undefined
 ): AndroidConfig.Resources.ResourceXML {
   return Colors.assignColorValue(colors, { value: backgroundColor, name: SPLASH_COLOR_NAME });
 }

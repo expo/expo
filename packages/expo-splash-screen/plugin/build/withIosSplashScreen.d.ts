@@ -1,3 +1,3 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-import { IOSSplashConfig } from './getIosSplashConfig';
-export declare const withIosSplashScreen: ConfigPlugin<IOSSplashConfig>;
+import { Props } from './types';
+export declare const withIosSplashScreen: ConfigPlugin<Props>;

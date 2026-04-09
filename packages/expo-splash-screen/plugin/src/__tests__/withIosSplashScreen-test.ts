@@ -5,8 +5,8 @@ import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
-import projectFixtures from './fixtures/react-native-project';
 import { withIosSplashScreen } from '../withIosSplashScreen';
+import projectFixtures from './fixtures/react-native-project';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
@@ -69,16 +69,12 @@ describe(withIosSplashScreen, () => {
     // Apply the splash plugin
     config = withIosSplashScreen(config, {
       // must use full path for mock fs
-      image: null,
+      image: undefined,
       resizeMode: 'contain',
       backgroundColor: '#ff00ff',
-      tabletImage: null,
-      tabletBackgroundColor: null,
       dark: {
-        image: null,
-        backgroundColor: null,
-        tabletImage: null,
-        tabletBackgroundColor: null,
+        image: undefined,
+        backgroundColor: undefined,
       },
       // userInterfaceStyle: 'automatic',
     });
@@ -118,13 +114,9 @@ describe(withIosSplashScreen, () => {
       image: '/app/assets/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#ff00ff',
-      tabletImage: '/app/assets/splash.png',
-      tabletBackgroundColor: '#ff0000',
       dark: {
         image: '/app/assets/splash.png',
         backgroundColor: '#00ff00',
-        tabletImage: '/app/assets/splash.png',
-        tabletBackgroundColor: '#0000ff',
       },
       // userInterfaceStyle: 'automatic',
     });
