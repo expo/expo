@@ -1,6 +1,6 @@
 {
   "name": "@expo/image-utils",
-  "version": "0.8.12",
+  "version": "0.8.13",
   "description": "A package used by Expo CLI for processing images",
   "main": "build/index.js",
   "scripts": {
@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",
-    "@expo/require-utils": "^55.0.3",
+    "@expo/require-utils": "^55.0.4",
     "chalk": "^4.0.0",
     "getenv": "^2.0.0",
     "jimp-compact": "0.16.1",

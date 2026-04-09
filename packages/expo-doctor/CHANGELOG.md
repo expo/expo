@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add version to the `--verbose` output ([#44592](https://github.com/expo/expo/pull/44592) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.18.18 — 2026-04-09
+
+### 🎉 New features
+
+- Add version to the `--verbose` output ([#44592](https://github.com/expo/expo/pull/44592) by [@kitten](https://github.com/kitten))
 
 ## 1.18.17 — 2026-04-07
 

@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.4 — 2026-04-09
+
+### 🎉 New features
+
 - Add `resolveFrom` utility that supports custom extensions and not following symlinks ([#44114](https://github.com/expo/expo/pull/44114) by [@kitten](https://github.com/kitten))
 - Add `resolveGlobal` utility for sharp and ngrok resolution ([#44236](https://github.com/expo/expo/pull/44236) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
 - Resolve realpath for evaluated modules' `node_modules` paths in `compileModule` ([#44599](https://github.com/expo/expo/pull/44599) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 55.0.3 — 2026-03-17
 

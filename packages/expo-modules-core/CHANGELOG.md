@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Resolve `react-native-worklets` from existing podspec, falling back to peer resolution ([#44232](https://github.com/expo/expo/pull/44232) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 55.0.22 — 2026-04-09
+
+### 🐛 Bug fixes
+
+- [iOS] Resolve `react-native-worklets` from existing podspec, falling back to peer resolution ([#44232](https://github.com/expo/expo/pull/44232) by [@kitten](https://github.com/kitten))
 
 ## 55.0.21 — 2026-04-07
 

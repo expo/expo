@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.15 — 2026-04-09
+
+### 💡 Others
+
 - Remove outdated `watcher.unstable_workerThreads` option ([#44591](https://github.com/expo/expo/pull/44591) by [@kitten](https://github.com/kitten))
 
 ## 55.0.14 — 2026-04-07

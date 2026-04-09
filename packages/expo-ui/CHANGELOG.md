@@ -4,14 +4,18 @@
 
 ### 🛠 Breaking changes
 
-- [iOS] Match `TextField` and `SecureField` API with SwiftUI: replaced `multiline`, `numberOfLines`, `allowNewlines` with `axis` prop. Moved `keyboardType`, `autocorrectionDisabled`, `onSubmit` from props to modifier registry. Renamed events `onValueChanged` → `onValueChange`, `onFocusChanged` → `onFocusChange`, `onSelectionChanged` → `onSelectionChange`. Removed hardcoded `fixedSize`. Added `LineLimitModifier` with `reservesSpace` and range support. Added `OnSubmitModifier` and `KeyboardTypeModifier`. ([#44549](https://github.com/expo/expo/pull/44549) by [@nishan](https://github.com/intergalacticspacehighway))
-- [android] Match `TextField` API to native Compose: renamed `TextInput` to `TextField`/`OutlinedTextField`, replaced individual keyboard props with `keyboardOptions`/`keyboardActions` matching `KeyboardOptions`/`KeyboardActions`, added `enabled`, `readOnly`, `isError`, `singleLine`, `maxLines`, `minLines`, `shape`, `colors`. Added composable slots: `placeholder`, `leadingIcon`, `trailingIcon`, `prefix`, `suffix`, `supportingText`. Added imperative `focus()`/`blur()` and `onFocusChanged` event. ([#44545](https://github.com/expo/expo/pull/44545) by [@nishan](https://github.com/intergalacticspacehighway))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.11 — 2026-04-09
+
+### 🛠 Breaking changes
+
+- [iOS] Match `TextField` and `SecureField` API with SwiftUI: replaced `multiline`, `numberOfLines`, `allowNewlines` with `axis` prop. Moved `keyboardType`, `autocorrectionDisabled`, `onSubmit` from props to modifier registry. Renamed events `onValueChanged` → `onValueChange`, `onFocusChanged` → `onFocusChange`, `onSelectionChanged` → `onSelectionChange`. Removed hardcoded `fixedSize`. Added `LineLimitModifier` with `reservesSpace` and range support. Added `OnSubmitModifier` and `KeyboardTypeModifier`. ([#44549](https://github.com/expo/expo/pull/44549) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Match `TextField` API to native Compose: renamed `TextInput` to `TextField`/`OutlinedTextField`, replaced individual keyboard props with `keyboardOptions`/`keyboardActions` matching `KeyboardOptions`/`KeyboardActions`, added `enabled`, `readOnly`, `isError`, `singleLine`, `maxLines`, `minLines`, `shape`, `colors`. Added composable slots: `placeholder`, `leadingIcon`, `trailingIcon`, `prefix`, `suffix`, `supportingText`. Added imperative `focus()`/`blur()` and `onFocusChanged` event. ([#44545](https://github.com/expo/expo/pull/44545) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 55.0.10 — 2026-04-07
 
