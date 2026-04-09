@@ -7,7 +7,13 @@ import { getPrecompileDir } from '../Directories';
 import logger from '../Logger';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
-import { getBuildFolderPrefixForPlatform, getBuildPlatformsForProduct, SPMBuild } from './SPMBuild';
+import {
+  enrichFrameworkWithHeaders,
+  findFirstExisting,
+  getBuildFolderPrefixForPlatform,
+  getBuildPlatformsForProduct,
+  SPMBuild,
+} from './SPMBuild';
 import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
@@ -497,35 +503,15 @@ const copySPMDependencyXCFrameworksAsync = async (
       continue;
     }
 
-    // Look for the pre-built xcframework in SourcePackages/artifacts/<packageName>/<productName>/
-    const artifactsDir = path.join(
-      buildPath,
-      'SourcePackages',
-      'artifacts',
-      packageName,
-      productName
-    );
-
     const xcframeworkName = `${productName}.xcframework`;
-    const sourceXCFrameworkPath = path.join(artifactsDir, xcframeworkName);
-
-    if (!(await fs.pathExists(sourceXCFrameworkPath))) {
-      logger.warn(
-        `⚠️  SPM dependency xcframework not found at ${path.relative(pkg.path, sourceXCFrameworkPath)}`
-      );
-      continue;
-    }
-
     const destXCFrameworkPath = path.join(outputDir, xcframeworkName);
-
-    // Use xcodebuild -create-xcframework to re-compose with only the slices matching
-    // the product's platforms. The source xcframework may contain macOS/tvOS/visionOS
-    // slices with Versions/Current/ symlink structures that cause fs.copy to fail.
-    // By extracting only the iOS frameworks from the build output, we avoid both the
-    // symlink issues and shipping unnecessary platform slices.
     const productBuildPlatforms = getBuildPlatformsForProduct(product);
 
-    // Collect the matching frameworks from the SPM build output
+    // Collect built frameworks from Build/Products/ — this covers source-built SPM
+    // dependencies (e.g., ZXingObjC fetched from a git URL and compiled by Xcode).
+    // SPM places dependency frameworks in PackageFrameworks/ subdirectory; check there
+    // first, then the top-level build products dir.
+    const checkoutDir = path.join(buildPath, 'SourcePackages', 'checkouts', packageName);
     const depFrameworks: { frameworkPath: string; debugSymbolsPath?: string }[] = [];
     for (const buildPlatform of productBuildPlatforms) {
       const buildFolderPrefix = getBuildFolderPrefixForPlatform(buildPlatform);
@@ -535,29 +521,60 @@ const copySPMDependencyXCFrameworksAsync = async (
         'Products',
         `${buildType}-${buildFolderPrefix}`
       );
-      const frameworkPath = path.join(buildProductsDir, `${productName}.framework`);
-      const dsymPath = path.join(buildProductsDir, `${productName}.framework.dSYM`);
+      const candidatePaths = [
+        path.join(buildProductsDir, 'PackageFrameworks', `${productName}.framework`),
+        path.join(buildProductsDir, `${productName}.framework`),
+      ];
+      const frameworkPath = await findFirstExisting(candidatePaths);
+      const dsymPath = await findFirstExisting(candidatePaths.map((p) => `${p}.dSYM`));
 
-      if (await fs.pathExists(frameworkPath)) {
+      if (frameworkPath) {
+        // SPM's PackageFrameworks/ output may lack Headers/ and Modules/ — they live
+        // in build intermediates. Enrich the framework so the xcframework is usable
+        // as a build dependency with module imports.
+        if (await fs.pathExists(checkoutDir)) {
+          await enrichFrameworkWithHeaders(
+            frameworkPath,
+            productName,
+            checkoutDir,
+            buildPath,
+            buildFolderPrefix,
+            buildType
+          );
+        }
         depFrameworks.push({
           frameworkPath,
-          debugSymbolsPath: (await fs.pathExists(dsymPath)) ? dsymPath : undefined,
+          debugSymbolsPath: dsymPath ?? undefined,
         });
       }
     }
 
     if (depFrameworks.length === 0) {
-      // Fallback: the dependency may be a binary target (not built locally).
-      // In that case, the framework only exists inside the xcframework slices in
-      // SourcePackages/artifacts. Use rsync to copy while preserving symlinks.
-      logger.info(
-        `📦 Copying SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
+      // No locally-built frameworks found. Check SourcePackages/artifacts/ for binary
+      // targets (pre-built xcframeworks distributed via SPM, not compiled locally).
+      const artifactsDir = path.join(
+        buildPath,
+        'SourcePackages',
+        'artifacts',
+        packageName,
+        productName
       );
-      await fs.remove(destXCFrameworkPath);
-      execSync(`rsync -a --delete "${sourceXCFrameworkPath}/" "${destXCFrameworkPath}/"`, {
-        stdio: 'pipe',
-      });
-      logger.info(`✅ Copied ${xcframeworkName} alongside ${product.name}.xcframework`);
+      const sourceXCFrameworkPath = path.join(artifactsDir, xcframeworkName);
+
+      if (await fs.pathExists(sourceXCFrameworkPath)) {
+        logger.info(
+          `📦 Copying SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
+        );
+        await fs.remove(destXCFrameworkPath);
+        execSync(`rsync -a --delete "${sourceXCFrameworkPath}/" "${destXCFrameworkPath}/"`, {
+          stdio: 'pipe',
+        });
+        logger.info(`✅ Copied ${xcframeworkName} alongside ${product.name}.xcframework`);
+      } else {
+        logger.warn(
+          `⚠️  SPM dependency ${chalk.cyan(productName)} not found in Build/Products/ or SourcePackages/artifacts/`
+        );
+      }
       continue;
     }
 
