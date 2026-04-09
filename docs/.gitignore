@@ -37,3 +37,6 @@ public/llms-eas.txt
 public/llms-sdk.txt
 scripts/generate-llms/talks.js
 public/llms-sdk-*.txt
+
+# vale binary (installed by scripts/install-vale.sh)
+.vale/bin/
