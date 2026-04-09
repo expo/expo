@@ -136,16 +136,14 @@ on:
       states:
         - ready_for_review
         - waiting_for_review
-    build_upload:
-      states:
-        - complete
   # @end #
 
 jobs:
-  build:
-    type: build
+  send_slack_notification:
+    type: slack
     params:
-      platform: ios
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: "App version is ready for review or waiting for review."
 ```
 
 ### VS Code extension

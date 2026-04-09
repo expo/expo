@@ -241,6 +241,11 @@ Supported values:
 All filter values must be lowercase and are case-sensitive.
 
 ```yaml
+# Triggers when:
+# - the app version enters review,
+# - a build upload completes or fails,
+# - an external beta build is ready for testing or approved,
+# - a tester reports a crash via TestFlight.
 on:
   app_store_connect:
     app_version:
@@ -261,6 +266,7 @@ on:
 ```
 
 ```yaml
+# Triggers on any app version or build upload state change.
 on:
   app_store_connect:
     app_version: {}
