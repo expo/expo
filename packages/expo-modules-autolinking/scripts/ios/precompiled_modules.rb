@@ -562,9 +562,9 @@ module Expo
         xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
         return unless File.exist?(xcframework_path)
 
-        create_nonframework_modulemap(react_prebuilt_dir)
+        create_nonframework_modulemap(installer.sandbox.root)
         patch_framework_modulemaps(xcframework_path)
-        inject_isystem_flags(installer, react_prebuilt_dir)
+        inject_isystem_flags(installer, installer.sandbox.root)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
       end
@@ -702,11 +702,11 @@ module Expo
       # ──────────────────────────────────────────────────────────────────────
 
       # Creates a non-framework modulemap so <React/X.h> resolves through -isystem + VFS.
-      def create_nonframework_modulemap(react_prebuilt_dir)
-        modulemap_path = File.join(react_prebuilt_dir, 'React-use-frameworks.modulemap')
+      def create_nonframework_modulemap(pods_root)
+        modulemap_path = File.join(pods_root, 'React-use-frameworks.modulemap')
         modulemap_content = <<~MODULEMAP
           module React {
-            umbrella header "React.xcframework/Headers/React_Core/React_Core-umbrella.h"
+            umbrella header "React-Core-prebuilt/React.xcframework/Headers/React_Core/React_Core-umbrella.h"
             export *
           }
         MODULEMAP
@@ -732,10 +732,10 @@ module Expo
 
       # Injects -fmodule-map-file and -isystem into all pod and aggregate xcconfigs.
       # Module builds don't inherit -I (HEADER_SEARCH_PATHS) but DO inherit -isystem.
-      def inject_isystem_flags(installer, react_prebuilt_dir)
-        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+      def inject_isystem_flags(installer, pods_root)
+        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/React-use-frameworks.modulemap\""
         extra_isystem = "-isystem \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
-        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/React-use-frameworks.modulemap\""
         swift_extra_isystem = "-Xcc -isystem -Xcc \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
         skip_marker = 'React-use-frameworks.modulemap'
 
