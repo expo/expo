@@ -136,7 +136,8 @@ fun Event.toOTMetadata(easClientId: String): OTMetadata {
       OTAttribute.of("expo.sdk.version", metadata.expoSdkVersion),
       OTAttribute.of("expo.environment", metadata.environment ?: ""),
       OTAttribute.of("expo.react_native.version", metadata.reactNativeVersion),
-      OTAttribute.of("expo.eas_client.id", easClientId)
+      OTAttribute.of("expo.eas_client.id", easClientId),
+      OTAttribute.of("expo.eas_build.id", metadata.appEasBuildId ?: "")
     )
   )
 }

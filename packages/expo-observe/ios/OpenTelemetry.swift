@@ -119,6 +119,7 @@ extension Event {
       OTAttribute(key: "expo.environment", rawValue: metadata.environment ?? ""),
       OTAttribute(key: "expo.react_native.version", rawValue: metadata.reactNativeVersion),
       OTAttribute(key: "expo.eas_client.id", rawValue: easClientId),
+      OTAttribute(key: "expo.eas_build.id", rawValue: metadata.appEasBuildId ?? ""),
     ])
   }
 

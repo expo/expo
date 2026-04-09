@@ -135,6 +135,7 @@ struct OpenTelemetryTests {
     #expect(attrs["expo.sdk.version"] == "55.0.0")
     #expect(attrs["expo.react_native.version"] == "0.83.1")
     #expect(attrs["expo.eas_client.id"] == testEasClientId)
+    #expect(attrs["expo.eas_build.id"] == "")
   }
 
   // MARK: - Full OTEvent
