@@ -28,7 +28,6 @@ function find(
   const result: FileData = new Map();
   let activeCalls = 0;
   const pathUtils = new RootPathUtils(rootDir);
-  const visited = new Set<string>();
 
   const exts = extensions.reduce(
     (acc, ext) => {
@@ -39,11 +38,6 @@ function find(
   );
 
   function search(directory: string): void {
-    if (visited.has(directory)) {
-      return;
-    } else {
-      visited.add(directory);
-    }
     activeCalls++;
     fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
       activeCalls--;
