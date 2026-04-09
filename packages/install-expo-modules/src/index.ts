@@ -37,6 +37,7 @@ const program = new Command(packageJSON.name)
   .description('Install expo-modules into your project')
   .option('-s, --sdk-version <version>', 'Install specified expo-modules sdk version')
   .option('--non-interactive', 'Disable interactive prompts')
+  .option('--skip-pod-install', 'Skip the step installing iOS pods')
   .parse(process.argv);
 
 function getSdkVersionInfo(projectRoot: string): VersionInfo {
@@ -194,8 +195,10 @@ async function runAsync() {
     await installBabelPresetExpoNonInteractiveAsync(projectRoot);
   }
 
-  console.log('\u203A Installing ios pods...');
-  await installPodsAsync(projectRoot);
+  if (!program.opts().skipPodInstall) {
+    console.log('\u203A Installing ios pods...');
+    await installPodsAsync(projectRoot);
+  }
 
   console.log(chalk.bold('\u203A Installation completed!'));
 }
