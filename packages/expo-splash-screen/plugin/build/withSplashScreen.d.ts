@@ -1,6 +1,6 @@
-import { AndroidSplashConfig } from '@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/getAndroidSplashConfig';
-import { IOSSplashConfig } from '@expo/prebuild-config/build/plugins/unversioned/expo-splash-screen/getIosSplashConfig';
 import { ConfigPlugin } from 'expo/config-plugins';
+import { AndroidSplashConfig } from './getAndroidSplashConfig';
+import { IOSSplashConfig } from './getIosSplashConfig';
 export type Props = {
     /**
      * Hex color for the splash screen background.
