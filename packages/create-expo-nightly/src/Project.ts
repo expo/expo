@@ -90,13 +90,15 @@ async function setupProjectPackageJsonAsync(
   for (const name of REACT_NATIVE_TRANSITIVE_DEPENDENCIES) {
     resolutions[name] = `${nightlyVersion}`;
   }
+  // pnpm workspace globs must be relative to the workspace root.
+  const relativePrefix = path.relative(projectRoot, expoRepoPath);
   const workspaceGlobs = [
-    `${workspacePrefix}/packages/*`,
-    `${workspacePrefix}/packages/@expo/*`,
+    `${relativePrefix}/packages/*`,
+    `${relativePrefix}/packages/@expo/*`,
   ];
 
   await mergeJsonFilesAsync(packageJsonPath, {
-    workspaces: workspaceGlobs,
+    workspaces: [`${workspacePrefix}/packages/*`, `${workspacePrefix}/packages/@expo/*`],
 
     // Exclude templates from autolinking
     expo: {
@@ -109,12 +111,10 @@ async function setupProjectPackageJsonAsync(
     resolutions,
   });
 
-  // pnpm requires its own workspace config to recognize workspace packages.
-  // preferWorkspacePackages ensures local packages are used even when the
-  // canary template has dependency ranges from a different SDK version.
+  // pnpm requires pnpm-workspace.yaml to recognize workspace packages.
   await fs.promises.writeFile(
     path.join(projectRoot, 'pnpm-workspace.yaml'),
-    ['packages:', ...workspaceGlobs.map((g) => `  - '${g}'`), 'preferWorkspacePackages: true', ''].join('\n')
+    ['packages:', ...workspaceGlobs.map((g) => `  - '${g}'`), ''].join('\n')
   );
 }
 
