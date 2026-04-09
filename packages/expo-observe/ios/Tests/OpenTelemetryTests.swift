@@ -96,7 +96,7 @@ struct OpenTelemetryTests {
     #expect(otMetric.gauge.dataPoints.count == 1)
 
     let dataPoint = otMetric.gauge.dataPoints[0]
-    #expect(dataPoint.value == 3.14)
+    #expect(dataPoint.asDouble == 3.14)
     #expect(dataPoint.attributes.count == 1)
     #expect(dataPoint.attributes[0].key == "session.id")
     #expect(dataPoint.attributes[0].value.stringValue == testSessionId)

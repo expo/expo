@@ -18,7 +18,7 @@ struct OTAttribute: Codable, Sendable {
 
 struct OTDataPoint: Codable, Sendable {
   let timeUnixNano: UInt64
-  let value: Double
+  let asDouble: Double
   let attributes: [OTAttribute]
 }
 
@@ -85,7 +85,7 @@ extension Event.Metric {
       gauge: OTGauge(dataPoints: [
         OTDataPoint(
           timeUnixNano: nsFromISODateString(),
-          value: self.value,
+          asDouble: self.value,
           attributes: [
             OTAttribute(
               key: "session.id",
@@ -108,6 +108,7 @@ extension Event {
       OTAttribute(key: "os.version", rawValue: metadata.deviceOsVersion),
       OTAttribute(key: "device.model.name", rawValue: metadata.deviceName),
       OTAttribute(key: "device.model.identifier", rawValue: metadata.deviceModel),
+      OTAttribute(key: "browser.language", rawValue: metadata.languageTag),
       OTAttribute(key: "telemetry.sdk.name", rawValue: "expo-observe"),
       OTAttribute(key: "telemetry.sdk.version", rawValue: ObserveVersions.clientVersion),
       OTAttribute(key: "telemetry.sdk.language", rawValue: "swift"),
@@ -115,9 +116,9 @@ extension Event {
       OTAttribute(key: "expo.app.build_number", rawValue: metadata.appBuildNumber ?? ""),
       OTAttribute(key: "expo.app.update_id", rawValue: metadata.appUpdateId ?? ""),
       OTAttribute(key: "expo.sdk.version", rawValue: metadata.expoSdkVersion),
+      OTAttribute(key: "expo.environment", rawValue: metadata.environment ?? ""),
       OTAttribute(key: "expo.react_native.version", rawValue: metadata.reactNativeVersion),
-      OTAttribute(key: "expo.eas_client.id", rawValue: easClientId)
-
+      OTAttribute(key: "expo.eas_client.id", rawValue: easClientId),
     ])
   }
 
