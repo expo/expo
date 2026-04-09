@@ -56,7 +56,7 @@ internal struct ObservabilityManager {
         return
       }
 
-      let body: any RequestBodyProtocol
+      let body: any Encodable
       if useOpenTelemetry {
         body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId)})
       } else {
@@ -65,11 +65,11 @@ internal struct ObservabilityManager {
       var request = URLRequest(url: endpointUrl)
       request.httpMethod = "POST"
       request.allHTTPHeaderFields = ["Content-Type": "application/json"]
-      request.httpBody = try body.toData([])
+      request.httpBody = try body.toJSONData([])
 
       observeLogger.debug("[EAS Observe] Sending the request to \(endpointUrl) with body:")
       // Use `print` so the JSON can be copied without including the log level emojis.
-      print(try body.toString(.prettyPrinted))
+      print(try body.toJSONString(.prettyPrinted))
 
       let (responseData, urlResponse) = try await URLSession.shared.data(for: request)
 

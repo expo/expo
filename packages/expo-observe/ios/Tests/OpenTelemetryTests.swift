@@ -1,6 +1,7 @@
 import Testing
 
 @testable import ExpoObserve
+@testable import ExpoAppMetrics
 
 @Suite("OpenTelemetry conversion")
 struct OpenTelemetryTests {
@@ -182,11 +183,11 @@ struct OpenTelemetryTests {
     let otEvent = event.toOTEvent(testEasClientId)
     let requestBody = OTRequestBody(resourceMetrics: [otEvent])
 
-    let jsonString = try requestBody.toString()
+    let jsonString = try requestBody.toJSONString()
     #expect(!jsonString.isEmpty)
 
     // Verify it can be round-tripped
-    let data = try requestBody.toData()
+    let data = try requestBody.toJSONData()
     let decoded = try JSONDecoder().decode(OTRequestBody.self, from: data)
     #expect(decoded.resourceMetrics.count == 1)
     #expect(decoded.resourceMetrics[0].scopeMetrics[0].metrics.count == 4)
@@ -198,7 +199,7 @@ struct OpenTelemetryTests {
     let otEvent = event.toOTEvent(testEasClientId)
     let requestBody = OTRequestBody(resourceMetrics: [otEvent])
 
-    let data = try requestBody.toData()
+    let data = try requestBody.toJSONData()
     let json = try JSONSerialization.jsonObject(with: data) as! [String: Any]
 
     // Top level should have "resourceMetrics" array
@@ -221,6 +222,67 @@ struct OpenTelemetryTests {
     let attrValue = firstAttr["value"] as! [String: Any]
     #expect(attrValue["stringValue"] != nil)
   }
+
+  // MARK: - Metric attributes
+
+  @Test
+  func `toOTMetric includes route name attribute when present`() {
+    let metric = Event.Metric(
+      category: "appStartup",
+      name: "bundleLoadTime",
+      value: 1.0,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: "/home",
+      customParams: nil
+    )
+    let otMetric = metric.toOTMetric()
+    let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+
+    #expect(attrs["expo.route_name"] == "/home")
+  }
+
+  @Test
+  func `toOTMetric excludes route name attribute when nil`() {
+    let metric = makeMetric(name: "bundleLoadTime", value: 1.0, timestamp: "2026-01-01T00:00:00Z")
+    let otMetric = metric.toOTMetric()
+    let keys = otMetric.gauge.dataPoints[0].attributes.map { $0.key }
+
+    #expect(keys.contains("expo.route_name") == false)
+  }
+
+  @Test
+  func `toOTMetric includes custom params as JSON string`() {
+    let metric = Event.Metric(
+      category: "appStartup",
+      name: "bundleLoadTime",
+      value: 1.0,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      customParams: AnyCodable(["screen": "dashboard", "variant": "A"] as [String: Any])
+    )
+    let otMetric = metric.toOTMetric()
+    let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+
+    let jsonString = attrs["expo.custom_params"]!
+    let parsed = try! JSONSerialization.jsonObject(with: jsonString.data(using: .utf8)!) as! [String: String]
+    #expect(parsed["screen"] == "dashboard")
+    #expect(parsed["variant"] == "A")
+  }
+
+  @Test
+  func `toOTMetric excludes custom params attribute when nil`() {
+    let metric = makeMetric(name: "bundleLoadTime", value: 1.0, timestamp: "2026-01-01T00:00:00Z")
+    let otMetric = metric.toOTMetric()
+    let keys = otMetric.gauge.dataPoints[0].attributes.map { $0.key }
+
+    #expect(keys.contains("expo.custom_params") == false)
+  }
+
+  // MARK: - Multiple events
 
   @Test
   func `multiple events produce multiple resourceMetrics entries`() {

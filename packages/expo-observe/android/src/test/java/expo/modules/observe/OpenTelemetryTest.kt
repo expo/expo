@@ -1,6 +1,8 @@
 package expo.modules.observe
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -119,6 +121,63 @@ class OpenTelemetryTest {
     )
     val otMetric = metric.toOTMetric()
     assertEquals(customSessionId, otMetric.gauge.dataPoints[0].attributes[0].value.stringValue)
+  }
+
+  // -- Metric attributes --
+
+  @Test
+  fun `toOTMetric includes route name attribute when present`() {
+    val metric = EASMetric(
+      sessionId = testSessionId,
+      timestamp = "2026-01-01T00:00:00.000Z",
+      category = "appStartup",
+      name = "bundleLoadTime",
+      value = 1.0,
+      routeName = "/home"
+    )
+    val otMetric = metric.toOTMetric()
+    val attrs = otMetric.gauge.dataPoints[0].attributes.associate { it.key to it.value.stringValue }
+
+    assertEquals("/home", attrs["expo.route_name"])
+  }
+
+  @Test
+  fun `toOTMetric excludes route name attribute when nil`() {
+    val metric = makeMetric("bundleLoadTime", 1.0, "2026-01-01T00:00:00.000Z")
+    val otMetric = metric.toOTMetric()
+    val keys = otMetric.gauge.dataPoints[0].attributes.map { it.key }
+
+    assertFalse(keys.contains("expo.route_name"))
+  }
+
+  @Test
+  fun `toOTMetric includes custom params as JSON string`() {
+    val metric = EASMetric(
+      sessionId = testSessionId,
+      timestamp = "2026-01-01T00:00:00.000Z",
+      category = "appStartup",
+      name = "bundleLoadTime",
+      value = 1.0,
+      customParams = JsonObject(mapOf(
+        "screen" to JsonPrimitive("dashboard"),
+        "variant" to JsonPrimitive("A")
+      ))
+    )
+    val otMetric = metric.toOTMetric()
+    val attrs = otMetric.gauge.dataPoints[0].attributes.associate { it.key to it.value.stringValue }
+
+    val parsed = Json.parseToJsonElement(attrs["expo.custom_params"]!!).jsonObject
+    assertEquals("dashboard", parsed["screen"]!!.jsonPrimitive.content)
+    assertEquals("A", parsed["variant"]!!.jsonPrimitive.content)
+  }
+
+  @Test
+  fun `toOTMetric excludes custom params attribute when nil`() {
+    val metric = makeMetric("bundleLoadTime", 1.0, "2026-01-01T00:00:00.000Z")
+    val otMetric = metric.toOTMetric()
+    val keys = otMetric.gauge.dataPoints[0].attributes.map { it.key }
+
+    assertFalse(keys.contains("expo.custom_params"))
   }
 
   // -- Event metadata --

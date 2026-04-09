@@ -96,6 +96,16 @@ private val metricNameMap = mapOf(
 )
 
 fun EASMetric.toOTMetric(): OTMetric {
+  val attributes = mutableListOf(
+    OTAttribute.of(key = "session.id", rawValue = sessionId)
+  )
+  routeName?.let {
+    attributes.add(OTAttribute.of(key = "expo.route_name", rawValue = it))
+  }
+  customParams?.let {
+    attributes.add(OTAttribute.of(key = "expo.custom_params", rawValue = it.toString()))
+  }
+
   return OTMetric(
     unit = "s",
     name = metricNameMap[name] ?: "expo.app_startup.$name",
@@ -104,12 +114,7 @@ fun EASMetric.toOTMetric(): OTMetric {
         OTDataPoint(
           timeUnixNano = timestampToDateNS(timestamp),
           asDouble = value,
-          attributes = listOf(
-            OTAttribute.of(
-              key = "session.id",
-              rawValue = sessionId
-            )
-          )
+          attributes = attributes
         )
       )
     )

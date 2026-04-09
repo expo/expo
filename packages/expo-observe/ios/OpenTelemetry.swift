@@ -79,19 +79,24 @@ extension Event.Metric {
   }
 
   func toOTMetric() -> OTMetric {
-    OTMetric(
+    var attributes: [OTAttribute] = [
+      OTAttribute(key: "session.id", rawValue: sessionId)
+    ]
+    if let routeName {
+      attributes.append(OTAttribute(key: "expo.route_name", rawValue: routeName))
+    }
+    if let customParamsString = try? customParams?.toJSONString() {
+      attributes.append(OTAttribute(key: "expo.custom_params", rawValue: customParamsString))
+    }
+
+    return OTMetric(
       unit: "s",
       name: metricNameMap[self.name] ?? "expo.app_startup.\(self.name)",
       gauge: OTGauge(dataPoints: [
         OTDataPoint(
           timeUnixNano: nsFromISODateString(),
           asDouble: self.value,
-          attributes: [
-            OTAttribute(
-              key: "session.id",
-              rawValue: self.sessionId
-            )
-          ]
+          attributes: attributes
         )
       ])
     )
@@ -138,17 +143,6 @@ extension Event {
 
 // MARK: -- Request body for Open Telemetry events
 
-internal struct OTRequestBody: Codable, Sendable, RequestBodyProtocol {
+internal struct OTRequestBody: Codable, Sendable {
   let resourceMetrics: [OTEvent]
-
-  func toData(_ formatting: JSONEncoder.OutputFormatting = []) throws -> Data {
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = formatting
-    return try encoder.encode(self)
-  }
-
-  func toString(_ formatting: JSONEncoder.OutputFormatting = []) throws -> String {
-    let data = try toData(formatting)
-    return String(data: data, encoding: .utf8) ?? ""
-  }
 }

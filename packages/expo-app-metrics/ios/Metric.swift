@@ -32,7 +32,7 @@ public struct Metric: Codable, Sendable {
     self.value = value
     self.timestamp = timestamp
     self.routeName = routeName
-    self.params = AnyCodable(params)
+    self.params = params != nil ? AnyCodable(params) : nil
   }
 
   func getMetricKey() -> String {
