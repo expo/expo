@@ -34,7 +34,7 @@ To declare your CLI extension, add an entry to the `cliExtensions` array in the 
         { "name": "list", "title": "List registered background tasks", "environments": ["cli"] },
         { "name": "trigger-test", "title": "Trigger background tasks", "environments": ["cli"] }
       ],
-      "entryPoint": "cli/build/index.mjs"
+      "entryPoint": "cli/build/index.js"
     }
   }
 }
@@ -52,10 +52,8 @@ You can use the `expo/devtools` API to communicate between your CLI extension an
 
 The effective way to get started is to use the `runCliExtension` function in your CLI extension app:
 
-```ts cli/src/index.mts
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const { runCliExtension } = require('expo/devtools') as typeof import('expo/devtools.js');
+```ts cli/index.ts
+import { runCliExtension } from '@expo/devtools';
 
 runCliExtension<{
   list: Record<string, never>;
@@ -68,7 +66,7 @@ runCliExtension<{
 
 You can now restart the Expo CLI by running `npx expo start` and test your CLI extension by pressing the <kbd>shift</kbd> + <kbd>m</kbd> keys in the Expo CLI to bring up the CLI devtools menu.
 
-> **Note:** CLI extensions use `.mts` source files that compile to `.mjs`, enabling ESM modules. The `expo/devtools` package is loaded via `createRequire` since it is a CJS module.
+> **Note:** The `expo/devtools` package re-exports `@expo/devtools`. CLI extensions (which run in a Node.js context) should import directly from `@expo/devtools`, while app-side code should use `expo/devtools`.
 
 ### Add communication between your CLI extension and your Expo app
 
@@ -76,11 +74,12 @@ CLI extensions communicate with running apps using the same `DevToolsPluginClien
 
 The connected app is automatically resolved and passed to your executor as the `app` parameter.
 
-```ts cli/src/index.mts
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const { runCliExtension, createCliDevToolsPluginClient, sendDevToolsRequestAsync } =
-  require('expo/devtools') as typeof import('expo/devtools.js');
+```ts cli/index.ts
+import {
+  runCliExtension,
+  createCliDevToolsPluginClient,
+  sendDevToolsRequestAsync,
+} from '@expo/devtools';
 
 const PLUGIN_NAME = 'expo-background-task';
 
