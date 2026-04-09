@@ -10,7 +10,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import H from '../../constants';
 import { RootPathUtils } from '../../lib/RootPathUtils';
 import type { Console, CrawlerOptions, CrawlResult, FileData, IgnoreMatcher } from '../../types';
 
@@ -23,92 +22,12 @@ function find(
   includeSymlinks: boolean,
   rootDir: string,
   console: Console,
+  previousFileSystem: CrawlerOptions['previousState']['fileSystem'] | null,
   callback: Callback
 ): void {
   const result: FileData = new Map();
   let activeCalls = 0;
   const pathUtils = new RootPathUtils(rootDir);
-
-  const exts = extensions.reduce(
-    (acc, ext) => {
-      acc[ext] = true;
-      return acc;
-    },
-    {} as Record<string, true | undefined>
-  );
-
-  function search(directory: string): void {
-    activeCalls++;
-    fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
-      activeCalls--;
-      if (err) {
-        console.warn(
-          `Error "${(err as any).code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
-        );
-      } else {
-        for (let idx = 0; idx < entries.length; idx++) {
-          const entry = entries[idx]!;
-          const file = path.join(directory, entry.name.toString());
-
-          if (ignore(file) || (!includeSymlinks && entry.isSymbolicLink())) {
-            continue;
-          } else if (entry.isDirectory()) {
-            search(file);
-            continue;
-          }
-
-          activeCalls++;
-
-          fs.lstat(file, (err, stat) => {
-            activeCalls--;
-
-            if (!err && stat) {
-              const ext = path.extname(file).slice(1);
-              if (stat.isSymbolicLink() || exts[ext]) {
-                result.set(pathUtils.absoluteToNormal(file), [
-                  stat.mtime.getTime(),
-                  stat.size,
-                  0,
-                  null,
-                  stat.isSymbolicLink() ? 1 : 0,
-                  null,
-                ]);
-              }
-            }
-
-            if (activeCalls === 0) {
-              callback(result);
-            }
-          });
-        }
-      }
-
-      if (activeCalls === 0) {
-        callback(result);
-      }
-    });
-  }
-
-  if (roots.length > 0) {
-    roots.forEach(search);
-  } else {
-    callback(result);
-  }
-}
-
-function findWithoutStat(
-  roots: readonly string[],
-  extensions: readonly string[],
-  ignore: IgnoreMatcher,
-  includeSymlinks: boolean,
-  rootDir: string,
-  console: Console,
-  callback: Callback
-): void {
-  const result: FileData = new Map();
-  let activeCalls = 0;
-  const pathUtils = new RootPathUtils(rootDir);
-  const visited: Set<string> = new Set();
 
   const exts = extensions.reduce(
     (acc, ext) => {
@@ -119,10 +38,6 @@ function findWithoutStat(
   );
 
   function search(directory: string, dirNormal: string): void {
-    if (visited.has(directory)) {
-      return;
-    }
-    visited.add(directory);
     activeCalls++;
     fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
       activeCalls--;
@@ -151,15 +66,35 @@ function findWithoutStat(
 
           const isSymlink = entry.isSymbolicLink();
           const ext = path.extname(name).slice(1);
-          if (isSymlink || exts[ext]) {
-            result.set(fileNormal, [
-              null, // deferred to getDifference
-              0, // unknown
-              0,
-              null,
-              isSymlink ? 1 : 0,
-              null,
-            ]);
+          if (!isSymlink && !exts[ext]) {
+            continue;
+          }
+
+          const mtime = previousFileSystem?.getMtimeByNormalPath(fileNormal);
+          if (mtime == null || mtime === 0) {
+            // When we're in a cold start or a previous file doesn't exit, we can
+            // skip the mtime/size lstat now and treat the file as new
+            result.set(fileNormal, [null, 0, 0, null, isSymlink ? 1 : 0, null]);
+          } else {
+            activeCalls++;
+            fs.lstat(file, (err, stat) => {
+              activeCalls--;
+
+              if (!err && stat) {
+                result.set(fileNormal, [
+                  stat.mtime.getTime(),
+                  stat.size,
+                  0,
+                  null,
+                  isSymlink ? 1 : 0,
+                  null,
+                ]);
+              }
+
+              if (activeCalls === 0) {
+                callback(result);
+              }
+            });
           }
         }
       }
@@ -171,50 +106,12 @@ function findWithoutStat(
   }
 
   if (roots.length > 0) {
-    roots.forEach((root) => search(root, pathUtils.absoluteToNormal(root)));
+    for (const root of roots) {
+      search(root, pathUtils.absoluteToNormal(root));
+    }
   } else {
     callback(result);
   }
-}
-
-async function asyncStatKnownFiles(
-  fileData: FileData,
-  previousFileSystem: CrawlerOptions['previousState']['fileSystem'],
-  rootDir: string
-): Promise<void> {
-  const pathUtils = new RootPathUtils(rootDir);
-  const promises: Promise<void>[] = [];
-
-  const externalPrefix = '..' + path.sep;
-  for (const [normalPath, metadata] of fileData) {
-    if (metadata[H.SYMLINK] !== 0) {
-      continue;
-    } else if (metadata[H.MTIME] != null && metadata[H.MTIME]! > 0) {
-      continue;
-    } else if (normalPath.startsWith(externalPrefix)) {
-      // Skip reading mtime for files outside of project root
-      continue;
-    }
-
-    const absolutePath = pathUtils.normalToAbsolute(normalPath);
-    if (!previousFileSystem.exists(absolutePath)) {
-      continue;
-    }
-
-    promises.push(
-      fs.promises.lstat(absolutePath).then(
-        (stat) => {
-          metadata[H.MTIME] = stat.mtime.getTime();
-          metadata[H.SIZE] = stat.size;
-        },
-        () => {
-          fileData.delete(normalPath);
-        }
-      )
-    );
-  }
-
-  await Promise.all(promises);
 }
 
 export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlResult> {
@@ -227,7 +124,6 @@ export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlR
     includeSymlinks,
     perfLogger,
     roots,
-    skipStat,
     abortSignal,
     subpath,
   } = options;
@@ -235,22 +131,21 @@ export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlR
   abortSignal?.throwIfAborted();
   perfLogger?.point('nodeCrawl_start');
 
-  const crawlFn = skipStat ? findWithoutStat : find;
-
-  // (1): Discover files
   const fileData = await new Promise<FileData>((resolve) => {
-    crawlFn(roots, extensions, ignore, includeSymlinks, rootDir, console, resolve);
+    find(
+      roots,
+      extensions,
+      ignore,
+      includeSymlinks,
+      rootDir,
+      console,
+      previousState.fileSystem,
+      resolve
+    );
   });
 
   perfLogger?.point('nodeCrawl_afterCrawl');
   abortSignal?.throwIfAborted();
-
-  // (2): Async stat for files that exist in the previous filesystem.
-  if (skipStat) {
-    await asyncStatKnownFiles(fileData, previousState.fileSystem, rootDir);
-    perfLogger?.point('nodeCrawl_afterStat');
-    abortSignal?.throwIfAborted();
-  }
 
   const difference = previousState.fileSystem.getDifference(fileData, {
     subpath,

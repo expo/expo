@@ -43,7 +43,6 @@ interface WatcherOptions {
   computeSha1: boolean;
   console: Console;
   enableSymlinks: boolean;
-  skipStat: boolean;
   extensions: readonly string[];
   healthCheckFilePrefix: string;
   ignoreForCrawl: (filePath: string) => boolean;
@@ -134,7 +133,6 @@ export class Watcher extends EventEmitter {
       computeSha1: options.computeSha1,
       console: options.console,
       includeSymlinks: options.enableSymlinks,
-      skipStat: options.skipStat,
       extensions: options.extensions,
       ignore: ignoreForCrawl,
       onStatus: (status) => {

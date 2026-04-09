@@ -31,10 +31,8 @@ export class Worker {
   async processFile(data: WorkerMessage): Promise<WorkerMetadata> {
     let contentPromise: Promise<Buffer> | undefined;
     let sha1Promise: Promise<WorkerMetadata['sha1']> | undefined;
-    let mtimePromise: Promise<WorkerMetadata['mtime']> | undefined;
-    let sizePromise: Promise<WorkerMetadata['size']> | undefined;
 
-    const { computeSha1, computeMtime, filePath, pluginsToRun } = data;
+    const { computeSha1, filePath, pluginsToRun } = data;
 
     const getContent = (): Promise<Buffer> => {
       if (contentPromise == null) {
@@ -42,16 +40,6 @@ export class Worker {
       }
       return contentPromise;
     };
-
-    if (computeMtime) {
-      try {
-        const statPromise = fs.promises.stat(filePath).catch(() => undefined);
-        mtimePromise = statPromise.then((stat) => stat?.mtime.getTime());
-        sizePromise = statPromise.then((stat) => stat?.size);
-      } catch {
-        // Will be caught as ENOENT by the caller
-      }
-    }
 
     const workerUtils = { getContent };
     const pluginDataPromise = Promise.all(
@@ -67,8 +55,6 @@ export class Worker {
       content: contentPromise != null && data.maybeReturnContent ? await contentPromise : undefined,
       pluginData: await pluginDataPromise,
       sha1: await sha1Promise,
-      mtime: (await mtimePromise) ?? undefined,
-      size: (await sizePromise) ?? undefined,
     };
   }
 }
