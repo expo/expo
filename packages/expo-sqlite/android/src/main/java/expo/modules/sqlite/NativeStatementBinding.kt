@@ -32,6 +32,7 @@ internal class NativeStatementBinding : Closeable {
   external fun sqlite3_finalize(): Int
   external fun sqlite3_reset(): Int
   external fun sqlite3_step(): Int
+  external fun isNoop(): Boolean
 
   external fun bindStatementParam(index: Int, param: Any?): Int
   external fun getColumnNames(): SQLiteColumnNames

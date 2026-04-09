@@ -112,6 +112,13 @@ class NativeStatement {
   private boundParams: SQLiteBindParams = [];
 
   prepare(nodeDb: DatabaseSync, source: string) {
+    if (isNoopStatementSql(source)) {
+      this.nodeStmt = null;
+      this.iterator = null;
+      this.boundParams = [];
+      return;
+    }
+
     const stmt = nodeDb.prepare(source);
     // The native module strips the `:@$` prefixes from named parameters.
     stmt.setAllowBareNamedParameters(true);
@@ -188,6 +195,16 @@ class NativeStatement {
   private _run = (
     params: SQLiteBindParams
   ): SQLiteRunResult & { firstRowValues: SQLiteColumnValues } => {
+    if (this.nodeStmt == null) {
+      this.boundParams = [];
+      this.iterator = null;
+      return {
+        lastInsertRowId: 0,
+        changes: 0,
+        firstRowValues: [],
+      };
+    }
+
     assert(this.nodeStmt);
     this.boundParams = params;
     this.iterator = null;
@@ -234,11 +251,17 @@ class NativeStatement {
   };
 
   private _columnNames = (): SQLiteColumnNames => {
-    assert(this.nodeStmt);
+    if (this.nodeStmt == null) {
+      return [];
+    }
     return this.nodeStmt.columns().map((column) => column.name);
   };
 
   private _reset = () => {
+    if (this.nodeStmt == null) {
+      this.iterator = null;
+      return;
+    }
     assert(this.nodeStmt);
     this.iterator?.return?.();
     this.iterator = this.nodeStmt.iterate(...asBindArgs(this.boundParams));
@@ -251,6 +274,15 @@ class NativeStatement {
 }
 
 //#endregion
+
+function isNoopStatementSql(source: string): boolean {
+  const normalizedSource = source
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/--[^\n\r]*/g, '')
+    .replace(/;/g, '')
+    .trim();
+  return normalizedSource.length === 0;
+}
 
 function asBindArgs(params: SQLiteBindParams): SQLInputValue[] {
   // Booleans are already normalized to 1/0 upstream, so values fit node:sqlite's input types.

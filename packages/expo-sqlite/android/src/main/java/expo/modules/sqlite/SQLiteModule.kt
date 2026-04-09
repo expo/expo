@@ -249,10 +249,16 @@ class SQLiteModule : Module() {
 
       AsyncFunction("getColumnNamesAsync") { statement: NativeStatement ->
         maybeThrowForFinalizedStatement(statement)
+        if (isNoopStatement(statement)) {
+          return@AsyncFunction arrayListOf()
+        }
         return@AsyncFunction statement.ref.getColumnNames()
       }.runOnQueue(moduleCoroutineScope)
       Function("getColumnNamesSync") { statement: NativeStatement ->
         maybeThrowForFinalizedStatement(statement)
+        if (isNoopStatement(statement)) {
+          return@Function arrayListOf()
+        }
         return@Function statement.ref.getColumnNames()
       }
 
@@ -388,6 +394,9 @@ class SQLiteModule : Module() {
   private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ArrayBuffer>, shouldPassAsArray: Boolean): Map<String, Any> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
+    if (isNoopStatement(statement)) {
+      return makeNoopRunResult()
+    }
 
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
@@ -437,6 +446,9 @@ class SQLiteModule : Module() {
   private fun step(statement: NativeStatement, database: NativeDatabase): SQLiteColumnValues? {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
+    if (isNoopStatement(statement)) {
+      return null
+    }
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
       return statement.getTransformedColumnValues()
@@ -451,6 +463,9 @@ class SQLiteModule : Module() {
   private fun getAll(statement: NativeStatement, database: NativeDatabase): List<SQLiteColumnValues> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
+    if (isNoopStatement(statement)) {
+      return emptyList()
+    }
     val columnValuesList = mutableListOf<SQLiteColumnValues>()
     while (true) {
       val ret = statement.ref.sqlite3_step()
@@ -469,6 +484,9 @@ class SQLiteModule : Module() {
   private fun reset(statement: NativeStatement, database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
+    if (isNoopStatement(statement)) {
+      return
+    }
     if (statement.ref.sqlite3_reset() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
@@ -478,10 +496,22 @@ class SQLiteModule : Module() {
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
+    if (!isNoopStatement(statement) && statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
     statement.isFinalized = true
+  }
+
+  private fun isNoopStatement(statement: NativeStatement): Boolean {
+    return !statement.isFinalized && statement.ref.isNoop()
+  }
+
+  private fun makeNoopRunResult(): Map<String, Any> {
+    return mapOf(
+      "lastInsertRowId" to 0,
+      "changes" to 0,
+      "firstRowValues" to arrayListOf<Any>()
+    )
   }
 
   private fun addUpdateHook(database: NativeDatabase) {
