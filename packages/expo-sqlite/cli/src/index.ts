@@ -2,7 +2,7 @@ import {
   runCliExtension,
   createCliDevToolsPluginClient,
   sendDevToolsRequestAsync,
-} from '@expo/devtools';
+} from 'expo/devtools.mjs';
 
 const PLUGIN_NAME = 'expo-sqlite';
 
