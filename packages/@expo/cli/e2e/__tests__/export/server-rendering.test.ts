@@ -444,5 +444,36 @@ describe('exports server', () => {
         ).querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
       ).toBe('TEST_VALUE');
     });
+
+    it('injects shell-available head metadata but not late suspended head metadata', async () => {
+      const page = getHtml(await server.fetchAsync('/head').then((res) => res.text()));
+
+      expect(page.querySelector('html > body [data-testid="late-head-text"]')?.innerText).toBe(
+        'Late Head'
+      );
+      expect(
+        page.querySelector('html > head > meta[name="expo-e2e-shell-head"]')?.attributes.content
+      ).toBe('shell');
+      expect(page.querySelector('html > head > meta[name="expo-e2e-late-head"]')).toBeNull();
+    });
+
+    it('injects generateMetadata tags into the initial server HTML head before Head tags', async () => {
+      const html = await server.fetchAsync('/metadata').then((res) => res.text());
+      const page = getHtml(html);
+      const head = page.querySelector('html > head');
+
+      expect(page.querySelector('html > body [data-testid="metadata-text"]')?.innerText).toBe(
+        'Metadata'
+      );
+      expect(head).not.toBeNull();
+
+      const metadataHeadNodes = head!.childNodes
+        .filter(
+          (node: any) => node.rawTagName && ['title', 'meta'].includes(node.rawTagName as string)
+        )
+        .map((node) => node.toString());
+
+      expect(metadataHeadNodes).toMatchSnapshot();
+    });
   });
 });
