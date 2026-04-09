@@ -24,6 +24,7 @@ import {
   serializeHelmetToHtml,
 } from '../utils/html';
 import { createDocumentMetadataInjectionTransform } from '../utils/streams';
+import { resolveMetadata } from './metadata';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 
@@ -43,6 +44,9 @@ export type GetStaticContentOptions = {
     /** Unique key for the route. Derived from the route's contextKey */
     key: string;
   };
+  metadata?: {
+    headTags: string;
+  } | null;
   request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
   assets?: {
@@ -193,6 +197,7 @@ export async function getStreamingContent(
   debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
 
   const injectionParts: string[] = [];
+  if (options?.metadata?.headTags) injectionParts.push(options.metadata.headTags);
   if (headTags) injectionParts.push(headTags);
   injectionParts.push(getHydrationFlagScript());
   if (css) injectionParts.push(css);
@@ -212,4 +217,5 @@ export async function getStreamingContent(
 }
 
 // Re-export for use in server
+export { resolveMetadata };
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';
