@@ -43,8 +43,16 @@ export default function createFallbackFilesystem(
 ): FallbackFilesystem {
   const { rootPathUtils, extensions, ignore, includeSymlinks } = opts;
 
+  const exts = extensions.reduce(
+    (acc, ext) => {
+      acc[ext] = true;
+      return acc;
+    },
+    {} as Record<string, true | undefined>
+  );
+
   function readdir(
-    normalPath: string,
+    _normalPath: string,
     absolutePath: string,
     dirNode: DirectoryNode | null | undefined
   ): DirectoryNode | null {
@@ -71,23 +79,15 @@ export default function createFallbackFilesystem(
           result.set(name, new Map());
         }
       } else if (entry.isSymbolicLink()) {
-        if (!includeSymlinks || result.has(name)) {
-          continue;
-        }
-        try {
-          const childNormalPath = normalPath === '' ? name : normalPath + path.sep + name;
-          const symlinkTarget = fs.readlinkSync(childAbsolutePath);
-          const target = rootPathUtils.resolveSymlinkToNormal(childNormalPath, symlinkTarget);
-          result.set(name, [0, 0, 0, null, target, null]);
-        } catch {
-          // Can't read symlink target — skip
+        // We can skip reading the symlink target here, since it'll be read lazily
+        if (includeSymlinks && !result.has(name)) {
+          result.set(name, [null, 0, 0, null, 1, null]);
         }
       } else if (entry.isFile()) {
         const ext = path.extname(name).slice(1);
-        if (!extensions.includes(ext) || result.has(name)) {
-          continue;
+        if (exts[ext] && !result.has(name)) {
+          result.set(name, [null, 0, 0, null, 0, null]);
         }
-        result.set(name, [0, 0, 0, null, 0, null]);
       }
     }
     markDir(result);
@@ -123,6 +123,7 @@ export default function createFallbackFilesystem(
           return null;
         }
         try {
+          // We might as well read the symlink target here and assume it'll be used
           const symlinkTarget = fs.readlinkSync(absolutePath);
           const target = rootPathUtils.resolveSymlinkToNormal(normalPath, symlinkTarget);
           return [stat.mtime.getTime(), stat.size, 0, null, target, null];
@@ -132,7 +133,7 @@ export default function createFallbackFilesystem(
       } else if (stat.isFile()) {
         // Check extension — symlinks bypass this check (same as node crawler)
         const ext = path.extname(absolutePath).slice(1);
-        if (!extensions.includes(ext)) {
+        if (!exts[ext]) {
           return null;
         } else {
           return [stat.mtime.getTime(), stat.size, 0, null, 0, null];
