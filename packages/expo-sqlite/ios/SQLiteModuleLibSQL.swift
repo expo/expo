@@ -374,7 +374,9 @@ public final class SQLiteModule: Module {
     if libsql_prepare(database.extraPointer, sourceString, &statement.pointer, &errMsg) != 0 {
       throw SQLiteErrorException(convertLibSqlErrorToString(errMsg))
     }
-    maybeAddCachedStatement(database: database, statement: statement)
+    if !isNoopStatement(statement) {
+      maybeAddCachedStatement(database: database, statement: statement)
+    }
   }
 
   // swiftlint:disable line_length
@@ -382,6 +384,10 @@ public final class SQLiteModule: Module {
   private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> [String: Any] {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+
+    if isNoopStatement(statement) {
+      return makeNoopRunResult()
+    }
 
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
@@ -435,6 +441,9 @@ public final class SQLiteModule: Module {
   private func step(statement: NativeStatement, database: NativeDatabase) throws -> SQLiteColumnValues? {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+    if isNoopStatement(statement) {
+      return nil
+    }
     let rows = try maybeBindStatementRows(statement)
     var row: OpaquePointer?
     var errMsg: UnsafePointer<CChar>?
@@ -453,6 +462,9 @@ public final class SQLiteModule: Module {
   private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+    if isNoopStatement(statement) {
+      return []
+    }
     var columnValuesList: [SQLiteColumnValues] = []
     var errMsg: UnsafePointer<CChar>?
     let rows = try maybeBindStatementRows(statement)
@@ -477,6 +489,9 @@ public final class SQLiteModule: Module {
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+    if isNoopStatement(statement) {
+      return
+    }
     if let rows = statement.extraPointer {
       libsql_free_rows(rows)
       statement.extraPointer = nil
@@ -494,7 +509,9 @@ public final class SQLiteModule: Module {
     if let rows = statement.extraPointer {
       libsql_free_rows(rows)
     }
-    libsql_free_stmt(statement.pointer)
+    if !isNoopStatement(statement) {
+      libsql_free_stmt(statement.pointer)
+    }
     statement.isFinalized = true
   }
 
@@ -554,6 +571,9 @@ public final class SQLiteModule: Module {
 
   private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
     try maybeThrowForFinalizedStatement(statement)
+    if isNoopStatement(statement) {
+      return []
+    }
     let rows = try maybeBindStatementRows(statement)
     let columnCount = Int(libsql_column_count(rows))
     var columnNames: SQLiteColumnNames = Array(repeating: "", count: columnCount)
@@ -683,6 +703,18 @@ public final class SQLiteModule: Module {
     if statement.isFinalized {
       throw AccessClosedResourceException()
     }
+  }
+
+  private func isNoopStatement(_ statement: NativeStatement) -> Bool {
+    return statement.pointer == nil && !statement.isFinalized
+  }
+
+  private func makeNoopRunResult() -> [String: Any] {
+    return [
+      "lastInsertRowId": 0,
+      "changes": 0,
+      "firstRowValues": []
+    ]
   }
 
   @inline(__always)
