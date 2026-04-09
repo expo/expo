@@ -9,9 +9,18 @@ import {
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
 import { Button, View, Text } from 'react-native';
+import { scheduleOnUI } from 'react-native-worklets';
 
 export default function SyncSwitchScreen() {
   const isOn = useNativeState(false);
+
+  const toggleFromWorklet = () => {
+    scheduleOnUI(() => {
+      'worklet';
+      console.log('[UI thread] isOn:', isOn.value);
+      isOn.value = !isOn.value;
+    });
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -21,6 +30,7 @@ export default function SyncSwitchScreen() {
           observe. Toggling from either side updates instantly.
         </Text>
         <Button title="Toggle from JS" onPress={() => (isOn.value = !isOn.value)} />
+        <Button title="Toggle from Worklet" onPress={toggleFromWorklet} />
       </View>
       <Host style={{ flex: 1 }}>
         <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>

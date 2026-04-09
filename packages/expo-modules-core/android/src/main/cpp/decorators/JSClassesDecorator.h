@@ -35,6 +35,8 @@ public:
     jsi::Object &jsObject
   ) override;
 
+  void install(jsi::Runtime &runtime) override;
+
 private:
   struct ClassEntry {
     std::vector<std::unique_ptr<JSDecorator>> prototypeDecorators;
@@ -43,6 +45,12 @@ private:
     jni::global_ref<jclass> ownerClass;
     bool isSharedRef;
   };
+
+  std::shared_ptr<jsi::Function> installClass(
+    jsi::Runtime &runtime,
+    const std::string &name,
+    ClassEntry &classInfo
+  );
 
   static jsi::Function createClass(
     jsi::Runtime &runtime,
