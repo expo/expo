@@ -105,9 +105,7 @@ extension Event.Metric {
 
 extension Event {
   func toOTMetadata(_ easClientId: String) -> OTMetadata {
-    OTMetadata(attributes: [
-      OTAttribute(key: "service.name", rawValue: Bundle.main.bundleIdentifier ?? ""),
-      OTAttribute(key: "service.version", rawValue: metadata.appVersion ?? ""),
+    var attributes: [OTAttribute] = [
       OTAttribute(key: "os.type", rawValue: "darwin"),
       OTAttribute(key: "os.name", rawValue: metadata.deviceOs),
       OTAttribute(key: "os.version", rawValue: metadata.deviceOsVersion),
@@ -117,15 +115,35 @@ extension Event {
       OTAttribute(key: "telemetry.sdk.name", rawValue: "expo-observe"),
       OTAttribute(key: "telemetry.sdk.version", rawValue: ObserveVersions.clientVersion),
       OTAttribute(key: "telemetry.sdk.language", rawValue: "swift"),
-      OTAttribute(key: "expo.app.name", rawValue: metadata.appName ?? ""),
-      OTAttribute(key: "expo.app.build_number", rawValue: metadata.appBuildNumber ?? ""),
-      OTAttribute(key: "expo.app.update_id", rawValue: metadata.appUpdateId ?? ""),
       OTAttribute(key: "expo.sdk.version", rawValue: metadata.expoSdkVersion),
-      OTAttribute(key: "expo.environment", rawValue: metadata.environment ?? ""),
       OTAttribute(key: "expo.react_native.version", rawValue: metadata.reactNativeVersion),
       OTAttribute(key: "expo.eas_client.id", rawValue: easClientId),
-      OTAttribute(key: "expo.eas_build.id", rawValue: metadata.appEasBuildId ?? ""),
-    ])
+    ]
+
+    // Send optional attributes only if they are set.
+    // Their defaults should be defined by the backend.
+    if let appIdentifier = metadata.appIdentifier {
+      attributes.append(OTAttribute(key: "service.name", rawValue: appIdentifier))
+    }
+    if let appVersion = metadata.appVersion {
+      attributes.append(OTAttribute(key: "service.version", rawValue: appVersion))
+    }
+    if let appName = metadata.appName {
+      attributes.append(OTAttribute(key: "expo.app.name", rawValue: appName))
+    }
+    if let appBuildNumber = metadata.appBuildNumber {
+      attributes.append(OTAttribute(key: "expo.app.build_number", rawValue: appBuildNumber))
+    }
+    if let appUpdateId = metadata.appUpdateId {
+      attributes.append(OTAttribute(key: "expo.app.update_id", rawValue: appUpdateId))
+    }
+    if let environment = metadata.environment {
+      attributes.append(OTAttribute(key: "expo.environment", rawValue: environment))
+    }
+    if let appEasBuildId = metadata.appEasBuildId {
+      attributes.append(OTAttribute(key: "expo.eas_build.id", rawValue: appEasBuildId))
+    }
+    return OTMetadata(attributes: attributes)
   }
 
   func toOTEvent(_ easClientId: String) -> OTEvent {

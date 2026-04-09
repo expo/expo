@@ -204,7 +204,7 @@ class OpenTelemetryTest {
     assertEquals("55.0.0", attrs["expo.sdk.version"])
     assertEquals("0.83.1", attrs["expo.react_native.version"])
     assertEquals(testEasClientId, attrs["expo.eas_client.id"])
-    assertEquals("", attrs["expo.eas_build.id"])
+    assertNull(attrs["expo.eas_build.id"])
   }
 
   // -- Full OTEvent --

@@ -122,29 +122,56 @@ fun EASMetric.toOTMetric(): OTMetric {
 }
 
 fun Event.toOTMetadata(easClientId: String): OTMetadata {
-  return OTMetadata(
-    attributes = listOf(
-      OTAttribute.of("service.name", metadata.appIdentifier),
-      OTAttribute.of("service.version", metadata.appVersion ?: ""),
-      OTAttribute.of("os.type", "linux"),
-      OTAttribute.of("os.name", metadata.deviceOs ?: ""),
-      OTAttribute.of("os.version", metadata.deviceOsVersion ?: ""),
-      OTAttribute.of("device.model.name", metadata.deviceName ?: ""),
-      OTAttribute.of("device.model.identifier", metadata.deviceModel ?: ""),
-      OTAttribute.of("browser.language", metadata.languageTag ?: ""),
-      OTAttribute.of("telemetry.sdk.name", "expo-observe"),
-      OTAttribute.of("telemetry.sdk.version", metadata.clientVersion ?: ""),
-      OTAttribute.of("telemetry.sdk.language", "kotlin"),
-      OTAttribute.of("expo.app.name", metadata.appName ?: ""),
-      OTAttribute.of("expo.app.build_number", metadata.appBuildNumber ?: ""),
-      OTAttribute.of("expo.app.update_id", metadata.appUpdateId ?: ""),
-      OTAttribute.of("expo.sdk.version", metadata.expoSdkVersion),
-      OTAttribute.of("expo.environment", metadata.environment ?: ""),
-      OTAttribute.of("expo.react_native.version", metadata.reactNativeVersion),
-      OTAttribute.of("expo.eas_client.id", easClientId),
-      OTAttribute.of("expo.eas_build.id", metadata.appEasBuildId ?: "")
-    )
+  val attributes = mutableListOf(
+    OTAttribute.of("service.name", metadata.appIdentifier),
+    OTAttribute.of("os.type", "linux"),
+    OTAttribute.of("telemetry.sdk.name", "expo-observe"),
+    OTAttribute.of("telemetry.sdk.language", "kotlin"),
+    OTAttribute.of("expo.sdk.version", metadata.expoSdkVersion),
+    OTAttribute.of("expo.react_native.version", metadata.reactNativeVersion),
+    OTAttribute.of("expo.eas_client.id", easClientId),
   )
+
+  // Send optional attributes only if they are set.
+  // Their defaults should be defined by the backend.
+  metadata.appVersion?.let {
+    attributes.add(OTAttribute.of("service.version", it))
+  }
+  metadata.deviceOs?.let {
+    attributes.add(OTAttribute.of("os.name", it))
+  }
+  metadata.deviceOsVersion?.let {
+    attributes.add(OTAttribute.of("os.version", it))
+  }
+  metadata.deviceName?.let {
+    attributes.add(OTAttribute.of("device.model.name", it))
+  }
+  metadata.deviceModel?.let {
+    attributes.add(OTAttribute.of("device.model.identifier", it))
+  }
+  metadata.languageTag?.let {
+    attributes.add(OTAttribute.of("browser.language", it))
+  }
+  metadata.clientVersion?.let {
+    attributes.add(OTAttribute.of("telemetry.sdk.version", it))
+  }
+  metadata.appName?.let {
+    attributes.add(OTAttribute.of("expo.app.name", it))
+  }
+  metadata.appBuildNumber?.let {
+    attributes.add(OTAttribute.of("expo.app.build_number", it))
+  }
+  metadata.appUpdateId?.let {
+    attributes.add(OTAttribute.of("expo.app.update_id", it))
+  }
+  metadata.environment?.let {
+    attributes.add(OTAttribute.of("expo.environment", it))
+  }
+  metadata.appEasBuildId?.let {
+    attributes.add(OTAttribute.of("expo.eas_build.id", it))
+  }
+
+  return OTMetadata(attributes = attributes)
 }
 
 fun Event.toOTEvent(easClientId: String): OTEvent {
