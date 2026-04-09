@@ -47,7 +47,7 @@ public object AppMetadataProvider {
       appVersion = packageInfo.versionName,
       appBuildNumber = getAppBuildNumber(packageInfo),
       appUpdateId = getAppUpdateId(),
-      appEasBuildId = BuildConfig.EXPO_OBSERVE_BUILD_ID,
+      appEasBuildId = BuildConfig.EXPO_EAS_BUILD_ID,
       languageTag = Locale.getDefault().getLanguageTag(),
       deviceOs = DEVICE_OS,
       deviceOsVersion = Build.VERSION.RELEASE,

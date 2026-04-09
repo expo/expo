@@ -2,6 +2,10 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
+reactNativeVersion = begin `node --print "require('react-native/package.json').version"`.strip rescue '0.0.0' end
+expoSdkVersion = begin `node --print "require('expo/package.json').version"`.strip rescue '0.0.0' end
+easBuildId = ENV.has_key?('EAS_BUILD_ID') ? ENV['EAS_BUILD_ID'] : nil
+
 Pod::Spec.new do |s|
   s.name           = 'ExpoAppMetrics'
   s.version        = package['version']
@@ -26,7 +30,13 @@ Pod::Spec.new do |s|
 
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    'SWIFT_COMPILATION_MODE' => 'wholemodule',
+    'GCC_PREPROCESSOR_DEFINITIONS' => [
+      "REACT_NATIVE_VERSION=\"#{reactNativeVersion}\"",
+      "EXPO_SDK_VERSION=\"#{expoSdkVersion}\"",
+      "EXPO_APP_METRICS_VERSION=\"#{package['version']}\"",
+      easBuildId ? "EXPO_EAS_BUILD_ID=\"#{easBuildId}\"" : nil
+    ].compact
   }
 
   s.source_files = '**/*.{h,m,mm,swift}'

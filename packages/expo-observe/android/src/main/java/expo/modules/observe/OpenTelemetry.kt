@@ -184,7 +184,7 @@ fun Event.toOTEvent(easClientId: String): OTEvent {
     resource = toOTMetadata(easClientId),
     scopeMetrics = listOf(
       OTScopeMetrics(
-        scope = OTScope(name = "expo-observe", version = metadata.clientVersion ?: ""),
+        scope = OTScope(name = "expo-observe", version = BuildConfig.EXPO_OBSERVE_VERSION),
         metrics = metrics.map { it.toOTMetric() }
       )
     )

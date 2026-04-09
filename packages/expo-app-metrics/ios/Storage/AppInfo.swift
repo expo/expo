@@ -12,14 +12,20 @@ public struct AppInfo: Codable, Equatable, Sendable {
   public let buildNumber: String?
   public let updateId: String?
   public let easBuildId: String?
+  public let clientVersion: String
+  public let reactNativeVersion: String
+  public let expoSdkVersion: String
 
-  public init(appId: String?, appName: String?, appVersion: String?, buildNumber: String?, updateId: String?, easBuildId: String?) {
+  public init(appId: String?, appName: String?, appVersion: String?, buildNumber: String?, updateId: String?) {
     self.appId = appId
     self.appName = appName
     self.appVersion = appVersion
     self.buildNumber = buildNumber
     self.updateId = updateId
-    self.easBuildId = easBuildId
+    self.easBuildId = AppMetricsVersions.easBuildId
+    self.clientVersion = AppMetricsVersions.clientVersion
+    self.reactNativeVersion = AppMetricsVersions.reactNativeVersion
+    self.expoSdkVersion = AppMetricsVersions.expoSdkVersion
   }
 
   public nonisolated(unsafe) static var current: AppInfo = {
@@ -31,8 +37,7 @@ public struct AppInfo: Codable, Equatable, Sendable {
       appName: (infoPlist["CFBundleDisplayName"] ?? infoPlist["CFBundleName"]) as? String,
       appVersion: infoPlist["CFBundleShortVersionString"] as? String,
       buildNumber: infoPlist["CFBundleVersion"] as? String,
-      updateId: getLaunchedUpdateId(),
-      easBuildId: nil
+      updateId: getLaunchedUpdateId()
     )
   }()
 

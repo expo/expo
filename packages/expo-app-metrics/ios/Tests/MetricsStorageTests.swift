@@ -185,6 +185,10 @@ struct MetricsStorageTests {
           "appId": "com.apple.dt.xctest.tool",
           "buildNumber": "24419",
           "appName": "xctest",
+          "clientVersion": "55.0.10",
+          "reactNativeVersion": "0.83.4",
+          "expoSdkVersion": "55.0.11",
+          "easBuildId": "xxxx-xxxxxxxxxxxxxxx-xxxx-xxxx-xxxxxxxxxxxxxx",
         ],
         "device": [
           "modelIdentifier": "iPhone 17 Pro Max",

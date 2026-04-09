@@ -24,7 +24,6 @@ internal class UpdatesMonitoring: MetricReporter {
             appVersion: current.appVersion,
             buildNumber: current.buildNumber,
             updateId: updateId,
-            easBuildId: current.easBuildId,
           )
           AppInfo.current = patched
           AppMetrics.storage.currentEntry.app = patched

@@ -61,15 +61,15 @@ struct Event: Codable, Sendable {
         appVersion: app.appVersion,
         appBuildNumber: app.buildNumber,
         appUpdateId: app.updateId,
-        appEasBuildId: ObserveVersions.easBuildId,
+        appEasBuildId: app.easBuildId,
 
         deviceName: device.modelName,
         deviceModel: device.modelIdentifier,
         deviceOs: device.systemName,
         deviceOsVersion: device.systemVersion,
 
-        reactNativeVersion: ObserveVersions.reactNativeVersion,
-        expoSdkVersion: ObserveVersions.expoSdkVersion,
+        reactNativeVersion: app.reactNativeVersion,
+        expoSdkVersion: app.expoSdkVersion,
         clientVersion: ObserveVersions.clientVersion,
 
         languageTag: Locale.preferredLanguages.first ?? "en-US",
