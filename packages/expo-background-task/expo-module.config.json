@@ -14,7 +14,7 @@
         { "name": "list", "title": "List registered background tasks", "environments": ["cli", "mcp"] },
         { "name": "trigger-test", "title": "Trigger background tasks", "environments": ["cli", "mcp"] }
       ],
-      "entryPoint": "cli/build/index.mjs"
+      "entryPoint": "cli/build/index.js"
     }
   }
 }
