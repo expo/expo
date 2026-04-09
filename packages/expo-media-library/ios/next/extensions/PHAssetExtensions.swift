@@ -1,15 +1,12 @@
 import Photos
 
 extension PHAsset {
-  func requestContentEditingInput() async throws -> PHContentEditingInput {
+  func requestContentEditingInput(
+    options: PHContentEditingInputRequestOptions = PHContentEditingInputRequestOptions()
+  ) async throws -> (input: PHContentEditingInput?, info: [AnyHashable: Any]?) {
     return try await withCheckedThrowingContinuation { continuation in
-      let options = PHContentEditingInputRequestOptions()
-      self.requestContentEditingInput(with: options) { contentInput, _ in
-        if let contentInput {
-          continuation.resume(returning: contentInput)
-        } else {
-          continuation.resume(throwing: NSError(domain: "PHAssetError", code: 1))
-        }
+      self.requestContentEditingInput(with: options) { contentInput, info in
+        continuation.resume(returning: (input: contentInput, info: info))
       }
     }
   }
