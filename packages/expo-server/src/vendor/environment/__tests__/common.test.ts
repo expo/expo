@@ -441,6 +441,110 @@ describe('getHtml', () => {
       })
     );
   });
+
+  it('resolves metadata before render and passes the resolved head tags to the SSR renderer', async () => {
+    const mockSSRModule = createMockSSRModule({
+      resolveMetadata: jest.fn().mockResolvedValue({
+        metadata: { title: 'Route title' },
+        headTags: '<title>Route title</title>',
+      }),
+    });
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+    const request = new Request('http://localhost/posts/123');
+
+    await env.getHtml(
+      request,
+      createMockRoute({
+        file: './posts/[id].tsx',
+        page: '/posts/[id]',
+        namedRegex: new RegExp('^/posts/(?<id>[^/]+?)(?:/)?$'),
+        routeKeys: { id: 'id' },
+      })
+    );
+
+    expect(mockSSRModule.resolveMetadata).toHaveBeenCalledWith({
+      route: {
+        file: './posts/[id].tsx',
+        page: '/posts/[id]',
+      },
+      request,
+      params: { id: '123' },
+    });
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        metadata: {
+          metadata: { title: 'Route title' },
+          headTags: '<title>Route title</title>',
+        },
+      })
+    );
+  });
+
+  it('passes through null metadata results without adding renderer metadata input', async () => {
+    const mockSSRModule = createMockSSRModule({
+      resolveMetadata: jest.fn().mockResolvedValue(null),
+    });
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+      })
+    );
+
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        metadata: null,
+      })
+    );
+  });
+
+  it('re-throws metadata resolution errors before render', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+    const metadataError = new Error('Metadata failed');
+    const mockSSRModule = createMockSSRModule({
+      resolveMetadata: jest.fn().mockRejectedValue(metadataError),
+    });
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await expect(
+      env.getHtml(
+        new Request('http://localhost/'),
+        createMockRoute({
+          file: './index.tsx',
+          page: '/index',
+          namedRegex: new RegExp('^/(?:/)?$'),
+        })
+      )
+    ).rejects.toThrow('Metadata failed');
+
+    expect(mockSSRModule.getStreamingContent).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith('SSR render error:', metadataError);
+    consoleErrorSpy.mockRestore();
+  });
 });
 
 describe('getApiRoute', () => {
@@ -730,11 +834,13 @@ function createMockRoute<T extends string | RegExp = string>(
   };
 }
 
-function createMockSSRModule(): ServerRenderModule {
+function createMockSSRModule(overrides: Partial<ServerRenderModule> = {}): ServerRenderModule {
   return {
+    resolveMetadata: jest.fn().mockResolvedValue(null),
     getStreamingContent: jest
       .fn()
       .mockResolvedValue(createMockHtmlStream('<html>SSR content</html>')),
+    ...overrides,
   };
 }
 
