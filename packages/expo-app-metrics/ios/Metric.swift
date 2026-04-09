@@ -10,6 +10,7 @@ public struct Metric: Codable, Sendable {
     case frameRate
     case memory
     case session
+    case updates
   }
 
   public let category: Metric.Category?
@@ -17,6 +18,7 @@ public struct Metric: Codable, Sendable {
   public let value: Double
   public var timestamp: String = Date.now.ISO8601Format()
   public var routeName: String? = nil
+  public var updateId: String? = nil
   public var params: AnyCodable? = nil
 
   init(
@@ -25,6 +27,7 @@ public struct Metric: Codable, Sendable {
     value: Double,
     timestamp: String = Date.now.ISO8601Format(),
     routeName: String? = nil,
+    updateId: String? = nil,
     params: [String: Any]? = nil
   ) {
     self.category = category
@@ -32,6 +35,7 @@ public struct Metric: Codable, Sendable {
     self.value = value
     self.timestamp = timestamp
     self.routeName = routeName
+    self.updateId = updateId
     self.params = params != nil ? AnyCodable(params) : nil
   }
 

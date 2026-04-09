@@ -26,7 +26,7 @@ object MetricsConstants {
 
 @Database(
   entities = [Metric::class, Session::class],
-  version = 10,
+  version = 11,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -107,6 +107,7 @@ data class Metric(
   @Field val name: String,
   @Field val value: Double,
   @Field val routeName: String? = null,
+  @Field val updateId: String? = null,
   // JSON string
   @Field val params: String? = null
 ) : Record

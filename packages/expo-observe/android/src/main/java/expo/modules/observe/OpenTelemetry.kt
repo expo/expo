@@ -1,7 +1,6 @@
 package expo.modules.observe
 
 import expo.modules.appmetrics.utils.TimeUtils.timestampToDateNS
-import java.util.UUID
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -93,6 +92,9 @@ private val metricNameMap = mapOf(
   // Legacy metrics - will be removed in a future release
   "loadTime" to "expo.app_startup.load_time",
   "launchTime" to "expo.app_startup.launch_time",
+
+  // Updates
+  "updateDownloadTime" to "expo.updates.download_time",
 )
 
 fun EASMetric.toOTMetric(): OTMetric {
@@ -101,6 +103,9 @@ fun EASMetric.toOTMetric(): OTMetric {
   )
   routeName?.let {
     attributes.add(OTAttribute.of(key = "expo.route_name", rawValue = it))
+  }
+  updateId?.let {
+    attributes.add(OTAttribute.of(key = "expo.update_id", rawValue = it))
   }
   customParams?.let {
     attributes.add(OTAttribute.of(key = "expo.custom_params", rawValue = it.toString()))

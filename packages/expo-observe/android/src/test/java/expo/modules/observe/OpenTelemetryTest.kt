@@ -73,6 +73,9 @@ class OpenTelemetryTest {
     // Legacy metrics
     assertEquals("expo.app_startup.load_time", makeMetric("loadTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
     assertEquals("expo.app_startup.launch_time", makeMetric("launchTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
+
+    // Updates
+    assertEquals("expo.updates.download_time", makeMetric("updateDownloadTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
   }
 
   @Test
@@ -169,6 +172,33 @@ class OpenTelemetryTest {
     val parsed = Json.parseToJsonElement(attrs["expo.custom_params"]!!).jsonObject
     assertEquals("dashboard", parsed["screen"]!!.jsonPrimitive.content)
     assertEquals("A", parsed["variant"]!!.jsonPrimitive.content)
+  }
+
+  @Test
+  fun `toOTMetric includes update id attribute when present`() {
+    val metric = EASMetric(
+      sessionId = testSessionId,
+      timestamp = "2026-01-01T00:00:00.000Z",
+      category = "updates",
+      name = "updateDownloadTime",
+      value = 2.5,
+      updateId = "abc123-def456"
+    )
+    val otMetric = metric.toOTMetric()
+    val attrs = otMetric.gauge.dataPoints[0].attributes.associate { it.key to it.value.stringValue }
+
+    assertEquals("expo.updates.download_time", otMetric.name)
+    assertEquals("abc123-def456", attrs["expo.update_id"])
+    assertEquals(testSessionId, attrs["session.id"])
+  }
+
+  @Test
+  fun `toOTMetric excludes update id attribute when nil`() {
+    val metric = makeMetric("bundleLoadTime", 1.0, "2026-01-01T00:00:00.000Z")
+    val otMetric = metric.toOTMetric()
+    val keys = otMetric.gauge.dataPoints[0].attributes.map { it.key }
+
+    assertFalse(keys.contains("expo.update_id"))
   }
 
   @Test

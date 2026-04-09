@@ -54,6 +54,7 @@ data class EASMetric(
   val name: String,
   val value: Double,
   val routeName: String? = null,
+  val updateId: String? = null,
   val customParams: JsonObject? = null
 ) {
   companion object {
@@ -65,6 +66,7 @@ data class EASMetric(
         name = metric.name,
         value = metric.value,
         routeName = metric.routeName,
+        updateId = metric.updateId,
         // TODO(@lukmccall): Consider using `org.json.JSONObject` instead of kotlinx.serialization. Also, we're not handling exceptions that might be thrown here.
         customParams = metric.params?.let { Json.decodeFromString<JsonObject>(it) }
       )

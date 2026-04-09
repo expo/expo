@@ -1,4 +1,5 @@
 import Foundation
+import ExpoAppMetrics
 
 // MARK: -- Open Telemetry data classes
 
@@ -65,6 +66,9 @@ let metricNameMap = [
   // Legacy metrics - will be removed in a future release
   "loadTime": "expo.app_startup.load_time",
   "launchTime": "expo.app_startup.launch_time",
+
+  // Updates
+  "updateDownloadTime": "expo.updates.download_time"
 ]
 
 nonisolated(unsafe) let formatter = ISO8601DateFormatter()
@@ -84,6 +88,9 @@ extension Event.Metric {
     ]
     if let routeName {
       attributes.append(OTAttribute(key: "expo.route_name", rawValue: routeName))
+    }
+    if let updateId {
+      attributes.append(OTAttribute(key: "expo.update_id", rawValue: updateId))
     }
     if let customParamsString = try? customParams?.toJSONString() {
       attributes.append(OTAttribute(key: "expo.custom_params", rawValue: customParamsString))

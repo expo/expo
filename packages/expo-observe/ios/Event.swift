@@ -46,6 +46,7 @@ struct Event: Codable, Sendable {
 
     // Metadata
     let routeName: String?
+    let updateId: String?
     let customParams: AnyCodable?
   }
 
@@ -84,6 +85,7 @@ struct Event: Codable, Sendable {
             sessionId: session.id,
             parentSessionId: nil,
             routeName: metric.routeName,
+            updateId: metric.updateId,
             customParams: metric.params
           )
         }

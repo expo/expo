@@ -1,32 +1,27 @@
 import ExpoModulesCore
+import EXUpdatesInterface
 
 internal let logger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
-public final class AppMetricsModule: Module {
+public final class AppMetricsModule: Module, UpdatesStateChangeListener {
+  var subscription: UpdatesStateChangeSubscription?
+
   public func definition() -> ModuleDefinition {
     Name("ExpoAppMetrics")
 
     OnCreate {
       AppMetricsActor.isolated {
+        AppMetrics.mainSession.updatesMonitor.patchAppInfoIfNeeded()
         AppMetrics.mainSession.startMonitoringFrames()
-
-        let current = AppInfo.current
-        if current.updateId == nil, let updateId = AppInfo.getLaunchedUpdateId() {
-          let patched = AppInfo(
-            appId: current.appId,
-            appName: current.appName,
-            appVersion: current.appVersion,
-            buildNumber: current.buildNumber,
-            updateId: updateId,
-            easBuildId: current.easBuildId,
-          )
-          AppInfo.current = patched
-          AppMetrics.storage.currentEntry.app = patched
-        }
       }
+      if let updatesController = UpdatesControllerRegistry.sharedInstance.controller {
+        subscription = updatesController.subscribeToUpdatesStateChanges(self)
+      }
+
     }
 
     OnDestroy {
+      subscription?.remove()
       AppMetricsActor.isolated {
         AppMetrics.mainSession.stopMonitoringFrames()
       }
@@ -62,5 +57,14 @@ public final class AppMetricsModule: Module {
       return try await AppMetrics.storage.clear()
     }
 
+  }
+
+  public func updatesStateDidChange(_ event: [String : Any]) {
+    if UpdatesStateEvent.fromDict(event)?.type ?? .restart == .downloadCompleteWithUpdate,
+      let metric = AppMetrics.mainSession.updatesMonitor.downloadTimeMetric(subscription) {
+      Task { @AppMetricsActor in
+        AppMetrics.mainSession.updatesMonitor.reportMetric(metric)
+      }
+    }
   }
 }

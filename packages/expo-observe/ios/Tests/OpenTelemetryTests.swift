@@ -36,6 +36,7 @@ struct OpenTelemetryTests {
       sessionId: testSessionId,
       parentSessionId: nil,
       routeName: nil,
+      updateId: nil,
       customParams: nil
     )
   }
@@ -235,12 +236,43 @@ struct OpenTelemetryTests {
       sessionId: testSessionId,
       parentSessionId: nil,
       routeName: "/home",
+      updateId: nil,
       customParams: nil
     )
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
 
     #expect(attrs["expo.route_name"] == "/home")
+  }
+
+  @Test
+  func `toOTMetric includes update id attribute when present`() {
+    let metric = Event.Metric(
+      category: "updates",
+      name: "updateDownloadTime",
+      value: 2.5,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      updateId: "abc123-def456",
+      customParams: nil
+    )
+    let otMetric = metric.toOTMetric()
+    let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+
+    #expect(otMetric.name == "expo.updates.download_time")
+    #expect(attrs["expo.update_id"] == "abc123-def456")
+    #expect(attrs["session.id"] == testSessionId)
+  }
+
+  @Test
+  func `toOTMetric excludes update id attribute when nil`() {
+    let metric = makeMetric(name: "bundleLoadTime", value: 1.0, timestamp: "2026-01-01T00:00:00Z")
+    let otMetric = metric.toOTMetric()
+    let keys = otMetric.gauge.dataPoints[0].attributes.map { $0.key }
+
+    #expect(keys.contains("expo.update_id") == false)
   }
 
   @Test
@@ -262,6 +294,7 @@ struct OpenTelemetryTests {
       sessionId: testSessionId,
       parentSessionId: nil,
       routeName: nil,
+      updateId: nil,
       customParams: AnyCodable(["screen": "dashboard", "variant": "A"] as [String: Any])
     )
     let otMetric = metric.toOTMetric()

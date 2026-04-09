@@ -5,6 +5,8 @@ import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.memory.MemoryMetricsManager
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.updates.UpdatesMonitoring
+import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -13,11 +15,14 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.updatesinterface.UpdatesControllerRegistry
+import expo.modules.updatesinterface.UpdatesStateChangeListener
+import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
-class AppMetricsModule : Module() {
+class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
@@ -27,6 +32,8 @@ class AppMetricsModule : Module() {
 
   // lateinit var frameMetricsManager: FrameMetricsManager
   lateinit var memoryMetricsManager: MemoryMetricsManager
+  lateinit var updatesMonitoring: UpdatesMonitoring
+  private var subscription: UpdatesStateChangeSubscription? = null
   lateinit var appSessionId: String
 
   private val moduleCreationTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
@@ -69,6 +76,11 @@ class AppMetricsModule : Module() {
           context = context,
           sessionManager = sessionManager
         )
+        updatesMonitoring = UpdatesMonitoring(sessionId = appSessionId)
+        updatesMonitoring.patchAppInfoIfNeeded(metadata)
+        UpdatesControllerRegistry.controller?.get()?.let { controller ->
+          subscription = controller.subscribeToUpdatesStateChanges(this@AppMetricsModule)
+        }
         // appContext.currentActivity?.let {
         //   frameMetricsManager = FrameMetricsManager(
         //     activity = it,
@@ -99,6 +111,7 @@ class AppMetricsModule : Module() {
       }
 
       OnActivityDestroys {
+        subscription?.remove()
         // TODO(@lukmccall): Don't use modules queue scope for cleaning as it might be cancelled by AppContext.
         scope.launch {
           // frameMetricsManager.stopAllRecordings()
@@ -149,6 +162,20 @@ class AppMetricsModule : Module() {
 
   fun getEnvironment(): String? {
     return AppMetricsPreferences.getEnvironment(context)
+  }
+
+  override fun updatesStateDidChange(event: Map<String, Any>) {
+    if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
+      updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
+        scope.launch {
+          // Ensure the session row exists before inserting the metric,
+          // since the session may not have been saved yet if the download
+          // completes before markInteractive or app backgrounding.
+          saveStartupMetricsIfNotSaved()
+          sessionManager.addMetrics(listOf(metric), sessionId = appSessionId)
+        }
+      }
+    }
   }
 
   // TODO(@lukmccall): Potential race condition - multiple coroutines could enter the block simultaneously, causing duplicates.

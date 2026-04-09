@@ -47,5 +47,6 @@ enum class MetricCategory(
 ) {
   AppStartup("appStartup"),
   FrameRate("frameRate"),
-  Memory("memory")
+  Memory("memory"),
+  Updates("updates")
 }

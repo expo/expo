@@ -4,7 +4,7 @@
 public struct AnyCodable: Codable, Sendable {
   // Similarly, `Any` does not conform to `Sendable`, but it is safe
   // to send it over different isolation domains as it is immutable.
-  nonisolated(unsafe) let value: Any?
+  public nonisolated(unsafe) let value: Any?
 
   init<T>(_ value: T) {
     self.value = value

@@ -6,12 +6,14 @@
  */
 internal final class MainSession: Session, @unchecked Sendable {
   let appStartupMonitor = AppStartupMonitoring()
+  let updatesMonitor = UpdatesMonitoring()
 
   // MARK: - Metrics
 
   init() {
     super.init(type: .main)
     self.appStartupMonitor.addReceiver(self)
+    self.updatesMonitor.addReceiver(self)
   }
 
   // MARK: - Codable
