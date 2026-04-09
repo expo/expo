@@ -1,5 +1,5 @@
-import { WarningAggregator } from 'expo/config-plugins';
 import { ExpoConfig } from 'expo/config';
+import { WarningAggregator } from 'expo/config-plugins';
 
 import { setSplashInfoPlist } from '../withIosSplashInfoPlist';
 
@@ -15,16 +15,22 @@ describe(setSplashInfoPlist, () => {
   it(`skips warning if dark mode isn't defined`, () => {
     // @ts-ignore: jest
     WarningAggregator.addWarningIOS.mockImplementationOnce();
+
     const config: ExpoConfig = {
       slug: '',
       name: '',
       userInterfaceStyle: 'light',
       ios: { splash: { image: 'b' } },
     };
-    const infoPlist = setSplashInfoPlist(config, {}, {
-      userInterfaceStyle: 'light',
-      image: 'b',
-    } as any);
+
+    const infoPlist = setSplashInfoPlist(
+      config,
+      {},
+      {
+        userInterfaceStyle: 'light',
+        image: 'b',
+      }
+    );
 
     // Check if the warning was thrown
     expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(0);
@@ -45,11 +51,15 @@ describe(setSplashInfoPlist, () => {
       ios: { splash: { image: 'b', dark: { image: 'v' } } },
     };
 
-    const infoPlist = setSplashInfoPlist(config, {}, {
-      userInterfaceStyle: 'light',
-      image: 'b',
-      dark: { image: 'v' },
-    } as any);
+    const infoPlist = setSplashInfoPlist(
+      config,
+      {},
+      {
+        userInterfaceStyle: 'light',
+        image: 'b',
+        dark: { image: 'v' },
+      }
+    );
 
     // Check if the warning was thrown
     expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(

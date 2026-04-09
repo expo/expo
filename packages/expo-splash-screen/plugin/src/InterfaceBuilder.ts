@@ -1,9 +1,8 @@
 import crypto from 'crypto';
+import Debug from 'debug';
 import { Builder, Parser } from 'xml2js';
 
-const debug = require('debug')(
-  'expo:prebuild-config:expo-splash-screen:ios:InterfaceBuilder'
-) as typeof console.log;
+const debug = Debug('expo:expo-splash-screen:ios:InterfaceBuilder');
 
 export type IBBoolean = 'YES' | 'NO' | boolean;
 

@@ -36,7 +36,7 @@ describe(removeOldSplashStyleGroup, () => {
         <item name="android:windowBackground">#222222</item>
     </style>
 </resources>`);
-    expect(removeOldSplashStyleGroup(xml as any)).toStrictEqual({
+    expect(removeOldSplashStyleGroup(xml as AndroidConfig.Resources.ResourceXML)).toStrictEqual({
       resources: {
         style: [],
       },

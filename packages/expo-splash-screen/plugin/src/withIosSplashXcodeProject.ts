@@ -1,11 +1,10 @@
+import Debug from 'debug';
 import { ConfigPlugin, IOSConfig, withXcodeProject, type XcodeProject } from 'expo/config-plugins';
 import path from 'path';
 
 import { STORYBOARD_FILE_PATH } from './withIosSplashScreenStoryboard';
 
-const debug = require('debug')(
-  'expo:prebuild-config:expo-splash-screen:ios:xcodeproj'
-) as typeof console.log;
+const debug = Debug('expo:expo-splash-screen:ios:xcodeproj');
 
 export const withIosSplashXcodeProject: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {

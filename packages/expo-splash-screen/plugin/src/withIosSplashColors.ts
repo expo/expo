@@ -1,15 +1,30 @@
-import { ConfigPlugin, IOSConfig, withDangerousMod } from 'expo/config-plugins';
 import Debug from 'debug';
+import { ConfigPlugin, IOSConfig, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs';
-import path, { join } from 'path';
+import path from 'path';
 
 import { parseColor } from './InterfaceBuilder';
 import { IOSSplashConfig } from './getIosSplashConfig';
-import { ContentsJsonColor } from '../../icons/AssetContents';
 
-const debug = Debug('expo:prebuild-config:expo-splash-screen:ios:splash-colorset');
+const debug = Debug('expo:expo-splash-screen:ios:splash-colorset');
 
 export const SPLASHSCREEN_COLORSET_PATH = 'Images.xcassets/SplashScreenBackground.colorset';
+
+const darkAppearances = [{ appearance: 'luminosity', value: 'dark' }] as const;
+
+interface ContentsJsonColor {
+  appearances?: typeof darkAppearances;
+  idiom: 'universal';
+  color: {
+    'color-space': 'srgb';
+    components: {
+      alpha: string;
+      blue: string;
+      green: string;
+      red: string;
+    };
+  };
+}
 
 export const withIosSplashColors: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
   if (!splash) {
@@ -90,26 +105,16 @@ async function writeColorsContentsJsonFileAsync({
         'color-space': 'srgb',
       },
       idiom: 'universal',
-      appearances: [
-        {
-          appearance: 'luminosity',
-          value: 'dark',
-        },
-      ],
+      appearances: darkAppearances,
     });
   }
+
   debug(`create colors contents.json:`, assetPath);
   debug(`use colors:`, colors);
-  await writeContentsJsonAsync(assetPath, { colors });
-}
 
-async function writeContentsJsonAsync(
-  directory: string,
-  { colors }: { colors: ContentsJsonColor[] }
-): Promise<void> {
-  await fs.promises.mkdir(directory, { recursive: true });
+  await fs.promises.mkdir(assetPath, { recursive: true });
   await fs.promises.writeFile(
-    join(directory, 'Contents.json'),
+    path.join(assetPath, 'Contents.json'),
     JSON.stringify(
       {
         colors,

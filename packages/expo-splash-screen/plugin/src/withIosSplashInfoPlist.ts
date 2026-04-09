@@ -1,10 +1,10 @@
-import { ConfigPlugin, InfoPlist, WarningAggregator, withInfoPlist } from 'expo/config-plugins';
-import { ExpoConfig } from 'expo/config';
 import Debug from 'debug';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, InfoPlist, WarningAggregator, withInfoPlist } from 'expo/config-plugins';
 
 import { IOSSplashConfig } from './getIosSplashConfig';
 
-const debug = Debug('expo:prebuild-config:expo-splash-screen:ios:infoPlist');
+const debug = Debug('expo:expo-splash-screen:ios:infoPlist');
 
 export const withIosSplashInfoPlist: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
   return withInfoPlist(config, (config) => {

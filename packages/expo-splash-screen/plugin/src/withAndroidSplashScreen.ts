@@ -7,17 +7,14 @@ import { withAndroidSplashMainActivity } from './withAndroidSplashMainActivity';
 import { withAndroidSplashStrings } from './withAndroidSplashStrings';
 import { withAndroidSplashStyles } from './withAndroidSplashStyles';
 
-export const withAndroidSplashScreen: ConfigPlugin<
-  AndroidSplashConfig | undefined | null | void
-> = (config, props) => {
-  const isLegacyConfig = props === undefined;
-  const splashConfig = getAndroidSplashConfig(config, props ?? null);
+export const withAndroidSplashScreen: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
+  const splashConfig = getAndroidSplashConfig(props);
 
   return withPlugins(config, [
-    [withAndroidSplashMainActivity, { isLegacyConfig }],
+    withAndroidSplashMainActivity,
     [withAndroidSplashImages, splashConfig],
     [withAndroidSplashDrawables, splashConfig],
-    [withAndroidSplashStyles, { splashConfig, isLegacyConfig }],
+    [withAndroidSplashStyles, splashConfig],
     [withAndroidSplashStrings, splashConfig],
   ]);
 };

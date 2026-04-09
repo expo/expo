@@ -1,4 +1,5 @@
 import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
+
 import { AndroidSplashConfig } from './getAndroidSplashConfig';
 import { IOSSplashConfig } from './getIosSplashConfig';
 import { withAndroidSplashScreen } from './withAndroidSplashScreen';
@@ -51,45 +52,32 @@ export type Props = {
 };
 
 const withSplashScreen: ConfigPlugin<Props | null> = (config, props) => {
-  let android: AndroidSplashConfig | null = null;
-  let ios: IOSSplashConfig | null = null;
+  if (props == null) {
+    return config;
+  }
 
-  const resizeMode = props?.resizeMode || 'contain';
+  const { android, ios, resizeMode = 'contain', ...rest } = props;
 
-  const { ios: iosProps, android: androidProps, ...otherProps } = props ?? ({} as Props);
+  config = withAndroidSplashScreen(config, {
+    ...rest,
+    ...android,
+    resizeMode: android?.resizeMode ?? resizeMode,
+    dark: {
+      ...rest?.dark,
+      ...android?.dark,
+    },
+  });
 
-  const usesLegacySplashConfigIOS =
-    !props || (androidProps && !iosProps && Object.keys(otherProps).length === 0);
-  const usesLegacySplashConfigAndroid =
-    !props || (iosProps && !androidProps && Object.keys(otherProps).length === 0);
+  config = withIosSplashScreen(config, {
+    ...rest,
+    ...ios,
+    resizeMode: ios?.resizeMode ?? (resizeMode === 'native' ? 'contain' : resizeMode),
+    dark: {
+      ...rest?.dark,
+      ...ios?.dark,
+    },
+  });
 
-  android = usesLegacySplashConfigAndroid
-    ? null
-    : {
-        ...otherProps,
-        ...androidProps,
-        resizeMode: androidProps?.resizeMode || resizeMode,
-        dark: {
-          ...otherProps?.dark,
-          ...androidProps?.dark,
-        },
-      };
-
-  ios = usesLegacySplashConfigIOS
-    ? null
-    : {
-        ...otherProps,
-        ...iosProps,
-        resizeMode: iosProps?.resizeMode || (resizeMode === 'native' ? 'contain' : resizeMode),
-        dark: {
-          ...otherProps?.dark,
-          ...iosProps?.dark,
-        },
-      };
-
-  // Passing null here will result in the legacy splash config being used.
-  config = withAndroidSplashScreen(config, android);
-  config = withIosSplashScreen(config, ios);
   return config;
 };
 

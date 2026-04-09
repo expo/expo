@@ -1,6 +1,6 @@
-import { compileModsAsync } from 'expo/config-plugins';
-import { ExpoConfig } from 'expo/config';
 import plist from '@expo/plist';
+import { ExpoConfig } from 'expo/config';
+import { compileModsAsync } from 'expo/config-plugins';
 import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
@@ -29,7 +29,7 @@ describe(withIosSplashScreen, () => {
     vol.fromJSON(
       {
         ...projectFixtures,
-        'assets/splash.png': icon as any,
+        'assets/splash.png': icon,
       },
       projectRoot
     );

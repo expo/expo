@@ -1,18 +1,12 @@
-import { ConfigPlugin, IOSConfig, withDangerousMod } from 'expo/config-plugins';
-import { generateImageAsync } from '@expo/image-utils';
+import { generateImageAsync, ImageOptions } from '@expo/image-utils';
 import Debug from 'debug';
+import { ConfigPlugin, IOSConfig, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
 import { IOSSplashConfig } from './getIosSplashConfig';
-import {
-  ContentsJsonImage,
-  ContentsJsonAppearance,
-  createContentsJsonItem,
-  writeContentsJsonAsync,
-} from '../../icons/AssetContents';
 
-const debug = Debug('expo:prebuild-config:expo-splash-screen:ios:assets');
+const debug = Debug('expo:expo-splash-screen:ios:assets');
 
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreenLogo.imageset';
@@ -21,6 +15,15 @@ const PNG_FILENAME = 'image';
 const DARK_PNG_FILENAME = 'dark_image';
 const TABLET_PNG_FILENAME = 'tablet_image';
 const DARK_TABLET_PNG_FILENAME = 'dark_tablet_image';
+
+const darkAppearances = [{ appearance: 'luminosity', value: 'dark' }] as const;
+
+interface ContentsJsonImage {
+  appearances?: typeof darkAppearances;
+  filename?: string;
+  idiom: 'universal' | 'ipad';
+  scale?: '1x' | '2x' | '3x';
+}
 
 export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
   if (!splash) {
@@ -85,7 +88,7 @@ async function configureImageAssets({
     return;
   }
 
-  await writeContentsJsonFileAsync({
+  await writeContentsJsonAsync({
     assetPath: imageSetPath,
     image: PNG_FILENAME,
     darkImage: darkImage ? DARK_PNG_FILENAME : null,
@@ -141,7 +144,7 @@ async function copyImageFiles({
               src: item,
               width: enableFullScreenImage ? undefined : size,
               height: enableFullScreenImage ? undefined : size,
-            } as any
+            } as ImageOptions
           );
           // Write image buffer to the file system.
           // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
@@ -185,12 +188,6 @@ async function generateImagesAssetsAsync({
 
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }
-const darkAppearances: ContentsJsonAppearance[] = [
-  {
-    appearance: 'luminosity',
-    value: 'dark',
-  } as ContentsJsonAppearance,
-];
 
 export function buildContentsJsonImages({
   image,
@@ -203,77 +200,87 @@ export function buildContentsJsonImages({
   darkImage: string | null;
   darkTabletImage: string | null;
 }): ContentsJsonImage[] {
-  return [
-    // Phone light
-    createContentsJsonItem({
+  // Phone light
+  const images: ContentsJsonImage[] = [
+    {
       idiom: 'universal',
       filename: `${image}.png`,
       scale: '1x',
-    }),
-    createContentsJsonItem({
+    },
+    {
       idiom: 'universal',
       filename: `${image}@2x.png`,
       scale: '2x',
-    }),
-    createContentsJsonItem({
+    },
+    {
       idiom: 'universal',
       filename: `${image}@3x.png`,
       scale: '3x',
-    }),
-    // Phone dark
-    darkImage &&
-      createContentsJsonItem({
+    },
+  ];
+
+  // Phone dark
+  if (darkImage) {
+    images.push(
+      {
         idiom: 'universal',
         appearances: darkAppearances,
         scale: '1x',
         filename: `${darkImage}.png`,
-      }),
-    darkImage &&
-      createContentsJsonItem({
+      },
+      {
         idiom: 'universal',
         appearances: darkAppearances,
         scale: '2x',
         filename: `${darkImage}@2x.png`,
-      }),
-    darkImage &&
-      createContentsJsonItem({
+      },
+      {
         idiom: 'universal',
         appearances: darkAppearances,
         scale: '3x',
         filename: `${darkImage}@3x.png`,
-      }),
-    // Tablet light
-    tabletImage &&
-      createContentsJsonItem({
+      }
+    );
+  }
+
+  // Tablet light
+  if (tabletImage) {
+    images.push(
+      {
         idiom: 'ipad',
         filename: `${tabletImage}.png`,
         scale: '1x',
-      }),
-    tabletImage &&
-      createContentsJsonItem({
+      },
+      {
         idiom: 'ipad',
         scale: '2x',
         filename: `${tabletImage}@2x.png`,
-      }),
-    // Phone dark
-    darkTabletImage &&
-      createContentsJsonItem({
+      }
+    );
+  }
+
+  // Tablet dark
+  if (darkTabletImage) {
+    images.push(
+      {
         idiom: 'ipad',
         appearances: darkAppearances,
         filename: `${darkTabletImage}.png`,
         scale: '1x',
-      }),
-    darkTabletImage &&
-      createContentsJsonItem({
+      },
+      {
         idiom: 'ipad',
         appearances: darkAppearances,
         filename: `${darkTabletImage}@2x.png`,
         scale: '2x',
-      }),
-  ].filter(Boolean) as ContentsJsonImage[];
+      }
+    );
+  }
+
+  return images;
 }
 
-async function writeContentsJsonFileAsync({
+async function writeContentsJsonAsync({
   assetPath,
   image,
   darkImage,
@@ -290,5 +297,22 @@ async function writeContentsJsonFileAsync({
 
   debug(`create contents.json:`, assetPath);
   debug(`use images:`, images);
-  await writeContentsJsonAsync(assetPath, { images });
+
+  await fs.promises.mkdir(assetPath, { recursive: true });
+  await fs.promises.writeFile(
+    path.join(assetPath, 'Contents.json'),
+    JSON.stringify(
+      {
+        images,
+        info: {
+          version: 1,
+          // common practice is for the tool that generated the icons to be the "author"
+          author: 'expo',
+        },
+      },
+      null,
+      2
+    ),
+    'utf8'
+  );
 }

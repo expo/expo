@@ -1,14 +1,8 @@
-import { ConfigPlugin, withMainActivity } from 'expo/config-plugins';
 import { addImports } from '@expo/config-plugins/build/android/codeMod';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
+import { ConfigPlugin, withMainActivity } from 'expo/config-plugins';
 
-export const withAndroidSplashMainActivity: ConfigPlugin<{ isLegacyConfig: boolean }> = (
-  config,
-  { isLegacyConfig }
-) => {
-  if (isLegacyConfig) {
-    return config;
-  }
+export const withAndroidSplashMainActivity: ConfigPlugin = (config) => {
   return withMainActivity(config, (config) => {
     const { modResults } = config;
     const { language } = modResults;

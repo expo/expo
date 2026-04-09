@@ -1,10 +1,9 @@
-import { ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
-import { ExpoConfig } from 'expo/config';
 import {
   generateImageAsync,
   compositeImagesAsync,
   generateImageBackgroundAsync,
 } from '@expo/image-utils';
+import { ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
@@ -100,16 +99,12 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig | null> = (
-  config,
-  splash
-) => {
+export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (config, splash) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
       if (splash) {
         await setSplashImageDrawablesAsync(
-          config,
           splash,
           config.modRequest.projectRoot,
           splash?.imageWidth ?? 200
@@ -128,15 +123,14 @@ export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig | null> =
  * @param androidMainPath Absolute path to the main directory containing code and resources in Android project. In general that would be `android/app/src/main`.
  */
 export async function setSplashImageDrawablesAsync(
-  config: Pick<ExpoConfig, 'android' | 'splash'>,
-  props: AndroidSplashConfig | null,
+  props: AndroidSplashConfig,
   projectRoot: string,
   imageWidth: number
 ) {
   await clearAllExistingSplashImagesAsync(projectRoot);
 
-  const splash = getAndroidSplashConfig(config, props);
-  const darkSplash = getAndroidDarkSplashConfig(config, props);
+  const splash = getAndroidSplashConfig(props);
+  const darkSplash = getAndroidDarkSplashConfig(props);
 
   await Promise.all([
     setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, imageWidth),

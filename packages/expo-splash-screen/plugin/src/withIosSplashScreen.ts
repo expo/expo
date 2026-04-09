@@ -1,5 +1,5 @@
-import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 import Debug from 'debug';
+import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 
 import { getIosSplashConfig, IOSSplashConfig } from './getIosSplashConfig';
 import { withIosSplashAssets } from './withIosSplashAssets';
@@ -9,14 +9,11 @@ import { withIosSplashScreenStoryboardBaseMod } from './withIosSplashScreenStory
 import { withIosSplashScreenImage } from './withIosSplashScreenStoryboardImage';
 import { withIosSplashXcodeProject } from './withIosSplashXcodeProject';
 
-const debug = Debug('expo:prebuild-config:expo-splash-screen:ios');
+const debug = Debug('expo:expo-splash-screen:ios');
 
-export const withIosSplashScreen: ConfigPlugin<IOSSplashConfig | undefined | null | void> = (
-  config,
-  props
-) => {
+export const withIosSplashScreen: ConfigPlugin<IOSSplashConfig> = (config, props) => {
   // If the user didn't specify a splash object, infer the splash object from the Expo config.
-  const splashConfig = getIosSplashConfig(config, props ?? null);
+  const splashConfig = getIosSplashConfig(props);
 
   debug(`config:`, props);
 
