@@ -9,7 +9,15 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   internal let markers = AppStartupMarkers()
 
   @AppMetricsActor
-  var startupState: StartupState = .launching
+  var startupState: StartupState = .launching {
+    didSet {
+      if startupState == .interrupted {
+        frameMetricsRecorder.stop()
+      }
+    }
+  }
+
+  let frameMetricsRecorder = FrameMetricsRecorder()
 
   lazy var appLaunchState = AppLaunchState()
 
@@ -40,6 +48,10 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         return
       }
       markers.finishedLaunching = currentTime
+
+      // Start tracking frame metrics from this point so the data
+      // matches the TTI window (finishedLaunching → markInteractive).
+      frameMetricsRecorder.start()
 
       if let launchTime = markers.getLaunchTime() {
         reportMetric(category: .appStartup, name: "\(launchType.rawValue)LaunchTime", value: launchTime)
@@ -89,11 +101,21 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       markers.timeToInteractive = currentTime
 
       if let tti = markers.getTTI() {
+        var params: [String: Any]?
+        let frameMetrics = frameMetricsRecorder.stop()
+        if frameMetrics.expectedFrames > 0 {
+          params = [
+            "frameRate.slowFrames": frameMetrics.slowFrames,
+            "frameRate.frozenFrames": frameMetrics.frozenFrames,
+            "frameRate.totalDelay": frameMetrics.freezeTime,
+          ]
+        }
         let metric = Metric(
           category: .appStartup,
           name: "timeToInteractive",
           value: tti,
-          routeName: routeName
+          routeName: routeName,
+          params: params
         )
         reportMetric(metric)
       }

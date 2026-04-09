@@ -15,6 +15,8 @@ public struct AnyCodable: Codable, Sendable {
 
     if let value = try? container.decode(Int.self) {
       self.value = value
+    } else if let value = try? container.decode(UInt.self) {
+      self.value = value
     } else if let value = try? container.decode(Double.self) {
       self.value = value
     } else if let value = try? container.decode(Bool.self) {
@@ -35,6 +37,8 @@ public struct AnyCodable: Codable, Sendable {
 
     switch value {
     case let value as Int:
+      try container.encode(value)
+    case let value as UInt:
       try container.encode(value)
     case let value as Double:
       try container.encode(value)
