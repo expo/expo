@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `CFBundleTypeRole` to `URLScheme` type
+
 ### 💡 Others
 
 ## 55.0.6 — 2026-02-25
