@@ -1,7 +1,8 @@
 import { requireNativeView } from 'expo';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { type ObservableState, getStateId } from '../State';
+import { type ObservableState } from '../State/useNativeState';
+import { getStateId } from '../State/utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 

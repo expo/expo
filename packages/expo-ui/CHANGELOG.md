@@ -63,6 +63,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `installOnUIRuntime` crash by ensuring `react-native-reanimated` initializes before accessing worklet runtime. ([#44582](https://github.com/expo/expo/pull/44582) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix initial prop values not being applied since `init` runs before `updateProps`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix prop syncing race condition where stale values override user interactions. Replace `onReceive(Sequence.publisher)` with `onAppear` + `onChange` across all SwiftUI views. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `Slider` thumb snapping back during drag by guarding `.onReceive` with `isEditing` state. ([#43701](https://github.com/expo/expo/issues/43701) by [@fedeciancaglini](https://github.com/fedeciancaglini)) ([#43797](https://github.com/expo/expo/pull/43797) by [@fedeciancaglini](https://github.com/fedeciancaglini))

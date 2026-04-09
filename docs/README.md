@@ -103,7 +103,7 @@ When you are done writing or editing docs, run the following script to lint your
 yarn run lint-prose
 ```
 
-We use [Vale](https://vale.sh/) to lint our docs.
+We use [Vale](https://vale.sh/) to lint our docs. The Vale binary is auto-installed during `yarn install` via the `postinstall` script. To install or update it manually, run `yarn install-vale`.
 
 #### Switch off Prose linter
 
