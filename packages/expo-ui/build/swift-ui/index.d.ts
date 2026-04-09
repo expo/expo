@@ -1,4 +1,4 @@
-import './State/index.fx';
+import '../State/index.fx';
 export * from './AccessoryWidgetBackground';
 export * from './BottomSheet';
 export * from './Button';
@@ -31,7 +31,7 @@ export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
 export * from './Text';
-export { useNativeState } from './State/useNativeState';
+export { useNativeState } from '../State/useNativeState';
 export * from './SyncToggle';
 export * from './Toggle';
 export * from './TextField';

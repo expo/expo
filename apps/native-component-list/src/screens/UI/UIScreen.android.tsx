@@ -107,6 +107,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'SyncSwitch component',
+    route: 'ui/sync-switch',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SyncSwitchScreen'));
+    },
+  },
+  {
     name: 'Shape component',
     route: 'ui/shape',
     options: {},
