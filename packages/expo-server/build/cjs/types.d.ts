@@ -1,4 +1,5 @@
 import type { _ImmutableHeaders, _ImmutableRequest } from './ImmutableRequest';
+import type { GenerateMetadataFunction, Metadata, MetadataIconDescriptor, MetadataImage, MetadataValue, MetadataValueArray } from './metadata';
 /**
  * An immutable version of the Fetch API's `Headers` object. It cannot be mutated or modified.
  */
@@ -82,3 +83,4 @@ export interface MiddlewareSettings {
  * @see [Data loaders](/router/web/data-loaders) for more information.
  */
 export type LoaderFunction<T = any> = (request: ImmutableRequest | undefined, params: Record<string, string | string[]>) => Promise<T> | T;
+export type { GenerateMetadataFunction, Metadata, MetadataIconDescriptor, MetadataImage, MetadataValue, MetadataValueArray, };
