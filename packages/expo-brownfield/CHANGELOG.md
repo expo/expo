@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `Expo.plist` to the brownfield framework target. ([#44645](https://github.com/expo/expo/pull/44645) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

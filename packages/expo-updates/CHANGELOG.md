@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [ios] resolve Expo.plist lookup in brownfield xcframework builds ([#44645](https://github.com/expo/expo/pull/44645) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 55.0.20 — 2026-04-09
 
 ### 🐛 Bug fixes
