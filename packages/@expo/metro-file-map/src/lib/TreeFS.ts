@@ -783,6 +783,13 @@ export default class TreeFS implements MutableFileSystem {
           segmentNode,
           currentPath
         );
+        if (normalSymlinkTarget == null) {
+          return {
+            canonicalMissingPath: currentPath,
+            exists: false,
+            missingSegmentName: segmentName,
+          };
+        }
         if (opts.collectLinkPaths) {
           opts.collectLinkPaths.add(this.#pathUtils.normalToAbsolute(currentPath));
         }
@@ -1260,14 +1267,27 @@ export default class TreeFS implements MutableFileSystem {
   #resolveSymlinkTargetToNormalPath(
     symlinkNode: FileMetadata,
     canonicalPathOfSymlink: Path
-  ): NormalizedSymlinkTarget {
+  ): NormalizedSymlinkTarget | null {
     const cachedResult = this.#cachedNormalSymlinkTargets.get(symlinkNode);
     if (cachedResult != null) {
       return cachedResult;
     }
 
-    const literalSymlinkTarget = symlinkNode[H.SYMLINK];
-    invariant(typeof literalSymlinkTarget === 'string', 'Expected symlink target to be populated.');
+    let literalSymlinkTarget: string;
+    if (symlinkNode[H.SYMLINK] === 1) {
+      // Symlink target not yet resolved — read it lazily on first traversal
+      const absoluteSymlink = this.#pathUtils.normalToAbsolute(canonicalPathOfSymlink);
+      try {
+        literalSymlinkTarget = fs.readlinkSync(absoluteSymlink);
+        symlinkNode[H.SYMLINK] = literalSymlinkTarget;
+        symlinkNode[H.VISITED] = 1;
+      } catch {
+        return null;
+      }
+    } else {
+      literalSymlinkTarget = symlinkNode[H.SYMLINK] as string;
+    }
+
     const absoluteSymlinkTarget = path.resolve(
       this.#rootDir,
       canonicalPathOfSymlink,
