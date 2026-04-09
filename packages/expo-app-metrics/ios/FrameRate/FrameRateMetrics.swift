@@ -1,5 +1,5 @@
-struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sendable {
-  enum MetricKeys: String, MetricKey {
+public struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sendable {
+  public enum MetricKeys: String, MetricKey {
     case renderedFrames
     case expectedFrames
     case droppedFrames
@@ -9,7 +9,7 @@ struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sendable {
     case sessionDuration
   }
 
-  static let category: Metric.Category? = .frameRate
+  public static let category: Metric.Category? = .frameRate
 
   /**
    Threshold in seconds to recognize a frame as slow.
@@ -58,13 +58,13 @@ struct FrameRateMetrics: Metrics, CustomStringConvertible, Equatable, Sendable {
    Dropped frames divided by expected frames.
    */
   var droppedFramesRatio: Double {
-    guard renderedFrames > 0 else {
+    guard expectedFrames > 0 else {
       return 0.0
     }
-    return Double(droppedFrames) / Double(renderedFrames)
+    return Double(droppedFrames) / Double(expectedFrames)
   }
 
-  var description: String {
+  public var description: String {
     return """
 FrameRateMetrics {
   \(expectedFrames) expected,

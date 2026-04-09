@@ -25,7 +25,7 @@ public protocol Metrics: Codable, Sendable {
   func toValues() -> [Metric]
 }
 
-extension Metrics {
+public extension Metrics {
   // Metrics don't have to be associated with any category (but they should).
   static var category: Metric.Category? {
     return nil

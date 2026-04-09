@@ -89,29 +89,7 @@ public class Session: Codable, MetricsReceiver {
 
   let memoryMeter = MemoryMonitoring()
 
-  // MARK: - Monitoring rendering frames
-
-  let framesMeter = FramesMeter()
-  var frameRateMetrics: FrameRateMetrics?
-
-  @AppMetricsActor
-  func startMonitoringFrames() {
-    framesMeter.startMonitoring()
-  }
-
-  @AppMetricsActor
-  func stopMonitoringFrames() {
-    framesMeter.stopMonitoring()
-  }
-
   // MARK: - MetricsReceiver
-
-  @AppMetricsActor
-  public func receiveMetrics<MetricsType: Metrics>(_ metrics: MetricsType) {
-    if let metrics = metrics as? FrameRateMetrics {
-      frameRateMetrics = metrics
-    }
-  }
 
   @AppMetricsActor
   public func receiveMetric(_ metric: Metric) {

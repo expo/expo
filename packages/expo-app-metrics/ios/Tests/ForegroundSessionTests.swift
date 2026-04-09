@@ -168,12 +168,4 @@ struct ForegroundSessionTests {
     #expect(session2.isActive == false)
   }
 
-  @Test
-  func `can start and stop frame monitoring`() {
-    let session = ForegroundSession()
-
-    // Should not throw
-    session.startMonitoringFrames()
-    session.stopMonitoringFrames()
-  }
 }

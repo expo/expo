@@ -7,6 +7,7 @@
 internal final class MainSession: Session, @unchecked Sendable {
   let appStartupMonitor = AppStartupMonitoring()
   let updatesMonitor = UpdatesMonitoring()
+  let frameMetricsRecorder = FrameMetricsRecorder()
 
   // MARK: - Metrics
 
@@ -14,6 +15,10 @@ internal final class MainSession: Session, @unchecked Sendable {
     super.init(type: .main)
     self.appStartupMonitor.addReceiver(self)
     self.updatesMonitor.addReceiver(self)
+
+    AppMetricsActor.isolated { [self] in
+      self.frameMetricsRecorder.start()
+    }
   }
 
   // MARK: - Codable

@@ -12,19 +12,14 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     OnCreate {
       AppMetricsActor.isolated {
         AppMetrics.mainSession.updatesMonitor.patchAppInfoIfNeeded()
-        AppMetrics.mainSession.startMonitoringFrames()
       }
       if let updatesController = UpdatesControllerRegistry.sharedInstance.controller {
         subscription = updatesController.subscribeToUpdatesStateChanges(self)
       }
-
     }
 
     OnDestroy {
       subscription?.remove()
-      AppMetricsActor.isolated {
-        AppMetrics.mainSession.stopMonitoringFrames()
-      }
     }
 
     Function("markFirstRender") {
@@ -46,7 +41,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     AsyncFunction("getFrameRateMetricsAsync") {
-      return await AppMetrics.mainSession.framesMeter.metrics
+      return await AppMetrics.mainSession.frameMetricsRecorder.metrics
     }
 
     AsyncFunction("getStoredEntries") {
