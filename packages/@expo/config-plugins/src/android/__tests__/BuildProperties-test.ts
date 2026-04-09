@@ -126,18 +126,27 @@ describe(updateAndroidBuildProperty, () => {
     ]);
   });
 
-  it('should keep original property when `value` is null by default', () => {
+  it('should remove original property when `value` is null', () => {
     const gradleProperties: PropertiesItem[] = [
       { type: 'property', key: 'foo', value: 'foo' },
       { type: 'property', key: 'bar', value: 'bar' },
     ];
     expect(updateAndroidBuildProperty(gradleProperties, 'bar', null)).toEqual([
       { type: 'property', key: 'foo', value: 'foo' },
-      { type: 'property', key: 'bar', value: 'bar' },
     ]);
   });
 
-  it('should remove original property when `value` is null when `removePropWhenValueIsNull` is true', () => {
+  it('should remove original property when `value` is undefined', () => {
+    const gradleProperties: PropertiesItem[] = [
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'bar', value: 'bar' },
+    ];
+    expect(updateAndroidBuildProperty(gradleProperties, 'bar', undefined)).toEqual([
+      { type: 'property', key: 'foo', value: 'foo' },
+    ]);
+  });
+
+  it('should still remove with removePropWhenValueIsNull for backwards compatibility', () => {
     const gradleProperties: PropertiesItem[] = [
       { type: 'property', key: 'foo', value: 'foo' },
       { type: 'property', key: 'bar', value: 'bar' },
