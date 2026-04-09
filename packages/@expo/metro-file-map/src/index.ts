@@ -607,7 +607,14 @@ export default class FileMap extends EventEmitter {
 
       if (fileData[H.SYMLINK] === 0) {
         filesToProcess.push([normalFilePath, fileData]);
-      } else {
+      } else if (
+        fileData[H.MTIME] != null &&
+        fileData[H.MTIME] !== 0
+      ) {
+        // Symlink was previously resolved and its mtime changed — resolve
+        // eagerly to update the cached target. Symlinks with null mtime
+        // (cold start or never accessed) are deferred to lazy resolution
+        // in TreeFS.#resolveSymlinkTargetToNormalPath.
         const maybeReadLink = this.#maybeReadLink(normalFilePath, fileData);
         if (maybeReadLink) {
           readLinkPromises.push(
