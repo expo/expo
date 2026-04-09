@@ -41,3 +41,11 @@ For every component added, create example screens in NCL (native-component-list)
 - `apps/native-component-list/src/screens/UI/<ComponentName>Screen.ios.tsx` — imports from `@expo/ui/swift-ui`
 - `apps/native-component-list/src/screens/UI/<ComponentName>Screen.android.tsx` — imports from `@expo/ui/jetpack-compose`
 - Register in both `UIScreen.ios.tsx` and `UIScreen.android.tsx`
+
+## Before committing
+
+1. Run `pnpm build` in the package directory — the `build/` output must be committed alongside source changes. CI will fail otherwise.
+2. Run `pnpm lint --max-warnings 0`.
+3. Add a changelog entry to `CHANGELOG.md` under the "Unpublished" section.
+4. When adding a new component, add documentation for it. When adding a new feature to an existing component, update its documentation accordingly. Docs are MDX files in `docs/pages/versions/unversioned/sdk/ui/swift-ui/` and `docs/pages/versions/unversioned/sdk/ui/jetpack-compose/`.
+5. Regenerate API docs data by running `et gdad -p @expo/ui`. If the change is to be cherry-picked to an already-released SDK version, also run `et gdad -p @expo/ui -s <version>` (e.g. `et gdad -p @expo/ui -s 55` for SDK 55). Changes are very likely to be picked to the latest stable of expo-ui (`npm view @expo/ui version`).
