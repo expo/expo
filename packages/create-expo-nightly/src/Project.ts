@@ -90,9 +90,13 @@ async function setupProjectPackageJsonAsync(
   for (const name of REACT_NATIVE_TRANSITIVE_DEPENDENCIES) {
     resolutions[name] = `${nightlyVersion}`;
   }
+  const workspaceGlobs = [
+    `${workspacePrefix}/packages/*`,
+    `${workspacePrefix}/packages/@expo/*`,
+  ];
+
   await mergeJsonFilesAsync(packageJsonPath, {
-    // Add workspaces
-    workspaces: [`${workspacePrefix}/packages/*`, `${workspacePrefix}/packages/@expo/*`],
+    workspaces: workspaceGlobs,
 
     // Exclude templates from autolinking
     expo: {
@@ -104,6 +108,14 @@ async function setupProjectPackageJsonAsync(
     // Pin the versions of transitive dependencies
     resolutions,
   });
+
+  // pnpm requires its own workspace config to recognize workspace packages.
+  // preferWorkspacePackages ensures local packages are used even when the
+  // canary template has dependency ranges from a different SDK version.
+  await fs.promises.writeFile(
+    path.join(projectRoot, 'pnpm-workspace.yaml'),
+    ['packages:', ...workspaceGlobs.map((g) => `  - '${g}'`), 'preferWorkspacePackages: true', ''].join('\n')
+  );
 }
 
 /**
