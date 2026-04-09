@@ -34,7 +34,6 @@ export default function rootRelativeCacheKeys(buildParameters: BuildParameters):
         case 'computeSha1':
         case 'enableSymlinks':
         case 'retainAllFiles':
-        case 'skipStat':
         case 'scopeFallback':
           return buildParameters[key] ?? null;
         case 'ignorePattern':

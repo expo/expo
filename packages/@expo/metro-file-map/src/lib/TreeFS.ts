@@ -230,10 +230,16 @@ export default class TreeFS implements MutableFileSystem {
         }
         if (
           newMetadata[H.MTIME] != null &&
-          newMetadata[H.MTIME]! > 0 &&
+          newMetadata[H.MTIME] !== 0 &&
           newMetadata[H.MTIME] === metadata[H.MTIME]
         ) {
           // Types and modified time match - not changed.
+          changedFiles.delete(canonicalPath);
+        } else if (
+          (newMetadata[H.MTIME] == null || newMetadata[H.MTIME] === 0) &&
+          (metadata[H.MTIME] == null || metadata[H.MTIME] === 0)
+        ) {
+          // Both files are untouched - not changed
           changedFiles.delete(canonicalPath);
         } else if (
           newMetadata[H.SHA1] != null &&
@@ -260,6 +266,17 @@ export default class TreeFS implements MutableFileSystem {
     return (fileMetadata && fileMetadata[H.SHA1]) ?? null;
   }
 
+  getMtimeByNormalPath(normalPath: Path): number | null {
+    const result = this.#lookupByNormalPath(normalPath, {
+      followLeaf: false,
+      skipFallback: true,
+    });
+    if (!result.exists || isDirectory(result.node)) {
+      return null;
+    }
+    return result.node[H.MTIME];
+  }
+
   async getOrComputeSha1(
     mixedPath: Path
   ): Promise<{ sha1: string; content?: Buffer } | null | undefined> {
@@ -272,19 +289,15 @@ export default class TreeFS implements MutableFileSystem {
     }
     const { canonicalPath, node: fileMetadata } = result;
 
-    if (fileMetadata[H.MTIME] != null && fileMetadata[H.MTIME]! > 0) {
+    if (fileMetadata[H.MTIME] == null || fileMetadata[H.MTIME] === 0) {
+      fileMetadata[H.SHA1] = null;
       const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
       try {
         const stat = await fs.promises.lstat(absolutePath);
         const diskMtime = stat.mtime.getTime();
-        if (diskMtime !== fileMetadata[H.MTIME]) {
-          fileMetadata[H.SHA1] = null;
-          fileMetadata[H.MTIME] = diskMtime;
-          fileMetadata[H.SIZE] = stat.size;
-        }
-      } catch {
-        fileMetadata[H.SHA1] = null;
-      }
+        fileMetadata[H.MTIME] = diskMtime;
+        fileMetadata[H.SIZE] = stat.size;
+      } catch {}
     }
 
     const existing = fileMetadata[H.SHA1];
@@ -597,6 +610,8 @@ export default class TreeFS implements MutableFileSystem {
        * directory is already present as a file.
        */
       makeDirectories?: boolean;
+      /** Whether to use the fallback filesystem during discovery */
+      skipFallback?: boolean;
       startPathIdx?: number;
       startNode?: DirectoryNode;
       start?: {
@@ -672,7 +687,7 @@ export default class TreeFS implements MutableFileSystem {
 
       if (segmentNode == null) {
         if (opts.makeDirectories !== true && segmentName !== '..') {
-          if (this.#fallbackFilesystem != null) {
+          if (!opts.skipFallback && this.#fallbackFilesystem != null) {
             const parentEnd = isLastSegment
               ? fromIdx - segmentName.length - 1
               : fromIdx - segmentName.length - 2;
@@ -701,7 +716,7 @@ export default class TreeFS implements MutableFileSystem {
           segmentNode = new Map();
           if (
             opts.makeDirectories === true ||
-            (segmentName === '..' && this.#fallbackFilesystem != null)
+            (segmentName === '..' && !opts.skipFallback && this.#fallbackFilesystem != null)
           ) {
             parentNode.set(segmentName, segmentNode);
           }
