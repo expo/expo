@@ -21,7 +21,6 @@ internal fun PTypeDescriptor.toRawTypeDescriptor(): RawTypeDescriptor {
           isNullable
         )
       }
-
     }
 
     PTypeDescriptor.Star -> error("Star projections are not supported")
