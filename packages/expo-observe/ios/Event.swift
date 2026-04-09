@@ -60,7 +60,7 @@ struct Event: Codable, Sendable {
         appVersion: app.appVersion,
         appBuildNumber: app.buildNumber,
         appUpdateId: app.updateId,
-        appEasBuildId: app.easBuildId == "" ? nil : app.easBuildId,
+        appEasBuildId: ObserveVersions.easBuildId,
 
         deviceName: device.modelName,
         deviceModel: device.modelIdentifier,
