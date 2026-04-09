@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getManifest = exports.getBuildTimeServerManifestAsync = void 0;
+exports.getManifest = exports.getBuildTimeServerManifestAsync = exports.resolveMetadata = void 0;
 exports.getStaticContent = getStaticContent;
 exports.getStreamingContent = getStreamingContent;
 const jsx_runtime_1 = require("react/jsx-runtime");
@@ -57,6 +57,8 @@ const getRootComponent_1 = require("./getRootComponent");
 const debug_1 = require("../utils/debug");
 const html_1 = require("../utils/html");
 const streams_1 = require("../utils/streams");
+const metadata_1 = require("./metadata");
+Object.defineProperty(exports, "resolveMetadata", { enumerable: true, get: function () { return metadata_1.resolveMetadata; } });
 const debug = (0, debug_1.createDebug)('expo:router:server:renderStaticContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
@@ -155,6 +157,8 @@ async function getStreamingContent(location, options) {
     const fonts = Font.getServerResources();
     debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
     const injectionParts = [];
+    if (options?.metadata?.headTags)
+        injectionParts.push(options.metadata.headTags);
     if (headTags)
         injectionParts.push(headTags);
     injectionParts.push((0, html_1.getHydrationFlagScript)());
@@ -173,7 +177,6 @@ async function getStreamingContent(location, options) {
         bodyAttributes,
     }));
 }
-// Re-export for use in server
 var getServerManifest_1 = require("./getServerManifest");
 Object.defineProperty(exports, "getBuildTimeServerManifestAsync", { enumerable: true, get: function () { return getServerManifest_1.getBuildTimeServerManifestAsync; } });
 Object.defineProperty(exports, "getManifest", { enumerable: true, get: function () { return getServerManifest_1.getManifest; } });

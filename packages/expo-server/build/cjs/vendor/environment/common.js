@@ -31,6 +31,7 @@ function initManifestRegExp(manifest) {
 function createEnvironment(input) {
     // Cached manifest and SSR renderer, initialized on first request
     let cachedManifest;
+    let cachedSsrModule = null;
     let ssrRenderer = null;
     async function getRoutesManifest() {
         if (cachedManifest === undefined || input.isDevelopment) {
@@ -41,11 +42,17 @@ function createEnvironment(input) {
     }
     async function getServerRenderer() {
         if (ssrRenderer && !input.isDevelopment) {
-            return ssrRenderer;
+            return {
+                renderer: ssrRenderer,
+                module: cachedSsrModule,
+            };
         }
         const manifest = await getRoutesManifest();
         if (manifest?.rendering?.mode !== 'ssr') {
-            return null;
+            return {
+                renderer: null,
+                module: null,
+            };
         }
         // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
         // available
@@ -54,17 +61,22 @@ function createEnvironment(input) {
             throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
         }
         const topLevelAssets = manifest.assets;
+        cachedSsrModule = ssrModule;
         ssrRenderer = async (request, options) => {
             const url = new URL(request.url);
             const location = new URL(url.pathname + url.search, url.origin);
             const assets = mergeAssets(topLevelAssets, options?.assets);
             return ssrModule.getStreamingContent(location, {
                 loader: options?.loader,
+                metadata: options?.metadata,
                 request,
                 assets,
             });
         };
-        return ssrRenderer;
+        return {
+            renderer: ssrRenderer,
+            module: ssrModule,
+        };
     }
     async function executeLoader(request, route, params) {
         if (!route.loader) {
@@ -80,16 +92,26 @@ function createEnvironment(input) {
         getRoutesManifest,
         async getHtml(request, route) {
             // SSR path: Render at runtime if SSR module is available
-            const renderer = await getServerRenderer();
+            const { renderer, module: ssrModule } = await getServerRenderer();
             if (renderer) {
                 let renderOptions = { assets: route.assets };
+                const params = (0, matchers_1.parseParams)(request, route);
                 try {
+                    if (ssrModule?.resolveMetadata) {
+                        renderOptions.metadata = await ssrModule.resolveMetadata({
+                            route: {
+                                file: route.file,
+                                page: route.page,
+                            },
+                            request,
+                            params,
+                        });
+                    }
                     if (route.loader) {
-                        const params = (0, matchers_1.parseParams)(request, route);
                         const result = await executeLoader(request, route, params);
                         const data = (0, matchers_1.isResponse)(result) ? await result.json() : result;
                         renderOptions = {
-                            assets: route.assets,
+                            ...renderOptions,
                             loader: {
                                 data: data ?? null,
                                 key: (0, matchers_1.resolveLoaderContextKey)(route.page, params),
