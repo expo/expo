@@ -43,13 +43,10 @@ export async function setupExpoRepoAsync(
     }
   );
 
-  try {
-    await runAsync('pnpm', ['install'], { cwd: expoRepoPath });
-  } catch (e) {
-    if (e instanceof Error) {
-      console.warn(`Failed to install dependencies in ${expoRepoPath}`, e.toString());
-    }
-  }
+  // --no-frozen-lockfile is required because setupDependenciesAsync adds
+  // react-native nightly overrides to package.json, which won't match the
+  // existing lockfile. In CI (where CI=true), pnpm defaults to frozen lockfile.
+  await runAsync('pnpm', ['install', '--no-frozen-lockfile'], { cwd: expoRepoPath });
   console.timeEnd('Installed dependencies in expo repository');
 
   return expoRepoPath;
