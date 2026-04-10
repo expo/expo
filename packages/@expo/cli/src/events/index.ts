@@ -13,9 +13,6 @@ interface InitMetadata {
 
 let logPath = process.cwd();
 let logStream: LogStream | undefined;
-let projectLogStream: LogStream | undefined;
-let projectLogRelativePath: string | undefined;
-let earlyBuffer: string[] = [];
 
 function parseLogTarget(env: string | undefined) {
   let logDestination: string | number | undefined;
@@ -69,8 +66,8 @@ export function installEventLogger(env = process.env.LOG_EVENTS) {
 /** Returns whether the event logger is active */
 export const isEventLoggerActive = () => !!logStream?.writable;
 
-/** Returns the relative path to the project log file, if active */
-export const getProjectLogPath = () => projectLogRelativePath;
+/** Returns the file path of the active event log, if any */
+export const getLogFile = () => logStream?.file ?? undefined;
 
 /** Whether logs shown in the terminal should be reduced.
  * @remarks
@@ -112,17 +109,11 @@ export const events: EventLoggerBuilder = ((
   _fn: (builder: EventBuilder) => readonly EventShape<string>[]
 ) => {
   function log(event: string, data: any) {
-    const _e = `${category}:${String(event)}`;
-    const _t = Date.now();
-    const payload = JSON.stringify({ _e, _t, ...data });
-    const line = payload + '\n';
     if (logStream) {
-      logStream._write(line);
-    }
-    if (projectLogStream) {
-      projectLogStream._write(line);
-    } else if (earlyBuffer.length < 1000) {
-      earlyBuffer.push(line);
+      const _e = `${category}:${String(event)}`;
+      const _t = Date.now();
+      const payload = JSON.stringify({ _e, _t, ...data });
+      logStream._write(payload + '\n');
     }
   }
   log.category = category;
@@ -145,26 +136,17 @@ export const events: EventLoggerBuilder = ((
 export const rootEvent = events('root', (t) => [t.event<'init', InitMetadata>()]);
 
 /**
- * Activates the project log stream, writing JSONL events to `.expo/dev/logs/<command>.log`.
- * Any events emitted before this call are buffered and flushed to the file.
- * This is idempotent — subsequent calls are no-ops.
+ * Enables project-level event logging to `.expo/dev/logs/<command>.log`.
+ * If `LOG_EVENTS` was already set (e.g. by a wrapper process), this is a no-op —
+ * the wrapper's chosen destination takes priority.
+ * The log file is truncated on each run.
  */
-export function setProjectLogRoot(projectRoot: string, command: string): string | undefined {
-  if (projectLogStream) return;
+export function enableProjectLogs(projectRoot: string, command: string): void {
+  if (logStream) return;
   const logFile = path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`);
   fs.mkdirSync(path.dirname(logFile), { recursive: true });
   fs.writeFileSync(logFile, ''); // truncate from previous run
-  projectLogStream = new LogStream(logFile);
-  for (const line of earlyBuffer) {
-    projectLogStream._write(line);
-  }
-  earlyBuffer.length = 0;
-  projectLogRelativePath = '.expo/dev/logs/' + command + '.log';
-  return projectLogRelativePath;
+  installEventLogger(logFile);
 }
-
-process.once('exit', () => {
-  projectLogStream?._end();
-});
 
 export type { EventLogger } from './builder';

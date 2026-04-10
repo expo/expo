@@ -41,156 +41,8 @@ afterEach(() => {
   jest.unmock('node:tty');
 });
 
-describe('setProjectLogRoot', () => {
-  it('creates log file and flushes early buffer', () => {
-    const projectRoot = '/test/project';
-
-    jest.isolateModules(() => {
-      const LogStreamWrite = jest.fn();
-      const LogStream = jest.fn().mockImplementation(() => ({
-        writable: true,
-        _write: LogStreamWrite,
-        _end: jest.fn(),
-      }));
-      jest.doMock('../stream', () => ({ LogStream }));
-
-      const { events, setProjectLogRoot } = require('..') as typeof import('..');
-
-      const event = events('test', (t: any) => [t.event<'foo', { v: number }>()]);
-
-      // Emit events before project root is set
-      (event as any)('foo', { v: 1 });
-      (event as any)('foo', { v: 2 });
-
-      // Should not have called LogStream yet
-      expect(LogStream).not.toHaveBeenCalled();
-
-      setProjectLogRoot(projectRoot, 'start');
-
-      // LogStream created for the project log file
-      const nodePath = require('node:path');
-      expect(LogStream).toHaveBeenCalledWith(
-        nodePath.join(projectRoot, '.expo', 'dev', 'logs', 'start.log')
-      );
-
-      // Buffered events should have been flushed
-      expect(LogStreamWrite).toHaveBeenCalledTimes(2);
-      expect(LogStreamWrite.mock.calls[0][0]).toContain('"_e":"test:foo"');
-      expect(LogStreamWrite.mock.calls[1][0]).toContain('"v":2');
-    });
-  });
-
-  it('is idempotent — second call is a no-op', () => {
-    const projectRoot = '/test/project';
-
-    jest.isolateModules(() => {
-      const LogStream = jest.fn().mockImplementation(() => ({
-        writable: true,
-        _write: jest.fn(),
-        _end: jest.fn(),
-      }));
-      jest.doMock('../stream', () => ({ LogStream }));
-
-      const { setProjectLogRoot } = require('..') as typeof import('..');
-
-      setProjectLogRoot(projectRoot, 'start');
-      setProjectLogRoot(projectRoot, 'export');
-
-      // Only one LogStream created
-      expect(LogStream).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('returns relative log path and exposes it via getProjectLogPath', () => {
-    const projectRoot = '/test/project';
-
-    jest.isolateModules(() => {
-      jest.doMock('../stream', () => ({
-        LogStream: jest.fn().mockImplementation(() => ({
-          writable: true,
-          _write: jest.fn(),
-          _end: jest.fn(),
-        })),
-      }));
-
-      const { setProjectLogRoot, getProjectLogPath } = require('..') as typeof import('..');
-
-      expect(getProjectLogPath()).toBeUndefined();
-
-      const result = setProjectLogRoot(projectRoot, 'start');
-      expect(result).toBe('.expo/dev/logs/start.log');
-      expect(getProjectLogPath()).toBe('.expo/dev/logs/start.log');
-    });
-  });
-
-  it('writes events to both streams when both are active', () => {
-    const projectRoot = '/test/project';
-
-    jest.isolateModules(() => {
-      const envWrite = jest.fn();
-      const projectWrite = jest.fn();
-      let streamIndex = 0;
-      const LogStream = jest.fn().mockImplementation(() => {
-        const write = streamIndex === 0 ? envWrite : projectWrite;
-        streamIndex++;
-        return { writable: true, _write: write, _end: jest.fn() };
-      });
-      jest.doMock('../stream', () => ({ LogStream }));
-
-      const { installEventLogger, setProjectLogRoot, events } =
-        require('..') as typeof import('..');
-
-      installEventLogger('/dev/null');
-      setProjectLogRoot(projectRoot, 'start');
-
-      const event = events('dual', (t: any) => [t.event<'ping', { n: number }>()]);
-      (event as any)('ping', { n: 42 });
-
-      // Both streams received the event
-      expect(envWrite).toHaveBeenCalled();
-      expect(projectWrite).toHaveBeenCalled();
-      const envPayload = envWrite.mock.calls.at(-1)[0];
-      const projectPayload = projectWrite.mock.calls.at(-1)[0];
-      expect(envPayload).toContain('"_e":"dual:ping"');
-      expect(projectPayload).toContain('"_e":"dual:ping"');
-    });
-  });
-
-  it('caps early buffer at 1000 entries', () => {
-    jest.isolateModules(() => {
-      jest.doMock('../stream', () => ({
-        LogStream: jest.fn().mockImplementation(() => ({
-          writable: true,
-          _write: jest.fn(),
-          _end: jest.fn(),
-        })),
-      }));
-
-      const { events } = require('..') as typeof import('..');
-      const event = events('buf', (t: any) => [t.event<'x', {}>()]);
-
-      for (let i = 0; i < 1100; i++) {
-        (event as any)('x', {});
-      }
-
-      // Verify indirectly: set project root and check only 1000 lines flushed
-      const mockWrite = jest.fn();
-      const { LogStream } = require('../stream');
-      LogStream.mockImplementation(() => ({
-        writable: true,
-        _write: mockWrite,
-        _end: jest.fn(),
-      }));
-
-      const { setProjectLogRoot } = require('..') as typeof import('..');
-      setProjectLogRoot('/test/project', 'start');
-
-      // 1000 buffered events flushed (capped)
-      expect(mockWrite).toHaveBeenCalledTimes(1000);
-    });
-  });
-
-  it('truncates log file on each run', () => {
+describe('enableProjectLogs', () => {
+  it('creates log directory, truncates file, and activates the event logger', () => {
     const projectRoot = '/test/project';
 
     jest.isolateModules(() => {
@@ -200,24 +52,75 @@ describe('setProjectLogRoot', () => {
         mkdirSync: mockMkdirSync,
         writeFileSync: mockWriteFileSync,
       }));
+
+      const LogStream = jest.fn().mockImplementation(() => ({
+        writable: true,
+        _write: jest.fn(),
+        _end: jest.fn(),
+      }));
+      jest.doMock('../stream', () => ({ LogStream }));
+
+      const { enableProjectLogs, isEventLoggerActive } = require('..') as typeof import('..');
+
+      expect(isEventLoggerActive()).toBe(false);
+
+      enableProjectLogs(projectRoot, 'start');
+
+      const nodePath = require('node:path');
+      const logFile = nodePath.join(projectRoot, '.expo', 'dev', 'logs', 'start.log');
+
+      expect(mockMkdirSync).toHaveBeenCalledWith(nodePath.dirname(logFile), { recursive: true });
+      expect(mockWriteFileSync).toHaveBeenCalledWith(logFile, '');
+      expect(LogStream).toHaveBeenCalledWith(logFile);
+      expect(isEventLoggerActive()).toBe(true);
+    });
+  });
+
+  it('is a no-op when LOG_EVENTS was already set', () => {
+    jest.isolateModules(() => {
+      const LogStream = jest.fn().mockImplementation(() => ({
+        writable: true,
+        _write: jest.fn(),
+        _end: jest.fn(),
+      }));
+      jest.doMock('../stream', () => ({ LogStream }));
+
+      const { installEventLogger, enableProjectLogs } = require('..') as typeof import('..');
+
+      // Simulate a wrapper setting LOG_EVENTS
+      installEventLogger('/dev/null');
+      expect(LogStream).toHaveBeenCalledTimes(1);
+
+      // enableProjectLogs should not create a second stream
+      enableProjectLogs('/test/project', 'start');
+      expect(LogStream).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('exposes the log file path via getLogFile', () => {
+    const projectRoot = '/test/project';
+
+    jest.isolateModules(() => {
+      const mockFile = '/test/project/.expo/dev/logs/start.log';
+      jest.doMock('node:fs', () => ({
+        mkdirSync: jest.fn(),
+        writeFileSync: jest.fn(),
+      }));
       jest.doMock('../stream', () => ({
         LogStream: jest.fn().mockImplementation(() => ({
           writable: true,
+          file: mockFile,
           _write: jest.fn(),
           _end: jest.fn(),
         })),
       }));
 
-      const { setProjectLogRoot } = require('..') as typeof import('..');
-      setProjectLogRoot(projectRoot, 'start');
+      const { enableProjectLogs, getLogFile } = require('..') as typeof import('..');
 
-      const nodePath = require('node:path');
-      const logFile = nodePath.join(projectRoot, '.expo', 'dev', 'logs', 'start.log');
+      expect(getLogFile()).toBeUndefined();
 
-      // fs.mkdirSync should have been called for the log directory
-      expect(mockMkdirSync).toHaveBeenCalledWith(nodePath.dirname(logFile), { recursive: true });
-      // fs.writeFileSync should have been called with empty string to truncate
-      expect(mockWriteFileSync).toHaveBeenCalledWith(logFile, '');
+      enableProjectLogs(projectRoot, 'start');
+      expect(getLogFile()).toBe(mockFile);
     });
   });
 });
