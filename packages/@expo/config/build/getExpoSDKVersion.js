@@ -11,9 +11,9 @@ function _jsonFile() {
   };
   return data;
 }
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
+function _requireUtils() {
+  const data = require("@expo/require-utils");
+  _requireUtils = function () {
     return data;
   };
   return data;
@@ -39,7 +39,7 @@ function getExpoSDKVersion(projectRoot, exp = {}) {
  * version of the `expo` package.
  */
 function getExpoSDKVersionFromPackage(projectRoot) {
-  const packageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo/package.json');
+  const packageJsonPath = (0, _requireUtils().resolveFrom)(projectRoot, 'expo/package.json');
   if (!packageJsonPath) {
     throw new (_Errors().ConfigError)(`Cannot determine the project's Expo SDK version because the module \`expo\` is not installed. Install it with \`npm install expo\` and try again.`, 'MODULE_NOT_FOUND');
   }

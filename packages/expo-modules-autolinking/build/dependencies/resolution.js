@@ -16,8 +16,7 @@ const createNodeModulePathsCreator = () => {
     return async function getNodeModulePaths(packagePath) {
         const outputPaths = [];
         const nodeModulePaths = node_module_1.default._nodeModulePaths(packagePath);
-        for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-            const nodeModulePath = nodeModulePaths[idx];
+        for (const [idx, nodeModulePath] of nodeModulePaths.entries()) {
             let target = _nodeModulePathCache.get(nodeModulePath);
             if (target === undefined) {
                 target = await (0, utils_2.maybeRealpath)(nodeModulePath);
@@ -58,8 +57,8 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
         }
     }
     const resolveDependency = async (dependencyName) => {
-        for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-            const originPath = (0, utils_2.fastJoin)(nodeModulePaths[idx], dependencyName);
+        for (const modulePath of nodeModulePaths) {
+            const originPath = (0, utils_2.fastJoin)(modulePath, dependencyName);
             const nodeModulePath = await (0, utils_2.maybeRealpath)(originPath);
             if (nodeModulePath != null) {
                 return {
@@ -102,8 +101,8 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
         }
         if (!hasVisitedPath && depth < maxDepth) {
             const modules = await resolveDependencies(packageJson, nodeModulePaths, depth, shouldIncludeDependency);
-            for (let idx = 0; idx < modules.length; idx++) {
-                searchResults[modules[idx].name] = modules[idx];
+            for (const module of modules) {
+                searchResults[module.name] = module;
             }
             const childResults = await (0, concurrency_1.taskAll)(modules, (resolution) => recurse(resolution, depth + 1));
             return (0, utils_1.mergeResolutionResults)(childResults, searchResults);

@@ -50,6 +50,21 @@ struct PersistentFileLogTests {
     #expect(entries[0] == "Test string 2")
   }
 
+  @Test
+  func `append after filter preserves separate entries`() async throws {
+    await clearEntriesAsync(log: log)
+    await appendEntryAsync(log: log, entry: "entry1")
+    await appendEntryAsync(log: log, entry: "entry2")
+    await filterEntriesAsync(log: log) { entry in
+      entry.contains("2")
+    }
+    await appendEntryAsync(log: log, entry: "entry3")
+    let entries = log.readEntries()
+    #expect(entries.count == 2)
+    #expect(entries[0] == "entry2")
+    #expect(entries[1] == "entry3")
+  }
+
   // MARK: - Helpers
 
   private func clearEntriesAsync(log: PersistentFileLog) async {

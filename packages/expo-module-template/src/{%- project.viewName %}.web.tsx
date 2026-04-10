@@ -1,3 +1,4 @@
+<% if (project.platforms.includes('web')) { -%>
 import * as React from 'react';
 
 import { <%- project.viewName %>Props } from './<%- project.name %>.types';
@@ -13,3 +14,11 @@ export default function <%- project.viewName %>(props: <%- project.viewName %>Pr
     </div>
   );
 }
+<% } else { -%>
+import { <%- project.viewName %>Props } from './<%- project.name %>.types';
+
+// <%- project.viewName %> is not available on the web platform.
+export default function <%- project.viewName %>(_props: <%- project.viewName %>Props) {
+  throw new Error('<%- project.viewName %> is not available on the web platform.');
+}
+<% } -%>

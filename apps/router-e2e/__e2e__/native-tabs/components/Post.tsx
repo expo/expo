@@ -1,5 +1,4 @@
-import { useTheme } from '@react-navigation/native';
-import { Link, type Href } from 'expo-router';
+import { Link, useTheme, type Href } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 export function Post(props: { title: string; href: Href }) {

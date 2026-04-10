@@ -125,7 +125,9 @@ function openFileBrowserAsync({
 
         try {
           const assets: ImagePickerAsset[] = await Promise.all(
-            Array.from(files).map((file) => readFile(file, { base64 }))
+            Array.from(files)
+              .filter((file) => file != null)
+              .map((file) => readFile(file, { base64 }))
           );
           resolve({ canceled: false, assets });
         } catch (error) {
@@ -200,7 +202,7 @@ async function readFileAsBase64(file: File): Promise<string> {
         return;
       }
       // Remove the data URL prefix to get just the base64 data
-      resolve(result.split(',')[1]);
+      resolve(result.split(',')?.[1] ?? '');
     };
     reader.readAsDataURL(file);
   });

@@ -2,7 +2,7 @@ import {
   Button,
   Checkbox,
   DropdownMenu,
-  Divider,
+  HorizontalDivider,
   DropdownMenuItem,
   Host,
   Icon,
@@ -154,10 +154,10 @@ export default function DropdownMenuScreen() {
                   <ComposeText>My text is green!</ComposeText>
                 </DropdownMenuItem.Text>
                 <DropdownMenuItem.LeadingIcon>
-                  <Icon tintColor="#ff0000" source={starIcon} size={24} />
+                  <Icon tint="#ff0000" source={starIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
                 <DropdownMenuItem.TrailingIcon>
-                  <Icon tintColor="#0000ff" source={checkIcon} size={24} />
+                  <Icon tint="#0000ff" source={checkIcon} size={24} />
                 </DropdownMenuItem.TrailingIcon>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setColorfulMenuExpanded(false)}>
@@ -221,7 +221,7 @@ export default function DropdownMenuScreen() {
                   <Icon source={homeIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
               </DropdownMenuItem>
-              <Divider />
+              <HorizontalDivider />
               <DropdownMenu
                 expanded={submenuExpanded}
                 onDismissRequest={() => setSubmenuExpanded(false)}>
@@ -272,7 +272,7 @@ export default function DropdownMenuScreen() {
                   </DropdownMenuItem>
                 </DropdownMenu.Items>
               </DropdownMenu>
-              <Divider />
+              <HorizontalDivider />
               <DropdownMenuItem
                 onClick={() => {
                   setSectionsMenuExpanded(false);

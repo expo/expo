@@ -1,1 +1,1 @@
-module.exports = require('./plugin/build/index');
+module.exports = require('./plugin/build/withWidgets');

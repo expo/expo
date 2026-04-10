@@ -8,8 +8,8 @@ import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import type { ContextScope, GlobalSwitchStatus, ContextMarker } from './AskPageAIChat.types';
 import { FOOTNOTE } from '../Text';
+import type { ContextScope, GlobalSwitchStatus, ContextMarker } from './AskPageAIChat.types';
 import { normalizeQuestion } from './AskPageAIChat.utils';
 
 type ConversationEntry = {
@@ -60,7 +60,7 @@ export function AskPageAIChatMessages({
     return (
       <div className="border-default bg-subtle rounded-md border px-3 py-2 shadow-xs">
         <FOOTNOTE className="text-default font-medium">AI Assistant</FOOTNOTE>
-        <div className="text-secondary mt-1 space-y-3 text-xs">
+        <div className="text-secondary mt-1 space-y-3 text-sm">
           I'm an SDK AI assistant — ask me a question about the{' '}
           <span className="text-default font-medium">
             {contextScope === 'page' ? 'current page' : 'Expo docs'}
@@ -130,7 +130,7 @@ export function AskPageAIChatMessages({
             </div>
             <div className="px-0">
               <FOOTNOTE className="text-default font-medium">AI Assistant</FOOTNOTE>
-              <div className="text-secondary mt-1 space-y-3 text-xs">
+              <div className="text-secondary mt-1 space-y-3 text-sm">
                 {answerForDisplay ? (
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                     {answerForDisplay}
@@ -147,7 +147,7 @@ export function AskPageAIChatMessages({
                     type="button"
                     theme="quaternary"
                     size="xs"
-                    className="border-default bg-subtle text-default hover:bg-element focus-visible:ring-palette-blue9 inline-flex items-center gap-2 rounded-md border px-3 py-1 text-xs font-medium shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                    className="border-default bg-subtle text-default hover:bg-element focus-visible:ring-palette-blue9 inline-flex items-center gap-2 rounded-md border px-3 py-1 text-sm font-medium shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={isBusy || hasTriggeredGlobalSearch || isPendingGlobal}
                     onClick={() => {
                       onSearchAcrossDocs(displayQuestion);
@@ -158,14 +158,14 @@ export function AskPageAIChatMessages({
                       : 'Search Expo docs'}
                   </Button>
                   {showSwitchingNotice ? (
-                    <FOOTNOTE theme="secondary" className="text-xs">
+                    <FOOTNOTE theme="secondary" className="text-sm">
                       {switchNoticeText}
                     </FOOTNOTE>
                   ) : null}
                 </div>
               ) : null}
               {canSubmitFeedback ? (
-                <div className="text-secondary mt-3 flex items-center gap-1 text-xs">
+                <div className="text-secondary mt-3 flex items-center gap-1 text-sm">
                   <span className="text-secondary">Was this helpful?</span>
                   <div className="flex items-center gap-1">
                     <Button
@@ -215,7 +215,7 @@ export function AskPageAIChatMessages({
               ) : null}
             </div>
             {sourcesForDisplay?.length ? (
-              <FOOTNOTE theme="secondary" className="ml-1 text-xs">
+              <FOOTNOTE theme="secondary" className="ml-1 text-sm">
                 Sources:{' '}
                 {sourcesForDisplay.map((source, sourceIdx, sources) => (
                   <span key={source.source_url}>

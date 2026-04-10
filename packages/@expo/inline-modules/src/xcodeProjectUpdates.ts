@@ -1,4 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { IOSConfig } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 

@@ -8,7 +8,12 @@
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
+
+- [Android] Preserve WorkManager cancellation semantics when a background task worker is cancelled. ([#44667](https://github.com/expo/expo/pull/44667) by [@chrfalch](https://github.com/chrfalch))- [Android] Prevent background task registration from replacing an already scheduled or running worker. ([#44663](https://github.com/expo/expo/pull/44663) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fixed a race when rescheduling background tasks concurrently. ([#44666](https://github.com/expo/expo/pull/44666) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 

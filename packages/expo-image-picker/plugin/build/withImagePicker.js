@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.withAndroidImagePickerPermissions = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const { Colors } = config_plugins_1.AndroidConfig;
-const pkg = require('expo-image-picker/package.json');
+const pkg = require('../../package.json');
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';

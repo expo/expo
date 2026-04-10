@@ -9,12 +9,18 @@
     "scripts",
     "templates"
   ],
+  "bin": {
+    "et": "bin/expotools.js",
+    "expotools": "bin/expotools.js"
+  },
   "scripts": {
+    "prepare": "taskr release",
     "build": "taskr release",
     "watch": "taskr",
     "clean": "rm -rf build cache",
     "et": "node bin/expotools.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "pnpm build && node --test 'build/**/*.test.js'"
   },
   "taskr": {
     "requires": [
@@ -29,6 +35,7 @@
     "@expo/multipart-body-parser": "^1.1.0",
     "@expo/osascript": "^2.2.4",
     "@expo/plist": "^0.3.4",
+    "@expo/xcpretty": "^4.4.0",
     "@expo/spawn-async": "^1.7.2",
     "@expo/swiftlint": "^0.57.1",
     "@linear/sdk": "^2.6.0",
@@ -59,7 +66,7 @@
     "recursive-omit-by": "^2.0.0",
     "semver": "^7.6.3",
     "strip-ansi": "^6.0.0",
-    "tar": "^7.5.11",
+    "tar": "^7.5.12",
     "terminal-link": "^2.1.1",
     "typedoc": "^0.28.15",
     "uuid": "^9.0.0"

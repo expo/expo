@@ -11,6 +11,13 @@ exports.getMetroWorkspaceGlobs = getMetroWorkspaceGlobs;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.resolveEntryPoint = resolveEntryPoint;
 exports.resolveRelativeEntryPoint = void 0;
+function _requireUtils() {
+  const data = require("@expo/require-utils");
+  _requireUtils = function () {
+    return data;
+  };
+  return data;
+}
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -21,13 +28,6 @@ function _fs() {
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
-    return data;
-  };
-  return data;
-}
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
     return data;
   };
   return data;
@@ -97,46 +97,41 @@ function resolveEntryPoint(projectRoot, {
     main
   } = pkg;
   if (main && typeof main === 'string') {
-    // Testing the main field against all of the provided extensions - for legacy reasons we can't use node module resolution as the package.json allows you to pass in a file without a relative path and expect it as a relative path.
-    let entry = getFileWithExtensions(projectRoot, main, extensions);
+    // Allow for paths like: `{ "main": "expo/AppEntry" }`
+    const entry = (0, _requireUtils().resolveFrom)(projectRoot, main, {
+      extensions
+    });
     if (!entry) {
-      // Allow for paths like: `{ "main": "expo/AppEntry" }`
-      entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
-      if (!entry) throw new (_Errors().ConfigError)(`Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`, 'ENTRY_NOT_FOUND');
+      throw new (_Errors().ConfigError)(`Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`, 'ENTRY_NOT_FOUND');
     }
     return entry;
   }
 
   // Check for a root index.* file in the project root.
-  const entry = resolveFromSilentWithExtensions(projectRoot, './index', extensions);
+  let entry = (0, _requireUtils().resolveFrom)(projectRoot, './index', {
+    extensions
+  });
   if (entry) {
     return entry;
   }
-  try {
-    // If none of the default files exist then we will attempt to use the main Expo entry point.
-    // This requires `expo` to be installed in the project to work as it will use `node_module/expo/AppEntry.js`
-    // Doing this enables us to create a bare minimum Expo project.
 
-    // TODO(Bacon): We may want to do a check against `./App` and `expo` in the `package.json` `dependencies` as we can more accurately ensure that the project is expo-min without needing the modules installed.
-    return (0, _resolveFrom().default)(projectRoot, 'expo/AppEntry');
-  } catch {
+  // If none of the default files exist then we will attempt to use the main Expo entry point.
+  // This requires `expo` to be installed in the project to work as it will use `node_module/expo/AppEntry.js`
+  // Doing this enables us to create a bare minimum Expo project.
+
+  // TODO(Bacon): We may want to do a check against `./App` and `expo` in the `package.json` `dependencies` as we can more accurately ensure that the project is expo-min without needing the modules installed.
+  entry = (0, _requireUtils().resolveFrom)(projectRoot, 'expo/AppEntry', {
+    extensions
+  });
+  if (!entry) {
     throw new (_Errors().ConfigError)(`The project entry file could not be resolved. Define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`, 'ENTRY_NOT_FOUND');
   }
-}
-
-// Resolve from but with the ability to resolve like a bundler
-function resolveFromSilentWithExtensions(fromDirectory, moduleId, extensions) {
-  for (const extension of extensions) {
-    const modulePath = _resolveFrom().default.silent(fromDirectory, `${moduleId}.${extension}`);
-    if (modulePath?.endsWith(extension)) {
-      return modulePath;
-    }
-  }
-  return _resolveFrom().default.silent(fromDirectory, moduleId) || null;
+  return entry;
 }
 
 // Statically attempt to resolve a module but with the ability to resolve like a bundler.
 // This won't use node module resolution.
+/** @deprecated */
 function getFileWithExtensions(fromDirectory, moduleId, extensions) {
   const modulePath = _path().default.join(fromDirectory, moduleId);
   if (_fs().default.existsSync(modulePath)) {
@@ -164,6 +159,7 @@ function getMetroServerRoot(projectRoot) {
   }
   serverRoot = (0, _resolveWorkspaceRoot().resolveWorkspaceRoot)(projectRoot);
   if (serverRoot != null) {
+    serverRoot = _path().default.resolve(serverRoot);
     _metroServerRootCache.set(projectRoot, serverRoot);
   }
   return serverRoot ?? projectRoot;
@@ -176,21 +172,53 @@ function getMetroServerRoot(projectRoot) {
 function getMetroWorkspaceGlobs(monorepoRoot) {
   return (0, _resolveWorkspaceRoot().getWorkspaceGlobs)(monorepoRoot);
 }
+function toPosixPath(filePath) {
+  return filePath.replace(/\\/g, '/');
+}
 
+// TODO: Move to internals
 /**
  * Convert an absolute entry point to a server or project root relative filepath.
  * This is useful on Android where the entry point is an absolute path.
+ * @deprecated
  */
-function convertEntryPointToRelative(projectRoot, absolutePath) {
+function convertEntryPointToRelative(projectRoot, absolutePath, extname = '.js') {
+  if (!_path().default.isAbsolute(absolutePath)) {
+    absolutePath = _path().default.resolve(process.cwd(), projectRoot, absolutePath);
+  }
+
   // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
   // We need to make sure to get the non-symlinked path to the server or project root.
-  return _path().default.relative(_fs().default.realpathSync(getMetroServerRoot(projectRoot)), _fs().default.realpathSync(absolutePath));
+  let serverRoot = getMetroServerRoot(projectRoot);
+  try {
+    const realServerRoot = _fs().default.realpathSync(serverRoot);
+    if (realServerRoot !== serverRoot) {
+      serverRoot = realServerRoot;
+      absolutePath = _fs().default.realpathSync(absolutePath);
+    }
+  } catch {
+    // NOTE: `fs.realpathSync` can fail if `projectRoot` doesn't exist (e.g. mocked folder)
+  }
+  let entry = toPosixPath(_path().default.relative(serverRoot, absolutePath));
+
+  // Strip extname, if it's set and trivially resolvable by Metro
+  if (extname != null) {
+    if (extname[0] !== '.') {
+      extname = `.${extname}`;
+    }
+    if (entry.endsWith(extname)) {
+      entry = entry.slice(0, -extname.length);
+    }
+  }
+  return entry;
 }
 
+// TODO: Move to internals
 /**
  * Resolve the entry point relative to either the server or project root.
  * This relative entry path should be used to pass non-absolute paths to Metro,
  * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
+ * @deprecated
  */
 const resolveRelativeEntryPoint = (projectRoot, options) => {
   return convertEntryPointToRelative(projectRoot, resolveEntryPoint(projectRoot, options));

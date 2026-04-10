@@ -191,7 +191,7 @@ function findSwiftFunctionCodeBlock(contents, selector) {
       continue;
     }
     for (let i = 0; i < argLabels.length; ++i) {
-      if (argLabels[i] !== params[i].argumentLabel) {
+      if (argLabels[i] !== params[i]?.argumentLabel) {
         continue;
       }
     }
@@ -210,7 +210,7 @@ function findSwiftFunctionCodeBlock(contents, selector) {
 }
 function parseSwiftFunctionParam(paramTuple) {
   const semiIndex = paramTuple.indexOf(':');
-  const [argumentLabel, parameterName] = paramTuple.substring(0, semiIndex).split(/\s+/);
+  const [argumentLabel = '', parameterName = ''] = paramTuple.substring(0, semiIndex).split(/\s+/);
   const typeString = paramTuple.substring(semiIndex + 1).trim();
   return {
     argumentLabel,

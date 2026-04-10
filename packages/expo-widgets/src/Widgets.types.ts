@@ -16,14 +16,14 @@ export type WidgetRenderingMode = 'fullColor' | 'accented' | 'vibrant';
  * The system can update the levelOfDetail value based on user proximity or other system specific factors and allow content customization adapting to show different levels of details.
  * - `simplified` — The system recommends showing a simplified view with less details.
  * - `default` — The system has no specific recommendation for the level of detail.
- * @available iOS 26+
+ * @platform iOS 26+
  */
 export type LevelOfDetail = 'simplified' | 'default';
 
 /**
  * The size family of the current Live Activity.
  * A Live Activity you initiate on one device can also appear on a remote device that renders the Live Activity in a different family size. As a result, it renders for a specific family, depending on both the device and the location in which it appears.
- * @available iOS 18+
+ * @platform iOS 18+
  */
 export type ActivityFamily = 'small' | 'medium';
 
@@ -64,22 +64,22 @@ export type WidgetEnvironment = {
    *
    * When you detect this condition, lower the overall brightness of your view.
    * For example, you can change large, filled shapes to be stroked, and choose less bright colors.
-   * @available iOS 16+
+   * @platform iOS 16+
    */
   isLuminanceReduced?: boolean;
   /**
    * The widget's rendering mode, based on where the system is displaying it.
-   * @available iOS 16+
+   * @platform iOS 16+
    */
   widgetRenderingMode?: WidgetRenderingMode;
   /**
    * A Boolean value that indicates whether an accessory family widget can display an accessory label.
-   * @available iOS 16+
+   * @platform iOS 16+
    */
   showsWidgetLabel?: boolean;
   /**
    * The content margins for the widget.
-   * @available iOS 17+
+   * @platform iOS 17+
    */
   widgetContentMargins?: {
     top: number;
@@ -89,7 +89,7 @@ export type WidgetEnvironment = {
   };
   /**
    * The level of detail the view is recommended to have.
-   * @available iOS 26+
+   * @platform iOS 26+
    */
   levelOfDetail?: LevelOfDetail;
 };
@@ -101,27 +101,27 @@ export type LiveActivityEnvironment = {
   colorScheme: 'light' | 'dark';
   /**
    * Whether the activity is displayed in a context with reduced luminance.
-   * @available iOS 16+
+   * @platform iOS 16+
    */
   isLuminanceReduced?: boolean;
   /**
    * Whether the activity is currently displayed in fullscreen.
-   * @available iOS 16.1+
+   * @platform iOS 16.1+
    */
   isActivityFullscreen?: boolean;
   /**
    * A Boolean value that indicates whether the Live Activity update synchronization rate is reduced.
-   * @available iOS 18+
+   * @platform iOS 18+
    */
   isActivityUpdateReduced?: boolean;
   /**
    * The size family of the current Live Activity.
-   * @available iOS 18+
+   * @platform iOS 18+
    */
   activityFamily?: ActivityFamily;
   /**
    * The level of detail the view is recommended to have.
-   * @available iOS 26+
+   * @platform iOS 26+
    */
   levelOfDetail?: LevelOfDetail;
 };

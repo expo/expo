@@ -46,6 +46,9 @@ async function run() {
     }
   });
 
+  if (showVerboseTestResults) {
+    console.log(`expo-doctor: v${packageJson().version}`);
+  }
   await actionAsync(projectRoot, showVerboseTestResults);
 }
 

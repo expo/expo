@@ -136,10 +136,10 @@ test.describe(inputDir, () => {
     await serverActionRequest;
     const response = await serverResponsePromise;
 
-    const rscPayload = new TextDecoder().decode(await response.body());
+    const rscPayload = await response.text();
 
     expect(sanitizeRSCPayloadString(rscPayload))
-      .toBe(`1:I["react-native-web/dist/exports/Text/index.js",[],"",1]
+      .toBe(`1:I["node_modules/react-native-web/dist/exports/Text/index.js",[],"",1]
 0:{"_value":[["$","$L1",null,{"style":{"color":"darkcyan"},"testID":"server-action-props","children":"c=0"}],["$","$L1",null,{"testID":"server-action-platform","children":"web"}]]}
 `);
 

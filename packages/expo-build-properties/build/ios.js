@@ -40,6 +40,10 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propName: 'expo.useHermesV1',
         propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'ios', 'useHermesV1')?.toString(),
     },
+    {
+        propName: 'EXPO_USE_PRECOMPILED_MODULES',
+        propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? false).toString(),
+    },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
     const deploymentTarget = props.ios?.deploymentTarget;

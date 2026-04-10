@@ -420,8 +420,10 @@ function collectOutputReferences(modules, key) {
         ...new Set([...modules]
             .map((module) => {
             return module.output.map((output) => {
-                if (key in output.data && typeof output.data[key] === 'string') {
-                    return output.data[key];
+                // TODO: This is a mess. This needs to be properly typed
+                const data = output.data;
+                if (key in data && typeof data[key] === 'string') {
+                    return data[key];
                 }
                 return undefined;
             });

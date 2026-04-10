@@ -71,15 +71,19 @@ class ExpoUIModule : Module() {
 
     View(RNHostView::class)
 
-    View(TextInputView::class) {
-      Events("onValueChanged")
-      Prop("defaultValue", "") { view: TextInputView, text: String ->
-        if (view.text == null) {
-          view.text = text
-        }
+    View(TextFieldView::class) {
+      Events("onValueChange", "onFocusChanged", "onKeyboardAction")
+      Prop("defaultValue", "") { view: TextFieldView, text: String ->
+        if (view.text == null) { view.text = text }
       }
-      AsyncFunction("setText") { view: TextInputView, text: String ->
+      AsyncFunction("setText") { view: TextFieldView, text: String ->
         view.text = text
+      }
+      AsyncFunction("focus") { view: TextFieldView ->
+        view.focus()
+      }
+      AsyncFunction("blur") { view: TextFieldView ->
+        view.blur()
       }
     }
 
@@ -210,8 +214,12 @@ class ExpoUIModule : Module() {
       ShapeContent(props)
     }
 
-    ExpoUIView("DividerView") { props: DividerProps ->
-      DividerContent(props)
+    ExpoUIView("HorizontalDividerView") { props: DividerProps ->
+      HorizontalDividerContent(props)
+    }
+
+    ExpoUIView("VerticalDividerView") { props: DividerProps ->
+      VerticalDividerContent(props)
     }
 
     ExpoUIView("DateTimePickerView", events = {
@@ -403,6 +411,14 @@ class ExpoUIModule : Module() {
       ListItemContent(props)
     }
 
+    ExpoUIView("BadgeView") { props: BadgeProps ->
+      BadgeContent(props)
+    }
+
+    ExpoUIView("BadgedBoxView") { props: BadgedBoxProps ->
+      BadgedBoxContent(props)
+    }
+
     ExpoUIView("SpacerView") { props: SpacerProps ->
       SpacerContent(props)
     }
@@ -414,12 +430,29 @@ class ExpoUIModule : Module() {
       BasicAlertDialogContent(props) { onDismissRequest(Unit) }
     }
 
-    ExpoUIView("SurfaceView") { props: SurfaceProps ->
-      SurfaceContent(props)
+    ExpoUIView("SurfaceView", events = {
+      Events("onSurfaceClick", "onCheckedChange")
+    }) { props: SurfaceProps ->
+      val onSurfaceClick by remember { EventDispatcher<Unit>() }
+      val onCheckedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      SurfaceContent(props, onClick = { onSurfaceClick(Unit) }, onCheckedChange = { onCheckedChange(GenericEventPayload1(it)) })
     }
 
     ExpoUIView("AnimatedVisibilityView") { props: AnimatedVisibilityProps ->
       AnimatedVisibilityContent(props)
+    }
+
+    // Class-based views so TooltipBoxView can detect them by type via findChildOfType
+    View(PlainTooltipView::class)
+    View(RichTooltipView::class)
+
+    View(TooltipBoxView::class) {
+      AsyncFunction("show") Coroutine { view: TooltipBoxView ->
+        view.show()
+      }
+      AsyncFunction("dismiss") Coroutine { view: TooltipBoxView ->
+        view.dismiss()
+      }
     }
 
     ExpoUIView("RadioButtonView", events = {

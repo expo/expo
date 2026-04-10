@@ -27,7 +27,7 @@ export default function remarkExportHeadings(options = {}) {
         headings.push({
           id: node.data?.id,
           depth: node.depth,
-          type: node.children.find(node => node.type !== 'text')?.type || 'text',
+          type: node.children.find(node => node.type !== 'text')?.type ?? 'text',
           title: node.children.map(child => child.value).join(' '),
         });
       }

@@ -22,10 +22,20 @@ type ExecuteOptions = Omit<execa.Options, 'cwd'> & {
 export async function executeAsync(
   cwd: string,
   commandOrFlags: string[] = [],
-  { command, verbose, ...spawnOptions }: ExecuteOptions = {}
+  { command, env, verbose, ...spawnOptions }: ExecuteOptions = {}
 ) {
+  // Strip npm_config_minimum_release_age inherited from the monorepo's pnpm-workspace.yaml,
+  // as it blocks recently published packages without the matching exclusion list.
+  const { npm_config_minimum_release_age, ...processEnv } = process.env;
   const [bin, ...flags] = command ? command.concat(commandOrFlags) : commandOrFlags;
-  const child = execa(bin, flags, { ...spawnOptions, cwd });
+
+  const child = execa(bin!, flags, {
+    ...spawnOptions,
+    cwd,
+    env: { ...processEnv, ...env },
+    extendEnv: false,
+  });
+
   const log = createVerboseLogger({ verbose, prefix: 'execute' });
 
   log(bin, ...flags, { ...spawnOptions, cwd });

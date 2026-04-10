@@ -352,6 +352,14 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
      * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
      */
     privacyManifestAggregationEnabled?: boolean;
+    /**
+     * Enable using precompiled Expo modules (XCFrameworks) instead of building from source.
+     * When enabled, sets the `EXPO_USE_PRECOMPILED_MODULES` environment variable to `1`
+     * during `pod install`, which causes matching modules to be linked as vendored frameworks.
+     *
+     * @default false
+     */
+    usePrecompiledModules?: boolean;
 }
 /**
  * Interface representing extra CocoaPods dependency.

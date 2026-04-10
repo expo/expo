@@ -11,6 +11,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Badge component',
+    route: 'ui/badge',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BadgeScreen'));
+    },
+  },
+  {
     name: 'AlertDialog component',
     route: 'ui/alert-dialog',
     options: {},
@@ -115,6 +123,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Divider component',
+    route: 'ui/divider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DividerScreen'));
+    },
+  },
+  {
     name: 'Slider component',
     route: 'ui/slider',
     options: {},
@@ -139,11 +155,19 @@ export const UIScreens = [
     },
   },
   {
-    name: 'TextInput component',
-    route: 'ui/textInput',
+    name: 'Text component',
+    route: 'ui/text',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./TextInputScreen'));
+      return optionalRequire(() => require('./TextScreen'));
+    },
+  },
+  {
+    name: 'TextField component',
+    route: 'ui/textField',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextFieldScreen'));
     },
   },
   {
@@ -240,6 +264,30 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ModifiersScreen'));
+    },
+  },
+  {
+    name: 'PullToRefreshBox component',
+    route: 'ui/pull-to-refresh-box',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./PullToRefreshBoxScreen'));
+    },
+  },
+  {
+    name: 'Surface component',
+    route: 'ui/surface',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SurfaceScreen'));
+    },
+  },
+  {
+    name: 'Tooltip component',
+    route: 'ui/tooltip',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TooltipScreen'));
     },
   },
 ];

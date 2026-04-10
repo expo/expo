@@ -76,7 +76,9 @@ function definePlugin({
           // "process.env.NODE_ENV" -> memberPatterns, extract "process" as root
           memberPatterns.push([key, value]);
           const root = key.split('.')[0];
-          memberRoots.add(root);
+          if (root != null) {
+            memberRoots.add(root);
+          }
         } else {
           // "__DEV__" -> identifiers
           identifiers.set(key, value);

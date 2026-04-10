@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ColorValue } from 'react-native';
 import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 declare function ModalStackRouteDrawer({ routeKey, options, dismissible, renderScreen, onDismiss, themeColors, }: {
     routeKey: string;
@@ -6,8 +7,8 @@ declare function ModalStackRouteDrawer({ routeKey, options, dismissible, renderS
     renderScreen: () => React.ReactNode;
     onDismiss: () => void;
     themeColors: {
-        card: string;
-        background: string;
+        card: ColorValue;
+        background: ColorValue;
     };
     dismissible?: boolean;
 }): React.JSX.Element;

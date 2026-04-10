@@ -116,7 +116,7 @@ export async function startInterfaceAsync(
       }
 
       const server = devServerManager.getDefaultDevServer();
-      const settings = PLATFORM_SETTINGS[platform];
+      const settings = PLATFORM_SETTINGS[platform]!;
 
       Log.log(`${BLT} Opening on ${settings.name}...`);
 

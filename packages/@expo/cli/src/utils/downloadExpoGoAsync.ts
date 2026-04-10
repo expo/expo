@@ -14,27 +14,20 @@ import { Log } from '../log';
 
 const debug = require('debug')('expo:utils:downloadExpoGo') as typeof console.log;
 
-const platformSettings: Record<
-  string,
-  {
-    shouldExtractResults: boolean;
-    versionsKey: keyof SDKVersion;
-    getFilePath: (filename: string) => string;
-  }
-> = {
+const platformSettings = {
   ios: {
     versionsKey: 'iosClientUrl',
-    getFilePath: (filename) =>
+    getFilePath: (filename: string) =>
       path.join(getExpoHomeDirectory(), 'ios-simulator-app-cache', `${filename}.app`),
     shouldExtractResults: true,
   },
   android: {
     versionsKey: 'androidClientUrl',
-    getFilePath: (filename) =>
+    getFilePath: (filename: string) =>
       path.join(getExpoHomeDirectory(), 'android-apk-cache', `${filename}.apk`),
     shouldExtractResults: false,
   },
-};
+} as const;
 
 /**
  * @internal exposed for testing.
@@ -42,8 +35,7 @@ const platformSettings: Record<
  */
 export async function getExpoGoVersionEntryAsync(sdkVersion: string): Promise<SDKVersion> {
   const { sdkVersions: versions } = await getVersionsAsync();
-  let version: SDKVersion;
-
+  let version: SDKVersion | undefined;
   if (sdkVersion.toUpperCase() === 'UNVERSIONED') {
     // find the latest version
     const latestVersionKey = Object.keys(versions).reduce((a, b) => {

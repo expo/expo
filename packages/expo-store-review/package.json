@@ -9,7 +9,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -34,11 +33,11 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
   "dependencies": {},
   "devDependencies": {
-    "expo-constants": "^55.0.7",
-    "expo-module-scripts": "^55.0.2"
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react-native": "*"
   }
 }

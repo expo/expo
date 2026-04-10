@@ -5,7 +5,7 @@ buildscript {
   dependencies {
     classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
     classpath("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:${kotlinVersion}")
-    classpath("com.apollographql.apollo:apollo-gradle-plugin:4.3.1")
+    classpath("com.apollographql.apollo:apollo-gradle-plugin:4.4.2")
   }
 }
 
@@ -121,6 +121,7 @@ dependencies {
   }
 
   implementation 'com.facebook.react:react-android'
+  implementation 'androidx.core:core-ktx:1.17.0'
 
   debugOnly project(":expo-dev-menu-interface")
   debugOnly project(":expo-manifests")
@@ -154,7 +155,7 @@ dependencies {
 
   debugOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 
-  debugOnly("com.apollographql.apollo:apollo-runtime:4.3.1")
+  debugOnly("com.apollographql.apollo:apollo-runtime:4.4.2")
 
   debugOnly("com.composables:core:1.43.1")
 

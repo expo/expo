@@ -1,0 +1,1 @@
+{"version":3,"file":"MaskedView.d.ts","sourceRoot":"","sources":["../../../src/react-navigation/elements/MaskedView.tsx"],"names":[],"mappings":"AAAA;;GAEG;AACH,OAAO,KAAK,KAAK,KAAK,MAAM,OAAO,CAAC;AAEpC,KAAK,KAAK,GAAG;IACX,WAAW,EAAE,KAAK,CAAC,YAAY,CAAC;IAChC,QAAQ,EAAE,KAAK,CAAC,YAAY,CAAC;CAC9B,CAAC;AAEF,wBAAgB,UAAU,CAAC,EAAE,QAAQ,EAAE,EAAE,KAAK,0EAE7C"}

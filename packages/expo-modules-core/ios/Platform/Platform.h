@@ -7,6 +7,7 @@
 #elif TARGET_OS_OSX
 
 #import <AppKit/AppKit.h>
+
 #import <React/RCTUIKit.h>
 
 @compatibility_alias UIView NSView;

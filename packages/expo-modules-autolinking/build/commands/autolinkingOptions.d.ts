@@ -29,7 +29,8 @@ export interface AutolinkingOptions {
      * @defaultValue `[]`
      */
     include: string[];
-    /** A list of package names to opt out of prebuilt Expo modules (Android-only)
+    /** A list of package name patterns to opt out of prebuilt modules.
+     * Supports regex patterns (e.g., ".*" for all packages, "expo-audio" for exact match).
      * @defaultValue `[]`
      */
     buildFromSource?: string[];

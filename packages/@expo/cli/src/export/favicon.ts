@@ -75,7 +75,7 @@ export async function getFaviconFromExpoConfigAsync(
   const dims = [16, 32, 48];
   const cacheType = 'favicon';
 
-  const size = dims[dims.length - 1];
+  const size = dims[dims.length - 1]!;
   try {
     const { source } = await generateImageAsync(
       { projectRoot, cacheType },

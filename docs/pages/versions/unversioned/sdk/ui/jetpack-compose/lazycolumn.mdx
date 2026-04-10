@@ -48,9 +48,15 @@ export default function LazyColumnArrangement() {
   return (
     <Host style={{ height: 400 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 8 }} horizontalAlignment="center">
-        <ListItem headline="Spaced item 1" />
-        <ListItem headline="Spaced item 2" />
-        <ListItem headline="Spaced item 3" />
+        <ListItem>
+          <ListItem.HeadlineContent>Spaced item 1</ListItem.HeadlineContent>
+        </ListItem>
+        <ListItem>
+          <ListItem.HeadlineContent>Spaced item 2</ListItem.HeadlineContent>
+        </ListItem>
+        <ListItem>
+          <ListItem.HeadlineContent>Spaced item 3</ListItem.HeadlineContent>
+        </ListItem>
       </LazyColumn>
     </Host>
   );
@@ -68,9 +74,15 @@ export default function LazyColumnPadding() {
   return (
     <Host style={{ height: 400 }}>
       <LazyColumn contentPadding={{ start: 16, top: 8, end: 16, bottom: 8 }}>
-        <ListItem headline="Padded item 1" />
-        <ListItem headline="Padded item 2" />
-        <ListItem headline="Padded item 3" />
+        <ListItem>
+          <ListItem.HeadlineContent>Padded item 1</ListItem.HeadlineContent>
+        </ListItem>
+        <ListItem>
+          <ListItem.HeadlineContent>Padded item 2</ListItem.HeadlineContent>
+        </ListItem>
+        <ListItem>
+          <ListItem.HeadlineContent>Padded item 3</ListItem.HeadlineContent>
+        </ListItem>
       </LazyColumn>
     </Host>
   );

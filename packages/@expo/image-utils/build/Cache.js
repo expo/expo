@@ -42,7 +42,8 @@ async function ensureCacheDirectory(projectRoot, type, cacheKey) {
 }
 async function getImageFromCacheAsync(fileName, cacheKey) {
     try {
-        return await fs_1.default.promises.readFile((0, path_1.resolve)(cacheKeys[cacheKey], fileName));
+        const cachedKey = cacheKeys[cacheKey];
+        return await fs_1.default.promises.readFile(cachedKey != null ? (0, path_1.resolve)(cachedKey, fileName) : (0, path_1.resolve)(fileName));
     }
     catch {
         return null;
@@ -50,7 +51,8 @@ async function getImageFromCacheAsync(fileName, cacheKey) {
 }
 async function cacheImageAsync(fileName, buffer, cacheKey) {
     try {
-        await fs_1.default.promises.writeFile((0, path_1.resolve)(cacheKeys[cacheKey], fileName), buffer);
+        const cachedKey = cacheKeys[cacheKey];
+        await fs_1.default.promises.writeFile(cachedKey != null ? (0, path_1.resolve)(cachedKey, fileName) : (0, path_1.resolve)(fileName), buffer);
     }
     catch (error) {
         console.warn(`Error caching image: "${fileName}". ${error.message}`);
