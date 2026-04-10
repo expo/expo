@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Preserve WorkManager cancellation semantics when a background task worker is cancelled.
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25
