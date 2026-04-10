@@ -39,10 +39,21 @@ class NetworkModule : Module() {
     }
 
     override fun onLost(lostNetwork: android.net.Network) {
-      // When a network is lost, connectivityManager.activeNetwork may still
-      // return the stale network on some Android versions, causing the emitted
-      // state to incorrectly report "connected". Instead, compare the lost
-      // network against the current active network to determine the real state.
+      // We intentionally do NOT reuse asyncEmitNetworkState(DELAY_MS) here.
+      //
+      // The 250ms delay used by onAvailable cannot be applied to onLost: on
+      // Android 13+ (and some earlier versions), connectivityManager.activeNetwork
+      // continues to return the just-lost Network object even after the delay,
+      // so re-querying it would emit a stale "isConnected = true" event — the
+      // exact bug reported in https://github.com/expo/expo/issues/37972.
+      //
+      // Instead, compare the lost network against the active network. If they
+      // match (or activeNetwork is null), there is no replacement network and
+      // we emit a disconnected state directly. If a different network is
+      // active (e.g. cellular fallback after WiFi drop), emit its state.
+      //
+      // We still post to the main looper because sendEvent expects the main
+      // thread; we just skip the delay.
       Handler(Looper.getMainLooper()).post {
         try {
           val activeNetwork = connectivityManager.activeNetwork
@@ -57,6 +68,7 @@ class NetworkModule : Module() {
             emitNetworkState()
           }
         } catch (e: SecurityException) {
+          Log.w(TAG, "SecurityException while handling onLost network callback", e)
         }
       }
     }
@@ -121,6 +133,7 @@ class NetworkModule : Module() {
       try {
         emitNetworkState()
       } catch (e: SecurityException) {
+        Log.w(TAG, "SecurityException while emitting network state", e)
       }
     }, delay.toLong())
   }
