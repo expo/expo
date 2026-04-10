@@ -19,7 +19,7 @@ type FileObject = {
 export function FileTree({ files = [], ...rest }: FileTreeProps) {
   return (
     <div
-      className="border-default bg-default mb-4 overflow-x-auto rounded-md border p-2 pr-4 pb-4 text-xs whitespace-nowrap"
+      className="border-default bg-default mb-4 overflow-x-auto rounded-md border p-2 pr-4 pb-4 text-sm whitespace-nowrap"
       {...rest}>
       {renderStructure(generateStructure(files))}
     </div>

@@ -98,8 +98,8 @@ const createNodeLabel = (data: NodeData, isHighlighted: boolean) => {
           {data.extraTitle}
         </div>
       )}
-      {data.subtitle && <div className={`text-xs ${styles.subtitleText}`}>{data.subtitle}</div>}
-      <div className={`mt-1 rounded-md px-2 py-1 text-xs ${styles.badge}`}>{data.badge}</div>
+      {data.subtitle && <div className={`text-sm ${styles.subtitleText}`}>{data.subtitle}</div>}
+      <div className={`mt-1 rounded-md px-2 py-1 text-sm ${styles.badge}`}>{data.badge}</div>
     </div>
   );
 };
