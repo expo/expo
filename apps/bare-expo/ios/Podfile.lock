@@ -3926,7 +3926,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: 87dd980cb26e47b1108e24c39bcfb88a9ab1030e
   ExpoAppIntegrity: 7e3ae77f96e3a3f742fe318d7aac24b66a7bead0
   ExpoAppleAuthentication: c8096cd35e4e4f88aec34fcbfcd9deae7cea04d3
-  ExpoAppMetrics: 4d9929148c8c38dd58e8c4aa08d1c12c5e7b8542
+  ExpoAppMetrics: 23cb572291ff358da73e9120b28b2ee721f84763
   ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27
   ExpoAudio: 40c883c60ed3bb17ecb3744a00732fb47029535b
   ExpoBackgroundFetch: ee315c8d1a54a3f358fc0cedb68e808e95935c57
@@ -3973,7 +3973,7 @@ SPEC CHECKSUMS:
   ExpoModulesWorklets: fe2384a395429f5148f20204d229fb50926f9392
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
-  ExpoObserve: be28c7c387eb5490b3bd7717c411c38dd2f343dd
+  ExpoObserve: 5b062a1f0a70be519b2b5306b0f80930ce36c3a6
   ExpoPrint: 884afdcfe9adea0d36f121353652d0cfa7963deb
   ExpoRouter: 617b413f30eb9fa39b210e4261814b13afd0418b
   ExpoScreenCapture: fe37f0547515f17434b002dcda5e1725fc61fe6f
