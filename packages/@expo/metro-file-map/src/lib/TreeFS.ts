@@ -24,6 +24,8 @@ import type {
   ProcessFileFunction,
 } from '../types';
 import { RootPathUtils, getAncestorOfRootIdx, pathsToPattern } from './RootPathUtils';
+import normalizePathSeparatorsToPosix from './normalizePathSeparatorsToPosix';
+import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
 
 type DirectoryNode = Map<string, MixedNode | null>;
 type FileNode = FileMetadata;
@@ -1277,14 +1279,15 @@ export default class TreeFS implements MutableFileSystem {
           canonicalPathOfSymlink,
           rawTarget
         );
-        symlinkNode[H.SYMLINK] = normalSymlinkTarget;
+        // Cached value should be in posix format
+        symlinkNode[H.SYMLINK] = normalizePathSeparatorsToPosix(normalSymlinkTarget);
         symlinkNode[H.VISITED] = 1;
       } catch {
         return null;
       }
     } else {
       // Already pre-normalised at ingestion or previous lazy resolution
-      normalSymlinkTarget = symlinkNode[H.SYMLINK] as string;
+      normalSymlinkTarget = normalizePathSeparatorsToSystem(symlinkNode[H.SYMLINK] as string);
     }
     const result = {
       ancestorOfRootIdx: this.#pathUtils.getAncestorOfRootIdx(normalSymlinkTarget),

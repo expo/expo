@@ -306,7 +306,10 @@ export default async function watchmanCrawl({
         if (fileData.type === 'l') {
           symlinkInfo = fileData['symlink_target'] ?? 1;
           if (typeof symlinkInfo === 'string') {
-            symlinkInfo = pathUtils.resolveSymlinkToNormal(relativeFilePath, symlinkInfo);
+            // Cached value should be in posix format
+            symlinkInfo = normalizePathSeparatorsToPosix(
+              pathUtils.resolveSymlinkToNormal(relativeFilePath, symlinkInfo)
+            );
           }
         }
 
