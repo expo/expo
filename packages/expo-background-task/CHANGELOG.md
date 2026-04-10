@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Prevent background task registration from replacing an already scheduled or running worker.
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25
