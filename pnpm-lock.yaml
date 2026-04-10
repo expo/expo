@@ -1182,6 +1182,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-background-task:
+        specifier: workspace:*
+        version: link:../../packages/expo-background-task
       expo-clipboard:
         specifier: workspace:*
         version: link:../../packages/expo-clipboard

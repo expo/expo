@@ -19,6 +19,9 @@
           "name": "ExpoBackgroundTask",
           "path": "ios",
           "pattern": "*.swift",
+          "exclude": [
+            "Tests/**"
+          ],
           "dependencies": [
             "Hermes",
             "React",
