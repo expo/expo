@@ -97,7 +97,6 @@ async function clearAllExistingSplashImagesAsync(projectRoot: string) {
 
   await Promise.all(
     paths.map((filePath) => {
-      console.log('cleaning ' + path.resolve(androidMainPath, filePath));
       return fs.promises.rm(path.resolve(androidMainPath, filePath), {
         force: true,
         recursive: true,
