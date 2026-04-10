@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class EXDevLauncherRecentlyOpenedAppsRegistry;
 @class EXDevLauncherController;
 @class EXDevLauncherErrorManager;
+@class RCTBridge;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
@@ -42,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
 
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
+@property (nonatomic, strong) RCTBridge * _Nullable appBridge;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) id<EXUpdatesDevLauncherInterface> updatesInterface;

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Restore the `appBridge` declaration so SDK 55 dev builds compile again.
+
 ### 💡 Others
 
 ## 55.0.27 — 2026-04-10
