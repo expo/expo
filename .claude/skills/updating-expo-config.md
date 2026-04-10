@@ -6,24 +6,11 @@ This skill documents the process of adding new properties to the Expo config sch
 
 When adding a new property to the Expo config, update these files in order:
 
-### 1. TypeScript Types
-
-**File:** `packages/@expo/config-types/src/ExpoConfig.ts`
-
-Add the new property to the appropriate interface (`ExpoConfig`, `IOS`, `Android`, `Web`, etc.) with JSDoc comments.
-
-```typescript
-/**
- * Description of the property.
- */
-propertyName?: string;
-```
-
-### 2. JSON Schema (Universe)
+### 1. JSON Schema (Universe)
 
 > This step only works for Expo team members with access to the server repository.
 
-**File:** `../universe/server/www/xdl-schemas/UNVERSIONED-schema.json`
+**File:** `../universe/server/www/xdl-schemas/UNVERSIONED-schema.json` (depends on where the developer clones the `universe` repo)
 
 Add the property to the corresponding definition (`IOS`, `Android`, etc.) with:
 
@@ -43,64 +30,21 @@ Add the property to the corresponding definition (`IOS`, `Android`, etc.) with:
 }
 ```
 
+### 2. Update TypeScript Types
+
+Generate the TypeScript types based on the JSON schema: `cd packages/@expo/config-types && pnpm generate --path ../../../../universe/server/www/xdl-schemas/UNVERSIONED-schema.json` in `packages/@expo/config-types`
+
 ### 3. Docs Schema
 
-**File:** `docs/public/static/schemas/unversioned/app-config-schema.json`
+This file is **auto-generated** from the universe schema via the Expo API server. After the universe schema is deployed: `cd docs && pnpm run schema-sync unversioned`
 
-This file is **auto-generated** from the universe schema via the Expo API server. After the universe schema is deployed:
+### 3. Config Plugin (if the property needs to be applied during prebuild)
 
-```bash
-cd docs && yarn run schema-sync unversioned
-```
+Create a new plugin module following existing patterns, generally in `packages/@expo/config-plugins/src`
 
-This fetches the schema from `exp.host/--/api/v2/project/configuration/schema/UNVERSIONED` and writes it locally.
+Ensure the plugin is registered for prebuild in `packages/@expo/prebuild-config`
 
-**For local development** (before the universe schema is deployed), you can manually add the property definition to match what you added in step 2. The format is a flattened JSON without `$ref` references.
-
-### 4. Config Plugin (if the property needs to be applied during prebuild)
-
-**File:** `packages/@expo/config-plugins/src/ios/<PropertyName>.ts` (or android/)
-
-Create a new plugin module following existing patterns:
-
-```typescript
-import type { ExpoConfig } from '@expo/config-types';
-import type { ConfigPlugin } from '../Plugin.types';
-
-export const withPropertyName: ConfigPlugin = (config) => {
-  // Implementation
-  return config;
-};
-
-export function getPropertyName(config: Pick<ExpoConfig, 'ios'>): string | null {
-  return config.ios?.propertyName ?? null;
-}
-```
-
-### 5. Export the Plugin
-
-**File:** `packages/@expo/config-plugins/src/ios/index.ts` (or android/)
-
-```typescript
-import * as PropertyName from './PropertyName';
-// ...
-export {
-  // ...
-  PropertyName,
-};
-```
-
-### 6. Register in Default Plugins
-
-**File:** `packages/@expo/prebuild-config/src/plugins/withDefaultPlugins.ts`
-
-Add to `withIosExpoPlugins` or `withAndroidExpoPlugins`:
-
-```typescript
-IOSConfig.PropertyName.withPropertyName,
-```
-
-### 7. Tests
+### 4. Tests
 
 #### Config Plugin Tests
 
@@ -129,87 +73,19 @@ After making changes, run:
 
 ```bash
 # Build config-types
-cd packages/@expo/config-types && yarn build
+cd packages/@expo/config-types && pnpm build
 
 # Build and test config-plugins
-cd packages/@expo/config-plugins && yarn build && yarn typecheck
-yarn test src/ios/__tests__/PropertyName-test.ts
-
+cd packages/@expo/config-plugins && pnpm build && pnpm typecheck
+pnpm test src/ios/__tests__/PropertyName-test.ts
 # Build prebuild-config
-cd packages/@expo/prebuild-config && yarn build && yarn typecheck
-```
-
-## Common Patterns
-
-### iOS Build Settings (Xcode project)
-
-Use `withXcodeProject` and iterate through `getNativeTargets()`:
-
-```typescript
-import { withXcodeProject } from '../plugins/ios-plugins';
-import { getNativeTargets } from './Target';
-import { getBuildConfigurationsForListId } from './utils/Xcodeproj';
-
-export const withProperty: ConfigPlugin = (config) => {
-  return withXcodeProject(config, (config) => {
-    const nativeTargets = getNativeTargets(config.modResults);
-    nativeTargets.forEach(([, nativeTarget]) => {
-      getBuildConfigurationsForListId(
-        config.modResults,
-        nativeTarget.buildConfigurationList
-      ).forEach(([, buildConfig]) => {
-        buildConfig.buildSettings.SETTING_NAME = value;
-      });
-    });
-    return config;
-  });
-};
-```
-
-### Podfile Properties
-
-Use `createBuildPodfilePropsConfigPlugin`:
-
-```typescript
-import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
-
-export const withPropertyPodfileProps = createBuildPodfilePropsConfigPlugin<ExpoConfig>(
-  [
-    {
-      propName: 'property.name',
-      propValueGetter: (config) => config.ios?.propertyName ?? null,
-    },
-  ],
-  'withPropertyPodfileProps'
-);
-```
-
-### Info.plist Properties
-
-Use `createInfoPlistPluginWithPropertyGuard`:
-
-```typescript
-import { createInfoPlistPluginWithPropertyGuard } from './utils/withInfoPlist';
-
-export const withProperty = createInfoPlistPluginWithPropertyGuard(
-  setProperty,
-  {
-    infoPlistProperty: 'CFBundlePropertyName',
-    expoConfigProperty: 'ios.propertyName',
-  },
-  'withProperty'
-);
+cd packages/@expo/prebuild-config && pnpm build && pnpm typecheck
 ```
 
 ## Checklist
 
-- [ ] TypeScript types in `@expo/config-types`
 - [ ] JSON schema in universe (`UNVERSIONED-schema.json`)
+- [ ] TypeScript types in `@expo/config-types`
 - [ ] Docs schema (run `cd docs && yarn run schema-sync unversioned` after universe deploy, or manually update for local dev)
 - [ ] Config plugin (if needed)
-- [ ] Export plugin from index
-- [ ] Register in default plugins (if needed)
-- [ ] Unit tests for plugin
-- [ ] Update prebuild-config test fixture
-- [ ] Build and typecheck all packages
-- [ ] Run tests
+- [ ] Tests for plugin
