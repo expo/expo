@@ -115,10 +115,12 @@ class ExpoUIModule : Module() {
 
     ExpoUIView<ModalBottomSheetViewProps>("ModalBottomSheetView") {
       val hide by AsyncFunction()
+      val expand by AsyncFunction()
+      val partialExpand by AsyncFunction()
       val onDismissRequest by Event<Unit>()
 
       Content { props ->
-        ModalBottomSheetContent(props, hide) { onDismissRequest(Unit) }
+        ModalBottomSheetContent(props, hide, expand, partialExpand) { onDismissRequest(Unit) }
       }
     }
 

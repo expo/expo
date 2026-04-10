@@ -43,6 +43,8 @@ data class ModalBottomSheetViewProps(
 fun FunctionalComposableScope.ModalBottomSheetContent(
   props: ModalBottomSheetViewProps,
   hide: AsyncFunctionHandle<Unit>,
+  expand: AsyncFunctionHandle<Unit>,
+  partialExpand: AsyncFunctionHandle<Unit>,
   onDismissRequest: () -> Unit
 ) {
   val sheetState = rememberModalBottomSheetState(props.skipPartiallyExpanded)
@@ -59,6 +61,28 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
     }
   }
 
+  expand.handle {
+    try {
+      withContext(scope.coroutineContext) {
+        sheetState.expand()
+      }
+    } catch (_: CancellationException) {
+      // Swipe-dismiss may cancel the coroutine scope while expand() is in-flight.
+      // Swallowing the exception avoids an unhandled promise rejection on the JS side.
+    }
+  }
+
+  partialExpand.handle {
+    try {
+      withContext(scope.coroutineContext) {
+        sheetState.partialExpand()
+      }
+    } catch (_: CancellationException) {
+      // Swipe-dismiss may cancel the coroutine scope while partialExpand() is in-flight.
+      // Swallowing the exception avoids an unhandled promise rejection on the JS side.
+    }
+  }
+ 
   val resolvedContainerColor = props.containerColor.composeOrNull ?: BottomSheetDefaults.ContainerColor
   val resolvedContentColor = props.contentColor.composeOrNull ?: contentColorFor(resolvedContainerColor)
   val resolvedScrimColor = props.scrimColor.composeOrNull ?: BottomSheetDefaults.ScrimColor
