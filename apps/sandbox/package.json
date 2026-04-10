@@ -10,9 +10,9 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/native": "^7.1.33",
-    "expo": "~55.0.13",
+    "expo": "~55.0.14",
     "expo-linking": "~55.0.12",
-    "expo-router": "^55.0.11",
+    "expo-router": "^55.0.12",
     "expo-splash-screen": "~55.0.17",
     "react": "19.1.1",
     "react-native": "0.83.4",
@@ -20,7 +20,7 @@
     "react-native-screens": "4.11.1-nightly-20250611-8b82e081e"
   },
   "devDependencies": {
-    "babel-preset-expo": "~55.0.16"
+    "babel-preset-expo": "~55.0.17"
   },
   "private": true
 }
