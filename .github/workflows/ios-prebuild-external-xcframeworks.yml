@@ -20,6 +20,9 @@ jobs:
   prebuild:
     runs-on: macos-15
     timeout-minutes: 120
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -49,6 +52,23 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
 
+      - name: Resolve SDK version
+        run: echo "SDK_VERSION=$(node -p \"require('./packages/expo/package.json').version\")" >> $GITHUB_ENV
+
+      - name: Decide whether to publish XCFramework archive
+        env:
+          INPUT_PACKAGES: ${{ github.event.inputs.packages }}
+        run: |
+          INPUT_PACKAGES_TRIMMED="${INPUT_PACKAGES//[[:space:]]/}"
+
+          if [[ "$GITHUB_REF" == refs/heads/sdk-* ]] && [[ -z "$INPUT_PACKAGES_TRIMMED" ]]; then
+            echo "PUBLISH_XCFRAMEWORK_ARCHIVE=1" >> $GITHUB_ENV
+            echo "Publishing XCFramework archive to GCS from release branch $GITHUB_REF"
+          else
+            echo "PUBLISH_XCFRAMEWORK_ARCHIVE=0" >> $GITHUB_ENV
+            echo "Skipping XCFramework archive publish for ref $GITHUB_REF (packages input: '${INPUT_PACKAGES}')"
+          fi
+
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
         env:
           INPUT_PACKAGES: ${{ github.event.inputs.packages }}
@@ -66,6 +86,53 @@ jobs:
 
           echo "Running: et prebuild $ARGS"
           et prebuild $ARGS
+
+      - name: Package XCFrameworks (${{ matrix.flavor }})
+        if: ${{ !cancelled() }}
+        run: |
+          FLAVOR_LOWER=$(echo "${{ matrix.flavor }}" | tr '[:upper:]' '[:lower:]')
+          ARCHIVE_PATH="$RUNNER_TEMP/xcframeworks-${{ matrix.flavor }}.zip"
+          FILE_LIST="$RUNNER_TEMP/xcframeworks-${{ matrix.flavor }}.txt"
+
+          cd packages/precompile/.build
+          shopt -s globstar nullglob
+          files=(**/"${FLAVOR_LOWER}"/xcframeworks/*.tar.gz)
+
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No XCFramework tarballs found for flavor ${{ matrix.flavor }}"
+            exit 1
+          fi
+
+          printf '%s\n' "${files[@]}" | sort > "$FILE_LIST"
+
+          if [ ! -s "$FILE_LIST" ]; then
+            echo "No XCFramework tarballs found for flavor ${{ matrix.flavor }}"
+            exit 1
+          fi
+
+          rm -f "$ARCHIVE_PATH"
+          zip -q "$ARCHIVE_PATH" -@ < "$FILE_LIST"
+          echo "THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH=$ARCHIVE_PATH" >> $GITHUB_ENV
+
+      - name: Authenticate to Google Cloud
+        if: ${{ !cancelled() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: exponentjs
+          workload_identity_provider: projects/321830142373/locations/global/workloadIdentityPools/github/providers/expo
+
+      - name: Setup gcloud
+        if: ${{ !cancelled() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: exponentjs
+
+      - name: Upload XCFramework zip to GCS
+        if: ${{ !cancelled() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        run: |
+          gcloud storage cp \
+            "$THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH" \
+            "gs://turtle-v2/precompiled-modules/$SDK_VERSION/xcframeworks-${{ matrix.flavor }}.zip"
 
       - name: Upload XCFrameworks
         uses: actions/upload-artifact@v4
