@@ -43,7 +43,7 @@ afterEach(() => {
 });
 
 describe('installEventLogger', () => {
-  it('falls back to project log path when LOG_EVENTS is not set', () => {
+  it('activates the event logger with the well-known log path', () => {
     const projectRoot = '/test/project';
 
     jest.isolateModules(() => {
@@ -58,7 +58,7 @@ describe('installEventLogger', () => {
 
       expect(isEventLoggerActive()).toBe(false);
 
-      installEventLogger(undefined);
+      installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'start'));
 
       const nodePath = require('node:path');
       const logFile = nodePath.join(projectRoot, '.expo', 'dev', 'logs', 'start.log');

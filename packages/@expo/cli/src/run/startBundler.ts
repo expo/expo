@@ -7,6 +7,7 @@ import { BundlerStartOptions } from '../start/server/BundlerDevServer';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
+import { getWellKnownTemporaryLogFile, installEventLogger } from '../events';
 
 export async function startBundlerAsync(
   projectRoot: string,
@@ -20,6 +21,10 @@ export async function startBundlerAsync(
     scheme?: string;
   }
 ): Promise<DevServerManager> {
+  // Later than the traditional start command but emulates the start logging that you would normally expect.
+  // This mirrors the `run:android` command which directly runs `expo start` if it's not already running.
+  installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'start'));
+
   const options: BundlerStartOptions = {
     port,
     headless,
