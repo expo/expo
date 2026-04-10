@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "expo": "workspace:*",
+    "expo-background-task": "workspace:*",
     "expo-clipboard": "workspace:*",
     "expo-dev-client": "workspace:*",
     "expo-router": "workspace:*",
