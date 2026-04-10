@@ -18,6 +18,10 @@ import { BuildPropertiesConfig, ConfigToPropertyRuleType } from '../utils/BuildP
  * @param name the config plugin name
  */
 export declare function createBuildGradlePropsConfigPlugin<SourceConfigType extends BuildPropertiesConfig>(configToPropertyRules: ConfigToPropertyRuleType<SourceConfigType>[], name?: string): ConfigPlugin<SourceConfigType extends ExpoConfig ? void : SourceConfigType>;
+/**
+ * A config-plugin to update `android/gradle.properties` from the `jsEngine` in expo config
+ */
+export declare const withJsEngineGradleProps: ConfigPlugin<void>;
 export declare function updateAndroidBuildPropertiesFromConfig<SourceConfigType extends BuildPropertiesConfig>(config: SourceConfigType, gradleProperties: PropertiesItem[], configToPropertyRules: ConfigToPropertyRuleType<SourceConfigType>[]): PropertiesItem[];
 export declare function updateAndroidBuildProperty(gradleProperties: PropertiesItem[], name: string, value: string | null | undefined, options?: {
     removePropWhenValueIsNull?: boolean;
