@@ -31,6 +31,7 @@ class NetworkModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val connectivityManager: ConnectivityManager
     get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  private val mainHandler = Handler(Looper.getMainLooper())
   private val DELAY_MS = 250
 
   private val networkCallback = object : ConnectivityManager.NetworkCallback() {
@@ -59,7 +60,7 @@ class NetworkModule : Module() {
       //
       // We still post to the main looper because sendEvent expects the main
       // thread; we just skip the delay.
-      Handler(Looper.getMainLooper()).post {
+      mainHandler.post {
         try {
           val activeNetwork = connectivityManager.activeNetwork
           if (activeNetwork == null || activeNetwork == lostNetwork) {
@@ -73,7 +74,20 @@ class NetworkModule : Module() {
             emitNetworkState()
           }
         } catch (e: SecurityException) {
-          Log.w(TAG, "SecurityException while handling onLost network callback", e)
+          // Missing ACCESS_NETWORK_STATE permission (or runtime revocation).
+          // Ensure the permission is declared in AndroidManifest.xml and
+          // granted at runtime on devices that require it.
+          Log.w(TAG, "expo-network could not read network state in onLost: missing ACCESS_NETWORK_STATE permission", e)
+        } catch (e: Exception) {
+          // The runnable may outlive the module if the React context is torn
+          // down between ConnectivityManager.NetworkCallback firing and the
+          // posted runnable draining. In that case, the `connectivityManager`
+          // getter throws `ReactContextLost` (a RuntimeException) when it
+          // resolves `appContext.reactContext`. unregisterNetworkCallback only
+          // stops future callbacks — it cannot cancel an already-posted
+          // runnable — so we must catch teardown-time exceptions here to
+          // avoid crashing the host app's main thread.
+          Log.w(TAG, "expo-network dropped a network state update during teardown (the module or React context is no longer available)", e)
         }
       }
     }
@@ -134,11 +148,14 @@ class NetworkModule : Module() {
    * This delay ensures we read the actual current network state rather than stale information.
    */
   private fun asyncEmitNetworkState(delay: Int) {
-    Handler(Looper.getMainLooper()).postDelayed({
+    mainHandler.postDelayed({
       try {
         emitNetworkState()
       } catch (e: SecurityException) {
-        Log.w(TAG, "SecurityException while emitting network state", e)
+        Log.w(TAG, "expo-network could not read network state: missing ACCESS_NETWORK_STATE permission", e)
+      } catch (e: Exception) {
+        // See the matching catch in onLost for the lifecycle race this guards.
+        Log.w(TAG, "expo-network dropped a delayed network state update during teardown (the module or React context is no longer available)", e)
       }
     }, delay.toLong())
   }
