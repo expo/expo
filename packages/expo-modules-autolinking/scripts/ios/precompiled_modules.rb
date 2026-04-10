@@ -558,9 +558,7 @@ module Expo
       # The modulemap is placed in Target Support Files/ rather than in the pod
       # directory itself, because React Native's replace-rncore-version.js script
       # phase deletes and re-extracts the entire React-Core-prebuilt/ directory at
-      # build time when switching Debug↔Release configurations. The -fmodule-map-file
-      # flag takes precedence over the xcframework's own framework modulemaps, so
-      # patch_framework_modulemaps does not need to survive the re-extraction.
+      # build time when switching Debug↔Release configurations.
       def configure_use_frameworks(installer)
         return unless prebuilt_react_active?
         return if linkage(installer).nil?
