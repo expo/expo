@@ -248,7 +248,7 @@ export const general = [
     makeGroup('Router 101', [
       makePage('router/basics/core-concepts.mdx'),
       makePage('router/basics/notation.mdx'),
-      makePage('router/basics/layout.mdx'),
+      makePage('router/basics/navigation-layouts.mdx'),
       makePage('router/basics/navigation.mdx'),
       makePage('router/basics/common-navigation-patterns.mdx'),
     ]),
