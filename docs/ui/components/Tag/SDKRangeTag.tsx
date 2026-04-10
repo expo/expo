@@ -46,8 +46,8 @@ export const SDKRangeTag = ({ min, max, exact, className, ...rest }: SDKRangeTag
           {...rest}>
           <span
             className={mergeClasses(
-              'text-3xs leading-none font-normal whitespace-nowrap',
-              '[h2_&]:text-2xs'
+              'text-xs leading-none font-normal whitespace-nowrap',
+              '[h2_&]:text-xs'
             )}>
             {label}
           </span>
