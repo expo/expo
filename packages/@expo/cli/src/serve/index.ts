@@ -38,8 +38,8 @@ export const expoServe: Command = async (argv) => {
   ] = await Promise.all([import('./serveAsync.js'), import('../utils/errors.js')]);
 
   const projectRoot = getProjectRoot(args);
-  const { enableProjectLogs } = await import('../events/index.js');
-  enableProjectLogs(projectRoot, 'serve');
+  const { installEventLogger } = await import('../events/index.js');
+  installEventLogger(undefined, projectRoot, 'serve');
 
   return serveAsync(projectRoot, {
     isDefaultDirectory: !args._[0],

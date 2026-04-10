@@ -1,5 +1,4 @@
 import { Console } from 'node:console';
-import fs from 'node:fs';
 import path from 'node:path';
 
 import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
@@ -41,11 +40,24 @@ function getInitMetadata(): InitMetadata {
   };
 }
 
-/** Activates the event logger based on the input env var
- * @param env - The target to write the logs to; defaults to `$LOG_EVENTS`
+/** Activates the event logger.
+ *
+ * Accepts either a log target string (file path, fd number, or `$LOG_EVENTS`),
+ * or a `projectRoot` + `command` pair to log to `.expo/dev/logs/<command>.log`.
+ * Subsequent calls are no-ops — the first activated destination wins.
  */
-export function installEventLogger(env = process.env.LOG_EVENTS) {
-  const eventLogDestination = parseLogTarget(env);
+export function installEventLogger(
+  env?: string,
+  /** When provided with `command`, logs to `.expo/dev/logs/<command>.log` as a fallback. */
+  projectRoot?: string,
+  command?: string
+) {
+  if (logStream) return;
+  const eventLogDestination = parseLogTarget(
+    env ?? process.env.LOG_EVENTS ?? (projectRoot && command
+      ? path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`)
+      : undefined)
+  );
   if (eventLogDestination) {
     if (eventLogDestination === 1) {
       // Reuse Node's existing stdio streams so redirected or piped terminals don't
@@ -134,19 +146,5 @@ export const events: EventLoggerBuilder = ((
 // These are built-in events: We choose an ambiguous name on purpose,
 // since we don't assume this implementation will necessarily only be in `@expo/cli`
 export const rootEvent = events('root', (t) => [t.event<'init', InitMetadata>()]);
-
-/**
- * Enables project-level event logging to `.expo/dev/logs/<command>.log`.
- * If `LOG_EVENTS` was already set (e.g. by a wrapper process), this is a no-op —
- * the wrapper's chosen destination takes priority.
- * The log file is truncated on each run.
- */
-export function enableProjectLogs(projectRoot: string, command: string): void {
-  if (logStream) return;
-  const logFile = path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`);
-  fs.mkdirSync(path.dirname(logFile), { recursive: true });
-  fs.writeFileSync(logFile, ''); // truncate from previous run
-  installEventLogger(logFile);
-}
 
 export type { EventLogger } from './builder';

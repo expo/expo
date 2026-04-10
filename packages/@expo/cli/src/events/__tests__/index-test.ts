@@ -41,18 +41,11 @@ afterEach(() => {
   jest.unmock('node:tty');
 });
 
-describe('enableProjectLogs', () => {
-  it('creates log directory, truncates file, and activates the event logger', () => {
+describe('installEventLogger', () => {
+  it('falls back to project log path when LOG_EVENTS is not set', () => {
     const projectRoot = '/test/project';
 
     jest.isolateModules(() => {
-      const mockMkdirSync = jest.fn();
-      const mockWriteFileSync = jest.fn();
-      jest.doMock('node:fs', () => ({
-        mkdirSync: mockMkdirSync,
-        writeFileSync: mockWriteFileSync,
-      }));
-
       const LogStream = jest.fn().mockImplementation(() => ({
         writable: true,
         _write: jest.fn(),
@@ -60,23 +53,21 @@ describe('enableProjectLogs', () => {
       }));
       jest.doMock('../stream', () => ({ LogStream }));
 
-      const { enableProjectLogs, isEventLoggerActive } = require('..') as typeof import('..');
+      const { installEventLogger, isEventLoggerActive } = require('..') as typeof import('..');
 
       expect(isEventLoggerActive()).toBe(false);
 
-      enableProjectLogs(projectRoot, 'start');
+      installEventLogger(undefined, projectRoot, 'start');
 
       const nodePath = require('node:path');
       const logFile = nodePath.join(projectRoot, '.expo', 'dev', 'logs', 'start.log');
 
-      expect(mockMkdirSync).toHaveBeenCalledWith(nodePath.dirname(logFile), { recursive: true });
-      expect(mockWriteFileSync).toHaveBeenCalledWith(logFile, '');
       expect(LogStream).toHaveBeenCalledWith(logFile);
       expect(isEventLoggerActive()).toBe(true);
     });
   });
 
-  it('is a no-op when LOG_EVENTS was already set', () => {
+  it('is a no-op on subsequent calls', () => {
     jest.isolateModules(() => {
       const LogStream = jest.fn().mockImplementation(() => ({
         writable: true,
@@ -85,14 +76,13 @@ describe('enableProjectLogs', () => {
       }));
       jest.doMock('../stream', () => ({ LogStream }));
 
-      const { installEventLogger, enableProjectLogs } = require('..') as typeof import('..');
+      const { installEventLogger } = require('..') as typeof import('..');
 
-      // Simulate a wrapper setting LOG_EVENTS
       installEventLogger('/dev/null');
       expect(LogStream).toHaveBeenCalledTimes(1);
 
-      // enableProjectLogs should not create a second stream
-      enableProjectLogs('/test/project', 'start');
+      // Second call with project fallback should be a no-op
+      installEventLogger(undefined, '/test/project', 'start');
       expect(LogStream).toHaveBeenCalledTimes(1);
     });
   });
@@ -102,10 +92,6 @@ describe('enableProjectLogs', () => {
 
     jest.isolateModules(() => {
       const mockFile = '/test/project/.expo/dev/logs/start.log';
-      jest.doMock('node:fs', () => ({
-        mkdirSync: jest.fn(),
-        writeFileSync: jest.fn(),
-      }));
       jest.doMock('../stream', () => ({
         LogStream: jest.fn().mockImplementation(() => ({
           writable: true,
@@ -115,17 +101,14 @@ describe('enableProjectLogs', () => {
         })),
       }));
 
-      const { enableProjectLogs, getLogFile } = require('..') as typeof import('..');
+      const { installEventLogger, getLogFile } = require('..') as typeof import('..');
 
       expect(getLogFile()).toBeUndefined();
 
-      enableProjectLogs(projectRoot, 'start');
+      installEventLogger(undefined, projectRoot, 'start');
       expect(getLogFile()).toBe(mockFile);
     });
   });
-});
-
-describe('installEventLogger', () => {
   it('reuses the existing stderr stream when logging events to stdout', () => {
     const stderr = createMockStream(2);
     const LogStream = jest.fn().mockImplementation(() => ({

@@ -74,9 +74,6 @@ export const expoExport: Command = async (argv) => {
   }).catch(logCmdError);
 
   const projectRoot = path.resolve(parsed.projectRoot);
-  const { enableProjectLogs } = await import('../events/index.js');
-  enableProjectLogs(projectRoot, 'export');
-
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, {
     ...args,
