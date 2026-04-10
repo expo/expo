@@ -40,6 +40,11 @@ function getInitMetadata(): InitMetadata {
   };
 }
 
+export function getWellKnownTemporaryLogFile(projectRoot: string, command: string): string {
+  return path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`);
+}
+
+
 /** Activates the event logger.
  *
  * Accepts either a log target string (file path, fd number, or `$LOG_EVENTS`),
@@ -47,17 +52,10 @@ function getInitMetadata(): InitMetadata {
  * Subsequent calls are no-ops — the first activated destination wins.
  */
 export function installEventLogger(
-  env?: string,
-  /** When provided with `command`, logs to `.expo/dev/logs/<command>.log` as a fallback. */
-  projectRoot?: string,
-  command?: string
+  env: string | undefined = process.env.LOG_EVENTS,
 ) {
   if (logStream) return;
-  const eventLogDestination = parseLogTarget(
-    env ?? process.env.LOG_EVENTS ?? (projectRoot && command
-      ? path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`)
-      : undefined)
-  );
+  const eventLogDestination = parseLogTarget(env);
   if (eventLogDestination) {
     if (eventLogDestination === 1) {
       // Reuse Node's existing stdio streams so redirected or piped terminals don't

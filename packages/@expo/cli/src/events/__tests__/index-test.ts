@@ -1,4 +1,5 @@
 import { Writable } from 'node:stream';
+import { getWellKnownTemporaryLogFile } from '..';
 
 const originalConsole = globalThis.console;
 const originalStdoutDescriptor = Object.getOwnPropertyDescriptor(process, 'stdout');
@@ -57,7 +58,7 @@ describe('installEventLogger', () => {
 
       expect(isEventLoggerActive()).toBe(false);
 
-      installEventLogger(undefined, projectRoot, 'start');
+      installEventLogger(undefined);
 
       const nodePath = require('node:path');
       const logFile = nodePath.join(projectRoot, '.expo', 'dev', 'logs', 'start.log');
@@ -82,7 +83,7 @@ describe('installEventLogger', () => {
       expect(LogStream).toHaveBeenCalledTimes(1);
 
       // Second call with project fallback should be a no-op
-      installEventLogger(undefined, '/test/project', 'start');
+      installEventLogger('/foo');
       expect(LogStream).toHaveBeenCalledTimes(1);
     });
   });
@@ -105,7 +106,7 @@ describe('installEventLogger', () => {
 
       expect(getLogFile()).toBeUndefined();
 
-      installEventLogger(undefined, projectRoot, 'start');
+      installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'start'));
       expect(getLogFile()).toBe(mockFile);
     });
   });
