@@ -30,7 +30,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val scope: CoroutineScope
     get() = appContext.modulesQueue
 
-  // lateinit var frameMetricsManager: FrameMetricsManager
   lateinit var memoryMetricsManager: MemoryMetricsManager
   lateinit var updatesMonitoring: UpdatesMonitoring
   private var subscription: UpdatesStateChangeSubscription? = null
@@ -81,41 +80,16 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         UpdatesControllerRegistry.controller?.get()?.let { controller ->
           subscription = controller.subscribeToUpdatesStateChanges(this@AppMetricsModule)
         }
-        // appContext.currentActivity?.let {
-        //   frameMetricsManager = FrameMetricsManager(
-        //     activity = it,
-        //     sessionManager = sessionManager
-        //   )
-        // }
-      }
-
-      OnActivityEntersForeground {
-        // If the activity was not available during OnCreate, we can get it here
-        // if (!::frameMetricsManager.isInitialized) {
-        //   appContext.currentActivity?.let {
-        //     frameMetricsManager = FrameMetricsManager(
-        //       activity = it,
-        //       sessionManager = sessionManager
-        //     )
-        //   }
-        // }
-
-        // frameMetricsManager.startRecording(sessionId = appSessionId)
       }
 
       OnActivityEntersBackground {
         scope.launch {
           saveStartupMetricsIfNotSaved()
-          // frameMetricsManager.stopRecording(sessionId = appSessionId)
         }
       }
 
       OnActivityDestroys {
         subscription?.remove()
-        // TODO(@lukmccall): Don't use modules queue scope for cleaning as it might be cancelled by AppContext.
-        scope.launch {
-          // frameMetricsManager.stopAllRecordings()
-        }
       }
 
       AsyncFunction("getStoredEntries") Coroutine { -> sessionManager.getAllSessions() }

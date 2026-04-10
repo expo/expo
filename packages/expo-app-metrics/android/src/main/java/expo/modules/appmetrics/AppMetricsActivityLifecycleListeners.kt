@@ -9,7 +9,7 @@ class AppMetricsActivityLifecycleListeners : ReactActivityLifecycleListener {
   override fun onResume(activity: Activity) {
     super.onResume(activity)
     // Native loading should be finished by this time
-    AppStartupManager.markLoadedIfNeeded()
+    AppStartupManager.markLoadedIfNeeded(activity)
   }
 
   override fun onPause(activity: Activity) {

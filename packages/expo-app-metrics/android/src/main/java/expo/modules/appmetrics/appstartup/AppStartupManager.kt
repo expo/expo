@@ -1,5 +1,6 @@
 package expo.modules.appmetrics.appstartup
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
@@ -8,10 +9,12 @@ import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.TAG
+import expo.modules.appmetrics.frames.FrameMetricsRecorder
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimestampInISOFormat
 import expo.modules.appmetrics.utils.TimeUtils.getProcessStartTimeInMillis
+import org.json.JSONObject
 
 enum class AppStartType { COLD, WARM }
 
@@ -41,7 +44,15 @@ object AppStartupManager {
 
   @Volatile
   var startupState: StartupState = StartupState.LAUNCHING
+    set(value) {
+      field = value
+      if (value == StartupState.INTERRUPTED) {
+        frameMetricsRecorder.stop()
+      }
+    }
   private var startupInfo: EASObserveAppStartupInfo? = null
+
+  private val frameMetricsRecorder = FrameMetricsRecorder()
 
   init {
     Log.d(TAG, "Creating manager")
@@ -86,7 +97,8 @@ object AppStartupManager {
   private fun addMetric(
     metric: AppStartupMetric,
     valueInMs: Long,
-    routeName: String? = null
+    routeName: String? = null,
+    params: Map<String, Any>? = null
   ) {
     _metrics.add(
       Metric(
@@ -95,20 +107,23 @@ object AppStartupManager {
         category = AppStartupMetric.category.categoryName,
         value = valueInMs.toDouble() / 1000.0,
         timestamp = getCurrentTimestampInISOFormat(),
-        routeName = routeName
+        routeName = routeName,
+        params = params?.let { JSONObject(it).toString() }
       )
     )
   }
 
   private fun addMetricSinceLaunch(
     metric: AppStartupMetric,
-    routeName: String? = null
+    routeName: String? = null,
+    params: Map<String, Any>? = null
   ) {
     val launch = launchTimeInMillis ?: return
     addMetric(
       metric = metric,
       valueInMs = getCurrentTimeInMillis() - launch,
-      routeName = routeName
+      routeName = routeName,
+      params = params
     )
   }
 
@@ -155,10 +170,14 @@ object AppStartupManager {
     startupInfo = info.copy(activityCreateTimestamp = getCurrentTimeInMillis())
   }
 
-  fun markLoadedIfNeeded() {
+  fun markLoadedIfNeeded(activity: Activity) {
     if (launchTimeInMillis != null) return
     val launchTime = getCurrentTimeInMillis()
     launchTimeInMillis = launchTime
+
+    // Start tracking frame metrics from this point so the data
+    // matches the TTI window (markLoaded → markInteractive).
+    frameMetricsRecorder.start(activity)
 
     var info = startupInfo ?: return
     val timeSinceProcessStart = launchTime - getProcessStartTimeInMillis()
@@ -187,7 +206,19 @@ object AppStartupManager {
   fun markInteractive(routeName: String? = null) {
     if (startupState != StartupState.LAUNCHING || hasRecordedInteractive) return
     hasRecordedInteractive = true
-    addMetricSinceLaunch(AppStartupMetric.TimeToInteractive, routeName)
+
+    val frameMetrics = frameMetricsRecorder.stop()
+    val params = if (frameMetrics.expectedFrames > 0) {
+      mapOf(
+        "frameRate.slowFrames" to frameMetrics.slowFrames,
+        "frameRate.frozenFrames" to frameMetrics.frozenFrames,
+        "frameRate.totalDelay" to frameMetrics.freezeTimeMs.toDouble() / 1000.0
+      )
+    } else {
+      null
+    }
+
+    addMetricSinceLaunch(AppStartupMetric.TimeToInteractive, routeName, params)
     startupState = StartupState.LAUNCHED
   }
 
