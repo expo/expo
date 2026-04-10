@@ -14,6 +14,7 @@ const testName = '02-server-actions';
 const inputDir = 'dist-' + testName;
 
 test.describe(inputDir, () => {
+  test.describe.configure({ mode: 'serial' });
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
