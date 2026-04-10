@@ -156,6 +156,9 @@ PODS:
     - ExpoModulesCore
   - ExpoBackgroundTask (55.0.14):
     - ExpoModulesCore
+  - ExpoBackgroundTask/Tests (55.0.14):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoBattery (55.0.13):
     - ExpoModulesCore
   - ExpoBlob (55.0.13):
@@ -4108,6 +4111,7 @@ DEPENDENCIES:
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
+  - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
@@ -4689,7 +4693,7 @@ SPEC CHECKSUMS:
   ExpoAsset: 49dcbe34165e4da8914fac3eb068255ecd100ebf
   ExpoAudio: 885bdbc085e0374bcc983ea473b1ed42d5ce5a25
   ExpoBackgroundFetch: b7a1e6658f6da3137f68a13d4b6bad6ff3b632a5
-  ExpoBackgroundTask: 2c9e0beed834749b6fca73fd6c4643c5c2d63a39
+  ExpoBackgroundTask: f944cd9a6c15fab2c0d24455d26bbb19bb5e4124
   ExpoBattery: d943385262ab8a22c034784cbeb92dcea1ccac98
   ExpoBlob: 882fa24430fdfdc8e7dc90cf0b90e1e4c7d0e6c5
   ExpoBlur: 08afa305ca20b1adb0b580fd3b09a38b64ce8804
