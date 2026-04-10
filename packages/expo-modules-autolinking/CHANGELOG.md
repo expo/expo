@@ -36,6 +36,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [Android] Fixed build failures caused by the "=" character in pnpm virtual store paths. ([#44109](https://github.com/expo/expo/pull/44109) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixes an issue where the modulemap is destroyed when switching between Debug and Release configurations. ([#44665](https://github.com/expo/expo/pull/44665) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.11 — 2026-03-18
 
