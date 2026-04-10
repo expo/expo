@@ -101,6 +101,7 @@
 - [Android] Added AsyncFunction support to the functional `ExpoUIView` DSL. ([#44081](https://github.com/expo/expo/pull/44081) by [@kudo](https://github.com/kudo))
 - [iOS] Fixed build error when using precompiled `ExpoModulesCore.xcframework`. ([#45016](https://github.com/expo/expo/pull/45016) by [@kudo](https://github.com/kudo))
 - [Android] Improved application startup performance by reducing reflection. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
+- [jetpack-compose] Added `expand` and `partialExpand` to `ModalBottomSheet`. ([#44682](https://github.com/expo/expo/pull/44682) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-02-25
 
