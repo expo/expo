@@ -7,6 +7,11 @@ export type SyncSwitchProps = {
      */
     isOn: ObservableState<boolean>;
     /**
+     * A worklet callback that runs synchronously on the UI thread when the switch changes.
+     * Must be marked with the `'worklet'` directive.
+     */
+    onCheckedChangeSync?: (checked: boolean) => void;
+    /**
      * Whether the switch is enabled.
      * @default true
      */

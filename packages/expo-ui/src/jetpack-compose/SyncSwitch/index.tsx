@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { type ObservableState } from '../../State/useNativeState';
+import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -12,6 +13,11 @@ export type SyncSwitchProps = {
    */
   isOn: ObservableState<boolean>;
   /**
+   * A worklet callback that runs synchronously on the UI thread when the switch changes.
+   * Must be marked with the `'worklet'` directive.
+   */
+  onCheckedChangeSync?: (checked: boolean) => void;
+  /**
    * Whether the switch is enabled.
    * @default true
    */
@@ -22,8 +28,9 @@ export type SyncSwitchProps = {
   modifiers?: ModifierConfig[];
 };
 
-type NativeSyncSwitchProps = Omit<SyncSwitchProps, 'isOn'> & {
+type NativeSyncSwitchProps = Omit<SyncSwitchProps, 'isOn' | 'onCheckedChangeSync'> & {
   isOn?: number | null;
+  onCheckedChangeSync?: number | null;
 };
 
 const SyncSwitchNativeView: React.ComponentType<NativeSyncSwitchProps> = requireNativeView(
@@ -36,12 +43,14 @@ const SyncSwitchNativeView: React.ComponentType<NativeSyncSwitchProps> = require
  * Use `useNativeState(false)` to create the state.
  */
 export function SyncSwitch(props: SyncSwitchProps) {
-  const { isOn, modifiers, ...restProps } = props;
+  const { isOn, onCheckedChangeSync, modifiers, ...restProps } = props;
+  const workletCallback = useWorkletProp(onCheckedChangeSync, 'onCheckedChangeSync');
 
   return (
     <SyncSwitchNativeView
       {...restProps}
       isOn={getStateId(isOn)}
+      onCheckedChangeSync={getStateId(workletCallback)}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
     />

@@ -29,7 +29,9 @@ import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
 import expo.modules.ui.menu.ItemPressedEvent
+import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.ui.state.ObservableState
+import expo.modules.ui.state.WorkletCallback
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
@@ -51,6 +53,14 @@ class ExpoUIModule : Module() {
     }
 
     // MARK: - Observable State
+
+    Class(WorkletCallback::class) {
+      Constructor { worklet: Worklet ->
+        val callback = WorkletCallback()
+        callback.worklet = worklet
+        callback
+      }
+    }
 
     Class(ObservableState::class) {
       Constructor { initial: Map<String, Any?> ->

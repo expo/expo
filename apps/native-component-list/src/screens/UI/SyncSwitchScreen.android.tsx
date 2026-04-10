@@ -38,7 +38,13 @@ export default function SyncSwitchScreen() {
             <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
               <ComposeText>Shared State Switch</ComposeText>
               <ComposeText>Uses useNativeState to share state between JS and Compose.</ComposeText>
-              <SyncSwitch isOn={isOn} />
+              <SyncSwitch
+                isOn={isOn}
+                onCheckedChangeSync={(checked) => {
+                  'worklet';
+                  console.log('[UI thread] onCheckedChangeSync:', checked);
+                }}
+              />
             </Column>
           </Card>
         </LazyColumn>
