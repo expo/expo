@@ -25,7 +25,7 @@ If you need lower-level control (custom modifiers, styles, or layouts), use thos
 ## Migrating from `@react-native-segmented-control/segmented-control`
 
 - Update the import from `import SegmentedControl from '@react-native-segmented-control/segmented-control'` to `import SegmentedControl from '@expo/ui/community/segmented-control'`.
-- Image values in the `values` array are not supported — only strings.
+- Image values in the `values` array are not supported, only strings.
 - `momentary`, `backgroundColor`, `fontStyle`, and `activeFontStyle` props are not supported.
 - `tintColor` only works on Android (sets the active segment container color). On iOS, it has no effect.
 
@@ -42,7 +42,7 @@ export default function SegmentedControlExample() {
     <SegmentedControl
       values={['One', 'Two', 'Three']}
       selectedIndex={selectedIndex}
-      onChange={(event) => {
+      onChange={event => {
         setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
       }}
     />
