@@ -15,6 +15,7 @@ export function getAndroidSplashConfig({
   };
 
   return {
+    drawable: root.drawable,
     imageWidth: root.imageWidth ?? 100,
     resizeMode: root.resizeMode,
 

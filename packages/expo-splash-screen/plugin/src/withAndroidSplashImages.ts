@@ -112,15 +112,19 @@ export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (confi
  * @param androidMainPath Absolute path to the main directory containing code and resources in Android project. In general that would be `android/app/src/main`.
  */
 export async function setSplashImageDrawablesAsync(
-  { dark, ...root }: AndroidSplashConfig,
+  { dark, drawable, ...root }: AndroidSplashConfig,
   projectRoot: string
 ) {
   await clearAllExistingSplashImagesAsync(projectRoot);
 
-  await Promise.all([
-    setSplashImageDrawablesForThemeAsync(root, 'light', projectRoot, root.imageWidth),
-    setSplashImageDrawablesForThemeAsync(dark, 'dark', projectRoot, root.imageWidth),
-  ]);
+  if (drawable != null) {
+    await writeSplashScreenDrawablesAsync(projectRoot, drawable);
+  } else {
+    await Promise.all([
+      setSplashImageDrawablesForThemeAsync(root, 'light', projectRoot, root.imageWidth),
+      setSplashImageDrawablesForThemeAsync(dark, 'dark', projectRoot, root.imageWidth),
+    ]);
+  }
 }
 
 async function clearAllExistingSplashImagesAsync(projectRoot: string) {
@@ -203,4 +207,23 @@ export async function setSplashImageDrawablesForThemeAsync(
       }
     })
   );
+}
+
+async function writeSplashScreenDrawablesAsync(
+  projectRoot: string,
+  drawable: NonNullable<AndroidSplashConfig['drawable']>
+) {
+  const androidMainPath = path.join(projectRoot, 'android/app/src/main');
+  const lightDrawablePath = path.join(androidMainPath, DRAWABLES_CONFIGS.default.modes.light.path);
+  const darkDrawablePath = path.join(androidMainPath, DRAWABLES_CONFIGS.default.modes.dark.path);
+
+  const lightFolder = path.dirname(lightDrawablePath);
+  await fs.promises.mkdir(lightFolder, { recursive: true });
+  await fs.promises.copyFile(path.join(projectRoot, drawable.icon), lightDrawablePath);
+
+  if (drawable.darkIcon) {
+    const darkFolder = path.dirname(darkDrawablePath);
+    await fs.promises.mkdir(darkFolder, { recursive: true });
+    await fs.promises.copyFile(path.join(projectRoot, drawable.darkIcon), darkDrawablePath);
+  }
 }
