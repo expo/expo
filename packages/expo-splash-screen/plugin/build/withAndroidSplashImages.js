@@ -15,70 +15,34 @@ const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
 const SPLASH_SCREEN_DRAWABLE_NAME = 'splashscreen_logo.xml';
 const DRAWABLES_CONFIGS = {
     default: {
-        modes: {
-            light: {
-                path: `./res/drawable/${SPLASH_SCREEN_DRAWABLE_NAME}`,
-            },
-            dark: {
-                path: `./res/drawable-night/${SPLASH_SCREEN_DRAWABLE_NAME}`,
-            },
-        },
-        dimensionsMultiplier: 1,
+        lightPath: `./res/drawable/${SPLASH_SCREEN_DRAWABLE_NAME}`,
+        darkPath: `./res/drawable-night/${SPLASH_SCREEN_DRAWABLE_NAME}`,
+        multiplier: 1,
     },
     mdpi: {
-        modes: {
-            light: {
-                path: `./res/drawable-mdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-            dark: {
-                path: `./res/drawable-night-mdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-        },
-        dimensionsMultiplier: 1,
+        lightPath: `./res/drawable-mdpi/${SPLASH_SCREEN_FILENAME}`,
+        darkPath: `./res/drawable-night-mdpi/${SPLASH_SCREEN_FILENAME}`,
+        multiplier: 1,
     },
     hdpi: {
-        modes: {
-            light: {
-                path: `./res/drawable-hdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-            dark: {
-                path: `./res/drawable-night-hdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-        },
-        dimensionsMultiplier: 1.5,
+        lightPath: `./res/drawable-hdpi/${SPLASH_SCREEN_FILENAME}`,
+        darkPath: `./res/drawable-night-hdpi/${SPLASH_SCREEN_FILENAME}`,
+        multiplier: 1.5,
     },
     xhdpi: {
-        modes: {
-            light: {
-                path: `./res/drawable-xhdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-            dark: {
-                path: `./res/drawable-night-xhdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-        },
-        dimensionsMultiplier: 2,
+        lightPath: `./res/drawable-xhdpi/${SPLASH_SCREEN_FILENAME}`,
+        darkPath: `./res/drawable-night-xhdpi/${SPLASH_SCREEN_FILENAME}`,
+        multiplier: 2,
     },
     xxhdpi: {
-        modes: {
-            light: {
-                path: `./res/drawable-xxhdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-            dark: {
-                path: `./res/drawable-night-xxhdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-        },
-        dimensionsMultiplier: 3,
+        lightPath: `./res/drawable-xxhdpi/${SPLASH_SCREEN_FILENAME}`,
+        darkPath: `./res/drawable-night-xxhdpi/${SPLASH_SCREEN_FILENAME}`,
+        multiplier: 3,
     },
     xxxhdpi: {
-        modes: {
-            light: {
-                path: `./res/drawable-xxxhdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-            dark: {
-                path: `./res/drawable-night-xxxhdpi/${SPLASH_SCREEN_FILENAME}`,
-            },
-        },
-        dimensionsMultiplier: 4,
+        lightPath: `./res/drawable-xxxhdpi/${SPLASH_SCREEN_FILENAME}`,
+        darkPath: `./res/drawable-night-xxxhdpi/${SPLASH_SCREEN_FILENAME}`,
+        multiplier: 4,
     },
 };
 const withAndroidSplashImages = (config, splash) => {
@@ -112,13 +76,15 @@ async function setSplashImageDrawablesAsync({ dark, drawable, ...root }, project
 }
 async function clearAllExistingSplashImagesAsync(projectRoot) {
     const androidMainPath = path_1.default.join(projectRoot, 'android/app/src/main');
-    await Promise.all(Object.values(DRAWABLES_CONFIGS).map(async ({ modes }) => {
-        await Promise.all(Object.values(modes).map(async ({ path: filePath }) => {
-            await fs_1.default.promises.rm(path_1.default.resolve(androidMainPath, filePath), {
-                force: true,
-                recursive: true,
-            });
-        }));
+    const paths = Object.values(DRAWABLES_CONFIGS)
+        .map(({ lightPath, darkPath }) => [lightPath, darkPath])
+        .flat();
+    await Promise.all(paths.map((filePath) => {
+        console.log('cleaning ' + path_1.default.resolve(androidMainPath, filePath));
+        return fs_1.default.promises.rm(path_1.default.resolve(androidMainPath, filePath), {
+            force: true,
+            recursive: true,
+        });
     }));
 }
 async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, imageWidth) {
@@ -127,11 +93,11 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
     }
     const androidMainPath = path_1.default.join(projectRoot, 'android/app/src/main');
     const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
-    await Promise.all(sizes.map(async (imageKey) => {
-        // @ts-ignore
-        const image = config[imageKey];
+    await Promise.all(sizes.map(async (sizeKey) => {
+        const image = config[sizeKey];
         if (image) {
-            const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
+            const drawableConfig = DRAWABLES_CONFIGS[sizeKey];
+            const { multiplier } = drawableConfig;
             const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
             const canvasSize = 288 * multiplier;
             const background = await (0, image_utils_1.generateImageBackgroundAsync)({
@@ -156,7 +122,7 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
                 y: (canvasSize - size) / 2,
             });
             // Get output path for drawable.
-            const outputPath = path_1.default.join(androidMainPath, DRAWABLES_CONFIGS[imageKey].modes[theme].path);
+            const outputPath = path_1.default.join(androidMainPath, theme === 'light' ? drawableConfig.lightPath : drawableConfig.darkPath);
             const folder = path_1.default.dirname(outputPath);
             // Ensure directory exists.
             await fs_1.default.promises.mkdir(folder, { recursive: true });
@@ -166,8 +132,8 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
 }
 async function writeSplashScreenDrawablesAsync(projectRoot, drawable) {
     const androidMainPath = path_1.default.join(projectRoot, 'android/app/src/main');
-    const lightDrawablePath = path_1.default.join(androidMainPath, DRAWABLES_CONFIGS.default.modes.light.path);
-    const darkDrawablePath = path_1.default.join(androidMainPath, DRAWABLES_CONFIGS.default.modes.dark.path);
+    const lightDrawablePath = path_1.default.join(androidMainPath, DRAWABLES_CONFIGS.default.lightPath);
+    const darkDrawablePath = path_1.default.join(androidMainPath, DRAWABLES_CONFIGS.default.darkPath);
     const lightFolder = path_1.default.dirname(lightDrawablePath);
     await fs_1.default.promises.mkdir(lightFolder, { recursive: true });
     await fs_1.default.promises.copyFile(path_1.default.join(projectRoot, drawable.icon), lightDrawablePath);
