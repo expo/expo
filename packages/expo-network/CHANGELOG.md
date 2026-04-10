@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed network state listener emitting stale "connected" state when device disconnects from network on Android. ([#37972](https://github.com/expo/expo/issues/37972) by [@gueroverdenwshq](https://github.com/gueroverdenwshq))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25

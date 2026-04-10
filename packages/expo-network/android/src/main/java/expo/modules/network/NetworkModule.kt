@@ -38,8 +38,27 @@ class NetworkModule : Module() {
       asyncEmitNetworkState(DELAY_MS)
     }
 
-    override fun onLost(network: android.net.Network) {
-      asyncEmitNetworkState(DELAY_MS)
+    override fun onLost(lostNetwork: android.net.Network) {
+      // When a network is lost, connectivityManager.activeNetwork may still
+      // return the stale network on some Android versions, causing the emitted
+      // state to incorrectly report "connected". Instead, compare the lost
+      // network against the current active network to determine the real state.
+      Handler(Looper.getMainLooper()).post {
+        try {
+          val activeNetwork = connectivityManager.activeNetwork
+          if (activeNetwork == null || activeNetwork == lostNetwork) {
+            val result = Bundle().apply {
+              putString("type", NetworkStateType.NONE.value)
+              putBoolean("isInternetReachable", false)
+              putBoolean("isConnected", false)
+            }
+            sendEvent(NETWORK_STATE_EVENT_NAME, result)
+          } else {
+            emitNetworkState()
+          }
+        } catch (e: SecurityException) {
+        }
+      }
     }
   }
 
