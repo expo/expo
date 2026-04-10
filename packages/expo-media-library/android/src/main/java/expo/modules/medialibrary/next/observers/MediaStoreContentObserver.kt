@@ -8,11 +8,17 @@ import android.provider.MediaStore
 import expo.modules.medialibrary.next.extensions.resolver.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.next.extensions.resolver.safeQuery
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MediaStoreContentObserver(
   handler: Handler,
   private val mediaType: MediaType,
   private val onChange: OnMediaLibraryChange,
+  private val observerScope: CoroutineScope,
   private val contentResolver: ContentResolver
 ) : ContentObserver(handler) {
   // The API should only notify about insertions and deletions, not metadata updates.
@@ -27,19 +33,22 @@ class MediaStoreContentObserver(
   }
 
   override fun onChange(selfChange: Boolean, uri: Uri?) {
-    val newAssetsIdSum = getAssetsIdSum(mediaType)
-    if (newAssetsIdSum != assetsIdSum) {
-      assetsIdSum = newAssetsIdSum
-      onChange.invoke()
+    observerScope.launch {
+      val newAssetsIdSum = getAssetsIdSum(mediaType)
+      if (newAssetsIdSum != assetsIdSum) {
+        assetsIdSum = newAssetsIdSum
+        onChange.invoke()
+      }
     }
   }
 
-  private fun getAssetsIdSum(mediaType: MediaType): Long =
+  private suspend fun getAssetsIdSum(mediaType: MediaType): Long = withContext(Dispatchers.IO) {
     contentResolver.safeQuery(
       uri = EXTERNAL_CONTENT_URI,
       projection = arrayOf(MediaStore.Files.FileColumns._ID),
       selection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} == ${mediaType.toMediaStoreValue()}"
     ).use { cursor ->
+      ensureActive()
       if (cursor == null) {
         return@use 0
       }
@@ -49,4 +58,5 @@ class MediaStoreContentObserver(
       }
       return@use idSum
     }
+  }
 }

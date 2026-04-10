@@ -5,9 +5,11 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
+import kotlinx.coroutines.CoroutineScope
 
 class MediaStoreObserverManager(
   private val contentResolver: ContentResolver,
+  private val observerScope: CoroutineScope,
   private val onChange: OnMediaLibraryChange
 ) {
   private var imagesObserver: MediaStoreContentObserver? = null
@@ -24,6 +26,7 @@ class MediaStoreObserverManager(
       handler = handler,
       mediaType = MediaType.IMAGE,
       onChange = onChange,
+      observerScope = observerScope,
       contentResolver = contentResolver
     ).also { imagesObserver ->
       contentResolver.registerContentObserver(
@@ -37,6 +40,7 @@ class MediaStoreObserverManager(
       handler = handler,
       mediaType = MediaType.VIDEO,
       onChange = onChange,
+      observerScope = observerScope,
       contentResolver = contentResolver
     ).also { videosObserver ->
       contentResolver.registerContentObserver(

@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.Promise
-import expo.modules.medialibrary.LIBRARY_DID_CHANGE_EVENT
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
@@ -35,7 +34,10 @@ class MediaLibraryNextModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private val observerManager by lazy {
-    MediaStoreObserverManager(context.contentResolver) {
+    MediaStoreObserverManager(
+      context.contentResolver,
+      appContext.backgroundCoroutineScope
+    ) {
       sendEvent(
         LIBRARY_DID_CHANGE_EVENT,
         bundleOf("hasIncrementalChanges" to false)
@@ -84,11 +86,11 @@ class MediaLibraryNextModule : Module() {
 
     Events(LIBRARY_DID_CHANGE_EVENT)
 
-    OnStartObserving {
+    OnStartObserving(LIBRARY_DID_CHANGE_EVENT) {
       observerManager.startObserving()
     }
 
-    OnStopObserving {
+    OnStopObserving(LIBRARY_DID_CHANGE_EVENT) {
       observerManager.stopObserving()
     }
 
@@ -292,5 +294,9 @@ class MediaLibraryNextModule : Module() {
         registerMediaStoreContracts(this@MediaLibraryNextModule)
       }
     }
+  }
+
+  companion object {
+    const val LIBRARY_DID_CHANGE_EVENT = "mediaLibraryDidChange"
   }
 }
