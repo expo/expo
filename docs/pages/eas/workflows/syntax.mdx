@@ -792,6 +792,44 @@ jobs:
         View details: ${{ workflow.url }}
 ```
 
+#### `app_store_connect`
+
+Information about App Store Connect entities associated with the workflow run. This context is available only for workflows triggered by an App Store Connect event. See [`on.app_store_connect`](#onapp_store_connect).
+
+```ts
+type AppStoreConnectContext = {
+  app: {
+    id: string;
+  };
+  build_upload?: {
+    id: string;
+    state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
+  };
+};
+```
+
+The `app_store_connect.build_upload` object is present only when the workflow is triggered by a `build_upload` event domain.
+
+Example:
+
+```yaml
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  notify:
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: |
+        Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
+        Upload ID: ${{ app_store_connect.build_upload.id }}
+        Upload state: ${{ app_store_connect.build_upload.state }}
+```
+
 #### `env`
 
 A record of environment variables available in the current job context.
