@@ -1,5 +1,5 @@
-import { getIosSplashConfig } from '../getIosSplashConfig';
 import { toString } from '../InterfaceBuilder';
+import { getIosSplashConfig } from '../getIosSplashConfig';
 import { getTemplateAsync } from '../withIosSplashScreenStoryboard';
 import { applySplashScreenStoryboard } from '../withIosSplashScreenStoryboardImage';
 
