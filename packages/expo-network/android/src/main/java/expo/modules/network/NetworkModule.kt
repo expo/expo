@@ -42,15 +42,20 @@ class NetworkModule : Module() {
       // We intentionally do NOT reuse asyncEmitNetworkState(DELAY_MS) here.
       //
       // The 250ms delay used by onAvailable cannot be applied to onLost: on
-      // Android 13+ (and some earlier versions), connectivityManager.activeNetwork
-      // continues to return the just-lost Network object even after the delay,
-      // so re-querying it would emit a stale "isConnected = true" event — the
-      // exact bug reported in https://github.com/expo/expo/issues/37972.
+      // Android 13+, connectivityManager.activeNetwork continues to return the
+      // just-lost Network object even after the delay, so re-querying it would
+      // emit a stale "isConnected = true" event — the exact bug reported in
+      // https://github.com/expo/expo/issues/37972. The behavior is not
+      // documented by AOSP as version-specific, so we apply this check
+      // defensively on all API 29+ devices.
       //
       // Instead, compare the lost network against the active network. If they
       // match (or activeNetwork is null), there is no replacement network and
       // we emit a disconnected state directly. If a different network is
       // active (e.g. cellular fallback after WiFi drop), emit its state.
+      //
+      // Note: android.net.Network.equals() compares by netId, so the identity
+      // check below is a reliable "same network" comparison.
       //
       // We still post to the main looper because sendEvent expects the main
       // thread; we just skip the delay.
