@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.15):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.13):
+  - Expo (55.0.14):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -63,15 +63,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (55.0.24):
+  - expo-dev-client (55.0.26):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (55.0.25):
+  - expo-dev-launcher (55.0.27):
     - EXManifests
-    - expo-dev-launcher/Main (= 55.0.25)
+    - expo-dev-launcher/Main (= 55.0.27)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -100,7 +100,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (55.0.25):
+  - expo-dev-launcher/Main (55.0.27):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -131,7 +131,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (55.0.25):
+  - expo-dev-launcher/Tests (55.0.27):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -166,7 +166,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (55.0.25):
+  - expo-dev-launcher/Unsafe (55.0.27):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -196,8 +196,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu (55.0.21):
-    - expo-dev-menu/Main (= 55.0.21)
+  - expo-dev-menu (55.0.22):
+    - expo-dev-menu/Main (= 55.0.22)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -220,7 +220,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu-interface (55.0.2)
-  - expo-dev-menu/Main (55.0.21):
+  - expo-dev-menu/Main (55.0.22):
     - EXManifests
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -246,7 +246,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/Tests (55.0.21):
+  - expo-dev-menu/Tests (55.0.22):
     - ExpoModulesTestCore
     - hermes-engine
     - Nimble
@@ -272,7 +272,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/UITests (55.0.21):
+  - expo-dev-menu/UITests (55.0.22):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.13):
+  - Expo/Tests (55.0.14):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -334,8 +334,11 @@ PODS:
     - ExpoModulesCore
   - ExpoBackgroundFetch (55.0.14):
     - ExpoModulesCore
-  - ExpoBackgroundTask (55.0.14):
+  - ExpoBackgroundTask (55.0.15):
     - ExpoModulesCore
+  - ExpoBackgroundTask/Tests (55.0.15):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoBattery (55.0.13):
     - ExpoModulesCore
   - ExpoBlob (55.0.13):
@@ -529,10 +532,10 @@ PODS:
     - ExpoModulesTestCore
   - ExpoPrint (55.0.13):
     - ExpoModulesCore
-  - ExpoRouter (55.0.11):
+  - ExpoRouter (55.0.12):
     - ExpoModulesCore
     - RNScreens
-  - ExpoRouter/Tests (55.0.11):
+  - ExpoRouter/Tests (55.0.12):
     - ExpoModulesCore
     - RNScreens
   - ExpoScreenCapture (55.0.13):
@@ -3184,6 +3187,7 @@ DEPENDENCIES:
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
+  - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
@@ -3813,10 +3817,10 @@ SPEC CHECKSUMS:
   EXConstants: 70e3278eef237cb75c2b3e9ab1ff65afa7427af0
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 2cf22467ed628c61467ad7b6ee56b4ea81ddf510
-  Expo: 167ec50df23c7825df6b18da2efe0ec72ed8a6e0
-  expo-dev-client: 27c4c01013fd324090f01d1e18e85b6fbed09367
-  expo-dev-launcher: 7e8ce81192d0d849339983f465b7ef659dae49a7
-  expo-dev-menu: 9a4a07c488e4e052dae3e97b12bd117281f3d5e5
+  Expo: 648d0bb74338aeecc4be0cc2e06b20765832d048
+  expo-dev-client: 8d1b804449425d398426f59cf11c923cdb253ef4
+  expo-dev-launcher: d1b81159d7a299d531303828f089a671abe9db94
+  expo-dev-menu: d8c2dede0e4d8fe93a66f1fb2f0804b8a22cdd2b
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: ec26d88646d544de24e189261aec537e5613f44a
   ExpoAppIntegrity: 9fd00a7e48bd94dd4dc838f933b8fdd628ee6dab
@@ -3824,7 +3828,7 @@ SPEC CHECKSUMS:
   ExpoAsset: 49dcbe34165e4da8914fac3eb068255ecd100ebf
   ExpoAudio: 885bdbc085e0374bcc983ea473b1ed42d5ce5a25
   ExpoBackgroundFetch: b7a1e6658f6da3137f68a13d4b6bad6ff3b632a5
-  ExpoBackgroundTask: 2c9e0beed834749b6fca73fd6c4643c5c2d63a39
+  ExpoBackgroundTask: 385d390a94e86f52a6d63f1faf07810794a32818
   ExpoBattery: d943385262ab8a22c034784cbeb92dcea1ccac98
   ExpoBlob: 882fa24430fdfdc8e7dc90cf0b90e1e4c7d0e6c5
   ExpoBlur: 08afa305ca20b1adb0b580fd3b09a38b64ce8804
@@ -3866,7 +3870,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 2b9fa25a6cbb1cce2e31863c88cc8c5ab883898b
   ExpoNotifications: a02f0500afb0b2876a33426396b329d3d9f817ac
   ExpoPrint: 4de2eaf713b1f23ad6a306dd1034158d6d84d43a
-  ExpoRouter: 3ed0398b36168839446322a6f5b029b8fc0daaf0
+  ExpoRouter: 978657094cf0a42d17bb891706282c8a4031d70f
   ExpoScreenCapture: 3cde76108a8c6ca1ec75d0da772b4adf0f6ae89f
   ExpoScreenOrientation: 0ae57967b00b3e90cbea24560683bf0f2e1c03fe
   ExpoSecureStore: 03372541cb9b7f67601fa2ed0a8c2abbc9037e04

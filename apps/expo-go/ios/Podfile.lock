@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (55.0.15):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.13):
+  - Expo (55.0.14):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -51,10 +51,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-menu (55.0.21):
+  - expo-dev-menu (55.0.22):
     - boost
     - DoubleConversion
-    - expo-dev-menu/Main (= 55.0.21)
+    - expo-dev-menu/Main (= 55.0.22)
     - fast_float
     - fmt
     - glog
@@ -81,7 +81,7 @@ PODS:
     - SocketRocket
     - Yoga
   - expo-dev-menu-interface (55.0.2)
-  - expo-dev-menu/Main (55.0.21):
+  - expo-dev-menu/Main (55.0.22):
     - boost
     - DoubleConversion
     - EXManifests
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (55.0.13):
+  - Expo/Tests (55.0.14):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -154,8 +154,11 @@ PODS:
     - ExpoModulesCore
   - ExpoBackgroundFetch (55.0.14):
     - ExpoModulesCore
-  - ExpoBackgroundTask (55.0.14):
+  - ExpoBackgroundTask (55.0.15):
     - ExpoModulesCore
+  - ExpoBackgroundTask/Tests (55.0.15):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoBattery (55.0.13):
     - ExpoModulesCore
   - ExpoBlob (55.0.13):
@@ -333,10 +336,10 @@ PODS:
     - ExpoModulesTestCore
   - ExpoPrint (55.0.13):
     - ExpoModulesCore
-  - ExpoRouter (55.0.11):
+  - ExpoRouter (55.0.12):
     - ExpoModulesCore
     - RNScreens
-  - ExpoRouter/Tests (55.0.11):
+  - ExpoRouter/Tests (55.0.12):
     - ExpoModulesCore
     - RNScreens
   - ExpoScreenCapture (55.0.13):
@@ -4108,6 +4111,7 @@ DEPENDENCIES:
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
+  - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
@@ -4681,15 +4685,15 @@ SPEC CHECKSUMS:
   EXConstants: 70e3278eef237cb75c2b3e9ab1ff65afa7427af0
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 2cf22467ed628c61467ad7b6ee56b4ea81ddf510
-  Expo: 6bd182b02e592a41de4e5241131b968551dc44e1
-  expo-dev-menu: 7249d221e598e96e086fae80724efcda1dc3f59c
+  Expo: d229a651e0f27867895487400897c9aaa6cba0d0
+  expo-dev-menu: dc3872a7eaaca8deae8d332f45abef10ac328467
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: ec26d88646d544de24e189261aec537e5613f44a
   ExpoAppleAuthentication: 9e3a40e8f9d95d23d980956f6dbf0b6c0302940b
   ExpoAsset: 49dcbe34165e4da8914fac3eb068255ecd100ebf
   ExpoAudio: 885bdbc085e0374bcc983ea473b1ed42d5ce5a25
   ExpoBackgroundFetch: b7a1e6658f6da3137f68a13d4b6bad6ff3b632a5
-  ExpoBackgroundTask: 2c9e0beed834749b6fca73fd6c4643c5c2d63a39
+  ExpoBackgroundTask: 385d390a94e86f52a6d63f1faf07810794a32818
   ExpoBattery: d943385262ab8a22c034784cbeb92dcea1ccac98
   ExpoBlob: 882fa24430fdfdc8e7dc90cf0b90e1e4c7d0e6c5
   ExpoBlur: 08afa305ca20b1adb0b580fd3b09a38b64ce8804
@@ -4728,7 +4732,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 2b9fa25a6cbb1cce2e31863c88cc8c5ab883898b
   ExpoNotifications: a02f0500afb0b2876a33426396b329d3d9f817ac
   ExpoPrint: 4de2eaf713b1f23ad6a306dd1034158d6d84d43a
-  ExpoRouter: 3ed0398b36168839446322a6f5b029b8fc0daaf0
+  ExpoRouter: 978657094cf0a42d17bb891706282c8a4031d70f
   ExpoScreenCapture: 3cde76108a8c6ca1ec75d0da772b4adf0f6ae89f
   ExpoScreenOrientation: 71450ffcb365db5b9b48defea53b52f18d4d650b
   ExpoSecureStore: 03372541cb9b7f67601fa2ed0a8c2abbc9037e04

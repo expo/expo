@@ -9,13 +9,13 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~55.0.13",
+    "expo": "~55.0.14",
     "expo-apple-authentication": "~55.0.13",
     "expo-blur": "~55.0.14",
     "expo-brownfield": "~55.0.20",
     "expo-build-properties": "~55.0.13",
     "expo-camera": "~55.0.15",
-    "expo-dev-client": "~55.0.24",
+    "expo-dev-client": "~55.0.26",
     "expo-image": "~55.0.8",
     "expo-linear-gradient": "~55.0.13",
     "expo-splash-screen": "~55.0.17",
