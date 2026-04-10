@@ -393,9 +393,10 @@ describe('--barrel option', () => {
   it('generates index.ts barrel file with correct re-exports when --barrel is set', async () => {
     const slug = 'barrel-module';
 
-    await executePassing([slug, '--local', '--barrel', '--source', localTemplatePath], {
-      cwd: localProjectRoot,
-    });
+    await executePassing(
+      [slug, '--local', '--barrel', '--features', 'View', '--source', localTemplatePath],
+      { cwd: localProjectRoot }
+    );
 
     const indexPath = path.join(localProjectRoot, 'modules', slug, 'index.ts');
     expect({ [indexPath]: fs.existsSync(indexPath) }).toEqual({ [indexPath]: true });

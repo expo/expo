@@ -79,7 +79,7 @@ describe('buildViewSnippets', () => {
 
   it('includes ViewEvent block when ViewEvent selected', async () => {
     const result = await buildViewSnippets(SNIPPETS_DIR, ['View', 'ViewEvent'], mockData, 'swift');
-    expect(result).toContain('Events("onLoad")');
+    expect(result).toContain('Events("onTap")');
   });
 });
 
@@ -151,7 +151,7 @@ describe('buildAppSnippets', () => {
     expect(result).toContain('MyModuleView');
   });
 
-  it('includes onLoad prop in View jsx when ViewEvent is also selected', async () => {
+  it('includes onTap prop in View jsx when ViewEvent is also selected', async () => {
     const dataWithViewEvent = {
       ...mockData,
       project: { ...mockData.project, features: ['View', 'ViewEvent'] },
@@ -162,16 +162,16 @@ describe('buildAppSnippets', () => {
       dataWithViewEvent,
       'jsx'
     );
-    expect(result).toContain('onLoad');
+    expect(result).toContain('onTap');
   });
 
-  it('does NOT include onLoad prop when only View is selected', async () => {
+  it('does NOT include onTap prop when only View is selected', async () => {
     const dataViewOnly = {
       ...mockData,
       project: { ...mockData.project, features: ['View'] },
     };
     const result = await buildAppSnippets(SNIPPETS_DIR, ['View'], dataViewOnly, 'jsx');
-    expect(result).not.toContain('onLoad');
+    expect(result).not.toContain('onTap');
   });
 
   it('includes SharedObject hook import and jsx', async () => {
