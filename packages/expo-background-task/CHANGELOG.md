@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Prevent background task registration from replacing an already scheduled or running worker.
+- [Android] Prevent background task registration from replacing an already scheduled or running worker. ([#44663](https://github.com/expo/expo/pull/44663) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
