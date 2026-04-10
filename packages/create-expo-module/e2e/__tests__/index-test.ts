@@ -17,9 +17,6 @@ import {
 /** Absolute path to the local expo-module-template package */
 const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template');
 
-/** Absolute path to the local expo-module-template-local package */
-const localTemplateLocalPath = path.resolve(__dirname, '../../../expo-module-template-local');
-
 beforeAll(async () => {
   ensureFolderExists(projectRoot);
 });
@@ -218,7 +215,7 @@ describe('--platform option', () => {
 
     // "ios" is not a valid platform value (the correct value is "apple")
     const result = await executePassing(
-      ['my-module', '--local', '--platform', 'ios', '--source', localTemplateLocalPath],
+      ['my-module', '--local', '--platform', 'ios', '--source', localTemplatePath],
       { cwd: fakeProject }
     );
 
@@ -241,7 +238,7 @@ describe('--platform option', () => {
 
     // "ios" is invalid; "apple" is the correct value — only apple should be used
     const result = await executePassing(
-      ['my-module', '--local', '--platform', 'apple', 'ios', '--source', localTemplateLocalPath],
+      ['my-module', '--local', '--platform', 'apple', 'ios', '--source', localTemplatePath],
       { cwd: fakeProject }
     );
 
@@ -262,7 +259,7 @@ describe('--platform option', () => {
     const fakeProject = createFakeProject('local-platform-project');
 
     await executePassing(
-      ['my-module', '--local', '--platform', 'android', '--source', localTemplateLocalPath],
+      ['my-module', '--local', '--platform', 'android', '--source', localTemplatePath],
       { cwd: fakeProject }
     );
 
@@ -357,10 +354,6 @@ describe('non-interactive module creation', () => {
 });
 
 describe('--barrel option', () => {
-  const localTemplatePath = path.resolve(
-    __dirname,
-    '../../../../packages/expo-module-template-local'
-  );
   let localProjectRoot: string;
 
   beforeAll(() => {
@@ -436,10 +429,6 @@ describe('--barrel option', () => {
 });
 
 describe('CI mode detection', () => {
-  const localTemplatePath = path.resolve(
-    __dirname,
-    '../../../../packages/expo-module-template-local'
-  );
   let ciProjectRoot: string;
 
   beforeAll(() => {
