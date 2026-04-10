@@ -4,17 +4,16 @@ import XCTest
 @testable import ExpoBackgroundTask
 
 final class BackgroundTaskSchedulerTests: XCTestCase {
-  override func tearDown() {
-    BackgroundTaskScheduler.resetForTesting()
-    super.tearDown()
+  override func tearDown() async throws {
+    await BackgroundTaskScheduler.resetForTesting()
+    try await super.tearDown()
   }
 
   func testConcurrentScheduleWorkerCallsDoNotOverlapCancel() async throws {
     let scheduler = OverlapDetectingScheduler()
 
-    BackgroundTaskScheduler.setSchedulerForTesting(scheduler)
-    BackgroundTaskScheduler.resetForTesting(registeredTaskCount: 1)
-    BackgroundTaskScheduler.setSchedulerForTesting(scheduler)
+    await BackgroundTaskScheduler.resetForTesting(registeredTaskCount: 1)
+    await BackgroundTaskScheduler.setSchedulerForTesting(scheduler)
     BackgroundTaskScheduler.bgTaskSchedulerDidFinishRegister()
 
     async let first: Void = BackgroundTaskScheduler.tryScheduleWorker()
@@ -28,7 +27,7 @@ final class BackgroundTaskSchedulerTests: XCTestCase {
   }
 }
 
-private final class OverlapDetectingScheduler: BackgroundTaskScheduling {
+private final class OverlapDetectingScheduler: BackgroundTaskScheduling, @unchecked Sendable {
   private let lock = NSLock()
   private var activeCancelCalls = 0
 
