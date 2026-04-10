@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Restore the `appBridge` declaration so SDK 55 dev builds compile again.
+- [iOS] Restore the `appBridge` declaration so SDK 55 dev builds compile again. ([#44688](https://github.com/expo/expo/pull/44688) by [@KinanLak](https://github.com/KinanLak))
 
 ### 💡 Others
 
