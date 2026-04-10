@@ -1,7 +1,7 @@
 package expo.modules.calendar.next
 
-import expo.modules.calendar.extensions.DateTimeInput
-import expo.modules.calendar.extensions.getTimeInMillis
+import expo.modules.calendar.next.utils.DateTimeInput
+import expo.modules.calendar.next.utils.getTimeInMillis
 import expo.modules.calendar.next.domain.dto.event.EventExceptionInput
 import kotlin.time.Duration.Companion.milliseconds
 import expo.modules.calendar.next.domain.repositories.attendee.AttendeeRepository
@@ -28,6 +28,7 @@ class ExpoCalendarEvent(
   private val attendeeMapper: AttendeeMapper,
   private val eventMapper: EventMapper,
   private val reminderMapper: ReminderMapper,
+  private val expoCalendarEventMapper: ExpoCalendarEventMapper,
   private val instanceRepository: InstanceRepository,
   private val reminderRepository: ReminderRepository,
   private var data: ExpoCalendarEventData?,
@@ -55,8 +56,6 @@ class ExpoCalendarEvent(
   val instanceId get() = data?.instanceId
   val recurrenceRule get() = data?.recurrenceRule
   val alarms get() = data?.alarms
-
-  private val expoCalendarEventMapper = ExpoCalendarEventMapper(reminderMapper)
 
   suspend fun createAttendee(attendeeRecord: AttendeeRecord): ExpoCalendarAttendee {
     val entity = attendeeMapper.toAttendeeInput(attendeeRecord, eventId)
@@ -107,6 +106,7 @@ class ExpoCalendarEvent(
       attendeeMapper = attendeeMapper,
       eventMapper = eventMapper,
       reminderMapper = reminderMapper,
+      expoCalendarEventMapper = expoCalendarEventMapper,
       instanceRepository = instanceRepository,
       reminderRepository = reminderRepository,
       data = data,

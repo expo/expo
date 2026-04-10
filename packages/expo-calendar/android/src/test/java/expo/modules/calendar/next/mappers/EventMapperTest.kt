@@ -9,7 +9,7 @@ import expo.modules.calendar.next.records.EventAvailability
 import expo.modules.calendar.next.records.EventInputRecord
 import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
-import expo.modules.calendar.next.utils.dateToMilliseconds
+import expo.modules.calendar.next.utils.toMilliseconds
 import expo.modules.kotlin.types.ValueOrUndefined
 import org.junit.Assert
 import org.junit.Test
@@ -50,8 +50,8 @@ class EventMapperTest {
     Assert.assertEquals(CalendarId(7L), result.calendarId)
     Assert.assertEquals("Meeting", result.title)
     Assert.assertEquals("Standup", result.description)
-    Assert.assertEquals(dateToMilliseconds("2026-03-23T10:00:00.000Z"), result.dtStart)
-    Assert.assertEquals(dateToMilliseconds("2026-03-23T11:00:00.000Z"), result.dtEnd)
+    Assert.assertEquals("2026-03-23T10:00:00.000Z".toMilliseconds(), result.dtStart)
+    Assert.assertEquals("2026-03-23T11:00:00.000Z".toMilliseconds(), result.dtEnd)
     Assert.assertEquals(Availability.FREE, result.availability)
     Assert.assertEquals(true, result.allDay)
     Assert.assertEquals("Room 1", result.eventLocation)
@@ -101,8 +101,8 @@ class EventMapperTest {
     Assert.assertEquals(CalendarId(7L), result.calendarId)
     Assert.assertEquals("Meeting", result.title)
     Assert.assertNull(result.description)
-    Assert.assertEquals(dateToMilliseconds("2026-03-23T10:00:00.000Z"), result.dtStart)
-    Assert.assertEquals(dateToMilliseconds("2026-03-23T11:00:00.000Z"), result.dtEnd)
+    Assert.assertEquals("2026-03-23T10:00:00.000Z".toMilliseconds(), result.dtStart)
+    Assert.assertEquals("2026-03-23T11:00:00.000Z".toMilliseconds(), result.dtEnd)
     Assert.assertNull(result.availability)
     Assert.assertNull(result.allDay)
     Assert.assertNull(result.eventLocation)
@@ -168,8 +168,8 @@ class EventMapperTest {
 
     // Then
     Assert.assertEquals("Updated", result.title.optional)
-    Assert.assertEquals(dateToMilliseconds("2026-03-24T10:00:00.000Z"), result.dtStart.optional)
-    Assert.assertEquals(dateToMilliseconds("2026-03-24T11:00:00.000Z"), result.dtEnd.optional)
+    Assert.assertEquals("2026-03-24T10:00:00.000Z".toMilliseconds(), result.dtStart.optional)
+    Assert.assertEquals("2026-03-24T11:00:00.000Z".toMilliseconds(), result.dtEnd.optional)
     Assert.assertEquals("Room 1", result.eventLocation.optional)
     Assert.assertEquals("Europe/Warsaw", result.eventTimezone.optional)
     Assert.assertEquals("Europe/Warsaw", result.eventEndTimezone.optional)

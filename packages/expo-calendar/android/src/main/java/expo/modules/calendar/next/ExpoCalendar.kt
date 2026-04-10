@@ -1,7 +1,7 @@
 package expo.modules.calendar.next
 
-import expo.modules.calendar.extensions.DateTimeInput
-import expo.modules.calendar.extensions.getTimeInMillis
+import expo.modules.calendar.next.utils.DateTimeInput
+import expo.modules.calendar.next.utils.getTimeInMillis
 import expo.modules.calendar.next.domain.repositories.calendar.CalendarRepository
 import expo.modules.calendar.next.domain.wrappers.CalendarId
 import expo.modules.calendar.next.domain.repositories.event.EventRepository

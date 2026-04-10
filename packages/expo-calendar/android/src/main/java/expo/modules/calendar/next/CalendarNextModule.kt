@@ -7,7 +7,7 @@ import expo.modules.calendar.dialogs.CreatedEventOptions
 import expo.modules.calendar.dialogs.ViewEventContract
 import expo.modules.calendar.dialogs.ViewEventIntentResult
 import expo.modules.calendar.dialogs.ViewedEventOptions
-import expo.modules.calendar.extensions.DateTimeInput
+import expo.modules.calendar.next.utils.DateTimeInput
 import expo.modules.calendar.next.domain.repositories.event.EventRepository
 import expo.modules.calendar.next.domain.repositories.instance.InstanceRepository
 import expo.modules.calendar.next.domain.repositories.attendee.AttendeeRepository

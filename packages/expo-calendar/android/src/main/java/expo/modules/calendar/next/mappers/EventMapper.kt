@@ -11,15 +11,15 @@ import expo.modules.calendar.next.records.EventAvailability
 import expo.modules.calendar.next.records.EventInputRecord
 import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
-import expo.modules.calendar.next.utils.dateToMilliseconds
+import expo.modules.calendar.next.utils.toMilliseconds
 import expo.modules.kotlin.types.map
 
 class EventMapper {
   fun toEventUpdate(input: EventUpdateRecord) = EventUpdate(
     title = input.title,
     description = input.notes,
-    dtStart = input.startDate.map { dateToMilliseconds(it) },
-    dtEnd = input.endDate.map { dateToMilliseconds(it) },
+    dtStart = input.startDate.map { it.toMilliseconds() },
+    dtEnd = input.endDate.map { it.toMilliseconds() },
     availability = input.availability.map { it?.toDomain() },
     allDay = input.allDay,
     eventLocation = input.location,
@@ -37,8 +37,8 @@ class EventMapper {
     calendarId = calendarId,
     title = eventRecord.title,
     description = eventRecord.notes,
-    dtStart = dateToMilliseconds(eventRecord.startDate),
-    dtEnd = dateToMilliseconds(eventRecord.endDate),
+    dtStart = eventRecord.startDate.toMilliseconds(),
+    dtEnd = eventRecord.endDate.toMilliseconds(),
     availability = eventRecord.availability?.toDomain(),
     allDay = eventRecord.allDay,
     eventLocation = eventRecord.location,
