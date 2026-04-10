@@ -1,34 +1,33 @@
 #!/usr/bin/env bun
 
-import { readFileSync } from "fs";
-import { execSync } from "child_process";
+import { readFileSync, unlinkSync } from 'fs';
 
 // --- Types ---
 
 interface ReviewComment {
   path: string;
   line: number;
-  side: "LEFT" | "RIGHT";
+  side: 'LEFT' | 'RIGHT';
   body: string;
-  severity: "critical" | "design" | "suggestion" | "nit";
+  severity: 'critical' | 'design' | 'suggestion' | 'nit';
   /** Substring of the target line's content. Used to verify/resolve the correct line in the diff. */
   line_content?: string;
 }
 
 interface ReviewPayload {
   pr_url: string;
-  owner: string;
-  repo: string;
   pull_number: number;
   summary: string;
-  verdict: "APPROVE" | "REQUEST_CHANGES" | "COMMENT" | "REJECT";
+  verdict: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT' | 'REJECT';
+  /** SHA of the commit this review targets. Pins comments to a specific commit so they don't drift if the PR is updated. */
+  commit_id?: string;
   comments: ReviewComment[];
 }
 
 // --- Diff parsing ---
 
 interface DiffLine {
-  side: "LEFT" | "RIGHT" | "BOTH";
+  side: 'LEFT' | 'RIGHT' | 'BOTH';
   leftLine: number;
   rightLine: number;
   content: string;
@@ -41,7 +40,7 @@ interface FileDiff {
 
 function parseDiff(diffText: string): FileDiff[] {
   const files: FileDiff[] = [];
-  const diffLines = diffText.split("\n");
+  const diffLines = diffText.split('\n');
 
   let currentFile: FileDiff | null = null;
   let leftLine = 0;
@@ -49,14 +48,14 @@ function parseDiff(diffText: string): FileDiff[] {
 
   for (const line of diffLines) {
     // New file
-    if (line.startsWith("diff --git")) {
+    if (line.startsWith('diff --git')) {
       if (currentFile) files.push(currentFile);
       currentFile = null;
       continue;
     }
 
     // File path from +++ line
-    if (line.startsWith("+++ b/")) {
+    if (line.startsWith('+++ b/')) {
       currentFile = { path: line.slice(6), lines: [] };
       continue;
     }
@@ -71,25 +70,25 @@ function parseDiff(diffText: string): FileDiff[] {
 
     if (!currentFile) continue;
 
-    if (line.startsWith("-")) {
+    if (line.startsWith('-')) {
       currentFile.lines.push({
-        side: "LEFT",
+        side: 'LEFT',
         leftLine,
         rightLine: -1,
         content: line.slice(1),
       });
       leftLine++;
-    } else if (line.startsWith("+")) {
+    } else if (line.startsWith('+')) {
       currentFile.lines.push({
-        side: "RIGHT",
+        side: 'RIGHT',
         leftLine: -1,
         rightLine,
         content: line.slice(1),
       });
       rightLine++;
-    } else if (line.startsWith(" ")) {
+    } else if (line.startsWith(' ')) {
       currentFile.lines.push({
-        side: "BOTH",
+        side: 'BOTH',
         leftLine,
         rightLine,
         content: line.slice(1),
@@ -107,15 +106,15 @@ function parseDiff(diffText: string): FileDiff[] {
 function getLineContent(
   fileDiffs: FileDiff[],
   path: string,
-  side: "LEFT" | "RIGHT",
+  side: 'LEFT' | 'RIGHT',
   line: number
 ): string | null {
   const fileDiff = fileDiffs.find((f) => f.path === path);
   if (!fileDiff) return null;
 
   for (const dl of fileDiff.lines) {
-    const lineNum = side === "LEFT" ? dl.leftLine : dl.rightLine;
-    if (lineNum === line && (dl.side === side || dl.side === "BOTH")) {
+    const lineNum = side === 'LEFT' ? dl.leftLine : dl.rightLine;
+    if (lineNum === line && (dl.side === side || dl.side === 'BOTH')) {
       return dl.content;
     }
   }
@@ -125,7 +124,7 @@ function getLineContent(
 function resolveLineFromContent(
   fileDiffs: FileDiff[],
   path: string,
-  side: "LEFT" | "RIGHT",
+  side: 'LEFT' | 'RIGHT',
   lineContent: string,
   hintLine: number
 ): { line: number; content: string } | null {
@@ -133,11 +132,12 @@ function resolveLineFromContent(
   if (!fileDiff) return null;
 
   const needle = lineContent.trim();
+  if (!needle) return null;
   const candidates: { line: number; content: string }[] = [];
 
   for (const dl of fileDiff.lines) {
-    if (dl.side !== side && dl.side !== "BOTH") continue;
-    const lineNum = side === "LEFT" ? dl.leftLine : dl.rightLine;
+    if (dl.side !== side && dl.side !== 'BOTH') continue;
+    const lineNum = side === 'LEFT' ? dl.leftLine : dl.rightLine;
     if (lineNum < 0) continue;
 
     if (dl.content.trim().includes(needle)) {
@@ -149,22 +149,15 @@ function resolveLineFromContent(
   if (candidates.length === 1) return candidates[0];
 
   // Multiple matches — pick the one closest to hintLine
-  candidates.sort(
-    (a, b) => Math.abs(a.line - hintLine) - Math.abs(b.line - hintLine)
-  );
+  candidates.sort((a, b) => Math.abs(a.line - hintLine) - Math.abs(b.line - hintLine));
   return candidates[0];
 }
 
-function fetchDiff(prUrl: string): FileDiff[] {
-  try {
-    const diffText = execSync(`gh pr diff ${prUrl}`, {
-      encoding: "utf-8",
-      maxBuffer: 50 * 1024 * 1024,
-    });
-    return parseDiff(diffText);
-  } catch {
-    return [];
-  }
+async function fetchDiff(pullNumber: number): Promise<FileDiff[]> {
+  const diffText = (await githubRequest(`/repos/expo/expo/pulls/${pullNumber}`, {
+    accept: 'application/vnd.github.v3.diff',
+  })) as string;
+  return parseDiff(diffText);
 }
 
 // --- Line resolution ---
@@ -172,16 +165,13 @@ function fetchDiff(prUrl: string): FileDiff[] {
 interface ResolvedComment extends ReviewComment {
   resolvedLine: number;
   targetContent: string | null;
-  resolution: "exact" | "resolved" | "unverified";
+  resolution: 'exact' | 'resolved' | 'unverified';
 }
 
-function resolveComments(
-  comments: ReviewComment[],
-  fileDiffs: FileDiff[]
-): ResolvedComment[] {
+function resolveComments(comments: ReviewComment[], fileDiffs: FileDiff[]): ResolvedComment[] {
   return comments.map((c) => {
     if (!fileDiffs.length) {
-      return { ...c, resolvedLine: c.line, targetContent: null, resolution: "unverified" as const };
+      return { ...c, resolvedLine: c.line, targetContent: null, resolution: 'unverified' as const };
     }
 
     // If line_content is provided, use it to find the correct line
@@ -189,7 +179,7 @@ function resolveComments(
       const resolved = resolveLineFromContent(
         fileDiffs,
         c.path,
-        c.side || "RIGHT",
+        c.side || 'RIGHT',
         c.line_content,
         c.line
       );
@@ -198,18 +188,18 @@ function resolveComments(
           ...c,
           resolvedLine: resolved.line,
           targetContent: resolved.content,
-          resolution: resolved.line === c.line ? "exact" as const : "resolved" as const,
+          resolution: resolved.line === c.line ? ('exact' as const) : ('resolved' as const),
         };
       }
     }
 
     // Fall back to checking specified line
-    const content = getLineContent(fileDiffs, c.path, c.side || "RIGHT", c.line);
+    const content = getLineContent(fileDiffs, c.path, c.side || 'RIGHT', c.line);
     return {
       ...c,
       resolvedLine: c.line,
       targetContent: content,
-      resolution: content !== null ? "exact" as const : "unverified" as const,
+      resolution: content !== null ? ('exact' as const) : ('unverified' as const),
     };
   });
 }
@@ -217,55 +207,66 @@ function resolveComments(
 // --- Validation ---
 
 function validate(data: unknown): ReviewPayload {
-  if (typeof data !== "object" || data === null) {
-    throw new Error("Review file must contain a JSON object");
+  if (typeof data !== 'object' || data === null) {
+    throw new Error('Review file must contain a JSON object');
   }
 
   const obj = data as Record<string, unknown>;
-  const required = [
-    "pr_url",
-    "owner",
-    "repo",
-    "pull_number",
-    "summary",
-    "verdict",
-    "comments",
-  ];
+  const required = ['pr_url', 'pull_number', 'summary', 'verdict', 'comments'];
   for (const key of required) {
     if (!(key in obj)) {
       throw new Error(`Missing required field: ${key}`);
     }
   }
 
-  if (!["APPROVE", "REQUEST_CHANGES", "COMMENT", "REJECT"].includes(obj.verdict as string)) {
+  const prUrlPattern = /^https:\/\/github\.com\/expo\/expo\/pull\/\d+$/;
+  if (typeof obj.pr_url !== 'string' || !prUrlPattern.test(obj.pr_url)) {
+    throw new Error(
+      `Invalid pr_url: ${obj.pr_url}. Must match https://github.com/expo/expo/pull/<number>`
+    );
+  }
+
+  if (typeof obj.summary !== 'string' || !obj.summary) {
+    throw new Error('summary must be a non-empty string');
+  }
+
+  if (
+    typeof obj.pull_number !== 'number' ||
+    !Number.isInteger(obj.pull_number) ||
+    obj.pull_number <= 0
+  ) {
+    throw new Error('pull_number must be a positive integer');
+  }
+
+  if (obj.pr_url !== `https://github.com/expo/expo/pull/${obj.pull_number}`) {
+    throw new Error(
+      `pr_url doesn't match pull_number. Expected https://github.com/expo/expo/pull/${obj.pull_number}`
+    );
+  }
+
+  if (!['APPROVE', 'REQUEST_CHANGES', 'COMMENT', 'REJECT'].includes(obj.verdict as string)) {
     throw new Error(
       `Invalid verdict: ${obj.verdict}. Must be APPROVE, REQUEST_CHANGES, COMMENT, or REJECT`
     );
   }
 
   if (!Array.isArray(obj.comments)) {
-    throw new Error("comments must be an array");
+    throw new Error('comments must be an array');
   }
 
   for (let i = 0; i < obj.comments.length; i++) {
     const c = obj.comments[i];
-    if (!c.path || typeof c.path !== "string") {
+    if (!c.path || typeof c.path !== 'string') {
       throw new Error(`comments[${i}].path must be a non-empty string`);
     }
-    if (!c.line || typeof c.line !== "number") {
+    if (typeof c?.line !== 'number') {
       throw new Error(`comments[${i}].line must be a number`);
     }
-    if (!c.body || typeof c.body !== "string") {
+    if (!c.body || typeof c.body !== 'string') {
       throw new Error(`comments[${i}].body must be a non-empty string`);
     }
-    if (!["critical", "design", "suggestion", "nit"].includes(c.severity)) {
-      throw new Error(
-        `comments[${i}].severity must be critical, design, suggestion, or nit`
-      );
-    }
-    // Default side to RIGHT if not specified
-    if (!c.side) {
-      c.side = "RIGHT";
+    if (!['critical', 'design', 'suggestion', 'nit'].includes(c.severity)) {
+      throw new Error(`comments[${i}].severity must be critical, design, suggestion, or nit`);
     }
   }
 
@@ -275,10 +276,10 @@ function validate(data: unknown): ReviewPayload {
 // --- Severity formatting ---
 
 const SEVERITY_LABELS: Record<string, string> = {
-  critical: "\u{1F6A8} **critical**",
-  design: "\u{1F3D7}\u{FE0F} **design**",
-  suggestion: "\u{1F4A1} suggestion",
-  nit: "\u{1F427} nit",
+  critical: '\u{1F6A8} **critical**',
+  design: '\u{1F3D7}\u{FE0F} **design**',
+  suggestion: '\u{1F4A1} suggestion',
+  nit: '\u{1F427} nit',
 };
 
 function formatCommentBody(comment: ReviewComment): string {
@@ -293,24 +294,26 @@ async function githubRequest(
   options: {
     method?: string;
     body?: unknown;
+    accept?: string;
   } = {}
 ): Promise<unknown> {
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     throw new Error(
-      "GITHUB_TOKEN environment variable is required.\n" +
-        "Set it with: export GITHUB_TOKEN=ghp_..."
+      'GITHUB_TOKEN environment variable is required.\n' +
+        'Set it with: export GITHUB_TOKEN=$(gh auth token)'
     );
   }
 
+  const accept = options.accept ?? 'application/vnd.github+json';
   const url = `https://api.github.com${path}`;
   const resp = await fetch(url, {
-    method: options.method ?? "GET",
+    method: options.method ?? 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      Accept: accept,
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     },
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
@@ -320,44 +323,49 @@ async function githubRequest(
   if (!resp.ok) {
     throw new Error(
       `GitHub API error ${resp.status} ${resp.statusText}\n` +
-        `${options.method ?? "GET"} ${url}\n` +
+        `${options.method ?? 'GET'} ${url}\n` +
         responseBody
     );
+  }
+
+  // Return raw text for non-JSON accept types (e.g. diffs)
+  if (accept !== 'application/vnd.github+json') {
+    return responseBody;
   }
 
   return responseBody ? JSON.parse(responseBody) : null;
 }
 
-async function postReview(
-  review: ReviewPayload,
-  resolved: ResolvedComment[]
-): Promise<{ reviewId: number; pullNumber: number; owner: string; repo: string }> {
-  const { owner, repo, pull_number, summary, verdict } = review;
+async function postReview(review: ReviewPayload, resolved: ResolvedComment[]): Promise<number> {
+  const { pull_number, summary, verdict } = review;
 
   const apiComments = resolved.map((c) => ({
     path: c.path,
     line: c.resolvedLine,
-    side: c.side || "RIGHT",
+    side: c.side || 'RIGHT',
     body: formatCommentBody(c),
   }));
 
   const verdictLabel =
-    verdict === "APPROVE" ? "✅ APPROVE" :
-    verdict === "REQUEST_CHANGES" ? "🔴 REQUEST_CHANGES" :
-    "💬 COMMENT";
+    verdict === 'APPROVE'
+      ? '✅ APPROVE'
+      : verdict === 'REQUEST_CHANGES'
+        ? '🔴 REQUEST_CHANGES'
+        : '💬 COMMENT';
   const bodyWithVerdict = `**Suggested verdict: ${verdictLabel}**\n\n${summary}`;
 
   const body: Record<string, unknown> = {
     body: bodyWithVerdict,
     comments: apiComments,
+    ...(review.commit_id ? { commit_id: review.commit_id } : {}),
   };
 
-  const result = await githubRequest(`/repos/${owner}/${repo}/pulls/${pull_number}/reviews`, {
-    method: "POST",
+  const result = (await githubRequest(`/repos/expo/expo/pulls/${pull_number}/reviews`, {
+    method: 'POST',
     body,
-  }) as { id: number; html_url?: string };
+  })) as { id: number };
 
-  return { reviewId: result.id, pullNumber: pull_number, owner, repo };
+  return result.id;
 }
 
 // --- Preview ---
@@ -368,7 +376,7 @@ function printPreview(review: ReviewPayload, resolved: ResolvedComment[]): void 
     counts[c.severity] = (counts[c.severity] ?? 0) + 1;
   }
 
-  console.log("=== Review Preview ===\n");
+  console.log('=== Review Preview ===\n');
   console.log(`PR:      ${review.pr_url}`);
   console.log(`Verdict: ${review.verdict}`);
   console.log(
@@ -376,25 +384,24 @@ function printPreview(review: ReviewPayload, resolved: ResolvedComment[]): void 
       (Object.keys(counts).length > 0
         ? ` (${Object.entries(counts)
             .map(([s, n]) => `${n} ${s}`)
-            .join(", ")})`
-        : "")
+            .join(', ')})`
+        : '')
   );
   console.log(`\n--- Summary ---\n${review.summary}`);
 
   if (resolved.length > 0) {
-    console.log("\n--- Inline Comments ---");
+    console.log('\n--- Inline Comments ---');
     for (const c of resolved) {
-      const lineInfo = c.resolvedLine !== c.line
-        ? ` (line ${c.line} -> ${c.resolvedLine} via line_content match)`
-        : "";
-      console.log(
-        `\n  ${c.path}:${c.resolvedLine} ${c.side} [${c.severity}]${lineInfo}`
-      );
+      const lineInfo =
+        c.resolvedLine !== c.line
+          ? ` (line ${c.line} -> ${c.resolvedLine} via line_content match)`
+          : '';
+      console.log(`\n  ${c.path}:${c.resolvedLine} ${c.side} [${c.severity}]${lineInfo}`);
 
       // Show target code line
       if (c.targetContent !== null) {
         console.log(`  > ${c.targetContent.trimStart()}`);
-      } else if (c.resolution === "unverified") {
+      } else if (c.resolution === 'unverified') {
         console.log(`  > ⚠️  Line not found in diff — comment may land on wrong position`);
       }
 
@@ -402,21 +409,19 @@ function printPreview(review: ReviewPayload, resolved: ResolvedComment[]): void 
     }
   }
 
-  console.log("\n======================");
-  console.log("Run with 'post' to submit this review to GitHub.");
+  console.log('\n======================');
+  console.log("Run with 'post-pending' to stage this review on GitHub.");
 }
 
 async function submitReview(
-  owner: string,
-  repo: string,
   pullNumber: number,
   reviewId: number,
-  event: "APPROVE" | "REQUEST_CHANGES" | "COMMENT"
+  event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT'
 ): Promise<void> {
-  await githubRequest(
-    `/repos/${owner}/${repo}/pulls/${pullNumber}/reviews/${reviewId}/events`,
-    { method: "POST", body: { event } }
-  );
+  await githubRequest(`/repos/expo/expo/pulls/${pullNumber}/reviews/${reviewId}/events`, {
+    method: 'POST',
+    body: { event },
+  });
 }
 
 // --- Main ---
@@ -424,7 +429,7 @@ async function submitReview(
 function loadReview(filePath: string): ReviewPayload {
   let raw: string;
   try {
-    raw = readFileSync(filePath, "utf-8");
+    raw = readFileSync(filePath, 'utf-8');
   } catch (err) {
     throw new Error(`Cannot read file: ${filePath}\n${(err as Error).message}`);
   }
@@ -442,47 +447,61 @@ function loadReview(filePath: string): ReviewPayload {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
-  if (args.length < 2) {
-    console.log("Usage: post-review.ts <command> <review-file.json> [options]");
-    console.log("");
-    console.log("Commands:");
-    console.log("  preview  Validate and preview the review (fetches diff to verify line targets)");
-    console.log("  post     Stage the review as PENDING on GitHub (editable before submitting)");
-    console.log("  submit   Submit a pending review: submit <review-file.json> <review_id> [APPROVE|REQUEST_CHANGES|COMMENT]");
-    console.log("  close    Comment and close a REJECT PR: close <review-file.json>");
+  const [command, ...rest] = args;
+
+  if (!command || rest.length < 1) {
+    console.log('Usage: post-review.ts <command> [options]');
+    console.log('');
+    console.log('Commands:');
+    console.log(
+      '  local-preview  <review-file.json>                              Validate and preview the review locally'
+    );
+    console.log(
+      '  post-pending  <review-file.json>                         Stage the review as PENDING on GitHub'
+    );
+    console.log(
+      '  submit   <review-file.json> <review_id> [APPROVE|REQUEST_CHANGES|COMMENT]  Submit a pending review'
+    );
+    console.log(
+      '  close    <review-file.json>                              Comment and close a REJECT PR'
+    );
     process.exit(1);
   }
 
-  const [command, filePath] = args;
+  const filePath = rest[0];
   const review = loadReview(filePath);
 
   switch (command) {
-    case "preview": {
-      console.log("Fetching diff to verify line targets...\n");
-      const fileDiffs = fetchDiff(review.pr_url);
+    case 'local-preview': {
+      console.log('Fetching diff to verify line targets...\n');
+      const fileDiffs = await fetchDiff(review.pull_number);
       const resolved = resolveComments(review.comments, fileDiffs);
       printPreview(review, resolved);
       break;
     }
 
-    case "post": {
-      if (review.verdict === "REJECT") {
-        console.error("REJECT verdicts skip review — use 'close' instead to comment and close the PR.");
+    case 'post-pending': {
+      if (review.verdict === 'REJECT') {
+        console.error(
+          "REJECT verdicts skip review — use 'close' instead to comment and close the PR."
+        );
         process.exit(1);
       }
-      console.log("Fetching diff to verify line targets...\n");
-      const fileDiffs = fetchDiff(review.pr_url);
+      console.log('Fetching diff to verify line targets...\n');
+      const fileDiffs = await fetchDiff(review.pull_number);
       const resolved = resolveComments(review.comments, fileDiffs);
       printPreview(review, resolved);
 
       // Warn about corrections
       const corrections = resolved.filter((c) => c.resolvedLine !== c.line);
       if (corrections.length > 0) {
-        console.log(`\n⚠️  ${corrections.length} comment(s) had line numbers corrected via line_content matching.`);
+        console.log(
+          `\n⚠️  ${corrections.length} comment(s) had line numbers corrected via line_content matching.`
+        );
       }
 
-      console.log("\nStaging review as PENDING on GitHub...");
-      const { reviewId, pullNumber, owner, repo } = await postReview(review, resolved);
+      console.log('\nStaging review as PENDING on GitHub...');
+      const reviewId = await postReview(review, resolved);
       console.log(`\nReview staged successfully (review ID: ${reviewId}).`);
       console.log(`\nOpen the PR to edit your pending comments:`);
       console.log(`  ${review.pr_url}/files`);
@@ -491,45 +510,60 @@ async function main(): Promise<void> {
       break;
     }
 
-    case "submit": {
-      const reviewId = parseInt(args[2], 10);
+    case 'submit': {
+      const reviewId = parseInt(rest[1], 10);
       if (isNaN(reviewId)) {
-        console.error("submit requires a review_id. Usage: submit <review-file.json> <review_id> [event]");
+        console.error(
+          'Usage: submit <review-file.json> <review_id> [APPROVE|REQUEST_CHANGES|COMMENT]'
+        );
         process.exit(1);
       }
-      type SubmitEvent = "APPROVE" | "REQUEST_CHANGES" | "COMMENT";
-      const validEvents: SubmitEvent[] = ["APPROVE", "REQUEST_CHANGES", "COMMENT"];
-      const event: SubmitEvent | undefined = args[3]
-        ? validEvents.find((e) => e === args[3])
+      type SubmitEvent = 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT';
+      const validEvents: SubmitEvent[] = ['APPROVE', 'REQUEST_CHANGES', 'COMMENT'];
+      const event: SubmitEvent | undefined = rest[2]
+        ? validEvents.find((e) => e === rest[2])
         : validEvents.find((e) => e === review.verdict);
       if (!event) {
-        console.error(`Invalid event: ${args[3] ?? review.verdict}. Must be APPROVE, REQUEST_CHANGES, or COMMENT`);
+        console.error(
+          `Invalid event: ${rest[2] ?? review.verdict}. Must be APPROVE, REQUEST_CHANGES, or COMMENT`
+        );
         process.exit(1);
       }
       console.log(`Submitting review ${reviewId} as ${event}...`);
-      await submitReview(review.owner, review.repo, review.pull_number, reviewId, event);
-      console.log("Review submitted successfully.");
+      await submitReview(review.pull_number, reviewId, event);
+      console.log('Review submitted successfully.');
+      try {
+        unlinkSync(filePath);
+      } catch {}
       break;
     }
 
-    case "close": {
-      if (review.verdict !== "REJECT") {
+    case 'close': {
+      if (review.verdict !== 'REJECT') {
         console.error(`'close' is only for REJECT verdicts (this review is ${review.verdict}).`);
         process.exit(1);
       }
       console.log(`Commenting and closing ${review.pr_url}...\n`);
       console.log(`Comment:\n${review.summary}\n`);
-      execSync(
-        `gh pr comment ${review.pr_url} --body ${JSON.stringify(review.summary)}`,
-        { stdio: "inherit" },
-      );
-      execSync(`gh pr close ${review.pr_url}`, { stdio: "inherit" });
-      console.log("\nPR closed.");
+      await githubRequest(`/repos/expo/expo/pulls/${review.pull_number}`, {
+        method: 'PATCH',
+        body: { state: 'closed' },
+      });
+      await githubRequest(`/repos/expo/expo/issues/${review.pull_number}/comments`, {
+        method: 'POST',
+        body: { body: review.summary },
+      });
+      console.log('PR closed.');
+      try {
+        unlinkSync(filePath);
+      } catch {}
       break;
     }
 
     default:
-      console.error(`Unknown command: ${command}. Use 'preview', 'post', 'submit', or 'close'.`);
+      console.error(
+        `Unknown command: ${command}. Use 'local-preview', 'post-pending', 'submit', or 'close'.`
+      );
       process.exit(1);
   }
 }
