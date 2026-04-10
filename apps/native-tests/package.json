@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "expo": "~55.0.13",
+    "expo-background-task": "~55.0.0",
     "expo-clipboard": "55.0.13",
     "expo-dev-client": "~55.0.24",
     "expo-router": "~55.0.11",
