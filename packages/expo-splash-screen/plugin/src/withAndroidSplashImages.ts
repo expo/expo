@@ -132,7 +132,7 @@ export async function setSplashImageDrawablesForThemeAsync(
         const background = await generateImageBackgroundAsync({
           width: canvasSize,
           height: canvasSize,
-          backgroundColor: config.backgroundColor ?? 'transparent',
+          backgroundColor: 'transparent',
           resizeMode: 'cover',
         });
 
