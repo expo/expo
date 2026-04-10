@@ -1,28 +1,229 @@
----
-title: Create a project
-description: Learn how to create a new Expo project.
-hideTOC: true
----
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+  FlatList,
+} from "react-native";
 
-import { Terminal } from '~/ui/components/Snippet';
+// -------- Couleurs --------
+const C = {
+  blue: "#1A56C4",
+  blueLight: "#E8F0FD",
+  green: "#16A34A",
+  greenLight: "#DCFCE7",
+  orange: "#EA580C",
+  orangeLight: "#FFF7ED",
+  gray: "#F3F4F6",
+  grayMid: "#9CA3AF",
+  black: "#111827",
+  white: "#FFFFFF",
+};
 
-Expo is a React Native framework that makes developing Android and iOS apps easier. Our framework provides file-based routing, a standard library of native modules, and much more. Expo is open source with an active community on [GitHub](https://github.com/expo/expo) and [Discord](https://chat.expo.dev).
+// -------- Données Mock --------
+const TRIPS = [
+  {
+    id: "1",
+    driver: { name: "Marie Tremblay", avatar: "M", rating: 4.9 },
+    from: "Montréal",
+    to: "Québec",
+    date: "Demain",
+    time: "7h30",
+    seats: 3,
+    price: 28,
+    duration: "2h45",
+  },
+  {
+    id: "2",
+    driver: { name: "Karim Benali", avatar: "K", rating: 4.7 },
+    from: "Montréal",
+    to: "Toronto",
+    date: "Samedi",
+    time: "6h00",
+    seats: 2,
+    price: 55,
+    duration: "5h30",
+  },
+];
 
-We also make [Expo Application Services (EAS)](https://expo.dev/eas), a set of services that complement the Expo framework in each step of the development process.
+// -------- Composants Réutilisables --------
 
-## System requirements
+// Affichage d'une note avec des étoiles
+const StarRating = ({ rating }) => {
+  const fullStars = Math.floor(rating);
+  return (
+    <Text style={{ color: "#FBBF24", fontSize: 13 }}>
+      {"★".repeat(fullStars)}{"☆".repeat(5 - fullStars)} {rating.toFixed(1)}
+    </Text>
+  );
+};
 
-- [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
+// Badges pour afficher des informations
+const Badge = ({ text, color, textColor }) => {
+  return (
+    <View
+      style={{
+        backgroundColor: color || C.blueLight,
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginRight: 5,
+        marginBottom: 5,
+      }}
+    >
+      <Text
+        style={{
+          color: textColor || C.blue,
+          fontSize: 12,
+          fontWeight: "600",
+        }}
+      >
+        {text}
+      </Text>
+    </View>
+  );
+};
 
-We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
+// Bouton réutilisable
+const Btn = ({ title, onPress, outline }) => {
+  return (
+    <TouchableOpacity
+      style={[
+        {
+          paddingVertical: 14,
+          borderRadius: 14,
+          alignItems: "center",
+          backgroundColor: outline ? C.white : C.blue,
+          borderWidth: outline ? 2 : 0,
+          borderColor: C.blue,
+        },
+      ]}
+      onPress={onPress}
+    >
+      <Text style={{ color: outline ? C.blue : C.white, fontWeight: "700" }}>
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
-To create a new project, run the following command:
+// Composant d'une carte de trajet
+const TripCard = ({ trip }) => {
+  return (
+    <View style={styles.card}>
+      {/* Header: Détails du conducteur */}
+      <View style={styles.row}>
+        <View style={styles.avatar}>
+          <Text style={{ fontSize: 18, fontWeight: "800", color: C.blue }}>
+            {trip.driver.avatar}
+          </Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontWeight: "700", fontSize: 15 }}>{trip.driver.name}</Text>
+          <StarRating rating={trip.driver.rating} />
+        </View>
 
-<Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-55']} />
+        {/* Prix */}
+        <View style={{ alignItems: "flex-end" }}>
+          <Text style={{ fontSize: 18, fontWeight: "700", color: C.blue }}>
+            {trip.price}$
+          </Text>
+          <Text style={{ fontSize: 12, color: C.grayMid }}>/place</Text>
+        </View>
+      </View>
 
-> **Note:** During the SDK 55 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-55` to create an SDK 55 project. You can also choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+      {/* Détails du trajet */}
+      <View style={[styles.row, { marginTop: 12 }]}>
+        <Badge text={`${trip.date} à ${trip.time}`} />
+        <Badge text={`Durée : ${trip.duration}`} color={C.greenLight} textColor={C.green} />
+        <Badge text={`${trip.seats} places`} color={C.orangeLight} />
+      </View>
+    </View>
+  );
+};
 
-## Next step
+// -------- Écrans --------
 
-You have a project. Now it's time to set up your development environment so that you can start developing.
+// Écran d'accueil
+const HomeScreen = () => {
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Bonjour !</Text>
+        <Text style={styles.headerSubtitle}>Où allons-nous aujourd'hui ?</Text>
+      </View>
+      {/* Liste des trajets */}
+      <FlatList
+        data={TRIPS}
+        keyExtractor={(trip) => trip.id}
+        renderItem={({ item }) => <TripCard trip={item} />}
+        contentContainerStyle={{ padding: 16 }}
+      />
+    </ScrollView>
+  );
+};
+
+// -------- App --------
+const App = () => {
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="dark-content" />
+      <HomeScreen />
+    </SafeAreaView>
+  );
+};
+
+// -------- Styles --------
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: C.gray,
+  },
+  header: {
+    backgroundColor: C.white,
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: C.grayMid,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: C.black,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: C.grayMid,
+    marginTop: 4,
+  },
+  card: {
+    backgroundColor: C.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  avatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: C.blueLight,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+});
+
+export default App;
