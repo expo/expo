@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Preserve WorkManager cancellation semantics when a background task worker is cancelled.
+- [Android] Preserve WorkManager cancellation semantics when a background task worker is cancelled. ([#44667](https://github.com/expo/expo/pull/44667) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
