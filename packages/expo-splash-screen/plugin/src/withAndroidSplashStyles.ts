@@ -1,4 +1,3 @@
-import { Colors } from '@expo/config-plugins/build/android';
 import {
   AndroidConfig,
   ConfigPlugin,
@@ -107,5 +106,8 @@ export function setSplashColorsForTheme(
   colors: AndroidConfig.Resources.ResourceXML,
   backgroundColor: string | undefined
 ): AndroidConfig.Resources.ResourceXML {
-  return Colors.assignColorValue(colors, { value: backgroundColor, name: SPLASH_COLOR_NAME });
+  return AndroidConfig.Colors.assignColorValue(colors, {
+    value: backgroundColor,
+    name: SPLASH_COLOR_NAME,
+  });
 }
