@@ -299,10 +299,12 @@ function importExportLiveBindingsPlugin({ template, types: t, }) {
                                 : helpers_1.assignExportHelper;
                             const exportBindings = t.getBindingIdentifiers(declaration, false, true);
                             for (const exportName in exportBindings) {
-                                state.exportDeclarations.push({
-                                    statement: (0, helpers_1.withLocation)(exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)), exportStatement.loc),
-                                    local: undefined,
-                                });
+                                if (exportBindings[exportName] != null) {
+                                    state.exportDeclarations.push({
+                                        statement: (0, helpers_1.withLocation)(exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)), exportStatement.loc),
+                                        local: undefined,
+                                    });
+                                }
                             }
                         }
                     }

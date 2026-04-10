@@ -450,6 +450,96 @@ describe('require', () => {
       expect(() => moduleSystem.__r(0)).toThrow('Requiring unknown module "99"');
     });
 
+    it('throws an error with moduleIdHint when requiring a null module in dev mode', () => {
+      createModuleSystem(moduleSystem, true, '');
+
+      createModule(
+        moduleSystem,
+        0,
+        'foo.js',
+        (global, require, importDefault, importAll, module) => {
+          require(null, 'optional-module');
+        }
+      );
+
+      expect(() => moduleSystem.__r(0)).toThrow("Cannot find module 'optional-module'");
+    });
+
+    it('throws a generic error when requiring a null module without moduleIdHint', () => {
+      createModuleSystem(moduleSystem, true, '');
+
+      createModule(
+        moduleSystem,
+        0,
+        'foo.js',
+        (global, require, importDefault, importAll, module) => {
+          require(null);
+        }
+      );
+
+      expect(() => moduleSystem.__r(0)).toThrow('Cannot find module');
+    });
+
+    it('throws a generic error when requiring a null module in prod mode', () => {
+      createModuleSystem(moduleSystem, false, '');
+
+      createModule(
+        moduleSystem,
+        0,
+        'foo.js',
+        (global, require, importDefault, importAll, module) => {
+          require(null, 'optional-module');
+        }
+      );
+
+      expect(() => moduleSystem.__r(0)).toThrow('Cannot find module');
+    });
+
+    it('passes moduleIdHint through importDefault to require', () => {
+      createModuleSystem(moduleSystem, true, '');
+
+      createModule(
+        moduleSystem,
+        0,
+        'foo.js',
+        (global, require, importDefault, importAll, module) => {
+          importDefault(null, 'my-optional-dep');
+        }
+      );
+
+      expect(() => moduleSystem.__r(0)).toThrow("Cannot find module 'my-optional-dep'");
+    });
+
+    it('passes moduleIdHint through importAll to require', () => {
+      createModuleSystem(moduleSystem, true, '');
+
+      createModule(
+        moduleSystem,
+        0,
+        'foo.js',
+        (global, require, importDefault, importAll, module) => {
+          importAll(null, 'my-optional-dep');
+        }
+      );
+
+      expect(() => moduleSystem.__r(0)).toThrow("Cannot find module 'my-optional-dep'");
+    });
+
+    it('includes moduleIdHint in unknown module errors', () => {
+      createModuleSystem(moduleSystem, false, '');
+
+      createModule(
+        moduleSystem,
+        0,
+        'foo.js',
+        (global, require, importDefault, importAll, module) => {
+          require(999, 'missing-module');
+        }
+      );
+
+      expect(() => moduleSystem.__r(0)).toThrow('Requiring unknown module "999"');
+    });
+
     it('throws an error when a module throws an error', () => {
       createModuleSystem(moduleSystem, false, '');
 

@@ -141,9 +141,9 @@ export const renderMethod = (
         className={mergeClasses(
           !nested && STYLES_APIBOX,
           !nested && STYLES_APIBOX_NESTED,
-          nested && 'border-b border-palette-gray4 last:border-b-0'
+          nested && 'border-palette-gray4 border-b last:border-b-0'
         )}>
-        <APISectionDeprecationNote comment={comment} sticky className="!rounded-t-none" />
+        <APISectionDeprecationNote comment={comment} sticky className="rounded-t-none!" />
         <APIBoxHeader
           name={getMethodName(
             method as MethodDefinitionData,
@@ -160,7 +160,7 @@ export const renderMethod = (
           tags={hasOverloads ? ['overload'] : undefined}
         />
         {hasOverloads && (
-          <div className="px-4 pb-2 text-tertiary">
+          <div className="text-tertiary px-4 pb-2">
             <BracketsEllipsesDuotoneIcon className="icon-xs mr-1 inline shrink-0" />
             <span className="text-3xs">Overload #{overloadIndex + 1}</span>
           </div>
@@ -184,13 +184,13 @@ export const renderMethod = (
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
                   <div className="flex flex-row items-center gap-2">
-                    <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                    <CornerDownRightIcon className="icon-sm text-icon-tertiary relative -mt-0.5 inline-block" />
                     <span className={STYLES_SECONDARY}>Returns:</span>
                   </div>
                   <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
                 </div>
                 {returnComment ? (
-                  <div className="mb-1 mt-1.5 flex flex-col pl-6">
+                  <div className="mt-1.5 mb-1 flex flex-col pl-6">
                     <APICommentTextBlock
                       comment={{ summary: returnComment.content }}
                       includeSpacing={false}

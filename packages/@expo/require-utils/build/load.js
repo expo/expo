@@ -49,8 +49,7 @@ function _transform() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 let _ts;
 function loadTypescript() {
   if (_ts === undefined) {
@@ -99,10 +98,33 @@ function toFormat(filename, isLegacy) {
     return null;
   }
 }
+function toRealDirname(filePath) {
+  let normalized = _nodePath().default.resolve(filePath);
+  // Try resolving the filename itself first
+  try {
+    normalized = _nodeFs().default.realpathSync(normalized);
+    return _nodePath().default.dirname(normalized);
+  } catch (error) {
+    normalized = _nodePath().default.dirname(normalized);
+    // If we're getting another error than an ENOENT, return the dirname unchanged
+    if (error?.code !== 'ENOENT') {
+      return normalized;
+    }
+  }
+  // Alternatively, if it's a fake path, resolve the directory directly instead
+  try {
+    return _nodeFs().default.realpathSync(normalized);
+  } catch {
+    return normalized;
+  }
+}
 function compileModule(code, filename, opts) {
   const format = toFormat(filename, false);
   const prependPaths = opts.paths ?? [];
-  const nodeModulePaths = nodeModule()._nodeModulePaths(_nodePath().default.dirname(filename));
+  // See: https://github.com/nodejs/node/blob/ff080948666f28fbd767548d26bea034d30bc277/lib/internal/modules/cjs/loader.js#L767
+  // If we get a symlinked path instead of the realpath, we assume the realpath is needed for Node module resolution
+  const basePath = toRealDirname(filename);
+  const nodeModulePaths = nodeModule()._nodeModulePaths(basePath);
   const paths = [...prependPaths, ...nodeModulePaths];
   try {
     const mod = Object.assign(new (nodeModule().Module)(filename, parent), {

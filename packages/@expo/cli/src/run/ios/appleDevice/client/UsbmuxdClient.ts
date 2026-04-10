@@ -165,7 +165,7 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
     }
 
     if (!udid) {
-      return devices[0];
+      return devices[0]!;
     }
 
     for (const device of devices) {

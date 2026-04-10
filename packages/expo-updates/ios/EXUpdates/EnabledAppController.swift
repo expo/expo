@@ -16,6 +16,13 @@ internal class EnabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscrip
       updatesController.unsubscribeFromUpdatesStateChanges(subscriptionId)
     }
   }
+
+  func getContext() -> Any? {
+    if let updatesController = AppController.sharedInstance as? EnabledAppController {
+      return updatesController.getNativeInterfaceContext()
+    }
+    return nil
+  }
 }
 
 /**
@@ -188,6 +195,10 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     if stateChangeListeners[subscriptionId] != nil {
       stateChangeListeners.removeValue(forKey: subscriptionId)
     }
+  }
+
+  internal func getNativeInterfaceContext() -> UpdatesNativeInterfaceStateContext {
+    return stateMachine.context.nativeInterfaceContext
   }
 
   public var runtimeVersion: String? {

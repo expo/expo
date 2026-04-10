@@ -7,8 +7,10 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlin.math.floor
 
 class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
   private var hasListener: Boolean = false
@@ -51,6 +53,13 @@ class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
 
     Function("getRuntimeVersion") {
       return@Function updatesController?.runtimeVersion
+    }
+
+    Function("getDownloadTimeMs") {
+      val context = subscription?.getContext() as? UpdatesNativeInterfaceStateContext ?: return@Function null
+      val startTime = context.downloadStartTime ?: return@Function null
+      val finishTime = context.downloadFinishTime ?: return@Function null
+      return@Function finishTime.time - startTime.time
     }
 
     AsyncFunction("clearInternalAssetsFolderAsync") { promise: Promise ->

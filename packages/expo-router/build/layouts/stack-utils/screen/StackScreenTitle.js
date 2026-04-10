@@ -39,6 +39,7 @@ const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const composition_options_1 = require("../../../fork/native-stack/composition-options");
 const style_1 = require("../../../utils/style");
+const shared_1 = require("../toolbar/shared");
 /**
  * Component to set the screen title.
  *
@@ -108,14 +109,14 @@ function appendStackScreenTitlePropsToOptions(options, props) {
     const flattenedLargeStyle = react_native_1.StyleSheet.flatten(props.largeStyle);
     let titleOptions = props.asChild
         ? { headerTitle: () => <>{props.children}</> }
-        : { title: props.children };
+        : { title: (0, shared_1.convertChildrenToString)(props.children) };
     if (props.asChild && typeof props.children === 'string') {
         if (__DEV__) {
             console.warn("Stack.Screen.Title: 'asChild' expects a custom component as children, string received.");
         }
         titleOptions = {};
     }
-    if (!props.asChild && props.children != null && typeof props.children !== 'string') {
+    if (!props.asChild && props.children != null && !(0, shared_1.areAllChildrenPrimitiveValues)(props.children)) {
         if (__DEV__) {
             console.warn('Stack.Screen.Title: Component passed to Stack.Screen.Title without `asChild` enabled. In order to render a custom component as the title, set `asChild` to true.');
         }

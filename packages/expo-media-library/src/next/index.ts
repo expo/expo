@@ -18,6 +18,22 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
   static delete(assets: Asset[]): Promise<void> {
     return ExpoMediaLibraryNext.deleteAssets(assets);
   }
+
+  // @hidden
+  getFavorite(): Promise<boolean> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'getFavorite is only available on iOS');
+    }
+    return super.getFavorite();
+  }
+
+  // @hidden
+  setFavorite(isFavorite: boolean): Promise<void> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'setFavorite is only available on iOS');
+    }
+    return super.setFavorite(isFavorite);
+  }
 }
 
 export class Album extends ExpoMediaLibraryNext.Album {
@@ -68,4 +84,24 @@ export async function requestPermissionsAsync(
     return await ExpoMediaLibraryNext.requestPermissionsAsync(writeOnly, granularPermissions);
   }
   return await ExpoMediaLibraryNext.requestPermissionsAsync(writeOnly);
+}
+
+/**
+ * Checks user's permissions for accessing media library.
+ * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has
+ * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
+ */
+export async function getPermissionsAsync(
+  writeOnly: boolean = false,
+  granularPermissions?: GranularPermission[]
+): Promise<PermissionResponse> {
+  if (!ExpoMediaLibraryNext.getPermissionsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
+  }
+  if (Platform.OS === 'android') {
+    return await ExpoMediaLibraryNext.getPermissionsAsync(writeOnly, granularPermissions);
+  }
+  return await ExpoMediaLibraryNext.getPermissionsAsync(writeOnly);
 }

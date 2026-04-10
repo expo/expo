@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { resolveEntryPoint } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 
@@ -30,7 +30,7 @@ jest.unmock('resolve-from');
         'export:embed',
         //
         '--entry-file',
-        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+        path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
         //
         '--bundle-output',
         `./${outputName}/index.js`,

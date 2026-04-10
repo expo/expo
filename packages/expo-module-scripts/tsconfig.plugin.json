@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "declaration": true
+    "declaration": true,
+    "noUncheckedIndexedAccess": true
   }
 }

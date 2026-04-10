@@ -45,7 +45,7 @@ The following section describes common problems and how to fix them. Below is a 
   className="max-w-[600px]"
 />
 
-If the deployment channel is unexpected, it means our build was not built with the correct channel. To fix this, [configure our channel](/#configure-channel) and rebuild our app.
+If the deployment channel is unexpected, it means our build was not built with the correct channel. To fix this, [configure our channel](#configure-channel) and rebuild our app.
 
 ### Unexpected runtime version
 
@@ -55,7 +55,7 @@ If the deployment channel is unexpected, it means our build was not built with t
   className="max-w-[600px]"
 />
 
-If the deployment runtime version is unexpected, it means our build was not built with the correct runtime version. To fix this, [configure our runtime version](/#configure-runtime-version) and rebuild our app.
+If the deployment runtime version is unexpected, it means our build was not built with the correct runtime version. To fix this, [configure our runtime version](#configure-runtime-version) and rebuild our app.
 
 ### Unexpected branch
 
@@ -65,7 +65,7 @@ If the deployment runtime version is unexpected, it means our build was not buil
   className="max-w-[600px]"
 />
 
-If the deployment has an unexpected branch, we need to [map our channel to the correct branch](/#map-channel-to-branch).
+If the deployment has an unexpected branch, we need to [map our channel to the correct branch](#map-channel-to-branch).
 
 ### Missing updates
 
@@ -75,7 +75,7 @@ If the deployment has an unexpected branch, we need to [map our channel to the c
   className="max-w-[600px]"
 />
 
-The displayed deployment does not have any updates. To fix this, [publish an update to the branch](/#publish-update). If an update was already published, check the [Updates page](https://expo.dev/accounts/[account]/projects/[project]/updates) to make sure it matches the runtime version of our build.
+The displayed deployment does not have any updates. To fix this, [publish an update to the branch](#publish-update). If an update was already published, check the [Updates page](https://expo.dev/accounts/[account]/projects/[project]/updates) to make sure it matches the runtime version of our build.
 
 ### Missing branch
 
@@ -85,11 +85,11 @@ The displayed deployment does not have any updates. To fix this, [publish an upd
   className="max-w-[600px]"
 />
 
-The displayed deployment has the correct channel, but it is not linked to a branch. To fix this, [map the channel to the correct branch](/#map-channel-to-branch).
+The displayed deployment has the correct channel, but it is not linked to a branch. To fix this, [map the channel to the correct branch](#map-channel-to-branch).
 
 ### Missing deployment
 
-If our deployment is not displayed, it means our build is not configured properly for EAS Update. To fix this, [configure our channel](/#configure-channel), [configure our runtime version](/#configure-runtime-version) and verify our [general configuration](/eas-update/debug/#verifying-app-configuration). We'll need to rebuild our app after making these changes.
+If our deployment is not displayed, it means our build is not configured properly for EAS Update. To fix this, [configure our channel](#configure-channel), [configure our runtime version](#configure-runtime-version) and verify our [general configuration](/eas-update/debug/#verifying-app-configuration). We'll need to rebuild our app after making these changes.
 
 ### Automatic roll back when an update crashes
 
@@ -353,7 +353,7 @@ https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production
 
 ### Viewing network requests
 
-Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a program like [Proxyman](https://proxyman.io/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
+Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a program like [Proxyman](https://proxyman.com/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
 
 With either program, we'll need to follow their instructions for installing an SSL certificate, so that the program can decode HTTPS requests. Once that's set up in a simulator or on an actual device, we can open our app and watch requests.
 

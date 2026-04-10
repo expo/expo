@@ -1,0 +1,54 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoImageManipulator",
+      "podName": "ExpoImageManipulator",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "spmPackages": [
+        {
+          "url": "https://github.com/SDWebImage/SDWebImage.git",
+          "productName": "SDWebImage",
+          "version": {
+            "exact": "5.21.1"
+          }
+        },
+        {
+          "url": "https://github.com/SDWebImage/SDWebImageWebPCoder.git",
+          "productName": "SDWebImageWebPCoder",
+          "version": {
+            "exact": "0.14.6"
+          }
+        }
+      ],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "ExpoImageManipulator",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore",
+            "SDWebImage",
+            "SDWebImageWebPCoder"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ]
+        }
+      ]
+    }
+  ]
+}

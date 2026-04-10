@@ -12,9 +12,9 @@ import { FAQ } from '~/ui/components/FAQ';
 import { FileTree } from '~/ui/components/FileTree';
 import { DiffBlock } from '~/ui/components/Snippet';
 
-> **important** Experimentally available in SDK 52 and later.
+> **important** This is an [experimental](/more/release-statuses/#experimental) feature.
 
-Expo Router offers a set of components to create custom tab layouts via the submodule [`expo-router/ui`](/versions/latest/sdk/router-ui/). Unlike the React Navigation styled `Tabs`, these components are unstyled and flexible. They are designed to allow you build complex UI patterns from scratch in your project.
+Expo Router offers a set of components to create custom tab layouts via the submodule [`expo-router/ui`](/versions/latest/sdk/router/ui/). Unlike the React Navigation styled `Tabs`, these components are unstyled and flexible. They are designed to allow you build complex UI patterns from scratch in your project.
 
 For other tab layouts see:
 
@@ -263,15 +263,15 @@ In Expo SDK 52 and earlier (React 18), use the legacy `forwardRef` function to a
 
 ### Hooks
 
-All components also have a hook version giving you control over the render tree. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for a full list of the hooks available.
+All components also have a hook version giving you control over the render tree. See the [Router UI Reference](/versions/latest/sdk/router/ui/) for a full list of the hooks available.
 
 Using hooks is considered advanced usage of this library. For most use-cases, using the components with `asChild` should give you enough control over the render tree.
 
-If you are developing a custom `<TabTrigger />`, you may also need to develop a custom `<TabList />` as `<TabList />` uses the [`useTabsWithChildren()`](/versions/latest/sdk/router-ui/#usetabswithchildrenoptions) which requires using the exported `<TabTrigger />` component.
+If you are developing a custom `<TabTrigger />`, you may also need to develop a custom `<TabList />` as `<TabList />` uses the [`useTabsWithChildren()`](/versions/latest/sdk/router/ui/#usetabswithchildrenoptions) which requires using the exported `<TabTrigger />` component.
 
 ### Customizing how tab screens are rendered
 
-The `TabSlot` accepts a `renderFn` property. This function can be used to override how your screen is rendered, allowing you to implement advanced functionality such as animations or persisting/unmounting screens. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for more information.
+The `TabSlot` accepts a `renderFn` property. This function can be used to override how your screen is rendered, allowing you to implement advanced functionality such as animations or persisting/unmounting screens. See the [Router UI Reference](/versions/latest/sdk/router/ui/) for more information.
 
 ## Common questions
 

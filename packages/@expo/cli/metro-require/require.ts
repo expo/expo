@@ -85,7 +85,7 @@ interface ModuleDefinition {
 type ModuleList = Map<ModuleID, ModuleDefinition | null>;
 
 export interface RequireFn {
-  (id: ModuleID | VerboseModuleNameForDev): Exports;
+  (id: ModuleID | VerboseModuleNameForDev, moduleIdHint?: string): Exports;
   Refresh?: any;
   Systrace?: any;
 }
@@ -255,12 +255,12 @@ function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]
   return modules.every((module) => !isIgnored(module));
 }
 
-function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev): any | Exports {
+function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev, moduleIdHint?: string): any | Exports {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedDefault !== EMPTY) {
     return modules.get(moduleId)!.importedDefault;
   }
 
-  const exports: Exports = metroRequire(moduleId);
+  const exports: Exports = metroRequire(moduleId, moduleIdHint);
   const importedDefault: any | Exports = exports && exports.__esModule ? exports.default : exports;
 
   return (modules.get(moduleId)!.importedDefault = importedDefault);
@@ -268,13 +268,14 @@ function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev): any |
 metroRequire.importDefault = metroImportDefault;
 
 function metroImportAll(
-  moduleId: ModuleID | VerboseModuleNameForDev
+  moduleId: ModuleID | VerboseModuleNameForDev,
+  moduleIdHint?: string
 ): any | Exports | Record<string, any> {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedAll !== EMPTY) {
     return modules.get(moduleId)!.importedAll;
   }
 
-  const exports: Exports = metroRequire(moduleId);
+  const exports: Exports = metroRequire(moduleId, moduleIdHint);
   let importedAll: Exports | Record<string, any>;
 
   if (exports && exports.__esModule) {

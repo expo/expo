@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- [iOS] Preserve HEIC orientation when loading local files for image manipulation. ([#43725](https://github.com/expo/expo/pull/43725) by [@maxsz](https://github.com/maxsz))
+
 ### 💡 Others
+
+- [iOS] Use `internal import SDWebImageWebPCoder` to hide third-party dependency from public module interface. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.9 — 2026-02-25
 

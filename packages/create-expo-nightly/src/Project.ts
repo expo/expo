@@ -77,9 +77,6 @@ async function setupProjectPackageJsonAsync(
   const packageJsonPath = path.join(projectRoot, 'package.json');
   const packageJson = await readJsonFileAsync(packageJsonPath);
 
-  const scripts: Record<string, string> = (packageJson.scripts as Record<string, string>) ?? {};
-  scripts['postinstall'] = 'bun --cwd expo postinstall';
-
   let workspacePrefix: string;
   const relativePath = path.relative(projectRoot, expoRepoPath);
   if (relativePath.startsWith('..')) {
@@ -106,9 +103,6 @@ async function setupProjectPackageJsonAsync(
 
     // Pin the versions of transitive dependencies
     resolutions,
-
-    // Add postinstall script
-    scripts,
   });
 }
 
@@ -140,7 +134,7 @@ module.exports = config;`
 }
 
 export async function prebuildAppAsync(projectRoot: string, templateTarballPath: string) {
-  await runAsync('bunx', ['expo', 'prebuild', '--no-install', '--template', templateTarballPath], {
+  await runAsync('pnpm', ['expo', 'prebuild', '--no-install', '--template', templateTarballPath], {
     cwd: projectRoot,
   });
 }

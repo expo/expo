@@ -31,7 +31,7 @@ export function normalizeParams(...params) {
             primitiveParams[key] = value ? 1 : 0;
         }
         else {
-            primitiveParams[key] = value;
+            primitiveParams[key] = value ?? null;
         }
     }
     return [primitiveParams, blobParams, shouldPassAsArray];
@@ -47,7 +47,10 @@ export function composeRow(columnNames, columnValues) {
         throw new Error(`Column names and values count mismatch. Names: ${columnNames.length}, Values: ${columnValues.length}`);
     }
     for (let i = 0; i < columnNames.length; i++) {
-        row[columnNames[i]] = columnValues[i];
+        const columnName = columnNames[i];
+        if (columnName != null) {
+            row[columnName] = columnValues[i];
+        }
     }
     return row;
 }
@@ -56,19 +59,23 @@ export function composeRow(columnNames, columnValues) {
  * @hidden
  */
 export function composeRows(columnNames, columnValuesList) {
-    if (columnValuesList.length === 0) {
+    const columnValues = columnValuesList[0];
+    if (columnValues == null) {
         return [];
     }
-    if (columnNames.length !== columnValuesList[0].length) {
+    if (columnNames.length !== columnValues.length) {
         // We only check the first row because SQLite returns the same column count for all rows.
-        throw new Error(`Column names and values count mismatch. Names: ${columnNames.length}, Values: ${columnValuesList[0].length}`);
+        throw new Error(`Column names and values count mismatch. Names: ${columnNames.length}, Values: ${columnValues.length}`);
     }
     const results = [];
     for (const columnValues of columnValuesList) {
         // TODO(cedric): make these types more generic and tighten the returned object type based on provided column names/values
         const row = {};
         for (let i = 0; i < columnNames.length; i++) {
-            row[columnNames[i]] = columnValues[i];
+            const columnName = columnNames[i];
+            if (columnName != null) {
+                row[columnName] = columnValues[i];
+            }
         }
         results.push(row);
     }

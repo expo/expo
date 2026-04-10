@@ -4,10 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- Replaced `AndroidConfig.StatusBar` with `AndroidConfig.SystemBars`, which sets transparent defaults for both status and navigation bar colors. ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
+
 ### 🎉 New features
 
 - Add `ios.deploymentTarget` config support to set the minimum iOS version. ([#43700](https://github.com/expo/expo/pull/43700) by [@evanbacon](https://github.com/evanbacon))
-
+- Added optional `codeSignIdentity` parameter to `setProvisioningProfileForPbxproj` to allow callers to specify the code signing identity instead of always using `"iPhone Distribution"`. ([#43986](https://github.com/expo/expo/pull/43986) by [@qwertey6](https://github.com/qwertey6))
 ### 🐛 Bug fixes
 
 ### 💡 Others

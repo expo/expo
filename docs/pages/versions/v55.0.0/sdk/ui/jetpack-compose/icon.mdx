@@ -33,9 +33,9 @@ export default function BasicIcon() {
 }
 ```
 
-### Icon with tint color
+### Icon with tint
 
-Use the `tintColor` prop to apply a color overlay to the icon.
+Use the `tint` prop to apply a color overlay to the icon.
 
 ```tsx TintedIcon.tsx
 import { Host, Icon } from '@expo/ui/jetpack-compose';
@@ -45,7 +45,7 @@ export default function TintedIcon() {
     <Host matchContents>
       <Icon
         source={require('./assets/favorite.xml')}
-        tintColor="#6200ee"
+        tint="#6200ee"
         contentDescription="Favorite"
       />
     </Host>

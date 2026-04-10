@@ -4,19 +4,34 @@
 
 ### 🛠 Breaking changes
 
+- Pass environment to Widgets and Live Activities. ([#43681](https://github.com/expo/expo/pull/43681) by [@jakex7](https://github.com/jakex7))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - Add support for `after(date)` dismissal policy, final content state, and `contentDate` when ending a Live Activity. ([#43472](https://github.com/expo/expo/pull/43472) by [@jakex7](https://github.com/jakex7))
+- [plugin] Add `contentMarginsDisabled`. ([#43799](https://github.com/expo/expo/pull/43799) by [@jakex7](https://github.com/jakex7))
+- Pass environment to AppIntent ([#43925](https://github.com/expo/expo/pull/43925) by [@jakex7](https://github.com/jakex7))
+- Automatically add `target` for `Button`. ([#43977](https://github.com/expo/expo/pull/43977) by [@jakex7](https://github.com/jakex7))
+- Add support for `Link` view from `@expo/ui`. ([#43985](https://github.com/expo/expo/pull/43985) by [@jakex7](https://github.com/jakex7))
+- Support `PlatformColor`. ([#44193](https://github.com/expo/expo/pull/44193) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
+- Fix `ExpoWidgets.bundle` not copied to widget extension when `use_frameworks` is active. ([#44065](https://github.com/expo/expo/pull/44065) by [@marvwhere](https://github.com/marvwhere))
 - Add missing project root to `watchFolders` in `metro.config.js` ([#43449](https://github.com/expo/expo/pull/43449) by [@kitten](https://github.com/kitten))
 - [plugin] Fix reading undefined when config is not provided. ([#43568](https://github.com/expo/expo/pull/43568) by [@jakex7](https://github.com/jakex7))
 - Skip server bundling in `export:embed` call for `expo-widgets` bundle ([#43602](https://github.com/expo/expo/pull/43602) by [@kitten](https://github.com/kitten))
+- Filter out invalid children. ([#43720](https://github.com/expo/expo/pull/43720) by [@jakex7](https://github.com/jakex7))
+- Add support for `React.Fragment`. ([#43833](https://github.com/expo/expo/pull/43833) by [@jakex7](https://github.com/jakex7))
+- Add Button children support. ([#43832](https://github.com/expo/expo/pull/43832) by [@jakex7](https://github.com/jakex7))
+- Remove unused `Compression` related code. ([#43981](https://github.com/expo/expo/pull/43981) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
 - Remove extraneous `@expo/config-plugins` dependency ([#43452](https://github.com/expo/expo/pull/43452) by [@kitten](https://github.com/kitten))
+- Fixed build error from nightly tests. ([#43849](https://github.com/expo/expo/pull/43849) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-02-25
 

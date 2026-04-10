@@ -3,8 +3,6 @@ import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
-import { InlineHelp } from 'ui/components/InlineHelp';
-import { PageHeader } from 'ui/components/PageHeader';
 import * as RoutesUtils from '~/common/routes';
 import { appendSectionToRoute, getBreadcrumbTrail, isRouteActive } from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
@@ -20,6 +18,8 @@ import { PageMetadata } from '~/types/common';
 import { AskPageAIOverlay } from '~/ui/components/AskPageAI';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { InlineHelp } from '~/ui/components/InlineHelp';
+import { PageHeader } from '~/ui/components/PageHeader';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
 import { StructuredData } from '~/ui/components/StructuredData';
@@ -341,7 +341,7 @@ export default function DocumentationPage({
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'bg-gradient-to-b from-default to-transparent opacity-90'
+            'from-default bg-linear-to-b to-transparent opacity-90'
           )}
         />
         <main
@@ -350,7 +350,7 @@ export default function DocumentationPage({
             'max-lg-gutters:px-4 max-lg-gutters:pt-5'
           )}>
           {version && version === 'unversioned' && (
-            <InlineHelp type="default" size="sm" className="!mb-5 !inline-flex w-full">
+            <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
               <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
               {versionToText(LATEST_VERSION)}).

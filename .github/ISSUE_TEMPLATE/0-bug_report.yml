@@ -11,7 +11,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        > [!IMPORTANT]  
+        > [!TIP]
+        > **Try debugging with AI first.** Set up the [Expo MCP Server](https://docs.expo.dev/eas/ai/mcp/) to give your AI coding assistant access to your dev environment, Expo docs, or even EAS build logs. It can help diagnose and fix both runtime issues in your app and build failures. Point it to our [CONTRIBUTING.md](https://github.com/expo/expo/blob/main/CONTRIBUTING.md) for codebase context — AI tools can often even [submit a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) with a fix!
+  - type: markdown
+    attributes:
+      value: |
+        > [!IMPORTANT]
         > Reproductions are necessary for **most** bug reports.
         > Without one, maintainers will be forced to first reproduce the issue and craft missing context, rather than being able to address the report immediately.
         > Issues without a reproduction link may be closed without further notice.

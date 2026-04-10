@@ -34,7 +34,7 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
 
 **The `experienceId` and `scopeKey` fields are required**. Otherwise, your notifications will not go through to your app. FCM has a list of supported fields in the [notification payload](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at the [FirebaseRemoteMessage](/versions/latest/sdk/notifications/#firebaseremotemessage).
 
-FCM also provides some [server-side libraries in a few different languages](https://firebase.google.com/docs/cloud-messaging/send-message#node.js) you can use instead of raw `fetch` requests.
+FCM also provides some [server-side libraries in a few different languages](https://firebase.google.com/docs/cloud-messaging/send/admin-sdk) you can use instead of raw `fetch` requests.
 
 ### How to find FCM server key
 
@@ -67,7 +67,7 @@ Your FCM server key can be found by making sure you've followed the [configurati
 
 ### Firebase notification types
 
-There are two types of Firebase Cloud Messaging messages: [notification and data messages](https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages).
+There are two types of Firebase Cloud Messaging messages: [notification and data messages](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type#notification-messages-with-optional-data-payload).
 
 1. **Notification** messages are only handled (and displayed) by the Firebase library. They don't necessarily wake the app, and `expo-notifications` will not be made aware that your app has received any notification.
 

@@ -2,7 +2,7 @@ import { theme } from '@expo/styleguide';
 
 export const CodecademyImage = () => (
   <svg
-    className="absolute bottom-5 right-5"
+    className="absolute right-5 bottom-5"
     width="126"
     height="154"
     viewBox="0 0 126 154"

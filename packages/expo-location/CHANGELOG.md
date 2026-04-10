@@ -4,9 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
+
+- [Android] Foreground service notification icon now falls back to `notification_icon` drawable before `applicationInfo.icon`. The launcher icon is full-color and renders as a solid white square in notifications. ([#44309](https://github.com/expo/expo/pull/44309) by [@creatornader](https://github.com/creatornader))
+- [iOS] Ignore [`locationUnknown`](https://developer.apple.com/documentation/corelocation/clerror-swift.struct/locationunknown) errors in `watchPositionAsync`. ([#44027](https://github.com/expo/expo/pull/44027) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

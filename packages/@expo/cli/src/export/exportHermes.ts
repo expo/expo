@@ -33,7 +33,7 @@ function getLiteralHermesSettingFromPodfile(content: string): boolean | null {
 
 export async function assertEngineMismatchAsync(
   projectRoot: string,
-  exp: Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>,
+  exp: Pick<ExpoConfig, 'ios' | 'android'>,
   platform: Platform
 ) {
   const isHermesManaged = isEnableHermesManaged(exp, platform);
@@ -48,15 +48,17 @@ export async function assertEngineMismatchAsync(
 }
 
 export function isEnableHermesManaged(
-  expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>>,
+  expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android'>>,
   platform: string
 ): boolean {
   switch (platform) {
     case 'android': {
-      return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+      // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
+      return ((expoConfig.android as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
     }
     case 'ios': {
-      return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+      // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
+      return ((expoConfig.ios as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
     }
     default:
       return false;

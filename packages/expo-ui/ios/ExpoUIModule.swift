@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import ExpoModulesWorklets
 
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
@@ -14,15 +15,39 @@ public final class ExpoUIModule: Module {
       }
     }
 
+    // MARK: - Observable State
+
+    Class(WorkletCallback.self) {
+      Constructor { (worklet: Worklet) -> WorkletCallback in
+        let callback = WorkletCallback()
+        callback.worklet = worklet
+        return callback
+      }
+    }
+
+    Class(ObservableState.self) {
+      Constructor { (initial: [String: Any]) -> ObservableState in
+        return ObservableState(value: initial["value"])
+      }
+
+      Function("getValue") { (state: ObservableState) -> Any in
+        return state.value ?? NSNull()
+      }
+
+      Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
+        state.value = wrapper["value"]
+      }
+    }
+
     // MARK: - Module Functions
 
     AsyncFunction("completeRefresh") { (id: String) in
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
-    // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
+    // MARK: - Expo UI Views with AsyncFunctions
 
-    View(SecureFieldView.self) {
+    ExpoUIView(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
       }
@@ -33,7 +58,7 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
     }
-    View(TextFieldView.self) {
+    ExpoUIView(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
       }
@@ -47,7 +72,7 @@ public final class ExpoUIModule: Module {
         view.setSelection(start: start, end: end)
       }
     }
-    View(ShareLinkView.self) {
+    ExpoUIView(ShareLinkView.self) {
       AsyncFunction("setItem") { (view: ShareLinkView, url: String?) in
         guard let url, let validURL = URL(string: url) else {
           view.rejectContinuation()
@@ -115,5 +140,10 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(GridView.self)
+    ExpoUIView(AccessoryWidgetBackgroundView.self)
+    ExpoUIView(LinkView.self)
+
+    // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
+    ExpoUIView(SyncToggleView.self)
   }
 }

@@ -2,7 +2,8 @@ import { vol } from 'memfs';
 
 import { getConfig, getWebOutputPath } from '../Config';
 
-jest.mock('fs');
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
 
 describe(getWebOutputPath, () => {
   beforeAll(() => {

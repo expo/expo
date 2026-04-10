@@ -8,8 +8,7 @@
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && expo-module tsc",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
@@ -37,17 +36,17 @@
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
-    "@expo/config": "~55.0.8",
-    "@expo/metro": "~54.2.0",
-    "@expo/env": "~2.1.1",
-    "@expo/json-file": "~10.0.12",
+    "@expo/config": "workspace:~55.0.8",
+    "@expo/metro": "56.0.0-rc.0",
+    "@expo/env": "workspace:~2.1.1",
+    "@expo/json-file": "workspace:~10.0.12",
     "@expo/spawn-async": "^1.7.2",
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
-    "hermes-parser": "^0.32.0",
+    "hermes-parser": "^0.33.3",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "^1.30.1",
     "picomatch": "^4.0.3",
@@ -55,7 +54,7 @@
     "resolve-from": "^5.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -64,10 +63,13 @@
   },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
+    "@types/babel__code-frame": "^7.0.1",
     "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/getenv": "^1.0.0",
     "@types/picomatch": "^4.0.2",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "^55.0.2",
+    "expo-module-scripts": "workspace:*",
     "sass": "^1.60.0"
   },
   "publishConfig": {

@@ -17,10 +17,13 @@ import {
   type PackageManagerName,
 } from './packageManager';
 import {
+  ALL_PLATFORMS,
   getLocalFolderNamePrompt,
   getLocalSubstitutionDataPrompts,
+  getPlatformPrompt,
   getSlugPrompt,
   getSubstitutionDataPrompts,
+  type Platform,
 } from './prompts';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
@@ -57,9 +60,13 @@ const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
  * Non-interactive when: CI=1/true or non-TTY stdin.
  */
 function isInteractive(): boolean {
-  // Check for CI environment
   const ci = process.env.CI;
-  if (ci === '1' || ci === 'true' || ci?.toLowerCase() === 'true') {
+  if (ci === '1' || ci?.toLowerCase() === 'true') {
+    return false;
+  }
+  // Check for Expo's own non-interactive flag, used across expo-module-scripts and @expo/cli
+  // to force non-interactive mode in sub-processes (e.g. during `prepare` or `prepublishOnly`)
+  if (process.env.EXPO_NONINTERACTIVE) {
     return false;
   }
   // Check for TTY
@@ -116,6 +123,98 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
 }
 
 /**
+ * Reads `app.json` from the nearest project root (found by walking up from CWD)
+ * and returns the `expo.platforms` list mapped to module platform names (`ios` → `apple`).
+ * Returns `null` when `app.json` is absent or has no `expo.platforms` field.
+ */
+async function getLocalAppJsonPlatforms(): Promise<Platform[] | null> {
+  let root: string | null = null;
+  for (let dir = CWD; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    if (fs.existsSync(path.resolve(dir, 'package.json'))) {
+      root = dir;
+      break;
+    }
+  }
+  if (!root) {
+    return null;
+  }
+  const appJsonPath = path.resolve(root, 'app.json');
+  if (!fs.existsSync(appJsonPath)) {
+    return null;
+  }
+  try {
+    const content = await fs.promises.readFile(appJsonPath, 'utf8');
+    const appJson = JSON.parse(content);
+    const raw: string[] | undefined = appJson?.expo?.platforms;
+    if (!Array.isArray(raw) || raw.length === 0) {
+      return null;
+    }
+    // app.json uses 'ios', expo-module.config.json uses 'apple'
+    const platformMap: Record<string, string> = { ios: 'apple', android: 'android', web: 'web' };
+    const mapped = raw
+      .map((p) => platformMap[p] ?? p)
+      .filter((p): p is Platform => (ALL_PLATFORMS as readonly string[]).includes(p));
+    return mapped.length > 0 ? mapped : null;
+  } catch {
+    debug('Failed to read or parse app.json for platform defaults');
+    return null;
+  }
+}
+
+/**
+ * Determines the target platforms for the module.
+ *
+ * Priority:
+ *   1. `--platform` CLI flag
+ *   2. Non-interactive mode → all platforms
+ *   3. Interactive + local module → pre-select from app.json, then prompt
+ *   4. Interactive + non-local → prompt with all platforms pre-selected
+ */
+async function resolvePlatformsAsync(
+  isLocal: boolean,
+  interactive: boolean,
+  options: CommandOptions
+): Promise<Platform[]> {
+  if (options.platform && options.platform.length > 0) {
+    const valid = options.platform.filter((p): p is Platform =>
+      (ALL_PLATFORMS as readonly string[]).includes(p)
+    );
+    const invalid = options.platform.filter(
+      (p) => !(ALL_PLATFORMS as readonly string[]).includes(p)
+    );
+    if (invalid.length > 0) {
+      console.warn(
+        chalk.yellow(
+          `⚠️  Unknown platform(s) ignored: ${invalid.join(', ')}. Valid values: ${ALL_PLATFORMS.join(', ')}`
+        )
+      );
+    }
+    if (valid.length === 0) {
+      console.warn(chalk.yellow(`⚠️  No valid platforms specified. Defaulting to all platforms.`));
+      return [...ALL_PLATFORMS];
+    }
+    return valid;
+  }
+
+  if (!interactive) {
+    return [...ALL_PLATFORMS];
+  }
+
+  const appJsonPlatforms = isLocal ? await getLocalAppJsonPlatforms() : null;
+  const preSelected: readonly string[] = appJsonPlatforms ?? ALL_PLATFORMS;
+
+  if (appJsonPlatforms) {
+    debug(`Using app.json platforms as defaults: ${appJsonPlatforms.join(', ')}`);
+  }
+
+  const { platforms } = await prompts(getPlatformPrompt(preSelected), {
+    onCancel: () => process.exit(0),
+  });
+
+  return platforms as Platform[];
+}
+
+/**
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
@@ -158,7 +257,7 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   const packageManager = resolvePackageManager();
   const packagePath = options.source
-    ? path.join(CWD, options.source)
+    ? path.resolve(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
 
   await logEventAsync(eventCreateExpoModule(packageManager, options));
@@ -167,6 +266,18 @@ async function main(target: string | undefined, options: CommandOptions) {
     await createModuleFromTemplate(packagePath, targetDir, data);
     step.succeed('Created the module from template files');
   });
+  if (options.local && options.barrel) {
+    await newStep('Generating barrel file', async (step) => {
+      await generateBarrelFileAsync(targetDir, data as LocalSubstitutionData);
+      step.succeed('Generated barrel file (index.ts)');
+    });
+  } else if (!options.local && options.barrel) {
+    console.warn(
+      chalk.yellow(
+        'Warning: The --barrel flag only applies to local modules (--local). It will be ignored.'
+      )
+    );
+  }
   if (!options.local) {
     await newStep('Installing module dependencies', async (step) => {
       await installDependencies(packageManager, targetDir);
@@ -219,7 +330,13 @@ async function main(target: string | undefined, options: CommandOptions) {
   console.log();
   if (options.local) {
     console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(`modules/${slug}`)}`);
-    printFurtherLocalInstructions(slug, data.project.moduleName);
+    printFurtherLocalInstructions(
+      slug,
+      data.project.moduleName,
+      data.project.viewName,
+      data.project.name,
+      options.barrel
+    );
   } else {
     console.log('✅ Successfully created Expo module');
     printFurtherInstructions(targetDir, packageManager, options.example);
@@ -370,6 +487,15 @@ function handleSuffix(name: string, suffix: string): string {
 }
 
 /**
+ * Maps template top-level directory names to the platform name in `expo-module.config.json`.
+ * Files under these directories are only copied when the corresponding platform is selected.
+ */
+const TEMPLATE_DIR_TO_PLATFORM: Record<string, Platform> = {
+  ios: 'apple',
+  android: 'android',
+};
+
+/**
  * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
 async function createModuleFromTemplate(
@@ -381,6 +507,13 @@ async function createModuleFromTemplate(
 
   // Iterate through all template files.
   for (const file of files) {
+    // Skip platform-specific directories when the platform was not selected.
+    const topLevelDir = file.split(path.sep)[0] ?? '';
+    const requiredPlatform = TEMPLATE_DIR_TO_PLATFORM[topLevelDir];
+    if (requiredPlatform && !data.project.platforms.includes(requiredPlatform)) {
+      continue;
+    }
+
     const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
       openDelimiter: '{',
       closeDelimiter: '}',
@@ -471,9 +604,10 @@ async function askForSubstitutionDataAsync(
 ): Promise<SubstitutionData | LocalSubstitutionData> {
   const interactive = isInteractive();
 
-  // Non-interactive mode: use CLI options and defaults
+  const platforms = await resolvePlatformsAsync(isLocal, interactive, options);
+
   if (!interactive) {
-    return getSubstitutionDataFromOptions(slug, isLocal, options);
+    return getSubstitutionDataFromOptions(slug, isLocal, options, platforms);
   }
 
   // Interactive mode: prompt for values, but skip prompts for CLI-provided values
@@ -519,6 +653,7 @@ async function askForSubstitutionDataAsync(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        platforms,
       },
       type: 'local',
     };
@@ -543,6 +678,7 @@ async function askForSubstitutionDataAsync(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      platforms,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
@@ -581,7 +717,8 @@ function getCliValueForPrompt(promptName: string, options: CommandOptions): stri
 async function getSubstitutionDataFromOptions(
   slug: string,
   isLocal: boolean,
-  options: CommandOptions
+  options: CommandOptions,
+  platforms: Platform[]
 ): Promise<SubstitutionData | LocalSubstitutionData> {
   const rawName = options.name ?? slugToModuleName(slug);
   const { name, wasRenamed } = ensureSafeModuleName(rawName);
@@ -606,6 +743,7 @@ async function getSubstitutionDataFromOptions(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        platforms,
       },
       type: 'local',
     };
@@ -632,6 +770,7 @@ async function getSubstitutionDataFromOptions(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      platforms,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
@@ -680,6 +819,25 @@ async function confirmTargetDirAsync(targetDir: string, options: CommandOptions)
 }
 
 /**
+ * Generates an `index.ts` barrel file that re-exports the module and view for local modules.
+ */
+async function generateBarrelFileAsync(
+  targetPath: string,
+  data: LocalSubstitutionData
+): Promise<void> {
+  const { moduleName, viewName, name } = data.project;
+  const content = [
+    `// Re-export the native module. On web, it will be resolved to ${moduleName}.web.ts`,
+    `// and on native platforms to ${moduleName}.ts`,
+    `export { default } from './src/${moduleName}';`,
+    `export { default as ${viewName} } from './src/${viewName}';`,
+    `export * from './src/${name}.types';`,
+    '',
+  ].join('\n');
+  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), content, 'utf8');
+}
+
+/**
  * Prints how the user can follow up once the script finishes creating the module.
  */
 function printFurtherInstructions(
@@ -704,11 +862,31 @@ function printFurtherInstructions(
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
 }
 
-function printFurtherLocalInstructions(slug: string, name: string) {
+function printFurtherLocalInstructions(
+  slug: string,
+  moduleName: string,
+  viewName: string,
+  name: string,
+  barrel: boolean
+) {
   console.log();
   console.log(`You can now import this module inside your application.`);
-  console.log(`For example, you can add this line to your App.tsx or App.js file:`);
-  console.log(`${chalk.gray.italic(`import ${name} from './modules/${slug}';`)}`);
+  console.log(`For example, you can add these lines to your App.tsx or App.js file:`);
+  if (barrel) {
+    console.log(
+      chalk.gray.italic(`import ${moduleName}, { ${viewName} } from './modules/${slug}';`)
+    );
+  } else {
+    console.log(
+      chalk.gray.italic(`import ${moduleName} from './modules/${slug}/src/${moduleName}';`)
+    );
+    console.log(
+      chalk.gray.italic(
+        `import { default as ${viewName} } from './modules/${slug}/src/${viewName}';`
+      )
+    );
+    console.log(chalk.gray.italic(`import type { } from './modules/${slug}/src/${name}.types';`));
+  }
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
@@ -737,6 +915,11 @@ program
     'Whether to create a local module in the current project, skipping installing node_modules and creating the example directory.',
     false
   )
+  .option(
+    '--barrel',
+    'Whether to generate an index.ts barrel file for the local module. Only applies to local modules',
+    false
+  )
   // Module configuration options (skip prompts when provided)
   .option('--name <name>', 'Native module name (e.g., MyModule).')
   .option('--description <description>', 'Module description.')
@@ -745,6 +928,10 @@ program
   .option('--author-email <email>', 'Author email for package.json.')
   .option('--author-url <url>', "URL to the author's profile (e.g., GitHub profile).")
   .option('--repo <url>', 'URL of the repository.')
+  .option(
+    '-p, --platform <platforms...>',
+    `Target platforms for the module. Available values: ${ALL_PLATFORMS.join(', ')}.`
+  )
   .action(main);
 
 program

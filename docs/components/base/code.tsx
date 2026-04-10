@@ -5,7 +5,6 @@ import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
-
 import {
   cleanCopyValue,
   getCodeData,
@@ -13,6 +12,7 @@ import {
   getCodeBlockDataFromChildren,
 } from '~/common/code-utilities';
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
+import { usePageApiVersion } from '~/providers/page-api-version';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetExpandOverlay } from '~/ui/components/Snippet/SnippetExpandOverlay';
@@ -38,6 +38,7 @@ type CodeProps = PropsWithChildren<{
 export function Code({ className, children, title }: CodeProps) {
   const contentRef = useRef<HTMLPreElement>(null);
   const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
+  const { version } = usePageApiVersion();
 
   const {
     language,
@@ -53,7 +54,8 @@ export function Code({ className, children, title }: CodeProps) {
   const [didMount, setDidMount] = useState(false);
   const collapseHeight = getCollapseHeight(params);
   const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
-  const highlightedHtml = getCodeData(value, language);
+  const resolvedVersion = params?.sdkVersion ? `v${params.sdkVersion}` : version;
+  const highlightedHtml = getCodeData(value, language, resolvedVersion);
 
   useEffect(() => {
     if (contentRef?.current?.clientHeight) {
@@ -93,14 +95,14 @@ export function Code({ className, children, title }: CodeProps) {
   }
 
   const commonClasses = mergeClasses(
-    wordWrap && '!break-words !whitespace-pre-wrap',
-    showExpand && !isExpanded && `!overflow-y-hidden [&::-webkit-scrollbar-track]:!bg-default`
+    wordWrap && 'wrap-break-word! whitespace-pre-wrap!',
+    showExpand && !isExpanded && `[&::-webkit-scrollbar-track]:bg-default! overflow-y-hidden!`
   );
 
   return codeBlockTitle ? (
     <Snippet>
       <SnippetHeader title={codeBlockTitle} Icon={getIconForFile(codeBlockTitle)}>
-        <CopyAction text={cleanCopyValue(value)} />
+        <CopyAction text={cleanCopyValue(value, resolvedVersion)} />
         <SettingsAction />
       </SnippetHeader>
       <SnippetContent className="p-0">
@@ -130,7 +132,7 @@ export function Code({ className, children, title }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle',
+        'border-secondary bg-subtle relative my-4 overflow-x-auto rounded-md border whitespace-pre',
         preferredTheme === Themes.DARK && 'dark-theme',
         commonClasses,
         '[p+&]:mt-0'
@@ -157,12 +159,12 @@ export const CodeBlock = ({ children, theme, className, inline = false }: CodeBl
   const Element = inline ? 'span' : 'pre';
   return (
     <Element
-      className={mergeClasses('m-0 whitespace-pre px-1 py-1.5', inline && 'inline-flex !p-0')}
+      className={mergeClasses('m-0 px-1 py-1.5 whitespace-pre', inline && 'inline-flex p-0!')}
       {...attributes}>
       <CODE
         className={mergeClasses(
-          '!text-3xs text-default',
-          inline && 'block w-full !p-1.5',
+          'text-3xs! text-default',
+          inline && 'block w-full p-1.5!',
           className
         )}
         theme={theme}>

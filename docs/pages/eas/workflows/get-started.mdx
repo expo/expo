@@ -110,6 +110,40 @@ on:
         platform: android
     build_ios:
       type: build
+      params:
+        platform: ios
+```
+
+### Trigger workflows from App Store Connect events
+
+You can also trigger workflows from App Store Connect events using [`on.app_store_connect`](/eas/workflows/syntax/#onapp_store_connect).
+
+Before using App Store Connect triggers, configure your App Store Connect connection in EAS dashboard:
+
+- Open EAS dashboard and select your project.
+- Navigate to **[Project settings > General > Connections](https://expo.dev/accounts/[account]/projects/[project]/settings)**.
+- Connect your App Store Connect app.
+
+Example workflow:
+
+```yaml .eas/workflows/app-store-connect-events.yml
+name: React to App Store Connect events
+
+# @info #
+on:
+  app_store_connect:
+    app_version:
+      states:
+        - ready_for_review
+        - waiting_for_review
+  # @end #
+
+jobs:
+  send_slack_notification:
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: 'App version is ready for review or waiting for review.'
 ```
 
 ### VS Code extension

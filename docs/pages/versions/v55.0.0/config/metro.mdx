@@ -15,7 +15,7 @@ See more information about **metro.config.js** in the [customizing Metro guide](
 
 Expo CLI can load environment variables from **.env** files. Learn more about how to use environment variables in Expo CLI in the [environment variables guide](/guides/environment-variables/).
 
-EAS CLI uses a different mechanism for environment variables, except when it invokes Expo CLI for compiling and bundling. Learn more about [environment variables in EAS](/build-reference/variables/).
+EAS CLI uses a different mechanism for environment variables, except when it invokes Expo CLI for compiling and bundling. Learn more about [environment variables in EAS](/eas/environment-variables/).
 
 If you are migrating an older project, then you should ignore local env files by adding the following to your **.gitignore**:
 
@@ -117,6 +117,8 @@ import 'emoji-mart/css/emoji-mart.css';
 - On native, all global stylesheets are automatically ignored.
 - Hot reloading is supported for global stylesheets, simply save the file and the changes will be applied.
 
+> **warning** When using Expo Router, always import global CSS in your root **\_layout.tsx**. Expo Router traverses the dependency graph starting from the root layout. Importing CSS in a nested layout causes **node_modules** CSS to load before your custom styles, which can break your intended style order.
+
 ### CSS Modules
 
 > **warning** CSS Modules for native are under development and currently only work on web.
@@ -215,7 +217,7 @@ Then, ensure [CSS is setup](#css) in the **metro.config.js** file.
 
 ### Tailwind
 
-> **info** Standard Tailwind CSS supports only web platform. For universal support, use a library such as [NativeWind](https://www.nativewind.dev/), which allows creating styled React Native components with Tailwind CSS.
+> **info** Standard Tailwind CSS supports only web platform. For universal support, use a library such as [NativeWind](https://www.nativewind.dev/) or [Uniwind](https://uniwind.dev/), which allow creating styled React Native components with Tailwind CSS.
 
 <BoxLink
   title="Tailwind CSS"
@@ -571,7 +573,7 @@ export async function GET(req: Request) {
 
 ## Web workers
 
-> **important** This feature is alpha and subject to breaking changes.
+> **important** This feature is [alpha](/more/release-statuses/#alpha) and subject to breaking changes.
 
 ```ts
 new Worker(new URL('./worker', window.location.href));

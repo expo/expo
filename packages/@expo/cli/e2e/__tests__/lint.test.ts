@@ -69,10 +69,11 @@ it('runs `npx expo lint` to install lint in a project', async () => {
     expect.stringMatching(/.expo\/cache\/eslint\/.cache_/),
     'App.js',
     'app.json',
-    'bun.lock',
     'eslint.config.js',
+    'index.js',
     'metro.config.js',
     'package.json',
+    'pnpm-lock.yaml',
   ]);
 
   // Ensure there are no linting errors
@@ -110,10 +111,11 @@ it('runs `npx expo customize eslint.config.js to install lint in a project', asy
     // expect.stringMatching(/.expo\/cache\/eslint\/.cache_/),
     'App.js',
     'app.json',
-    'bun.lock',
     'eslint.config.js',
+    'index.js',
     'metro.config.js',
     'package.json',
+    'pnpm-lock.yaml',
   ]);
 
   // Ensure there are no linting errors

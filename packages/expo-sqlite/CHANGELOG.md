@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
+
+- Add explicit secure context error for `web/wa-sqlite/AccessHandlePoolVFS.js` ([#40605](https://github.com/expo/expo/pull/40605) by [@BDav24](https://github.com/BDav24))
 
 ### 💡 Others
 

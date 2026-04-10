@@ -7,7 +7,7 @@ import { Header } from '@/components';
 const State = () => {
   return (
     <ScrollView style={styles.container}>
-      <Header title="Shared State" />
+      <Header title="Shared State" testID="state-header" />
       {/* Data types */}
       <DataTypesDemo />
       {/* Operations */}
@@ -53,13 +53,13 @@ const DataTypesDemo = () => {
           stateKey="array"
           label="Array"
           text={JSON.stringify(array)}
-          onPress={() => setArray((p) => [...(p ?? []), 'ex', 1, 2.34, false, { a: 'b' }])}
+          onPress={() => setArray((p) => [...(p ?? []), 'expo', 1, false])}
         />
         <DataTypesDemoItem
           stateKey="object"
           label="Object"
           text={JSON.stringify(object)}
-          onPress={() => setObject({ a: 'b', c: { d: 'e', f: ['g', { h: 'i' }] } })}
+          onPress={() => setObject({ a: { b: 'c' } })}
         />
       </View>
     </View>
@@ -81,8 +81,12 @@ const DataTypesDemoItem = ({
     <View>
       <View style={styles.row}>
         <Text style={styles.label}>{label}</Text>
-        <Button title="Set" onPress={onPress} />
-        <Button title="Delete" onPress={() => ExpoBrownfield.deleteSharedState(stateKey)} />
+        <Button title="Set" testID={`${stateKey}-set-button`} onPress={onPress} />
+        <Button
+          title="Delete"
+          testID={`${stateKey}-delete-button`}
+          onPress={() => ExpoBrownfield.deleteSharedState(stateKey)}
+        />
       </View>
       <Text style={styles.value}>{text}</Text>
     </View>

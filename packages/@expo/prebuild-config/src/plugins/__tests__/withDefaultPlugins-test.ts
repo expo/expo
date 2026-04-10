@@ -59,18 +59,6 @@ function getLargeConfig(): ExportedConfig {
     backgroundColor: 'orange',
     primaryColor: '#fff000',
     // icon: './icons/icon.png',
-    androidStatusBar: {
-      barStyle: 'light-content',
-      backgroundColor: '#000FFF',
-      hidden: false,
-      translucent: true,
-    },
-    androidNavigationBar: {
-      visible: 'sticky-immersive',
-      barStyle: 'dark-content',
-
-      backgroundColor: '#ff0000',
-    },
     developmentClient: {
       silentLaunch: true,
     },

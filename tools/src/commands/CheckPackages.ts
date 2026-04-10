@@ -19,10 +19,10 @@ export default (program: Command) => {
     )
     .option('-a, --all', 'Whether to check all packages and ignore `--since` option.', false)
     .option('-c, --core', 'Whether to add core packages to check.', false)
-    .option('--no-build', 'Whether to skip `yarn build` check.', false)
-    .option('--no-test', 'Whether to skip `yarn test` check.', false)
-    .option('--no-lint', 'Whether to skip `yarn lint` check.', false)
-    .option('--fix-lint', 'Whether to run `yarn lint --fix` instead of `yarn lint`.', false)
+    .option('--no-build', 'Whether to skip `pnpm build` check.', false)
+    .option('--no-test', 'Whether to skip `pnpm test` check.', false)
+    .option('--no-lint', 'Whether to skip `pnpm lint` check.', false)
+    .option('--fix-lint', 'Whether to run `pnpm lint --fix` instead of `yarn lint`.', false)
     .option(
       '--no-uniformity-check',
       'Whether to check the uniformity of committed and generated build files.',

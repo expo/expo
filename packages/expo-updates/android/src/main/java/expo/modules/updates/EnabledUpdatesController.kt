@@ -34,6 +34,7 @@ import expo.modules.updates.statemachine.UpdatesStateValue
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -254,7 +255,7 @@ class EnabledUpdatesController(
   }
 
   override suspend fun fetchUpdate() = suspendCancellableCoroutine { continuation ->
-    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate) {
+    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate, controllerScope) {
       continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
@@ -278,6 +279,8 @@ class EnabledUpdatesController(
           }
         }
         continuation.resume(resultMap)
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         continuation.resumeWithException(e.toCodedException())
       }
@@ -286,7 +289,7 @@ class EnabledUpdatesController(
 
   override suspend fun setExtraParam(key: String, value: String?) = suspendCancellableCoroutine { continuation ->
     controllerScope.launch {
-      runCatching {
+      try {
         ManifestMetadata.setExtraParam(
           databaseHolder.database,
           updatesConfiguration,
@@ -294,7 +297,9 @@ class EnabledUpdatesController(
           value
         )
         continuation.resume(Unit)
-      }.onFailure { e ->
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
         continuation.resumeWithException(e.toCodedException())
       }
     }
@@ -351,6 +356,10 @@ class EnabledUpdatesController(
     if (stateChangeListenerMap.containsKey(subscriptionId)) {
       stateChangeListenerMap.remove(subscriptionId)
     }
+  }
+
+  internal fun getNativeInterfaceContext(): expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext {
+    return stateMachine.context.nativeInterfaceContext
   }
 
   override val isEnabled: Boolean = true

@@ -80,11 +80,10 @@ export function AskPageAIOverlay({
     <div className="pointer-events-none fixed inset-0 z-[120]">
       <div
         className={mergeClasses(
-          'fixed bottom-4 right-4 flex h-full flex-col overflow-hidden rounded-2xl border border-default bg-default transition-all duration-200 ease-out',
-          'max-sm:left-4 sm:bottom-8',
+          'border-default bg-default fixed right-4 bottom-4 flex h-full flex-col overflow-hidden rounded-2xl border transition-all duration-200 ease-out',
           shouldShowExpandedLayout
-            ? 'sm:top-8 sm:bottom-8 sm:right-12 bottom-4 top-4 h-auto w-[min(600px,calc(100vw-72px))] max-w-[min(600px,calc(100vw-72px))]'
-            : 'sm:right-8 max-h-[min(85vh,600px)] w-[min(420px,calc(100vw-24px))]',
+            ? 'top-4 bottom-4 h-auto w-[min(600px,calc(100vw-72px))] max-w-[min(600px,calc(100vw-72px))]'
+            : 'max-h-[min(85vh,600px)] w-[min(420px,calc(100vw-24px))]',
           isVisible
             ? 'pointer-events-auto translate-y-0 opacity-100 shadow-xl'
             : 'pointer-events-none translate-y-3 opacity-0 shadow-none'

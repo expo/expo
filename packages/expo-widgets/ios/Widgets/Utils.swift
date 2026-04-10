@@ -1,17 +1,16 @@
+import SwiftUI
 import WidgetKit
 import Foundation
 
 func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [WidgetsTimelineEntry] {
-  let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(name)_layout") ?? ""
   let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") ?? []
 
   let entries: [WidgetsTimelineEntry?] = timeline.enumerated().map { index, entry in
     if let entry = entry as? [String: Any], let timestamp = entry["timestamp"] as? Int, let props = entry["props"] as? [String: Any] {
-      let node = evaluateLayout(layout: layout, props: props, timestamp: timestamp, family: family)
       return WidgetsTimelineEntry(
         date: Date(timeIntervalSince1970: Double(timestamp) / 1000),
-        source: name,
-        node: node,
+        name: name,
+        props: props,
         entryIndex: index
       )
     }
@@ -24,30 +23,31 @@ func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [W
 func evaluateLayout(
   layout: String,
   props: [String: Any],
-  timestamp: Int,
-  family: WidgetFamily
+  environment: [String: Any]
 ) -> [String: Any]? {
-  guard let context = createWidgetContext(layout: layout, props: props) else {
+  guard let context = createWidgetContext(layout: layout) else {
     return nil
   }
-  let familyKey: String? = getKeyFor(widgetFamily: family)
 
   let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [timestamp, familyKey as Any]
+    withArguments: [props, environment]
   )
   return result?.toObject() as? [String: Any]
 }
 
-func getLiveActivityNodes(forName name: String, props: String = "{}") -> [String: Any] {
+func getLiveActivityNodes(forName name: String, props: String = "{}", environment: [String: Any]) -> [String: Any] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
   let propsData = props.data(using: .utf8)
-  let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] }
-  guard let context = createWidgetContext(layout: layout, props: propsDict ?? [:]) else {
+  let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] } ?? [:]
+  guard let context = createWidgetContext(layout: layout) else {
     return [:]
   }
 
+  var widgetEnvironment = environment
+  widgetEnvironment["timestamp"] = Int(Date.now.timeIntervalSince1970 * 1000)
+
   let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [Int(Date.now.timeIntervalSince1970 * 1000)]
+    withArguments: [propsDict, environment]
   )
   return result?.toObject() as? [String: Any] ?? [:]
 }
@@ -58,4 +58,51 @@ func getLiveActivityUrl(forName name: String) -> URL? {
     return URL(string: url)
   }
   return nil
+}
+
+func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any] {
+  var env: [String: Any] = [
+    "showsContainerBackground": environment.showsWidgetContainerBackground,
+    "widgetFamily": environment.widgetFamily.description,
+    "colorScheme": "\(environment.colorScheme)"
+  ]
+
+  if #available(iOS 16.0, *) {
+    env["isLuminanceReduced"] = environment.isLuminanceReduced
+    env["widgetRenderingMode"] = environment.widgetRenderingMode.description
+    env["showsWidgetLabel"] = environment.showsWidgetLabel
+  }
+  if #available(iOS 17.0, *) {
+    env["widgetContentMargins"] = [
+      "top": environment.widgetContentMargins.top,
+      "bottom": environment.widgetContentMargins.bottom,
+      "leading": environment.widgetContentMargins.leading,
+      "trailing": environment.widgetContentMargins.trailing,
+    ]
+  }
+  if #available(iOS 26.0, *) {
+    env["levelOfDetail"] = environment.levelOfDetail == .simplified ? "simplified" : environment.levelOfDetail == .default ? "default" : nil
+  }
+  return env
+}
+
+func getLiveActivityEnvironment(environment: EnvironmentValues) -> [String: Any] {
+  var env: [String: Any] = [
+    "colorScheme": "\(environment.colorScheme)"
+  ]
+
+  if #available(iOS 16.0, *) {
+    env["isLuminanceReduced"] = environment.isLuminanceReduced
+  }
+  if #available(iOS 16.1, *) {
+    env["isActivityFullscreen"] = environment.isActivityFullscreen
+  }
+  if #available(iOS 18.0, *) {
+    env["isActivityUpdateReduced"] = environment.isActivityUpdateReduced
+    env["activityFamily"] = "\(environment.activityFamily)"
+  }
+  if #available(iOS 26.0, *) {
+    env["levelOfDetail"] = environment.levelOfDetail == .simplified ? "simplified" : environment.levelOfDetail == .default ? "default" : nil
+  }
+  return env
 }

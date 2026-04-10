@@ -15,7 +15,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     kotlinVersion: '1.6.10',
   },
   ios: {
-    deploymentTarget: '15.1',
+    deploymentTarget: '16.4',
   },
 };
 
@@ -420,6 +420,15 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
    */
   privacyManifestAggregationEnabled?: boolean;
+
+  /**
+   * Enable using precompiled Expo modules (XCFrameworks) instead of building from source.
+   * When enabled, sets the `EXPO_USE_PRECOMPILED_MODULES` environment variable to `1`
+   * during `pod install`, which causes matching modules to be linked as vendored frameworks.
+   *
+   * @default false
+   */
+  usePrecompiledModules?: boolean;
 }
 
 /**
@@ -788,6 +797,7 @@ const schema: JSONSchema<PluginConfigType> = {
           nullable: true,
         },
         useHermesV1: { type: 'boolean', nullable: true },
+        usePrecompiledModules: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },

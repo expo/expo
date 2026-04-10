@@ -31,7 +31,7 @@ export async function getDevToolsPluginClientAsync(pluginName, options) {
             instance.connectionInfo.devServer !== connectionInfo.devServer) {
             await instance.closeAsync();
             delete instanceMap[pluginName];
-            instance = null;
+            instance = undefined;
         }
     }
     if (instance == null) {
@@ -53,7 +53,7 @@ export function cleanupDevToolsPluginInstances() {
             instance.then((instance) => instance.closeAsync());
         }
         else {
-            instance.closeAsync();
+            instance?.closeAsync();
         }
     }
 }

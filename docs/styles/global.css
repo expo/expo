@@ -1,31 +1,32 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@config '../tailwind.config.cjs';
 
-html {
-  @apply bg-default;
-}
+@layer base {
+  html {
+    @apply bg-default;
+  }
 
-body {
-  text-rendering: optimizeLegibility;
-  line-height: 1;
-}
+  body {
+    text-rendering: optimizeLegibility;
+    line-height: 1;
+  }
 
-input {
-  appearance: unset;
-}
+  input {
+    appearance: unset;
+  }
 
-#__next[aria-hidden] {
-  filter: none !important;
-}
+  #__next[aria-hidden] {
+    filter: none !important;
+  }
 
-img {
-  max-width: 768px;
-  width: 100%;
-}
+  img {
+    max-width: 768px;
+    width: 100%;
+  }
 
-img.wide-image {
-  max-width: 900px;
+  img.wide-image {
+    max-width: 900px;
+  }
 }
 
 code {
@@ -80,7 +81,7 @@ div:not(#root) > ::-webkit-scrollbar-track {
 }
 
 div:not(#root) > ::-webkit-scrollbar-thumb {
-  @apply rounded-sm bg-palette-gray5;
+  @apply bg-palette-gray5 rounded-sm;
 }
 
 div:not(#root) > ::-webkit-scrollbar-thumb:hover {
@@ -133,7 +134,7 @@ div.tippy-box {
 }
 
 .tippy-box[data-theme~='expo'] .tippy-content {
-  @apply rounded-md bg-palette-black px-4 py-3 text-sm text-palette-white;
+  @apply bg-palette-black text-palette-white rounded-md px-4 py-3 text-sm;
   line-height: 1.525;
 }
 
@@ -172,11 +173,11 @@ div.tippy-box {
 }
 
 .diff-gutter-col {
-  @apply w-6 bg-element;
+  @apply bg-element w-6;
 }
 
 .diff-gutter {
-  @apply px-1 text-3xs;
+  @apply text-3xs px-1;
   text-align: right;
   user-select: none;
 }

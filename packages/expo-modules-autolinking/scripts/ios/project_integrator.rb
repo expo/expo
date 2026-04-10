@@ -132,6 +132,32 @@ module Expo
       end
     end
 
+    # Integrates the core macro plugins into the targets.
+    def self.integrate_core_macro_plugins(targets)
+      targets.each do |target|
+        macros_pod_target = target.pod_targets.find { |pod_target| pod_target.name == 'ExpoModulesMacros' }
+        if macros_pod_target.nil?
+          Pod::UI.warn("[Expo] Skipping integration of core macro plugins for target '#{target.name}' because ExpoModuleOptimizedMacros pod target not found")
+          return
+        end
+        macros_src_root = macros_pod_target.pod_target_srcroot
+        macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_src_root}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+        target.pod_targets.each do |pod_target|
+          has_core_dependency = pod_target.dependencies.find { |dependency| dependency == 'ExpoModulesCore' }
+          next unless has_core_dependency
+          pod_target.build_settings.each do |build_configuration_name, build_settings|
+            xcconfig = build_settings.xcconfig
+            swift_flags = xcconfig.attributes[SWIFT_FLAGS] || '$(inherited)'
+            unless swift_flags.include?(macro_flags)
+              xcconfig_path = pod_target.xcconfig_path(build_configuration_name)
+              xcconfig.attributes[SWIFT_FLAGS] = "#{swift_flags} #{macro_flags}"
+              xcconfig.save_as(xcconfig_path)
+            end
+          end
+        end
+      end
+    end
+
     # Makes sure that the build script configuring the project is installed,
     # is up-to-date and is placed before the "Compile Sources" phase.
     def self.integrate_build_script(autolinking_manager, project, target, native_target)
@@ -246,6 +272,7 @@ module Expo
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
+      podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -299,6 +326,7 @@ module Expo
         --target "#{modules_provider_path}" \\
         #{entitlement_param} \\
         #{app_root_param} \\
+        #{podfile_properties_param} \\
         --platform "apple" \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT

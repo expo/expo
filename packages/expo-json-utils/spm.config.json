@@ -1,0 +1,33 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "EXJSONUtils",
+      "podName": "EXJSONUtils",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "EXJSONUtils",
+          "path": "ios",
+          "pattern": "**/*.m",
+          "headerPattern": "**/*.h",
+          "dependencies": [],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ],
+          "includeDirectories": [
+            "."
+          ],
+          "exclude": [
+            "Tests/**"
+          ]
+        }
+      ]
+    }
+  ]
+}

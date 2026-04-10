@@ -3,10 +3,10 @@
 exports[`APICommentTextBlock basic comment 1`] = `
 <div>
   <div
-    class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    class="px-4 [table_&]:mb-0! [table_&]:px-0"
   >
     <p
-      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+      class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
       data-text="true"
     >
       This is the basic comment.
@@ -18,22 +18,22 @@ exports[`APICommentTextBlock basic comment 1`] = `
 exports[`APICommentTextBlock comment with example 1`] = `
 <div>
   <div
-    class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    class="px-4 [table_&]:mb-0! [table_&]:px-0"
   >
     <div
       class="mb-3 flex flex-row items-start [table_&]:mb-2.5"
       data-md="api-platforms"
     >
       <span
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
+        class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
         data-text="true"
       >
         <div
-          class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
+          class="mr-2 inline-flex min-h-[21px] items-center gap-1 rounded-full border px-[7px] py-0.5 select-none last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
           data-md="platform-badge"
         >
           <svg
-            class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-green12 opacity-80"
+            class="translate-z icon-2xs text-palette-green12 mt-[-0.5px] shrink-0 opacity-80"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -49,7 +49,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
             </g>
           </svg>
           <span
-            class="whitespace-nowrap !text-3xs font-normal !leading-none"
+            class="text-3xs! leading-none! font-normal whitespace-nowrap"
           >
             Android
           </span>
@@ -57,18 +57,18 @@ exports[`APICommentTextBlock comment with example 1`] = `
       </span>
     </div>
     <p
-      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+      class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
       data-text="true"
     >
       Gets the referrer URL of the installed app with the 
       <a
-        class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+        class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
         href="https://developer.android.com/google/play/installreferrer"
         rel="noopener noreferrer"
         target="_blank"
       >
         <code
-          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 break-words !inline py-0"
+          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           Install Referrer API
@@ -78,14 +78,14 @@ exports[`APICommentTextBlock comment with example 1`] = `
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
     </p>
     <div
-      class="mb-2.5 [table_&]:last:mb-0 last:[&>*]:!mb-0"
+      class="mb-2.5 [table_&]:last:mb-0 [&>*:last-child]:mb-0!"
     >
       <p
-        class="tracking-[-0.006rem] flex border-y border-palette-gray4 bg-subtle px-4 py-2 text-2xs font-medium text-tertiary -mx-4 mb-3 mt-1"
+        class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-2xs text-tertiary flex border-y px-4 py-2 font-medium -mx-4 mt-1 mb-3"
         data-text="true"
       >
         <span
-          class="tracking-[-0.006rem] flex flex-row items-center gap-2 text-2xs font-medium text-tertiary"
+          class="tracking-[-0.006rem] text-2xs text-tertiary flex flex-row items-center gap-2 font-medium"
           data-text="true"
         >
           <svg
@@ -111,7 +111,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
         </span>
       </p>
       <pre
-        class="relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle [p+&]:mt-0"
+        class="border-secondary bg-subtle relative my-4 overflow-x-auto rounded-md border whitespace-pre [p+&]:mt-0"
         data-md-lang="ts"
         data-text="true"
       >

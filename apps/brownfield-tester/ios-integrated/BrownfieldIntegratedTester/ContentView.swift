@@ -7,11 +7,30 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            NavigationLink(destination: ReactNativeView(moduleName: "main"), label: {
-                Text("Open React Native App")
-                    .accessibilityIdentifier("openReactNativeButton")
-                    .font(.largeTitle)
-            })
+            List {
+                Section(header: Text("Screens")) {
+                    NavigationLink(destination: ReactNativeView(), label: {
+                        HStack {
+                            Image(systemName: "atom")
+                            Text("Open React Native App")
+                        }
+                        .accessibilityIdentifier("openReactNativeButton")
+                    })
+                    NavigationLink(destination: StateView(), label: {
+                        HStack {
+                            Image(systemName: "cylinder.split.1x2")
+                            Text("Shared State")
+                        }
+                        .accessibilityIdentifier("openStateView")
+                    })
+                }
+                
+                Section(header: Text("Custom component")) {
+                    ReactNativeView(moduleName: "custom-component")
+                        .frame(height: 400)
+                }
+            }
+            .listStyle(.sidebar)
         }
         .onAppear { brownfieldTester.start() }
         .onDisappear { brownfieldTester.stop() }

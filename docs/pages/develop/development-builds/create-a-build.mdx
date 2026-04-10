@@ -19,7 +19,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 When you create a new Expo app with `npx create-expo-app`, you start off with a project where you update the JavaScript code on your local machine and view the changes in the Expo Go app. A **development build** is essentially **your own version of Expo Go** where you are free to use any native libraries and change any native config. In this guide, you will learn how to convert your project that runs on Expo Go into a development build, which will make the native side of your app fully customizable.
 
-<VideoBoxLink videoId="uQCE9zl3dXU" title="How to create a development build" />
+<VideoBoxLink
+  videoId="uQCE9zl3dXU"
+  title="How to create a development build"
+  description="Configure and create a development build for your Expo project using EAS Build."
+/>
 
 ## Prerequisites
 
@@ -79,7 +83,7 @@ For detailed, step-by-step instructions, see our [EAS Tutorial](/tutorial/eas/in
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
-<Collapsible summary="Are you using this library in a existing (bare) React Native apps?">
+<Collapsible summary="Are you using this library in an existing (bare) React Native app?">
 
 Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation/) or are created with `npx react-native`, require further configuration after installing this library. See steps 1 and 2 from [Install `expo-dev-client` in an existing React Native app](/bare/install-dev-builds-in-bare/).
 

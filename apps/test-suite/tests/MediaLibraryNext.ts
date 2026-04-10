@@ -330,6 +330,18 @@ export async function test(t) {
       t.expect(width).toBeGreaterThan(0);
     });
 
+    if (Platform.OS === 'ios') {
+      t.it('sets and gets favorite status', async () => {
+        t.expect(await asset.getFavorite()).toBe(false);
+        // mark as favorite
+        await asset.setFavorite(true);
+        t.expect(await asset.getFavorite()).toBe(true);
+        // unmark as favorite
+        await asset.setFavorite(false);
+        t.expect(await asset.getFavorite()).toBe(false);
+      });
+    }
+
     t.it('returns an asset info object', async () => {
       const info = await asset.getInfo();
       t.expect(info).toBeDefined();
@@ -342,6 +354,9 @@ export async function test(t) {
       t.expect(info.duration).toBe(await asset.getDuration());
       t.expect(info.creationTime).toBe(await asset.getCreationTime());
       t.expect(info.modificationTime).toBe(await asset.getModificationTime());
+      if (Platform.OS === 'ios') {
+        t.expect(info.isFavorite).toBe(await asset.getFavorite());
+      }
     });
   });
 
@@ -419,6 +434,19 @@ export async function test(t) {
       // then
       t.expect(firstAsset.id).toBe(bothFirstAsset.id);
       t.expect(secondAsset.id).toBe(bothSecondAsset.id);
+    });
+
+    t.it('limit 0 returns no assets', async () => {
+      // given
+      const createdAssets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+      assetsContainer.push(...createdAssets);
+      const albumName = createAlbumName('limit 0 returns no assets');
+      const album = await Album.create(albumName, createdAssets);
+      albumsContainer.push(album);
+      // when
+      const assets = await new Query().album(album).limit(0).exe();
+      // then
+      t.expect(assets.length).toBe(0);
     });
 
     t.it('offset outside of bounds works correctly', async () => {

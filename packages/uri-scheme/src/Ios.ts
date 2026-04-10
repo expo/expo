@@ -111,11 +111,11 @@ function getInfoPlistsInDirectory(projectRoot: string): string[] {
 export function getConfigPath(projectRoot: string): string {
   // TODO: Figure out how to avoid using the Tests info.plist
   const rnInfoPlistPaths = getInfoPlistsInDirectory(path.join(projectRoot, 'ios'));
-  if (rnInfoPlistPaths.length) {
+  if (rnInfoPlistPaths[0] != null) {
     return rnInfoPlistPaths[0];
   }
   const infoPlistPaths = getInfoPlistsInDirectory(projectRoot);
-  if (!infoPlistPaths.length) {
+  if (infoPlistPaths[0] == null) {
     throw new CommandError(`iOS: No Info.plist found for project at root: ${projectRoot}`);
   }
   return infoPlistPaths[0];

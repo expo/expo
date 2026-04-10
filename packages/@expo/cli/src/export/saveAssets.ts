@@ -201,7 +201,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
         // Get source map
         const sourceMapIndex = allAssets.findIndex(([fp]) => fp === filePath + '.map');
         if (sourceMapIndex !== -1) {
-          const [sourceMapFilePath, sourceMapAsset] = allAssets.splice(sourceMapIndex, 1)[0];
+          const [sourceMapFilePath, sourceMapAsset] = allAssets.splice(sourceMapIndex, 1)[0]!;
           Log.log(chalk.gray(sourceMapFilePath), sizeStr(sourceMapAsset.contents));
         }
       }

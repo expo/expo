@@ -7,12 +7,12 @@ import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.modules.InternalModuleDefinitionBuilder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.AnyType
-import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.types.descriptors.toTypeDescriptor
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.memberProperties
-import kotlin.reflect.typeOf
 
 /**
  * The name for the global event dispatcher
@@ -27,12 +27,12 @@ open class ModuleDefinitionBuilderWithCompose(
    * Also collects all compose view props and generates setters.
    */
   @JvmName("ComposeView")
-  inline fun <reified T : ExpoComposeView<P>, reified P : Any> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit = {}) {
-    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
+  inline fun <reified T : ExpoComposeView<P>, reified P : ComposeProps> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit = {}) {
+    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, typeDescriptorOf<T>())
     P::class.memberProperties.forEach { prop ->
       val kType = prop.returnType.arguments.first().type
       if (kType != null && viewDefinitionBuilder.props[prop.name] == null) {
-        viewDefinitionBuilder.props[prop.name] = ComposeViewProp(prop.name, AnyType(kType), prop)
+        viewDefinitionBuilder.props[prop.name] = ComposeViewProp(prop.name, AnyType(kType.toTypeDescriptor()), prop)
       }
     }
 
@@ -76,7 +76,7 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
       viewType = ComposeFunctionHolder::class.java,
       props = propsClass.memberProperties.associate { prop ->
         val kType = prop.returnType
-        prop.name to ComposeViewProp(prop.name, AnyType(kType), prop)
+        prop.name to ComposeViewProp(prop.name, AnyType(kType.toTypeDescriptor()), prop)
       }
     )
   }

@@ -42,7 +42,7 @@ export declare const {
   isInaccessible,
   getDefaultNormalizer,
   renderHook,
-  userEvent,
+  // userEvent,
 }: typeof rnTestingLibrary;
 
 export declare let screen: typeof rnTestingLibrary.screen;

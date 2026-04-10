@@ -10,14 +10,13 @@ const concurrency_1 = require("../concurrency");
 const utils_2 = require("../utils");
 // NOTE(@kitten): There's no need to search very deep for modules
 // We don't expect native modules to be excessively nested in the dependency tree
-const MAX_DEPTH = 8;
+const MAX_DEPTH = 9;
 const createNodeModulePathsCreator = () => {
     const _nodeModulePathCache = new Map();
     return async function getNodeModulePaths(packagePath) {
         const outputPaths = [];
         const nodeModulePaths = node_module_1.default._nodeModulePaths(packagePath);
-        for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-            const nodeModulePath = nodeModulePaths[idx];
+        for (const [idx, nodeModulePath] of nodeModulePaths.entries()) {
             let target = _nodeModulePathCache.get(nodeModulePath);
             if (target === undefined) {
                 target = await (0, utils_2.maybeRealpath)(nodeModulePath);
@@ -58,8 +57,8 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
         }
     }
     const resolveDependency = async (dependencyName) => {
-        for (let idx = 0; idx < nodeModulePaths.length; idx++) {
-            const originPath = (0, utils_2.fastJoin)(nodeModulePaths[idx], dependencyName);
+        for (const modulePath of nodeModulePaths) {
+            const originPath = (0, utils_2.fastJoin)(modulePath, dependencyName);
             const nodeModulePath = await (0, utils_2.maybeRealpath)(originPath);
             if (nodeModulePath != null) {
                 return {
@@ -88,14 +87,10 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
     const maxDepth = limitDepth != null ? limitDepth : MAX_DEPTH;
     const recurse = async (resolution, depth = 0) => {
         const searchResults = Object.create(null);
-        if (_visitedPackagePaths.has(resolution.path)) {
-            return searchResults;
-        }
-        else {
-            _visitedPackagePaths.add(resolution.path);
-        }
+        const hasVisitedPath = _visitedPackagePaths.has(resolution.path);
+        _visitedPackagePaths.add(resolution.path);
         const [nodeModulePaths, packageJson] = await Promise.all([
-            getNodeModulePaths(resolution.path),
+            !hasVisitedPath ? getNodeModulePaths(resolution.path) : [],
             (0, utils_2.loadPackageJson)((0, utils_2.fastJoin)(resolution.path, 'package.json')),
         ]);
         if (!packageJson) {
@@ -104,11 +99,11 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
         else {
             resolution.version = packageJson.version || '';
         }
-        const modules = await resolveDependencies(packageJson, nodeModulePaths, depth, shouldIncludeDependency);
-        for (let idx = 0; idx < modules.length; idx++) {
-            searchResults[modules[idx].name] = modules[idx];
-        }
-        if (depth + 1 < maxDepth) {
+        if (!hasVisitedPath && depth < maxDepth) {
+            const modules = await resolveDependencies(packageJson, nodeModulePaths, depth, shouldIncludeDependency);
+            for (const module of modules) {
+                searchResults[module.name] = module;
+            }
             const childResults = await (0, concurrency_1.taskAll)(modules, (resolution) => recurse(resolution, depth + 1));
             return (0, utils_1.mergeResolutionResults)(childResults, searchResults);
         }

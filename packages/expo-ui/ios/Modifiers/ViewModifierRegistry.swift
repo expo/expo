@@ -780,7 +780,6 @@ internal struct ListRowBackground: ViewModifier, Record {
   }
 }
 
-
 internal enum VerticalEdgeOptions: String, Enumerable {
   case all
   case top
@@ -986,14 +985,6 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
-internal struct LineLimitModifier: ViewModifier, Record {
-  @Field var limit: Int?
-
-  func body(content: Content) -> some View {
-    content.lineLimit(limit)
-  }
-}
-
 internal enum Prominence: String, Enumerable {
   case standard
   case increased
@@ -1106,7 +1097,7 @@ internal enum AxisOptions: String, Enumerable {
   case horizontal
   case vertical
   case both
-  
+
   func toAxis() -> Axis.Set {
     switch self {
     case .vertical:
@@ -1307,7 +1298,7 @@ public class ViewModifierRegistry {
   }
 
   /**
-    * Applies `Text returning modifiers. Useful for Text concatenation in TextView.
+   * Applies Text returning modifiers. Useful for Text concatenation in TextView.
    */
   func applyTextModifier(
     _ type: String,
@@ -1349,6 +1340,29 @@ public class ViewModifierRegistry {
       return Text(" ['\(type)' not supported for nested Text]").foregroundColor(.red)
       #else
       return text
+      #endif
+    }
+  }
+
+  /**
+   * Applies Image returning modifiers.
+   */
+  func applyImageModifier(
+    _ type: String,
+    to image: Image,
+    appContext: AppContext,
+    params: [String: Any]
+  ) -> Image {
+    switch type {
+    case "resizable":
+      guard let modifier = try? ResizableModifier(from: params, appContext: appContext)
+      else { return image.resizable() }
+      return image.resizable(capInsets: EdgeInsets(top: modifier.top, leading: modifier.leading, bottom: modifier.bottom, trailing: modifier.trailing), resizingMode: modifier.resizingMode.toResizingMode)
+    default:
+      #if DEBUG
+      return image
+      #else
+      return image
       #endif
     }
   }
@@ -1804,6 +1818,14 @@ extension ViewModifierRegistry {
       return try TagModifier(from: params, appContext: appContext)
     }
 
+    register("scrollTargetBehavior") { params, appContext, _ in
+      return try ScrollTargetBehaviorModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollTargetLayout") { params, appContext, _ in
+      return try ScrollTargetLayoutModifier(from: params, appContext: appContext)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
@@ -1812,12 +1834,28 @@ extension ViewModifierRegistry {
       return try SubmitLabelModifier(from: params, appContext: appContext)
     }
 
+    register("textInputAutocapitalization") { params, appContext, _ in
+      return try TextInputAutocapitalizationModifier(from: params, appContext: appContext)
+    }
+
+    register("textContentType") { params, appContext, _ in
+      return try TextContentTypeModifier(from: params, appContext: appContext)
+    }
+
     register("datePickerStyle") { params, appContext, _ in
       return try DatePickerStyleModifier(from: params, appContext: appContext)
     }
 
     register("scrollDisabled") { params, appContext, _ in
       return try ScrollDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("defaultScrollAnchor") { params, appContext, _ in
+      return try DefaultScrollAnchorModifier(from: params, appContext: appContext)
+    }
+
+    register("defaultScrollAnchorForRole") { params, appContext, _ in
+      return try DefaultScrollAnchorForRoleModifier(from: params, appContext: appContext)
     }
 
     register("progressViewStyle") { params, appContext, _ in
@@ -1862,6 +1900,22 @@ extension ViewModifierRegistry {
 
     register("contentTransition") { params, appContext, _ in
       return try ContentTransitionModifier(from: params, appContext: appContext)
+    }
+
+    register("widgetURL") { params, appContext, _ in
+      return try WidgetURLModifier(from: params, appContext: appContext)
+    }
+
+    register("keyboardType") { params, appContext, _ in
+      return try KeyboardTypeModifier(from: params, appContext: appContext)
+    }
+
+    register("autocorrectionDisabled") { params, appContext, _ in
+      return try AutocorrectionDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("onSubmit") { params, appContext, eventDispatcher in
+      return try OnSubmitModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
   }
 }

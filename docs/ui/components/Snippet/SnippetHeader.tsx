@@ -28,19 +28,19 @@ export const SnippetHeader = ({
   <div
     data-md="snippet-header"
     className={mergeClasses(
-      'flex min-h-[40px] justify-between overflow-hidden border border-default bg-default pl-4',
+      'border-default bg-default flex min-h-[40px] justify-between overflow-hidden border pl-4',
       !float && 'rounded-t-md border-b-0',
       float && 'rounded-md',
       Icon && 'pl-3',
-      alwaysDark && 'dark-theme !bg-palette-gray3 pr-2 dark:border-transparent'
+      alwaysDark && 'dark-theme bg-palette-gray3! pr-2 dark:border-transparent'
     )}>
     <LABEL
       className={mergeClasses(
-        'flex min-h-10 w-full items-center gap-2 overflow-x-auto py-1 pr-4 font-medium !leading-tight',
+        'flex min-h-10 w-full items-center gap-2 overflow-x-auto py-1 pr-4 leading-tight! font-medium',
         alwaysDark && 'text-palette-white'
       )}>
       {Icon && <Icon className="icon-sm shrink-0" />}
-      <span className="break-words w-max max-w-[60dvw] truncate">{title}</span>
+      <span className="w-max max-w-[60dvw] truncate wrap-break-word">{title}</span>
       {showOperation && operationType ? <FileStatus type={operationType} /> : null}
       {titleSlot}
     </LABEL>

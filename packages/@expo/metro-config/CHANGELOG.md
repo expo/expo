@@ -6,9 +6,16 @@
 
 ### 🎉 New features
 
+- Add Hermes V1 detection ([#43080](https://github.com/expo/expo/pull/43080) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
+- Fix mangled async chunk filenames for catch-all routes ([#43547](https://github.com/expo/expo/pull/43547) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+- Updated the `isHermesV1` detection logic and fixed unit tests. ([#43841](https://github.com/expo/expo/pull/43841) by [@kudo](https://github.com/kudo))
+- Remove outdated `watcher.unstable_workerThreads` option ([#44591](https://github.com/expo/expo/pull/44591) by [@kitten](https://github.com/kitten))
 
 ## 55.0.9 — 2026-02-25
 

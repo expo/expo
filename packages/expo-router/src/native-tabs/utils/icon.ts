@@ -5,7 +5,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { isChildOfType } from '../../utils/children';
 import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../common/elements';
-import type { NativeTabOptions, NativeTabsProps } from '../types';
+import type { NativeTabOptions, NativeTabsProps, SymbolOrImageSource } from '../types';
 
 export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconColor']): {
   default?: ColorValue;
@@ -35,6 +35,8 @@ type AwaitedIcon =
 
 export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
   const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
+  const renderingMode =
+    icon && typeof icon === 'object' && 'renderingMode' in icon ? icon.renderingMode : undefined;
   const [awaitedIcon, setAwaitedIcon] = useState<AwaitedIcon | undefined>(undefined);
 
   useEffect(() => {
@@ -42,8 +44,7 @@ export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
       if (src && src instanceof Promise) {
         const awaitedSrc = await src;
         if (awaitedSrc) {
-          const currentAwaitedIcon = { src: awaitedSrc };
-          setAwaitedIcon(currentAwaitedIcon);
+          setAwaitedIcon({ src: awaitedSrc });
         }
       }
     };
@@ -54,7 +55,13 @@ export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
     // So we should be safe with promise resolving
   }, [src]);
 
-  return useMemo(() => (isAwaitedIcon(icon) ? icon : awaitedIcon), [awaitedIcon, icon]);
+  return useMemo(() => {
+    const resolved = isAwaitedIcon(icon) ? icon : awaitedIcon;
+    if (resolved && renderingMode && 'src' in resolved) {
+      return { ...resolved, renderingMode };
+    }
+    return resolved;
+  }, [awaitedIcon, icon, renderingMode]);
 }
 
 function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
@@ -115,14 +122,22 @@ export function convertOptionsIconToAndroidPropsIcon(
   return undefined;
 }
 
-export function convertComponentSrcToImageSource(src: React.ReactElement) {
+export function convertComponentSrcToImageSource(
+  src: React.ReactElement,
+  renderingMode?: 'template' | 'original'
+) {
+  let result: SymbolOrImageSource | undefined;
   if (isChildOfType(src, NativeTabsTriggerVectorIcon)) {
     const props = src.props;
-    return { src: props.family.getImageSource(props.name, 24, 'white') };
+    result = { src: props.family.getImageSource(props.name, 24, 'white') };
   } else if (isChildOfType(src, NativeTabsTriggerPromiseIcon)) {
-    return { src: src.props.loader() };
+    result = { src: src.props.loader() };
   } else {
     console.warn('Only VectorIcon is supported as a React element in Icon.src');
+    return undefined;
   }
-  return undefined;
+  if (renderingMode) {
+    result = { ...result, renderingMode };
+  }
+  return result;
 }

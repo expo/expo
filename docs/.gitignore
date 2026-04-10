@@ -1,5 +1,6 @@
 # general
 node_modules
+.env
 *.tsbuildinfo
 .eslintcache
 
@@ -14,6 +15,7 @@ public/static/constants
 .next
 .swc
 out
+next-env.d.ts
 
 # worker test temp dir
 .worker-test
@@ -35,3 +37,6 @@ public/llms-eas.txt
 public/llms-sdk.txt
 scripts/generate-llms/talks.js
 public/llms-sdk-*.txt
+
+# vale binary (installed by scripts/install-vale.sh)
+.vale/bin/

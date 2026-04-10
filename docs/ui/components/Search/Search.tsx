@@ -49,7 +49,7 @@ export const Search = ({ mainSection }: SearchProps) => {
       />
       <CommandMenuTrigger
         setOpen={setOpen}
-        className="mb-2.5 hocus:bg-element hocus:dark:bg-subtle"
+        className="hocus:bg-element hocus:dark:bg-subtle mb-2.5"
       />
     </>
   );

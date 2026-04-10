@@ -4,7 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Change the names of "iPad Air (11-inch) (6th generation)", "iPad Air (13-inch) (6th generation)" and "iPhone SE" to "iPad Air 11-inch (M2)", "iPad Air 13-inch (M2)" and "iPhone SE (1st generation)". ([#43644](https://github.com/expo/expo/pull/43644) by [@prusnak](https://github.com/prusnak))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- [iOS] Update Apple devices ([#43644](https://github.com/expo/expo/pull/43644) by [@prusnak](https://github.com/prusnak))
 
 ### 🐛 Bug fixes
 

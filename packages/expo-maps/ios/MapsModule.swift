@@ -19,7 +19,7 @@ public class MapsModule: Module {
       }
       permissionsManager.getPermissionUsingRequesterClass(
         MapPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -30,7 +30,7 @@ public class MapsModule: Module {
       }
       permissionsManager.askForPermission(
         usingRequesterClass: MapPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }

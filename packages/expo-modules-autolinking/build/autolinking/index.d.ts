@@ -1,7 +1,6 @@
 import { AutolinkingOptions } from '../commands/autolinkingOptions';
 import { ExtraDependencies, ModuleDescriptor, SearchResults, SupportedPlatform } from '../types';
 export { getConfiguration } from './getConfiguration';
-export { generateModulesProviderAsync } from './generatePackageList';
 /** @deprecated */
 export interface SearchOptions extends Partial<AutolinkingOptions> {
     projectRoot: string;

@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- [plugin] Add option to disable tools button by default. ([#44251](https://github.com/expo/expo/pull/44251) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix support for react-native 0.84 ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fix crash in FabState coerceTo ([#43752](https://github.com/expo/expo/pull/43752) by [@kot331107](https://github.com/kot331107))
+- [iOS] Fix react-native version resolution in podspec ([#44178](https://github.com/expo/expo/pull/44178) by [@kitten](https://github.com/kitten))
+- [iOS] Fix deadlock in `DevMenuPackagerConnectionHandler.setup`. ([#44405](https://github.com/expo/expo/pull/44405) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

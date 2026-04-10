@@ -59,7 +59,7 @@ describe('exports for hermes with no bytecode', () => {
     const bundlePath = globSync('**/*.js', {
       cwd: path.join(outputDir, '_expo'),
       absolute: true,
-    })[0];
+    })[0]!;
 
     const bundle = await fs.promises.readFile(bundlePath, 'utf8');
     // Minified mark
@@ -116,7 +116,7 @@ describe('exports for hermes with no bytecode and no minification', () => {
     const bundlePath = globSync('**/*.js', {
       cwd: path.join(outputDir, '_expo'),
       absolute: true,
-    })[0];
+    })[0]!;
 
     const bundle = await fs.promises.readFile(bundlePath, 'utf8');
     // Unminified mark

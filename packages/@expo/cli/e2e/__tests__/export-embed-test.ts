@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { resolveEntryPoint } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 
@@ -48,7 +48,7 @@ it('runs `npx expo export:embed --help`', async () => {
 
       Options
         <dir>                                  Directory of the Expo project. Default: Current working directory
-        --entry-file <path>                    Path to the root JS file, either absolute or relative to JS root
+        --entry-file <path>                    Path to the root JS file, either absolute or relative to current working directory
         --platform <string>                    Either "ios" or "android" (default: "ios")
         --transformer <string>                 Specify a custom transformer to be used
         --dev [boolean]                        If false, warnings are disabled and the bundle is minified (default: true)
@@ -96,7 +96,7 @@ it('runs `npx expo export:embed`', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -122,13 +122,26 @@ it('runs `npx expo export:embed`', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
     'assets/__e2e__/static-rendering/sweet.ttf',
-    'assets/__packages/expo-router/assets/arrow_down.png',
-    'assets/__packages/expo-router/assets/error.png',
-    'assets/__packages/expo-router/assets/file.png',
-    'assets/__packages/expo-router/assets/forward.png',
-    'assets/__packages/expo-router/assets/pkg.png',
-    'assets/__packages/expo-router/assets/sitemap.png',
-    'assets/__packages/expo-router/assets/unmatched.png',
+    expect.stringMatching(/assets\/arrow_down\.png$/),
+    expect.stringMatching(/assets\/error\.png$/),
+    expect.stringMatching(/assets\/file\.png$/),
+    expect.stringMatching(/assets\/forward\.png$/),
+    expect.stringMatching(/assets\/pkg\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon-mask\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@3x\.png$/),
+    expect.stringMatching(/assets\/sitemap\.png$/),
+    expect.stringMatching(/assets\/unmatched\.png$/),
     'assets/assets/icon.png',
     'output.js',
   ]);
@@ -155,7 +168,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -192,13 +205,26 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
     'assets/__e2e__/static-rendering/sweet.ttf',
-    'assets/__packages/expo-router/assets/arrow_down.png',
-    'assets/__packages/expo-router/assets/error.png',
-    'assets/__packages/expo-router/assets/file.png',
-    'assets/__packages/expo-router/assets/forward.png',
-    'assets/__packages/expo-router/assets/pkg.png',
-    'assets/__packages/expo-router/assets/sitemap.png',
-    'assets/__packages/expo-router/assets/unmatched.png',
+    expect.stringMatching(/assets\/arrow_down\.png$/),
+    expect.stringMatching(/assets\/error\.png$/),
+    expect.stringMatching(/assets\/file\.png$/),
+    expect.stringMatching(/assets\/forward\.png$/),
+    expect.stringMatching(/assets\/pkg\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon-mask\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@3x\.png$/),
+    expect.stringMatching(/assets\/sitemap\.png$/),
+    expect.stringMatching(/assets\/unmatched\.png$/),
     'assets/assets/icon.png',
     'output.js',
     'output.js.map',
@@ -217,7 +243,7 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -253,13 +279,26 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
-    'assets/__packages/expo-router/assets/arrow_down.png',
-    'assets/__packages/expo-router/assets/error.png',
-    'assets/__packages/expo-router/assets/file.png',
-    'assets/__packages/expo-router/assets/forward.png',
-    'assets/__packages/expo-router/assets/pkg.png',
-    'assets/__packages/expo-router/assets/sitemap.png',
-    'assets/__packages/expo-router/assets/unmatched.png',
+    expect.stringMatching(/assets\/arrow_down\.png$/),
+    expect.stringMatching(/assets\/error\.png$/),
+    expect.stringMatching(/assets\/file\.png$/),
+    expect.stringMatching(/assets\/forward\.png$/),
+    expect.stringMatching(/assets\/pkg\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon-mask\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/back-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/clear-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/close-icon@3x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@2x\.png$/),
+    expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@3x\.png$/),
+    expect.stringMatching(/assets\/sitemap\.png$/),
+    expect.stringMatching(/assets\/unmatched\.png$/),
     'output.js',
   ]);
 });
@@ -273,12 +312,12 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   // `npx expo export:embed`
   await executeExpoAsync(
     projectRoot,
-    // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
+    // pnpm expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
     // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'android' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',
@@ -314,17 +353,51 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
-    'drawable-mdpi/__packages_exporouter_assets_arrow_down.png',
-    'drawable-mdpi/__packages_exporouter_assets_error.png',
-    'drawable-mdpi/__packages_exporouter_assets_file.png',
-    'drawable-mdpi/__packages_exporouter_assets_forward.png',
-    'drawable-mdpi/__packages_exporouter_assets_pkg.png',
-    'drawable-mdpi/__packages_exporouter_assets_sitemap.png',
-    'drawable-mdpi/__packages_exporouter_assets_unmatched.png',
+    expect.stringMatching(/drawable-mdpi\/.*_arrow_down\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_arrow_right\.xml$/),
+    expect.stringMatching(/drawable-mdpi\/.*_checkmark\.xml$/),
+    expect.stringMatching(/drawable-mdpi\/.*_error\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_file\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_forward\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_pkg\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_backicon\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_backiconmask\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_clearicon\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_closeicon\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_searchicon\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_sitemap\.png$/),
+    expect.stringMatching(/drawable-mdpi\/.*_unmatched\.png$/),
+
     'drawable-mdpi/assets_icon.png',
+
+    expect.stringMatching(/drawable-xhdpi\/.*_backicon\.png$/),
+    expect.stringMatching(/drawable-xhdpi\/.*_clearicon\.png$/),
+    expect.stringMatching(/drawable-xhdpi\/.*_closeicon\.png$/),
+    expect.stringMatching(/drawable-xhdpi\/.*_searchicon\.png$/),
+
+    expect.stringMatching(/drawable-xxhdpi\/.*_backicon\.png$/),
+    expect.stringMatching(/drawable-xxhdpi\/.*_clearicon\.png$/),
+    expect.stringMatching(/drawable-xxhdpi\/.*_closeicon\.png$/),
+    expect.stringMatching(/drawable-xxhdpi\/.*_searchicon\.png$/),
+
+    expect.stringMatching(/drawable-xxxhdpi\/.*_backicon\.png$/),
+    expect.stringMatching(/drawable-xxxhdpi\/.*_clearicon\.png$/),
+    expect.stringMatching(/drawable-xxxhdpi\/.*_closeicon\.png$/),
+    expect.stringMatching(/drawable-xxxhdpi\/.*_searchicon\.png$/),
+
     'output.js',
     'output.js.map',
     'raw/__e2e___staticrendering_sweet.ttf',
+
+    expect.stringMatching(/raw\/.*_100thin\.ttf$/),
+    expect.stringMatching(/raw\/.*_200extralight\.ttf$/),
+    expect.stringMatching(/raw\/.*_300light\.ttf$/),
+    expect.stringMatching(/raw\/.*_400regular\.ttf$/),
+    expect.stringMatching(/raw\/.*_500medium\.ttf$/),
+    expect.stringMatching(/raw\/.*_600semibold\.ttf$/),
+    expect.stringMatching(/raw\/.*_700bold\.ttf$/),
+    expect.stringMatching(/raw\/.*_evilicons\.ttf$/),
+
     'raw/keep.xml',
   ]);
 });
@@ -341,7 +414,7 @@ it('runs `npx expo export:embed --bytecode`', async () => {
     [
       'export:embed',
       '--entry-file',
-      resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+      path.relative(projectRoot, resolveEntryPoint(projectRoot, { platform: 'ios' })),
       '--bundle-output',
       `./${output}/output.js`,
       '--assets-dest',

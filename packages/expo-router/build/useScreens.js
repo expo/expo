@@ -42,7 +42,6 @@ exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 exports.screenOptionsFactory = screenOptionsFactory;
 exports.routeToScreen = routeToScreen;
 exports.getSingularId = getSingularId;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
@@ -54,6 +53,7 @@ const navigationEvents_1 = require("./navigationEvents");
 const utils_2 = require("./navigationEvents/utils");
 const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
+const native_1 = require("./react-navigation/native");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
@@ -70,7 +70,7 @@ function getSortedChildren(children, order = [], initialRouteName) {
             console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
             return null;
         }
-        const matchIndex = entries.findIndex((child) => child.route === name);
+        const matchIndex = entries.findIndex((child) => child.route === name || child.route === `${name}/index`);
         if (matchIndex === -1) {
             console.warn(`[Layout children]: No route named "${name}" exists in nested children:`, children.map(({ route }) => route));
             return null;
@@ -122,16 +122,20 @@ function useSortedScreens(order, protectedScreens, useOnlyUserDefinedScreens = f
     const node = (0, Route_1.useRouteNode)();
     const nodeChildren = node?.children ?? [];
     const children = useOnlyUserDefinedScreens
-        ? nodeChildren.filter((child) => order.some((userDefinedScreen) => userDefinedScreen.name === child.route))
+        ? nodeChildren.filter((child) => order.some((userDefinedScreen) => userDefinedScreen.name === child.route ||
+            `${userDefinedScreen.name}/index` === child.route))
         : nodeChildren;
     const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
     return react_1.default.useMemo(() => sorted
-        .filter((item) => !protectedScreens.has(item.route.route))
+        .filter((item) => {
+        const route = item.route.route;
+        return (!protectedScreens.has(route) && !protectedScreens.has(route.replace(/\/index$/, '')));
+    })
         .map((value) => {
         return routeToScreen(value.route, value.props);
     }), [sorted, protectedScreens]);
 }
-function fromImport(value, { ErrorBoundary, ...component }) {
+function fromImport(value, { ErrorBoundary, SuspenseFallback, ...component }) {
     // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
     if (component?.default && __DEV__) {
         component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
@@ -149,16 +153,17 @@ function fromImport(value, { ErrorBoundary, ...component }) {
         }
         return {
             default: Wrapped,
+            SuspenseFallback,
         };
     }
     if (process.env.NODE_ENV !== 'production') {
         if (typeof component.default === 'object' &&
             component.default &&
             Object.keys(component.default).length === 0) {
-            return { default: EmptyRoute_1.EmptyRoute };
+            return { default: EmptyRoute_1.EmptyRoute, SuspenseFallback };
         }
     }
-    return { default: component.default };
+    return { default: component.default, SuspenseFallback };
 }
 function fromLoadedRoute(value, res) {
     if (!(res instanceof Promise)) {
@@ -175,6 +180,7 @@ function getQualifiedRouteComponent(value) {
         return qualifiedStore.get(value);
     }
     let ScreenComponent;
+    let LayoutSuspenseFallback;
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
     if (import_mode_1.default === 'lazy') {
         ScreenComponent = react_1.default.lazy(async () => {
@@ -187,7 +193,9 @@ function getQualifiedRouteComponent(value) {
     }
     else {
         const res = value.loadRoute();
-        ScreenComponent = fromImport(value, res).default;
+        const result = fromImport(value, res);
+        ScreenComponent = result.default;
+        LayoutSuspenseFallback = value.type === 'layout' ? result.SuspenseFallback : undefined;
     }
     const WrappedScreenComponent = (props) => {
         (0, utils_1.useColorSchemeChangesIfNeeded)();
@@ -202,6 +210,13 @@ function getQualifiedRouteComponent(value) {
         const stateForPath = (0, native_1.useStateForPath)();
         const isFocused = navigation.isFocused();
         const store = (0, storeContext_1.useExpoRouterStore)();
+        const InheritedSuspenseFallback = (0, react_1.use)(Route_1.SuspenseFallbackContext);
+        const ResolvedSuspenseFallback = import_mode_1.default === 'lazy'
+            ? SuspenseFallback_1.SuspenseFallback
+            : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? SuspenseFallback_1.SuspenseFallback);
+        const providedSuspenseFallback = value.type === 'layout'
+            ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
+            : InheritedSuspenseFallback;
         if (isFocused) {
             const state = navigation.getState();
             const isLeaf = !(state && 'state' in state.routes[state.index]);
@@ -232,16 +247,18 @@ function getQualifiedRouteComponent(value) {
         const isRouteType = value.type === 'route';
         const hasRouteKey = !!route?.key;
         return (<Route_1.Route node={value} params={route?.params}>
-        {navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
-        <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
-          <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
-          <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-            <WrappedScreenComponent {...props} 
+        <Route_1.SuspenseFallbackContext value={providedSuspenseFallback}>
+          {navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
+          <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
+            <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
+            <react_1.default.Suspense fallback={<ResolvedSuspenseFallback route={value.contextKey} params={(route?.params ?? {})}/>}>
+              <WrappedScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
         segment={value.route}/>
-          </react_1.default.Suspense>
-        </zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider>
+            </react_1.default.Suspense>
+          </zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider>
+        </Route_1.SuspenseFallbackContext>
       </Route_1.Route>);
     }
     if (__DEV__) {

@@ -72,6 +72,12 @@ export function mergeWithDuplicate(
     } else if (pathDepthB < pathDepthA) {
       target = b;
       duplicate = a;
+    } else if (b.source < a.source) {
+      target = b;
+      duplicate = a;
+    } else if (b.originPath < a.originPath) {
+      target = b;
+      duplicate = a;
     } else {
       target = a;
       duplicate = b;
@@ -134,13 +140,13 @@ export function mergeResolutionResults(
   results: ResolutionResult[],
   base?: ResolutionResult
 ): ResolutionResult {
-  if (base == null && results.length === 1) {
+  if (base == null && results.length === 1 && results[0] != null) {
     return results[0];
   }
   const output: ResolutionResult = base == null ? Object.create(null) : base;
   for (let idx = 0; idx < results.length; idx++) {
     for (const key in results[idx]) {
-      const resolution = results[idx][key]!;
+      const resolution = results[idx]![key]!;
       const prevResolution = output[key];
       if (prevResolution != null) {
         output[key] = mergeWithDuplicate(prevResolution, resolution);

@@ -109,6 +109,7 @@ With the `branches` list, you can trigger the workflow only when those specified
 With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
 - `opened`
+- `ready_for_review`
 - `reopened`
 - `synchronize`
 - `labeled`
@@ -166,6 +167,110 @@ on:
     - Test
     - Preview
     # other labels
+```
+
+### `on.app_store_connect`
+
+Runs your workflow when one of the selected App Store Connect events occurs.
+
+> **info** To use this trigger, configure your App Store Connect connection in the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/settings). For setup steps, see the [App Store Connect trigger setup](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) section.
+
+When `on.app_store_connect` is present, you must specify at least one event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`). Within a configured event domain, you can specify which states should trigger your workflow.
+
+#### `on.app_store_connect.app_version.states`
+
+Filters app store app version state change events. Defaults to all supported app version states when not provided.
+
+Supported values:
+
+- `accepted`
+- `developer_rejected`
+- `in_review`
+- `invalid_binary`
+- `metadata_rejected`
+- `pending_apple_release`
+- `pending_developer_release`
+- `prepare_for_submission`
+- `processing_for_distribution`
+- `ready_for_distribution`
+- `ready_for_review`
+- `rejected`
+- `replaced_with_new_version`
+- `waiting_for_export_compliance`
+- `waiting_for_review`
+
+#### `on.app_store_connect.build_upload.states`
+
+Filters build upload events by state. Defaults to all supported build upload states when not provided.
+
+Supported values:
+
+- `complete`
+- `failed`
+- `processing`
+- `awaiting_upload`
+
+#### `on.app_store_connect.external_beta.states`
+
+Filters external beta events by state. Defaults to all supported external beta states when not provided.
+
+Supported values:
+
+- `processing`
+- `processing_exception`
+- `missing_export_compliance`
+- `ready_for_beta_testing`
+- `in_beta_testing`
+- `expired`
+- `ready_for_beta_submission`
+- `in_export_compliance_review`
+- `waiting_for_beta_review`
+- `in_beta_review`
+- `beta_rejected`
+- `beta_approved`
+
+#### `on.app_store_connect.beta_feedback.types`
+
+Filters beta feedback reported by testers by its type. Defaults to all supported beta feedback types when not provided.
+
+Supported values:
+
+- `crash`
+- `screenshot`
+
+All filter values must be lowercase and are case-sensitive.
+
+```yaml
+# Triggers when:
+# - the app version enters review,
+# - a build upload completes or fails,
+# - an external beta build is ready for testing or approved,
+# - a tester reports a crash via TestFlight.
+on:
+  app_store_connect:
+    app_version:
+      states:
+        - ready_for_review
+        - waiting_for_review
+    build_upload:
+      states:
+        - complete
+        - failed
+    external_beta:
+      states:
+        - ready_for_beta_testing
+        - beta_approved
+    beta_feedback:
+      types:
+        - crash
+```
+
+```yaml
+# Triggers on any app version or build upload state change.
+on:
+  app_store_connect:
+    app_version: {}
+    build_upload: {}
 ```
 
 ### `on.schedule.cron`
@@ -364,17 +469,17 @@ Default working directory to run the scripts in. Relative paths like "./assets" 
 
 Specific versions of tools that should be used for jobs defined in this workflow configuration. Follow each tool's documentation for available values.
 
-| Tool        | Description                                                                                                                              |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `node`      | Version of Node.js installed via `nvm`.                                                                                                  |
-| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                  |
-| `corepack`  | If set to `true`, [corepack](https://nodejs.org/api/corepack.html) will be enabled at the beginning of build process. Defaults to false. |
-| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                  |
-| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                               |
-| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                   |
-| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                              |
-| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                             |
-| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                            |
+| Tool        | Description                                                                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node`      | Version of Node.js installed via `nvm`.                                                                                                       |
+| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                       |
+| `corepack`  | If set to `true`, [corepack](https://github.com/nodejs/corepack#readme) will be enabled at the beginning of build process. Defaults to false. |
+| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                       |
+| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                                    |
+| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                        |
+| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                                   |
+| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                                  |
+| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                                 |
 
 Example of workflow using `defaults.tools`:
 
@@ -622,6 +727,12 @@ type GitHubContext = {
     };
     pull_request?: {
       number: number;
+      title: string;
+      body: string | null;
+      state: 'open' | 'closed';
+      draft: boolean;
+      merged: boolean | null;
+      // ... Other fields from the GitHub Pull Request webhook payload
     };
     number?: number;
     schedule?: string;
@@ -629,6 +740,8 @@ type GitHubContext = {
   };
 };
 ```
+
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes all fields from GitHub's Pull Request webhook payload. The commonly used fields are shown above, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
@@ -650,7 +763,7 @@ jobs:
   title="${{ github }} context"
   description="View the ${{ github }} definition source code."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/eas-build-job/src/common.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/eas-build-job/src/common.ts"
 />
 
 #### `workflow`
@@ -1095,14 +1208,14 @@ jobs:
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
       android_system_image_package: string # optional. Android emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
-      output_format?: string # optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
 ```
 
 #### `maestro-cloud`
 
-Runs [Maestro](https://maestro.dev/) tests on a build in [Maestro Cloud](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud). See [Maestro Cloud job documentation](/eas/workflows/pre-packaged-jobs#maestro-cloud) for detailed information and examples.
+Runs [Maestro](https://maestro.dev/) tests on a build in [Maestro Cloud](https://docs.maestro.dev/maestro-cloud/run-tests-on-maestro-cloud). See [Maestro Cloud job documentation](/eas/workflows/pre-packaged-jobs#maestro-cloud) for detailed information and examples.
 
-> **important** Running tests in Maestro Cloud requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud) to learn more.
+> **important** Running tests in Maestro Cloud requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/maestro-cloud/run-tests-on-maestro-cloud) to learn more.
 
 ```yaml
 jobs:
@@ -1433,7 +1546,7 @@ jobs:
   title="eas/checkout source code"
   description="View the source code for the eas/checkout function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
 />
 
 #### `eas/install_node_modules`
@@ -1454,7 +1567,7 @@ jobs:
   title="eas/install_node_modules source code"
   description="View the source code for the eas/install_node_modules function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
 />
 
 #### `eas/download_build`
@@ -1506,7 +1619,7 @@ jobs:
   title="eas/download_build source code"
   description="View the source code for the eas/download_build function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
 />
 
 #### `eas/prebuild`
@@ -1549,7 +1662,7 @@ jobs:
   title="eas/prebuild source code"
   description="View the source code for the eas/prebuild function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
 />
 
 #### `eas/restore_cache`
@@ -1597,7 +1710,7 @@ jobs:
   title="eas/restore_cache source code"
   description="View the source code for the eas/restore_cache function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/restoreCache.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/restoreCache.ts"
 />
 
 #### `eas/save_cache`
@@ -1634,12 +1747,12 @@ jobs:
   title="eas/save_cache source code"
   description="View the source code for the eas/save_cache function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/saveCache.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/saveCache.ts"
 />
 
 #### `eas/send_slack_message`
 
-Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
+Sends a specified message to a configured [Slack webhook URL](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://docs.slack.dev/block-kit) message.
 
 With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: https://expo.dev/builds/${{ needs.build_ios.outputs.build_id }}`, `Build finished with status: ${{ after.build_android.status }}`.
 
@@ -1660,14 +1773,14 @@ jobs:
 | Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                                                            |
-| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                           |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://docs.slack.dev/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                          |
 | `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use [EAS Environment Variables](/eas/environment-variables/#managing-environment-variables) like `slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` Environment Variable, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink
   title="eas/send_slack_message source code"
   description="View the source code for the eas/send_slack_message function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
 />
 
 #### `eas/use_npm_token`
@@ -1693,7 +1806,7 @@ jobs:
   title="eas/use_npm_token source code"
   description="View the source code for the eas/use_npm_token function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
 />
 
 #### `eas/download_artifact`
@@ -1732,7 +1845,6 @@ jobs:
     params:
       build_id: '123-abc'
       flow_path: 'path/to/flow.yaml'
-      output_format: 'junit'
   my_job:
     needs: [maestro_tests]
     steps:
@@ -1748,7 +1860,7 @@ jobs:
   title="eas/download_artifact source code"
   description="View the source code for the eas/download_artifact function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
 />
 
 ## Built-in shell functions

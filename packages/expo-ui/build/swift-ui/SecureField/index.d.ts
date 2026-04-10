@@ -1,8 +1,7 @@
 import { Ref } from 'react';
-import { TextFieldKeyboardType } from '../TextField';
 import { type CommonViewModifierProps } from '../types';
 /**
- * Can be used for imperatively setting text on the SecureField component.
+ * Can be used for imperatively setting text and focus on the `SecureField` component.
  */
 export type SecureFieldRef = {
     setText: (newText: string) => Promise<void>;
@@ -11,35 +10,25 @@ export type SecureFieldRef = {
 };
 export type SecureFieldProps = {
     ref?: Ref<SecureFieldRef>;
-    /**
-     * Initial value that the SecureField displays when being mounted. As the SecureField is an uncontrolled component, change the key prop if you need to change the text value.
-     */
+    /** Initial value displayed when mounted. Uncontrolled — change `key` to reset. */
     defaultValue?: string;
+    /** If true, the field will be focused automatically when mounted. @default false */
+    autoFocus?: boolean;
     /**
      * A text that is displayed when the field is empty.
      */
     placeholder?: string;
     /**
-     * A callback triggered when user types in text into the SecureField.
+     * A callback triggered when the text value changes.
      */
-    onChangeText?: (value: string) => void;
+    onValueChange?: (value: string) => void;
     /**
-     * A callback triggered when user submits the TextField by pressing the return key.
+     * A callback triggered when the field gains or loses focus.
      */
-    onSubmit?: (value: string) => void;
-    /**
-     * A callback triggered when user focuses or blurs the SecureField.
-     */
-    onChangeFocus?: (focused: boolean) => void;
-    keyboardType?: TextFieldKeyboardType;
-    /**
-     * If true, the text input will be focused automatically when the component is mounted.
-     * @default false
-     */
-    autoFocus?: boolean;
+    onFocusChange?: (focused: boolean) => void;
 } & CommonViewModifierProps;
 /**
- * Renders a `SecureField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
+ * Renders a SwiftUI `SecureField` for password input.
  */
 export declare function SecureField(props: SecureFieldProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

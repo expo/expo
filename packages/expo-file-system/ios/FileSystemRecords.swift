@@ -17,6 +17,12 @@ struct RelocationOptions: Record {
   @Field var overwrite: Bool = false
 }
 
+struct FilePickingOptions: Record {
+  @Field var initialUri: URL?
+  @Field var mimeTypes: [String]?
+  @Field var multipleFiles: Bool?
+}
+
 struct FileInfo: Record {
   @Field var exists: Bool
   @Field var uri: String?

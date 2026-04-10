@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun CircularProgressBar(
   modifier: Modifier = Modifier,
+  progress: Float? = null,
   startAngle: Float = 270f,
   size: Dp = 96.dp,
   strokeWidth: Dp = size / 8,
@@ -34,18 +36,36 @@ fun CircularProgressBar(
   val backgroundColor = NewAppTheme.pallet.gray.`3`
   val progressColor = NewAppTheme.pallet.blue.`8`
 
-  val transition = rememberInfiniteTransition(label = "infiniteSpinningTransition")
+  val effectiveProgress = if (progress != null) {
+    progress
+  } else {
+    val transition = rememberInfiniteTransition(label = "infiniteSpinningTransition")
+    val animatedProgress by transition.animateFloat(
+      initialValue = 0f,
+      targetValue = 1f,
+      animationSpec = infiniteRepeatable(
+        tween(duration.inWholeMilliseconds.toInt())
+      ),
+      label = "Progress Animation"
+    )
+    animatedProgress
+  }
 
-  val animatedProgress by transition.animateFloat(
-    initialValue = 0f,
-    targetValue = 1f,
-    animationSpec = infiniteRepeatable(
-      tween(duration.inWholeMilliseconds.toInt())
-    ),
-    label = "Progress Animation"
-  )
+  val determinateModifier = if (progress != null) {
+    Modifier.graphicsLayer {
+      alpha = progress
+      rotationZ = progress * 270f
+    }
+  } else {
+    Modifier
+  }
 
-  Canvas(modifier = Modifier.size(size).then(modifier)) {
+  Canvas(
+    modifier = Modifier
+      .size(size)
+      .then(determinateModifier)
+      .then(modifier)
+  ) {
     val strokeWidthPx = strokeWidth.toPx()
     val arcSize = size.toPx() - strokeWidthPx
     drawArc(
@@ -59,18 +79,30 @@ fun CircularProgressBar(
       style = Stroke(width = strokeWidthPx)
     )
 
-    withTransform({
-      rotate(degrees = startAngle, pivot = center)
-    }) {
+    if (progress != null) {
       drawArc(
         color = progressColor,
-        startAngle = 0f,
-        sweepAngle = animatedProgress * 360,
+        startAngle = 270f,
+        sweepAngle = progress * 270f,
         useCenter = false,
         topLeft = Offset(strokeWidthPx / 2, strokeWidthPx / 2),
         size = Size(arcSize, arcSize),
         style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round)
       )
+    } else {
+      withTransform({
+        rotate(degrees = startAngle, pivot = center)
+      }) {
+        drawArc(
+          color = progressColor,
+          startAngle = 0f,
+          sweepAngle = effectiveProgress * 360,
+          useCenter = false,
+          topLeft = Offset(strokeWidthPx / 2, strokeWidthPx / 2),
+          size = Size(arcSize, arcSize),
+          style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round)
+        )
+      }
     }
   }
 }

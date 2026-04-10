@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
-barcode_scanner_enabled = podfile_properties.fetch('expo-camera.barcode-scanner-enabled', 'true') != 'false'
+barcode_scanner_enabled = podfile_properties.fetch('expo.camera.barcode-scanner-enabled', 'true') != 'false'
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoCamera'
@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1'
+    :ios => '16.4'
   }
   s.source         = { :git => "https://github.com/expo/expo.git" }
   s.static_framework = true

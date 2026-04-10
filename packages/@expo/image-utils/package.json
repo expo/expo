@@ -7,10 +7,10 @@
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
-    "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+    "pretest:e2e": "expo-module prepublishOnly",
+    "test:e2e": "expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
@@ -32,17 +32,18 @@
   ],
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",
+    "@expo/require-utils": "workspace:^55.0.2",
     "chalk": "^4.0.0",
     "getenv": "^2.0.0",
     "jimp-compact": "0.16.1",
     "parse-png": "^2.1.0",
-    "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },
   "devDependencies": {
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.0.0",
-    "expo-module-scripts": "^55.0.2",
+    "expo-module-scripts": "workspace:*",
+    "sharp": "~0.34.2",
     "sharp-cli": "^5.2.0"
   },
   "publishConfig": {

@@ -68,12 +68,12 @@ const generalDirectories = fs
 
 export const home = [
   makeSection('Get started', [
-    makePage('get-started/introduction.mdx'),
     makePage('get-started/create-a-project.mdx'),
     makePage('get-started/set-up-your-environment.mdx'),
     makePage('get-started/start-developing.mdx'),
     makePage('get-started/next-steps.mdx'),
   ]),
+  makeSection('AI', [makePage('skills.mdx'), makePage('llms.mdx')]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
     makePage('develop/app-navigation.mdx'),
@@ -146,7 +146,7 @@ export const home = [
     makePage('deploy/web.mdx'),
   ]),
   makeSection('Monitor', [makePage('monitoring/services.mdx')]),
-  makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx'), makePage('llms.mdx')]),
+  makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
 
 export const general = [
@@ -310,6 +310,7 @@ export const general = [
       makeSection('Tutorials', [
         makePage('modules/native-module-tutorial.mdx'),
         makePage('modules/native-view-tutorial.mdx'),
+        makePage('modules/inline-modules-tutorial.mdx'),
         makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
         makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
         makePage('modules/third-party-library.mdx'),
@@ -318,6 +319,7 @@ export const general = [
       ]),
       makeSection('Reference', [
         makePage('modules/module-api.mdx'),
+        makePage('modules/inline-modules-reference.mdx'),
         makePage('modules/android-lifecycle-listeners.mdx'),
         makePage('modules/appdelegate-subscribers.mdx'),
         makePage('modules/autolinking.mdx'),

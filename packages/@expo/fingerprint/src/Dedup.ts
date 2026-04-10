@@ -16,8 +16,8 @@ export function dedupSources(sources: HashSource[], projectRoot: string): HashSo
       source,
       projectRoot
     );
-    if (duplicatedItemIndex >= 0) {
-      const duplicatedItem = newSources[duplicatedItemIndex];
+    const duplicatedItem = newSources[duplicatedItemIndex];
+    if (duplicatedItem != null) {
       debug(`Skipping duplicated source: ${JSON.stringify(source)}`);
       if (shouldSwapSource) {
         newSources[duplicatedItemIndex] = {

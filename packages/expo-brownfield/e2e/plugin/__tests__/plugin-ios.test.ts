@@ -30,7 +30,7 @@ describe('plugin for ios', () => {
 
   /**
    * Expected behavior:
-   * - Podfile properties includes: "ios.buildReactNativeFromSource" = "true"
+   * - Podfile properties includes: "ios.buildReactNativeFromSource" = "false"
    *   added via build properties plugin
    */
   it('modifies the build properties', async () => {
@@ -57,7 +57,7 @@ describe('plugin for ios', () => {
    */
   it('modifies the podfile properties', async () => {
     validatePodfileProperties(TEMP_DIR, {
-      'ios.useFrameworks': 'static',
+      'ios.buildReactNativeFromSource': 'false',
     });
   });
 

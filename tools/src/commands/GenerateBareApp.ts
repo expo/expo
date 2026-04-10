@@ -39,7 +39,7 @@ export async function action(
   await createProjectDirectory({ workspaceDir, appName, template, useLocalTemplate });
   await modifyPackageJson({ packagesToSymlink, projectDir });
   await modifyAppJson({ projectDir, appName });
-  await yarnInstall({ projectDir });
+  await pnpmInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
   await runExpoPrebuild({ projectDir, useLocalTemplate });
   if (rnVersion != null) {
@@ -201,9 +201,9 @@ async function modifyPackageJson({
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
 }
 
-async function yarnInstall({ projectDir }: { projectDir: string }) {
+async function pnpmInstall({ projectDir }: { projectDir: string }) {
   console.log('Yarning');
-  return await spawnAsync('yarn', [], { cwd: projectDir, stdio: 'ignore' });
+  return await spawnAsync('pnpm', ['install'], { cwd: projectDir, stdio: 'ignore' });
 }
 
 export async function symlinkPackages({
@@ -239,7 +239,7 @@ async function updateRNVersion({
   pkg.dependencies['react-native'] = reactNativeVersion;
 
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
-  await spawnAsync('yarn', [], { cwd: projectDir });
+  await spawnAsync('pnpm', ['install'], { cwd: projectDir });
 }
 
 function getLocalReactNativeVersion() {
@@ -282,25 +282,6 @@ const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
 const config = getDefaultConfig('${projectRoot}');
-
-// 1. Watch expo packages within the monorepo
-config.watchFolders = ['${PACKAGES_DIR}'];
-
-// 2. Let Metro know where to resolve packages, and in what order
-config.resolver.nodeModulesPaths = [
-  path.resolve('${projectRoot}', 'node_modules'),
-  path.resolve('${PACKAGES_DIR}'),
-];
-
-// Use Node-style module resolution instead of Haste everywhere
-config.resolver.providesModuleNodeModules = [];
-
-// Ignore test files and JS files in the native Android and Xcode projects
-config.resolver.blockList = [
-  /\\/__tests__\\/.*/,
-  /.*\\/android\\/React(Android|Common)\\/.*/,
-  /.*\\/versioned-react-native\\/.*/,
-];
 
 module.exports = config;
 `;

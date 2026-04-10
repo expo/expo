@@ -27,24 +27,26 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 30000
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: ⬢ Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           yarn-docs: 'true'
-          yarn-tools: 'true'
-          yarn-workspace: 'true'
           docs-api-data: 'true'
-      - name: 🧶 Install workspace deps on cache miss
-        run: yarn install --immutable
-      - name: 🧶 Install tools deps on cache miss
-        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
+      - name: 📦 Install workspace deps
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 📦 Install tools deps
         working-directory: tools
-        run: yarn install --immutable
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📝 Regenerate `unversioned` data for Docs
