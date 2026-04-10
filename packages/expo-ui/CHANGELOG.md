@@ -28,7 +28,7 @@
 
 ### 🎉 New features
 
-- [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. By [@nishan](https://github.com/intergalacticspacehighway)
+- [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44681](https://github.com/expo/expo/pull/44681) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `ObservableState` shared object and `useNativeState` hook for controlling native Compose state from JS. By [@nishan](https://github.com/intergalacticspacehighway)
 - [iOS] Add `ObservableState` shared object and `useNativeState` hook for controlling native SwiftUI state from JS. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add shared object worklet support with `.value` property API for `ObservableState`. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway))
