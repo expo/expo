@@ -239,7 +239,7 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::getJavascriptClass(
   return method(javaPart_, std::move(native));
 }
 
-// Installs SharedObject.__resolveInWorklet in this runtime.
+// Installs SharedObject.__resolveInWorklet in the runtime.
 void JSIContext::installModuleClasses() {
   auto &runtime = runtimeHolder->get();
   auto expoObj = runtime.global().getPropertyAsObject(runtime, "expo");

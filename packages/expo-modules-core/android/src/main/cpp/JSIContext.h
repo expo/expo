@@ -130,8 +130,9 @@ public:
   std::unique_ptr<JSReferencesCache> jsRegistry;
   jni::global_ref<JNIDeallocator::javaobject> jniDeallocator;
 
-  // Used by the worklet runtime to keep class decorators alive
-  // so prototype host functions remain callable.
+  // Only used by the worklet runtime - keeps class decorators alive so
+  // prototype host functions remain callable (they capture weak_ptr<MethodMetadata>).
+  // On the main runtime, JavaScriptModuleObject::decorators serves the same role.
   std::vector<std::unique_ptr<JSDecorator>> moduleClassDecorators;
 
   void registerClass(jni::local_ref<jclass> native,
