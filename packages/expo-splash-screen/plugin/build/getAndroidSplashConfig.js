@@ -11,6 +11,7 @@ function getAndroidSplashConfig({ android = {}, resizeMode = 'contain', ...rest 
         dark: { ...rest.dark, ...android.dark },
     };
     return {
+        drawable: root.drawable,
         imageWidth: root.imageWidth ?? 100,
         resizeMode: root.resizeMode,
         backgroundColor: root.backgroundColor ?? '#ffffff',

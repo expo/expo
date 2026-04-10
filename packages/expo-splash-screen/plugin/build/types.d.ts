@@ -1,6 +1,3 @@
-type PartialDeep<T> = {
-    [K in keyof T]?: PartialDeep<T[K]>;
-} & {};
 export interface BaseAndroidSplashConfig {
     backgroundColor?: string;
     image?: string;
@@ -12,6 +9,10 @@ export interface BaseAndroidSplashConfig {
 }
 export type AndroidSplashConfig = BaseAndroidSplashConfig & {
     backgroundColor: string;
+    drawable?: {
+        icon: string;
+        darkIcon?: string;
+    };
     imageWidth: number;
     resizeMode: 'contain' | 'cover' | 'native';
     dark?: BaseAndroidSplashConfig;
@@ -65,11 +66,10 @@ export type Props = {
      * Properties for configuring the splash screen on Android.
      * @platform android
      */
-    android?: PartialDeep<AndroidSplashConfig>;
+    android?: Partial<AndroidSplashConfig>;
     /**
      * Properties for configuring the splash screen on iOS.
      * @platform ios
      */
-    ios?: PartialDeep<IOSSplashConfig>;
+    ios?: Partial<IOSSplashConfig>;
 };
-export {};

@@ -98,12 +98,17 @@ exports.withAndroidSplashImages = withAndroidSplashImages;
  *
  * @param androidMainPath Absolute path to the main directory containing code and resources in Android project. In general that would be `android/app/src/main`.
  */
-async function setSplashImageDrawablesAsync({ dark, ...root }, projectRoot) {
+async function setSplashImageDrawablesAsync({ dark, drawable, ...root }, projectRoot) {
     await clearAllExistingSplashImagesAsync(projectRoot);
-    await Promise.all([
-        setSplashImageDrawablesForThemeAsync(root, 'light', projectRoot, root.imageWidth),
-        setSplashImageDrawablesForThemeAsync(dark, 'dark', projectRoot, root.imageWidth),
-    ]);
+    if (drawable != null) {
+        await writeSplashScreenDrawablesAsync(projectRoot, drawable);
+    }
+    else {
+        await Promise.all([
+            setSplashImageDrawablesForThemeAsync(root, 'light', projectRoot, root.imageWidth),
+            setSplashImageDrawablesForThemeAsync(dark, 'dark', projectRoot, root.imageWidth),
+        ]);
+    }
 }
 async function clearAllExistingSplashImagesAsync(projectRoot) {
     const androidMainPath = path_1.default.join(projectRoot, 'android/app/src/main');
@@ -158,4 +163,17 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
             await fs_1.default.promises.writeFile(outputPath, composedImage);
         }
     }));
+}
+async function writeSplashScreenDrawablesAsync(projectRoot, drawable) {
+    const androidMainPath = path_1.default.join(projectRoot, 'android/app/src/main');
+    const lightDrawablePath = path_1.default.join(androidMainPath, DRAWABLES_CONFIGS.default.modes.light.path);
+    const darkDrawablePath = path_1.default.join(androidMainPath, DRAWABLES_CONFIGS.default.modes.dark.path);
+    const lightFolder = path_1.default.dirname(lightDrawablePath);
+    await fs_1.default.promises.mkdir(lightFolder, { recursive: true });
+    await fs_1.default.promises.copyFile(path_1.default.join(projectRoot, drawable.icon), lightDrawablePath);
+    if (drawable.darkIcon) {
+        const darkFolder = path_1.default.dirname(darkDrawablePath);
+        await fs_1.default.promises.mkdir(darkFolder, { recursive: true });
+        await fs_1.default.promises.copyFile(path_1.default.join(projectRoot, drawable.darkIcon), darkDrawablePath);
+    }
 }

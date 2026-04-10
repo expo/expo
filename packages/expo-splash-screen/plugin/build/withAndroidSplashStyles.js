@@ -4,7 +4,6 @@ exports.withAndroidSplashStyles = void 0;
 exports.removeOldSplashStyleGroup = removeOldSplashStyleGroup;
 exports.setSplashStylesForTheme = setSplashStylesForTheme;
 exports.setSplashColorsForTheme = setSplashColorsForTheme;
-const android_1 = require("@expo/config-plugins/build/android");
 const config_plugins_1 = require("expo/config-plugins");
 const styleResourceGroup = {
     name: 'Theme.App.SplashScreen',
@@ -91,5 +90,8 @@ function setSplashStylesForTheme(styles) {
     });
 }
 function setSplashColorsForTheme(colors, backgroundColor) {
-    return android_1.Colors.assignColorValue(colors, { value: backgroundColor, name: SPLASH_COLOR_NAME });
+    return config_plugins_1.AndroidConfig.Colors.assignColorValue(colors, {
+        value: backgroundColor,
+        name: SPLASH_COLOR_NAME,
+    });
 }
