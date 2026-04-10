@@ -262,7 +262,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Determines the custom actions to show in Picture in Picture (PiP) mode.
    *
-   * > **Note:** The default playback controls are provided by [MediaSession](https://developer.android.com/develop/ui/views/picture-in-picture#add_controls)(Previous, Play/Pause and Next).
+   * > **Note:** The default playback controls are provided by [`MediaSession`](https://developer.android.com/develop/ui/views/picture-in-picture#add_controls)(Previous, Play/Pause and Next).
    *
    * @default null
    * @platform android 8+
@@ -826,9 +826,9 @@ export type ScrubbingModeOptions = {
 export type NowPlayingAction = {
   /**
    * The name of the icon to be displayed in the now playing notification and lock screen.
-   * > **Note**: The icon must be included in the `icons` list property of `app.json`.
+   * > **Note**: The icon must be included in the `icons` list property of app config.
    *
-   * > **Note**: The name of the icon is the file name without the extension. For example, if the icon file is named `heart_icon.png`, the `iconName` should be `heart_icon`.
+   * > **Note**: The name of the icon is the file name without the extension. For example, if the icon file is named **heart_icon.png**, the `iconName` should be `heart_icon`.
    */
   iconName: string;
   /**
@@ -864,9 +864,9 @@ export type PictureInPictureAction = {
   description: string;
   /**
    * The name of the icon to be displayed in the Picture In Picture action.
-   * > **Note**: The icon must be included in the `icons` list property of `app.json`
+   * > **Note**: The icon must be included in the `icons` list property of app config.
    *
-   * > **Note**: The name of the icon is the file name without the extension. For example, if the icon file is named `pip_icon.png`, the `iconName` should be `pip_icon`.
+   * > **Note**: The name of the icon is the file name without the extension. For example, if the icon file is named **pip_icon.png**, the `iconName` should be `pip_icon`.
    */
   iconName: string;
 };
