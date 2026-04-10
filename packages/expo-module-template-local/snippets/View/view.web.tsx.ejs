@@ -3,17 +3,21 @@ import * as React from 'react';
 
 import { <%- project.viewName %>Props } from './<%- project.name %>.types';
 
-export default function <%- project.viewName %>(props: <%- project.viewName %>Props) {
+export default function <%- project.viewName %>(<% if (project.features.includes('ViewEvent')) { %>props<% } else { %>_props<% } %>: <%- project.viewName %>Props) {
   return (
-    <div>
+    <div
+      style={{
+        backgroundColor: '#aabbcc',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}<% if (project.features.includes('ViewEvent')) { %>
+      onClick={() => props.onTap({ nativeEvent: {} })}<% } %>>
+      <span><%- project.name %> - native view</span>
 <% if (project.features.includes('ViewEvent')) { -%>
-      <iframe
-        style={{ flex: 1 }}
-        src={props.url}
-        onLoad={() => props.onLoad({ nativeEvent: { url: props.url } })}
-      />
-<% } else { -%>
-      <iframe style={{ flex: 1 }} src={props.url} />
+      <span>Tap the view to emit a view event</span>
 <% } -%>
     </div>
   );

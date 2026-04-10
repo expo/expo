@@ -20,14 +20,11 @@ export type ChangeEventPayload = {
 <% if (hasEvent) { -%>
 
 <% } -%>
-export type OnLoadEventPayload = {
-  url: string;
-};
+export type OnTapEventPayload = Record<string, never>;
 
 export type <%- project.viewName %>Props = {
-  url: string;
 <% if (project.features.includes('ViewEvent')) { -%>
-  onLoad: (event: { nativeEvent: OnLoadEventPayload }) => void;
+  onTap: (event: { nativeEvent: OnTapEventPayload }) => void;
 <% } -%>
   style?: StyleProp<ViewStyle>;
 };

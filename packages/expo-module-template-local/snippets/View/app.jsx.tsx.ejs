@@ -1,9 +1,3 @@
         <Group name="Views">
-          <<%- project.viewName %>
-            url="https://www.example.com"
-<% if (project.features.includes('ViewEvent')) { -%>
-            onLoad={({ nativeEvent: { url } }) => console.log(`Loaded: ${url}`)}
-<% } -%>
-            style={styles.view}
-          />
+          <<%- project.viewName %><% if (project.features.includes('ViewEvent')) { %> onTap={() => console.log('Tapped!')}<% } %> style={styles.view} />
         </Group>

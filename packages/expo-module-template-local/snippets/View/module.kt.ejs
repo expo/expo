@@ -1,9 +1,5 @@
     View(<%- project.viewName %>::class) {
 <% if (viewSnippets.trim()) { -%>
-<%- viewSnippets %>
+<%- viewSnippets.trimEnd() %>
 <% } -%>
-      // Defines a setter for the `url` prop.
-      Prop("url") { view: <%- project.viewName %>, url: URL ->
-        view.webView.loadUrl(url.toString())
-      }
     }
