@@ -1316,6 +1316,9 @@ importers:
       expo-speech:
         specifier: workspace:*
         version: link:../../packages/expo-speech
+      expo-splash-screen:
+        specifier: workspace:*
+        version: link:../../packages/expo-splash-screen
       expo-sqlite:
         specifier: workspace:*
         version: link:../../packages/expo-sqlite
