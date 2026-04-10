@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { FallbackFilesystem, FileMetadata, IgnoreMatcher } from '../../types';
 import { RootPathUtils } from '../../lib/RootPathUtils';
+import normalizePathSeparatorsToPosix from '../../lib/normalizePathSeparatorsToPosix';
+import type { FallbackFilesystem, FileMetadata, IgnoreMatcher } from '../../types';
 
 type DirectoryNode = Map<string, MixedNode | null>;
 type FileNode = FileMetadata;
@@ -125,7 +126,10 @@ export default function createFallbackFilesystem(
         try {
           // We might as well read the symlink target here and assume it'll be used
           const symlinkTarget = fs.readlinkSync(absolutePath);
-          const target = rootPathUtils.resolveSymlinkToNormal(normalPath, symlinkTarget);
+          // Cached value should be in posix format
+          const target = normalizePathSeparatorsToPosix(
+            rootPathUtils.resolveSymlinkToNormal(normalPath, symlinkTarget)
+          );
           return [stat.mtime.getTime(), stat.size, 0, null, target, null];
         } catch {
           return null;

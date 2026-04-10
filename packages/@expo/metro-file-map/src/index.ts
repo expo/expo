@@ -564,11 +564,10 @@ export default class FileMap extends EventEmitter {
       return fsPromises
         .readlink(this.#pathUtils.normalToAbsolute(normalPath))
         .then((symlinkTarget) => {
+          const target = this.#pathUtils.resolveSymlinkToNormal(normalPath, symlinkTarget);
+          // Cached value should be in posix format
+          fileMetadata[H.SYMLINK] = normalizePathSeparatorsToPosix(target);
           fileMetadata[H.VISITED] = 1;
-          fileMetadata[H.SYMLINK] = this.#pathUtils.resolveSymlinkToNormal(
-            normalPath,
-            symlinkTarget
-          );
         });
     }
     return null;
