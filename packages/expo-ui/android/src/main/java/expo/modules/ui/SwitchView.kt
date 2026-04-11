@@ -6,7 +6,6 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
@@ -55,7 +54,7 @@ fun FunctionalComposableScope.SwitchContent(
     enabled = props.enabled,
     thumbContent = thumbContentSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) {
             Content()
           }
