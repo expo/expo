@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] revert Fixed deep links not reaching the app because `EXDevLauncherController.isAppRunning` always returned `false`. ([#44609](https://github.com/expo/expo/pull/44609) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 55.0.28 — 2026-04-11
+
+### 🐛 Bug fixes
+
+- [iOS] revert Fixed deep links not reaching the app because `EXDevLauncherController.isAppRunning` always returned `false`. ([#44609](https://github.com/expo/expo/pull/44609) by [@vonovak](https://github.com/vonovak))
 
 ## 55.0.27 — 2026-04-10
 

@@ -36,7 +36,7 @@
   "expo-constants": "~55.0.13",
   "expo-contacts": "~55.0.13",
   "expo-crypto": "~55.0.14",
-  "expo-dev-client": "~55.0.26",
+  "expo-dev-client": "~55.0.27",
   "expo-device": "~55.0.14",
   "expo-document-picker": "~55.0.13",
   "expo-eas-observe": "~0.0.32",
