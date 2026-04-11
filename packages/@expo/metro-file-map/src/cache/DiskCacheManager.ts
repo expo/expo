@@ -36,6 +36,9 @@ const DEFAULT_PREFIX = 'metro-file-map';
 const DEFAULT_DIRECTORY = tmpdir();
 const DEFAULT_AUTO_SAVE_DEBOUNCE_MS = 5000;
 
+// NOTE(@kitten): We're incompatible with Metro, so need our own naming
+const FIXED_PREFIX = 'expo';
+
 export class DiskCacheManager implements CacheManager {
   readonly #autoSaveOpts: AutoSaveOptions | undefined | null;
   readonly #cachePath: string;
@@ -71,7 +74,7 @@ export class DiskCacheManager implements CacheManager {
 
     return path.join(
       cacheDirectory ?? DEFAULT_DIRECTORY,
-      `${cacheFilePrefix ?? DEFAULT_PREFIX}-${rootDirHash}-${relativeConfigHash}`
+      `${cacheFilePrefix ?? DEFAULT_PREFIX}-${FIXED_PREFIX}-${rootDirHash}-${relativeConfigHash}`
     );
   }
 
