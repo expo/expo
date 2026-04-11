@@ -1,4 +1,3 @@
-import Foundation
 import ExpoModulesCore
 
 public class AudioModule: Module {
@@ -15,14 +14,6 @@ public class AudioModule: Module {
   private var allowsBackgroundRecording = false
   private var sessionOptions: AVAudioSession.CategoryOptions = []
   private var lastConfiguredMode: AudioMode?
-
-  private func performLockScreenUpdateOnMain(_ operation: @escaping () -> Void) {
-    if Thread.isMainThread {
-      operation()
-    } else {
-      DispatchQueue.main.async(execute: operation)
-    }
-  }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -268,27 +259,21 @@ public class AudioModule: Module {
       }
 
       Function("setActiveForLockScreen") { (player: AudioPlayer, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
-        self.performLockScreenUpdateOnMain {
-          player.setActiveForLockScreen(active, metadata: metadata, options: options)
-        }
+        player.setActiveForLockScreen(active, metadata: metadata, options: options)
       }
 
       Function("updateLockScreenMetadata") { (player: AudioPlayer, metadata: Metadata?) in
-        self.performLockScreenUpdateOnMain {
-          if player.isActiveForLockScreen {
-            player.metadata = metadata
-            MediaController.shared.updateNowPlayingInfo(for: player)
-          }
+        if player.isActiveForLockScreen {
+          player.metadata = metadata
+          MediaController.shared.updateNowPlayingInfo(for: player)
         }
       }
 
       Function("clearLockScreenControls") { (player: AudioPlayer) in
-        self.performLockScreenUpdateOnMain {
-          if player.isActiveForLockScreen {
-            player.metadata = nil
-            player.isActiveForLockScreen = false
-            MediaController.shared.setActivePlayer(nil)
-          }
+        if player.isActiveForLockScreen {
+          player.metadata = nil
+          player.isActiveForLockScreen = false
+          MediaController.shared.setActivePlayer(nil)
         }
       }
 

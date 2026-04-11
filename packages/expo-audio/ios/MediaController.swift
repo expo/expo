@@ -11,7 +11,6 @@ class MediaController {
 
   private var currentArtworkUrl: URL?
   private var cachedArtwork: MPMediaItemArtwork?
-  private var failedArtworkUrl: URL?
   private var artworkLoadToken: UUID?
   private var currentArtworkItemIdentifier: ObjectIdentifier?
   private var isLiveStream = false
@@ -29,8 +28,6 @@ class MediaController {
   }
 
   private func setActivePlayerOnMain(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
-    assert(Thread.isMainThread)
-
     if let previous = activePlayer, previous.id != player?.id {
       previous.isActiveForLockScreen = false
       resetArtworkState()
@@ -51,8 +48,6 @@ class MediaController {
   }
 
   private func updateNowPlayingInfoOnMain(for player: AudioPlayer) {
-    assert(Thread.isMainThread)
-
     guard player.id == activePlayer?.id else {
       return
     }
@@ -151,7 +146,6 @@ class MediaController {
     if currentArtworkUrl != artworkUrl {
       currentArtworkUrl = artworkUrl
       cachedArtwork = nil
-      failedArtworkUrl = nil
       artworkLoadToken = nil
     }
 
@@ -160,7 +154,7 @@ class MediaController {
       return
     }
 
-    guard artworkLoadToken == nil, failedArtworkUrl != artworkUrl else {
+    guard artworkLoadToken == nil else {
       return
     }
 
@@ -181,11 +175,9 @@ class MediaController {
       }
 
       guard let artwork else {
-        self.failedArtworkUrl = artworkUrl
         return
       }
 
-      self.failedArtworkUrl = nil
       self.cachedArtwork = artwork
 
       var latestNowPlayingInfo = self.nowPlayingInfoCenter.nowPlayingInfo ?? [String: Any]()
@@ -195,8 +187,6 @@ class MediaController {
   }
 
   private func clearNowPlayingInfoOnMain() {
-    assert(Thread.isMainThread)
-
     nowPlayingInfoCenter.nowPlayingInfo = nil
     activePlayer = nil
     isLiveStream = false
@@ -215,28 +205,27 @@ class MediaController {
   private func resetArtworkState() {
     currentArtworkUrl = nil
     cachedArtwork = nil
-    failedArtworkUrl = nil
     artworkLoadToken = nil
   }
 
   private func loadArtworkFromURL(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) {
     URLSession.shared.dataTask(with: url) { data, _, error in
       if error != nil {
-        DispatchQueue.main.async {
+        self.performOnMain {
           completion(nil)
         }
         return
       }
 
       guard let data, let image = UIImage(data: data) else {
-        DispatchQueue.main.async {
+        self.performOnMain {
           completion(nil)
         }
         return
       }
 
       let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
-      DispatchQueue.main.async {
+      self.performOnMain {
         completion(artwork)
       }
     }
