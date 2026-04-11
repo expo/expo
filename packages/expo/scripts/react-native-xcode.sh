@@ -59,9 +59,12 @@ esac
 
 # Path to react-native folder inside node_modules
 REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-# The project should be located next to where react-native is installed
-# in node_modules.
-PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
+# Use Xcode's PROJECT_DIR (points to the ios/ directory) to derive the project
+# root. The previous approach of using REACT_NATIVE_DIR/../.. assumed a hoisted
+# node_modules layout, which breaks with package managers that use isolated
+# installs (e.g. pnpm without node-linker=hoisted), where the expo package
+# lives deep inside .pnpm/ store rather than at node_modules/expo/.
+PROJECT_ROOT=${PROJECT_ROOT:-"$PROJECT_DIR/.."}
 
 cd "$PROJECT_ROOT" || exit
 
