@@ -158,9 +158,10 @@ export function convertEntryPointToRelative(
   let serverRoot = getMetroServerRoot(projectRoot);
   try {
     const realServerRoot = fs.realpathSync(serverRoot);
-    if (realServerRoot !== serverRoot) {
+    const realAbsolutePath = fs.realpathSync(absolutePath);
+    if (realServerRoot !== serverRoot || realAbsolutePath !== absolutePath) {
       serverRoot = realServerRoot;
-      absolutePath = fs.realpathSync(absolutePath);
+      absolutePath = realAbsolutePath;
     }
   } catch {
     // NOTE: `fs.realpathSync` can fail if `projectRoot` doesn't exist (e.g. mocked folder)
