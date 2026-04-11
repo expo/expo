@@ -115,6 +115,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       initialProps: self.rootViewInitialProperties,
       launchOptions: developmentClientController.getLaunchOptions()
     )
+    developmentClientController.appBridge = RCTBridge.current()
 
     let targetVC: UIViewController
 #if !os(macOS)
