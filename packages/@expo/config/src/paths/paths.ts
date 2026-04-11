@@ -158,27 +158,27 @@ export function convertEntryPointToRelative(
   let serverRoot = getMetroServerRoot(projectRoot);
   try {
     const realServerRoot = fs.realpathSync(serverRoot);
-    // If the absolute path is already a real path, we preserve it to not resolve symlinks prematurely
+    // If the absolute path already starts with the resolved server root, use it directly
     if (absolutePath.startsWith(realServerRoot)) {
       serverRoot = realServerRoot;
+    } else if (absolutePath.startsWith(serverRoot)) {
+      // If the absolute path starts with the (possibly symlinked) server root, preserve it as-is
     } else {
-      // Otherwise, we resolve the abs
-      const realAbsolutePath = fs.realpathSync(absolutePath);
-      if (realAbsolutePath.startsWith(realServerRoot)) {
-        serverRoot = realServerRoot;
-        absolutePath = realAbsolutePath;
-      } else if (absolutePath.startsWith(serverRoot)) {
-        // We only do nothing, if we're sure there's no better match
-      } else if (realServerRoot !== serverRoot || realAbsolutePath !== absolutePath) {
-        // Last resort: just fall back to the legacy behavior of using the realpath
-        // for both of them, without knowing if the resulting relative path will be valid
-        serverRoot = realServerRoot;
-        absolutePath = realAbsolutePath;
-        // TODO(@kitten): Technically, we could append a relative path from project root to
-        // absolute path to a relative path from server root to project root here for correctness.
-        // However, that basically doubles the above logic, so let's not do that unless we find
-        // it to be necessary
-      }
+      // Otherwise, resolve the absolute path to check if it matches the real server root.
+      // This is only needed when absolutePath doesn't match either root representation,
+      // and absolutePath may not be valid (e.g. non-existent file)
+      try {
+        const realAbsolutePath = fs.realpathSync(absolutePath);
+        if (realAbsolutePath.startsWith(realServerRoot)) {
+          serverRoot = realServerRoot;
+          absolutePath = realAbsolutePath;
+        } else if (realServerRoot !== serverRoot || realAbsolutePath !== absolutePath) {
+          // Last resort: fall back to the legacy behavior of using the realpath for both,
+          // without knowing if the resulting relative path will be valid
+          serverRoot = realServerRoot;
+          absolutePath = realAbsolutePath;
+        }
+      } catch {}
     }
   } catch {
     // NOTE: `fs.realpathSync` can fail if `projectRoot` doesn't exist (e.g. mocked folder)
