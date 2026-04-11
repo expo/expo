@@ -159,9 +159,9 @@ export function convertEntryPointToRelative(
   try {
     const realServerRoot = fs.realpathSync(serverRoot);
     // If the absolute path already starts with the resolved server root, use it directly
-    if (absolutePath.startsWith(realServerRoot)) {
+    if (absolutePath.startsWith(realServerRoot + path.sep)) {
       serverRoot = realServerRoot;
-    } else if (absolutePath.startsWith(serverRoot)) {
+    } else if (absolutePath.startsWith(serverRoot + path.sep)) {
       // If the absolute path starts with the (possibly symlinked) server root, preserve it as-is
     } else {
       // Otherwise, resolve the absolute path to check if it matches the real server root.
@@ -169,7 +169,7 @@ export function convertEntryPointToRelative(
       // and absolutePath may not be valid (e.g. non-existent file)
       try {
         const realAbsolutePath = fs.realpathSync(absolutePath);
-        if (realAbsolutePath.startsWith(realServerRoot)) {
+        if (realAbsolutePath.startsWith(realServerRoot + path.sep)) {
           serverRoot = realServerRoot;
           absolutePath = realAbsolutePath;
         } else if (realServerRoot !== serverRoot || realAbsolutePath !== absolutePath) {
