@@ -37,7 +37,7 @@ function find(
     {} as Record<string, true | undefined>
   );
 
-  function search(directory: string, dirNormal: string): void {
+  function search(directory: string, dirNormal: string, isWithinRoot: boolean): void {
     activeCalls++;
     fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
       activeCalls--;
@@ -57,10 +57,13 @@ function find(
 
           // Build the normal path incrementally — avoids calling
           // absoluteToNormal per file.
-          const fileNormal = dirNormal === '' ? name : dirNormal + path.sep + name;
-
+          const fileNormal = isWithinRoot
+            ? dirNormal === ''
+              ? name
+              : dirNormal + path.sep + name
+            : pathUtils.absoluteToNormal(file);
           if (entry.isDirectory()) {
-            search(file, fileNormal);
+            search(file, fileNormal, isWithinRoot || fileNormal === '');
             continue;
           }
 
@@ -107,7 +110,8 @@ function find(
 
   if (roots.length > 0) {
     for (const root of roots) {
-      search(root, pathUtils.absoluteToNormal(root));
+      const rootNormal = pathUtils.absoluteToNormal(root);
+      search(root, rootNormal, !rootNormal.startsWith('..' + path.sep));
     }
   } else {
     callback(result);
