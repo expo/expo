@@ -69,6 +69,7 @@
     "expo-linking": "workspace:*",
     "expo-router": "workspace:*",
     "expo-speech": "workspace:*",
+    "expo-splash-screen": "workspace:*",
     "expo-sqlite": "workspace:*",
     "expo-symbols": "workspace:*",
     "jose": "^5",
