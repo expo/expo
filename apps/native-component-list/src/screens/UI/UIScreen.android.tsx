@@ -163,11 +163,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'TextInput component',
-    route: 'ui/textInput',
+    name: 'TextField component',
+    route: 'ui/textField',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./TextInputScreen'));
+      return optionalRequire(() => require('./TextFieldScreen'));
     },
   },
   {
@@ -280,6 +280,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./SurfaceScreen'));
+    },
+  },
+  {
+    name: 'Tooltip component',
+    route: 'ui/tooltip',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TooltipScreen'));
     },
   },
 ];

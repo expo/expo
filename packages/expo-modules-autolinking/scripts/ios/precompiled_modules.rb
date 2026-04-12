@@ -130,6 +130,7 @@ module Expo
       #
       # @param installer [Pod::Installer] The CocoaPods installer instance
       def perform_pre_install(installer)
+        return unless enabled?
         return unless prebuilt_react_active?
         return if linkage(installer).nil?
 
@@ -553,6 +554,11 @@ module Expo
       # 1. Creates a non-framework modulemap so <React/X.h> resolves through -isystem + VFS
       # 2. Patches framework modulemaps to remove `framework module React` (keep React_RCTAppDelegate)
       # 3. Injects -isystem and -fmodule-map-file into all pod and aggregate xcconfigs
+      #
+      # The modulemap is placed in Target Support Files/ rather than in the pod
+      # directory itself, because React Native's replace-rncore-version.js script
+      # phase deletes and re-extracts the entire React-Core-prebuilt/ directory at
+      # build time when switching Debug↔Release configurations.
       def configure_use_frameworks(installer)
         return unless prebuilt_react_active?
         return if linkage(installer).nil?
@@ -561,9 +567,12 @@ module Expo
         xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
         return unless File.exist?(xcframework_path)
 
-        create_nonframework_modulemap(react_prebuilt_dir)
+        target_support_dir = File.join(installer.sandbox.root, 'Target Support Files', 'React-Core-prebuilt')
+        FileUtils.mkdir_p(target_support_dir)
+
+        create_nonframework_modulemap(target_support_dir, installer.sandbox.root)
         patch_framework_modulemaps(xcframework_path)
-        inject_isystem_flags(installer, react_prebuilt_dir)
+        inject_isystem_flags(installer, target_support_dir)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
       end
@@ -701,11 +710,12 @@ module Expo
       # ──────────────────────────────────────────────────────────────────────
 
       # Creates a non-framework modulemap so <React/X.h> resolves through -isystem + VFS.
-      def create_nonframework_modulemap(react_prebuilt_dir)
-        modulemap_path = File.join(react_prebuilt_dir, 'React-use-frameworks.modulemap')
+      def create_nonframework_modulemap(target_support_dir, pods_root)
+        modulemap_path = File.join(target_support_dir, 'React-use-frameworks.modulemap')
+        umbrella_header = File.join(pods_root, 'React-Core-prebuilt', 'React.xcframework', 'Headers', 'React_Core', 'React_Core-umbrella.h')
         modulemap_content = <<~MODULEMAP
           module React {
-            umbrella header "React.xcframework/Headers/React_Core/React_Core-umbrella.h"
+            umbrella header "#{umbrella_header}"
             export *
           }
         MODULEMAP
@@ -731,10 +741,10 @@ module Expo
 
       # Injects -fmodule-map-file and -isystem into all pod and aggregate xcconfigs.
       # Module builds don't inherit -I (HEADER_SEARCH_PATHS) but DO inherit -isystem.
-      def inject_isystem_flags(installer, react_prebuilt_dir)
-        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+      def inject_isystem_flags(installer, target_support_dir)
+        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/Target\\ Support\\ Files/React-Core-prebuilt/React-use-frameworks.modulemap\""
         extra_isystem = "-isystem \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
-        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/Target\\ Support\\ Files/React-Core-prebuilt/React-use-frameworks.modulemap\""
         swift_extra_isystem = "-Xcc -isystem -Xcc \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
         skip_marker = 'React-use-frameworks.modulemap'
 

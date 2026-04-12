@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "expo": "workspace:*",
+    "expo-background-task": "workspace:*",
     "expo-clipboard": "workspace:*",
     "expo-dev-client": "workspace:*",
     "expo-router": "workspace:*",
@@ -20,7 +21,7 @@
     "expo-updates": "workspace:*",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.0-rc.7"
+    "react-native": "0.85.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

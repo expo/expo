@@ -1,0 +1,106 @@
+---
+title: SecureField
+description: A SwiftUI SecureField component for password input.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI SecureField matches the official SwiftUI [SecureField API](https://developer.apple.com/documentation/swiftui/securefield) and provides a text field that masks user input for passwords and other sensitive text.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic secure field
+
+```tsx BasicSecureFieldExample.tsx
+import { useState } from 'react';
+import { Host, SecureField } from '@expo/ui/swift-ui';
+
+export default function BasicSecureFieldExample() {
+  const [password, setPassword] = useState('');
+
+  return (
+    <Host matchContents>
+      <SecureField placeholder="Password" onValueChange={setPassword} />
+    </Host>
+  );
+}
+```
+
+### Submit handling
+
+Use the [`submitLabel`](modifiers/#submitlabelsubmitlabel) and [`onSubmit`](modifiers/#onsubmithandler) modifiers to handle form submission from the keyboard.
+
+```tsx SecureFieldSubmitExample.tsx
+import { useState } from 'react';
+import { Host, SecureField } from '@expo/ui/swift-ui';
+import { submitLabel, onSubmit } from '@expo/ui/swift-ui/modifiers';
+
+export default function SecureFieldSubmitExample() {
+  const [password, setPassword] = useState('');
+
+  return (
+    <Host matchContents>
+      <SecureField
+        placeholder="Password"
+        onValueChange={setPassword}
+        modifiers={[submitLabel('done'), onSubmit(() => console.log('Login submitted'))]}
+      />
+    </Host>
+  );
+}
+```
+
+### Imperative ref
+
+Use a ref to imperatively set text, focus, or blur the secure field.
+
+```tsx ImperativeSecureFieldExample.tsx
+import { useRef } from 'react';
+import { Host, SecureField, SecureFieldRef, Button, HStack, VStack } from '@expo/ui/swift-ui';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function ImperativeSecureFieldExample() {
+  const ref = useRef<SecureFieldRef>(null);
+
+  return (
+    <Host matchContents>
+      <VStack>
+        <SecureField ref={ref} placeholder="Password" />
+        <HStack spacing={12}>
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.focus()}
+            label="Focus"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.blur()}
+            label="Blur"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.setText('secret123')}
+            label="Set Text"
+          />
+        </HStack>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { SecureField } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/securefield" apiName="SecureField" />

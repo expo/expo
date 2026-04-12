@@ -36,7 +36,7 @@ class MediaController {
 
     activePlayer = player
     player?.isActiveForLockScreen = true
-    isLiveStream = options?.isLiveStream ?? false
+    isLiveStream = options?.isLiveStream ?? player?.isLive ?? false
 
     if let player {
       enableRemoteCommands(options: options)
@@ -80,7 +80,6 @@ class MediaController {
       info.removeValue(forKey: MPMediaItemPropertyPlaybackDuration)
       info.removeValue(forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime)
     } else {
-      info[MPNowPlayingInfoPropertyIsLiveStream] = false
       info[MPMediaItemPropertyPlaybackDuration] = player.duration
       info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
     }
@@ -307,7 +306,7 @@ class MediaController {
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
-    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !(options?.isLiveStream ?? false)
+    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !isLiveStream
     remoteCommandCenter.skipForwardCommand.isEnabled = options?.showSeekForward ?? false
     remoteCommandCenter.skipBackwardCommand.isEnabled = options?.showSeekBackward ?? false
   }

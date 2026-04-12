@@ -1,5 +1,7 @@
 import type { PromptObject } from 'prompts';
 
+import type { Platform } from './prompts';
+
 /**
  * Possible command options.
  */
@@ -10,6 +12,7 @@ export type CommandOptions = {
   withChangelog: boolean;
   example: boolean;
   local: boolean;
+  barrel: boolean;
   // Module configuration options (skip prompts when provided)
   name?: string;
   description?: string;
@@ -18,6 +21,7 @@ export type CommandOptions = {
   authorEmail?: string;
   authorUrl?: string;
   repo?: string;
+  platform?: Platform[];
 };
 
 /**
@@ -32,6 +36,7 @@ export type SubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    platforms: Platform[];
   };
   author: string;
   license: string;
@@ -46,6 +51,7 @@ export type LocalSubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    platforms: Platform[];
   };
   type: 'local';
 };

@@ -47,6 +47,16 @@ Install `jest-expo` and other required dev dependencies in your project. Run the
 
 > **Note:** If your project is not using TypeScript, you can skip installing `@types/jest`.
 
+If your project uses TypeScript, add `"jest"` to the `types` array in your **tsconfig.json** to enable Jest's type definitions:
+
+```json tsconfig.json
+{
+  "compilerOptions": {
+    "types": ["jest"]
+  }
+}
+```
+
 </Step>
 
 <Step label="2">

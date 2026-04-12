@@ -113,6 +113,14 @@ function truncate(str: string, len: number): string {
   return str.slice(0, len - 1) + '…';
 }
 
+/** Count how many terminal rows a string occupies, accounting for line wrapping. */
+function terminalLines(text: string): number {
+  const cols = process.stdout.columns || 80;
+  // Strip ANSI escape codes to get the visible character count
+  const visible = text.replace(/\x1b\[[0-9;]*m/g, '').length;
+  return Math.max(1, Math.ceil(visible / cols));
+}
+
 async function batchAsync<T, R>(
   items: T[],
   batchSize: number,
@@ -527,8 +535,14 @@ function clearLines(count: number): void {
 }
 
 function categoryLineCount(categories: CategoryInfo[]): number {
-  // Each category: prefix line + guidance line + blank line, plus the hint line
-  return categories.length * 3 + 1;
+  // Each category: prefix line + guidance line(s) + blank line, plus the hint line
+  let lines = 1; // hint line
+  for (const cat of categories) {
+    lines += 1; // prefix/label line
+    lines += terminalLines(`       ${cat.guidance}`); // guidance may wrap
+    lines += 1; // blank line
+  }
+  return lines;
 }
 
 function itemListLineCount(category: CategoryInfo, selectedIndex: number): number {
@@ -537,8 +551,8 @@ function itemListLineCount(category: CategoryInfo, selectedIndex: number): numbe
   const visibleItems = end - start;
   const hasAbove = start > 0 ? 1 : 0;
   const hasBelow = end < total ? 1 : 0;
-  // Title + guidance + blank + above? + items + below? + blank + hint
-  return 3 + hasAbove + visibleItems + hasBelow + 2;
+  // Title + guidance (may wrap) + blank + above? + items + below? + blank + hint
+  return 1 + terminalLines(`  ${category.guidance}`) + 1 + hasAbove + visibleItems + hasBelow + 2;
 }
 
 async function interactiveDashboard(options: ActionOptions, spinner: ora.Ora) {

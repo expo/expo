@@ -169,6 +169,14 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v55.0.0/sdk/ui/jetpack-compose/picker/':
     '/versions/v55.0.0/sdk/ui/jetpack-compose/segmentedbutton/',
 
+  // TextInput renamed to TextField
+  '/versions/latest/sdk/ui/jetpack-compose/textinput/':
+    '/versions/latest/sdk/ui/jetpack-compose/textfield/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/textinput/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/textfield/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textinput/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/textfield/',
+
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
@@ -609,7 +617,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Based on Algolia 404 report 2026-04-01
   '/versions/latest/sdk/secure-store/': '/versions/latest/sdk/securestore/',
-  '/versions/latest/sdk/av/': '/versions/latest/sdk/audio/',
+  '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
   '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
     '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
 };

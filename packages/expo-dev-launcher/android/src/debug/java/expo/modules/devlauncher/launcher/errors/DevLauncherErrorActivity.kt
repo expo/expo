@@ -8,18 +8,18 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import expo.modules.devlauncher.compose.models.ErrorViewModel
 import expo.modules.devlauncher.compose.screens.ErrorScreen
+import expo.modules.devlauncher.helpers.enableEdgeToEdge
+import expo.modules.devmenu.compose.newtheme.AppTheme
 import java.lang.ref.WeakReference
 
 class DevLauncherErrorActivity : AppCompatActivity() {
   val viewModel by viewModels<ErrorViewModel>()
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    // Enables edge-to-edge
-    WindowCompat.setDecorFitsSystemWindows(window, false)
     super.onCreate(savedInstanceState)
+    window.enableEdgeToEdge()
 
     onBackPressedDispatcher.addCallback(
       this,
@@ -39,10 +39,12 @@ class DevLauncherErrorActivity : AppCompatActivity() {
     viewModel.setError(error)
 
     setContent {
-      ErrorScreen(
-        stack = viewModel.appError?.error?.stackTraceToString() ?: "No stack trace available",
-        onAction = viewModel::onAction
-      )
+      AppTheme {
+        ErrorScreen(
+          stack = viewModel.appError?.error?.stackTraceToString() ?: "No stack trace available",
+          onAction = viewModel::onAction
+        )
+      }
     }
   }
 
