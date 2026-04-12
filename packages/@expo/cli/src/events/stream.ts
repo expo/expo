@@ -70,14 +70,21 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
     } else {
       this.emit('write', written);
 
-      const outputLength = Buffer.byteLength(this.#output);
-      if (outputLength > written) {
-        const output = Buffer.from(this.#output).subarray(written).toString();
-        this.#len -= this.#output.length - output.length;
-        this.#output = output;
-      } else {
+      if (written === this.#output.length) {
+        // Fast path: complete write (exact for ASCII, the common case for JSONL)
         this.#len -= this.#output.length;
         this.#output = '';
+      } else {
+        // Multi-byte complete write (written > length) or partial write (written < length)
+        const outputLength = Buffer.byteLength(this.#output);
+        if (outputLength > written) {
+          const output = Buffer.from(this.#output).toString('utf8', written);
+          this.#len -= this.#output.length - output.length;
+          this.#output = output;
+        } else {
+          this.#len -= this.#output.length;
+          this.#output = '';
+        }
       }
 
       if (this.#output || this.#lines.length - this.#head > this.#partialLine) {
