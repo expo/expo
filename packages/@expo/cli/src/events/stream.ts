@@ -94,7 +94,10 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
         this.#close();
       } else {
         this.#writing = false;
-        this.emit('drain');
+        // NOTE: This breaks the WritableStream contract slightly, but helps performance here
+        if (this.#flushPending) {
+          this.emit('drain');
+        }
       }
     }
   }
