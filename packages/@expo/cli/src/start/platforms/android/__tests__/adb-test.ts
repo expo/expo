@@ -12,6 +12,7 @@ import {
   launchActivityAsync,
   sanitizeAdbDeviceName,
   openUrlAsync,
+  installAsync
 } from '../adb';
 
 jest.mock('../ADBServer', () => ({
@@ -384,5 +385,34 @@ describe(sanitizeAdbDeviceName, () => {
 
   it(`returns the avd device name from multi line with CR`, () => {
     expect(sanitizeAdbDeviceName(`Pixel_6_API_31\rOK`)).toBe('Pixel_6_API_31');
+  });
+});
+
+describe(installAsync, () => {
+  it(`installs an apk to the specified device`, async () => {
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('Success');
+
+    await installAsync(device, { filePath: '/path/to/build.apk' });
+
+    expect(getServer().runAsync).toHaveBeenCalledWith([
+      '-s',
+      '123',
+      'install',
+      '-r',
+      '-d',
+      '--user',
+      expect.any(String),
+      '/path/to/build.apk',
+    ]);
+  });
+
+  it(`throws a CommandError when storage is insufficient`, async () => {
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce(
+      'Performing Streamed Install\nFailure [INSTALL_FAILED_INSUFFICIENT_STORAGE]'
+    );
+
+    await expect(
+      installAsync(device, { filePath: '/path/to/build.apk' })
+    ).rejects.toThrow(CommandError);
   });
 });

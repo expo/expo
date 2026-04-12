@@ -193,10 +193,18 @@ export async function getPackageInfoAsync(
 
 /** Install an app on a connected device. */
 export async function installAsync(device: DeviceContext, { filePath }: { filePath: string }) {
-  // TODO: Handle the `INSTALL_FAILED_INSUFFICIENT_STORAGE` error.
-  return await getServer().runAsync(
+  const result = await getServer().runAsync(
     adbArgs(device.pid, 'install', '-r', '-d', '--user', env.EXPO_ADB_USER, filePath)
   );
+
+  if (result.includes('INSTALL_FAILED_INSUFFICIENT_STORAGE')) {
+    throw new CommandError(
+      'INSUFFICIENT_STORAGE',
+      `Failed to install the app on the device (${device.pid}) because there is not enough storage space. Please free up some space and try again.`
+    );
+  }
+
+  return result;
 }
 
 /** Format ADB args with process ID. */
