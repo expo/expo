@@ -12,11 +12,14 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.telephony.CellSignalStrength
 import android.util.Log
 import androidx.core.content.ContextCompat
 
 private val TAG = WifiSignalStrengthMonitor::class.java.simpleName
+private const val CONNECTIVITY_CHANGE_DELAY_MS = 150L
 
 internal class WifiSignalStrengthMonitor(
   private val context: Context,
@@ -26,17 +29,27 @@ internal class WifiSignalStrengthMonitor(
   private val wifiManager: WifiManager =
     context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
+  private val handler = Handler(Looper.getMainLooper())
+  private var pendingUpdate: Runnable? = null
+
+  private fun delayedUpdate() {
+    pendingUpdate?.let { handler.removeCallbacks(it) }
+    val runnable = Runnable { onStrengthChanged(getCurrentStrength()) }
+    pendingUpdate = runnable
+    handler.postDelayed(runnable, CONNECTIVITY_CHANGE_DELAY_MS)
+  }
+
   private val networkCallback = object : ConnectivityManager.NetworkCallback() {
     override fun onAvailable(network: Network) {
-      onStrengthChanged(getCurrentStrength())
+      delayedUpdate()
     }
 
     override fun onLost(network: Network) {
-      onStrengthChanged(getCurrentStrength())
+      delayedUpdate()
     }
 
     override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
-      onStrengthChanged(getCurrentStrength())
+      delayedUpdate()
     }
   }
 
@@ -44,7 +57,7 @@ internal class WifiSignalStrengthMonitor(
   private val broadcastReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
       if (intent.action == ConnectivityManager.CONNECTIVITY_ACTION) {
-        onStrengthChanged(getCurrentStrength())
+        delayedUpdate()
       }
     }
   }
@@ -105,6 +118,8 @@ internal class WifiSignalStrengthMonitor(
   }
 
   fun unregister() {
+    pendingUpdate?.let { handler.removeCallbacks(it) }
+    pendingUpdate = null
     try {
       context.unregisterReceiver(broadcastReceiver)
     } catch (e: IllegalArgumentException) {
