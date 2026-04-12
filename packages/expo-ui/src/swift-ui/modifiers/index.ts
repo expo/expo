@@ -217,7 +217,13 @@ export const opacity = (value: number) => createModifier('opacity', { value });
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
 export const clipShape = (
-  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
+  shape:
+    | 'rectangle'
+    | 'circle'
+    | 'capsule'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape',
   cornerRadius?: number
 ) => createModifier('clipShape', { shape, cornerRadius });
 
@@ -697,7 +703,13 @@ export const layoutPriority = (priority: number) => createModifier('layoutPriori
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
 export const mask = (
-  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
+  shape:
+    | 'rectangle'
+    | 'circle'
+    | 'capsule'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape',
   cornerRadius?: number
 ) => createModifier('mask', { shape, cornerRadius });
 
@@ -746,7 +758,13 @@ export const glassEffect = (params?: {
     interactive?: boolean;
     tint?: Color;
   };
-  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse' | 'roundedRectangle';
+  shape?:
+    | 'circle'
+    | 'capsule'
+    | 'rectangle'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape';
   cornerRadius?: number;
 }) => createModifier('glassEffect', params);
 
