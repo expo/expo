@@ -250,6 +250,22 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
 
     this.#len += data.length;
 
+    // Fast path (1): For complete lines with no pending partial we can skip the work below
+    if (this.#partialLine === 0 && data.charCodeAt(data.length - 1) === 10 /*'\n'*/) {
+      // Fast path (2): When no write is pending, directly write the line
+      if (!this.#writing && this.#lines.length === 0 && !this.#output) {
+        this.#writing = true;
+        this.#output = data;
+        fs.write(this.#fd, data, (err, written) => this.#release(err, written));
+      } else {
+        this.#lines.push(data);
+        if (!this.#writing) {
+          this.#writeLine();
+        }
+      }
+      return this.#len < HIGH_WATER_MARK;
+    }
+
     let startIdx = 0;
     let endIdx = -1;
     while ((endIdx = data.indexOf('\n', startIdx)) > -1) {
