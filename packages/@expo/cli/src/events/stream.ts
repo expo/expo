@@ -156,11 +156,19 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
 
   #writeLine() {
     this.#writing = true;
-    if (!this.#output && this.#lines.length - this.#head > this.#partialLine) {
-      this.#output = this.#lines[this.#head++] || '';
-      if (this.#head === this.#lines.length) {
-        this.#lines.length = 0;
-        this.#head = 0;
+    if (!this.#output) {
+      const end = this.#lines.length - this.#partialLine;
+      if (end > this.#head) {
+        this.#output = this.#lines[this.#head++] || '';
+        // Batch multiple lines into one write call below HWM, to avoid
+        // excessive syscalls after when lines accumulated during a previous write
+        while (this.#head < end && this.#output.length < HIGH_WATER_MARK) {
+          this.#output += this.#lines[this.#head++];
+        }
+        if (this.#head === this.#lines.length) {
+          this.#lines.length = 0;
+          this.#head = 0;
+        }
       }
     }
     fs.write(this.#fd, this.#output, (err, written) => this.#release(err, written));
