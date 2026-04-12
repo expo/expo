@@ -75,6 +75,18 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
         // Fast path: complete write (exact for ASCII, the common case for JSONL)
         this.#len -= this.#output.length;
         this.#output = '';
+
+        if (this.#lines.length - this.#head > this.#partialLine) {
+          this.#writeLine();
+        } else if (this.#ending) {
+          this.#writing = false;
+          this.#close();
+        } else {
+          this.#writing = false;
+          if (this.#flushPending) {
+            this.emit('drain');
+          }
+        }
       } else {
         // Multi-byte complete write (written > length) or partial write (written < length)
         const outputLength = Buffer.byteLength(this.#output);
@@ -86,18 +98,17 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
           this.#len -= this.#output.length;
           this.#output = '';
         }
-      }
 
-      if (this.#output || this.#lines.length - this.#head > this.#partialLine) {
-        this.#writeLine();
-      } else if (this.#ending) {
-        this.#writing = false;
-        this.#close();
-      } else {
-        this.#writing = false;
-        // NOTE: This breaks the WritableStream contract slightly, but helps performance here
-        if (this.#flushPending) {
-          this.emit('drain');
+        if (this.#output || this.#lines.length - this.#head > this.#partialLine) {
+          this.#writeLine();
+        } else if (this.#ending) {
+          this.#writing = false;
+          this.#close();
+        } else {
+          this.#writing = false;
+          if (this.#flushPending) {
+            this.emit('drain');
+          }
         }
       }
     }
