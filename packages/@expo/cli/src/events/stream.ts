@@ -6,6 +6,16 @@ import path from 'node:path';
 const BUSY_WRITE_TIMEOUT = 100;
 const HIGH_WATER_MARK = 16_387; /*16KB*/
 
+export function writeEvent(dest: LogStream, category: string, kind: string, payload: any) {
+  const timestamp = Date.now();
+  const rest = JSON.stringify(payload).slice(1);
+  const line =
+    rest.length > 1
+      ? `{"_e":"${category}:${kind}","_t":${timestamp},${rest}\n`
+      : `{"_e":"${category}:${kind}","_t":${timestamp}}\n`;
+  dest._write(line);
+}
+
 export class LogStream extends EventEmitter implements NodeJS.WritableStream {
   #fd = -1;
   #file: string | null = null;

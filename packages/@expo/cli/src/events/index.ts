@@ -2,7 +2,7 @@ import { Console } from 'node:console';
 import path from 'node:path';
 
 import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
-import { LogStream } from './stream';
+import { LogStream, writeEvent } from './stream';
 import { env } from '../utils/env';
 
 interface InitMetadata {
@@ -106,10 +106,7 @@ export const events: EventLoggerBuilder = ((
 ) => {
   function log(event: string, data: any) {
     if (logStream) {
-      const _e = `${category}:${String(event)}`;
-      const _t = Date.now();
-      const payload = JSON.stringify({ _e, _t, ...data });
-      logStream._write(payload + '\n');
+      writeEvent(logStream, category, event, data);
     }
   }
   log.category = category;
