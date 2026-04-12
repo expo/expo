@@ -13,7 +13,7 @@ export function writeEvent(dest: LogStream, category: string, kind: string, payl
     rest.length > 1
       ? `{"_e":"${category}:${kind}","_t":${timestamp},${rest}\n`
       : `{"_e":"${category}:${kind}","_t":${timestamp}}\n`;
-  dest._write(line);
+  dest._writeln(line);
 }
 
 export class LogStream extends EventEmitter implements NodeJS.WritableStream {
@@ -279,6 +279,21 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
         }
       }
     }
+  }
+
+  _writeln(data: string): boolean {
+    this.#len += data.length;
+    if (!this.#writing && this.#lines.length === this.#head && !this.#output) {
+      this.#writing = true;
+      this.#output = data;
+      fs.write(this.#fd, data, this.#onRelease);
+    } else {
+      this.#lines.push(data);
+      if (!this.#writing) {
+        this.#writeLine();
+      }
+    }
+    return this.#len < HIGH_WATER_MARK;
   }
 
   _write(data: string): boolean {
