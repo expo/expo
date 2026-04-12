@@ -31,6 +31,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
   #lines: string[] = [];
   #head = 0;
   #partialLine = 0;
+  #onRelease = (err: NodeJS.ErrnoException | null, written: number) => this.#release(err, written);
 
   constructor(dest: string | number) {
     super();
@@ -181,7 +182,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
         }
       }
     }
-    fs.write(this.#fd, this.#output, (err, written) => this.#release(err, written));
+    fs.write(this.#fd, this.#output, this.#onRelease);
   }
 
   _end() {
@@ -282,7 +283,7 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
       if (!this.#writing && this.#lines.length === this.#head && !this.#output) {
         this.#writing = true;
         this.#output = data;
-        fs.write(this.#fd, data, (err, written) => this.#release(err, written));
+        fs.write(this.#fd, data, this.#onRelease);
       } else {
         this.#lines.push(data);
         if (!this.#writing) {
