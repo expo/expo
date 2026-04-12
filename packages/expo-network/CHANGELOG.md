@@ -8,6 +8,10 @@
 
 ### 🎉 New features
 
+- [Android] Added `getCellSignalStrengthAsync` and `getWifiSignalStrengthAsync` to read signal strength on demand, returning a value in the range [0, 4] or -1 if unavailable.
+- [Android] Added `addCellSignalStrengthListener` and `addWifiSignalStrengthListener` to subscribe to signal strength changes.
+- [Android] Added `useCellSignalStrength`, `useWifiSignalStrength`, and `useActiveSignalStrength` hooks that reactively track signal strength, automatically switching between cellular and Wi-Fi based on the active network type.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

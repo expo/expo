@@ -1,6 +1,6 @@
 ---
 title: Network
-description: A library that provides access to the device's network such as its IP address, MAC address, and airplane mode status.
+description: A library that provides access to the device's network such as its IP address, MAC address, airplane mode status, and signal strength.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-network'
 packageName: 'expo-network'
 iconUrl: '/static/images/packages/expo-network.png'
@@ -10,7 +10,7 @@ platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-`expo-network` provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
+`expo-network` provides useful information about the device's network such as its IP address, MAC address, airplane mode status, and signal strength.
 
 ## Installation
 
@@ -25,6 +25,8 @@ On Android, this module requires permissions to access the network and Wi-Fi sta
 ```js
 import * as Network from 'expo-network';
 ```
+
+> **Android only:** The signal strength APIs (`getCellSignalStrengthAsync`, `getWifiSignalStrengthAsync`, `addCellSignalStrengthListener`, `addWifiSignalStrengthListener`, and the `useCellSignalStrength`, `useWifiSignalStrength`, `useActiveSignalStrength` hooks) are only available on Android. They return a value in the range `[0, 4]`, where `0` is the weakest and `4` is the strongest signal. The constant `INVALID_SIGNAL_STRENGTH` (`-1`) is returned when the value is unavailable or when the active network type does not support signal strength (for example, Ethernet or VPN).
 
 <APISection packageName="expo-network" apiName="Network" />
 

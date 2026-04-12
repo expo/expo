@@ -2,9 +2,16 @@ import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
 import ExpoNetwork from './ExpoNetwork';
-import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
+import {
+  NetworkSignalStrengthEvent,
+  NetworkState,
+  NetworkStateEvent,
+  NetworkStateType,
+} from './Network.types';
 
-export { NetworkState, NetworkStateEvent, NetworkStateType };
+export { NetworkSignalStrengthEvent, NetworkState, NetworkStateEvent, NetworkStateType };
+
+export const INVALID_SIGNAL_STRENGTH = -1;
 
 const onNetworkStateEventName = 'onNetworkStateChanged';
 
@@ -97,6 +104,50 @@ export function addNetworkStateListener(
   return ExpoNetwork.addListener(onNetworkStateEventName, listener);
 }
 
+/**
+ * Gets the current cellular signal strength on Android.
+ * Returns a value in the range [0, 4], or -1 if unavailable.
+ * @platform android
+ */
+export async function getCellSignalStrengthAsync(): Promise<number> {
+  if (!ExpoNetwork.getCellSignalStrengthAsync) {
+    throw new UnavailabilityError('expo-network', 'getCellSignalStrengthAsync');
+  }
+  return await ExpoNetwork.getCellSignalStrengthAsync();
+}
+
+/**
+ * Gets the current Wi-Fi signal strength on Android.
+ * Returns a value in the range [0, 4], or -1 if unavailable.
+ * @platform android
+ */
+export async function getWifiSignalStrengthAsync(): Promise<number> {
+  if (!ExpoNetwork.getWifiSignalStrengthAsync) {
+    throw new UnavailabilityError('expo-network', 'getWifiSignalStrengthAsync');
+  }
+  return await ExpoNetwork.getWifiSignalStrengthAsync();
+}
+
+/**
+ * Adds a listener that fires whenever the cellular signal strength changes.
+ * @platform android
+ */
+export function addCellSignalStrengthListener(
+  listener: (event: NetworkSignalStrengthEvent) => void
+): EventSubscription {
+  return ExpoNetwork.addListener('onCellSignalStrengthChanged', listener);
+}
+
+/**
+ * Adds a listener that fires whenever the Wi-Fi signal strength changes.
+ * @platform android
+ */
+export function addWifiSignalStrengthListener(
+  listener: (event: NetworkSignalStrengthEvent) => void
+): EventSubscription {
+  return ExpoNetwork.addListener('onWifiSignalStrengthChanged', listener);
+}
+
 // @needsAudit
 /**
  * Returns the current network state of the device. This method
@@ -120,4 +171,82 @@ export function useNetworkState(): NetworkState {
   }, []);
 
   return networkState;
+}
+
+/**
+ * Returns the current cellular signal strength and subscribes to updates.
+ * The value is in the range [0, 4], or -1 if unavailable.
+ * @platform android
+ */
+export function useCellSignalStrength(): number {
+  const [strength, setStrength] = useState<number>(INVALID_SIGNAL_STRENGTH);
+
+  useEffect(() => {
+    getCellSignalStrengthAsync()
+      .then(setStrength)
+      .catch(() => setStrength(INVALID_SIGNAL_STRENGTH));
+    const listener = addCellSignalStrengthListener(({ strength }) => setStrength(strength));
+    return () => listener.remove();
+  }, []);
+
+  return strength;
+}
+
+/**
+ * Returns the current Wi-Fi signal strength and subscribes to updates.
+ * The value is in the range [0, 4], or -1 if unavailable.
+ * @platform android
+ */
+export function useWifiSignalStrength(): number {
+  const [strength, setStrength] = useState<number>(INVALID_SIGNAL_STRENGTH);
+
+  useEffect(() => {
+    getWifiSignalStrengthAsync()
+      .then(setStrength)
+      .catch(() => setStrength(INVALID_SIGNAL_STRENGTH));
+    const listener = addWifiSignalStrengthListener(({ strength }) => setStrength(strength));
+    return () => listener.remove();
+  }, []);
+
+  return strength;
+}
+
+/**
+ * Returns the signal strength of the currently active network and subscribes to updates.
+ * Automatically switches between cellular and Wi-Fi signal strength as the active network changes.
+ * The value is in the range [0, 4], or -1 if the active network type does not support signal
+ * strength (e.g. Ethernet, VPN) or if the value is unavailable.
+ * @platform android
+ */
+export function useActiveSignalStrength(): number {
+  const { type } = useNetworkState();
+  const [strength, setStrength] = useState<number>(INVALID_SIGNAL_STRENGTH);
+
+  useEffect(() => {
+    let getStrength: (() => Promise<number>) | null = null;
+    let addListener:
+      | ((listener: (event: NetworkSignalStrengthEvent) => void) => EventSubscription)
+      | null = null;
+
+    if (type === NetworkStateType.CELLULAR) {
+      getStrength = getCellSignalStrengthAsync;
+      addListener = addCellSignalStrengthListener;
+    } else if (type === NetworkStateType.WIFI) {
+      getStrength = getWifiSignalStrengthAsync;
+      addListener = addWifiSignalStrengthListener;
+    }
+
+    if (!getStrength || !addListener) {
+      setStrength(INVALID_SIGNAL_STRENGTH);
+      return;
+    }
+
+    getStrength()
+      .then(setStrength)
+      .catch(() => setStrength(INVALID_SIGNAL_STRENGTH));
+    const subscription = addListener(({ strength }) => setStrength(strength));
+    return () => subscription.remove();
+  }, [type]);
+
+  return strength;
 }

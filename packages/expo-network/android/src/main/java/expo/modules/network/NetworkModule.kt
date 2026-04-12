@@ -25,6 +25,8 @@ import java.nio.ByteOrder
 private val TAG = NetworkModule::class.java.simpleName
 
 internal const val NETWORK_STATE_EVENT_NAME = "onNetworkStateChanged"
+internal const val CELL_SIGNAL_STRENGTH_EVENT_NAME = "onCellSignalStrengthChanged"
+internal const val WIFI_SIGNAL_STRENGTH_EVENT_NAME = "onWifiSignalStrengthChanged"
 
 class NetworkModule : Module() {
   private val context: Context
@@ -32,6 +34,21 @@ class NetworkModule : Module() {
   private val connectivityManager: ConnectivityManager
     get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
   private val DELAY_MS = 250
+
+  private var cellSignalStrengthMonitor: CellSignalStrengthMonitor? = null
+  private var wifiSignalStrengthMonitor: WifiSignalStrengthMonitor? = null
+
+  private fun emitCellSignalStrength(strength: Int) {
+    val bundle = Bundle()
+    bundle.putInt("strength", strength)
+    sendEvent(CELL_SIGNAL_STRENGTH_EVENT_NAME, bundle)
+  }
+
+  private fun emitWifiSignalStrength(strength: Int) {
+    val bundle = Bundle()
+    bundle.putInt("strength", strength)
+    sendEvent(WIFI_SIGNAL_STRENGTH_EVENT_NAME, bundle)
+  }
 
   private val networkCallback = object : ConnectivityManager.NetworkCallback() {
     override fun onAvailable(network: android.net.Network) {
@@ -46,7 +63,7 @@ class NetworkModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoNetwork")
 
-    Events(NETWORK_STATE_EVENT_NAME)
+    Events(NETWORK_STATE_EVENT_NAME, CELL_SIGNAL_STRENGTH_EVENT_NAME, WIFI_SIGNAL_STRENGTH_EVENT_NAME)
 
     OnCreate {
       val networkRequest = NetworkRequest.Builder().build()
@@ -54,10 +71,26 @@ class NetworkModule : Module() {
         networkRequest,
         networkCallback
       )
+
+      cellSignalStrengthMonitor = CellSignalStrengthMonitor(context, ::emitCellSignalStrength)
+      cellSignalStrengthMonitor?.register()
+
+      wifiSignalStrengthMonitor = WifiSignalStrengthMonitor(context, connectivityManager, ::emitWifiSignalStrength)
+      wifiSignalStrengthMonitor?.register()
     }
 
     OnDestroy {
       connectivityManager.unregisterNetworkCallback(networkCallback)
+      cellSignalStrengthMonitor?.unregister()
+      wifiSignalStrengthMonitor?.unregister()
+    }
+
+    AsyncFunction("getCellSignalStrengthAsync") {
+      return@AsyncFunction cellSignalStrengthMonitor?.getCurrentStrength() ?: INVALID_SIGNAL_STRENGTH
+    }
+
+    AsyncFunction("getWifiSignalStrengthAsync") {
+      return@AsyncFunction wifiSignalStrengthMonitor?.getCurrentStrength() ?: INVALID_SIGNAL_STRENGTH
     }
 
     AsyncFunction("getNetworkStateAsync") {
