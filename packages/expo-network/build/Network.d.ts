@@ -67,14 +67,16 @@ export declare function isAirplaneModeEnabledAsync(): Promise<boolean>;
 export declare function addNetworkStateListener(listener: (event: NetworkStateEvent) => void): EventSubscription;
 /**
  * Gets the current cellular signal strength on Android.
- * Returns a value in the range [0, 4], or -1 if unavailable.
  * @platform android
+ * @returns A promise fulfilled with a number in the range [0, 4], or `INVALID_SIGNAL_STRENGTH` if
+ *   unavailable.
  */
 export declare function getCellSignalStrengthAsync(): Promise<number>;
 /**
  * Gets the current Wi-Fi signal strength on Android.
- * Returns a value in the range [0, 4], or -1 if unavailable.
  * @platform android
+ * @returns A promise fulfilled with a number in the range [0, 4], or `INVALID_SIGNAL_STRENGTH` if
+ *   unavailable.
  */
 export declare function getWifiSignalStrengthAsync(): Promise<number>;
 /**
@@ -116,7 +118,7 @@ export declare function useWifiSignalStrength(): number;
  * Returns the signal strength of the currently active network and subscribes to updates.
  * Automatically switches between cellular and Wi-Fi signal strength as the active network changes.
  * The value is in the range [0, 4], or -1 if the active network type does not support signal
- * strength (e.g. Ethernet, VPN) or if the value is unavailable.
+ * strength (for example, Ethernet or VPN) or if the value is unavailable.
  * @platform android
  */
 export declare function useActiveSignalStrength(): number;

@@ -83,7 +83,7 @@ export type NetworkStateEvent = NetworkState;
 /**
  * Represents the signal strength of a network connection.
  * The value is in the range [0, 4], where 0 is the weakest and 4 is the strongest.
- * Returns -1 if the signal strength could not be determined.
+ * A value of `-1` indicates the signal strength could not be determined.
  * @platform android
  */
 export type NetworkSignalStrengthEvent = {
