@@ -91,7 +91,7 @@ fun SplashScreenImage(
   AsyncImage(
     model = ImageRequest.Builder(LocalContext.current)
       .data(imageUrl)
-      .crossfade(true)
+      .crossfade(false)
       .build(),
     contentDescription = "Splash Screen Image",
     modifier = Modifier.width(imageWidth.dp)
