@@ -60,9 +60,9 @@ const IGNORES_PATHS = [
   'snippets',
 ];
 
-// Files and top-level directories that only belong in remote (standalone npm) modules.
+// Files and top-level directories that only belong in standalone npm modules.
 // When generating a local module, these are skipped so the host project's tooling is used instead.
-const REMOTE_ONLY_FILES = new Set([
+const LOCAL_EXCLUDED_FILES = new Set([
   '$package.json',
   '$CHANGELOG.md',
   '$.gitignore',
@@ -74,7 +74,7 @@ const REMOTE_ONLY_FILES = new Set([
   'README.md',
   path.join('src', 'index.ts'),
 ]);
-const REMOTE_ONLY_DIRS = new Set(['example', 'internal']);
+const LOCAL_EXCLUDED_DIRS = new Set(['example', 'internal']);
 
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
@@ -660,9 +660,9 @@ async function createModuleFromTemplate(
       continue;
     }
 
-    // Skip remote-only files and directories for local modules.
+    // Skip standalone-only files and directories for local modules.
     if (data.type === 'local') {
-      if (REMOTE_ONLY_FILES.has(file) || REMOTE_ONLY_DIRS.has(topLevelDir)) {
+      if (LOCAL_EXCLUDED_FILES.has(file) || LOCAL_EXCLUDED_DIRS.has(topLevelDir)) {
         continue;
       }
     }
@@ -839,7 +839,7 @@ async function askForSubstitutionDataAsync(
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
     repo,
-    type: 'remote',
+    type: 'standalone',
   };
 }
 
@@ -899,7 +899,7 @@ async function getSubstitutionDataFromOptions(
     };
   }
 
-  // For remote modules, resolve author info
+  // For standalone modules, resolve author info
   const description = options.description ?? 'My new module';
   const authorName = options.authorName ?? (await findMyName()) ?? '';
   const authorEmail = options.authorEmail ?? (await findGitHubEmail()) ?? '';
@@ -927,7 +927,7 @@ async function getSubstitutionDataFromOptions(
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
     repo,
-    type: 'remote',
+    type: 'standalone',
   };
 }
 
