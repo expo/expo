@@ -120,20 +120,20 @@ class BarcodeScannerUtils {
     return result
   }
 
-    static func zxingFormatToBarcodeType(_ format: ZXBarcodeFormat) -> BarcodeType? {
-      switch format {
-      case kBarcodeFormatPDF417:
-        return .pdf417
-      case kBarcodeFormatCode39:
-        return .code39
-      case kBarcodeFormatCodabar:
-        if #available(iOS 15.4, *) {
-          return .codabar
-        }
-        return nil
-      default:
-        return nil
+  static func zxingFormatToBarcodeType(_ format: ZXBarcodeFormat) -> BarcodeType? {
+    switch format {
+    case kBarcodeFormatPDF417:
+      return .pdf417
+    case kBarcodeFormatCode39:
+      return .code39
+    case kBarcodeFormatCodabar:
+      if #available(iOS 15.4, *) {
+        return .codabar
       }
+      return nil
+    default:
+      return nil
     }
+  }
   #endif
 }
