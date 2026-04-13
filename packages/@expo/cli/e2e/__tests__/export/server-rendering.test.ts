@@ -220,6 +220,21 @@ describe('exports server', () => {
       );
     });
 
+    it('emits the hydration flag before the bootstrap script', async () => {
+      const html = await server.fetchAsync('/').then((res) => res.text());
+
+      const hydrationFlagIndex = html.indexOf(
+        '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
+      );
+      const bootstrapScriptIndex = html.search(
+        /<script src="\/_expo\/static\/js\/web\/entry-.*\.js"[^>]*async=""><\/script>/
+      );
+
+      expect(hydrationFlagIndex).toBeGreaterThanOrEqual(0);
+      expect(bootstrapScriptIndex).toBeGreaterThanOrEqual(0);
+      expect(hydrationFlagIndex).toBeLessThan(bootstrapScriptIndex);
+    });
+
     it('SSR styles are injected', async () => {
       const indexHtml = getHtml(await server.fetchAsync('/').then((res) => res.text()));
 
