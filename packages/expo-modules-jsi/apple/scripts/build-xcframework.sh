@@ -219,20 +219,22 @@ symlink_dependencies() {
 
   # hermes-engine and React are committed directories containing files that
   # can't come from Pods (module.modulemap, VFS overlay). Only their
-  # heavy subdirectories are symlinked.
+  # heavy subdirectories are symlinked. `ln -sfn` atomically replaces an
+  # existing symlink so we recover from dangling links and keep the target
+  # in sync when PODS_ROOT changes.
   local hermes_destroot="${sources}/hermes-engine/destroot"
-  if [[ ! -e "$hermes_destroot" && -d "${PODS_ROOT}/hermes-engine/destroot" ]]; then
-    ln -s "${PODS_ROOT}/hermes-engine/destroot" "$hermes_destroot"
+  if [[ -d "${PODS_ROOT}/hermes-engine/destroot" ]]; then
+    ln -sfn "${PODS_ROOT}/hermes-engine/destroot" "$hermes_destroot"
   fi
 
   local react_xcframework="${sources}/React/React.xcframework"
-  if [[ ! -e "$react_xcframework" && -d "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" ]]; then
-    ln -s "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" "$react_xcframework"
+  if [[ -d "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" ]]; then
+    ln -sfn "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" "$react_xcframework"
   fi
 
   local rndeps_xcframework="${sources}/ReactNativeDependencies/ReactNativeDependencies.xcframework"
-  if [[ ! -e "$rndeps_xcframework" && -d "${PODS_ROOT}/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework" ]]; then
-    ln -s "${PODS_ROOT}/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework" "$rndeps_xcframework"
+  if [[ -d "${PODS_ROOT}/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework" ]]; then
+    ln -sfn "${PODS_ROOT}/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework" "$rndeps_xcframework"
   fi
 
   # Generate the VFS overlay with paths matching the local Sources/React directory.
