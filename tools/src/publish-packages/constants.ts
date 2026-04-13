@@ -48,6 +48,5 @@ export const NON_CASCADING_PACKAGES = new Set([
   'babel-preset-expo',
   'eslint-config-universe',
   'jest-expo',
-  '@expo/config',
   '@expo/json-file',
 ]);
