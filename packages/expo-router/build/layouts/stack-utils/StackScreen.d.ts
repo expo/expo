@@ -4,7 +4,58 @@ import type { ParamListBase, StackNavigationState } from '../../react-navigation
 import { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 import type { NativeStackNavigationEventMap } from '../../react-navigation/native-stack';
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
-type StackBaseScreenProps = BaseScreenProps<NativeStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>;
+/**
+ * Additional web-only modal style options for Stack.Screen.
+ * @platform web
+ */
+export interface WebModalStyle {
+    /**
+     * Override the width of the modal (px or percentage). Only applies on web platform.
+     * @platform web
+     */
+    width?: number | string;
+    /**
+     * Override the height of the modal (px or percentage). Applies on web desktop.
+     * @platform web
+     */
+    height?: number | string;
+    /**
+     * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
+     * @platform web
+     */
+    minHeight?: number | string;
+    /**
+     * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
+     * @platform web
+     */
+    minWidth?: number | string;
+    /**
+     * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
+     * @platform web
+     */
+    border?: string;
+    /**
+     * Override the overlay background color (any valid CSS color or rgba/hsla value).
+     * @platform web
+     */
+    overlayBackground?: string;
+    /**
+     * Override the modal shadow filter (any valid CSS filter value, e.g. 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none').
+     * @platform web
+     */
+    shadow?: string;
+}
+/**
+ * Extended stack navigation options that include web-specific modal style props.
+ */
+export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
+    /**
+     * Web-only options for customizing the modal appearance on web platform.
+     * @platform web
+     */
+    webModalStyle?: WebModalStyle;
+};
+type StackBaseScreenProps = BaseScreenProps<ExtendedStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>;
 export interface StackScreenProps extends PropsWithChildren {
     /** Name is required when used inside a Layout component. */
     name?: StackBaseScreenProps['name'];
@@ -93,8 +144,8 @@ export declare const StackScreen: (({ children, options, ...rest }: StackScreenP
     Title: typeof StackScreenTitle;
     BackButton: typeof StackScreenBackButton;
 };
-export declare function validateStackPresentation(options: NativeStackNavigationOptions): NativeStackNavigationOptions;
-export declare function validateStackPresentation<F extends (...args: never[]) => NativeStackNavigationOptions>(options: F): F;
-export declare function appendScreenStackPropsToOptions(options: NativeStackNavigationOptions, props: StackScreenProps): NativeStackNavigationOptions;
+export declare function validateStackPresentation(options: ExtendedStackNavigationOptions): ExtendedStackNavigationOptions;
+export declare function validateStackPresentation<F extends (...args: never[]) => ExtendedStackNavigationOptions>(options: F): F;
+export declare function appendScreenStackPropsToOptions(options: ExtendedStackNavigationOptions, props: StackScreenProps): ExtendedStackNavigationOptions;
 export {};
 //# sourceMappingURL=StackScreen.d.ts.map
