@@ -108,15 +108,9 @@ class BarcodeScannerUtils {
     var result = [String: Any]()
     result["type"] = BarcodeScannerUtils.zxingFormatToBarcodeType(barcodeScannerResult.barcodeFormat)?.rawValue ?? "unknown"
 
-    var data = ""
-    for i in 0..<barcodeScannerResult.text.count {
-      let character = barcodeScannerResult.text[barcodeScannerResult.text.index(barcodeScannerResult.text.startIndex, offsetBy: i)]
-        if character != "\0" {
-          data.append(character)
-        }
-      }
-      result["data"] = data
-
+    let data = barcodeScannerResult.text.filter { $0 != "\0" }
+    result["data"] = data
+    
     return result
   }
 
