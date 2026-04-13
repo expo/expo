@@ -4417,9 +4417,6 @@ importers:
 
   packages/expo-manifests:
     dependencies:
-      '@expo/config':
-        specifier: workspace:~55.0.8
-        version: link:../@expo/config
       expo:
         specifier: workspace:*
         version: link:../expo
