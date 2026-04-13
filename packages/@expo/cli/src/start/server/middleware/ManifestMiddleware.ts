@@ -17,7 +17,11 @@ import {
   getAsyncRoutesFromExpoConfig,
   createBundleUrlPathFromExpoConfig,
 } from './metroOptions';
-import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
+import {
+  resolveGoogleServicesFile,
+  resolveManifestAssets,
+  resolveSplashScreenAssets,
+} from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
@@ -255,6 +259,14 @@ export abstract class ManifestMiddleware<
 
   /** Resolve all assets and set them on the manifest as URLs */
   private async mutateManifestWithAssetsAsync(manifest: ExpoConfig, bundleUrl: string) {
+    const resolver = async (path: string) => {
+      if (this.options.isNativeWebpack) {
+        // When using our custom dev server, just do assets normally
+        // without the `assets/` subpath redirect.
+        return resolve(bundleUrl!.match(/^https?:\/\/.*?\//)![0], path);
+      }
+      return bundleUrl!.match(/^https?:\/\/.*?\//)![0] + 'assets/' + path;
+    };
     await resolveManifestAssets(this.projectRoot, {
       manifest,
       resolver: async (path) => {
@@ -266,6 +278,10 @@ export abstract class ManifestMiddleware<
         return bundleUrl!.match(/^https?:\/\/.*?\//)![0] + 'assets/' + path;
       },
     });
+    await resolveManifestAssets(this.projectRoot, { manifest, resolver });
+    // expo-splash-screen stashes its config under `extra`, so it's invisible to the SDK asset
+    // schema used by `resolveManifestAssets`. Resolve its image paths explicitly.
+    await resolveSplashScreenAssets(this.projectRoot, { manifest, resolver });
     // The server normally inserts this but if we're offline we'll do it here
     await resolveGoogleServicesFile(this.projectRoot, manifest);
   }

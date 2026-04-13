@@ -1947,6 +1947,9 @@ importers:
       expo-modules-autolinking:
         specifier: workspace:*
         version: link:../../expo-modules-autolinking
+      expo-splash-screen:
+        specifier: workspace:*
+        version: link:../../expo-splash-screen
       find-process:
         specifier: ^1.4.7
         version: 1.4.11

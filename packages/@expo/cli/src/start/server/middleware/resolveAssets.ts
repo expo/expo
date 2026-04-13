@@ -1,4 +1,5 @@
 import { ExpoConfig } from '@expo/config';
+import type { AndroidSplashConfig, IOSSplashConfig } from 'expo-splash-screen/plugin';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -55,6 +56,71 @@ export async function resolveGoogleServicesFile(
     }
   }
   return manifest;
+}
+
+/**
+ * Inline URLs for image assets stored under `extra["expo-splash-screen"]` by the expo-splash-screen
+ * config plugin. These paths live outside the SDK schema, so `resolveManifestAssets` won't discover
+ * them. We resolve them explicitly here, overwriting each path in place.
+ */
+export async function resolveSplashScreenAssets(
+  projectRoot: string,
+  {
+    manifest,
+    resolver,
+  }: {
+    manifest: ExpoConfig;
+    resolver: (assetPath: string) => Promise<string>;
+  }
+) {
+  const splash = manifest.extra?.['expo-splash-screen'] as
+    | { android: AndroidSplashConfig; ios: IOSSplashConfig }
+    | undefined;
+
+  if (splash == null) {
+    return;
+  }
+
+  const resolveKeys = async <K extends string>(
+    parent: { [P in K]?: string } | undefined,
+    keys: K[]
+  ) => {
+    if (parent == null) {
+      return;
+    }
+
+    await Promise.all(
+      keys.map(async (key) => {
+        const value = parent[key];
+
+        if (typeof value !== 'string' || validateUrl(value, { requireProtocol: true })) {
+          return;
+        }
+        if (await fileExistsAsync(path.resolve(projectRoot, value))) {
+          parent[key] = await resolver(value);
+          return;
+        }
+
+        Log.warn(
+          `Unable to resolve asset "${value}" from "extra["expo-splash-screen"]" in your app config`
+        );
+      })
+    );
+  };
+
+  const androidImageKeys = ['image', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'] satisfies Array<
+    keyof NonNullable<AndroidSplashConfig['dark']>
+  >;
+  const iosImageKeys = ['image', 'tabletImage'] satisfies Array<
+    keyof NonNullable<IOSSplashConfig['dark']>
+  >;
+
+  await Promise.all([
+    resolveKeys(splash.android, androidImageKeys),
+    resolveKeys(splash.android?.dark, androidImageKeys),
+    resolveKeys(splash.ios, iosImageKeys),
+    resolveKeys(splash.ios?.dark, iosImageKeys),
+  ]);
 }
 
 /**
