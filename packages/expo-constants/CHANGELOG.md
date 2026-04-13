@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Switch app config generation from `@expo/config` to `expo/config` public API ([#44721](https://github.com/expo/expo/pull/44721) by [@kitten](https://github.com/kitten))
+
 ## 55.0.14 — 2026-04-13
 
 _This version does not introduce any user-facing changes._

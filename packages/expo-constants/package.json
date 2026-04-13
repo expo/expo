@@ -43,7 +43,6 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config": "~55.0.15",
     "@expo/env": "~2.1.1"
   },
   "devDependencies": {
