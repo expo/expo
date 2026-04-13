@@ -27,7 +27,7 @@ export default ({ config }) => {
     [
       'expo-splash-screen',
       {
-        backgroundColor: '#fff',
+        backgroundColor: '#ffffff',
         image: './assets/icons/loadingIcon.png',
         imageWidth: 100,
       },

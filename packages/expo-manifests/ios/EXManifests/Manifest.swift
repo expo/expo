@@ -263,8 +263,7 @@ public class Manifest: NSObject {
   public func iosSplashBackgroundColor() -> String? {
     return expoClientConfigRootObject().let { it in
       Manifest.string(fromManifest: it, atPaths: [
-        ["ios", "splash", "backgroundColor"],
-        ["splash", "backgroundColor"]
+        ["extra", "expo-splash-screen", "ios", "backgroundColor"],
       ])
     }
   }
@@ -276,12 +275,11 @@ public class Manifest: NSObject {
   }
 
   public func iosSplashImageUrl() -> String? {
-    var paths = [["ios", "splash", "imageUrl"], ["splash", "imageUrl"]]
+    var paths = [["extra", "expo-splash-screen", "ios", "image"]]
 #if os(iOS) || os(tvOS)
     if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
       paths.insert(contentsOf: [
-        ["ios", "splash", "tabletImageUrl"],
-        ["splash", "tabletImageUrl"]
+        ["extra", "expo-splash-screen", "ios", "tabletImage"],
       ], at: 0)
     }
 #endif
@@ -290,11 +288,18 @@ public class Manifest: NSObject {
     }
   }
 
+  public func iosSplashImageWidth() -> Int? {
+    return expoClientConfigRootObject().let { it in
+      Manifest.int(fromManifest: it, atPaths: [
+        ["extra", "expo-splash-screen", "ios", "imageWidth"],
+      ])
+    }
+  }
+
   public func iosSplashImageResizeMode() -> String? {
     return expoClientConfigRootObject().let { it in
       Manifest.string(fromManifest: it, atPaths: [
-        ["ios", "splash", "resizeMode"],
-        ["splash", "resizeMode"]
+        ["extra", "expo-splash-screen", "ios", "resizeMode"],
       ])
     }
   }
@@ -425,6 +430,33 @@ public class Manifest: NSObject {
       let key = atPath[i]
       let value = json[key]
       if isLastKey, let value = value as? String {
+        return value
+      }
+      guard let newJson = value else {
+        return nil
+      }
+      // swiftlint:disable:next force_cast
+      json = newJson as! [String: Any]
+    }
+    return nil
+  }
+
+  private static func int(fromManifest: [String: Any], atPaths: [[String]]) -> Int? {
+    for path in atPaths {
+      if let result = int(fromManifest: fromManifest, atPath: path) {
+        return result
+      }
+    }
+    return nil
+  }
+
+  private static func int(fromManifest: [String: Any], atPath: [String]) -> Int? {
+    var json = fromManifest
+    for i in 0..<atPath.count {
+      let isLastKey = i == atPath.count - 1
+      let key = atPath[i]
+      let value = json[key]
+      if isLastKey, let value = value as? Int {
         return value
       }
       guard let newJson = value else {

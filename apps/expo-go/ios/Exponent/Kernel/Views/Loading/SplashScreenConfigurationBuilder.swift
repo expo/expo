@@ -1,11 +1,13 @@
 struct SplashScreenConfigurationBuilder {
   static func parse(manifest: EXManifests.Manifest) -> ManagedAppSplashScreenConfiguration {
-    let imageUrl = manifest.iosAppIconUrl()
-    let resizeMode: SplashScreenImageResizeMode = manifest.iosSplashImageResizeMode() == "cover" ? .cover : .contain
-    let appName = manifest.name()
+    let backgroundColor = manifest.iosSplashBackgroundColor()
+    let imageUrl = manifest.iosSplashImageUrl() ?? manifest.iosAppIconUrl()
+    let imageWidth = manifest.iosSplashImageWidth()
+
     return ManagedAppSplashScreenConfiguration(
-      appName: appName,
+      backgroundColor: backgroundColor,
       imageUrl: imageUrl,
-      imageResizeMode: resizeMode)
+      imageWidth: imageWidth
+    )
   }
 }

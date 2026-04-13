@@ -1,12 +1,7 @@
 import UIKit
 
-enum SplashScreenImageResizeMode {
-  case contain
-  case cover
-}
-
 struct ManagedAppSplashScreenConfiguration {
-  let appName: String?
+  let backgroundColor: String?
   let imageUrl: String?
-  let imageResizeMode: SplashScreenImageResizeMode?
+  let imageWidth: Int?
 }

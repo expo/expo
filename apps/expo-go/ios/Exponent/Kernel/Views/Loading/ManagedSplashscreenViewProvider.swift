@@ -6,7 +6,6 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
   var configuration: ManagedAppSplashScreenConfiguration?
   var splashScreenView: UIView?
   var splashImageView: UIImageView?
-  var imageViewContainer: UIView?
 
   @objc init(with manifest: EXManifests.Manifest) {
     configuration = SplashScreenConfigurationBuilder.parse(manifest: manifest)
@@ -35,68 +34,45 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
         return
       }
 
-      splashScreenView?.backgroundColor = .white
-      if let imageUrl = configuration?.imageUrl {
-        if previousConfiguration?.imageUrl != imageUrl ||
-          previousConfiguration?.imageResizeMode != configuration?.imageResizeMode {
-          imageViewContainer?.removeFromSuperview()
-          let appName = createNameLabel(name: configuration?.appName)
+      view.backgroundColor = EXUtil.color(withHexString: configuration?.backgroundColor) ?? .white
+      let imageWidth = configuration?.imageWidth ?? 100
 
-          let container = createStackView()
-          imageViewContainer = container
-          splashScreenView?.addSubview(container)
+      if let imageUrl = configuration?.imageUrl {
+        if splashImageView == nil
+            || previousConfiguration?.imageUrl != imageUrl
+            || previousConfiguration?.imageWidth != configuration?.imageWidth {
+          splashImageView?.removeFromSuperview()
 
           let imageView = createImageView(with: imageUrl)
           splashImageView = imageView
+          view.addSubview(imageView)
 
-          container.addArrangedSubview(imageView)
-          container.addArrangedSubview(appName)
-          if let splashScreenView {
-            NSLayoutConstraint.activate([
-              container.centerXAnchor.constraint(equalTo: splashScreenView.centerXAnchor),
-              container.centerYAnchor.constraint(equalTo: splashScreenView.centerYAnchor),
-              imageView.widthAnchor.constraint(equalToConstant: 200),
-              imageView.heightAnchor.constraint(equalToConstant: 200)
-            ])
-          }
+          NSLayoutConstraint.activate([
+            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            imageView.widthAnchor.constraint(equalToConstant: CGFloat(imageWidth))
+          ])
         }
       }
     }
   }
 
-  private func createStackView() -> UIStackView {
-    let container = UIStackView()
-    container.translatesAutoresizingMaskIntoConstraints = false
-
-    container.spacing = 30
-    container.axis = .vertical
-    container.alignment = .center
-    container.layer.shadowColor = UIColor.black.cgColor
-    container.layer.shadowOffset = CGSize.zero
-    container.layer.shadowOpacity = 0.2
-    container.layer.shadowRadius = 10
-    container.layer.masksToBounds = false
-    container.clipsToBounds = false
-
-    return container
-  }
-
   private func createImageView(with imageUrl: String) -> UIImageView {
     let imageView = UIImageView()
     imageView.translatesAutoresizingMaskIntoConstraints = false
-    imageView.sd_setImage(with: URL(string: imageUrl))
-    imageView.contentMode = configuration?.imageResizeMode == .cover ? .scaleAspectFill : .scaleAspectFit
-    imageView.layer.cornerRadius = 30
-    imageView.layer.masksToBounds = true
+    imageView.contentMode = .scaleAspectFit
+
+    imageView.sd_setImage(with: URL(string: imageUrl)) { [weak imageView] image, _, _, _ in
+      guard let imageView, let image, image.size.width > 0 else {
+        return
+      }
+
+      imageView.heightAnchor.constraint(
+        equalTo: imageView.widthAnchor,
+        multiplier: image.size.height / image.size.width
+      ).isActive = true
+    }
 
     return imageView
-  }
-
-  private func createNameLabel(name: String?) -> UILabel {
-    let appName = UILabel()
-    appName.translatesAutoresizingMaskIntoConstraints = false
-    appName.text = configuration?.appName
-    appName.font = .systemFont(ofSize: 20, weight: .semibold)
-    return appName
   }
 }
