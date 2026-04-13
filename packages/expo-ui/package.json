@@ -26,6 +26,10 @@
     "./datetimepicker": {
       "types": "./build/datetime-picker/index.d.ts",
       "default": "./src/datetime-picker/index.tsx"
+    },
+    "./community/segmented-control": {
+      "types": "./build/community/segmented-control/index.d.ts",
+      "default": "./src/community/segmented-control/index.tsx"
     }
   },
   "scripts": {

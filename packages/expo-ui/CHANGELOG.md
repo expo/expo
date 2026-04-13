@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `@expo/ui/community/segmented-control` — a drop-in replacement for `@react-native-segmented-control/segmented-control`. ([#44611](https://github.com/expo/expo/pull/44611) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
