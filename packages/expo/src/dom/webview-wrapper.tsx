@@ -22,8 +22,7 @@ import ExpoDomWebView from './webview/ExpoDOMWebView';
 import RNWebView from './webview/RNWebView';
 import { useDebugZeroHeight } from './webview/useDebugZeroHeight';
 
-type RawWebViewProps = React.ComponentProps<Exclude<typeof ExpoDomWebView, undefined>> &
-  React.ComponentProps<Exclude<typeof RNWebView, undefined>>;
+type RawWebViewProps = React.ComponentProps<Exclude<typeof RNWebView, undefined>>;
 
 interface Props {
   children?: any;
@@ -224,7 +223,6 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
           return emitError(error);
         }
       } else {
-        // @ts-expect-error: TODO(@kitten): The two types for this event will never match up, but we know they do
         dom?.onMessage?.(event);
       }
       _emitGlobalEvent({ type, data });

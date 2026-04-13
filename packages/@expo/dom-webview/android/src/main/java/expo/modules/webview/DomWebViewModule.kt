@@ -19,7 +19,7 @@ class DomWebViewModule : Module() {
     }
 
     View(DomWebView::class) {
-      Events("onMessage")
+      Events("onMessage", "onRenderProcessGone")
 
       Prop("source") { view: DomWebView, source: DomWebViewSource ->
         view.setSource(source)
@@ -39,6 +39,10 @@ class DomWebViewModule : Module() {
 
       Prop("webviewDebuggingEnabled") { view: DomWebView, enabled: Boolean ->
         view.webviewDebuggingEnabled = enabled
+      }
+
+      Prop("mediaPlaybackRequiresUserAction") { view: DomWebView, enabled: Boolean ->
+        view.mediaPlaybackRequiresUserAction = enabled
       }
 
       Prop("showsHorizontalScrollIndicator") { view: DomWebView, enabled: Boolean ->
@@ -65,8 +69,16 @@ class DomWebViewModule : Module() {
         view.injectJavaScript(script)
       }
 
+      AsyncFunction("reload") { view: DomWebView ->
+        view.forceReload()
+      }
+
       OnViewDidUpdateProps { view: DomWebView ->
         view.reload()
+      }
+
+      OnViewDestroys { view: DomWebView ->
+        view.onViewDestroys()
       }
     }
   }
