@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused `@expo/config` dependency ([#44722](https://github.com/expo/expo/pull/44722) by [@kitten](https://github.com/kitten))
+
 ## 55.0.15 — 2026-04-09
 
 _This version does not introduce any user-facing changes._
