@@ -326,6 +326,14 @@ describe('getHtml', () => {
         assets: { css: ['/style.css'], js: ['/app.js'] },
       })
     );
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        request: expect.objectContaining({
+          signal: request.signal,
+        }),
+      })
+    );
   });
 
   it('merges top-level and per-route assets', async () => {
