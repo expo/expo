@@ -3,11 +3,6 @@
     "name": "BareExpo",
     "slug": "bare-expo",
     "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#000020"
-    },
     "scheme": "bareexpo",
     "facebookScheme": "fb629712900716487",
     "facebookAppId": "629712900716487",
@@ -56,6 +51,14 @@
     "plugins": [
       "expo-video",
       "expo-background-fetch",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#000020"
+        }
+      ],
       [
         "expo-font",
         {

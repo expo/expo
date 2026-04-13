@@ -192,9 +192,27 @@ function convertEntryPointToRelative(projectRoot, absolutePath, extname = '.js')
   let serverRoot = getMetroServerRoot(projectRoot);
   try {
     const realServerRoot = _fs().default.realpathSync(serverRoot);
-    if (realServerRoot !== serverRoot) {
+    // If the absolute path already starts with the resolved server root, use it directly
+    if (absolutePath.startsWith(realServerRoot + _path().default.sep)) {
       serverRoot = realServerRoot;
-      absolutePath = _fs().default.realpathSync(absolutePath);
+    } else if (absolutePath.startsWith(serverRoot + _path().default.sep)) {
+      // If the absolute path starts with the (possibly symlinked) server root, preserve it as-is
+    } else {
+      // Otherwise, resolve the absolute path to check if it matches the real server root.
+      // This is only needed when absolutePath doesn't match either root representation,
+      // and absolutePath may not be valid (e.g. non-existent file)
+      try {
+        const realAbsolutePath = _fs().default.realpathSync(absolutePath);
+        if (realAbsolutePath.startsWith(realServerRoot + _path().default.sep)) {
+          serverRoot = realServerRoot;
+          absolutePath = realAbsolutePath;
+        } else if (realServerRoot !== serverRoot || realAbsolutePath !== absolutePath) {
+          // Last resort: fall back to the legacy behavior of using the realpath for both,
+          // without knowing if the resulting relative path will be valid
+          serverRoot = realServerRoot;
+          absolutePath = realAbsolutePath;
+        }
+      } catch {}
     }
   } catch {
     // NOTE: `fs.realpathSync` can fail if `projectRoot` doesn't exist (e.g. mocked folder)
