@@ -8,6 +8,7 @@
 
 - Add `include` option to `package.json:expo.autolinking` and per-platform configurations. This allows the verification and deduplication checks to also apply to additional packages that aren't otherwise recognized as native modules, which is useful to detect or deduplicate additional packages with singleton state, for example. ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
 - Add support for loading precompiled frameworks from npm. ([#44360](https://github.com/expo/expo/pull/44360) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Expose `isNativeModuleAsync` utility in internal exports ([#44458](https://github.com/expo/expo/pull/44458) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 

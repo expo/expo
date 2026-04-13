@@ -1,5 +1,5 @@
 import { PackageRevision, SupportedPlatform } from '../types';
-import { type ResolutionResult } from './types';
+import { type ResolutionResult, DependencyResolution } from './types';
 import { type Memoizer } from '../memoize';
 import { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
 export interface CachedDependenciesSearchOptions {
@@ -18,5 +18,6 @@ export interface CachedDependenciesLinker {
 export declare function makeCachedDependenciesLinker(params: {
     projectRoot: string;
 }): CachedDependenciesLinker;
+export declare function isNativeModuleAsync(resolution: DependencyResolution, reactNativeProjectConfig: RNConfigReactNativeProjectConfig | null, platform: SupportedPlatform, excludeNames: Set<string>): Promise<boolean>;
 export declare function scanDependencyResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform, extraInclude?: string[]): Promise<ResolutionResult>;
 export declare function scanExpoModuleResolutionsForPlatform(linker: CachedDependenciesLinker, platform: SupportedPlatform, extraInclude?: string[]): Promise<Record<string, PackageRevision>>;

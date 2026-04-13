@@ -12,6 +12,7 @@
 - Add `--device generic` support to `expo run:ios` for build-only workflows without targeting a specific device. ([#43529](https://github.com/expo/expo/pull/43529) by [@evanbacon](https://github.com/evanbacon))
 - Show Xcode build progress bar in interactive terminals with retry logic for concurrent build DB lock failures. ([#43529](https://github.com/expo/expo/pull/43529) by [@evanbacon](https://github.com/evanbacon))
 - Enable parallel CocoaPods code signing to speed up device builds. ([#43529](https://github.com/expo/expo/pull/43529) by [@evanbacon](https://github.com/evanbacon))
+- Prompt before clearing native folders when we detect project as a native module ([#44458](https://github.com/expo/expo/pull/44458) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
