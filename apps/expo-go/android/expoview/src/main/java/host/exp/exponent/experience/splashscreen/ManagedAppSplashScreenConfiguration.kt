@@ -49,7 +49,7 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       val densityDpi = context.resources.displayMetrics.densityDpi
       val splashInfo = manifest.getSplashInfo()
 
-      return splashInfo?.getNullable<String>(
+      val imageUrl = splashInfo?.getNullable<String>(
         when {
           densityDpi >= DisplayMetrics.DENSITY_XXXHIGH -> "xxxhdpi"
           densityDpi >= DisplayMetrics.DENSITY_XXHIGH -> "xxhdpi"
@@ -59,6 +59,9 @@ class ManagedAppSplashScreenConfiguration private constructor() {
           else -> "image"
         }
       )
+
+      // if the splash configuration is not set, we default to the app icon
+      return imageUrl ?: manifest.getIconUrl()
     }
 
     private fun parseImageWidth(manifest: Manifest): Int? {
