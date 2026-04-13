@@ -1,12 +1,9 @@
-import Debug from 'debug';
 import { ConfigPlugin, IOSConfig, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
 import { parseColor } from './InterfaceBuilder';
 import { IOSSplashConfig } from './types';
-
-const debug = Debug('expo:expo-splash-screen:ios:splash-colorset');
 
 export const SPLASHSCREEN_COLORSET_PATH = 'Images.xcassets/SplashScreenBackground.colorset';
 
@@ -105,9 +102,6 @@ async function writeColorsContentsJsonFileAsync({
       appearances: darkAppearances,
     });
   }
-
-  debug(`create colors contents.json:`, assetPath);
-  debug(`use colors:`, colors);
 
   await fs.promises.mkdir(assetPath, { recursive: true });
   await fs.promises.writeFile(

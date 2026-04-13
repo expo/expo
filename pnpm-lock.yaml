@@ -5126,9 +5126,6 @@ importers:
       '@expo/image-utils':
         specifier: workspace:^0.8.12
         version: link:../@expo/image-utils
-      debug:
-        specifier: ^4.3.2
-        version: 4.4.3
       expo:
         specifier: workspace:*
         version: link:../expo
@@ -5139,9 +5136,6 @@ importers:
       '@expo/plist':
         specifier: workspace:*
         version: link:../@expo/plist
-      '@types/debug':
-        specifier: ^4.1.8
-        version: 4.1.12
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15

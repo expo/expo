@@ -1,4 +1,3 @@
-import Debug from 'debug';
 import { ConfigPlugin, withPlugins } from 'expo/config-plugins';
 
 import { getIosSplashConfig } from './getIosSplashConfig';
@@ -10,12 +9,12 @@ import { withIosSplashScreenStoryboardBaseMod } from './withIosSplashScreenStory
 import { withIosSplashScreenImage } from './withIosSplashScreenStoryboardImage';
 import { withIosSplashXcodeProject } from './withIosSplashXcodeProject';
 
-const debug = Debug('expo:expo-splash-screen:ios');
-
 export const withIosSplashScreen: ConfigPlugin<Props> = (config, props) => {
   const splash = getIosSplashConfig(props);
 
-  debug(`config:`, props);
+  // Elevate splash to a static value on extra so Expo Go can read it.
+  config.extra ??= {};
+  config.extra[pkg.name] = splash;
 
   return withPlugins(config, [
     [withIosSplashInfoPlist, splash],
