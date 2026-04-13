@@ -5,7 +5,8 @@ import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
-import { withIosSplashScreen } from '../withIosSplashScreen';
+import { getIosSplashConfig } from '../getIosSplashConfig';
+import { withIosSplashScreen } from '../withSplashScreen';
 import projectFixtures from './fixtures/react-native-project';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
@@ -67,17 +68,20 @@ describe(withIosSplashScreen, () => {
     };
 
     // Apply the splash plugin
-    config = withIosSplashScreen(config, {
-      // must use full path for mock fs
-      image: undefined,
-      resizeMode: 'contain',
-      backgroundColor: '#ff00ff',
-      dark: {
+    config = withIosSplashScreen(
+      config,
+      getIosSplashConfig({
+        // must use full path for mock fs
         image: undefined,
-        backgroundColor: undefined,
-      },
-      // userInterfaceStyle: 'automatic',
-    });
+        resizeMode: 'contain',
+        backgroundColor: '#ff00ff',
+        dark: {
+          image: undefined,
+          backgroundColor: undefined,
+        },
+        // userInterfaceStyle: 'automatic',
+      })
+    );
 
     // compile all plugins and mods
     config = await compileModsAsync(config, {
@@ -109,17 +113,20 @@ describe(withIosSplashScreen, () => {
     };
 
     // Apply the splash plugin
-    config = withIosSplashScreen(config, {
-      // must use full path for mock fs
-      image: '/app/assets/splash.png',
-      resizeMode: 'contain',
-      backgroundColor: '#ff00ff',
-      dark: {
+    config = withIosSplashScreen(
+      config,
+      getIosSplashConfig({
+        // must use full path for mock fs
         image: '/app/assets/splash.png',
-        backgroundColor: '#00ff00',
-      },
-      // userInterfaceStyle: 'automatic',
-    });
+        resizeMode: 'contain',
+        backgroundColor: '#ff00ff',
+        dark: {
+          image: '/app/assets/splash.png',
+          backgroundColor: '#00ff00',
+        },
+        // userInterfaceStyle: 'automatic',
+      })
+    );
 
     // compile all plugins and mods
     config = await compileModsAsync(config, { projectRoot, platforms: ['ios', 'android'] });

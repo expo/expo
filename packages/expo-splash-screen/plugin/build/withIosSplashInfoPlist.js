@@ -1,13 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withIosSplashInfoPlist = void 0;
 exports.setSplashInfoPlist = setSplashInfoPlist;
-const debug_1 = __importDefault(require("debug"));
 const config_plugins_1 = require("expo/config-plugins");
-const debug = (0, debug_1.default)('expo:expo-splash-screen:ios:infoPlist');
 const withIosSplashInfoPlist = (config, splash) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults = setSplashInfoPlist(config, config.modResults, splash);
@@ -20,7 +15,6 @@ function setSplashInfoPlist(config, infoPlist, splash) {
         splash.dark?.tabletImage ||
         splash.dark?.backgroundColor ||
         splash.dark?.tabletBackgroundColor);
-    debug(`isDarkModeEnabled: `, isDarkModeEnabled);
     if (isDarkModeEnabled) {
         // IOSConfig.UserInterfaceStyle.getUserInterfaceStyle(config);
         // Determine if the user manually defined the userInterfaceStyle incorrectly
@@ -42,7 +36,6 @@ function setSplashInfoPlist(config, infoPlist, splash) {
         infoPlist.UILaunchStoryboardName = 'SplashScreen';
     }
     else {
-        debug(`Disabling UILaunchStoryboardName`);
         delete infoPlist.UILaunchStoryboardName;
     }
     return infoPlist;
