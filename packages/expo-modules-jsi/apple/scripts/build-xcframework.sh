@@ -182,7 +182,7 @@ build_slice() {
   # NOTE: If these patterns change in a future Swift version, the build will fail with
   # "expected declaration" or "expected type" errors in the .swiftinterface file.
   find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface' \
-    -exec sed -i '' '/__ObjC/,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' {} +
+    -exec sed -i '' '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' {} +
 
   local headers_dir="${slice_staging}/${PACKAGE_NAME}.framework/Headers"
   mkdir -p "$headers_dir"
