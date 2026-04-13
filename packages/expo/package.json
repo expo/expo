@@ -78,7 +78,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "55.0.23",
-    "@expo/config": "~55.0.14",
+    "@expo/config": "~55.0.15",
     "@expo/config-plugins": "~55.0.8",
     "@expo/devtools": "55.0.2",
     "@expo/fingerprint": "0.16.6",

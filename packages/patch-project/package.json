@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@bacons/xcode": "1.0.0-alpha.24",
-    "@expo/config": "~55.0.14",
+    "@expo/config": "~55.0.15",
     "@expo/config-plugins": "~55.0.8",
     "@expo/env": "~2.1.1",
     "@expo/spawn-async": "^1.7.2",

@@ -25,7 +25,7 @@
     "expo-linking": "55.0.12",
     "expo-localization": "55.0.13",
     "expo-router": "55.0.12",
-    "expo-device": "55.0.14",
+    "expo-device": "55.0.15",
     "expo-constants": "55.0.13",
     "expo-dev-client": "~55.0.27",
     "expo-sqlite": "55.0.15",

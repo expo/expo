@@ -49,7 +49,7 @@
     "expo-blur": "~55.0.14",
     "expo-camera": "~55.0.15",
     "expo-constants": "~55.0.13",
-    "expo-device": "~55.0.14",
+    "expo-device": "~55.0.15",
     "expo-font": "~55.0.6",
     "expo-linear-gradient": "~55.0.13",
     "expo-linking": "^55.0.12",

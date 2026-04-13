@@ -33,7 +33,7 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "~55.0.14",
+    "@expo/config": "~55.0.15",
     "@expo/env": "~2.1.1",
     "@expo/json-file": "~10.0.13",
     "@expo/metro": "~55.0.0",

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `convertEntryPointToRelative` implementation not resolving from real server root to entrypoint ([#44699](https://github.com/expo/expo/pull/44699) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 55.0.15 — 2026-04-13
+
+### 🐛 Bug fixes
+
+- Fix `convertEntryPointToRelative` implementation not resolving from real server root to entrypoint ([#44699](https://github.com/expo/expo/pull/44699) by [@kitten](https://github.com/kitten))
 
 ## 55.0.14 — 2026-04-09
 

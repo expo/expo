@@ -28,7 +28,7 @@
     "expo-constants": "~55.0.13",
     "expo-contacts": "~55.0.13",
     "expo-crypto": "~55.0.14",
-    "expo-device": "~55.0.14",
+    "expo-device": "~55.0.15",
     "expo-eas-client": "~55.0.5",
     "expo-file-system": "~55.0.16",
     "expo-gl": "~55.0.13",
