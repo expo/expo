@@ -23,12 +23,6 @@ public:
     jsi::Runtime &runtime,
     jsi::Object &jsObject
   ) = 0;
-
-  /**
-   * Installs class definitions in the runtime.
-   * Default is a no-op; overridden by JSClassesDecorator.
-   */
-  virtual void install(jsi::Runtime &runtime) {}
 };
 
 } // namespace expo

@@ -9,6 +9,8 @@
 #include "SharedObject.h"
 #include "SharedRef.h"
 #include "NativeModule.h"
+#include "decorators/JSDecoratorsBridgingObject.h"
+#include "decorators/JSClassesDecorator.h"
 
 #include <fbjni/detail/Meta.h>
 #include <fbjni/fbjni.h>
@@ -283,11 +285,9 @@ void JSIContext::installModuleClasses() {
         if (decorator) {
           auto decorators = decorator->cthis()->bridge();
           for (auto &dec: decorators) {
-            dec->install(rt);
-          }
-          // Keep decorators alive so MethodMetadata weak_ptrs remain valid.
-          for (auto &dec: decorators) {
-            self->moduleClassDecorators.push_back(std::move(dec));
+            if (auto *classDec = dynamic_cast<JSClassesDecorator *>(dec.get())) {
+              classDec->installForWorklet(rt);
+            }
           }
         }
 
@@ -320,7 +320,6 @@ void JSIContext::installModuleClasses() {
 }
 
 void JSIContext::prepareForDeallocation() noexcept {
-  moduleClassDecorators.clear();
   jsRegistry.reset();
   if (runtimeHolder) {
     unbindJSIContext(runtimeHolder->get());
