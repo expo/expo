@@ -328,24 +328,6 @@ public class Manifest: NSObject {
     return forcesRTL
   }
 
-  public func jsEngine() -> String {
-    let jsEngine = expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: [
-        ["ios", "jsEngine"],
-        ["jsEngine"]
-      ])
-    }
-
-    guard let jsEngine = jsEngine else {
-      let sdkMajorVersion = expoGoSDKMajorVersion()
-      if sdkMajorVersion > 0 && sdkMajorVersion < 48 {
-        return "jsc"
-      }
-      return "hermes"
-    }
-    return jsEngine
-  }
-
   /**
    Queries the dedicated package properties in `plugins`
    */
