@@ -69,6 +69,12 @@ SOURCE_DIRS=(
 SOURCE_FILES=(
   "${PACKAGE_DIR}/Package.swift"
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
+  # Dep xcframework identity — forces a rebuild when deps change (e.g. after
+  # an RN upgrade). Info.plist contains version metadata and is read through
+  # the symlink, so a new underlying dep invalidates the hash.
+  "${PACKAGE_DIR}/Sources/React/React.xcframework/Info.plist"
+  "${PACKAGE_DIR}/Sources/ReactNativeDependencies/ReactNativeDependencies.xcframework/Info.plist"
+  "${PACKAGE_DIR}/Sources/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework/Info.plist"
 )
 
 # Computes a SHA256 hash of all source files.
