@@ -25,6 +25,12 @@ export default ({ config }) => {
       },
     ],
     [
+      'expo-splash-screen',
+      {
+        image: './assets/icons/loadingIcon.png',
+      },
+    ],
+    [
       // expo-modules-test-core must be added manually.
       './plugins/withSettingsImport',
       {
