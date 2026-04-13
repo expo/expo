@@ -42,24 +42,25 @@ class NetworkModule : Module() {
     override fun onLost(lostNetwork: android.net.Network) {
       // We intentionally do NOT reuse asyncEmitNetworkState(DELAY_MS) here.
       //
-      // The 250ms delay used by onAvailable cannot be applied to onLost: on
+      // The 250ms delay used by onAvailable cannot be applied to onLost. On
       // Android 13+, connectivityManager.activeNetwork continues to return the
-      // just-lost Network object even after the delay, so re-querying it would
+      // just-lost Network object even after the delay. Re-querying it would
       // emit a stale "isConnected = true" event — the exact bug reported in
-      // https://github.com/expo/expo/issues/37972. The behavior is not
+      // https://github.com/expo/expo/issues/37972. This behavior isn't
       // documented by AOSP as version-specific, so we apply this check
       // defensively on all API 29+ devices.
       //
-      // Instead, compare the lost network against the active network. If they
-      // match (or activeNetwork is null), there is no replacement network and
-      // we emit a disconnected state directly. If a different network is
-      // active (e.g. cellular fallback after WiFi drop), emit its state.
+      // Instead, we compare the lost network against the current active network.
+      // If they match (or activeNetwork is null), there is no replacement 
+      // network and we emit a disconnected state directly. If a different 
+      // network is active (e.g. cellular), we emit 
+      // its state instead.
       //
-      // Note: android.net.Network.equals() compares by netId, so the identity
-      // check below is a reliable "same network" comparison.
+      // Note: android.net.Network.equals() compares by netId, so the check 
+      // below is a reliable "same network" comparison.
       //
-      // We still post to the main looper because sendEvent expects the main
-      // thread; we just skip the delay.
+      // We still post to the main looper because sendEvent must run on the 
+      // main thread; we just skip the artificial delay.
       mainHandler.post {
         try {
           val activeNetwork = connectivityManager.activeNetwork
@@ -80,13 +81,14 @@ class NetworkModule : Module() {
           Log.w(TAG, "expo-network could not read network state in onLost: missing ACCESS_NETWORK_STATE permission", e)
         } catch (e: Exception) {
           // The runnable may outlive the module if the React context is torn
-          // down between ConnectivityManager.NetworkCallback firing and the
-          // posted runnable draining. In that case, the `connectivityManager`
-          // getter throws `ReactContextLost` (a RuntimeException) when it
-          // resolves `appContext.reactContext`. unregisterNetworkCallback only
-          // stops future callbacks — it cannot cancel an already-posted
-          // runnable — so we must catch teardown-time exceptions here to
-          // avoid crashing the host app's main thread.
+          // down between the ConnectivityManager.NetworkCallback firing and 
+          // the posted runnable executing. In that case, the `connectivityManager`
+          // getter throws `ReactContextLost` when it
+          // attempts to resolve `appContext.reactContext`. Since 
+          // unregisterNetworkCallback only prevents future callbacks and 
+          // cannot cancel a runnable that is already in the queue, we must 
+          // catch teardown-time exceptions here to avoid crashing the 
+          // host app's main thread.
           Log.w(TAG, "expo-network dropped a network state update during teardown (the module or React context is no longer available)", e)
         }
       }
