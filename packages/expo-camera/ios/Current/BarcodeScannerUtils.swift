@@ -108,33 +108,27 @@ class BarcodeScannerUtils {
   #if canImport(ZXingObjC)
   static func zxResultToDictionary(_ barcodeScannerResult: ZXResult) -> [String: Any] {
     var result = [String: Any]()
-    result["type"] = BarcodeScannerUtils.zxingFormatToString(barcodeScannerResult.barcodeFormat)
+    result["type"] = BarcodeScannerUtils.zxingFormatToBarcodeType(barcodeScannerResult.barcodeFormat)?.rawValue ?? "unknown"
 
-    var data = ""
-    for i in 0..<barcodeScannerResult.text.count {
-      let character = barcodeScannerResult.text[barcodeScannerResult.text.index(barcodeScannerResult.text.startIndex, offsetBy: i)]
-      if character != "\0" {
-        data.append(character)
-      }
-    }
+    let data = barcodeScannerResult.text.filter { $0 != "\0" }
     result["data"] = data
 
     return result
   }
 
-  static func zxingFormatToString(_ format: ZXBarcodeFormat) -> String {
+  static func zxingFormatToBarcodeType(_ format: ZXBarcodeFormat) -> BarcodeType? {
     switch format {
     case kBarcodeFormatPDF417:
-      return AVMetadataObject.ObjectType.pdf417.rawValue
+      return .pdf417
     case kBarcodeFormatCode39:
-      return AVMetadataObject.ObjectType.code39.rawValue
+      return .code39
     case kBarcodeFormatCodabar:
       if #available(iOS 15.4, *) {
-        return AVMetadataObject.ObjectType.codabar.rawValue
+        return .codabar
       }
-      return "unknown"
+      return nil
     default:
-      return "unknown"
+      return nil
     }
   }
   #endif
