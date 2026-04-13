@@ -1,6 +1,6 @@
 import AVFoundation
 #if canImport(ZXingObjC)
-import ZXingObjC
+  import ZXingObjC
 #endif
 import VisionKit
 import Vision
@@ -104,36 +104,36 @@ class BarcodeScannerUtils {
   }
 
   #if canImport(ZXingObjC)
-  static func zxResultToDictionary(_ barcodeScannerResult: ZXResult) -> [String: Any] {
-    var result = [String: Any]()
-    result["type"] = BarcodeScannerUtils.zxingFormatToString(barcodeScannerResult.barcodeFormat)
+    static func zxResultToDictionary(_ barcodeScannerResult: ZXResult) -> [String: Any] {
+      var result = [String: Any]()
+      result["type"] = BarcodeScannerUtils.zxingFormatToBarcodeType(barcodeScannerResult.barcodeFormat)?.rawValue ?? "unknown"
 
-    var data = ""
-    for i in 0..<barcodeScannerResult.text.count {
+      var data = ""
+      for i in 0..<barcodeScannerResult.text.count {
       let character = barcodeScannerResult.text[barcodeScannerResult.text.index(barcodeScannerResult.text.startIndex, offsetBy: i)]
-      if character != "\0" {
-        data.append(character)
+        if character != "\0" {
+          data.append(character)
+        }
+      }
+      result["data"] = data
+
+      return result
+    }
+
+    static func zxingFormatToBarcodeType(_ format: ZXBarcodeFormat) -> BarcodeType? {
+      switch format {
+      case kBarcodeFormatPDF417:
+        return .pdf417
+      case kBarcodeFormatCode39:
+        return .code39
+      case kBarcodeFormatCodabar:
+        if #available(iOS 15.4, *) {
+          return .codabar
+        }
+        return nil
+      default:
+        return nil
       }
     }
-    result["data"] = data
-
-    return result
-  }
-
-  static func zxingFormatToString(_ format: ZXBarcodeFormat) -> String {
-    switch format {
-    case kBarcodeFormatPDF417:
-      return AVMetadataObject.ObjectType.pdf417.rawValue
-    case kBarcodeFormatCode39:
-      return AVMetadataObject.ObjectType.code39.rawValue
-    case kBarcodeFormatCodabar:
-      if #available(iOS 15.4, *) {
-        return AVMetadataObject.ObjectType.codabar.rawValue
-      }
-      return "unknown"
-    default:
-      return "unknown"
-    }
-  }
   #endif
 }
