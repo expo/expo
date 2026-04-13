@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Align dev launcher labels across iOS and Android. ([#44720](https://github.com/expo/expo/pull/44720) by [@vonovak](https://github.com/vonovak))
+
 ## 55.0.28 — 2026-04-11
 
 ### 🐛 Bug fixes

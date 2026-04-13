@@ -68,7 +68,7 @@ struct ErrorView: View {
       }
 
       Button(action: onGoHome) {
-        Text("Go to home")
+        Text("Go home")
           .font(.headline)
           .foregroundColor(.black)
           .frame(maxWidth: .infinity)
