@@ -79,14 +79,10 @@ describe('--platform option', () => {
     expectFileExists(projectName, 'ios');
     expectFileNotExists(projectName, 'android');
 
-    // Web files should exist but contain the "not available" stub
+    // Web module stub should exist (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/PlatformTestModule.web.ts');
-    expectFileExists(projectName, 'src/PlatformTestView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/PlatformTestModule.web.ts'), 'utf8')
-    ).toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/PlatformTestView.web.tsx'), 'utf8')
     ).toContain('not available on the web platform');
   });
 
@@ -116,14 +112,10 @@ describe('--platform option', () => {
     expectFileExists(projectName, 'ios');
     expectFileExists(projectName, 'android');
 
-    // Web files should exist but contain the "not available" stub
+    // Web module stub should exist (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/MultiPlatformModule.web.ts');
-    expectFileExists(projectName, 'src/MultiPlatformView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/MultiPlatformModule.web.ts'), 'utf8')
-    ).toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/MultiPlatformView.web.tsx'), 'utf8')
     ).toContain('not available on the web platform');
   });
 
@@ -150,14 +142,10 @@ describe('--platform option', () => {
     expectFileExists(projectName, 'ios');
     expectFileExists(projectName, 'android');
 
-    // Web files should exist with the full implementation
+    // Web module file should exist with the full implementation (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/DefaultPlatformModule.web.ts');
-    expectFileExists(projectName, 'src/DefaultPlatformView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/DefaultPlatformModule.web.ts'), 'utf8')
-    ).not.toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/DefaultPlatformView.web.tsx'), 'utf8')
     ).not.toContain('not available on the web platform');
   });
 
@@ -186,14 +174,10 @@ describe('--platform option', () => {
     expectFileNotExists(projectName, 'ios');
     expectFileNotExists(projectName, 'android');
 
-    // Web files should exist with the full implementation
+    // Web module file should exist with the full implementation (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/WebOnlyModule.web.ts');
-    expectFileExists(projectName, 'src/WebOnlyView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/WebOnlyModule.web.ts'), 'utf8')
-    ).not.toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/WebOnlyView.web.tsx'), 'utf8')
     ).not.toContain('not available on the web platform');
   });
 
@@ -222,14 +206,10 @@ describe('--platform option', () => {
     expectFileExists(projectName, 'android');
     expectFileNotExists(projectName, 'ios');
 
-    // Web files should exist but contain the "not available" stub
+    // Web module stub should exist (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/AndroidOnlyModule.web.ts');
-    expectFileExists(projectName, 'src/AndroidOnlyView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/AndroidOnlyModule.web.ts'), 'utf8')
-    ).toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/AndroidOnlyView.web.tsx'), 'utf8')
     ).toContain('not available on the web platform');
   });
 
@@ -413,9 +393,10 @@ describe('--barrel option', () => {
   it('generates index.ts barrel file with correct re-exports when --barrel is set', async () => {
     const slug = 'barrel-module';
 
-    await executePassing([slug, '--local', '--barrel', '--source', localTemplatePath], {
-      cwd: localProjectRoot,
-    });
+    await executePassing(
+      [slug, '--local', '--barrel', '--features', 'View', '--source', localTemplatePath],
+      { cwd: localProjectRoot }
+    );
 
     const indexPath = path.join(localProjectRoot, 'modules', slug, 'index.ts');
     expect({ [indexPath]: fs.existsSync(indexPath) }).toEqual({ [indexPath]: true });

@@ -10,6 +10,7 @@ import validateNpmPackage from 'validate-npm-package-name';
 
 import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
+import { ALL_FEATURES, resolveFeatures } from './features';
 import {
   installDependencies,
   formatRunCommand,
@@ -18,6 +19,7 @@ import {
 } from './packageManager';
 import {
   ALL_PLATFORMS,
+  getFeaturesPrompt,
   getLocalFolderNamePrompt,
   getLocalSubstitutionDataPrompts,
   getPlatformPrompt,
@@ -25,8 +27,15 @@ import {
   getSubstitutionDataPrompts,
   type Platform,
 } from './prompts';
+import {
+  buildAppSnippets,
+  buildModuleSnippets,
+  buildViewSnippets,
+  buildWebModuleSnippets,
+  copyFileSnippets,
+} from './snippets';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
-import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
+import type { CommandOptions, Feature, LocalSubstitutionData, SubstitutionData } from './types';
 import { env } from './utils/env';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
@@ -48,6 +57,7 @@ const IGNORES_PATHS = [
   'package.json',
   '.npmignore',
   '.gitignore',
+  'snippets',
 ];
 
 // Url to the documentation on Expo Modules
@@ -212,6 +222,64 @@ async function resolvePlatformsAsync(
   });
 
   return platforms as Platform[];
+}
+
+export { resolveFeatures };
+
+function warnIfViewAutoIncluded(rawFeatures: Feature[]): void {
+  if (rawFeatures.includes('ViewEvent') && !rawFeatures.includes('View')) {
+    console.log(chalk.yellow('⚠️  ViewEvent requires View — adding View automatically.'));
+  }
+}
+
+/**
+ * Priority: --full-example flag → --features all → --features flag → interactive prompt → empty.
+ */
+async function resolveFeaturesAsync(
+  interactive: boolean,
+  options: CommandOptions
+): Promise<Feature[]> {
+  if (options.fullExample) {
+    return resolveFeatures([], true);
+  }
+
+  if (options.features && options.features.length > 0) {
+    if (options.features.includes('all' as Feature)) {
+      return resolveFeatures([], true);
+    }
+    const rawFeatures = options.features;
+    warnIfViewAutoIncluded(rawFeatures);
+    return resolveFeatures(rawFeatures);
+  }
+
+  if (!interactive) {
+    return [];
+  }
+
+  const { features } = await prompts(getFeaturesPrompt(), {
+    onCancel: () => process.exit(0),
+  });
+  const rawFeatures: Feature[] = features ?? [];
+  warnIfViewAutoIncluded(rawFeatures);
+  return resolveFeatures(rawFeatures);
+}
+
+/**
+ * Returns a safe, capitalized module name and logs a warning if it was renamed
+ * to avoid conflicting with an Apple framework.
+ */
+function resolveModuleName(rawName: string): string {
+  const { name: safeName, wasRenamed } = ensureSafeModuleName(rawName);
+  const name = safeName.charAt(0).toUpperCase() + safeName.slice(1);
+  if (wasRenamed) {
+    console.log();
+    console.log(
+      chalk.yellow(
+        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
+      )
+    );
+  }
+  return name;
 }
 
 /**
@@ -503,9 +571,71 @@ async function createModuleFromTemplate(
   targetPath: string,
   data: SubstitutionData | LocalSubstitutionData
 ) {
+  const snippetsDir = path.join(templatePath, 'snippets');
+  const features = data.project.features;
+
+  // Build view-level snippets first (used inside the View() block)
+  const [viewSnippetsSwift, viewSnippetsKt] = await Promise.all([
+    buildViewSnippets(snippetsDir, features, data, 'swift'),
+    buildViewSnippets(snippetsDir, features, data, 'kt'),
+  ]);
+
+  // Build module-level snippets, passing the view snippets for injection
+  const [moduleSnippetsSwift, moduleSnippetsKt] = await Promise.all([
+    buildModuleSnippets(snippetsDir, features, data, 'swift', viewSnippetsSwift),
+    buildModuleSnippets(snippetsDir, features, data, 'kt', viewSnippetsKt),
+  ]);
+
+  // Build web module snippets and helpers
+  const webEventImport = features.includes('Event')
+    ? `\nimport { ${data.project.moduleName}Events } from './${data.project.name}.types';\n`
+    : '';
+  const webEventType = features.includes('Event') ? `${data.project.moduleName}Events` : '{}';
+  const webModuleSnippets = await buildWebModuleSnippets(snippetsDir, features, data);
+
+  // Build combined module import line for App.tsx
+  const needsDefaultImport = features.some((f) =>
+    (['Constant', 'Function', 'AsyncFunction', 'Event'] as string[]).includes(f)
+  );
+  const moduleNamedImports: string[] = [];
+  if (features.includes('View')) moduleNamedImports.push(data.project.viewName);
+  if (features.includes('SharedObject'))
+    moduleNamedImports.push(`use${data.project.sharedObjectName}`);
+
+  let appModuleCombinedImport = '';
+  if (needsDefaultImport || moduleNamedImports.length > 0) {
+    const parts: string[] = [];
+    if (needsDefaultImport) parts.push(data.project.name);
+    if (moduleNamedImports.length > 0) parts.push(`{ ${moduleNamedImports.join(', ')} }`);
+    appModuleCombinedImport = `import ${parts.join(', ')} from '${data.project.slug}';\n`;
+  }
+
+  const [appReactImportSnippets, appExternalImportSnippets, appHookSnippets, appJSXSnippets] =
+    await Promise.all([
+      buildAppSnippets(snippetsDir, features, data, 'react-imports'),
+      buildAppSnippets(snippetsDir, features, data, 'external-imports'),
+      buildAppSnippets(snippetsDir, features, data, 'hooks'),
+      buildAppSnippets(snippetsDir, features, data, 'jsx'),
+    ]);
+
+  const augmentedData = {
+    ...data,
+    moduleSnippetsSwift,
+    moduleSnippetsKt,
+    viewSnippetsSwift,
+    viewSnippetsKt,
+    webEventImport,
+    webEventType,
+    webModuleSnippets,
+    appModuleCombinedImport,
+    appExternalImportSnippets,
+    appReactImportSnippets,
+    appHookSnippets,
+    appJSXSnippets,
+  };
+
   const files = await getFilesAsync(templatePath);
 
-  // Iterate through all template files.
   for (const file of files) {
     // Skip platform-specific directories when the platform was not selected.
     const topLevelDir = file.split(path.sep)[0] ?? '';
@@ -514,7 +644,7 @@ async function createModuleFromTemplate(
       continue;
     }
 
-    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
+    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), augmentedData, {
       openDelimiter: '{',
       closeDelimiter: '}',
       escape: (value: string) => value.replace(/\./g, path.sep),
@@ -522,13 +652,20 @@ async function createModuleFromTemplate(
     const fromPath = path.join(templatePath, file);
     const toPath = path.join(targetPath, renderedRelativePath);
     const template = await fs.promises.readFile(fromPath, 'utf8');
-    const renderedContent = ejs.render(template, data);
+    const renderedContent = ejs.render(template, augmentedData);
 
     if (!fs.existsSync(path.dirname(toPath))) {
       await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
     }
     await fs.promises.writeFile(toPath, renderedContent, 'utf8');
   }
+
+  await copyFileSnippets(
+    snippetsDir,
+    features,
+    augmentedData as SubstitutionData | LocalSubstitutionData,
+    targetPath
+  );
 }
 
 async function createGitRepositoryAsync(targetDir: string) {
@@ -605,9 +742,10 @@ async function askForSubstitutionDataAsync(
   const interactive = isInteractive();
 
   const platforms = await resolvePlatformsAsync(isLocal, interactive, options);
+  const features = await resolveFeaturesAsync(interactive, options);
 
   if (!interactive) {
-    return getSubstitutionDataFromOptions(slug, isLocal, options, platforms);
+    return getSubstitutionDataFromOptions(slug, isLocal, options, platforms, features);
   }
 
   // Interactive mode: prompt for values, but skip prompts for CLI-provided values
@@ -633,17 +771,8 @@ async function askForSubstitutionDataAsync(
 
   // Merge CLI-provided values with prompted values
   const rawName = options.name ?? promptedValues.name ?? slugToModuleName(slug);
-  const { name, wasRenamed } = ensureSafeModuleName(rawName);
+  const name = resolveModuleName(rawName);
   const projectPackage = options.package ?? promptedValues.package ?? slugToAndroidPackage(slug);
-
-  if (wasRenamed) {
-    console.log();
-    console.log(
-      chalk.yellow(
-        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
-      )
-    );
-  }
 
   if (isLocal) {
     return {
@@ -653,7 +782,9 @@ async function askForSubstitutionDataAsync(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
         platforms,
+        features,
       },
       type: 'local',
     };
@@ -678,7 +809,9 @@ async function askForSubstitutionDataAsync(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
       platforms,
+      features,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
@@ -718,20 +851,12 @@ async function getSubstitutionDataFromOptions(
   slug: string,
   isLocal: boolean,
   options: CommandOptions,
-  platforms: Platform[]
+  platforms: Platform[],
+  features: Feature[]
 ): Promise<SubstitutionData | LocalSubstitutionData> {
   const rawName = options.name ?? slugToModuleName(slug);
-  const { name, wasRenamed } = ensureSafeModuleName(rawName);
+  const name = resolveModuleName(rawName);
   const projectPackage = options.package ?? slugToAndroidPackage(slug);
-
-  if (wasRenamed) {
-    console.log();
-    console.log(
-      chalk.yellow(
-        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
-      )
-    );
-  }
 
   debug(`Non-interactive mode: name="${name}", package="${projectPackage}"`);
 
@@ -743,7 +868,9 @@ async function getSubstitutionDataFromOptions(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
         platforms,
+        features,
       },
       type: 'local',
     };
@@ -770,7 +897,9 @@ async function getSubstitutionDataFromOptions(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
       platforms,
+      features,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
@@ -825,16 +954,22 @@ async function generateBarrelFileAsync(
   targetPath: string,
   data: LocalSubstitutionData
 ): Promise<void> {
-  const { moduleName, viewName, name } = data.project;
-  const content = [
+  const { moduleName, viewName, sharedObjectName, name, features } = data.project;
+  const lines = [
     `// Re-export the native module. On web, it will be resolved to ${moduleName}.web.ts`,
     `// and on native platforms to ${moduleName}.ts`,
     `export { default } from './src/${moduleName}';`,
-    `export { default as ${viewName} } from './src/${viewName}';`,
-    `export * from './src/${name}.types';`,
-    '',
-  ].join('\n');
-  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), content, 'utf8');
+  ];
+  if (features.includes('View')) {
+    lines.push(`export { default as ${viewName} } from './src/${viewName}';`);
+  }
+  if (features.includes('SharedObject')) {
+    lines.push(
+      `export { create${sharedObjectName}, use${sharedObjectName} } from './src/${sharedObjectName}';`
+    );
+  }
+  lines.push(`export * from './src/${name}.types';`, '');
+  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), lines.join('\n'), 'utf8');
 }
 
 /**
@@ -932,10 +1067,19 @@ program
     '-p, --platform <platforms...>',
     `Target platforms for the module. Available values: ${ALL_PLATFORMS.join(', ')}.`
   )
+  .option(
+    '--features <features...>',
+    `Feature examples to include in the module. Use "all" to include all features, or specify any of: ${ALL_FEATURES.join(', ')}.`
+  )
+  .option('--full-example', 'Include all available feature examples.', false)
   .action(main);
 
-program
-  .hook('postAction', async () => {
-    await getTelemetryClient().flush?.();
-  })
-  .parse(process.argv);
+program.hook('postAction', async () => {
+  await getTelemetryClient().flush?.();
+});
+
+const isInProcessUnitTest =
+  !!process.env.JEST_WORKER_ID && !process.argv[1]?.includes('create-expo-module');
+if (!isInProcessUnitTest) {
+  program.parse(process.argv);
+}
