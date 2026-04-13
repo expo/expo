@@ -252,6 +252,8 @@ export function withExtendedResolver(
       // TODO: We should track all the files that used imports and invalidate them
       // currently the user will need to save all the files that use imports to
       // use the new aliases.
+      // TODO(@kitten): It's unclear why we don't use Metro here, also the above todo is
+      // infeasible without switching to Metro and somehow cascading
       const configWatcher = new FileNotifier(config.projectRoot, [
         './tsconfig.json',
         './jsconfig.json',
