@@ -3743,9 +3743,6 @@ importers:
 
   packages/expo-constants:
     dependencies:
-      '@expo/config':
-        specifier: workspace:~55.0.8
-        version: link:../@expo/config
       '@expo/env':
         specifier: workspace:~2.1.1
         version: link:../@expo/env
