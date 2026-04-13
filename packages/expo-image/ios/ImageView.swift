@@ -87,11 +87,6 @@ public final class ImageView: ExpoView {
   var isSFSymbolSource: Bool = false
 
   /**
-   The ideal image size that fills in the container size while maintaining the source aspect ratio.
-   */
-  var imageIdealSize: CGSize = .zero
-
-  /**
    `idealSize` before rounding, used only for `contentPosition` math so alignment matches true cover/contain geometry.
    */
   var imageLayoutSize: CGSize = .zero
@@ -277,8 +272,7 @@ public final class ImageView: ExpoView {
         scale: scale,
         contentFit: contentFit
       )
-      imageIdealSize = imageLayoutSize.rounded(.up)
-
+      let imageIdealSize = imageLayoutSize.rounded(.up)
       let image = processImage(image, idealSize: imageIdealSize, scale: scale)
       applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
       renderSourceImage(image)
@@ -322,7 +316,6 @@ public final class ImageView: ExpoView {
       scale: scale,
       contentFit: contentFit
     )
-    imageIdealSize = imageLayoutSize.rounded(.up)
 
     applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     renderSFSymbolImage(image)
