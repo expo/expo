@@ -18,6 +18,7 @@ import { getRootComponent } from './getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
   createInjectedCssElements,
+  createInjectedScriptElements,
   createLoaderDataScript,
   getHydrationFlagScript,
   serializeHelmetToHtml,
@@ -133,7 +134,7 @@ export async function getStaticContent(
       // In non-streaming mode, use deferred scripts in the body
       output = output.replace(
         '</body>',
-        `${options.assets.js.map((src) => `<script src="${src}" defer></script>`).join('\n')}\n</body>`
+        `${createInjectedScriptElements(options.assets.js)}\n</body>`
       );
     }
   }

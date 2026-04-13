@@ -117,7 +117,7 @@ async function getStaticContent(location, options) {
         }
         if (options.assets.js.length > 0) {
             // In non-streaming mode, use deferred scripts in the body
-            output = output.replace('</body>', `${options.assets.js.map((src) => `<script src="${src}" defer></script>`).join('\n')}\n</body>`);
+            output = output.replace('</body>', `${(0, html_1.createInjectedScriptElements)(options.assets.js)}\n</body>`);
         }
     }
     return '<!DOCTYPE html>' + output;
