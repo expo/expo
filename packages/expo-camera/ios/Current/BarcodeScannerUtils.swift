@@ -1,6 +1,6 @@
 import AVFoundation
 #if canImport(ZXingObjC)
-  import ZXingObjC
+import ZXingObjC
 #endif
 import VisionKit
 import Vision
@@ -104,12 +104,12 @@ class BarcodeScannerUtils {
   }
 
   #if canImport(ZXingObjC)
-    static func zxResultToDictionary(_ barcodeScannerResult: ZXResult) -> [String: Any] {
-      var result = [String: Any]()
-      result["type"] = BarcodeScannerUtils.zxingFormatToBarcodeType(barcodeScannerResult.barcodeFormat)?.rawValue ?? "unknown"
+  static func zxResultToDictionary(_ barcodeScannerResult: ZXResult) -> [String: Any] {
+    var result = [String: Any]()
+    result["type"] = BarcodeScannerUtils.zxingFormatToBarcodeType(barcodeScannerResult.barcodeFormat)?.rawValue ?? "unknown"
 
-      var data = ""
-      for i in 0..<barcodeScannerResult.text.count {
+    var data = ""
+    for i in 0..<barcodeScannerResult.text.count {
       let character = barcodeScannerResult.text[barcodeScannerResult.text.index(barcodeScannerResult.text.startIndex, offsetBy: i)]
         if character != "\0" {
           data.append(character)
@@ -117,8 +117,8 @@ class BarcodeScannerUtils {
       }
       result["data"] = data
 
-      return result
-    }
+    return result
+  }
 
     static func zxingFormatToBarcodeType(_ format: ZXBarcodeFormat) -> BarcodeType? {
       switch format {
