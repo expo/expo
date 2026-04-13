@@ -18,7 +18,7 @@ fun SignUp(
     verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
   ) {
     ActionButton(
-      "Login",
+      "Log in",
       foreground = Color.White,
       background = Color.Black,
       modifier = Modifier.padding(NewAppTheme.spacing.`3`),
@@ -26,7 +26,7 @@ fun SignUp(
     )
 
     ActionButton(
-      "Sign Up",
+      "Sign up",
       foreground = NewAppTheme.colors.text.secondary,
       background = NewAppTheme.colors.background.element,
       modifier = Modifier.padding(NewAppTheme.spacing.`3`),
