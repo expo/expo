@@ -7,6 +7,7 @@ import { extract as tarExtract, TarOptionsWithAliases } from 'tar';
 import { promisify } from 'util';
 
 import { env } from './env';
+import { profileAsync } from './profiler';
 import { createEntryResolver } from '../createFileTransform';
 import { ALIASES } from '../legacyTemplates';
 import { Log } from '../log';
@@ -216,14 +217,6 @@ function getNpmBin() {
   return process.platform === 'win32' ? 'npm.cmd' : 'npm';
 }
 
-async function getNpmInfoAsync(moduleId: string, cwd: string): Promise<NpmPackageInfo> {
-  const infos = await npmPackAsync(moduleId, cwd, '--dry-run');
-  if (infos?.[0]) {
-    return infos[0];
-  }
-  throw new Error(`Could not find npm package "${moduleId}"`);
-}
-
 function isNpmPackageInfo(item: any): item is NpmPackageInfo {
   return (
     item &&
@@ -267,28 +260,29 @@ export async function downloadAndExtractNpmModuleAsync(
 
   await fs.promises.mkdir(cachePath, { recursive: true });
 
-  const info = await getNpmInfoAsync(npmName, cachePath);
-
-  const cacheFilename = path.join(cachePath, info.filename);
+  let info: NpmPackageInfo;
   try {
-    // TODO: This cache does not expire.
-    const fileExists = await fileExistsAsync(cacheFilename);
-
-    const disableCache = env.EXPO_NO_CACHE || props.disableCache;
-    if (disableCache || !fileExists) {
-      debug(`Downloading tarball for ${npmName} to ${cachePath}...`);
-      await npmPackAsync(npmName, cachePath);
+    // Single npm pack call: downloads the tarball and returns metadata.
+    // This eliminates a separate --dry-run call that was previously used just to get the filename.
+    debug(`Downloading tarball for ${npmName} to ${cachePath}...`);
+    const infos = await profileAsync('npm-pack', () => npmPackAsync(npmName, cachePath));
+    if (!infos?.[0]) {
+      throw new Error(`Could not find npm package "${npmName}"`);
     }
+    info = infos[0];
   } catch (error: any) {
     Log.error('Error downloading template package: ' + npmName);
     throw error;
   }
 
+  const cacheFilename = path.join(cachePath, info.filename);
   try {
-    await extractLocalNpmTarballAsync(cacheFilename, {
-      cwd: props.cwd,
-      name: props.name,
-    });
+    await profileAsync('extract-tarball', () =>
+      extractLocalNpmTarballAsync(cacheFilename, {
+        cwd: props.cwd,
+        name: props.name,
+      })
+    );
   } catch (error: any) {
     Log.error('Error extracting template package: ' + npmName);
     throw error;

@@ -19,6 +19,7 @@ import {
   ExtractProps,
   getResolvedTemplateName,
 } from './utils/npm';
+import { profileAsync } from './utils/profiler';
 
 const debug = require('debug')('expo:init:template') as typeof console.log;
 
@@ -127,33 +128,39 @@ export async function extractAndPrepareTemplateAppAsync(
 
   const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-default');
 
-  if (type === 'repository') {
-    await downloadAndExtractGitHubRepositoryAsync(uri, {
-      cwd: projectRoot,
-      name: projectName,
-    });
-  } else {
-    const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
-    await downloadAndExtractNpmModuleAsync(resolvedUri, {
-      cwd: projectRoot,
-      name: projectName,
-      disableCache: type === 'file',
-    });
-  }
+  await profileAsync('download-template', async () => {
+    if (type === 'repository') {
+      await downloadAndExtractGitHubRepositoryAsync(uri, {
+        cwd: projectRoot,
+        name: projectName,
+      });
+    } else {
+      const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
+      await downloadAndExtractNpmModuleAsync(resolvedUri, {
+        cwd: projectRoot,
+        name: projectName,
+        disableCache: type === 'file',
+      });
+    }
+  });
 
   try {
-    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
-    await renameTemplateAppNameAsync({
-      cwd: projectRoot,
-      files,
-      name: projectName,
-    });
+    const files = await profileAsync('glob-template-files', () =>
+      getTemplateFilesToRenameAsync({ cwd: projectRoot })
+    );
+    await profileAsync('rename-template-files', () =>
+      renameTemplateAppNameAsync({
+        cwd: projectRoot,
+        files,
+        name: projectName,
+      })
+    );
   } catch (error: any) {
     Log.error('Error renaming app name in template');
     throw error;
   }
 
-  await sanitizeTemplateAsync(projectRoot);
+  await profileAsync('sanitize-template', () => sanitizeTemplateAsync(projectRoot));
 
   return projectRoot;
 }

@@ -7,6 +7,7 @@ import { ExitError } from './error';
 import { Log } from './log';
 import { formatSelfCommand } from './resolvePackageManager';
 import { assertWithOptionsArgs, printHelp, resolveStringOrBooleanArgsAsync } from './utils/args';
+import { printReport, profileAsync } from './utils/profiler';
 
 const debug = require('debug')('expo:init:cli') as typeof console.log;
 
@@ -68,28 +69,33 @@ async function run() {
     );
   }
 
-  const { AnalyticsEventPhases, AnalyticsEventTypes, flushAsync, track } = await import(
-    './telemetry'
+  const { AnalyticsEventPhases, AnalyticsEventTypes, flushAsync, track } = await profileAsync(
+    'import:telemetry',
+    () => import('./telemetry')
   );
   try {
-    const parsed = await resolveStringOrBooleanArgsAsync(argv, rawArgsMap, {
-      '--template': Boolean,
-      '--example': Boolean,
-      '-t': '--template',
-      '-e': '--example',
-    });
+    const parsed = await profileAsync('parse-args', () =>
+      resolveStringOrBooleanArgsAsync(argv, rawArgsMap, {
+        '--template': Boolean,
+        '--example': Boolean,
+        '-t': '--template',
+        '-e': '--example',
+      })
+    );
 
     debug(`Default args:\n%O`, args);
     debug(`Parsed:\n%O`, parsed);
 
-    const { createAsync } = await import('./createAsync');
-    await createAsync(parsed.projectRoot, {
-      yes: !!args['--yes'],
-      template: parsed.args['--template'],
-      example: parsed.args['--example'],
-      install: !args['--no-install'],
-      agentsMd: !args['--no-agents-md'],
-    });
+    const { createAsync } = await profileAsync('import:createAsync', () => import('./createAsync'));
+    await profileAsync('createAsync', () =>
+      createAsync(parsed.projectRoot, {
+        yes: !!args['--yes'],
+        template: parsed.args['--template'],
+        example: parsed.args['--example'],
+        install: !args['--no-install'],
+        agentsMd: !args['--no-agents-md'],
+      })
+    );
 
     // Track successful event.
     track({
@@ -97,8 +103,16 @@ async function run() {
       properties: { phase: AnalyticsEventPhases.SUCCESS },
     });
 
-    // Flush all events.
-    await flushAsync();
+    // Run telemetry flush and update check concurrently to avoid sequential network waits.
+    await profileAsync('flush+update-check', () =>
+      Promise.all([
+        profileAsync('telemetry:flush', () => flushAsync()),
+        profileAsync('update-check', async () => {
+          const shouldUpdate = await (await import('./utils/update-check')).default;
+          await shouldUpdate();
+        }),
+      ])
+    );
   } catch (error: any) {
     // ExitError has already been logged, all others should be logged before exiting.
     if (!(error instanceof ExitError)) {
@@ -118,8 +132,7 @@ async function run() {
       process.exit(error.code || 1);
     });
   } finally {
-    const shouldUpdate = await (await import('./utils/update-check')).default;
-    await shouldUpdate();
+    printReport();
   }
 }
 

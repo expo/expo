@@ -21,6 +21,10 @@ class Env {
   get EXPO_NO_TELEMETRY() {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
+  /** Enable profiling. Set to '1' for table output, 'json' for machine-readable JSON. */
+  get CREATE_EXPO_PROFILE(): string {
+    return process.env.CREATE_EXPO_PROFILE ?? '';
+  }
 }
 
 export const env = new Env();
