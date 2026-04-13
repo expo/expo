@@ -9,7 +9,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~55.0.14",
+    "expo": "~55.0.15",
     "expo-apple-authentication": "~55.0.13",
     "expo-blur": "~55.0.14",
     "expo-brownfield": "~55.0.20",
@@ -18,7 +18,7 @@
     "expo-dev-client": "~55.0.27",
     "expo-image": "~55.0.8",
     "expo-linear-gradient": "~55.0.13",
-    "expo-splash-screen": "~55.0.17",
+    "expo-splash-screen": "~55.0.18",
     "expo-status-bar": "~55.0.5",
     "expo-updates": "~55.0.20",
     "expo-video": "~55.0.15",

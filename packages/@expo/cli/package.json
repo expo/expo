@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "55.0.23",
+  "version": "55.0.24",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -49,11 +49,11 @@
     "@expo/json-file": "^10.0.13",
     "@expo/log-box": "55.0.10",
     "@expo/metro": "~55.0.0",
-    "@expo/metro-config": "~55.0.15",
+    "@expo/metro-config": "~55.0.16",
     "@expo/osascript": "^2.4.2",
     "@expo/package-manager": "^1.10.4",
     "@expo/plist": "^0.5.2",
-    "@expo/prebuild-config": "^55.0.14",
+    "@expo/prebuild-config": "^55.0.15",
     "@expo/require-utils": "^55.0.4",
     "@expo/router-server": "^55.0.14",
     "@expo/schema-utils": "^55.0.3",

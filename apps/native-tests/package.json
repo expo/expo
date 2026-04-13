@@ -9,15 +9,15 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~55.0.14",
+    "expo": "~55.0.15",
     "expo-background-task": "~55.0.16",
     "expo-clipboard": "55.0.13",
     "expo-dev-client": "~55.0.27",
     "expo-router": "~55.0.12",
     "expo-image": "~55.0.8",
     "expo-media-library": "55.0.14",
-    "expo-notifications": "~55.0.18",
-    "expo-splash-screen": "~55.0.17",
+    "expo-notifications": "~55.0.19",
+    "expo-splash-screen": "~55.0.18",
     "expo-updates": "55.0.20",
     "react": "19.2.0",
     "react-dom": "19.2.0",

@@ -29,7 +29,7 @@ PODS:
     - ExpoModulesTestCore
   - EXApplication (55.0.14):
     - ExpoModulesCore
-  - EXConstants (55.0.13):
+  - EXConstants (55.0.14):
     - ExpoModulesCore
   - EXJSONUtils (55.0.2)
   - EXJSONUtils/Tests (55.0.2)
@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.15):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.14):
+  - Expo (55.0.15):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.14):
+  - Expo/Tests (55.0.15):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -328,7 +328,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAppleAuthentication (55.0.13):
     - ExpoModulesCore
-  - ExpoAsset (55.0.14):
+  - ExpoAsset (55.0.15):
     - ExpoModulesCore
   - ExpoAudio (55.0.13):
     - ExpoModulesCore
@@ -432,7 +432,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (55.0.13):
     - ExpoModulesCore
-  - ExpoLinking (55.0.12):
+  - ExpoLinking (55.0.13):
     - ExpoModulesCore
   - ExpoLivePhoto (55.0.13):
     - ExpoModulesCore
@@ -525,9 +525,9 @@ PODS:
     - React-hermes
   - ExpoNetwork (55.0.13):
     - ExpoModulesCore
-  - ExpoNotifications (55.0.18):
+  - ExpoNotifications (55.0.19):
     - ExpoModulesCore
-  - ExpoNotifications/Tests (55.0.18):
+  - ExpoNotifications/Tests (55.0.19):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoPrint (55.0.13):
@@ -573,7 +573,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (55.0.13):
     - ExpoModulesCore
-  - ExpoSplashScreen (55.0.17):
+  - ExpoSplashScreen (55.0.18):
     - ExpoModulesCore
   - ExpoSQLite (55.0.15):
     - ExpoModulesCore
@@ -3814,10 +3814,10 @@ SPEC CHECKSUMS:
   BenchmarkingModule: 69aa39c6f6d42bf6fc47caeacb070d24de22d54f
   EASClient: 414b26bae592cf8db64aa60461aff9d84ebbd944
   EXApplication: c2dcab659064299662da96cc6032c4334b79777f
-  EXConstants: 70e3278eef237cb75c2b3e9ab1ff65afa7427af0
+  EXConstants: 6965c4c970052e7a04dff7bb6b3c50ae292a5833
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 2cf22467ed628c61467ad7b6ee56b4ea81ddf510
-  Expo: 648d0bb74338aeecc4be0cc2e06b20765832d048
+  Expo: 988e63a4c41c1206c4d75b9ecbb2e5c731013ac9
   expo-dev-client: 0fe1c8853cdf673ff979a6b73407347c058e3588
   expo-dev-launcher: 9a5051ab930c50ce646b8daf6bd4cc64d8ef6e6b
   expo-dev-menu: 0ad7cb1887e400733d3b03daac2e7a3e7ba7268e
@@ -3825,7 +3825,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: ec26d88646d544de24e189261aec537e5613f44a
   ExpoAppIntegrity: 9fd00a7e48bd94dd4dc838f933b8fdd628ee6dab
   ExpoAppleAuthentication: 9e3a40e8f9d95d23d980956f6dbf0b6c0302940b
-  ExpoAsset: 49dcbe34165e4da8914fac3eb068255ecd100ebf
+  ExpoAsset: 639cd3ba5c2f751362ea86602e532be7f8b09146
   ExpoAudio: 885bdbc085e0374bcc983ea473b1ed42d5ce5a25
   ExpoBackgroundFetch: b7a1e6658f6da3137f68a13d4b6bad6ff3b632a5
   ExpoBackgroundTask: b8f57191843bc66b3df39e91db21f14004d123d4
@@ -3854,7 +3854,7 @@ SPEC CHECKSUMS:
   ExpoInsights: 3cdab47e97c78948478e693eb1c9feea371fd0c8
   ExpoKeepAwake: 5e391c2c712b7af91e044be8ab44b7f542d81f3c
   ExpoLinearGradient: f7a3da6577688c5fb627e9ee6b47ed620c169da3
-  ExpoLinking: b9d2941f40a2e30e8de23e40ef2d69c82d625f2c
+  ExpoLinking: 36e1e619adec0a946395142444210d848c80cb54
   ExpoLivePhoto: 99d40280350c6efd9b8743f008607433a09a6277
   ExpoLocalAuthentication: 22f5fbc0935bdc7057ec7144fcfad0792ed8a3f2
   ExpoLocalization: e9dbdecfb6a2a36d14c6c628e5c3f9fb9b6f305d
@@ -3868,7 +3868,7 @@ SPEC CHECKSUMS:
   ExpoModulesJSI: 353160c13f3d9d1ff3751453d18f456c13d5f289
   ExpoModulesTestCore: 15b132dcc38f95c14ba445efc336c806d48884a2
   ExpoNetwork: 2b9fa25a6cbb1cce2e31863c88cc8c5ab883898b
-  ExpoNotifications: a02f0500afb0b2876a33426396b329d3d9f817ac
+  ExpoNotifications: f3300053f7b01c89038ac1d3a3429edbb32d9eb6
   ExpoPrint: 4de2eaf713b1f23ad6a306dd1034158d6d84d43a
   ExpoRouter: 978657094cf0a42d17bb891706282c8a4031d70f
   ExpoScreenCapture: 3cde76108a8c6ca1ec75d0da772b4adf0f6ae89f
@@ -3878,7 +3878,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 7bc7b17aaaab37a933a012a14aa776562999feaa
   ExpoSMS: 97950b69618e3757174960e8d50d949d82939f0b
   ExpoSpeech: 1cd5d4582a81ddc8259f77391a5174f19ebf8bff
-  ExpoSplashScreen: b849bc4b15ee30f4302c4cef0680488cf1e9203f
+  ExpoSplashScreen: 2369a893d4c2ffa6fd05a66c7bcc248e40b62457
   ExpoSQLite: 9989421186383e2229b8736ff58cea4ee8e21d8b
   ExpoStoreReview: dd070408095f59c82a019de10a5a414f751741b2
   ExpoSymbols: 9dfd60e35b2fafb284adefaefe1c6d757e331708
