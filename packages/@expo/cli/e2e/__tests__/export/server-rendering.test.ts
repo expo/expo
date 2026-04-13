@@ -34,6 +34,11 @@ describe('exports server', () => {
   )('$name requests', (config) => {
     const server = setupServer(config);
 
+    it('sets the `Transfer-Encoding: chunked` header', async () => {
+      const res = await server.fetchAsync('/');
+      expect(res.headers.get('Transfer-Encoding')).toEqual('chunked');
+    });
+
     it(`can serve up index html`, async () => {
       const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
       expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
@@ -439,6 +444,5 @@ describe('exports server', () => {
         ).querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
       ).toBe('TEST_VALUE');
     });
-
   });
 });
