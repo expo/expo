@@ -110,7 +110,7 @@ class BarcodeScannerUtils {
 
     let data = barcodeScannerResult.text.filter { $0 != "\0" }
     result["data"] = data
-    
+
     return result
   }
 
