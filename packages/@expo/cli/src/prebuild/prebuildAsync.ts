@@ -2,7 +2,11 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
-import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
+import {
+  clearNativeFolder,
+  promptToClearMalformedNativeProjectsAsync,
+  maybeBailOnNativeModuleAsync,
+} from './clearNativeFolder';
 import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
@@ -82,6 +86,10 @@ export async function prebuildAsync(
     const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
     // Clean the project folders...
     if (await maybeBailOnGitStatusAsync()) {
+      return null;
+    }
+    // Check if the target project is actually a native module, which we don't want to erase
+    if (await maybeBailOnNativeModuleAsync(projectRoot)) {
       return null;
     }
     // Clear the native folders before syncing
