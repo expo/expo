@@ -292,4 +292,20 @@ struct ColorConvertiblesTests {
       try CGColor.convert(from: "hwb(invalid)", appContext: appContext)
     }
   }
+
+  @Test
+  func `throws when color components array has fewer than 3 values`() {
+    let shortArrays: [[Double]] = [[], [1.0], [1.0, 0.5]]
+
+    for components in shortArrays {
+      #expect {
+        try CGColor.convert(from: components, appContext: appContext)
+      } throws: { error in
+        guard let componentsError = error as? InvalidColorComponentsException else {
+          return false
+        }
+        return componentsError.description == InvalidColorComponentsException(components.count).description
+      }
+    }
+  }
 }

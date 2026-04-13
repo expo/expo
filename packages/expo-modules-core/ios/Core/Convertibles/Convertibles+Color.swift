@@ -11,12 +11,12 @@ extension UIColor: Convertible {
     // swiftlint:disable force_cast
     if let value = value as? String {
       if let namedColorComponents = namedColors[value] {
-        return uiColorWithComponents(namedColorComponents) as! Self
+        return try uiColorWithComponents(namedColorComponents) as! Self
       }
       return try colorFromString(value) as! Self
     }
     if let components = value as? [Double] {
-      return uiColorWithComponents(components) as! Self
+      return try uiColorWithComponents(components) as! Self
     }
     if let value = value as? Int {
       return try colorFromArgb(UInt64(value)) as! Self
@@ -153,7 +153,10 @@ private func uiColorFromSemanticName(name: String) -> UIColor? {
   return UIColor.perform(selector).takeUnretainedValue() as? UIColor
 }
 
-private func uiColorWithComponents(_ components: [Double]) -> UIColor {
+private func uiColorWithComponents(_ components: [Double]) throws -> UIColor {
+  guard components.count >= 3 else {
+    throw InvalidColorComponentsException(components.count)
+  }
   let alpha = components.count > 3 ? components[3] : 1.0
   return UIColor(red: components[0], green: components[1], blue: components[2], alpha: alpha)
 }
@@ -600,5 +603,11 @@ internal class InvalidHWBColorException: GenericException<String>, @unchecked Se
 internal class HexColorOverflowException: GenericException<UInt64>, @unchecked Sendable {
   override var reason: String {
     "Provided hex color '\(param)' would result in an overflow"
+  }
+}
+
+internal class InvalidColorComponentsException: GenericException<Int>, @unchecked Sendable {
+  override var reason: String {
+    "Color components array must contain at least 3 values (red, green, blue), but got \(param)"
   }
 }
