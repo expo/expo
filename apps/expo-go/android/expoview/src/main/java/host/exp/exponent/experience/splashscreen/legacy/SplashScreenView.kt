@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -24,12 +27,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration
 import host.exp.expoview.R
 
 // this needs to stay for versioning to work
@@ -38,9 +41,7 @@ import host.exp.expoview.R
 class SplashScreenView(
   context: Context
 ) : RelativeLayout(context) {
-  var imageUrl = ""
-  var appName = ""
-  val backgroundColor = Color.White
+  var config: ManagedAppSplashScreenConfiguration? by mutableStateOf(null)
 
   init {
     layoutParams = ViewGroup.LayoutParams(
@@ -55,8 +56,9 @@ class SplashScreenView(
         )
         setContent {
           SplashScreenView(
-            imageUrl = imageUrl,
-            appName = appName
+            backgroundColor = config?.backgroundColor?.let { Color(it) } ?: Color.White,
+            imageUrl = config?.imageUrl ?: "",
+            imageWidth = config?.imageWidth ?: 100
           )
         }
       }
@@ -67,28 +69,24 @@ class SplashScreenView(
 @Composable
 fun SplashScreenView(
   modifier: Modifier = Modifier,
+  backgroundColor: Color,
   imageUrl: String,
-  appName: String
+  imageWidth: Int
 ) {
   Box(
     modifier = modifier
       .fillMaxSize()
-      .background(color = Color.White),
+      .background(color = backgroundColor),
     contentAlignment = Alignment.Center
   ) {
-    Column(
-      verticalArrangement = Arrangement.spacedBy(30.dp),
-      horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-      SplashScreenImage(imageUrl)
-      Text(appName, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-    }
+    SplashScreenImage(imageUrl, imageWidth)
   }
 }
 
 @Composable
 fun SplashScreenImage(
-  imageUrl: String? = null
+  imageUrl: String? = null,
+  imageWidth: Int
 ) {
   AsyncImage(
     model = ImageRequest.Builder(LocalContext.current)
@@ -96,11 +94,6 @@ fun SplashScreenImage(
       .crossfade(true)
       .build(),
     contentDescription = "Splash Screen Image",
-    contentScale = ContentScale.Fit,
-    placeholder = painterResource(R.drawable.project_default_icon),
-    modifier = Modifier
-      .size(200.dp)
-      .background(Color.White)
-      .shadow(4.dp, RoundedCornerShape(30.dp))
+    modifier = Modifier.width(imageWidth.dp)
   )
 }

@@ -21,9 +21,9 @@ class ManagedAppSplashScreenViewProvider(
     return splashScreenView
   }
 
-  fun updateSplashScreenViewWithManifest(manifest: Manifest) {
+  fun updateSplashScreenViewWithManifest(context: Context, manifest: Manifest) {
     val previousConfig = config
-    config = ManagedAppSplashScreenConfiguration.parseManifest(manifest)
+    config = ManagedAppSplashScreenConfiguration.parseManifest(context, manifest)
     configureSplashScreenView(config, previousConfig)
   }
 
@@ -32,11 +32,11 @@ class ManagedAppSplashScreenViewProvider(
     previousConfig: ManagedAppSplashScreenConfiguration?
   ) {
     if (previousConfig == null ||
-      config.appName != previousConfig.appName ||
-      !config.imageUrl.equals(previousConfig.imageUrl)
+      config.backgroundColor != previousConfig.backgroundColor ||
+      config.imageUrl != previousConfig.imageUrl ||
+      config.imageWidth != previousConfig.imageWidth
     ) {
-      splashScreenView.appName = config.appName ?: ""
-      splashScreenView.imageUrl = config.imageUrl ?: ""
+      splashScreenView.config = config
     }
   }
 }
