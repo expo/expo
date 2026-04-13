@@ -47,7 +47,7 @@ export type SubstitutionData = {
   author: string;
   license: string;
   repo: string;
-  type: 'remote';
+  type: 'standalone';
 };
 
 export type LocalSubstitutionData = {

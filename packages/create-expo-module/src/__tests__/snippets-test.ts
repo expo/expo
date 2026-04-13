@@ -27,7 +27,7 @@ const mockData = {
   author: 'Test',
   license: 'MIT',
   repo: 'https://github.com/test/test',
-  type: 'remote' as const,
+  type: 'standalone' as const,
 };
 
 // Path to the actual snippets directory in the template package

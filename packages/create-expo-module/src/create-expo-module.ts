@@ -60,6 +60,22 @@ const IGNORES_PATHS = [
   'snippets',
 ];
 
+// Files and top-level directories that only belong in standalone npm modules.
+// When generating a local module, these are skipped so the host project's tooling is used instead.
+const LOCAL_EXCLUDED_FILES = new Set([
+  '$package.json',
+  '$CHANGELOG.md',
+  '$.gitignore',
+  '$.npmignore',
+  '$.prettierrc',
+  'babel.config.js',
+  'eslint.config.cjs',
+  'tsconfig.json',
+  'README.md',
+  path.join('src', 'index.ts'),
+]);
+const LOCAL_EXCLUDED_DIRS = new Set(['example', 'internal']);
+
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
@@ -516,7 +532,7 @@ async function getTemplateVersion(isLocal: boolean) {
 async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
     const templateVersion = await getTemplateVersion(isLocal);
-    const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
+    const packageName = 'expo-module-template';
     const tmpDir = path.join(os.tmpdir(), '.create-expo-module');
 
     await fs.promises.mkdir(tmpDir, { recursive: true });
@@ -642,6 +658,13 @@ async function createModuleFromTemplate(
     const requiredPlatform = TEMPLATE_DIR_TO_PLATFORM[topLevelDir];
     if (requiredPlatform && !data.project.platforms.includes(requiredPlatform)) {
       continue;
+    }
+
+    // Skip standalone-only files and directories for local modules.
+    if (data.type === 'local') {
+      if (LOCAL_EXCLUDED_FILES.has(file) || LOCAL_EXCLUDED_DIRS.has(topLevelDir)) {
+        continue;
+      }
     }
 
     const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), augmentedData, {
@@ -816,7 +839,7 @@ async function askForSubstitutionDataAsync(
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
     repo,
-    type: 'remote',
+    type: 'standalone',
   };
 }
 
@@ -876,7 +899,7 @@ async function getSubstitutionDataFromOptions(
     };
   }
 
-  // For remote modules, resolve author info
+  // For standalone modules, resolve author info
   const description = options.description ?? 'My new module';
   const authorName = options.authorName ?? (await findMyName()) ?? '';
   const authorEmail = options.authorEmail ?? (await findGitHubEmail()) ?? '';
@@ -904,7 +927,7 @@ async function getSubstitutionDataFromOptions(
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
     repo,
-    type: 'remote',
+    type: 'standalone',
   };
 }
 
