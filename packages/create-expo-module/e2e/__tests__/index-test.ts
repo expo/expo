@@ -39,6 +39,8 @@ describe('CLI flags', () => {
     expect(result.stdout).toMatch(/--author-name/);
     expect(result.stdout).toMatch(/--barrel/);
     expect(result.stdout).toMatch(/--platform/);
+    expect(result.stdout).toMatch(/--license/);
+    expect(result.stdout).toMatch(/--module-version/);
   });
 
   it('shows version with --version flag', async () => {
@@ -484,5 +486,73 @@ describe('CI mode detection', () => {
       { cwd: ciProjectRoot, env: { CI: '0' } }
     );
     expect(result.stdout).toMatch(/Successfully created/);
+  });
+});
+
+describe('non-interactive defaults warning', () => {
+  it('warns about defaulted fields when none are explicitly provided', async () => {
+    const projectName = 'defaults-warning-module';
+
+    const result = await executePassing([
+      projectName,
+      '--no-example',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    // Warning should appear on stderr
+    expect(result.stderr).toMatch(/The following fields were not explicitly provided/);
+    // All non-explicitly-provided fields are listed — hardcoded defaults and auto-derived values
+    expect(result.stderr).toMatch(/\bname\b/);
+    expect(result.stderr).toMatch(/\bpackage\b/);
+    expect(result.stderr).toMatch(/\bdescription\b/);
+    expect(result.stderr).toMatch(/\blicense\b/);
+    expect(result.stderr).toMatch(/\bversion\b/);
+    expect(result.stderr).toMatch(/\bauthorName\b/);
+    expect(result.stderr).toMatch(/\bauthorEmail\b/);
+    expect(result.stderr).toMatch(/\bauthorUrl\b/);
+    expect(result.stderr).toMatch(/\brepo\b/);
+  });
+
+  it('omits fields from the warning when they are explicitly provided', async () => {
+    const projectName = 'partial-defaults-warning';
+
+    const result = await executePassing([
+      projectName,
+      '--no-example',
+      '--name', 'PartialDefaults',
+      '--description', 'Provided description',
+      '--package', 'com.test.partial',
+      '--author-name', 'Test Author',
+      '--author-email', 'test@example.com',
+      '--author-url', 'https://github.com/test',
+      '--repo', 'https://github.com/test/partial',
+      '--license', 'Apache-2.0',
+      '--module-version', '1.0.0',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    // All fields were explicitly provided — no warning
+    expect(result.stderr).not.toMatch(/The following fields were not explicitly provided/);
+  });
+
+  it('respects --license and --module-version in the generated package.json', async () => {
+    const projectName = 'custom-license-version';
+
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name', 'CustomLicenseVersion',
+      '--package', 'com.test.custom',
+      '--license', 'Apache-2.0',
+      '--module-version', '2.0.0',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const packageJson = readJson(projectName, 'package.json');
+    expect(packageJson.license).toBe('Apache-2.0');
+    expect(packageJson.version).toBe('2.0.0');
   });
 });

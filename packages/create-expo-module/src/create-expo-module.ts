@@ -36,6 +36,7 @@ import {
 } from './snippets';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import type { CommandOptions, Feature, LocalSubstitutionData, SubstitutionData } from './types';
+import { buildDefaultsWarning } from './utils/defaults';
 import { env } from './utils/env';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
@@ -822,12 +823,14 @@ async function askForSubstitutionDataAsync(
     promptedValues.authorUrl ??
     (authorEmail ? ((await findGitHubUserFromEmail(authorEmail)) ?? '') : '');
   const repo = options.repo ?? promptedValues.repo ?? (await guessRepoUrl(authorUrl, slug)) ?? '';
+  const license = options.license ?? promptedValues.license ?? 'MIT';
+  const version = options.moduleVersion ?? promptedValues.version ?? '0.1.0';
 
   return {
     project: {
       slug,
       name,
-      version: '0.1.0',
+      version,
       description,
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
@@ -837,7 +840,7 @@ async function askForSubstitutionDataAsync(
       features,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
-    license: 'MIT',
+    license,
     repo,
     type: 'standalone',
   };
@@ -862,6 +865,10 @@ function getCliValueForPrompt(promptName: string, options: CommandOptions): stri
       return options.authorUrl;
     case 'repo':
       return options.repo;
+    case 'license':
+      return options.license;
+    case 'version':
+      return options.moduleVersion;
     default:
       return undefined;
   }
@@ -877,13 +884,21 @@ async function getSubstitutionDataFromOptions(
   platforms: Platform[],
   features: Feature[]
 ): Promise<SubstitutionData | LocalSubstitutionData> {
+  const defaults: { field: string; value: string }[] = [];
+
   const rawName = options.name ?? slugToModuleName(slug);
   const name = resolveModuleName(rawName);
+  if (options.name === undefined) defaults.push({ field: 'name', value: name });
+
   const projectPackage = options.package ?? slugToAndroidPackage(slug);
+  if (options.package === undefined) defaults.push({ field: 'package', value: projectPackage });
 
   debug(`Non-interactive mode: name="${name}", package="${projectPackage}"`);
 
   if (isLocal) {
+    const warning = buildDefaultsWarning(defaults);
+    if (warning) process.stderr.write(chalk.yellow(warning) + '\n');
+
     return {
       project: {
         slug,
@@ -899,23 +914,39 @@ async function getSubstitutionDataFromOptions(
     };
   }
 
-  // For standalone modules, resolve author info
   const description = options.description ?? 'My new module';
   const authorName = options.authorName ?? (await findMyName()) ?? '';
   const authorEmail = options.authorEmail ?? (await findGitHubEmail()) ?? '';
   const authorUrl =
     options.authorUrl ?? (authorEmail ? ((await findGitHubUserFromEmail(authorEmail)) ?? '') : '');
   const repo = options.repo ?? (await guessRepoUrl(authorUrl, slug)) ?? '';
+  const license = options.license ?? 'MIT';
+  const version = options.moduleVersion ?? '0.1.0';
+
+  if (options.description === undefined)
+    defaults.push({ field: 'description', value: description });
+  if (options.authorName === undefined) defaults.push({ field: 'authorName', value: authorName });
+  if (options.authorEmail === undefined)
+    defaults.push({ field: 'authorEmail', value: authorEmail });
+  if (options.authorUrl === undefined) defaults.push({ field: 'authorUrl', value: authorUrl });
+  if (options.repo === undefined) defaults.push({ field: 'repo', value: repo });
+  if (options.license === undefined) defaults.push({ field: 'license', value: license });
+  if (options.moduleVersion === undefined) defaults.push({ field: 'version', value: version });
 
   debug(
-    `Non-interactive mode: description="${description}", authorName="${authorName}", authorEmail="${authorEmail}", authorUrl="${authorUrl}", repo="${repo}"`
+    `Non-interactive mode: description="${description}", authorName="${authorName}", authorEmail="${authorEmail}", authorUrl="${authorUrl}", repo="${repo}", license="${license}", version="${version}"`
   );
+
+  const warning = buildDefaultsWarning(defaults);
+  if (warning) {
+    process.stderr.write(chalk.yellow(warning) + '\n');
+  }
 
   return {
     project: {
       slug,
       name,
-      version: '0.1.0',
+      version,
       description,
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
@@ -925,7 +956,7 @@ async function getSubstitutionDataFromOptions(
       features,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
-    license: 'MIT',
+    license,
     repo,
     type: 'standalone',
   };
@@ -1086,6 +1117,8 @@ program
   .option('--author-email <email>', 'Author email for package.json.')
   .option('--author-url <url>', "URL to the author's profile (e.g., GitHub profile).")
   .option('--repo <url>', 'URL of the repository.')
+  .option('--license <license>', 'License identifier for package.json (e.g., MIT).')
+  .option('--module-version <version>', 'Initial version for package.json (e.g., 0.1.0).')
   .option(
     '-p, --platform <platforms...>',
     `Target platforms for the module. Available values: ${ALL_PLATFORMS.join(', ')}.`
