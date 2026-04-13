@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed `maxSdkVersion="33"` from `READ_MEDIA_IMAGES` permission to fix Android manifest merge conflict with `expo-media-library` on Android 14+. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@oeddyo](https://github.com/oeddyo))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25
