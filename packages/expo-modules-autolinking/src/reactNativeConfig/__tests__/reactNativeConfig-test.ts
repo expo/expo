@@ -469,7 +469,7 @@ describe(resolveReactNativeModule, () => {
       undefined
     );
   });
-  
+
   it('should deep merge project config into library config preserving nested sibling keys', async () => {
     const projectConfig: RNConfigReactNativeProjectConfig = {
       dependencies: {
