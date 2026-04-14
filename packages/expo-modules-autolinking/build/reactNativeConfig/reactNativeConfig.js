@@ -18,6 +18,22 @@ const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
 const android_1 = require("../platforms/android");
 const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY = 'expo.edgeToEdgeEnabled';
+const deepObjectMerge = (target, source) => {
+    if (source !== undefined &&
+        typeof target === 'object' &&
+        target != null &&
+        !Array.isArray(target) &&
+        (!target.constructor || target.constructor === Object) &&
+        typeof source === 'object' &&
+        !Array.isArray(source)) {
+        target = { ...target };
+        for (const key in source) {
+            target[key] = deepObjectMerge(target[key], source[key]);
+        }
+        return target;
+    }
+    return source !== undefined ? source : target;
+};
 /**
  * Create config for react-native core autolinking.
  */
@@ -110,10 +126,6 @@ function findProjectLocalDependencyRoots(projectConfig) {
 }
 async function resolveDependencyConfigAsync(platform, name, packageRoot, projectConfig) {
     const libraryConfig = await (0, config_1.loadConfigAsync)(packageRoot);
-    const reactNativeConfig = {
-        ...libraryConfig?.dependency,
-        ...projectConfig?.dependencies?.[name],
-    };
     if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
         // Package defines platforms would be a platform host package.
         // The rnc-cli will skip this package.
@@ -124,6 +136,11 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
         // when @react-native-community/cli-platform-android/ios is installed.
         // Therefore, we need to manually filter it out.
         return null;
+    }
+    let reactNativeConfig = libraryConfig?.dependency ?? {};
+    const projectDependencyOverride = projectConfig?.dependencies?.[name];
+    if (projectDependencyOverride != null) {
+        reactNativeConfig = deepObjectMerge(reactNativeConfig, projectDependencyOverride);
     }
     let platformData = null;
     if (platform === 'android') {

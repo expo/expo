@@ -567,7 +567,7 @@ describe(resolveDependencyConfigAsync, () => {
     });
   });
 
-  it('should call platform resolver with merged config and project config will override library config', async () => {
+  it('should preserve library config when project config sets platform to null (deep merge)', async () => {
     const projectConfig: RNConfigReactNativeProjectConfig = {
       dependencies: {
         'react-native-test': {
@@ -597,7 +597,52 @@ describe(resolveDependencyConfigAsync, () => {
     );
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
       '/app/node_modules/react-native-test',
-      null
+      {
+        configurations: ['Debug'],
+        scriptPhases: [{ name: 'test', path: './test.js' }],
+      },
+    );
+  });
+
+  it('should deep merge project config into library config preserving nested sibling keys', async () => {
+    const projectConfig: RNConfigReactNativeProjectConfig = {
+      dependencies: {
+        'react-native-test': {
+          platforms: {
+            ios: {
+              sourceDir: './mock-ios',
+              scriptPhases: [{ name: 'test', path: './override.js' }],
+            },
+          },
+        },
+      },
+    };
+    const libraryConfig: RNConfigReactNativeLibraryConfig = {
+      dependency: {
+        platforms: {
+          ios: {
+            configurations: ['Debug'],
+            scriptPhases: [{ name: 'test', path: './test.js' }],
+          },
+        },
+      },
+    };
+    mockLoadReactNativeConfigAsync.mockResolvedValueOnce(libraryConfig);
+
+    await resolveDependencyConfigAsync(
+      'ios',
+      'react-native-test',
+      '/app/node_modules/react-native-test',
+      projectConfig,
+    );
+
+    expect(mockPlatformResolverIos).toHaveBeenCalledWith(
+      '/app/node_modules/react-native-test',
+      {
+        sourceDir: './mock-ios',
+        configurations: ['Debug'],
+        scriptPhases: [{ name: 'test', path: './override.js' }],
+      },
     );
   });
 

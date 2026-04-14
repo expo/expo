@@ -24,6 +24,25 @@ import { resolveGradlePropertyAsync } from '../platforms/android';
 
 const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY = 'expo.edgeToEdgeEnabled';
 
+const deepObjectMerge = (target: any, source: any): any => {
+  if (
+    source !== undefined &&
+    typeof target === 'object' &&
+    target != null &&
+    !Array.isArray(target) &&
+    (!target.constructor || target.constructor === Object) &&
+    typeof source === 'object' &&
+    !Array.isArray(source)
+  ) {
+    target = { ...target };
+    for (const key in source) {
+      target[key] = deepObjectMerge(target[key], source[key]);
+    }
+    return target;
+  }
+  return source !== undefined ? source : target;
+};
+
 /**
  * Create config for react-native core autolinking.
  */
@@ -148,10 +167,6 @@ export async function resolveDependencyConfigAsync(
   projectConfig: RNConfigReactNativeProjectConfig | null
 ): Promise<RNConfigDependency | null> {
   const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(packageRoot);
-  const reactNativeConfig = {
-    ...libraryConfig?.dependency,
-    ...projectConfig?.dependencies?.[name],
-  };
 
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
@@ -163,6 +178,12 @@ export async function resolveDependencyConfigAsync(
     // when @react-native-community/cli-platform-android/ios is installed.
     // Therefore, we need to manually filter it out.
     return null;
+  }
+
+  let reactNativeConfig = libraryConfig?.dependency ?? {};
+  const projectDependencyOverride = projectConfig?.dependencies?.[name];
+  if (projectDependencyOverride != null) {
+    reactNativeConfig = deepObjectMerge(reactNativeConfig, projectDependencyOverride);
   }
 
   let platformData = null;
