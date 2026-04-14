@@ -84,3 +84,4 @@ local.properties
 # Generated native projects
 android/
 ios/
+artifacts/
