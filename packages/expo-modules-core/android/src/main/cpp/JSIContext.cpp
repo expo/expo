@@ -331,7 +331,6 @@ void JSIContext::installModuleClasses() {
 }
 
 void JSIContext::prepareForDeallocation() noexcept {
-  moduleClassDecorators.clear();
   jsRegistry.reset();
   if (runtimeHolder) {
     unbindJSIContext(runtimeHolder->get());
