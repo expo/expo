@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- [Internal] Improve performance of internal debug logging ([#44706](https://github.com/expo/expo/pull/44706) by [@kitten](https://github.com/kitten))
 - Update to `multitars@^1.0.0` ([#44774](https://github.com/expo/expo/pull/44774) by [@kitten](https://github.com/kitten))
 
 ## 55.0.24 — 2026-04-13
