@@ -1,0 +1,24 @@
+import { type ObservableState } from '../../State/useNativeState';
+import { type ModifierConfig } from '../../types';
+export type SyncSwitchProps = {
+    /**
+     * An observable state that drives the switch.
+     * Create one with `useNativeState(false)`.
+     */
+    isOn: ObservableState<boolean>;
+    /**
+     * Whether the switch is enabled.
+     * @default true
+     */
+    enabled?: boolean;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+};
+/**
+ * A switch driven by observable native state.
+ * Use `useNativeState(false)` to create the state.
+ */
+export declare function SyncSwitch(props: SyncSwitchProps): import("react").JSX.Element;
+//# sourceMappingURL=index.d.ts.map
