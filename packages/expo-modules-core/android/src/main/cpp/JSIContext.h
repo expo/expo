@@ -134,6 +134,11 @@ public:
 
   jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
 
+  /**
+   * Installs module class prototypes and `SharedObject.__resolveInWorklet` in this runtime.
+   */
+  void installModuleClasses();
+
   void prepareForDeallocation() noexcept;
 
   [[nodiscard]] bool wasDeallocated() const noexcept;
@@ -151,6 +156,9 @@ private:
   friend HybridBase;
 
   bool wasDeallocated_ = false;
+
+  jni::local_ref<JavaScriptObject::javaobject> ensureClassInstalled(jsi::Runtime &rt, jni::local_ref<jclass> nativeClass);
+  jsi::Value resolveSharedObjectInstance(jsi::Runtime &rt, int objectId, jni::local_ref<JavaScriptObject::javaobject> jsClassObj);
 
   [[nodiscard]] inline jni::local_ref<JavaScriptModuleObject::javaobject>
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
