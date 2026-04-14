@@ -19,11 +19,12 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.ui.convertibles.HorizontalArrangement
+import expo.modules.ui.convertibles.VerticalAlignment
 import expo.modules.ui.convertibles.toComposeArrangement
 
 data class LazyRowProps(
   val horizontalArrangement: MutableState<HorizontalArrangement?> = mutableStateOf(null),
-  val verticalAlignment: MutableState<String?> = mutableStateOf(null),
+  val verticalAlignment: MutableState<VerticalAlignment?> = mutableStateOf(null),
   val contentPadding: MutableState<ContentPadding?> = mutableStateOf(null),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
 ) : ComposeProps
@@ -50,12 +51,7 @@ class LazyRowView(context: Context, appContext: AppContext) :
     recomposeScope = currentRecomposeScope
     val horizontalArrangement = props.horizontalArrangement.value?.toComposeArrangement() ?: Arrangement.Start
 
-    val verticalAlignment = when (props.verticalAlignment.value) {
-      "top" -> Alignment.Top
-      "bottom" -> Alignment.Bottom
-      "center" -> Alignment.CenterVertically
-      else -> Alignment.Top
-    }
+    val verticalAlignment = props.verticalAlignment.value?.toComposeAlignment() ?: Alignment.Top
 
     val padding = props.contentPadding.value
 

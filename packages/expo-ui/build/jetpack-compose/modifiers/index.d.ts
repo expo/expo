@@ -206,7 +206,7 @@ export declare const toggleable: (value: boolean, handler: () => void, options?:
     role?: "checkbox" | "radioButton" | "switch" | "tab";
 }) => import("./createModifier").ModifierConfig;
 /**
- * Calls the handler when the composable's visibility changes (e.g., enters or leaves the viewport in a lazy list).
+ * Calls the handler when the composable's visibility changes (for example, enters or leaves the viewport in a lazy list).
  * @param handler - Function called with `true` when visible, `false` when not.
  * @param options - Optional configuration.
  * @param options.minDurationMs - Minimum duration in ms before the callback fires. Default is 0.
