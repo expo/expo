@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = __importDefault(require("chalk"));
-const commander_1 = __importDefault(require("commander"));
+const commander_1 = require("commander");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const mockgen_1 = require("./mockgen");
@@ -159,8 +159,8 @@ function generateJsxIntrinsics(cli) {
         writeStringToFileOrPrintToConsole(jsxIntrinsicViewFileContent, realOutputPath);
     });
 }
-function generateExpoModuleTSInterface(cli) {
-    addCommonOptions(cli.command('generate-ts')).action(async (options) => {
+function generateConciseExpoModuleTSInterfaceCommand(cli) {
+    addCommonOptions(cli.command('generate-concise-ts').summary('Creates concise ts interface, great with inline-modules.').description('Creates concise ts interface for an expo module. Overrites `ModuleName.generated.ts` and creates `ModuleName.ts` if not present. Can be used with inline-modules.')).action(async (options) => {
         const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
         if (!parsed)
             return;
@@ -184,15 +184,17 @@ function generateExpoModuleTSInterface(cli) {
     });
 }
 async function main(args) {
-    const cli = commander_1.default
+    const cli = new commander_1.Command();
+    cli.name('expo-type-information')
         .version(require('../package.json').version)
         .description('CLI commands for retrieving type information from native files.');
-    generateExpoModuleTSInterface(cli);
-    typeInformationCommand(cli);
-    generateModuleTypesCommand(cli);
-    generateViewTypesCommand(cli);
+    generateConciseExpoModuleTSInterfaceCommand(cli);
     generateMocksForFileCommand(cli);
-    generateJsxIntrinsics(cli);
+    const otherCommands = cli.command('other').description('internal or very specific commands');
+    typeInformationCommand(otherCommands);
+    generateModuleTypesCommand(otherCommands);
+    generateViewTypesCommand(otherCommands);
+    generateJsxIntrinsics(otherCommands);
     await cli.parseAsync(args, { from: 'user' });
 }
 main(process.argv.slice(2));

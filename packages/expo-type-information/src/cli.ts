@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import commander from 'commander';
+import commander, {Command} from 'commander';
 import fs from 'fs';
 import path from 'path';
 
@@ -145,7 +145,7 @@ function writeStringToFileOrPrintToConsole(text: string, realOutputPath: string 
   console.log(text);
 }
 
-function typeInformationCommand(cli: commander.CommanderStatic) {
+function typeInformationCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('type-information')).action(
     async (options: TypeInformationCommandCommonArguments) => {
       const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
@@ -159,7 +159,7 @@ function typeInformationCommand(cli: commander.CommanderStatic) {
   );
 }
 
-function generateModuleTypesCommand(cli: commander.CommanderStatic) {
+function generateModuleTypesCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-module-types')).action(
     async (options: TypeInformationCommandCommonArguments) => {
       const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
@@ -175,7 +175,7 @@ function generateModuleTypesCommand(cli: commander.CommanderStatic) {
   );
 }
 
-function generateViewTypesCommand(cli: commander.CommanderStatic) {
+function generateViewTypesCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-view-types')).action(
     async (options: TypeInformationCommandCommonArguments) => {
       const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
@@ -192,7 +192,7 @@ function generateViewTypesCommand(cli: commander.CommanderStatic) {
   );
 }
 
-function generateMocksForFileCommand(cli: commander.CommanderStatic) {
+function generateMocksForFileCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-mocks-for-file')).action(
     async (options: TypeInformationCommandCommonArguments) => {
       const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
@@ -204,7 +204,7 @@ function generateMocksForFileCommand(cli: commander.CommanderStatic) {
   );
 }
 
-function generateJsxIntrinsics(cli: commander.CommanderStatic) {
+function generateJsxIntrinsics(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-jsx-intrinsics')).action(
     async (options: TypeInformationCommandCommonArguments) => {
       const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
@@ -224,8 +224,8 @@ function generateJsxIntrinsics(cli: commander.CommanderStatic) {
   );
 }
 
-function generateExpoModuleTSInterface(cli: commander.CommanderStatic) {
-  addCommonOptions(cli.command('generate-ts')).action(
+function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
+  addCommonOptions(cli.command('generate-concise-ts').summary('Creates concise ts interface, great with inline-modules.').description('Creates concise ts interface for an expo module. Overrites `ModuleName.generated.ts` and creates `ModuleName.ts` if not present. Can be used with inline-modules.')).action(
     async (options: TypeInformationCommandCommonArguments) => {
       const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
       if (!parsed) return;
@@ -262,16 +262,19 @@ function generateExpoModuleTSInterface(cli: commander.CommanderStatic) {
 }
 
 async function main(args: string[]) {
-  const cli = commander
+  const cli = new Command();
+  cli.name('expo-type-information')
     .version(require('../package.json').version)
     .description('CLI commands for retrieving type information from native files.');
 
-  generateExpoModuleTSInterface(cli);
-  typeInformationCommand(cli);
-  generateModuleTypesCommand(cli);
-  generateViewTypesCommand(cli);
+  generateConciseExpoModuleTSInterfaceCommand(cli);
   generateMocksForFileCommand(cli);
-  generateJsxIntrinsics(cli);
+  
+  const otherCommands = cli.command('other').description('internal or very specific commands')
+  typeInformationCommand(otherCommands);
+  generateModuleTypesCommand(otherCommands);
+  generateViewTypesCommand(otherCommands);
+  generateJsxIntrinsics(otherCommands);
 
   await cli.parseAsync(args, { from: 'user' });
 }
