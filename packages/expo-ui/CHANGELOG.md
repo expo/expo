@@ -64,7 +64,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Use local `ClassDefinition` wrapper instead of ExpoModulesCore's `Class()` to work around a Swift 6.3 compiler crash when consuming ExpoModulesCore as an XCFramework. This can be reverted when ExpoUI is prebuilt as an XCFramework itself.
+- [iOS] Use local `ClassDefinition` wrapper instead of ExpoModulesCore's `Class()` to work around a Swift 6.3 compiler crash when consuming ExpoModulesCore as an XCFramework. This can be reverted when ExpoUI is prebuilt as an XCFramework itself. ([#44765](https://github.com/expo/expo/pull/44765) by [@chrfalch](https://github.com/chrfalch))
 - Fix `installOnUIRuntime` crash by ensuring `react-native-reanimated` initializes before accessing worklet runtime. ([#44582](https://github.com/expo/expo/pull/44582) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix initial prop values not being applied since `init` runs before `updateProps`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix prop syncing race condition where stale values override user interactions. Replace `onReceive(Sequence.publisher)` with `onAppear` + `onChange` across all SwiftUI views. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
