@@ -31,6 +31,7 @@ jest.mock('../../../../log');
 jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
+  resolveSplashScreenAssets: jest.fn(),
 }));
 jest.mock('@expo/config/paths', () => ({
   ...jest.requireActual('@expo/config/paths'),
