@@ -1,3 +1,4 @@
+import '../State/index.fx';
 import './MaterialSymbolsAssetsTransformer.fx';
 export * from './AlertDialog';
 export * from './Badge';
@@ -10,6 +11,7 @@ export * from './Button';
 export * from './Icon';
 export * from './IconButton';
 export * from './DropdownMenu';
+export * from './ExposedDropdownMenuBox';
 export * from './Divider';
 export * from './Host';
 export * from './LazyColumn';
@@ -21,6 +23,7 @@ export * from './Progress';
 export * from './Slider';
 export * from './Spacer';
 export * from './Switch';
+export * from './SyncSwitch';
 export * from './TextField';
 export * from './ToggleButton';
 export * from './Shape';
@@ -40,5 +43,6 @@ export * from './Box';
 export * from './Row';
 export * from './Column';
 export * from './FlowRow';
+export { useNativeState } from '../State/useNativeState';
 export { ViewEvent } from '../types';
 //# sourceMappingURL=index.d.ts.map

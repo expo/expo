@@ -3,7 +3,6 @@ package expo.modules.ui.menu
 import android.graphics.Color
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -14,9 +13,6 @@ import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.composeOrNull
 import expo.modules.ui.findChildSlotView
-import java.io.Serializable
-
-class ItemPressedEvent : Record, Serializable
 
 class DropdownMenuItemColors : Record {
   @Field val textColor: Color? = null
@@ -36,7 +32,7 @@ data class DropdownMenuItemProps(
 @Composable
 fun FunctionalComposableScope.DropdownMenuItemContent(
   props: DropdownMenuItemProps,
-  onItemPressed: (ItemPressedEvent) -> Unit
+  onItemPressed: () -> Unit
 ) {
   val textSlotView = findChildSlotView(view, "text")
   val leadingSlotView = findChildSlotView(view, "leadingIcon")
@@ -64,7 +60,7 @@ fun FunctionalComposableScope.DropdownMenuItemContent(
       { with(UIComposableScope()) { with(it) { Content() } } }
     },
     onClick = {
-      onItemPressed(ItemPressedEvent())
+      onItemPressed()
     }
   )
 }
