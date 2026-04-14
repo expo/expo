@@ -34,6 +34,7 @@
 - add ExposedDropdownMenuBox ([#44201](https://github.com/expo/expo/pull/44201) by [@vonovak](https://github.com/vonovak))
 - Added `@expo/ui/community/segmented-control` — a drop-in replacement for `@react-native-segmented-control/segmented-control`. ([#44611](https://github.com/expo/expo/pull/44611) by [@vonovak](https://github.com/vonovak))
 - Added `@expo/ui/community/picker` — Android, iOS and web `Picker` drop-in replacement for `@react-native-picker/picker`. ([#44058](https://github.com/expo/expo/pull/44058) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `TabView` component wrapping SwiftUI's `TabView`, with `tabViewStyle`, `indexViewStyle` and `tabItem` modifiers for the page (swipeable) and bottom-tab styles. ([#44780](https://github.com/expo/expo/pull/44780) by [@vonovak](https://github.com/vonovak))
 - [iOS] Add `ObservableState` shared object and `useNativeState` hook for controlling native SwiftUI state from JS. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add shared object worklet support with `.value` property API for `ObservableState`. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44216](https://github.com/expo/expo/pull/44216) by [@nishan](https://github.com/intergalacticspacehighway))
