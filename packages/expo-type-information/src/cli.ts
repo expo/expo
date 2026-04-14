@@ -261,58 +261,12 @@ function generateExpoModuleTSInterface(cli: commander.CommanderStatic) {
   );
 }
 
-function generateTypeFiles(cli: commander.CommanderStatic) {
-  return addCommonOptions(cli.command('generate-type-files')).action(
-    async (options: TypeInformationCommandCommonArguments) => {
-      const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
-      if (!parsed) return;
-
-      const { typeInfo, realInputPath, realOutputPath } = parsed;
-      const typesFileContent = await getGeneratedModuleTypesFileContent(realInputPath, typeInfo);
-      const moduleFileContent = await getGeneratedModuleTypesFileContent(realInputPath, typeInfo);
-      const viewFileContent =
-        (await getGeneratedJSXIntrinsicsViewDeclaration(realInputPath, typeInfo)) ??
-        '// ERROR GENERATING VIEW TYPES';
-
-      const moduleName = 'SomeModuleName';
-      const dirName = realOutputPath ?? path.dirname(realInputPath);
-      const typesFilePromise = fs.promises.writeFile(
-        path.resolve(dirName, `${moduleName}.types.ts`),
-        typesFileContent,
-        {
-          flag: 'w',
-          encoding: 'utf-8',
-        }
-      );
-      const moduleFilePromise = fs.promises.writeFile(
-        path.resolve(dirName, `${moduleName}.module.ts`),
-        moduleFileContent,
-        {
-          flag: 'w',
-          encoding: 'utf-8',
-        }
-      );
-      const viewFilePromise = fs.promises.writeFile(
-        path.resolve(dirName, `${moduleName}.view.ts`),
-        viewFileContent,
-        {
-          flag: 'w',
-          encoding: 'utf-8',
-        }
-      );
-
-      await Promise.all([typesFilePromise, moduleFilePromise, viewFilePromise]);
-    }
-  );
-}
-
 async function main(args: string[]) {
   const cli = commander
     .version(require('../package.json').version)
     .description('CLI commands for retrieving type information from native files.');
 
   generateExpoModuleTSInterface(cli);
-  generateTypeFiles(cli);
   typeInformationCommand(cli);
   generateModuleTypesCommand(cli);
   generateViewTypesCommand(cli);

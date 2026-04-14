@@ -183,39 +183,11 @@ function generateExpoModuleTSInterface(cli) {
         catch (e) { }
     });
 }
-function generateTypeFiles(cli) {
-    return addCommonOptions(cli.command('generate-type-files')).action(async (options) => {
-        const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
-        if (!parsed)
-            return;
-        const { typeInfo, realInputPath, realOutputPath } = parsed;
-        const typesFileContent = await (0, typescriptGeneration_1.getGeneratedModuleTypesFileContent)(realInputPath, typeInfo);
-        const moduleFileContent = await (0, typescriptGeneration_1.getGeneratedModuleTypesFileContent)(realInputPath, typeInfo);
-        const viewFileContent = (await (0, typescriptGeneration_1.getGeneratedJSXIntrinsicsViewDeclaration)(realInputPath, typeInfo)) ??
-            '// ERROR GENERATING VIEW TYPES';
-        const moduleName = 'SomeModuleName';
-        const dirName = realOutputPath ?? path_1.default.dirname(realInputPath);
-        const typesFilePromise = fs_1.default.promises.writeFile(path_1.default.resolve(dirName, `${moduleName}.types.ts`), typesFileContent, {
-            flag: 'w',
-            encoding: 'utf-8',
-        });
-        const moduleFilePromise = fs_1.default.promises.writeFile(path_1.default.resolve(dirName, `${moduleName}.module.ts`), moduleFileContent, {
-            flag: 'w',
-            encoding: 'utf-8',
-        });
-        const viewFilePromise = fs_1.default.promises.writeFile(path_1.default.resolve(dirName, `${moduleName}.view.ts`), viewFileContent, {
-            flag: 'w',
-            encoding: 'utf-8',
-        });
-        await Promise.all([typesFilePromise, moduleFilePromise, viewFilePromise]);
-    });
-}
 async function main(args) {
     const cli = commander_1.default
         .version(require('../package.json').version)
         .description('CLI commands for retrieving type information from native files.');
     generateExpoModuleTSInterface(cli);
-    generateTypeFiles(cli);
     typeInformationCommand(cli);
     generateModuleTypesCommand(cli);
     generateViewTypesCommand(cli);
