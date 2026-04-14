@@ -46,11 +46,14 @@ describe('installEventLogger', () => {
     const stderr = createMockStream(2);
     const LogStream = jest.fn().mockImplementation(() => ({
       writable: true,
-      _write: jest.fn(),
+      _writeln: jest.fn(),
     }));
 
     jest.isolateModules(() => {
-      jest.doMock('../stream', () => ({ LogStream }));
+      jest.doMock('../stream', () => ({
+        LogStream,
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
       jest.doMock('node:tty', () => ({
         WriteStream: jest.fn(() => {
           throw new Error('TTY initialization should not run');
@@ -73,11 +76,14 @@ describe('installEventLogger', () => {
     const stdout = createMockStream(1);
     const LogStream = jest.fn().mockImplementation(() => ({
       writable: true,
-      _write: jest.fn(),
+      _writeln: jest.fn(),
     }));
 
     jest.isolateModules(() => {
-      jest.doMock('../stream', () => ({ LogStream }));
+      jest.doMock('../stream', () => ({
+        LogStream,
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
       jest.doMock('node:tty', () => ({
         WriteStream: jest.fn(() => {
           throw new Error('TTY initialization should not run');
