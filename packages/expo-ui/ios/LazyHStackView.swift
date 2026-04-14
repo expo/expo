@@ -18,7 +18,7 @@ public struct LazyHStackView: ExpoSwiftUI.View {
   public var body: some View {
     LazyHStack(
       alignment: props.alignment?.toVerticalAlignment() ?? .center,
-      spacing: CGFloat(props.spacing ?? 0)) {
+      spacing: props.spacing.map { CGFloat($0) }) {
         Children()
     }
   }
