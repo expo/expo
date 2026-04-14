@@ -37,7 +37,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   /**
    Default initializer receiving children definitions from the result builder.
    */
-  init(definitions: [AnyDefinition]) {
+  public init(definitions: [AnyDefinition]) {
     self.functions = definitions
       .compactMap { $0 as? AnyFunctionDefinition }
       .filter { !($0 is AnyStaticFunctionDefinition) }

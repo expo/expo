@@ -24,7 +24,7 @@ public final class ClassDefinition: ObjectDefinition {
    */
   let isSharedRef: Bool
 
-  init<AssociatedObject: ClassAssociatedObject>(
+  public init<AssociatedObject: ClassAssociatedObject>(
     name: String,
     associatedType: AssociatedObject.Type,
     elements: [AnyClassDefinitionElement] = []
@@ -145,7 +145,7 @@ public final class ClassDefinition: ObjectDefinition {
 /**
  A protocol for types that can be used an associated type of the ``ClassDefinition``.
  */
-internal protocol ClassAssociatedObject {}
+public protocol ClassAssociatedObject {}
 
 // Basically we only need these two
 extension JavaScriptObject: ClassAssociatedObject, AnyArgument, AnyJavaScriptValue {

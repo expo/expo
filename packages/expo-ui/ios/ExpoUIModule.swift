@@ -3,6 +3,16 @@
 import ExpoModulesCore
 import ExpoModulesWorklets
 
+// Workaround for Swift 6.3 compiler crash (LifetimeDependenceInfoRequest) when
+// resolving the `Class` free function from ExpoModulesCore's .swiftinterface.
+// This local wrapper calls ClassDefinition.init directly, avoiding the xcframework resolution.
+private func LocalClass<SharedObjectType: SharedObject>(
+  _ sharedObjectType: SharedObjectType.Type,
+  @ClassDefinitionBuilder<SharedObjectType> _ elements: () -> [AnyClassDefinitionElement]
+) -> ClassDefinition {
+  return ClassDefinition(name: String(describing: SharedObjectType.self), associatedType: SharedObjectType.self, elements: elements())
+}
+
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
@@ -17,7 +27,7 @@ public final class ExpoUIModule: Module {
 
     // MARK: - Observable State
 
-    Class(WorkletCallback.self) {
+    LocalClass(WorkletCallback.self) {
       Constructor { (worklet: Worklet) -> WorkletCallback in
         let callback = WorkletCallback()
         callback.worklet = worklet
@@ -25,7 +35,7 @@ public final class ExpoUIModule: Module {
       }
     }
 
-    Class(ObservableState.self) {
+    LocalClass(ObservableState.self) {
       Constructor { (initial: [String: Any]) -> ObservableState in
         return ObservableState(value: initial["value"])
       }

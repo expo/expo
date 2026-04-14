@@ -18,6 +18,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Made `ClassDefinition.init`, `ClassAssociatedObject` protocol, and `ObjectDefinition.init` public to work around a Swift 6.3 compiler crash (`LifetimeDependenceInfoRequest`) when resolving `Class()` from a `.swiftinterface` in XCFramework builds.
+
 - [iOS] Add async/await overload for StaticAsyncFunction ([#44471](https://github.com/expo/expo/pull/44471) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fixed looking up the `EXConstants.bundle` from the main bundle to allow running with precompiled XCFrameworks. ([#44551](https://github.com/expo/expo/pull/44551) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fixed Constants.expoConfig returning null due to optional value wrapping in ConstantsProvider. ([#44550](https://github.com/expo/expo/pull/44550) by [@chrfalch](https://github.com/chrfalch))
