@@ -2,7 +2,6 @@
 
 ## Unpublished
 
-
 ### 🛠 Breaking changes
 
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
@@ -19,6 +18,7 @@
 - [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Improve looping support. ([#43600](https://github.com/expo/expo/pull/43600) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Prevent stale lock screen artwork updates from crashing or overwriting newer metadata. ([#44498](https://github.com/expo/expo/pull/44498) by [@kotadd](https://github.com/kotadd))
+- [Android] Fix lock screen controls on android 12 and earlier.
 
 ### 💡 Others
 
