@@ -18,7 +18,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Made `ClassDefinition.init`, `ClassAssociatedObject` protocol, and `ObjectDefinition.init` public to work around a Swift 6.3 compiler crash (`LifetimeDependenceInfoRequest`) when resolving `Class()` from a `.swiftinterface` in XCFramework builds.
+- [iOS] Made `ClassDefinition.init`, `ClassAssociatedObject` protocol, and `ObjectDefinition.init` public to work around a Swift 6.3 compiler crash (`LifetimeDependenceInfoRequest`) when resolving `Class()` from a `.swiftinterface` in XCFramework builds. ([#44765](https://github.com/expo/expo/pull/44765) by [@chrfalch](https://github.com/chrfalch))
 
 - [iOS] Add async/await overload for StaticAsyncFunction ([#44471](https://github.com/expo/expo/pull/44471) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fixed looking up the `EXConstants.bundle` from the main bundle to allow running with precompiled XCFrameworks. ([#44551](https://github.com/expo/expo/pull/44551) by [@chrfalch](https://github.com/chrfalch))
