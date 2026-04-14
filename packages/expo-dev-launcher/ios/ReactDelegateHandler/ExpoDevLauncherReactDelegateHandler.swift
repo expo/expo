@@ -125,6 +125,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       // Greenfield: add DevLauncherViewController as a child of the window's root VC
       // so react-native-screens finds a VC in the containment hierarchy with correct
       // layout margins.
+      //
+      // Note: this inserts DevLauncherViewController between ScreenOrientationViewController
+      // (the window root VC) and RNSNavigationController, which blocks react-native-screens'
+      // single-level VC traversal for orientation and other window traits.
+      // ScreenOrientationViewController.vcWithRNScreenOrientation() works around this by
+      // searching one level deeper through child VCs.
       rootViewController.view = rootView
       if rootViewController.parent != windowRootVC {
         windowRootVC.addChild(rootViewController)

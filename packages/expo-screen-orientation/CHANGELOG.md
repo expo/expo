@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed per-screen orientation not working with expo-dev-client by searching child VCs for react-native-screens orientation when an intermediate VC blocks the traversal. ([#44181](https://github.com/expo/expo/pull/44181) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 55.0.13 — 2026-04-09
