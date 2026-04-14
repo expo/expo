@@ -43,6 +43,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'TabView component',
+    route: 'ui/tabview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TabViewScreen'));
+    },
+  },
+  {
     name: 'Toggle component',
     route: 'ui/toggle',
     options: {},
