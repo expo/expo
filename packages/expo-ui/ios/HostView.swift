@@ -45,35 +45,26 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   @ObservedObject var props: HostViewProps
 
   var body: some View {
-    var useViewportSizeMeasurement = props.useViewportSizeMeasurement
-    var matchContentsHorizontal = props.matchContentsHorizontal
-    var matchContentsVertical = props.matchContentsVertical
-    if #unavailable(iOS 16.0, tvOS 16.0, macOS 13.0) {
-      if useViewportSizeMeasurement || matchContentsHorizontal || matchContentsVertical {
-        log.warn("useViewportSizeMeasurement and matchContents require iOS/tvOS 16.0+")
-      }
+    var useViewportSizeMeasurement: Bool = props.useViewportSizeMeasurement
+    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+      useViewportSizeMeasurement = props.useViewportSizeMeasurement
+    } else {
+      log.warn("useViewportSizeMeasurement is not supported on iOS/tvOS < 16.0")
       useViewportSizeMeasurement = false
-      matchContentsHorizontal = false
-      matchContentsVertical = false
     }
-    let needsCustomLayout = useViewportSizeMeasurement || matchContentsHorizontal || matchContentsVertical
 
     let layoutDirection = props.layoutDirection.toLayoutDirection()
     let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
 
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
-      let HostLayout = needsCustomLayout
-        ? AnyLayout(HostContentLayout(
-            layoutDirection: layoutDirection,
-            matchContentsHorizontal: matchContentsHorizontal,
-            matchContentsVertical: matchContentsVertical,
-            useViewportFallback: useViewportSizeMeasurement
-          ))
+      let HostLayout = useViewportSizeMeasurement
+        ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection))
         : AnyLayout(ZStackLayout(alignment: alignment))
       return HostLayout {
         Children()
       }
+      .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
       .modifier(GeometryChangeModifier(props: props))
@@ -82,6 +73,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     return ZStack(alignment: alignment) {
       Children()
     }
+    .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
     .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
     .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
     .modifier(GeometryChangeModifier(props: props))
@@ -106,31 +98,19 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 }
 
 /**
- Custom layout for `Host` content.
- - `matchContents` - proposes `nil` so children report their intrinsic size
- - `useViewportFallback` - substitutes viewport safe-area size when RN layout size is zero.
- - Neither — passes the Host's RN layout size through as-is.
+ A Layout designed for the `useViewportSizeMeasurement` behavior.
+ If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand it's children size.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
-private struct HostContentLayout: Layout {
+private struct ViewportSizeMeasurementLayout: Layout {
   let layoutDirection: LayoutDirection
-  let matchContentsHorizontal: Bool
-  let matchContentsVertical: Bool
-  let useViewportFallback: Bool
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     let maxSize = safeAreaSize()
-
-    let availableWidth: CGFloat? = resolveProposal(
-      matchContents: matchContentsHorizontal,
-      proposal: proposal.width,
-      viewportFallback: maxSize.width
-    )
-    let availableHeight: CGFloat? = resolveProposal(
-      matchContents: matchContentsVertical,
-      proposal: proposal.height,
-      viewportFallback: maxSize.height
-    )
+    let proposalWidth = proposal.width ?? 0
+    let proposalHeight = proposal.height ?? 0
+    let availableWidth = proposalWidth > 0 ? proposalWidth : maxSize.width
+    let availableHeight = proposalHeight > 0 ? proposalHeight : maxSize.height
 
     var resultWidth: CGFloat = 0
     var resultHeight: CGFloat = 0
@@ -140,17 +120,6 @@ private struct HostContentLayout: Layout {
       resultHeight = max(resultHeight, size.height)
     }
     return CGSize(width: resultWidth, height: resultHeight)
-  }
-
-  private func resolveProposal(matchContents: Bool, proposal: CGFloat?, viewportFallback: CGFloat) -> CGFloat? {
-    if matchContents {
-      return nil
-    }
-    if useViewportFallback {
-      let value = proposal ?? 0
-      return value > 0 ? proposal : viewportFallback
-    }
-    return proposal
   }
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
