@@ -123,6 +123,35 @@ function slugToAndroidPackage(slug: string): string {
   return `expo.modules.${namespace}`;
 }
 
+/**
+ * Resolves the target directory for a new local module given the project's `package.json` path.
+ * Respects `expo.autolinking.nativeModulesDir` when present; falls back to `modules/`.
+ * @internal Exported for testing.
+ */
+export function resolveLocalModuleDir(packageJsonPath: string, targetOrSlug: string): string {
+  let packageJson: any = {};
+  try {
+    const fileContent = fs.readFileSync(packageJsonPath, 'utf8');
+    packageJson = JSON.parse(fileContent);
+  } catch {
+    console.log(
+      chalk.yellow(
+        `⚠️ Could not parse package.json at ${packageJsonPath}. Using the \`modules\` directory in the root of the project as the module location.`
+      )
+    );
+  }
+
+  const { expo } = packageJson;
+  const projectRoot = path.dirname(packageJsonPath);
+  const nativeModulesDir = expo?.autolinking?.nativeModulesDir;
+
+  if (nativeModulesDir) {
+    return path.resolve(projectRoot, nativeModulesDir, targetOrSlug);
+  }
+
+  return path.join(projectRoot, 'modules', targetOrSlug);
+}
+
 async function getCorrectLocalDirectory(targetOrSlug: string) {
   let packageJsonPath: string | null = null;
   for (let dir = CWD; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
@@ -140,12 +169,13 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
     );
     console.log(
       chalk.red(
-        'For native modules to autolink correctly, you need to place them in the `modules` directory in the root of the project.'
+        'For native modules to autolink correctly, you need to place them in the directory specified in `expo.autolinking.nativeModulesDir` field in `package.json` which defaults to `modules` directory in the root of the project when unspecified.'
       )
     );
     return null;
   }
-  return path.join(packageJsonPath, '..', 'modules', targetOrSlug);
+
+  return resolveLocalModuleDir(packageJsonPath, targetOrSlug);
 }
 
 /**
@@ -310,17 +340,6 @@ async function main(target: string | undefined, options: CommandOptions) {
     debug('Running in non-interactive mode');
   }
 
-  if (options.local) {
-    console.log();
-    console.log(
-      `${chalk.gray('The local module will be created in the ')}${chalk.gray.bold.italic(
-        'modules'
-      )} ${chalk.gray('directory in the root of your project. Learn more: ')}${chalk.gray.bold(
-        FYI_LOCAL_DIR
-      )}`
-    );
-    console.log();
-  }
   const slug = await askForPackageSlugAsync(target, options.local, options);
   const targetDir = options.local
     ? await getCorrectLocalDirectory(target || slug)
@@ -329,6 +348,19 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!targetDir) {
     return;
   }
+
+  const relativePath = path.relative(CWD, targetDir);
+
+  if (options.local) {
+    console.log();
+    console.log(
+      `${chalk.gray('The local module will be created in ')}${chalk.gray.bold.italic(
+        relativePath
+      )} ${chalk.gray('directory. Learn more: ')}${chalk.gray.bold(FYI_LOCAL_DIR)}`
+    );
+    console.log();
+  }
+
   await fs.promises.mkdir(targetDir, { recursive: true });
   await confirmTargetDirAsync(targetDir, options);
 
@@ -413,13 +445,14 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   console.log();
   if (options.local) {
-    console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(`modules/${slug}`)}`);
+    console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(relativePath)}`);
+    const importPath = relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
     printFurtherLocalInstructions(
-      slug,
       data.project.moduleName,
       data.project.viewName,
       data.project.name,
-      options.barrel
+      options.barrel,
+      importPath
     );
   } else {
     console.log('✅ Successfully created Expo module');
@@ -1021,29 +1054,25 @@ function printFurtherInstructions(
 }
 
 function printFurtherLocalInstructions(
-  slug: string,
   moduleName: string,
   viewName: string,
   name: string,
-  barrel: boolean
+  barrel: boolean,
+  relativePath: string
 ) {
   console.log();
   console.log(`You can now import this module inside your application.`);
   console.log(`For example, you can add these lines to your App.tsx or App.js file:`);
   if (barrel) {
-    console.log(
-      chalk.gray.italic(`import ${moduleName}, { ${viewName} } from './modules/${slug}';`)
-    );
+    console.log(chalk.gray.italic(`import ${moduleName}, { ${viewName} } from '${relativePath}';`));
   } else {
     console.log(
-      chalk.gray.italic(`import ${moduleName} from './modules/${slug}/src/${moduleName}';`)
+      chalk.gray.italic(`import ${moduleName} from '${relativePath}/src/${moduleName}';`)
     );
     console.log(
-      chalk.gray.italic(
-        `import { default as ${viewName} } from './modules/${slug}/src/${viewName}';`
-      )
+      chalk.gray.italic(`import { default as ${viewName} } from '${relativePath}/src/${viewName}';`)
     );
-    console.log(chalk.gray.italic(`import type { } from './modules/${slug}/src/${name}.types';`));
+    console.log(chalk.gray.italic(`import type { } from '${relativePath}/src/${name}.types';`));
   }
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
