@@ -9,6 +9,14 @@
   "keywords": [],
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./rsc/runtime": "./rsc/runtime.js",
+    "./package.json": "./package.json"
+  },
   "files": [
     "build",
     "src",
