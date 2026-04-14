@@ -83,7 +83,7 @@ function getOverridesEntries(pkg: Record<string, any>): Record<string, string> {
 export class DependencyVersionOverrideCheck implements DoctorCheck {
   description = 'Check for overridden dependency versions that may cause issues';
 
-  sdkVersionRange = '>=53.0.0';
+  sdkVersionRange = '>=55.0.0';
 
   async runAsync({ pkg, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
