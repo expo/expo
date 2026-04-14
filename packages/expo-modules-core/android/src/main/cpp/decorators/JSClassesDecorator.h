@@ -48,11 +48,11 @@ public:
   ) override;
 
   /**
-   * Worklet runtime path - installs classes in classRegistry and attaches
-   * decorator ownership to each prototype via NativeState.
-   * Unlike decorate(), does not set classes as properties on a parent object.
+   * Worklet runtime path - installs classes in classRegistry, transfers
+   * decorator ownership to each prototype via NativeState, and drains this
+   * decorator. Must only be called once.
    */
-  void installForWorklet(jsi::Runtime &runtime);
+  void consumeForWorklet(jsi::Runtime &runtime);
 
 private:
   struct ClassEntry {

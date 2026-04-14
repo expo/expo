@@ -152,11 +152,11 @@ std::shared_ptr<jsi::Function> JSClassesDecorator::installClass(
   return klassSharedPtr;
 }
 
-// Used by the worklet runtime path. Installs all classes in the runtime 
+// Used by the worklet runtime path. Installs all classes in the runtime
 // and registers them in classRegistry.
 // Transfers decorator ownership to each prototype via NativeState so
 // MethodMetadata stays alive since host functions capture weak_ptrs to it.
-void JSClassesDecorator::installForWorklet(jsi::Runtime &runtime) {
+void JSClassesDecorator::consumeForWorklet(jsi::Runtime &runtime) {
   for (auto &[name, classInfo]: classes) {
     auto klass = installClass(runtime, name, classInfo);
     jsi::Object proto = klass->getProperty(runtime, "prototype").asObject(runtime);
@@ -166,6 +166,7 @@ void JSClassesDecorator::installForWorklet(jsi::Runtime &runtime) {
     state->constructor = std::move(classInfo.constructor);
     proto.setNativeState(runtime, std::move(state));
   }
+  classes.clear();
 }
 
 // Installs all classes and sets them as properties on the passed object.

@@ -87,6 +87,13 @@ public:
    */
   std::vector<std::unique_ptr<JSDecorator>> bridge();
 
+  /**
+   * Returns the class decorator, or nullptr if none was registered.
+   */
+  JSClassesDecorator* getClassDecorator() const {
+    return classDecorator.get();
+  }
+
 private:
   friend HybridBase;
 

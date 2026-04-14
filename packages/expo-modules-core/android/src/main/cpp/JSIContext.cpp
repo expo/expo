@@ -254,11 +254,9 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::ensureClassInstalled(js
     );
   auto decorator = buildClassDecorator(javaPart_, jni::make_local(nativeClass));
   if (decorator) {
-    auto decorators = decorator->cthis()->bridge();
-    for (auto &dec: decorators) {
-      if (auto *classDec = dynamic_cast<JSClassesDecorator *>(dec.get())) {
-        classDec->installForWorklet(rt);
-      }
+    auto *classDec = decorator->cthis()->getClassDecorator();
+    if (classDec) {
+      classDec->consumeForWorklet(rt);
     }
   }
 
@@ -276,6 +274,11 @@ jsi::Value JSIContext::resolveSharedObjectInstance(jsi::Runtime &rt, int objectI
   auto protoObj = proto.asObject(rt);
   auto instance = common::createObjectWithPrototype(rt, &protoObj);
 
+  // Flags = 0 → non-configurable, non-enumerable, non-writable. Freezes the id on the proxy.
+  // Unlike the main-runtime path (SharedObject.cpp) which defines __expo_shared_object_id__
+  // as a getter on the prototype reading NativeState, here it's an own property on the instance
+  // since worklet proxies don't carry NativeState. SharedObjectIdConverter uses getProperty
+  // which finds own props first, so both paths resolve correctly.
   jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
   descriptor.setProperty(rt, "value", objectId);
   common::defineProperty(rt, &instance, "__expo_shared_object_id__", std::move(descriptor));
