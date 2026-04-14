@@ -10,6 +10,7 @@ import {
   TypeInferenceOption,
 } from '../src/typeInformation';
 import {
+  getGeneratedModuleTypescriptInterface,
   getGeneratedModuleTypesFileContent,
   getGeneratedViewTypesFileContent,
 } from '../src/typescriptGeneration';
@@ -73,6 +74,17 @@ it('Same generated mock file JS', async () => {
     expect(
       generateTSMockForModule(fileInfo.moduleClasses[0] as ModuleClassDeclaration, fileInfo, false)
     ).toMatchSnapshot();
+  }
+});
+
+it('Same generated ts', async () => {
+  const fileInfo = defaultArgsFileInfo;
+  expect(fileInfo).toBeTruthy();
+  if (fileInfo) {
+    const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
+      await getGeneratedModuleTypescriptInterface(swiftFile, fileInfo);
+    expect(volitileGeneratedFileContent).toMatchSnapshot();
+    expect(moduleTypescriptInterfaceFileContent).toMatchSnapshot();
   }
 });
 

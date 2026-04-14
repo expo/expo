@@ -3,25 +3,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.basicTypesIdentifiers = basicTypesIdentifiers;
 exports.getPropsTypeDeclaration = getPropsTypeDeclaration;
-exports.wrapWithPromise = wrapWithPromise;
-exports.getArgumentDeclaration = getArgumentDeclaration;
+exports.getArgumentDeclarationAndName = getArgumentDeclarationAndName;
 exports.getTsFunction = getTsFunction;
 exports.mapTypeToTsTypeNode = mapTypeToTsTypeNode;
 exports.getClassConstructorDeclaration = getClassConstructorDeclaration;
 exports.getTsClassDeclaration = getTsClassDeclaration;
 exports.getIdentifierUnknownDeclaration = getIdentifierUnknownDeclaration;
-exports.getTypeAliasDeclaration = getTypeAliasDeclaration;
 exports.getRecordDeclaration = getRecordDeclaration;
 exports.getEnumDeclaration = getEnumDeclaration;
 exports.getViewPropsTypeName = getViewPropsTypeName;
-exports.getGeneratedJSXIntrinsicsViewDeclarationForModule = getGeneratedJSXIntrinsicsViewDeclarationForModule;
 exports.prettifyCode = prettifyCode;
-exports.basicTypesIdentifiers = basicTypesIdentifiers;
 exports.getGeneratedViewTypesFileContent = getGeneratedViewTypesFileContent;
 exports.getGeneratedJSXIntrinsicsViewDeclaration = getGeneratedJSXIntrinsicsViewDeclaration;
 exports.getGeneratedModuleTypesFileContent = getGeneratedModuleTypesFileContent;
-const path_1 = __importDefault(require("path"));
+exports.getGeneratedModuleTypescriptInterface = getGeneratedModuleTypescriptInterface;
 const prettier_1 = __importDefault(require("prettier"));
 const typescript_1 = __importDefault(require("typescript"));
 const typeInformation_1 = require("./typeInformation");
@@ -35,6 +32,22 @@ const declareModifier = typescript_1.default.factory.createModifier(typescript_1
 const asyncModifier = typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.AsyncKeyword);
 const readonlyModifier = typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ReadonlyKeyword);
 const constModifier = typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ConstKeyword);
+const defaultModifier = typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.DefaultKeyword);
+const unknownKeywordType = typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword);
+const anyKeywordType = typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.AnyKeyword);
+const voidKeywordType = typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.VoidKeyword);
+const newlineIdentifier = typescript_1.default.factory.createIdentifier('\n\n');
+let freeId = 0;
+function getNextFreeId() {
+    freeId += 1;
+    return freeId;
+}
+function basicTypesIdentifiers() {
+    return new Set(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set', 'Promise']);
+}
+function getPrefix() {
+    return [typescript_1.default.factory.createJSDocComment(prefix)];
+}
 function getModifiersArray(modifiers) {
     const modifiersArray = [];
     if (modifiers.export)
@@ -47,35 +60,66 @@ function getModifiersArray(modifiers) {
         modifiersArray.push(readonlyModifier);
     return modifiersArray;
 }
-function getPrefix() {
-    return [typescript_1.default.factory.createJSDocComment(prefix)];
+function joinTSNodesWithNewlines(nodes) {
+    const new_nodes = [];
+    for (const node of nodes) {
+        if (node.length > 0) {
+            new_nodes.push(...node);
+            new_nodes.push(newlineIdentifier);
+        }
+    }
+    return new_nodes;
 }
-let freeId = 0;
-function getNextFreeId() {
-    freeId += 1;
-    return freeId;
+//
+// ts.factory wrapper functions
+//
+function getImport({ defaultImportName, namedImportsNames, importFromName, }) {
+    const defaultImportIdentifier = defaultImportName
+        ? typescript_1.default.factory.createIdentifier(defaultImportName)
+        : undefined;
+    const namedImportsIdentifiers = namedImportsNames && namedImportsNames.length > 0
+        ? typescript_1.default.factory.createNamedImports(namedImportsNames.map((importedName) => typescript_1.default.factory.createImportSpecifier(false, undefined, typescript_1.default.factory.createIdentifier(importedName))))
+        : undefined;
+    return [
+        typescript_1.default.factory.createImportDeclaration(undefined, typescript_1.default.factory.createImportClause(undefined, defaultImportIdentifier, namedImportsIdentifiers), typescript_1.default.factory.createStringLiteral(importFromName)),
+    ];
 }
-function getUnresolvedTypesNamespaceNameForFile(filePath) {
-    const fileNameWithExtension = path_1.default.basename(filePath);
-    return fileNameWithExtension.slice(0, fileNameWithExtension.lastIndexOf('.')) + 'Types';
-}
-const newlineIdentifier = typescript_1.default.factory.createIdentifier('\n\n');
 function getOneNamedImport(importedName, importFromName) {
-    return typescript_1.default.factory.createImportDeclaration(undefined, typescript_1.default.factory.createImportClause(undefined, undefined, typescript_1.default.factory.createNamedImports([
-        typescript_1.default.factory.createImportSpecifier(false, undefined, typescript_1.default.factory.createIdentifier(importedName)),
-    ])), typescript_1.default.factory.createStringLiteral(importFromName), undefined);
+    return getImport({
+        importFromName,
+        namedImportsNames: [importedName],
+    });
+}
+function getParameterDeclaration({ modifiers, name, type, questionToken, dotDotDotToken, initializer, }) {
+    return typescript_1.default.factory.createParameterDeclaration(modifiers, dotDotDotToken, name, questionToken, type, initializer);
+}
+function getPropertyDeclaration({ modifiers, name, typeNode, initializer, optional, }) {
+    return typescript_1.default.factory.createPropertyDeclaration(modifiers, name, optional ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.QuestionToken) : undefined, typeNode, initializer);
+}
+function getPropertySignature({ name, typeNode, optional, modifiers, }) {
+    return typescript_1.default.factory.createPropertySignature(modifiers, name, optional ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.QuestionToken) : undefined, typeNode);
+}
+function getCallExpression({ expression, args, typeArgs, }) {
+    return typescript_1.default.factory.createCallExpression(typeof expression === 'string' ? typescript_1.default.factory.createIdentifier(expression) : expression, typeArgs, args);
 }
 function getPropEventElementDeclaration(eventDeclaration) {
-    return typescript_1.default.factory.createPropertySignature(undefined, eventDeclaration, undefined, typescript_1.default.factory.createFunctionTypeNode(undefined, [
-        typescript_1.default.factory.createParameterDeclaration(undefined, undefined, 'event', undefined, typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.AnyKeyword)),
-    ], typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.VoidKeyword)));
+    const name = eventDeclaration;
+    const typeNode = typescript_1.default.factory.createFunctionTypeNode(undefined, [getParameterDeclaration({ name: 'event', type: anyKeywordType })], voidKeywordType);
+    return getPropertySignature({ name, typeNode });
 }
 function getPropTypeElementDeclaration(propDeclaration) {
     const propTypeArgument = propDeclaration.arguments[1]?.type;
     if (!propDeclaration || !propDeclaration.arguments || !propTypeArgument) {
         return undefined;
     }
-    return typescript_1.default.factory.createPropertySignature(undefined, propDeclaration.name, undefined, mapTypeToTsTypeNode(propTypeArgument));
+    const name = propDeclaration.name;
+    const typeNode = mapTypeToTsTypeNode(propTypeArgument);
+    return getPropertySignature({ name, typeNode });
+}
+function getMissingTypeIdentifiers(fileTypeInformation) {
+    return fileTypeInformation.usedTypeIdentifiers
+        .difference(fileTypeInformation.declaredTypeIdentifiers)
+        .difference(basicTypesIdentifiers());
 }
 function getPropsType(propsDeclaration, events) {
     return typescript_1.default.factory.createTypeLiteralNode([
@@ -91,74 +135,97 @@ function getPropsTypeDeclaration(propsTypeName, propsDeclaration, events, export
 function wrapWithPromise(typeNode) {
     return typescript_1.default.factory.createTypeReferenceNode('Promise', [typeNode]);
 }
+function getConstantExportDeclaration(name, type, value) {
+    const typeNode = mapTypeToTsTypeNode(type);
+    const modifiers = [exportModifier, constModifier];
+    const initializer = typescript_1.default.factory.createIdentifier(value);
+    return getPropertyDeclaration({ modifiers, name, typeNode, initializer });
+}
 function getClassPropertyDeclaration(declaration) {
-    return typescript_1.default.factory.createPropertyDeclaration([readonlyModifier], declaration.name, undefined, mapTypeToTsTypeNode(declaration.type), undefined);
+    return getPropertyDeclaration({ modifiers: [readonlyModifier], name: declaration.name, typeNode: mapTypeToTsTypeNode(declaration.type) });
 }
 function getClassDeclarationInModule(classDeclaration) {
-    return typescript_1.default.factory.createPropertyDeclaration(undefined, classDeclaration.name, undefined, 
-    // TODO that's a hack, but I couldn't find a proper way to do this
-    // The problem is that declare class semantics seem somewhat different than class semantics.
-    typescript_1.default.factory.createTypeReferenceNode('typeof ' + classDeclaration.name), undefined);
+    return getPropertyDeclaration({
+        // TODO that's a hack, but I couldn't find a proper way to do this
+        // The problem is that declare class semantics seem somewhat different than class semantics.
+        name: classDeclaration.name,
+        typeNode: typescript_1.default.factory.createTypeReferenceNode('typeof ' + classDeclaration.name),
+    });
 }
 function getExportedModuleDeclaration(moduleClassDeclaration) {
     return [
-        typescript_1.default.factory.createClassDeclaration([exportModifier, declareModifier], moduleClassDeclaration.name, undefined, [
+        typescript_1.default.factory.createClassDeclaration([exportModifier, declareModifier], `${moduleClassDeclaration.name}NativeModuleType`, undefined, [
             typescript_1.default.factory.createHeritageClause(typescript_1.default.SyntaxKind.ExtendsKeyword, [
                 typescript_1.default.factory.createExpressionWithTypeArguments(typescript_1.default.factory.createIdentifier('NativeModule'), undefined),
             ]),
         ], [].concat(moduleClassDeclaration.constants.map(getClassPropertyDeclaration), moduleClassDeclaration.properties.map(getClassPropertyDeclaration), moduleClassDeclaration.functions.map(getSyncMethodDeclaration), moduleClassDeclaration.asyncFunctions.map(getAsyncMethodDeclaration), moduleClassDeclaration.classes.map(getClassDeclarationInModule))),
     ];
 }
+function getArgumentDeclarationAndName(arg) {
+    const argName = arg.name ?? '_' + getNextFreeId();
+    const argDeclaration = getParameterDeclaration({
+        name: argName,
+        type: mapTypeToTsTypeNode(arg.type),
+    });
+    return { argDeclaration, argName };
+}
 function getArgumentDeclaration(arg) {
-    // const optional = arg.type.kind === TypeKind.OPTIONAL;
-    // const argType = optional ? (arg.type.type as Type) : arg.type;
-    return typescript_1.default.factory.createParameterDeclaration(undefined, undefined, arg.name ?? '_' + getNextFreeId(), undefined, mapTypeToTsTypeNode(arg.type), 
-    // optional ? ts.factory.createToken(ts.SyntaxKind.QuestionToken) : undefined,
-    // mapTypeToTsTypeNode(argType),
-    undefined);
+    return getArgumentDeclarationAndName(arg).argDeclaration;
 }
 function getAsyncMethodDeclaration(functionDeclaration) {
-    return getTsFunction(functionDeclaration, true, true, false, true);
+    return getTsFunction({
+        functionDeclaration,
+        async: true,
+        method: true,
+        exported: false,
+        declaration: true,
+    });
 }
 function getSyncMethodDeclaration(functionDeclaration) {
-    return getTsFunction(functionDeclaration, false, true, false, true);
+    return getTsFunction({
+        functionDeclaration,
+        async: false,
+        method: true,
+        exported: false,
+        declaration: true,
+    });
 }
-function getTsFunction(functionDeclaration, async, method, exported, declaration, returnStatement) {
+function getTsFunction({ functionDeclaration, async, method, exported, declaration, returnStatement, overrideArgumentDeclarations, includeReturnType, }) {
     const functionModifiers = getModifiersArray({ export: exported, async: async && !declaration });
     const customReturn = !!returnStatement;
     const bareReturnTypeNode = mapTypeToTsTypeNode(functionDeclaration.returnType);
-    const returnTypeNode = async ? wrapWithPromise(bareReturnTypeNode) : bareReturnTypeNode;
+    const includeReturnTypeBoolean = includeReturnType ?? true;
+    let returnTypeNode = async
+        ? wrapWithPromise(bareReturnTypeNode)
+        : bareReturnTypeNode;
+    returnTypeNode = includeReturnTypeBoolean ? returnTypeNode : undefined;
+    const argumentDeclarations = overrideArgumentDeclarations ?? functionDeclaration.arguments.map(getArgumentDeclaration);
     if (method) {
-        return typescript_1.default.factory.createMethodDeclaration(functionModifiers, undefined, functionDeclaration.name, undefined, undefined, functionDeclaration.arguments.map(getArgumentDeclaration), returnTypeNode, declaration ? undefined : typescript_1.default.factory.createBlock(customReturn ? returnStatement : []));
+        return typescript_1.default.factory.createMethodDeclaration(functionModifiers, undefined, functionDeclaration.name, undefined, undefined, argumentDeclarations, includeReturnTypeBoolean ? returnTypeNode : undefined, declaration ? undefined : typescript_1.default.factory.createBlock(customReturn ? returnStatement : []));
     }
-    return typescript_1.default.factory.createFunctionDeclaration(functionModifiers, undefined, functionDeclaration.name, undefined, functionDeclaration.arguments.map(getArgumentDeclaration), returnTypeNode, declaration ? undefined : typescript_1.default.factory.createBlock(customReturn ? returnStatement : []));
+    return typescript_1.default.factory.createFunctionDeclaration(functionModifiers, undefined, functionDeclaration.name, undefined, argumentDeclarations, returnTypeNode, declaration ? undefined : typescript_1.default.factory.createBlock(customReturn ? returnStatement : []));
 }
 function mapBasicTypeToTsNode(basicType) {
     if (basicType === typeInformation_1.BasicType.UNRESOLVED) {
-        return typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword), typescript_1.default.SyntaxKind.MultiLineCommentTrivia, "The type couldn't be resolved automatically.");
+        return typescript_1.default.addSyntheticTrailingComment(unknownKeywordType, typescript_1.default.SyntaxKind.MultiLineCommentTrivia, "The type couldn't be resolved automatically.");
     }
-    return typescript_1.default.factory.createKeywordTypeNode((() => {
-        switch (basicType) {
-            case typeInformation_1.BasicType.ANY:
-                return typescript_1.default.SyntaxKind.AnyKeyword;
-            case typeInformation_1.BasicType.BOOLEAN:
-                return typescript_1.default.SyntaxKind.BooleanKeyword;
-            case typeInformation_1.BasicType.NUMBER:
-                return typescript_1.default.SyntaxKind.NumberKeyword;
-            case typeInformation_1.BasicType.STRING:
-                return typescript_1.default.SyntaxKind.StringKeyword;
-            case typeInformation_1.BasicType.VOID:
-                return typescript_1.default.SyntaxKind.VoidKeyword;
-            case typeInformation_1.BasicType.UNDEFINED:
-                return typescript_1.default.SyntaxKind.UndefinedKeyword;
-        }
-    })());
+    const BASIC_TYPE_MAP = {
+        [typeInformation_1.BasicType.ANY]: typescript_1.default.SyntaxKind.AnyKeyword,
+        [typeInformation_1.BasicType.BOOLEAN]: typescript_1.default.SyntaxKind.BooleanKeyword,
+        [typeInformation_1.BasicType.NUMBER]: typescript_1.default.SyntaxKind.NumberKeyword,
+        [typeInformation_1.BasicType.STRING]: typescript_1.default.SyntaxKind.StringKeyword,
+        [typeInformation_1.BasicType.VOID]: typescript_1.default.SyntaxKind.VoidKeyword,
+        [typeInformation_1.BasicType.UNDEFINED]: typescript_1.default.SyntaxKind.UndefinedKeyword,
+        [typeInformation_1.BasicType.UNRESOLVED]: typescript_1.default.SyntaxKind.UndefinedKeyword, // This is handled earlier
+    };
+    return typescript_1.default.factory.createKeywordTypeNode(BASIC_TYPE_MAP[basicType]);
 }
-function createDictionaryTypeNode(type) {
+function createDictionaryTypeNode(dictionaryType) {
+    const name = 'key';
+    const type = mapTypeToTsTypeNode(dictionaryType.key);
+    const valueType = mapTypeToTsTypeNode(dictionaryType.value);
     return typescript_1.default.factory.createTypeLiteralNode([
-        typescript_1.default.factory.createIndexSignature(undefined, [
-            typescript_1.default.factory.createParameterDeclaration(undefined, undefined, 'key', undefined, mapTypeToTsTypeNode(type.key), undefined),
-        ], mapTypeToTsTypeNode(type.value)),
+        typescript_1.default.factory.createIndexSignature(undefined, [getParameterDeclaration({ name, type })], valueType),
     ]);
 }
 function mapTypeToTsTypeNode(type) {
@@ -196,25 +263,32 @@ function getTsClassDeclaration(classDeclaration, fileTypeInformation, exported, 
     const constructorDeclaration = classDeclaration.constructor
         ? getClassConstructorDeclaration(classDeclaration.constructor, declaration)
         : undefined;
-    return typescript_1.default.factory.createClassDeclaration(getModifiersArray({ export: exported, declare: declaration }), typescript_1.default.factory.createIdentifier(classDeclaration.name), undefined, [], 
-    // [
-    //   ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
-    //     ts.factory.createExpressionWithTypeArguments(
-    //       ts.factory.createIdentifier('SharedObject'),
-    //       undefined
-    //     ),
-    //   ]),
-    // ],
-    []
-        .concat(classDeclaration.methods.map((method) => getTsFunction(method, false, true, false, declaration, !declaration && getFunctionReturnBlock
-        ? getFunctionReturnBlock(method, fileTypeInformation)
-        : null)), classDeclaration.asyncMethods.map((method) => getTsFunction(method, true, true, false, declaration, !declaration && getFunctionReturnBlock
-        ? getFunctionReturnBlock(method, fileTypeInformation)
-        : null)), declaration ? classDeclaration.properties.map(getClassPropertyDeclaration) : [], constructorDeclaration)
+    return typescript_1.default.factory.createClassDeclaration(getModifiersArray({ export: exported, declare: declaration }), typescript_1.default.factory.createIdentifier(classDeclaration.name), undefined, [], []
+        .concat(classDeclaration.methods.map((method) => getTsFunction({
+        functionDeclaration: method,
+        async: false,
+        method: true,
+        exported: false,
+        declaration,
+        returnStatement: !declaration && getFunctionReturnBlock
+            ? getFunctionReturnBlock(method, fileTypeInformation)
+            : null,
+    })), classDeclaration.asyncMethods.map((method) => getTsFunction({
+        functionDeclaration: method,
+        async: true,
+        method: true,
+        exported: false,
+        declaration,
+        returnStatement: !declaration && getFunctionReturnBlock
+            ? getFunctionReturnBlock(method, fileTypeInformation)
+            : null,
+    })), declaration ? classDeclaration.properties.map(getClassPropertyDeclaration) : [], constructorDeclaration)
         .filter((v) => !!v));
 }
 function getModuleDefaultValueExport(defaultValueTypename) {
-    return [].concat(typescript_1.default.factory.createParameterDeclaration([exportModifier, constModifier], undefined, '_default', undefined, typescript_1.default.factory.createTypeReferenceNode(defaultValueTypename), undefined), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier('_default')));
+    const name = '_default';
+    const type = typescript_1.default.factory.createTypeReferenceNode(defaultValueTypename);
+    return [].concat(getParameterDeclaration({ modifiers: [constModifier], name, type }), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier('_default')));
 }
 function getNTypeParameterDeclaration(n) {
     const params = [];
@@ -223,47 +297,45 @@ function getNTypeParameterDeclaration(n) {
     }
     return params;
 }
-function getNTypeNodes(n) {
-    const params = [];
-    for (let i = 0; i < n; i += 1) {
-        params.push(typescript_1.default.factory.createTypeReferenceNode('T' + i));
-    }
-    return params;
-}
 function getIdentifierUnknownDeclaration(identifier, exported, inferredTypeParametersCount) {
-    return getTypeAliasDeclaration(identifier, typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword), exported, inferredTypeParametersCount.get(identifier));
-}
-function getTypeAliasDeclaration(alias, typeIdentifier, exported, paramCount) {
-    return typescript_1.default.factory.createTypeAliasDeclaration(exported ? [exportModifier] : undefined, alias, paramCount === undefined ? undefined : getNTypeParameterDeclaration(paramCount), typeIdentifier);
+    const paramCount = inferredTypeParametersCount.get(identifier);
+    return typescript_1.default.factory.createTypeAliasDeclaration(exported ? [exportModifier] : undefined, identifier, paramCount !== undefined ? getNTypeParameterDeclaration(paramCount) : undefined, unknownKeywordType);
 }
 function getRecordDeclaration(recordType, exported) {
     return typescript_1.default.factory.createTypeAliasDeclaration(exported ? [exportModifier] : [], recordType.name, undefined, typescript_1.default.factory.createTypeLiteralNode(recordType.fields.map((field) => {
         const optional = field.type.kind === typeInformation_1.TypeKind.OPTIONAL;
-        const argType = optional ? field.type.type : field.type;
-        return typescript_1.default.factory.createPropertySignature(undefined, field.name ?? '_' + getNextFreeId(), optional ? typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.QuestionToken) : undefined, mapTypeToTsTypeNode(argType));
+        const typeNode = mapTypeToTsTypeNode(optional ? field.type.type : field.type);
+        const name = field.name ?? '_' + getNextFreeId();
+        return getPropertySignature({ name, optional, typeNode });
     })));
 }
 function getEnumDeclaration(enumType, exported, declared) {
     return typescript_1.default.factory.createEnumDeclaration(getModifiersArray({ export: exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
 }
-function getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers, unresolvedTypesNamespace) {
-    return [].concat([
-        typescript_1.default.factory.createModuleDeclaration([exportModifier, declareModifier], typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), typescript_1.default.factory.createModuleBlock([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount))), typescript_1.default.NodeFlags.Namespace),
-    ], [...undeclaredTypeIdentifiers].map((undeclaredTypeIdentifier) => {
-        const paramCount = fileTypeInformation.inferredTypeParametersCount.get(undeclaredTypeIdentifier);
-        return getTypeAliasDeclaration(undeclaredTypeIdentifier, typescript_1.default.factory.createTypeReferenceNode(typescript_1.default.factory.createQualifiedName(typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), undeclaredTypeIdentifier), paramCount === undefined ? undefined : getNTypeNodes(paramCount)), true, paramCount);
-    }));
+function getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers) {
+    return [].concat([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount)));
 }
-function getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, recordTypes, enumTypes, undeclaredTypeIdentifiers, unresolvedTypesNamespace) {
+function getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, recordTypes, enumTypes, undeclaredTypeIdentifiers) {
     const recordDeclarationMap = (recordType) => getRecordDeclaration(recordType, true);
     const enumDeclarationMap = (enumType) => getEnumDeclaration(enumType, true, false);
     const classDeclarationMap = (classDeclaration) => getTsClassDeclaration(classDeclaration, fileTypeInformation, true, true, null);
-    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('NativeModule', 'expo'), newlineIdentifier, getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers, unresolvedTypesNamespace), newlineIdentifier, recordTypes.flatMap(recordDeclarationMap), newlineIdentifier, enumTypes.flatMap(enumDeclarationMap), newlineIdentifier, moduleClassDeclaration.classes.map(classDeclarationMap), newlineIdentifier, getExportedModuleDeclaration(moduleClassDeclaration), newlineIdentifier, getModuleDefaultValueExport(moduleClassDeclaration.name));
+    return joinTSNodesWithNewlines([
+        getPrefix(),
+        getOneNamedImport('NativeModule', 'expo'),
+        getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers),
+        recordTypes.flatMap(recordDeclarationMap),
+        enumTypes.flatMap(enumDeclarationMap),
+        moduleClassDeclaration.classes.map(classDeclarationMap),
+        getExportedModuleDeclaration(moduleClassDeclaration),
+        getModuleDefaultValueExport(moduleClassDeclaration.name),
+    ]);
 }
 function getViewDefaultValueExport(view) {
-    return [].concat(typescript_1.default.factory.createParameterDeclaration([exportModifier, constModifier], undefined, '_default', undefined, typescript_1.default.factory.createTypeReferenceNode('React.JSXElementConstructor', [
+    const name = '_default';
+    const type = typescript_1.default.factory.createTypeReferenceNode('React.JSXElementConstructor', [
         typescript_1.default.factory.createTypeReferenceNode(getViewPropsTypeName(view)),
-    ]), undefined), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier('_default')));
+    ]);
+    return [].concat(getParameterDeclaration({ modifiers: [exportModifier, constModifier], name, type }), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier(name)));
 }
 function getViewPropsTypeName(view) {
     return view.name + (view.name.endsWith('View') ? 'Props' : 'ViewProps');
@@ -273,12 +345,17 @@ function getViewTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInfor
         return [];
     }
     const mainView = moduleClassDeclaration.views[0];
-    const undeclaredTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers
-        .difference(fileTypeInformation.declaredTypeIdentifiers)
-        .difference(basicTypesIdentifiers());
-    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('SharedObject', 'expo'), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, mainView
-        ? getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false)
-        : [], newlineIdentifier, mainView ? getViewDefaultValueExport(mainView) : []);
+    const undeclaredTypeIdentifiers = getMissingTypeIdentifiers(fileTypeInformation);
+    return joinTSNodesWithNewlines([
+        getPrefix(),
+        getOneNamedImport('SharedObject', 'expo'),
+        getOneNamedImport('ViewProps', 'react-native'),
+        [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount)),
+        mainView
+            ? getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false)
+            : [],
+        mainView ? getViewDefaultValueExport(mainView) : [],
+    ]);
 }
 function getJsxIntrinsicElementsInterfaceDeclaration(intrinsicElements) {
     const globalIdentifier = typescript_1.default.factory.createIdentifier('global');
@@ -294,17 +371,146 @@ function getJsxIntrinsicElementsInterfaceDeclaration(intrinsicElements) {
 }
 function getGeneratedJSXIntrinsicsViewDeclarationForModule(moduleClassDeclaration, fileTypeInformation) {
     const mainView = moduleClassDeclaration.views[0];
-    const undeclaredTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers
-        .difference(fileTypeInformation.declaredTypeIdentifiers)
-        .difference(basicTypesIdentifiers());
+    const undeclaredTypeIdentifiers = getMissingTypeIdentifiers(fileTypeInformation);
     const recordDeclarationMap = (recordType) => getRecordDeclaration(recordType, false);
     const enumDeclarationMap = (enumType) => getEnumDeclaration(enumType, false, true);
     const classDeclarationMap = (classDeclaration) => getTsClassDeclaration(classDeclaration, fileTypeInformation, false, true, null);
-    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, false, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, fileTypeInformation.records.flatMap(recordDeclarationMap), newlineIdentifier, fileTypeInformation.enums.flatMap(enumDeclarationMap), newlineIdentifier, moduleClassDeclaration.classes.map(classDeclarationMap), newlineIdentifier, mainView
-        ? getJsxIntrinsicElementsInterfaceDeclaration([
-            typescript_1.default.factory.createPropertySignature(undefined, typescript_1.default.factory.createIdentifier(moduleClassDeclaration.name), undefined, getPropsType(mainView.props, mainView.events)),
-        ])
-        : []);
+    const name = moduleClassDeclaration.name;
+    const propsTypeNode = mainView ? getPropsType(mainView.props, mainView.events) : undefined;
+    return joinTSNodesWithNewlines([
+        getPrefix(),
+        getOneNamedImport('ViewProps', 'react-native'),
+        [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, false, fileTypeInformation.inferredTypeParametersCount)),
+        fileTypeInformation.records.flatMap(recordDeclarationMap),
+        fileTypeInformation.enums.flatMap(enumDeclarationMap),
+        moduleClassDeclaration.classes.map(classDeclarationMap),
+        mainView
+            ? getJsxIntrinsicElementsInterfaceDeclaration([
+                getPropertySignature({ name, typeNode: propsTypeNode }),
+            ])
+            : [],
+    ]);
+}
+function getGeneratedFileDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, recordTypes, enumTypes, undeclaredTypeIdentifiers) {
+    const mainView = moduleClassDeclaration.views.length > 0 ? moduleClassDeclaration.views[0] : null;
+    const recordDeclarationMap = (recordType) => getRecordDeclaration(recordType, true);
+    const enumDeclarationMap = (enumType) => getEnumDeclaration(enumType, true, false);
+    const classDeclarationMap = (classDeclaration) => getTsClassDeclaration(classDeclaration, fileTypeInformation, true, true, null);
+    return joinTSNodesWithNewlines([
+        getPrefix(),
+        getOneNamedImport('NativeModule', 'expo'),
+        mainView ? getOneNamedImport('SharedObject', 'expo') : [],
+        mainView ? getOneNamedImport('ViewProps', 'react-native') : [],
+        getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers),
+        recordTypes.flatMap(recordDeclarationMap),
+        enumTypes.flatMap(enumDeclarationMap),
+        moduleClassDeclaration.classes.map(classDeclarationMap),
+        mainView
+            ? getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, true)
+            : [],
+        getExportedModuleDeclaration(moduleClassDeclaration),
+    ]);
+}
+function getStableFileDeclarationsForModule(moduleClassDeclaration, fileTypeInformation) {
+    const usedTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers;
+    const mainView = moduleClassDeclaration.views.length > 0 ? moduleClassDeclaration.views[0] : null;
+    const generatedModuleAlias = moduleClassDeclaration.name;
+    const generatedModuleTypeAlias = `${moduleClassDeclaration.name}NativeModuleType`;
+    const generatedFilePath = `./${moduleClassDeclaration.name}.generated`;
+    const exportedFunctionReturnStatement = (functionDeclaration, overrideArguments) => {
+        const expression = `${generatedModuleAlias}.${functionDeclaration.name}`;
+        const args = overrideArguments ??
+            functionDeclaration.arguments.map((arg) => typescript_1.default.factory.createIdentifier(arg.name ?? 'unnamedArgument'));
+        return typescript_1.default.factory.createReturnStatement(getCallExpression({
+            expression,
+            args,
+        }));
+    };
+    const mapFunctionDeclarationTemplate = (isAsync) => (functionDeclaration) => {
+        const argumentDeclarations = [];
+        const argumentNames = [];
+        for (const arg of functionDeclaration.arguments) {
+            const { argDeclaration, argName } = getArgumentDeclarationAndName(arg);
+            argumentDeclarations.push(argDeclaration);
+            argumentNames.push(argName);
+        }
+        return [
+            getTsFunction({
+                functionDeclaration,
+                async: isAsync,
+                method: false,
+                exported: true,
+                declaration: false,
+                returnStatement: [
+                    exportedFunctionReturnStatement(functionDeclaration, argumentNames.map(typescript_1.default.factory.createIdentifier)),
+                ],
+                overrideArgumentDeclarations: argumentDeclarations,
+                includeReturnType: false,
+            }),
+        ];
+    };
+    const mapSyncFunctionDeclaration = mapFunctionDeclarationTemplate(false);
+    const mapAsyncFunctionDeclaration = mapFunctionDeclarationTemplate(true);
+    const getDefaultReactComponentDeclaration = (componentName, propsTypeAlias) => {
+        const propsTypeNode = typescript_1.default.factory.createTypeReferenceNode(propsTypeAlias);
+        return [
+            typescript_1.default.factory.createFunctionExpression([exportModifier, defaultModifier], undefined, componentName + 'Component', undefined, [getParameterDeclaration({ name: 'props', type: propsTypeNode })], undefined, typescript_1.default.factory.createBlock([
+                typescript_1.default.factory.createReturnStatement(typescript_1.default.factory.createJsxSelfClosingElement(typescript_1.default.factory.createIdentifier(componentName), undefined, typescript_1.default.factory.createJsxAttributes([
+                    typescript_1.default.factory.createJsxSpreadAttribute(typescript_1.default.factory.createIdentifier('props')),
+                ]))),
+            ])),
+        ];
+    };
+    return joinTSNodesWithNewlines([
+        mainView ? getImport({ importFromName: 'react', defaultImportName: 'React' }) : [],
+        getImport({
+            namedImportsNames: [...usedTypeIdentifiers.difference(basicTypesIdentifiers())].concat([generatedModuleTypeAlias, mainView ? getViewPropsTypeName(mainView) : null].filter((v) => v !== null)),
+            importFromName: generatedFilePath,
+        }),
+        getImport({
+            namedImportsNames: ['requireNativeModule', 'requireNativeView'],
+            importFromName: 'expo',
+        }),
+        [
+            getParameterDeclaration({
+                modifiers: [constModifier],
+                name: moduleClassDeclaration.name,
+                type: typescript_1.default.factory.createTypeReferenceNode(generatedModuleTypeAlias),
+                initializer: getCallExpression({
+                    expression: 'requireNativeModule',
+                    typeArgs: [typescript_1.default.factory.createTypeReferenceNode(generatedModuleTypeAlias)],
+                    args: [typescript_1.default.factory.createStringLiteral(moduleClassDeclaration.name)],
+                }),
+            }),
+        ],
+        mainView
+            ? [
+                getParameterDeclaration({
+                    modifiers: [constModifier],
+                    name: mainView.name,
+                    initializer: getCallExpression({
+                        expression: 'requireNativeView',
+                        args: [typescript_1.default.factory.createStringLiteral(moduleClassDeclaration.name)]
+                    }),
+                }),
+            ]
+            : [],
+        moduleClassDeclaration.constants.flatMap((constant) => [
+            getConstantExportDeclaration(constant.name, constant.type, `${generatedModuleAlias}.${constant.name}`),
+        ]),
+        moduleClassDeclaration.functions.flatMap(mapSyncFunctionDeclaration),
+        moduleClassDeclaration.asyncFunctions.flatMap(mapAsyncFunctionDeclaration),
+        mainView
+            ? getDefaultReactComponentDeclaration(mainView.name, getViewPropsTypeName(mainView))
+            : [],
+    ]);
+}
+async function prettyPrintTSNodesToString(file, elements) {
+    const printer = typescript_1.default.createPrinter({ newLine: typescript_1.default.NewLineKind.LineFeed });
+    const resultFile = typescript_1.default.createSourceFile(file, '', typescript_1.default.ScriptTarget.Latest, false, typescript_1.default.ScriptKind.TSX);
+    const viewTypes = typescript_1.default.factory.createNodeArray(elements);
+    const printedTs = printer.printList(typescript_1.default.ListFormat.MultiLine + typescript_1.default.ListFormat.PreserveLines, viewTypes, resultFile);
+    return await prettifyCode(printedTs, 'typescript');
 }
 async function prettifyCode(text, parser = 'babel') {
     return await prettier_1.default.format(text, {
@@ -314,16 +520,6 @@ async function prettifyCode(text, parser = 'babel') {
         trailingComma: 'none',
         singleQuote: true,
     });
-}
-async function prettyPrintTSNodesToString(file, elements) {
-    const printer = typescript_1.default.createPrinter({ newLine: typescript_1.default.NewLineKind.LineFeed });
-    const resultFile = typescript_1.default.createSourceFile(file, '', typescript_1.default.ScriptTarget.Latest, false, typescript_1.default.ScriptKind.TSX);
-    const viewTypes = typescript_1.default.factory.createNodeArray(elements);
-    const printedTs = printer.printList(typescript_1.default.ListFormat.MultiLine + typescript_1.default.ListFormat.PreserveLines, viewTypes, resultFile);
-    return await prettifyCode(printedTs, 'typescript');
-}
-function basicTypesIdentifiers() {
-    return new Set(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set', 'Promise']);
 }
 async function getGeneratedViewTypesFileContent(file, fileTypeInformation) {
     const outputModuleDefinition = fileTypeInformation.moduleClasses[0];
@@ -353,8 +549,18 @@ async function getGeneratedModuleTypesFileContent(file, fileTypeInformation) {
         events: [],
         definitionOffset: 0,
     };
-    return prettyPrintTSNodesToString(file, getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, fileTypeInformation.records, fileTypeInformation.enums, fileTypeInformation.usedTypeIdentifiers
-        .difference(fileTypeInformation.declaredTypeIdentifiers)
-        .difference(basicTypesIdentifiers()), getUnresolvedTypesNamespaceNameForFile(file)));
+    return prettyPrintTSNodesToString(file, getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, fileTypeInformation.records, fileTypeInformation.enums, getMissingTypeIdentifiers(fileTypeInformation)));
+}
+async function getGeneratedModuleTypescriptInterface(file, fileTypeInformation) {
+    const firstModule = fileTypeInformation.moduleClasses[0];
+    if (!firstModule) {
+        return { volitileGeneratedFileContent: '', moduleTypescriptInterfaceFileContent: '' };
+    }
+    const volitileGeneratedFileContent = await prettyPrintTSNodesToString(file, getGeneratedFileDeclarationsForModule(firstModule, fileTypeInformation, fileTypeInformation.records, fileTypeInformation.enums, getMissingTypeIdentifiers(fileTypeInformation)));
+    const moduleTypescriptInterfaceFileContent = await prettyPrintTSNodesToString(file, getStableFileDeclarationsForModule(firstModule, fileTypeInformation));
+    return {
+        volitileGeneratedFileContent,
+        moduleTypescriptInterfaceFileContent,
+    };
 }
 //# sourceMappingURL=typescriptGeneration.js.map
