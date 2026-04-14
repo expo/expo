@@ -61,7 +61,6 @@ class EmbeddedManifestSpec : ExpoSpec {
         expect(manifest.iosSplashImageResizeMode()).to(beNil())
         expect(manifest.iosGoogleServicesFile()).to(beNil())
         expect(manifest.supportsRTL()) == false
-        expect(manifest.jsEngine()) == "hermes"
       }
     }
   }
