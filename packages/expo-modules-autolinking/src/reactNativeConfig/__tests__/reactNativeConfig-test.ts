@@ -422,7 +422,7 @@ describe(resolveReactNativeModule, () => {
     );
   });
 
-  it('should call platform resolver with merged config and project config will override library config', async () => {
+  it('should preserve library config when project config sets platform to null (deep merge)', async () => {
     const projectConfig: RNConfigReactNativeProjectConfig = {
       dependencies: {
         'react-native-test': {
@@ -458,9 +458,64 @@ describe(resolveReactNativeModule, () => {
       new Set()
     );
 
+    // Deep merge preserves the target object when the source is null,
+    // so the library's ios config is kept.
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
       expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
-      null,
+      {
+        configurations: ['Debug'],
+        scriptPhases: [{ name: 'test', path: './test.js' }],
+      },
+      undefined
+    );
+  });
+  
+  it('should deep merge project config into library config preserving nested sibling keys', async () => {
+    const projectConfig: RNConfigReactNativeProjectConfig = {
+      dependencies: {
+        'react-native-test': {
+          platforms: {
+            ios: {
+              sourceDir: './mock-ios',
+              scriptPhases: [{ name: 'test', path: './override.js' }],
+            },
+          },
+        },
+      },
+    };
+    const libraryConfig: RNConfigReactNativeLibraryConfig = {
+      dependency: {
+        platforms: {
+          ios: {
+            configurations: ['Debug'],
+            scriptPhases: [{ name: 'test', path: './test.js' }],
+          },
+        },
+      },
+    };
+    mockLoadReactNativeConfigAsync.mockResolvedValueOnce(libraryConfig);
+
+    await resolveReactNativeModule(
+      {
+        name: 'react-native-test',
+        version: '',
+        path: '/app/node_modules/react-native-test',
+        originPath: '/app/node_modules/react-native-test',
+        duplicates: null,
+        depth: 0,
+      },
+      projectConfig,
+      'ios',
+      new Set()
+    );
+
+    expect(mockPlatformResolverIos).toHaveBeenCalledWith(
+      expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
+      {
+        sourceDir: './mock-ios',
+        configurations: ['Debug'],
+        scriptPhases: [{ name: 'test', path: './override.js' }],
+      },
       undefined
     );
   });

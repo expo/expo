@@ -31,6 +31,25 @@ import {
 } from '../dependencies';
 import { checkDependencyWebAsync } from './webResolver';
 
+const deepObjectMerge = (target: any, source: any): any => {
+  if (
+    source !== undefined &&
+    typeof target === 'object' &&
+    target != null &&
+    !Array.isArray(target) &&
+    (!target.constructor || target.constructor === Object) &&
+    typeof source === 'object' &&
+    !Array.isArray(source)
+  ) {
+    target = { ...target };
+    for (const key in source) {
+      target[key] = deepObjectMerge(target[key], source[key]);
+    }
+    return target;
+  }
+  return source !== undefined ? source : target;
+};
+
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
   const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
   try {
@@ -60,15 +79,17 @@ export async function resolveReactNativeModule(
   const libraryConfig = (await loadConfigAsync(
     resolution.path
   )) as RNConfigReactNativeLibraryConfig;
-  const reactNativeConfig = {
-    ...libraryConfig?.dependency,
-    ...projectConfig?.dependencies?.[resolution.name],
-  };
 
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
     return null;
+  }
+
+  let reactNativeConfig = libraryConfig?.dependency ?? {};
+  const projectDependencyOverride = projectConfig?.dependencies?.[resolution.name];
+  if (projectDependencyOverride != null) {
+    reactNativeConfig = deepObjectMerge(reactNativeConfig, projectDependencyOverride);
   }
 
   let maybeExpoModuleConfig: ExpoModuleConfig | null | undefined;
