@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Removed `maxSdkVersion` on `READ_MEDIA_IMAGES` permission to prevent Android manifest merger from capping it app-wide, which broke other libraries (like `expo-media-library`) on Android 14+. ([44769](https://github.com/expo/expo/issues/44769) by [@zoontek](https://github.com/zoontek))
+- Removed `maxSdkVersion` on `READ_MEDIA_IMAGES` permission to prevent Android manifest merger from capping it app-wide, which broke other libraries (like `expo-media-library`) on Android 14+. ([#44769](https://github.com/expo/expo/pull/44769) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 
