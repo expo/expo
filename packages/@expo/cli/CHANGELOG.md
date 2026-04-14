@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Update to `multitars@^1.0.0` ([#44774](https://github.com/expo/expo/pull/44774) by [@kitten](https://github.com/kitten))
+
 ## 55.0.24 — 2026-04-13
 
 _This version does not introduce any user-facing changes._
