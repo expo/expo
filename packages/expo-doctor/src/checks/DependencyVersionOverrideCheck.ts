@@ -81,7 +81,7 @@ function getOverridesEntries(pkg: Record<string, any>): Record<string, string> {
 }
 
 export class DependencyVersionOverrideCheck implements DoctorCheck {
-  description = 'Check for overridden dependency versions that may cause issues';
+  description = 'Check for overridden dependencies';
 
   sdkVersionRange = '>=55.0.0';
 
@@ -136,13 +136,18 @@ export class DependencyVersionOverrideCheck implements DoctorCheck {
 
     const advice: string[] = [];
     if (issues.length) {
-      advice.push(
-        'An incompatible version of a critical dependency is installed, which is unsupported and may cause unexpected behavior.'
+      issues.unshift(
+        (issues.length > 1
+          ? 'Incompatible versions of critical dependencies are installed, '
+          : 'An incompatible version of a critical dependency is installed, ') +
+          'which is unsupported and may cause unexpected behavior.'
       );
       if (overriddenPackages.length) {
         advice.push(
           `Remove the resolution/override for ${joinWithCommasAnd(overriddenPackages)} from your package.json and reinstall your dependencies.`
         );
+      } else {
+        advice.push(`Reinstall your dependencies and check that they're not in a corrupted state.`);
       }
     }
 

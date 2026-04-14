@@ -110,9 +110,9 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
-    expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain('@expo/cli');
-    expect(result.issues[0]).toContain('0.18.0');
+    expect(result.issues).toHaveLength(2);
+    expect(result.issues[1]).toContain('@expo/cli');
+    expect(result.issues[1]).toContain('0.18.0');
   });
 
   it('adds advice to remove resolutions when dependency is in resolutions', async () => {
@@ -233,10 +233,10 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
-    expect(result.issues).toHaveLength(2);
-    expect(result.issues[0]).toContain('@expo/metro');
-    expect(result.issues[0]).toContain('metro');
-    expect(result.issues[1]).toContain('metro-resolver');
+    expect(result.issues).toHaveLength(3);
+    expect(result.issues[1]).toContain('@expo/metro');
+    expect(result.issues[1]).toContain('metro');
+    expect(result.issues[2]).toContain('metro-resolver');
   });
 
   it('skips chain when an optional package cannot be resolved (e.g. expo-router not installed)', async () => {
@@ -304,9 +304,9 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
-    expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain('expo-router');
-    expect(result.issues[0]).toContain('@expo/metro-runtime');
+    expect(result.issues).toHaveLength(2);
+    expect(result.issues[1]).toContain('expo-router');
+    expect(result.issues[1]).toContain('@expo/metro-runtime');
   });
 
   it('resolves packages from isolated node_modules (pnpm-style)', async () => {
@@ -351,8 +351,8 @@ describe('runAsync', () => {
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
-    expect(result.issues).toHaveLength(1);
-    expect(result.issues[0]).toContain('metro');
-    expect(result.issues[0]).toContain('0.76.0');
+    expect(result.issues).toHaveLength(2);
+    expect(result.issues[1]).toContain('metro');
+    expect(result.issues[1]).toContain('0.76.0');
   });
 });
