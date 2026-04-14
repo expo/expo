@@ -101,7 +101,10 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
     }
   }
 
-  return targetUrl.pathname + targetUrl.search;
+  // When the hostname is the resolved `localhost` (see above on new URL) we just output the path
+  return targetUrl.hostname === 'localhost'
+    ? targetUrl.pathname + targetUrl.search
+    : targetUrl.toString();
 }
 
 /** Match `[page]` -> `page`
