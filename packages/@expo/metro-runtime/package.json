@@ -21,8 +21,6 @@
     "build",
     "src",
     "rsc",
-    "async-require.js",
-    "async-require.d.ts",
     "assets",
     "!**/__tests__"
   ],
