@@ -1,9 +1,9 @@
 import React, { ComponentProps } from 'react';
 import { type StackScreenProps, type ExtendedStackNavigationOptions, StackSearchBar } from './stack-utils';
-export type { ExtendedStackNavigationOptions } from './stack-utils';
 import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState, type RouteProp } from '../react-navigation/native';
 import { NativeStackNavigationEventMap } from '../react-navigation/native-stack';
 import { Protected } from '../views/Protected';
+export type { ExtendedStackNavigationOptions } from './stack-utils';
 declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/native-stack").NativeStackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {

@@ -211,9 +211,7 @@ export function validateStackPresentation<
   F extends (...args: never[]) => ExtendedStackNavigationOptions,
 >(options: F): F;
 export function validateStackPresentation(
-  options:
-    | ExtendedStackNavigationOptions
-    | ((...args: never[]) => ExtendedStackNavigationOptions)
+  options: ExtendedStackNavigationOptions | ((...args: never[]) => ExtendedStackNavigationOptions)
 ): ((...args: never[]) => ExtendedStackNavigationOptions) | ExtendedStackNavigationOptions {
   if (typeof options === 'function') {
     return (...args: never[]) => {

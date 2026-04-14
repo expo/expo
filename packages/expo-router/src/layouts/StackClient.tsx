@@ -25,8 +25,6 @@ import {
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
-
-export type { ExtendedStackNavigationOptions } from './stack-utils';
 import {
   CommonNavigationAction,
   NavigationAction,
@@ -44,10 +42,11 @@ import { NativeStackNavigationEventMap } from '../react-navigation/native-stack'
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
 
+export type { ExtendedStackNavigationOptions } from './stack-utils';
+
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
 const NativeStackNavigator = createNativeStackNavigator().Navigator;
-
 
 const RNStack = withLayoutContext<
   ExtendedStackNavigationOptions,
