@@ -595,13 +595,10 @@ describe(resolveDependencyConfigAsync, () => {
       '/app/node_modules/react-native-test',
       projectConfig
     );
-    expect(mockPlatformResolverIos).toHaveBeenCalledWith(
-      '/app/node_modules/react-native-test',
-      {
-        configurations: ['Debug'],
-        scriptPhases: [{ name: 'test', path: './test.js' }],
-      },
-    );
+    expect(mockPlatformResolverIos).toHaveBeenCalledWith('/app/node_modules/react-native-test', {
+      configurations: ['Debug'],
+      scriptPhases: [{ name: 'test', path: './test.js' }],
+    });
   });
 
   it('should deep merge project config into library config preserving nested sibling keys', async () => {
@@ -633,17 +630,14 @@ describe(resolveDependencyConfigAsync, () => {
       'ios',
       'react-native-test',
       '/app/node_modules/react-native-test',
-      projectConfig,
+      projectConfig
     );
 
-    expect(mockPlatformResolverIos).toHaveBeenCalledWith(
-      '/app/node_modules/react-native-test',
-      {
-        sourceDir: './mock-ios',
-        configurations: ['Debug'],
-        scriptPhases: [{ name: 'test', path: './override.js' }],
-      },
-    );
+    expect(mockPlatformResolverIos).toHaveBeenCalledWith('/app/node_modules/react-native-test', {
+      sourceDir: './mock-ios',
+      configurations: ['Debug'],
+      scriptPhases: [{ name: 'test', path: './override.js' }],
+    });
   });
 
   it(`should return null for the react-native because it's a platform package`, async () => {
