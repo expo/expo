@@ -112,6 +112,7 @@ class ExpoUIModule : Module() {
     }
     View(IconView::class)
     View(LazyColumnView::class)
+    View(LazyRowView::class)
 
     //endregion Views use expo-modules-core DSL for uncommon features
 

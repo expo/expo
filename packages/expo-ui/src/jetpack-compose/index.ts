@@ -16,6 +16,7 @@ export * from './ExposedDropdownMenuBox';
 export * from './Divider';
 export * from './Host';
 export * from './LazyColumn';
+export * from './LazyRow';
 export * from './ListItem';
 export * from './RNHostView';
 export * from './DatePicker';

@@ -235,6 +235,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'LazyColumn / LazyRow',
+    route: 'ui/lazy-column-row',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyColumnRowScreen'));
+    },
+  },
+  {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',
     options: {},
