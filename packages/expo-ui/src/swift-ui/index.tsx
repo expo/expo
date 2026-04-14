@@ -1,4 +1,4 @@
-import './State/index.fx';
+import '../State/index.fx';
 
 export * from './AccessoryWidgetBackground';
 export * from './BottomSheet';
@@ -32,7 +32,7 @@ export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
 export * from './Text';
-export { useNativeState } from './State/useNativeState';
+export { useNativeState } from '../State/useNativeState';
 export * from './SyncToggle';
 export * from './Toggle';
 export * from './TextField';
@@ -41,8 +41,9 @@ export * from './Namespace';
 export * from './GlassEffectContainer';
 export * from './ScrollView';
 export * from './Shapes';
+export * from './Overlay';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';
 export * from './Link';
-export { type CommonViewModifierProps } from './types';
+export { type Alignment, type CommonViewModifierProps } from './types';

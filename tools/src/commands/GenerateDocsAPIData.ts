@@ -23,6 +23,7 @@ const MINIFY_JSON = true;
 
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
+  'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
   'expo-ui/datetime-picker': ['datetime-picker/index.tsx', 'expo-ui'],
 
   // Swift UI
@@ -49,6 +50,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
   'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/overlay': ['swift-ui/Overlay/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/popover': ['swift-ui/Popover/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/progressview': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],

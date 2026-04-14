@@ -29,6 +29,7 @@ import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
 import expo.modules.ui.menu.ItemPressedEvent
+import expo.modules.ui.state.ObservableState
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
@@ -47,6 +48,22 @@ class ExpoUIModule : Module() {
       okHttpClient?.connectionPool?.evictAll()
       okHttpClient?.cache?.close()
       okHttpClient = null
+    }
+
+    // MARK: - Observable State
+
+    Class(ObservableState::class) {
+      Constructor { initial: Map<String, Any?> ->
+        ObservableState(initial["value"])
+      }
+
+      Function("getValue") { state: ObservableState ->
+        state.value
+      }
+
+      Function("setValue") { state: ObservableState, wrapper: Map<String, Any?> ->
+        state.value = wrapper["value"]
+      }
     }
 
     //region Views use expo-modules-core DSL for uncommon features
@@ -468,6 +485,11 @@ class ExpoUIModule : Module() {
     }) { props: FloatingActionButtonProps ->
       val onButtonPressed by remember { EventDispatcher<Unit>() }
       FloatingActionButtonContent(props) { onButtonPressed(Unit) }
+    }
+
+    // Experimental Compose state support to trigger synchronous state updates from UI worklet.
+    ExpoUIView("SyncSwitchView") { props: SyncSwitchProps ->
+      SyncSwitchContent(props)
     }
 
     //endregion Expo UI views
