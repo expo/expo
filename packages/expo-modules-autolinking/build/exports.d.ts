@@ -4,6 +4,7 @@ export * from './types';
 export * from './autolinking';
 export * from './platforms';
 export { ResolutionResult, BaseDependencyResolution, DependencyResolution, DependencyResolutionSource, CachedDependenciesLinker, CachedDependenciesSearchOptions, makeCachedDependenciesLinker, scanDependencyResolutionsForPlatform, scanExpoModuleResolutionsForPlatform, } from './dependencies';
+export * from './utilities';
 /** @deprecated */
 export declare function mergeLinkingOptionsAsync<Options extends Partial<AutolinkingCommonArguments>>(argumentsOptions: Options): Promise<Options & AutolinkingOptions>;
 interface QueryAutolinkingModulesFromProjectParams extends Partial<AutolinkingCommonArguments> {

@@ -43,7 +43,7 @@ fun ErrorScreen(
         )
       )
 
-      NewText("This development build encountered the following error.")
+      NewText("This development build encountered the following error:")
     }
 
     StackTrace(
@@ -70,7 +70,7 @@ fun ErrorScreen(
       )
 
       ActionButton(
-        "Go To Home",
+        "Go home",
         foreground = NewAppTheme.colors.buttons.secondary.foreground,
         background = NewAppTheme.colors.buttons.secondary.background,
         modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),

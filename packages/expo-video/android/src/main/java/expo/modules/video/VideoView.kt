@@ -288,6 +288,17 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     listeners.retainAll { it.get() != listener }
   }
 
+  override fun onSourceChanged(player: VideoPlayer, source: VideoSource?, oldSource: VideoSource?) {
+    // When replacing the media on the same player, keep the surface hidden until the first frame of
+    // the new item is rendered. Otherwise the previous stream can remain visible (often mis-scaled)
+    // while the new stream buffers — e.g. switching from a higher-resolution URL to a lower one.
+    // See https://github.com/expo/expo/issues/44385
+    if (player == videoPlayer && oldSource != null) {
+      shouldHideSurfaceView = true
+      applySurfaceViewVisibility()
+    }
+  }
+
   override fun onVideoSourceLoaded(
     player: VideoPlayer,
     videoSource: VideoSource?,

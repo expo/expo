@@ -14,11 +14,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeResolutionResults = exports.filterMapResolutionResult = exports.scanDependenciesFromRNProjectConfig = exports.scanDependenciesInSearchPath = exports.scanDependenciesRecursively = void 0;
+exports.mergeResolutionResults = exports.filterMapResolutionResult = exports.scanDependenciesFromRNProjectConfig = exports.mockDependencyAtPath = exports.scanDependenciesInSearchPath = exports.scanDependenciesRecursively = void 0;
 var resolution_1 = require("./resolution");
 Object.defineProperty(exports, "scanDependenciesRecursively", { enumerable: true, get: function () { return resolution_1.scanDependenciesRecursively; } });
 var scanning_1 = require("./scanning");
 Object.defineProperty(exports, "scanDependenciesInSearchPath", { enumerable: true, get: function () { return scanning_1.scanDependenciesInSearchPath; } });
+Object.defineProperty(exports, "mockDependencyAtPath", { enumerable: true, get: function () { return scanning_1.mockDependencyAtPath; } });
 var rncliLocal_1 = require("./rncliLocal");
 Object.defineProperty(exports, "scanDependenciesFromRNProjectConfig", { enumerable: true, get: function () { return rncliLocal_1.scanDependenciesFromRNProjectConfig; } });
 var utils_1 = require("./utils");

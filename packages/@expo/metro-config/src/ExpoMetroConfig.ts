@@ -316,7 +316,6 @@ export function getDefaultConfig(
     },
     cacheStores: [cacheStore],
     watcher: {
-      unstable_workerThreads: false,
       // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
       additionalExts: ['env', 'local', 'development'],
     },

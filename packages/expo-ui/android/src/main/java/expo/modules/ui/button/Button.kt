@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
+import expo.modules.ui.UIComposableScope
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
@@ -71,7 +71,7 @@ fun FunctionalComposableScope.ButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.shape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -93,7 +93,7 @@ fun FunctionalComposableScope.FilledTonalButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.filledTonalShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -115,7 +115,7 @@ fun FunctionalComposableScope.OutlinedButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.outlinedShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -137,7 +137,7 @@ fun FunctionalComposableScope.ElevatedButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.elevatedShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -159,6 +159,6 @@ fun FunctionalComposableScope.TextButtonContent(
     shape = shapeFromShapeRecord(props.shape) ?: ButtonDefaults.textShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }

@@ -12,7 +12,7 @@ import { Task } from '../../TasksRunner';
 import type { CommandOptions, Parcel, TaskArgs } from '../types';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
-const EXCLUDE = ['expo-module-template-local', 'expo-module-template'];
+const EXCLUDE = ['expo-module-template'];
 
 /**
  * Finds and removes stale build directories (*.cxx and android/build) that can cause build issues.

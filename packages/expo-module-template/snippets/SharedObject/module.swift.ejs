@@ -1,0 +1,12 @@
+    Class(<%- project.sharedObjectName %>.self) {
+      Constructor { () -> <%- project.sharedObjectName %> in
+        return <%- project.sharedObjectName %>()
+      }
+
+      Property("count") { (ref: <%- project.sharedObjectName %>) -> Int in
+        return ref.count
+      }
+      .set { (ref: <%- project.sharedObjectName %>, count: Int) in
+        ref.count = count
+      }
+    }

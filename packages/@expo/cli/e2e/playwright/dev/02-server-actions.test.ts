@@ -4,7 +4,7 @@ import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
 import { sanitizeRSCPayloadString } from '../../utils/rsc';
-import { pageCollectErrors } from '../page';
+import { pageCollectErrors, replayRequestText } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -87,20 +87,11 @@ test.describe(inputDir, () => {
       );
     });
 
-    const serverActionResponsePromise = page.waitForResponse((response) => {
-      const pathname = new URL(response.url()).pathname;
-      return (
-        pathname.startsWith('/_flight/web/ACTION_') && pathname.endsWith('_$$INLINE_ACTION.txt')
-      );
-    });
-
     // Call the server action
     await page.locator('[data-testid="call-jsx-server-action"]').click();
 
-    await serverActionRequest;
-    const response = await serverActionResponsePromise;
-
-    const rscPayload = await response.text();
+    const request = await serverActionRequest;
+    const rscPayload = await replayRequestText(request);
 
     expect(sanitizeRSCPayloadString(rscPayload))
       .toBe(`1:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F02-server-actions%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"],"",1]

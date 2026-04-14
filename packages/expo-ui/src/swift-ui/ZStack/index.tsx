@@ -1,29 +1,14 @@
 import { requireNativeView } from 'expo';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { CommonViewModifierProps } from '../types';
+import { type Alignment, type CommonViewModifierProps } from '../types';
 
 export type ZStackProps = {
   children: React.ReactNode;
   /**
    * The alignment of children within the stack.
    */
-  alignment?:
-    | 'center'
-    | 'leading'
-    | 'trailing'
-    | 'top'
-    | 'bottom'
-    | 'topLeading'
-    | 'topTrailing'
-    | 'bottomLeading'
-    | 'bottomTrailing'
-    | 'centerFirstTextBaseline'
-    | 'centerLastTextBaseline'
-    | 'leadingFirstTextBaseline'
-    | 'leadingLastTextBaseline'
-    | 'trailingFirstTextBaseline'
-    | 'trailingLastTextBaseline';
+  alignment?: Alignment;
 } & CommonViewModifierProps;
 
 const ZStackNativeView: React.ComponentType<ZStackProps> = requireNativeView(

@@ -30,7 +30,7 @@ export const PlatformTag = ({ platform, label, className, suffix, ...rest }: Pla
       )}
       {...rest}>
       <PlatformIcon platform={platformName} />
-      <span className={mergeClasses('text-3xs! leading-none! font-normal whitespace-nowrap')}>
+      <span className={mergeClasses('text-xs! leading-none! font-normal whitespace-nowrap')}>
         {displayLabel}
       </span>
       {suffix}

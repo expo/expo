@@ -56,6 +56,10 @@ let package = Package(
           "-Xcc",
           "-I../../Sources/ReactNativeDependencies/ReactNativeDependencies.xcframework/Headers",
 
+          // Module maps for hermes and jsi
+          "-Xcc",
+          "-fmodule-map-file=../../Sources/hermes-engine/module.modulemap",
+
           // API Notes
           "-Xcc",
           "-iapinotes-modules",

@@ -13,7 +13,6 @@ export type AudioLockScreenOptions = {
     /**
      * Whether the audio is a live stream. When `true`, the lock screen will hide the duration
      * and scrub bar, and disable seek controls.
-     * @platform ios
      */
     isLiveStream?: boolean;
 };

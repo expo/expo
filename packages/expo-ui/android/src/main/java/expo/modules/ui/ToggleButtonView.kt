@@ -13,7 +13,6 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -57,7 +56,7 @@ fun FunctionalComposableScope.ToggleButtonContent(
       disabledContentColor = props.colors.disabledContentColor.compose
     )
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -81,7 +80,7 @@ fun FunctionalComposableScope.IconToggleButtonContent(
       disabledContentColor = props.colors.disabledContentColor.compose
     )
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }
 
@@ -105,7 +104,7 @@ fun FunctionalComposableScope.FilledIconToggleButtonContent(
       disabledContentColor = props.colors.disabledContentColor.compose
     )
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }
 
@@ -129,6 +128,6 @@ fun FunctionalComposableScope.OutlinedIconToggleButtonContent(
       disabledContentColor = props.colors.disabledContentColor.compose
     )
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }

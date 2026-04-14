@@ -14,7 +14,6 @@ const EXCLUDE_PACKAGES = [
   'expo-env-info',
   'expo-module-scripts',
   'expo-module-template',
-  'expo-module-template-local',
   'expo-test-runner',
   'install-expo-modules',
   'pod-install',

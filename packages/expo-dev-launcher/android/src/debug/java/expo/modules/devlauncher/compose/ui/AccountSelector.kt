@@ -72,7 +72,7 @@ fun AccountSelector(
     }
 
     ActionButton(
-      "Log Out",
+      "Log out",
       foreground = Color.White,
       background = Color.Black,
       modifier = Modifier.padding(NewAppTheme.spacing.`3`),

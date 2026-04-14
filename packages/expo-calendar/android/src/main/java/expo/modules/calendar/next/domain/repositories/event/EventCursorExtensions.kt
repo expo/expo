@@ -19,11 +19,11 @@ fun Cursor.toEventEntity(): EventEntity {
       getOptionalLong(CalendarContract.Events._ID)
         ?: throw IllegalStateException("event ID must not be null")
     ),
-    accessLevel = getOptionalInt(CalendarContract.Events.ACCESS_LEVEL).let { value ->
+    accessLevel = getOptionalInt(CalendarContract.Events.ACCESS_LEVEL)?.let { value ->
       AccessLevel.entries.find { it.value == value }
     },
     allDay = getOptionalInt(CalendarContract.Events.ALL_DAY) == 1,
-    availability = getOptionalInt(CalendarContract.Events.AVAILABILITY).let { value ->
+    availability = getOptionalInt(CalendarContract.Events.AVAILABILITY)?.let { value ->
       Availability.entries.find { it.value == value }
     },
     calendarId = getOptionalLong(CalendarContract.Events.CALENDAR_ID)?.let {
@@ -45,7 +45,7 @@ fun Cursor.toEventEntity(): EventEntity {
     rrule = getOptionalString(CalendarContract.Events.RRULE)
       ?.takeIf { it.isNotBlank() }
       ?.let { RecurrenceRule.fromRuleString(it) },
-    status = getOptionalInt(CalendarContract.Events.STATUS).let { value ->
+    status = getOptionalInt(CalendarContract.Events.STATUS)?.let { value ->
       Status.entries.find { it.value == value }
     },
     title = getOptionalString(CalendarContract.Events.TITLE)

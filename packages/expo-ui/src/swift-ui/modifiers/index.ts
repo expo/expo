@@ -851,11 +851,31 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
 /**
- * Sets the maximum number of lines that text can occupy in the view.
- * @param limit - The maximum number of lines.
+ * Sets the line limit for text in the view.
+ *
+ * Four variants matching SwiftUI:
+ * - `lineLimit()` — no line limit (unlimited lines)
+ * - `lineLimit(5)` — max 5 lines
+ * - `lineLimit(5, { reservesSpace: true })` — max 5 lines, reserves height even when empty (iOS 16+, tvOS 16+)
+ * - `lineLimit({ min: 3, max: 8 })` — range of 3 to 8 lines (iOS 16+, tvOS 16+)
+ *
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linelimit(_:)).
  */
-export const lineLimit = (limit?: number) => createModifier('lineLimit', { limit });
+export function lineLimit(): ModifierConfig;
+export function lineLimit(limit: number, options?: { reservesSpace?: boolean }): ModifierConfig;
+export function lineLimit(range: { min: number; max: number }): ModifierConfig;
+export function lineLimit(
+  limitOrRange?: number | { min: number; max: number },
+  options?: { reservesSpace?: boolean }
+): ModifierConfig {
+  if (typeof limitOrRange === 'object' && limitOrRange !== null) {
+    return createModifier('lineLimit', { min: limitOrRange.min, max: limitOrRange.max });
+  }
+  return createModifier('lineLimit', {
+    limit: limitOrRange,
+    reservesSpace: options?.reservesSpace,
+  });
+}
 /**
  * Sets the header prominence for this view.
  * @param prominence - The prominence to apply.
@@ -1016,6 +1036,43 @@ export const gridCellAnchor = (
 export const submitLabel = (
   submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
 ) => createModifier('submitLabel', { submitLabel });
+
+/**
+ * Sets the keyboard type for text input views.
+ * @param keyboardType - The type of keyboard to display.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/keyboardtype(_:)).
+ */
+export const keyboardType = (
+  keyboardType:
+    | 'default'
+    | 'email-address'
+    | 'numeric'
+    | 'phone-pad'
+    | 'ascii-capable'
+    | 'numbers-and-punctuation'
+    | 'url'
+    | 'name-phone-pad'
+    | 'decimal-pad'
+    | 'twitter'
+    | 'web-search'
+    | 'ascii-capable-number-pad'
+) => createModifier('keyboardType', { keyboardType });
+
+/**
+ * Disables autocorrection for text input views.
+ * @param disabled - Whether autocorrection is disabled. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/autocorrectiondisabled(_:)).
+ */
+export const autocorrectionDisabled = (disabled: boolean = true) =>
+  createModifier('autocorrectionDisabled', { disabled });
+
+/**
+ * Adds an action to perform when the user submits a value to this view (e.g. pressing return in a text field).
+ * @param handler - Function to call on submit.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onsubmit(of:_:)).
+ */
+export const onSubmit = (handler: () => void) =>
+  createModifierWithEventListener('onSubmit', handler);
 
 /**
  * Sets how often the shift key in the keyboard is automatically enabled.
@@ -1242,6 +1299,9 @@ export type BuiltInModifier =
   | ReturnType<typeof gridColumnAlignment>
   | ReturnType<typeof gridCellAnchor>
   | ReturnType<typeof submitLabel>
+  | ReturnType<typeof keyboardType>
+  | ReturnType<typeof autocorrectionDisabled>
+  | ReturnType<typeof onSubmit>
   | ReturnType<typeof textInputAutocapitalization>
   | ReturnType<typeof textContentType>
   | ReturnType<typeof datePickerStyle>

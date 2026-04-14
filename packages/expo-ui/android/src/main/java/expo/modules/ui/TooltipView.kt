@@ -141,7 +141,7 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
               ?: TooltipDefaults.plainTooltipContentColor,
             modifier = ModifierRegistry.applyModifiers(plainTooltipView.props.modifiers.value, appContext, this@Content, globalEventDispatcher)
           ) {
-            with(ComposableScope()) { with(plainTooltipView) { Content() } }
+            with(UIComposableScope()) { with(plainTooltipView) { Content() } }
           }
         } else if (richTooltipView != null) {
           val titleSlotView = findChildSlotView(richTooltipView, "title")
@@ -170,7 +170,7 @@ class TooltipBoxView(context: Context, appContext: AppContext) :
       state = tooltipState,
       modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
     ) {
-      Children(ComposableScope(), filter = { !isSlotView(it) })
+      Children(UIComposableScope(), filter = { !isSlotView(it) })
     }
   }
 }

@@ -7,15 +7,21 @@ import expo.modules.calendar.exceptions.ColumnMissingException
 
 internal fun Cursor.getOptionalLong(columnName: String): Long? {
   val index = getColumnIndexOrThrow(columnName)
-  // Given that getLong() will return 0 for null values:
+  // getLong() returns 0 for null columns, but 0 is also a valid timestamp (epoch).
+  // isNull() lets us distinguish "not set in DB" from "explicitly set to 0".
   if (isNull(index)) {
     return null
   }
   return getLong(index)
 }
 
-internal fun Cursor.getOptionalInt(columnName: String): Int {
+internal fun Cursor.getOptionalInt(columnName: String): Int? {
   val index = getColumnIndexOrThrow(columnName)
+  // getInt() returns 0 for null columns, but 0 is also the int value of AttendeeRole.NONE.
+  // isNull() lets us distinguish "not set in DB" from "explicitly set to NONE".
+  if (isNull(index)) {
+    return null
+  }
   return getInt(index)
 }
 
@@ -24,6 +30,7 @@ internal fun Cursor.getOptionalString(columnName: String): String? {
   if (index == -1) {
     return null
   }
+  // getString() returns null for null columns, so we don't need to check isNull() here.
   return getString(index)
 }
 

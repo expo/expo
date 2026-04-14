@@ -79,6 +79,20 @@ object BackgroundTaskScheduler {
       return false
     }
 
+    val existingWorkInfo = getWorkerInfo(context)
+
+    // During startup/headless restore, task consumers register again while the
+    // unique worker is already scheduled or executing. Replacing it here resets
+    // the pending run or cancels the active run, which can create a
+    // cancel/reschedule loop.
+    if (
+      cancelExisting &&
+      (existingWorkInfo?.state == WorkInfo.State.ENQUEUED || existingWorkInfo?.state == WorkInfo.State.RUNNING)
+    ) {
+      Log.d(TAG, "Worker is already scheduled, skipping cancel-and-replace scheduling.")
+      return true
+    }
+
     // Stop the current worker (if any)
     if (cancelExisting) {
       stopWorker(context)

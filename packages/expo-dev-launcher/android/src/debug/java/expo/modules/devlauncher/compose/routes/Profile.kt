@@ -121,7 +121,7 @@ private fun LoggedOut(authLauncher: ManagedActivityResultLauncher<AuthRequestTyp
     }
 
     NewText(
-      "Login or create an account to view local\ndevelopment servers and more",
+      "Log in or create an account to view local\ndevelopment servers and more",
       style = NewAppTheme.font.sm.merge(
         lineHeight = 19.sp,
         textAlign = TextAlign.Center

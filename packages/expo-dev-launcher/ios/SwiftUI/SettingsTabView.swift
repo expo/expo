@@ -119,7 +119,7 @@ struct SettingsTabView: View {
             .resizable()
             .frame(width: 24, height: 24)
             .opacity(0.6)
-          Toggle("Shake Device", isOn: $viewModel.shakeDevice)
+          Toggle("Shake device", isOn: $viewModel.shakeDevice)
         }
         .padding()
 

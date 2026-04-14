@@ -1,0 +1,10 @@
+        <Group name="Shared Object">
+          <Text>Count: {sharedObjectCount}</Text>
+          <Button title="Read count" onPress={() => setSharedObjectCount(sharedObject.count)} />
+          <Button
+            title="Increment count"
+            onPress={() => {
+              sharedObject.count += 1;
+            }}
+          />
+        </Group>

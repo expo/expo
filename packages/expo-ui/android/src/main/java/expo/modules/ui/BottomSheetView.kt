@@ -88,7 +88,7 @@ class ModalBottomSheetView(context: Context, appContext: AppContext) :
       sheetGesturesEnabled = props.sheetGesturesEnabled.value,
       dragHandle = when {
         dragHandleSlotView != null -> {
-          { with(ComposableScope()) { with(dragHandleSlotView) { Content() } } }
+          { with(UIComposableScope()) { with(dragHandleSlotView) { Content() } } }
         }
         props.showDragHandle.value -> {
           { BottomSheetDefaults.DragHandle() }
@@ -101,7 +101,7 @@ class ModalBottomSheetView(context: Context, appContext: AppContext) :
       ),
       modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
     ) {
-      Children(ComposableScope(), filter = { !isSlotView(it) })
+      Children(UIComposableScope(), filter = { !isSlotView(it) })
     }
   }
 }

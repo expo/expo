@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Replaced deprecated `androidStatusBar` and `androidNavigationBar` manifest accessors with `extra["expo-status-bar"]` and `extra["expo-navigation-bar"]`. ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
+- Remove unused `@expo/config` dependency ([#44722](https://github.com/expo/expo/pull/44722) by [@kitten](https://github.com/kitten))
 
 ## 55.0.9 — 2026-02-25
 

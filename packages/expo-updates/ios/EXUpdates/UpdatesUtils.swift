@@ -16,6 +16,22 @@ internal extension Array where Element: Equatable {
   }
 }
 
+/**
+ * In brownfield setups the Expo project is packaged as an xcframework, so
+ * resources like Expo.plist, main.jsbundle, and image assets live in the
+ * framework bundle instead of the host app's main bundle.
+ *
+ * `updatesBundle` resolves to whichever bundle actually contains the
+ * expo-updates resources at runtime: `Bundle.main` for standard apps,
+ * or the framework bundle for brownfield xcframeworks.
+ */
+internal let updatesBundle: Bundle = {
+  if Bundle.main.path(forResource: "Expo", ofType: "plist") != nil {
+    return Bundle.main
+  }
+  return Bundle(for: UpdatesUtils.self)
+}()
+
 @objc(EXUpdatesUtils)
 @objcMembers
 public final class UpdatesUtils: NSObject {
@@ -110,16 +126,16 @@ public final class UpdatesUtils: NSObject {
 
   internal static func url(forBundledAsset asset: UpdateAsset) -> URL? {
     guard let mainBundleDir = asset.mainBundleDir else {
-      return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type)
+      return updatesBundle.url(forResource: asset.mainBundleFilename, withExtension: asset.type)
     }
-    return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type, subdirectory: mainBundleDir)
+    return updatesBundle.url(forResource: asset.mainBundleFilename, withExtension: asset.type, subdirectory: mainBundleDir)
   }
 
   internal static func path(forBundledAsset asset: UpdateAsset) -> String? {
     guard let mainBundleDir = asset.mainBundleDir else {
-      return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type)
+      return updatesBundle.path(forResource: asset.mainBundleFilename, ofType: asset.type)
     }
-    return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type, inDirectory: mainBundleDir)
+    return updatesBundle.path(forResource: asset.mainBundleFilename, ofType: asset.type, inDirectory: mainBundleDir)
   }
 
   /**

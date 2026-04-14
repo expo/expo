@@ -37,7 +37,7 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
       <div className="bg-default flex flex-col justify-center gap-1 px-4 py-2">
         <p className="flex items-center gap-1.5 text-sm leading-normal font-medium">{title}</p>
         {description && (
-          <p className="text-secondary flex items-center gap-2 text-xs">{description}</p>
+          <p className="text-secondary flex items-center gap-2 text-sm">{description}</p>
         )}
       </div>
       <Download03Icon

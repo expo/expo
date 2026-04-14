@@ -1,5 +1,6 @@
 import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
+import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 
 import { getIsReactServer, getPlatform, getPossibleProjectRoot } from './common';
 
@@ -43,7 +44,7 @@ function getExpoConstantsManifest(projectRoot: string) {
 function applyWebDefaults({ config, appName, webName }: ConfigMemo) {
   const appJSON: ExpoConfig = config.exp;
   // For RN CLI support
-  const { web: webManifest = {}, splash = {}, ios = {}, android = {} } = appJSON;
+  const { web: webManifest = {}, ios = {}, android = {} } = appJSON;
   const languageISOCode = webManifest.lang;
   const primaryColor = appJSON.primaryColor;
   const description = appJSON.description;
@@ -62,7 +63,8 @@ function applyWebDefaults({ config, appName, webName }: ConfigMemo) {
    * The background_color should be the same color as the load page,
    * to provide a smooth transition from the splash screen to your app.
    */
-  const backgroundColor = webManifest.backgroundColor || splash.backgroundColor; // No default background color
+  const splash = getConfigPluginProps<SplashProps>(appJSON, 'expo-splash-screen');
+  const backgroundColor = webManifest.backgroundColor || splash?.backgroundColor; // No default background color
   return {
     ...appJSON,
     name: appName,
@@ -211,4 +213,20 @@ export function expoInlineManifestPlugin(
       },
     },
   };
+}
+
+/**
+ * Get the props for a config-plugin
+ */
+export function getConfigPluginProps<Props>(config: ExpoConfig, pluginName: string): Props | null {
+  const plugin = (config.plugins ?? []).find((plugin) => {
+    if (Array.isArray(plugin)) {
+      return plugin[0] === pluginName;
+    }
+    return plugin === pluginName;
+  });
+  if (Array.isArray(plugin)) {
+    return (plugin[1] ?? null) as Props;
+  }
+  return null;
 }

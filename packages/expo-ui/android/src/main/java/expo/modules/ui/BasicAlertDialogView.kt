@@ -4,7 +4,6 @@ import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.DialogProperties
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -29,6 +28,6 @@ fun FunctionalComposableScope.BasicAlertDialogContent(
       decorFitsSystemWindows = props.properties.decorFitsSystemWindows
     )
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }

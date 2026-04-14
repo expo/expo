@@ -69,21 +69,27 @@ index 00000000000..3ec2507bab7
 +    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" tools:replace="android:usesCleartextTraffic" />
 +</manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 150248b6b3c..c1f2105809f 100644
+index 150248b6b3c..14bdba124ab 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-@@ -5,8 +5,8 @@
+@@ -1,12 +1,13 @@
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++  xmlns:tools="http://schemas.android.com/tools">
+ 
+   <uses-permission android:name="android.permission.INTERNET"/>
+   <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
    <uses-permission android:name="android.permission.VIBRATE"/>
    <!-- These require runtime permissions on M -->
 -  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 -  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
++  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
++  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
    <!-- END OPTIONAL PERMISSIONS -->
  
    <queries>
-@@ -19,7 +19,7 @@
+@@ -19,7 +20,7 @@
    </queries>
  
    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true">
@@ -190,6 +196,19 @@ index fa7b11e23c1..0554dd156c1 100644
      google()
      mavenCentral()
      maven { url 'https://www.jitpack.io' }
+diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
+index 8a6be077181..1ea9b6464ec 100644
+--- a/templates/expo-template-bare-minimum/android/gitignore
++++ b/templates/expo-template-bare-minimum/android/gitignore
+@@ -12,5 +12,8 @@ local.properties
+ *.hprof
+ .cxx/
+ 
++# generated inline modules
++app/src/main/java/inline/
++
+ # Bundle artifacts
+ *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
 index 7531e9eb23c..97271b9456f 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
@@ -216,22 +235,22 @@ index 7531e9eb23c..97271b9456f 100644
  expo.gif.enabled=true
  # Enable webp support in React Native images (~85 KB increase)
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
-index a4b76b9530d..8bdaf60c75a 100644
+index a4b76b9530d..61285a659d1 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
-index 37f853b1c84..2a84e188b85 100644
+index 37f853b1c84..37f78a6af83 100644
 --- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 @@ -1,6 +1,6 @@
  distributionBase=GRADLE_USER_HOME
  distributionPath=wrapper/dists
 -distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
-+distributionUrl=https\://services.gradle.org/distributions/gradle-9.0.0-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-9.3.1-bin.zip
  networkTimeout=10000
  validateDistributionUrl=true
  zipStoreBase=GRADLE_USER_HOME
 diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
-index f3b75f3b0d4..bbb00327904 100755
+index f3b75f3b0d4..adff685a034 100755
 --- a/templates/expo-template-bare-minimum/android/gradlew
 +++ b/templates/expo-template-bare-minimum/android/gradlew
 @@ -1,7 +1,7 @@
@@ -243,44 +262,68 @@ index f3b75f3b0d4..bbb00327904 100755
  #
  # Licensed under the Apache License, Version 2.0 (the "License");
  # you may not use this file except in compliance with the License.
-@@ -114,7 +114,7 @@ case "$( uname )" in                #(
+@@ -114,7 +114,6 @@ case "$( uname )" in                #(
    NONSTOP* )        nonstop=true ;;
  esac
  
 -CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
-+CLASSPATH="\\\"\\\""
  
  
  # Determine the Java command to use to start the JVM.
-@@ -213,7 +213,7 @@ DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+@@ -172,7 +171,6 @@ fi
+ # For Cygwin or MSYS, switch paths to Windows format before running java
+ if "$cygwin" || "$msys" ; then
+     APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+-    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+ 
+     JAVACMD=$( cygpath --unix "$JAVACMD" )
+ 
+@@ -205,15 +203,14 @@ fi
+ DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+ 
+ # Collect all arguments for the java command:
+-#   * DEFAULT_JVM_OPTS, JAVA_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
++#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+ #     and any embedded shellness will be escaped.
+ #   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
+ #     treated as '${Hostname}' itself on the command line.
+ 
  set -- \
          "-Dorg.gradle.appname=$APP_BASE_NAME" \
-         -classpath "$CLASSPATH" \
+-        -classpath "$CLASSPATH" \
 -        org.gradle.wrapper.GradleWrapperMain \
 +        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
          "$@"
  
  # Stop when "xargs" is not available.
 diff --git a/templates/expo-template-bare-minimum/android/gradlew.bat b/templates/expo-template-bare-minimum/android/gradlew.bat
-index 9b42019c791..5eed7ee8452 100644
+index 9b42019c791..39baf4d6846 100644
 --- a/templates/expo-template-bare-minimum/android/gradlew.bat
 +++ b/templates/expo-template-bare-minimum/android/gradlew.bat
-@@ -70,11 +70,11 @@ goto fail
+@@ -1,3 +1,8 @@
++@REM Copyright (c) Meta Platforms, Inc. and affiliates.
++@REM
++@REM This source code is licensed under the MIT license found in the
++@REM LICENSE file in the root directory of this source tree.
++
+ @rem
+ @rem Copyright 2015 the original author or authors.
+ @rem
+@@ -70,11 +75,10 @@ goto fail
  :execute
  @rem Setup the command line
  
 -set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
-+set CLASSPATH=
  
  
  @rem Execute Gradle
 -"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
-+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
  
  :end
  @rem End local scope for the variables with windows NT shell
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-index 1b7513bd31b..8a390c764af 100644
+index 1b7513bd31b..39fa5afe55b 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 @@ -168,6 +168,8 @@
@@ -292,6 +335,52 @@ index 1b7513bd31b..8a390c764af 100644
  			);
  			name = "Bundle React Native code and images";
  			outputPaths = (
+@@ -246,11 +248,12 @@
+ 					"FB_SONARKIT_ENABLED=1",
+ 				);
+ 				INFOPLIST_FILE = HelloWorld/Info.plist;
+-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
++				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+ 				);
++				MACOSX_DEPLOYMENT_TARGET = 13.4;
+ 				MARKETING_VERSION = 1.0;
+ 				OTHER_LDFLAGS = (
+ 					"$(inherited)",
+@@ -273,11 +276,12 @@
+ 				CLANG_ENABLE_MODULES = YES;
+ 				CURRENT_PROJECT_VERSION = 1;
+ 				INFOPLIST_FILE = HelloWorld/Info.plist;
+-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
++				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+ 				);
++				MACOSX_DEPLOYMENT_TARGET = 13.4;
+ 				MARKETING_VERSION = 1.0;
+ 				OTHER_LDFLAGS = (
+ 					"$(inherited)",
+@@ -339,7 +343,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+ 				GCC_WARN_UNUSED_FUNCTION = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
++				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					/usr/lib/swift,
+ 					"$(inherited)",
+@@ -391,7 +395,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+ 				GCC_WARN_UNUSED_FUNCTION = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
++				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					/usr/lib/swift,
+ 					"$(inherited)",
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 index a7887e1e5b1..9670a1ff07e 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
@@ -385,10 +474,10 @@ index 447b4188985..58d21796e1d 100644
      </resources>
  </document>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 29503ff0cc1..03484edf156 100644
+index 29503ff0cc1..a2af7b4a5de 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -4,12 +4,19 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
+@@ -4,12 +4,20 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
  require 'json'
  podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
  
@@ -398,21 +487,23 @@ index 29503ff0cc1..03484edf156 100644
 +  # Environment variable takes precedence
 +  return ENV['USE_CCACHE'] == '1' if ENV['USE_CCACHE']
  
+-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+-install! 'cocoapods',
+-  :deterministic_uuids => false
 +  # Fall back to Podfile properties
 +  podfile_properties['apple.ccacheEnabled'] == 'true'
 +end
 +
 +ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
-+ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
-+ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
++ENV['RCT_USE_RN_DEP'] ||= '0' if podfile_properties['ios.buildReactNativeFromSource'] == 'true'
++ENV['RCT_USE_PREBUILT_RNCORE'] ||= '0' if podfile_properties['ios.buildReactNativeFromSource'] == 'true'
 +ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
- platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
--install! 'cocoapods',
--  :deterministic_uuids => false
++ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == '1'
++platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
  
  prepare_react_native_project!
  
-@@ -20,7 +27,10 @@ target 'HelloWorld' do
+@@ -20,7 +28,10 @@ target 'HelloWorld' do
      config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
    else
      config_command = [
@@ -424,7 +515,7 @@ index 29503ff0cc1..03484edf156 100644
        'expo-modules-autolinking',
        'react-native-config',
        '--json',
-@@ -47,18 +57,7 @@ target 'HelloWorld' do
+@@ -47,18 +58,7 @@ target 'HelloWorld' do
        installer,
        config[:reactNativePath],
        :mac_catalyst_enabled => false,
@@ -445,15 +536,15 @@ index 29503ff0cc1..03484edf156 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 911f7ee9a53..01e53f014e3 100644
+index 661f6b6addf..e6346b6d456 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "53.0.41",
-+  "version": "55.0.8",
+-  "version": "53.0.42",
++  "version": "55.0.14",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -461,16 +552,16 @@ index 911f7ee9a53..01e53f014e3 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~53.0.26",
+-    "expo": "~53.0.27",
 -    "expo-status-bar": "~2.2.3",
 -    "react": "19.0.0",
 -    "react-native": "0.79.6"
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~55.0.0-preview.9",
-+    "expo-status-bar": "~55.0.2",
-+    "react": "19.2.0",
-+    "react-native": "0.83.1"
++    "expo": "~55.0.2",
++    "expo-status-bar": "~55.0.4",
++    "react": "19.2.3",
++    "react-native": "0.85.0"
    }
  }

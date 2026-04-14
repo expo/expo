@@ -162,7 +162,7 @@ export const renderMethod = (
         {hasOverloads && (
           <div className="text-tertiary px-4 pb-2">
             <BracketsEllipsesDuotoneIcon className="icon-xs mr-1 inline shrink-0" />
-            <span className="text-3xs">Overload #{overloadIndex + 1}</span>
+            <span className="text-xs">Overload #{overloadIndex + 1}</span>
           </div>
         )}
         {parameters && parameters.length > 0 && (

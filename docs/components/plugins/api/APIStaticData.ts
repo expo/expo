@@ -207,12 +207,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Asset: '/versions/latest/sdk/asset/#asset',
   AsyncIterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
-  AudioSampleCallback: '/versions/latest/sdk/av/#avplaybackstatustoset',
   AuthSessionOpenOptions: '/versions/latest/sdk/webbrowser/#authsessionopenoptions',
-  AVMetadata: '/versions/latest/sdk/av/#avmetadata',
-  AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
-  AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
-  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
   ColorValue: 'https://reactnative.dev/docs/colors',
@@ -261,7 +256,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Platform: 'https://reactnative.dev/docs/platform',
-  Playback: '/versions/latest/sdk/av/#playback',
   ProcessedColorValue: 'https://reactnative.dev/docs/colors',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',

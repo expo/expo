@@ -273,6 +273,14 @@
   return object ? [[EXJavaScriptObject alloc] initWith:object runtime:self] : nil;
 }
 
+#pragma mark - Value conversion
+
+- (nonnull EXJavaScriptValue *)valueFromObject:(nonnull EXJavaScriptObject *)object
+{
+  return [[EXJavaScriptValue alloc] initWithRuntime:self
+                                              value:jsi::Value(*_runtime, *[object get])];
+}
+
 #pragma mark - Script evaluation
 
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource

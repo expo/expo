@@ -22,8 +22,8 @@ it(`lints`, async () => {
   );
 
   for (const result of results) {
-    const relativeFilePath = path.relative(__dirname, result.filePath);
+    const platformIndependentPath = path.relative(__dirname, result.filePath).replace(/\\/g, '/');
     delete result.filePath;
-    expect(result).toMatchSnapshot(relativeFilePath);
+    expect(result).toMatchSnapshot(platformIndependentPath);
   }
 }, 20000);

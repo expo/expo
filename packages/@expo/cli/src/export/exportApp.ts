@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -34,7 +35,6 @@ import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
@@ -187,7 +187,7 @@ export async function exportAppAsync(
                 splitChunks:
                   !env.EXPO_NO_BUNDLE_SPLITTING &&
                   ((devServer.isReactServerComponentsEnabled && !bytecode) || platform === 'web'),
-                mainModuleName: getEntryWithServerRoot(projectRoot, {
+                mainModuleName: resolveRelativeEntryPoint(projectRoot, {
                   platform,
                   pkg: projectConfig.pkg,
                 }),

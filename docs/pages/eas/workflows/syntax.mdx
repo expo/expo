@@ -169,6 +169,110 @@ on:
     # other labels
 ```
 
+### `on.app_store_connect`
+
+Runs your workflow when one of the selected App Store Connect events occurs.
+
+> **info** To use this trigger, configure your App Store Connect connection in the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/settings). For setup steps, see the [App Store Connect trigger setup](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) section.
+
+When `on.app_store_connect` is present, you must specify at least one event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`). Within a configured event domain, you can specify which states should trigger your workflow.
+
+#### `on.app_store_connect.app_version.states`
+
+Filters app store app version state change events. Defaults to all supported app version states when not provided.
+
+Supported values:
+
+- `accepted`
+- `developer_rejected`
+- `in_review`
+- `invalid_binary`
+- `metadata_rejected`
+- `pending_apple_release`
+- `pending_developer_release`
+- `prepare_for_submission`
+- `processing_for_distribution`
+- `ready_for_distribution`
+- `ready_for_review`
+- `rejected`
+- `replaced_with_new_version`
+- `waiting_for_export_compliance`
+- `waiting_for_review`
+
+#### `on.app_store_connect.build_upload.states`
+
+Filters build upload events by state. Defaults to all supported build upload states when not provided.
+
+Supported values:
+
+- `complete`
+- `failed`
+- `processing`
+- `awaiting_upload`
+
+#### `on.app_store_connect.external_beta.states`
+
+Filters external beta events by state. Defaults to all supported external beta states when not provided.
+
+Supported values:
+
+- `processing`
+- `processing_exception`
+- `missing_export_compliance`
+- `ready_for_beta_testing`
+- `in_beta_testing`
+- `expired`
+- `ready_for_beta_submission`
+- `in_export_compliance_review`
+- `waiting_for_beta_review`
+- `in_beta_review`
+- `beta_rejected`
+- `beta_approved`
+
+#### `on.app_store_connect.beta_feedback.types`
+
+Filters beta feedback reported by testers by its type. Defaults to all supported beta feedback types when not provided.
+
+Supported values:
+
+- `crash`
+- `screenshot`
+
+All filter values must be lowercase and are case-sensitive.
+
+```yaml
+# Triggers when:
+# - the app version enters review,
+# - a build upload completes or fails,
+# - an external beta build is ready for testing or approved,
+# - a tester reports a crash via TestFlight.
+on:
+  app_store_connect:
+    app_version:
+      states:
+        - ready_for_review
+        - waiting_for_review
+    build_upload:
+      states:
+        - complete
+        - failed
+    external_beta:
+      states:
+        - ready_for_beta_testing
+        - beta_approved
+    beta_feedback:
+      types:
+        - crash
+```
+
+```yaml
+# Triggers on any app version or build upload state change.
+on:
+  app_store_connect:
+    app_version: {}
+    build_upload: {}
+```
+
 ### `on.schedule.cron`
 
 Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/db2/11.5?topic=task-unix-cron-format) syntax. You can use [crontab guru](https://crontab.guru/) and their [examples](https://crontab.guru/examples.html) to generate cron strings.
@@ -686,6 +790,44 @@ jobs:
       message: |
         Workflow run completed: ${{ workflow.name }}
         View details: ${{ workflow.url }}
+```
+
+#### `app_store_connect`
+
+Information about App Store Connect entities associated with the workflow run. This context is available only for workflows triggered by an App Store Connect event. See [`on.app_store_connect`](#onapp_store_connect).
+
+```ts
+type AppStoreConnectContext = {
+  app: {
+    id: string;
+  };
+  build_upload?: {
+    id: string;
+    state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
+  };
+};
+```
+
+The `app_store_connect.build_upload` object is present only when the workflow is triggered by a `build_upload` event domain.
+
+Example:
+
+```yaml
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  notify:
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: |
+        Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
+        Upload ID: ${{ app_store_connect.build_upload.id }}
+        Upload state: ${{ app_store_connect.build_upload.state }}
 ```
 
 #### `env`

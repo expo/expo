@@ -1,9 +1,10 @@
 {
-  "platforms": ["apple", "android", "web"],
+  "platforms": [<%- project.platforms.map(p => JSON.stringify(p)).join(', ') %>]<% if (project.platforms.includes('apple')) { %>,
   "apple": {
     "modules": ["<%- project.moduleName %>"]
-  },
+  }<% } -%>
+<% if (project.platforms.includes('android')) { %>,
   "android": {
     "modules": ["<%- project.package %>.<%- project.moduleName %>"]
-  }
+  }<% } %>
 }

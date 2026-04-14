@@ -64,6 +64,17 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     return seconds.isNaN ? 0.0 : seconds
   }
 
+  var isLive: Bool {
+    ref.currentItem?.duration.isIndefinite ?? false
+  }
+
+  var currentOffsetFromLive: Double? {
+    guard let currentDate = ref.currentItem?.currentDate() else {
+      return nil
+    }
+    return Date().timeIntervalSince1970 - currentDate.timeIntervalSince1970
+  }
+
   init(_ ref: AVPlayer, interval: Double, source: AudioSource? = nil) {
     self.interval = interval
     self.source = source
@@ -119,7 +130,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     }
   }
 
-  func currentStatus() -> [String: Any] {
+  func currentStatus() -> [String: Any?] {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
     let rate = isPlaying ? ref.rate : currentRate
     return [
@@ -136,12 +147,16 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
       "isLoaded": isLoaded,
       "playbackRate": rate,
       "shouldCorrectPitch": shouldCorrectPitch,
-      "isBuffering": isBuffering
+      "isBuffering": isBuffering,
+      "isLive": isLive,
+      "currentOffsetFromLive": currentOffsetFromLive,
+      "error": nil
     ]
   }
 
   func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil, options: LockScreenOptions?) {
     self.metadata = metadata
+    self.isActiveForLockScreen = active
     if active {
       MediaController.shared.setActivePlayer(self, options: options)
     } else {
@@ -199,6 +214,11 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
             installTap()
             shouldInstallAudioTap = false
           }
+        }
+        if status == .failed {
+          self.updateStatus(with: [
+            "error": self.ref.currentItem?.error?.localizedDescription ?? "Unknown error"
+          ])
         }
       }
       .store(in: &cancellables)

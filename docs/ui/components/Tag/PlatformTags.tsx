@@ -19,9 +19,7 @@ export const PlatformTags = ({ prefix, platforms }: PlatformTagsProps) => {
   return (
     <CALLOUT tag="span" className="inline-flex items-center">
       {prefix && (
-        <span className={mergeClasses(STYLES_SECONDARY, '[table_&]:text-2xs!')}>
-          {prefix}&ensp;
-        </span>
+        <span className={mergeClasses(STYLES_SECONDARY, '[table_&]:text-xs!')}>{prefix}&ensp;</span>
       )}
       {platforms
         .sort((a, b) => a.localeCompare(b))

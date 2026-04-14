@@ -116,7 +116,7 @@ export function Code({ className, children, title }: CodeProps) {
           {...attributes}>
           <div className="w-fit p-4">
             <code
-              className="text-2xs text-default"
+              className="text-default text-xs"
               dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
             />
           </div>
@@ -140,7 +140,7 @@ export function Code({ className, children, title }: CodeProps) {
       {...attributes}>
       <div className="w-fit p-4">
         <code
-          className="text-2xs text-default"
+          className="text-default text-xs"
           dangerouslySetInnerHTML={{ __html: highlightedHtml }}
         />
       </div>
@@ -163,7 +163,7 @@ export const CodeBlock = ({ children, theme, className, inline = false }: CodeBl
       {...attributes}>
       <CODE
         className={mergeClasses(
-          'text-3xs! text-default',
+          'text-default text-xs!',
           inline && 'block w-full p-1.5!',
           className
         )}

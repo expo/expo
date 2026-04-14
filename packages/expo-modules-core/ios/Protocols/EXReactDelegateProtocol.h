@@ -14,10 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Creates a React root view with the given module name and properties.
  */
+#if !TARGET_OS_OSX
 - (UIView *)createReactRootViewWithModuleName:(NSString *)moduleName
                             initialProperties:(nullable NSDictionary<NSString *, id> *)initialProperties
                                 launchOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions;
-
+#else
+- (NSView *)createReactRootViewWithModuleName:(NSString *)moduleName
+                            initialProperties:(nullable NSDictionary<NSString *, id> *)initialProperties
+                              launchOptions:(nullable NSDictionary *)launchOptions;
+#endif
 /**
  Returns the bundle URL for the React Native bundle.
  */

@@ -1,5 +1,4 @@
-import { getVersionedNativeModulesAsync } from '@expo/cli/src/start/doctor/dependencies/bundledNativeModules';
-
+import { getNativeModuleVersionsAsync } from '../api/getNativeModuleVersionsAsync';
 import { Log } from '../utils/log';
 
 export interface VersionedNativeModuleNamesCache {
@@ -15,7 +14,7 @@ export const getVersionedNativeModuleNamesAsync = (
 ): Promise<string[] | null> => {
   const _task = async () => {
     try {
-      const bundledNativeModules = await getVersionedNativeModulesAsync(
+      const bundledNativeModules = await getNativeModuleVersionsAsync(
         params.projectRoot,
         params.sdkVersion!
       );

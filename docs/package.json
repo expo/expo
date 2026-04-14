@@ -14,7 +14,7 @@
     "format": "oxfmt --write .",
     "lint": "NODE_OPTIONS='--no-warnings' node scripts/lint.js --max-warnings 0",
     "lint-links": "remark -u validate-links ./pages",
-    "lint-prose": "yarn vale --config='.vale.ini' --glob='*.{md,mdx}' .",
+    "lint-prose": ".vale/bin/vale --config='.vale.ini' --glob='!{pages/versions/latest,pages/versions/latest/**,pages/internal,pages/internal/**}' pages scenes README.md",
     "watch": "tsc --noEmit -w",
     "test": "yarn generate-static-resources && yarn node --experimental-strip-types --experimental-vm-modules \"$(yarn bin jest)\"",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
@@ -31,7 +31,8 @@
     "eas-cli-sync": "node ./ui/components/EASCLIReference/eas-cli-rerference.js",
     "expo-skills-sync": "node --experimental-strip-types ./ui/components/ExpoSkillsTable/sync-expo-skills.js",
     "expo-mcp-sync": "node --experimental-strip-types --env-file=.env ./ui/components/ExpoMCPToolsTable/sync-expo-mcp-tools.js",
-    "postinstall": "yarn copy-latest && yarn generate-static-resources"
+    "install-vale": "node --experimental-strip-types scripts/install-vale.ts",
+    "postinstall": "yarn copy-latest && yarn generate-static-resources && yarn install-vale"
   },
   "packageManager": "yarn@4.9.1",
   "dependencies": {
@@ -102,7 +103,6 @@
     "@types/react-dom": "^19.2.3",
     "@types/semver": "^7.7.1",
     "@types/turndown": "^5.0.6",
-    "@vvago/vale": "3.12.0",
     "acorn": "^8.16.0",
     "cheerio": "^1.2.0",
     "eslint": "^9.39.2",

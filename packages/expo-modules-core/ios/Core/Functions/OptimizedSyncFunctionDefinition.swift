@@ -51,7 +51,11 @@ public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unche
 
   @JavaScriptActor
   public func build(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createSyncFunction(
+    return try build(appContext: appContext, in: appContext.runtime)
+  }
+
+  public func build(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    return try runtime.createSyncFunction(
       name,
       typeEncoding: typeEncoding,
       argsCount: argsCount,

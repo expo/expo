@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import androidx.core.view.size
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -36,7 +35,7 @@ fun FunctionalComposableScope.BadgeContent(props: BadgeProps) {
         modifier = Modifier.ensureBadgeContentCircular(),
         contentAlignment = Alignment.Center
       ) {
-        Children(ComposableScope())
+        Children(UIComposableScope())
       }
     }
   } else {

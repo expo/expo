@@ -1,18 +1,28 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 import BackgroundTasks
+import Foundation
+
+protocol BackgroundTaskScheduling: Sendable {
+  func cancel(taskRequestWithIdentifier identifier: String)
+  func submit(_ request: BGProcessingTaskRequest) throws
+  func pendingTaskRequests() async -> [BGTaskRequest]
+}
+
+private struct SystemBackgroundTaskScheduler: BackgroundTaskScheduling {
+  func cancel(taskRequestWithIdentifier identifier: String) {
+    BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: identifier)
+  }
+
+  func submit(_ request: BGProcessingTaskRequest) throws {
+    try BGTaskScheduler.shared.submit(request)
+  }
+
+  func pendingTaskRequests() async -> [BGTaskRequest] {
+    return await BGTaskScheduler.shared.pendingTaskRequests()
+  }
+}
 
 public class BackgroundTaskScheduler {
-  /**
-   * Keep track of number of registered task consumers
-   */
-  static var numberOfRegisteredTasksOfThisType: Int = 0
-
-  /**
-   * Interval for task scheduler. The iOS BGTaskScheduler does not guarantee that the number of minutes will be
-   * exact, but it indicates when we'd like the task to start. This will be set to at least 12 hours
-   */
-  private static var intervalSeconds: TimeInterval = 12 * 60 * 60
-
   /**
    A one-time async gate that becomes ready after BGTaskScheduler registration finishes.
    Multiple awaiters will be resumed when ready; subsequent awaiters return immediately.
@@ -48,6 +58,86 @@ public class BackgroundTaskScheduler {
    */
   private static let registrationGate = RegistrationGate()
 
+  private actor SchedulerState {
+    private var scheduler: BackgroundTaskScheduling = SystemBackgroundTaskScheduler()
+    private var numberOfRegisteredTasksOfThisType: Int = 0
+    private var intervalSeconds: TimeInterval = 12 * 60 * 60
+
+    func didRegisterTask(minutes: Int?) -> Bool {
+      if let minutes = minutes {
+        intervalSeconds = Double(minutes) * 60
+      }
+      numberOfRegisteredTasksOfThisType += 1
+
+      return numberOfRegisteredTasksOfThisType == 1
+    }
+
+    func didUnregisterTask() -> Bool {
+      numberOfRegisteredTasksOfThisType = max(0, numberOfRegisteredTasksOfThisType - 1)
+      return numberOfRegisteredTasksOfThisType == 0
+    }
+
+    func hasRegisteredTasks() -> Bool {
+      return numberOfRegisteredTasksOfThisType > 0
+    }
+
+    func scheduleWorker() throws {
+      if numberOfRegisteredTasksOfThisType == 0 {
+        print("Background Task: skipping scheduling. No registered tasks")
+        return
+      }
+
+      stopWorkerOnce()
+
+      let request = BGProcessingTaskRequest(identifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
+      request.requiresNetworkConnectivity = true
+      request.requiresExternalPower = false
+      request.earliestBeginDate = Date().addingTimeInterval(intervalSeconds)
+
+      do {
+        try scheduler.submit(request)
+      } catch let error as BGTaskScheduler.Error {
+        switch error.code {
+        case .unavailable:
+          throw CouldNotRegisterWorkerTask("Background task scheduling is unavailable.")
+        case .tooManyPendingTaskRequests:
+          throw CouldNotRegisterWorkerTask("Too many pending task requests.")
+        case .notPermitted:
+          throw CouldNotRegisterWorkerTask("Task request not permitted.")
+        @unknown default:
+          print("An unknown BGTaskScheduler error occurred.")
+        }
+      } catch {
+        throw CouldNotRegisterWorkerTask("Unknown error occurred.")
+      }
+    }
+
+    func stopWorker() {
+      stopWorkerOnce()
+    }
+
+    func isWorkerRunning() async -> Bool {
+      let requests = await scheduler.pendingTaskRequests()
+      return requests.contains(where: { $0.identifier == BackgroundTaskConstants.BackgroundWorkerIdentifier })
+    }
+
+    func setSchedulerForTesting(_ scheduler: BackgroundTaskScheduling) {
+      self.scheduler = scheduler
+    }
+
+    func resetForTesting(registeredTaskCount: Int = 0) {
+      scheduler = SystemBackgroundTaskScheduler()
+      numberOfRegisteredTasksOfThisType = registeredTaskCount
+      intervalSeconds = 12 * 60 * 60
+    }
+
+    private func stopWorkerOnce() {
+      scheduler.cancel(taskRequestWithIdentifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
+    }
+  }
+
+  private static let schedulerState = SchedulerState()
+
   /**
    Call from the BackgroundTaskAppDelegate after the call to BGTaskScheduler.shared.register has finished
    so that we can hold back any tryScheduleWorker calls, especially the call to BGTaskScheduler.shared.submit
@@ -63,13 +153,8 @@ public class BackgroundTaskScheduler {
    * Call when a task is registered to keep track of how many background task consumers we have
    */
   public static func didRegisterTask(minutes: Int?) {
-    if let minutes = minutes {
-      intervalSeconds = Double(minutes) * 60
-    }
-    numberOfRegisteredTasksOfThisType += 1
-
-    if numberOfRegisteredTasksOfThisType == 1 {
-      Task {
+    Task {
+      if await schedulerState.didRegisterTask(minutes: minutes) {
         try await tryScheduleWorker()
       }
     }
@@ -79,9 +164,8 @@ public class BackgroundTaskScheduler {
    * Call when a task is unregistered to keep track of how many background task consumers we have
    */
   public static func didUnregisterTask() {
-    numberOfRegisteredTasksOfThisType -= 1
-    if numberOfRegisteredTasksOfThisType == 0 {
-      Task {
+    Task {
+      if await schedulerState.didUnregisterTask() {
         await stopWorker()
       }
     }
@@ -91,7 +175,7 @@ public class BackgroundTaskScheduler {
    * Tries to schedule the worker task to run
    */
   public static func tryScheduleWorker() async throws {
-    if numberOfRegisteredTasksOfThisType == 0 {
+    if await !schedulerState.hasRegisteredTasks() {
       print("Background Task: skipping scheduling. No registered tasks")
       return
     }
@@ -99,52 +183,29 @@ public class BackgroundTaskScheduler {
     // Wait until BGTaskScheduler registration has completed.
     await registrationGate.awaitReady()
 
-    // Stop existing tasks
-    await stopWorker()
-
-    // Create request
-    let request = BGProcessingTaskRequest(identifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
-
-    // We'll require network but accept running on battery power.
-    request.requiresNetworkConnectivity = true
-    request.requiresExternalPower = false
-
-    // Set up mimimum start date
-    request.earliestBeginDate = Date().addingTimeInterval(intervalSeconds)
-
-    do {
-      try BGTaskScheduler.shared.submit(request)
-    } catch let error as BGTaskScheduler.Error {
-      switch error.code {
-      case .unavailable:
-        throw CouldNotRegisterWorkerTask("Background task scheduling is unavailable.")
-      case .tooManyPendingTaskRequests:
-        throw CouldNotRegisterWorkerTask("Too many pending task requests.")
-      case .notPermitted:
-        throw CouldNotRegisterWorkerTask("Task request not permitted.")
-      @unknown default:
-        print("An unknown BGTaskScheduler error occurred.")
-        // Handle any future cases added by Apple
-      }
-    } catch {
-      // All other errors
-      throw CouldNotRegisterWorkerTask("Unknown error occurred.")
-    }
+    try await schedulerState.scheduleWorker()
   }
 
   /**
    Cancels the worker task
    */
   public static func stopWorker() async {
-    BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
+    await schedulerState.stopWorker()
   }
 
   /**
    Returns true if the worker task is pending
    */
   public static func isWorkerRunning() async -> Bool {
-    let requests = await BGTaskScheduler.shared.pendingTaskRequests()
-    return requests.contains(where: { $0.identifier == BackgroundTaskConstants.BackgroundWorkerIdentifier })
+    return await schedulerState.isWorkerRunning()
+  }
+
+  static func setSchedulerForTesting(_ scheduler: BackgroundTaskScheduling) async {
+    await schedulerState.setSchedulerForTesting(scheduler)
+  }
+
+  static func resetForTesting(registeredTaskCount: Int = 0) async {
+    await schedulerState.resetForTesting(registeredTaskCount: registeredTaskCount)
   }
 
   /**

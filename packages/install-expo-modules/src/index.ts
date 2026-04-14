@@ -194,8 +194,10 @@ async function runAsync() {
     await installBabelPresetExpoNonInteractiveAsync(projectRoot);
   }
 
-  console.log('\u203A Installing ios pods...');
-  await installPodsAsync(projectRoot);
+  if (process.platform === 'darwin') {
+    console.log('\u203A Installing ios pods...');
+    await installPodsAsync(projectRoot);
+  }
 
   console.log(chalk.bold('\u203A Installation completed!'));
 }

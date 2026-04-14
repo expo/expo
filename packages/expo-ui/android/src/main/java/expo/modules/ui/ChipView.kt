@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
@@ -65,7 +64,7 @@ class ChipBorder : Record {
 private fun FunctionalComposableScope.slotContent(slotName: String): (@Composable () -> Unit)? {
   return findChildSlotView(view, slotName)?.let { slotView ->
     {
-      with(ComposableScope()) {
+      with(UIComposableScope()) {
         with(slotView) {
           Content()
         }

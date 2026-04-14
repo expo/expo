@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -57,7 +56,7 @@ fun FunctionalComposableScope.ListItemContent(props: ListItemProps) {
   ListItem(
     headlineContent = {
       headlineSlotView?.let {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }
@@ -65,28 +64,28 @@ fun FunctionalComposableScope.ListItemContent(props: ListItemProps) {
     modifier = modifier,
     overlineContent = overlineSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }
     },
     supportingContent = supportingSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }
     },
     leadingContent = leadingSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }
     },
     trailingContent = trailingSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }

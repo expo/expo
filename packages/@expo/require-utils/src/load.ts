@@ -84,10 +84,34 @@ export interface ModuleOptions {
   paths?: string[];
 }
 
+function toRealDirname(filePath: string): string {
+  let normalized = path.resolve(filePath);
+  // Try resolving the filename itself first
+  try {
+    normalized = fs.realpathSync(normalized);
+    return path.dirname(normalized);
+  } catch (error: any) {
+    normalized = path.dirname(normalized);
+    // If we're getting another error than an ENOENT, return the dirname unchanged
+    if (error?.code !== 'ENOENT') {
+      return normalized;
+    }
+  }
+  // Alternatively, if it's a fake path, resolve the directory directly instead
+  try {
+    return fs.realpathSync(normalized);
+  } catch {
+    return normalized;
+  }
+}
+
 function compileModule(code: string, filename: string, opts: ModuleOptions) {
   const format = toFormat(filename, false);
   const prependPaths = opts.paths ?? [];
-  const nodeModulePaths = nodeModule._nodeModulePaths(path.dirname(filename));
+  // See: https://github.com/nodejs/node/blob/ff080948666f28fbd767548d26bea034d30bc277/lib/internal/modules/cjs/loader.js#L767
+  // If we get a symlinked path instead of the realpath, we assume the realpath is needed for Node module resolution
+  const basePath = toRealDirname(filename);
+  const nodeModulePaths = nodeModule._nodeModulePaths(basePath);
   const paths = [...prependPaths, ...nodeModulePaths];
   try {
     const mod = Object.assign(new nodeModule.Module(filename, parent), { filename, paths });

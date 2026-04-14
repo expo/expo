@@ -1,0 +1,13 @@
+module hermes {
+  umbrella header "destroot/include/hermes/hermes.h"
+
+  export *
+  module * { export * }
+}
+
+module jsi {
+  umbrella header "destroot/include/jsi/jsi.h"
+
+  export *
+  module * { export * }
+}

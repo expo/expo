@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mockDependencyAtPath = mockDependencyAtPath;
 exports.scanDependenciesInSearchPath = scanDependenciesInSearchPath;
 const fs_1 = __importDefault(require("fs"));
 const concurrency_1 = require("../concurrency");
@@ -40,6 +41,20 @@ async function resolveDependency(basePath, dependencyName, shouldIncludeDependen
     else {
         return null;
     }
+}
+/** Create a mock resolution for a local search path dependency at the given path */
+async function mockDependencyAtPath(originPath) {
+    const realPath = await (0, utils_2.maybeRealpath)(originPath);
+    const packageJson = await (0, utils_2.loadPackageJson)((0, utils_2.fastJoin)(realPath || originPath, 'package.json'));
+    return {
+        source: 1 /* DependencyResolutionSource.SEARCH_PATH */,
+        name: packageJson?.name || 'local-module', // NOTE: Mock name
+        version: packageJson?.version ?? '',
+        path: realPath ?? originPath,
+        originPath,
+        duplicates: null,
+        depth: 0,
+    };
 }
 async function scanDependenciesInSearchPath(rawPath, { shouldIncludeDependency = utils_1.defaultShouldIncludeDependency } = {}) {
     const rootPath = await (0, utils_2.maybeRealpath)(rawPath);

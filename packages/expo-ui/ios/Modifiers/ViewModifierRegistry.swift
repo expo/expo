@@ -985,14 +985,6 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
-internal struct LineLimitModifier: ViewModifier, Record {
-  @Field var limit: Int?
-
-  func body(content: Content) -> some View {
-    content.lineLimit(limit)
-  }
-}
-
 internal enum Prominence: String, Enumerable {
   case standard
   case increased
@@ -1912,6 +1904,18 @@ extension ViewModifierRegistry {
 
     register("widgetURL") { params, appContext, _ in
       return try WidgetURLModifier(from: params, appContext: appContext)
+    }
+
+    register("keyboardType") { params, appContext, _ in
+      return try KeyboardTypeModifier(from: params, appContext: appContext)
+    }
+
+    register("autocorrectionDisabled") { params, appContext, _ in
+      return try AutocorrectionDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("onSubmit") { params, appContext, eventDispatcher in
+      return try OnSubmitModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
   }
 }

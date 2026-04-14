@@ -13,7 +13,7 @@ internal final class ToggleProps: UIBaseViewProps {
 internal struct ToggleView: ExpoSwiftUI.View {
   @ObservedObject var props: ToggleProps
   @State var checked: Bool = false
-  
+
   init(props: ToggleProps) {
     self.props = props
   }

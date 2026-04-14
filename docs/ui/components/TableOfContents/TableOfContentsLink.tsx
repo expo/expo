@@ -53,7 +53,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
             <TitleElement
               className={mergeClasses(
                 'text-secondary! hocus:text-link! w-full',
-                isCodeOrFilePath && 'text-2xs! truncate',
+                isCodeOrFilePath && 'truncate text-xs!',
                 isActive && 'text-link!',
                 isDeprecated && 'line-through opacity-80'
               )}>

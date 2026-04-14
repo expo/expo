@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
+import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import path from 'path';
 import semver from 'semver';
 
@@ -31,14 +32,10 @@ export async function getExpoConfigSourcesAsync(
   // external files in config
   const isAndroid = options.platforms.includes('android');
   const isIos = options.platforms.includes('ios');
-  const splashScreenPluginProps = getConfigPluginProps<{
-    image?: string;
-    dark?: {
-      image?: string;
-    };
-    android?: NonNullable<ExpoConfig['android']>['splash'];
-    ios?: NonNullable<ExpoConfig['ios']>['splash'];
-  }>(expoConfig, 'expo-splash-screen');
+  const splashScreenPluginProps = getConfigPluginProps<SplashProps>(
+    expoConfig,
+    'expo-splash-screen'
+  );
   const fontPluginProps = getConfigPluginProps<{
     // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts
     fonts?: string[];
@@ -82,17 +79,6 @@ export async function getExpoConfigSourcesAsync(
     isIos ? splashScreenPluginProps?.ios?.tabletImage : undefined,
     isIos ? splashScreenPluginProps?.ios?.dark?.image : undefined,
     isIos ? splashScreenPluginProps?.ios?.dark?.tabletImage : undefined,
-
-    // legacy splash images
-    expoConfig.splash?.image,
-    isAndroid ? expoConfig.android?.splash?.image : undefined,
-    isAndroid ? expoConfig.android?.splash?.mdpi : undefined,
-    isAndroid ? expoConfig.android?.splash?.hdpi : undefined,
-    isAndroid ? expoConfig.android?.splash?.xhdpi : undefined,
-    isAndroid ? expoConfig.android?.splash?.xxhdpi : undefined,
-    isAndroid ? expoConfig.android?.splash?.xxxhdpi : undefined,
-    isIos ? expoConfig.ios?.splash?.image : undefined,
-    isIos ? expoConfig.ios?.splash?.tabletImage : undefined,
 
     // google service files
     isAndroid ? expoConfig.android?.googleServicesFile : undefined,
@@ -190,12 +176,9 @@ function normalizeExpoConfig(
 
   if (sourceSkips & SourceSkips.ExpoConfigAssets) {
     delete normalizedConfig.icon;
-    delete normalizedConfig.splash;
     delete normalizedConfig.android?.adaptiveIcon;
     delete normalizedConfig.android?.icon;
-    delete normalizedConfig.android?.splash;
     delete normalizedConfig.ios?.icon;
-    delete normalizedConfig.ios?.splash;
     delete normalizedConfig.web?.favicon;
     delete normalizedConfig.web?.splash;
   }

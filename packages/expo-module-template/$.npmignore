@@ -8,6 +8,7 @@ __mocks__
 __tests__
 
 /babel.config.js
+/internal/module_scripts/
 /android/src/androidTest/
 /android/src/test/
 /android/build/

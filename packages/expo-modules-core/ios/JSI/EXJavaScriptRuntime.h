@@ -145,6 +145,13 @@ NS_SWIFT_NAME(JavaScriptRuntime)
  */
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype;
 
+#pragma mark - Value conversion
+
+/**
+ Wraps a JavaScript object as a JavaScript value.
+ */
+- (nonnull EXJavaScriptValue *)valueFromObject:(nonnull EXJavaScriptObject *)object NS_SWIFT_NAME(value(from:));
+
 #pragma mark - Script evaluation
 
 /**

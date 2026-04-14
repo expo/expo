@@ -91,6 +91,19 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       config.ios?.version || config.version
     );
 
+    // Add Expo.plist to the framework target's resources so expo-updates
+    // can read its configuration from the framework bundle at runtime.
+    // Uses addBuildPhase to create a PBXResourcesBuildPhase for the framework target
+    // since addResourceFile requires an existing Resources phase which framework targets lack.
+    xcodeProject.addBuildPhase(
+      [`${projectName}/Supporting/Expo.plist`],
+      'PBXResourcesBuildPhase',
+      'Resources',
+      target.uuid,
+      'framework',
+      '""'
+    );
+
     return config;
   });
 };

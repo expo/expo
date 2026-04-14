@@ -11,6 +11,7 @@ import {
   promptExamplesAsync,
 } from './Examples';
 import * as Template from './Template';
+import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
 import {
@@ -36,6 +37,7 @@ export type Options = {
   template?: string | true;
   example?: string | true;
   yes: boolean;
+  agentsMd: boolean;
 };
 
 const debug = require('debug')('expo:init:create') as typeof console.log;
@@ -138,6 +140,10 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
 
   await setupDependenciesAsync(projectRoot, props);
 
+  if (props.agentsMd) {
+    generateAgentFiles(projectRoot);
+  }
+
   // for now, we will just init a git repo if they have git installed and the
   // project is not inside an existing git tree, and do it silently. we should
   // at some point check if git is installed and actually bail out if not, because
@@ -222,6 +228,10 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
   });
 
   await setupDependenciesAsync(projectRoot, props);
+
+  if (props.agentsMd) {
+    generateAgentFiles(projectRoot);
+  }
 
   // for now, we will just init a git repo if they have git installed and the
   // project is not inside an existing git tree, and do it silently. we should

@@ -1,32 +1,36 @@
 package expo.modules.kotlin.types.descriptors
 
 import android.util.Log
-import io.github.lukmccall.pika.TypeInfo
-import io.github.lukmccall.pika.typeInfo
+import io.github.lukmccall.pika.PTypeDescriptor
+import io.github.lukmccall.pika.pTypeDescriptorOf
 import kotlin.reflect.typeOf
 
 @PublishedApi
-internal fun TypeInfo.toRawTypeDescriptor(): RawTypeDescriptor {
+internal fun PTypeDescriptor.toRawTypeDescriptor(): RawTypeDescriptor {
   return when (this) {
-    is TypeInfo.Simple -> RawTypeDescriptor.Simple(
-      kClass,
-      isNullable
-    )
+    is PTypeDescriptor.Concrete -> {
+      if (this is PTypeDescriptor.Concrete.Parameterized) {
+        RawTypeDescriptor.Parameterized(
+          pType.kClass,
+          isNullable,
+          argumentsPTypes.map { it.toRawTypeDescriptor() }
+        )
+      } else {
+        RawTypeDescriptor.Simple(
+          pType.kClass,
+          isNullable
+        )
+      }
+    }
 
-    is TypeInfo.Parameterized -> RawTypeDescriptor.Parameterized(
-      kClass,
-      isNullable,
-      typeArguments.map { it.toRawTypeDescriptor() }
-    )
-
-    TypeInfo.Star -> error("Star projections are not supported")
+    PTypeDescriptor.Star -> error("Star projections are not supported")
   }
 }
 
 @PublishedApi
 internal inline fun <reified T> cpTypeDescriptorOf(): TypeDescriptor {
   return TypeDescriptor(
-    typeInfo = typeInfo<T>().toRawTypeDescriptor(),
+    typeInfo = pTypeDescriptorOf<T>().toRawTypeDescriptor(),
     kTypeProvider = { typeOf<T>() }
   )
 }

@@ -28,10 +28,10 @@ export default function ToolbarWithFABExample() {
   return (
     <Host matchContents>
       <HorizontalFloatingToolbar>
-        <IconButton onPress={() => console.log('Edit pressed')}>
+        <IconButton onClick={() => console.log('Edit pressed')}>
           <Icon source={require('./assets/edit.xml')} contentDescription="Edit" />
         </IconButton>
-        <IconButton onPress={() => console.log('Share pressed')}>
+        <IconButton onClick={() => console.log('Share pressed')}>
           <Icon source={require('./assets/share.xml')} contentDescription="Share" />
         </IconButton>
         <HorizontalFloatingToolbar.FloatingActionButton onPress={() => console.log('Add pressed')}>

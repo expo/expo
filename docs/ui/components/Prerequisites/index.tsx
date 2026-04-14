@@ -108,7 +108,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             </LinkBase>
           </div>
           <div>
-            <p className="text-secondary text-xs">
+            <p className="text-secondary text-sm">
               {numberOfRequirements} requirement{numberOfRequirements === 1 ? '' : 's'}
             </p>
           </div>

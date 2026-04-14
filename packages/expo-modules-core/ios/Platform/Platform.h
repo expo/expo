@@ -8,9 +8,7 @@
 
 #import <AppKit/AppKit.h>
 
-#if !__building_module(ExpoModulesCore)
 #import <React/RCTUIKit.h>
-#endif
 
 @compatibility_alias UIView NSView;
 @compatibility_alias UIResponder NSResponder;

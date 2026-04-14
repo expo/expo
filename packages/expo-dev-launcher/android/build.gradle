@@ -121,6 +121,7 @@ dependencies {
   }
 
   implementation 'com.facebook.react:react-android'
+  implementation 'androidx.core:core-ktx:1.17.0'
 
   debugOnly project(":expo-dev-menu-interface")
   debugOnly project(":expo-manifests")
