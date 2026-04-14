@@ -76,6 +76,9 @@ struct DevMenuToggleButton: View {
   }
 }
 
+#if compiler(>=5.9)
+@available(iOS 17.0, *)
 #Preview {
   DevMenuActionButton(title: "Action", icon: "person.fast") {}
 }
+#endif
