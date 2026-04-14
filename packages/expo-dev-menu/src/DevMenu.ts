@@ -49,11 +49,16 @@ let handlers = new Map<string, () => void>();
  */
 export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void> {
   handlers = new Map();
-  const callbackNames: { name: string; shouldCollapse?: boolean }[] = [];
+  const callbackNames: { name: string; shouldCollapse?: boolean; type?: string; value?: boolean }[] = [];
 
   items.forEach((item) => {
     handlers.set(item.name, item.callback);
-    callbackNames.push({ name: item.name, shouldCollapse: item.shouldCollapse });
+    callbackNames.push({
+      name: item.name,
+      shouldCollapse: item.shouldCollapse,
+      type: item.type,
+      value: item.value,
+    });
   });
 
   return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);
