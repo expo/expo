@@ -29,7 +29,7 @@ export default function BasicDropdownMenuExample() {
     <Host matchContents>
       <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
         <DropdownMenu.Trigger>
-          <Button variant="bordered" onPress={() => setIsExpanded(true)}>
+          <Button variant="bordered" onClick={() => setIsExpanded(true)}>
             Show Menu
           </Button>
         </DropdownMenu.Trigger>

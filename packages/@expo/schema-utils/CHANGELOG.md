@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update types to accept `$id` and change `exclusiveMinimum`/`exclusiveMaximum` to accept `number` for Draft 06 spec ([#44510](https://github.com/expo/expo/pull/44510) by [@Nedunchezhiyan-M](https://github.com/Nedunchezhiyan-M))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26

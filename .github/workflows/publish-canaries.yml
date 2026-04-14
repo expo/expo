@@ -22,7 +22,6 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'schedule' && 'sdk-56' || github.ref }}
           submodules: true
       - name: 🔨 Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app

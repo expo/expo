@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Match `TextField` and `SecureField` API with SwiftUI: replaced `multiline`, `numberOfLines`, `allowNewlines` with `axis` prop. Moved `keyboardType`, `autocorrectionDisabled`, `onSubmit` from props to modifier registry. Renamed events `onValueChanged` → `onValueChange`, `onFocusChanged` → `onFocusChange`, `onSelectionChanged` → `onSelectionChange`. Removed hardcoded `fixedSize`. Added `LineLimitModifier` with `reservesSpace` and range support. Added `OnSubmitModifier` and `KeyboardTypeModifier`. ([#44549](https://github.com/expo/expo/pull/44549) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Match `TextField` API to native Compose: renamed `TextInput` to `TextField`/`OutlinedTextField`, replaced individual keyboard props with `keyboardOptions`/`keyboardActions` matching `KeyboardOptions`/`KeyboardActions`, added `enabled`, `readOnly`, `isError`, `singleLine`, `maxLines`, `minLines`, `shape`, `colors`. Added composable slots: `placeholder`, `leadingIcon`, `trailingIcon`, `prefix`, `suffix`, `supportingText`. Added imperative `focus()`/`blur()` and `onFocusChanged` event. ([#44545](https://github.com/expo/expo/pull/44545) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `Icon` API to native: renamed `tintColor` to `tint`. Match `ListItem` API to native: replaced string props with slot sub-components (`HeadlineContent`, `SupportingContent`, `OverlineContent`, `LeadingContent`, `TrailingContent`). Renamed color props to match `ListItemDefaults.colors()`. Added `tonalElevation`, `shadowElevation`. Removed `color`, `onPress`. ([#44054](https://github.com/expo/expo/pull/44054) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `PullToRefreshBox` indicator props: replaced `loadingIndicatorModifiers` with nested `indicator` prop containing `color`, `containerColor`, and `modifiers`. Added `contentAlignment` prop. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `Divider` into `HorizontalDivider` and `VerticalDivider` matching native Compose components. Added `thickness` and `color` props. ([#44035](https://github.com/expo/expo/pull/44035) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -26,6 +28,12 @@
 
 ### 🎉 New features
 
+- [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))
+- Added `@expo/ui/community/segmented-control` — a drop-in replacement for `@react-native-segmented-control/segmented-control`. ([#44611](https://github.com/expo/expo/pull/44611) by [@vonovak](https://github.com/vonovak))
+- [iOS] Add `ObservableState` shared object and `useNativeState` hook for controlling native SwiftUI state from JS. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add shared object worklet support with `.value` property API for `ObservableState`. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44216](https://github.com/expo/expo/pull/44216) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `TooltipBox`, `PlainTooltip`, and `RichTooltip` components matching native Compose Tooltip API. Supports plain and rich tooltips with slot-based content, programmatic show/dismiss via ref, and `isPersistent`, `hasAction`, `enableUserInput`, `focusable` props. ([#44373](https://github.com/expo/expo/pull/44373) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `Badge` and `BadgedBox` components wrapping Jetpack Compose's Badge API for status indicators and count overlays. ([#44139](https://github.com/expo/expo/pull/44139) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `shape`, `border`, `selected`, `checked`, `onClick`, and `onCheckedChange` props to `Surface`, supporting clickable, selectable, and toggleable variants. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added nested text support for Compose `Text` with style inheritance, custom fonts via `expo-font`, `background`, `shadow`, and `lineBreak` properties. ([#44094](https://github.com/expo/expo/pull/44094) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -42,6 +50,9 @@
 - [Android] Added border color customization for `Switch` and `Checkbox` components. ([#43770](https://github.com/expo/expo/pull/43770) by [@liestig](https://github.com/liestig))
 - [iOS] Added `defaultScrollAnchor` modifier for controlling initial scroll position (iOS 17+). ([#43914](https://github.com/expo/expo/pull/43914) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added `defaultScrollAnchorForRole` modifier for per-role scroll anchor control (iOS 18+). ([#43923](https://github.com/expo/expo/pull/43923) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Added `scrollTargetBehavior` and `scrollTargetLayout` modifiers for scroll target configuration (iOS 17+). ([#43955](https://github.com/expo/expo/pull/43955) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Added `textInputAutocapitalization` modifier for controlling keyboard autocapitalization behavior (iOS 15+). ([#44547](https://github.com/expo/expo/pull/44547) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Added `textContentType` modifier for enabling autofill and semantic text input hints (iOS 13+). ([#44548](https://github.com/expo/expo/pull/44548) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] detect FAB in HorizontalFloatingToolbar ([#43601](https://github.com/expo/expo/pull/43601) by [@Ubax](https://github.com/Ubax))
@@ -55,6 +66,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `installOnUIRuntime` crash by ensuring `react-native-reanimated` initializes before accessing worklet runtime. ([#44582](https://github.com/expo/expo/pull/44582) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix initial prop values not being applied since `init` runs before `updateProps`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix prop syncing race condition where stale values override user interactions. Replace `onReceive(Sequence.publisher)` with `onAppear` + `onChange` across all SwiftUI views. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `Slider` thumb snapping back during drag by guarding `.onReceive` with `isEditing` state. ([#43701](https://github.com/expo/expo/issues/43701) by [@fedeciancaglini](https://github.com/fedeciancaglini)) ([#43797](https://github.com/expo/expo/pull/43797) by [@fedeciancaglini](https://github.com/fedeciancaglini))
@@ -72,6 +84,7 @@
 - [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Use view hash code as key for `Children`. ([#44521](https://github.com/expo/expo/pull/44521) by [@kudo](https://github.com/kudo))
+- Refactored `ComposableScope` and allow extensibility. ([#44698](https://github.com/expo/expo/pull/44698) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-02-25
 

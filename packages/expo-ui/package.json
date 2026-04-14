@@ -26,6 +26,10 @@
     "./datetimepicker": {
       "types": "./build/datetime-picker/index.d.ts",
       "default": "./src/datetime-picker/index.tsx"
+    },
+    "./community/segmented-control": {
+      "types": "./build/community/segmented-control/index.d.ts",
+      "default": "./src/community/segmented-control/index.tsx"
     }
   },
   "scripts": {
@@ -57,7 +61,9 @@
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "react-native-reanimated": "4.3.0",
+    "react-native-worklets": "0.8.1"
   },
   "jest": {
     "preset": "expo-module-scripts"
@@ -65,6 +71,16 @@
   "peerDependencies": {
     "expo": "workspace:*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-reanimated": "*",
+    "react-native-worklets": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-worklets": {
+      "optional": true
+    }
   }
 }

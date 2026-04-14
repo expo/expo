@@ -12,8 +12,14 @@ export default class DocsDocument extends Document {
 
   render() {
     return (
-      <Html lang="en">
-        <Head />
+      <Html lang="en" data-expo-theme>
+        <Head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){if(window.matchMedia("(prefers-color-scheme:dark)").matches){document.documentElement.classList.add("dark-theme")}})()`,
+            }}
+          />
+        </Head>
         <body className="text-pretty">
           <Main />
           <NextScript />

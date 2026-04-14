@@ -188,7 +188,7 @@ function renderTextWithTokens(text: string): ReactNode[] {
     }
 
     nodes.push(
-      <CODE key={`token-${start}-${match[0]}`} className="text-3xs">
+      <CODE key={`token-${start}-${match[0]}`} className="text-xs">
         {match[0]}
       </CODE>
     );
@@ -267,7 +267,7 @@ export function renderInlineContent(text: string): ReactNode[] {
   parts.forEach((part, index) => {
     if (index % 2 === 1) {
       nodes.push(
-        <CODE key={`code-${index}`} className="text-3xs">
+        <CODE key={`code-${index}`} className="text-xs">
           {part}
         </CODE>
       );

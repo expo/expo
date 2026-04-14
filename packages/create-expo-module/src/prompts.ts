@@ -3,8 +3,27 @@ import type { Answers, PromptObject } from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
 import { ensureSafeModuleName } from './appleFrameworks';
+import { ALL_FEATURES } from './features';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
+
+export const ALL_PLATFORMS = ['apple', 'android', 'web'] as const;
+export type Platform = (typeof ALL_PLATFORMS)[number];
+
+export function getPlatformPrompt(preSelected: readonly string[] = ALL_PLATFORMS): PromptObject {
+  return {
+    type: 'multiselect',
+    name: 'platforms',
+    message: 'Which platforms should this module support?',
+    choices: ALL_PLATFORMS.map((p) => ({
+      title: p,
+      value: p,
+      selected: preSelected.includes(p),
+    })),
+    min: 1,
+    hint: '- Space to select. Enter to confirm.',
+  };
+}
 
 /**
  * Converts a slug to a native module name (PascalCase), ensuring it doesn't conflict with Apple frameworks.
@@ -106,6 +125,20 @@ export async function getSubstitutionDataPrompts(slug: string): Promise<PromptOb
       validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
     },
   ];
+}
+
+export function getFeaturesPrompt(): PromptObject {
+  return {
+    type: 'multiselect',
+    name: 'features',
+    message: 'Which feature examples should this module include?',
+    choices: ALL_FEATURES.map((f) => ({
+      title: f,
+      value: f,
+      selected: false,
+    })),
+    hint: '- Space to select. Enter to confirm (empty = minimal module).',
+  };
 }
 
 export async function getLocalSubstitutionDataPrompts(

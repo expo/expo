@@ -10,7 +10,6 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRowScope
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
@@ -69,7 +68,7 @@ fun FunctionalComposableScope.SegmentedButtonContent(
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   val label: @Composable () -> Unit = labelSlotView?.let {
     {
-      with(ComposableScope()) {
+      with(UIComposableScope()) {
         with(it) {
           Content()
         }

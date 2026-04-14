@@ -22,7 +22,7 @@ export const StatusTag = ({ status, note, className }: StatusTagProps) => {
         className
       )}>
       {status === 'experimental' && <Star06Icon className="icon-2xs text-palette-pink12" />}
-      <span className={mergeClasses('text-3xs! leading-none! font-normal whitespace-nowrap')}>
+      <span className={mergeClasses('text-xs! leading-none! font-normal whitespace-nowrap')}>
         {status ? formatName(status) + (note ? `: ${note}` : '') : note}
       </span>
     </div>
