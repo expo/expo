@@ -89,6 +89,7 @@
     "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "expo-module-scripts": "workspace:*",
+    "expo-splash-screen": "workspace:*",
     "jest": "^29.2.1",
     "react-refresh": "^0.14.2",
     "resolve-from": "^5.0.0"

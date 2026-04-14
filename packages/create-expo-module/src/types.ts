@@ -1,6 +1,9 @@
 import type { PromptObject } from 'prompts';
 
+import type { Feature } from './features';
 import type { Platform } from './prompts';
+
+export type { Feature };
 
 /**
  * Possible command options.
@@ -13,7 +16,6 @@ export type CommandOptions = {
   example: boolean;
   local: boolean;
   barrel: boolean;
-  // Module configuration options (skip prompts when provided)
   name?: string;
   description?: string;
   package?: string;
@@ -22,6 +24,8 @@ export type CommandOptions = {
   authorUrl?: string;
   repo?: string;
   platform?: Platform[];
+  features?: Feature[];
+  fullExample?: boolean;
 };
 
 /**
@@ -36,12 +40,14 @@ export type SubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    sharedObjectName: string;
     platforms: Platform[];
+    features: Feature[];
   };
   author: string;
   license: string;
   repo: string;
-  type: 'remote';
+  type: 'standalone';
 };
 
 export type LocalSubstitutionData = {
@@ -51,7 +57,9 @@ export type LocalSubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    sharedObjectName: string;
     platforms: Platform[];
+    features: Feature[];
   };
   type: 'local';
 };

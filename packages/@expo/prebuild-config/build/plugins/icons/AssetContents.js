@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createContentsJsonItem = createContentsJsonItem;
 exports.writeContentsJsonAsync = writeContentsJsonAsync;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
@@ -20,10 +19,6 @@ function _path() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-function createContentsJsonItem(item) {
-  return item;
-}
-
 /**
  * Writes the Config.json which is used to assign images to their respective platform, dpi, and idiom.
  *

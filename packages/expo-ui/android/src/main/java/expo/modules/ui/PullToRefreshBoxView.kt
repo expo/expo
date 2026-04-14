@@ -11,7 +11,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.records.Field
@@ -52,6 +51,6 @@ fun FunctionalComposableScope.PullToRefreshBoxContent(props: PullToRefreshBoxPro
     },
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }

@@ -66,16 +66,6 @@ async function getExpoConfigSourcesAsync(projectRoot, config, loadedModules, opt
         isIos ? splashScreenPluginProps?.ios?.tabletImage : undefined,
         isIos ? splashScreenPluginProps?.ios?.dark?.image : undefined,
         isIos ? splashScreenPluginProps?.ios?.dark?.tabletImage : undefined,
-        // legacy splash images
-        expoConfig.splash?.image,
-        isAndroid ? expoConfig.android?.splash?.image : undefined,
-        isAndroid ? expoConfig.android?.splash?.mdpi : undefined,
-        isAndroid ? expoConfig.android?.splash?.hdpi : undefined,
-        isAndroid ? expoConfig.android?.splash?.xhdpi : undefined,
-        isAndroid ? expoConfig.android?.splash?.xxhdpi : undefined,
-        isAndroid ? expoConfig.android?.splash?.xxxhdpi : undefined,
-        isIos ? expoConfig.ios?.splash?.image : undefined,
-        isIos ? expoConfig.ios?.splash?.tabletImage : undefined,
         // google service files
         isAndroid ? expoConfig.android?.googleServicesFile : undefined,
         isIos ? expoConfig.ios?.googleServicesFile : undefined,
@@ -148,12 +138,9 @@ function normalizeExpoConfig(config, projectRoot, options) {
     }
     if (sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAssets) {
         delete normalizedConfig.icon;
-        delete normalizedConfig.splash;
         delete normalizedConfig.android?.adaptiveIcon;
         delete normalizedConfig.android?.icon;
-        delete normalizedConfig.android?.splash;
         delete normalizedConfig.ios?.icon;
-        delete normalizedConfig.ios?.splash;
         delete normalizedConfig.web?.favicon;
         delete normalizedConfig.web?.splash;
     }

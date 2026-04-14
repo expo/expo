@@ -62,6 +62,7 @@
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
+    "expo-splash-screen": "workspace:*",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"
   }

@@ -10,6 +10,7 @@ import validateNpmPackage from 'validate-npm-package-name';
 
 import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
+import { ALL_FEATURES, resolveFeatures } from './features';
 import {
   installDependencies,
   formatRunCommand,
@@ -18,6 +19,7 @@ import {
 } from './packageManager';
 import {
   ALL_PLATFORMS,
+  getFeaturesPrompt,
   getLocalFolderNamePrompt,
   getLocalSubstitutionDataPrompts,
   getPlatformPrompt,
@@ -25,8 +27,15 @@ import {
   getSubstitutionDataPrompts,
   type Platform,
 } from './prompts';
+import {
+  buildAppSnippets,
+  buildModuleSnippets,
+  buildViewSnippets,
+  buildWebModuleSnippets,
+  copyFileSnippets,
+} from './snippets';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
-import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
+import type { CommandOptions, Feature, LocalSubstitutionData, SubstitutionData } from './types';
 import { env } from './utils/env';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
@@ -48,7 +57,24 @@ const IGNORES_PATHS = [
   'package.json',
   '.npmignore',
   '.gitignore',
+  'snippets',
 ];
+
+// Files and top-level directories that only belong in standalone npm modules.
+// When generating a local module, these are skipped so the host project's tooling is used instead.
+const LOCAL_EXCLUDED_FILES = new Set([
+  '$package.json',
+  '$CHANGELOG.md',
+  '$.gitignore',
+  '$.npmignore',
+  '$.prettierrc',
+  'babel.config.js',
+  'eslint.config.cjs',
+  'tsconfig.json',
+  'README.md',
+  path.join('src', 'index.ts'),
+]);
+const LOCAL_EXCLUDED_DIRS = new Set(['example', 'internal']);
 
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
@@ -97,6 +123,35 @@ function slugToAndroidPackage(slug: string): string {
   return `expo.modules.${namespace}`;
 }
 
+/**
+ * Resolves the target directory for a new local module given the project's `package.json` path.
+ * Respects `expo.autolinking.nativeModulesDir` when present; falls back to `modules/`.
+ * @internal Exported for testing.
+ */
+export function resolveLocalModuleDir(packageJsonPath: string, targetOrSlug: string): string {
+  let packageJson: any = {};
+  try {
+    const fileContent = fs.readFileSync(packageJsonPath, 'utf8');
+    packageJson = JSON.parse(fileContent);
+  } catch {
+    console.log(
+      chalk.yellow(
+        `⚠️ Could not parse package.json at ${packageJsonPath}. Using the \`modules\` directory in the root of the project as the module location.`
+      )
+    );
+  }
+
+  const { expo } = packageJson;
+  const projectRoot = path.dirname(packageJsonPath);
+  const nativeModulesDir = expo?.autolinking?.nativeModulesDir;
+
+  if (nativeModulesDir) {
+    return path.resolve(projectRoot, nativeModulesDir, targetOrSlug);
+  }
+
+  return path.join(projectRoot, 'modules', targetOrSlug);
+}
+
 async function getCorrectLocalDirectory(targetOrSlug: string) {
   let packageJsonPath: string | null = null;
   for (let dir = CWD; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
@@ -114,12 +169,13 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
     );
     console.log(
       chalk.red(
-        'For native modules to autolink correctly, you need to place them in the `modules` directory in the root of the project.'
+        'For native modules to autolink correctly, you need to place them in the directory specified in `expo.autolinking.nativeModulesDir` field in `package.json` which defaults to `modules` directory in the root of the project when unspecified.'
       )
     );
     return null;
   }
-  return path.join(packageJsonPath, '..', 'modules', targetOrSlug);
+
+  return resolveLocalModuleDir(packageJsonPath, targetOrSlug);
 }
 
 /**
@@ -214,6 +270,64 @@ async function resolvePlatformsAsync(
   return platforms as Platform[];
 }
 
+export { resolveFeatures };
+
+function warnIfViewAutoIncluded(rawFeatures: Feature[]): void {
+  if (rawFeatures.includes('ViewEvent') && !rawFeatures.includes('View')) {
+    console.log(chalk.yellow('⚠️  ViewEvent requires View — adding View automatically.'));
+  }
+}
+
+/**
+ * Priority: --full-example flag → --features all → --features flag → interactive prompt → empty.
+ */
+async function resolveFeaturesAsync(
+  interactive: boolean,
+  options: CommandOptions
+): Promise<Feature[]> {
+  if (options.fullExample) {
+    return resolveFeatures([], true);
+  }
+
+  if (options.features && options.features.length > 0) {
+    if (options.features.includes('all' as Feature)) {
+      return resolveFeatures([], true);
+    }
+    const rawFeatures = options.features;
+    warnIfViewAutoIncluded(rawFeatures);
+    return resolveFeatures(rawFeatures);
+  }
+
+  if (!interactive) {
+    return [];
+  }
+
+  const { features } = await prompts(getFeaturesPrompt(), {
+    onCancel: () => process.exit(0),
+  });
+  const rawFeatures: Feature[] = features ?? [];
+  warnIfViewAutoIncluded(rawFeatures);
+  return resolveFeatures(rawFeatures);
+}
+
+/**
+ * Returns a safe, capitalized module name and logs a warning if it was renamed
+ * to avoid conflicting with an Apple framework.
+ */
+function resolveModuleName(rawName: string): string {
+  const { name: safeName, wasRenamed } = ensureSafeModuleName(rawName);
+  const name = safeName.charAt(0).toUpperCase() + safeName.slice(1);
+  if (wasRenamed) {
+    console.log();
+    console.log(
+      chalk.yellow(
+        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
+      )
+    );
+  }
+  return name;
+}
+
 /**
  * The main function of the command.
  *
@@ -226,17 +340,6 @@ async function main(target: string | undefined, options: CommandOptions) {
     debug('Running in non-interactive mode');
   }
 
-  if (options.local) {
-    console.log();
-    console.log(
-      `${chalk.gray('The local module will be created in the ')}${chalk.gray.bold.italic(
-        'modules'
-      )} ${chalk.gray('directory in the root of your project. Learn more: ')}${chalk.gray.bold(
-        FYI_LOCAL_DIR
-      )}`
-    );
-    console.log();
-  }
   const slug = await askForPackageSlugAsync(target, options.local, options);
   const targetDir = options.local
     ? await getCorrectLocalDirectory(target || slug)
@@ -245,6 +348,19 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!targetDir) {
     return;
   }
+
+  const relativePath = path.relative(CWD, targetDir);
+
+  if (options.local) {
+    console.log();
+    console.log(
+      `${chalk.gray('The local module will be created in ')}${chalk.gray.bold.italic(
+        relativePath
+      )} ${chalk.gray('directory. Learn more: ')}${chalk.gray.bold(FYI_LOCAL_DIR)}`
+    );
+    console.log();
+  }
+
   await fs.promises.mkdir(targetDir, { recursive: true });
   await confirmTargetDirAsync(targetDir, options);
 
@@ -329,13 +445,14 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   console.log();
   if (options.local) {
-    console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(`modules/${slug}`)}`);
+    console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(relativePath)}`);
+    const importPath = relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
     printFurtherLocalInstructions(
-      slug,
       data.project.moduleName,
       data.project.viewName,
       data.project.name,
-      options.barrel
+      options.barrel,
+      importPath
     );
   } else {
     console.log('✅ Successfully created Expo module');
@@ -448,7 +565,7 @@ async function getTemplateVersion(isLocal: boolean) {
 async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
     const templateVersion = await getTemplateVersion(isLocal);
-    const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
+    const packageName = 'expo-module-template';
     const tmpDir = path.join(os.tmpdir(), '.create-expo-module');
 
     await fs.promises.mkdir(tmpDir, { recursive: true });
@@ -503,9 +620,71 @@ async function createModuleFromTemplate(
   targetPath: string,
   data: SubstitutionData | LocalSubstitutionData
 ) {
+  const snippetsDir = path.join(templatePath, 'snippets');
+  const features = data.project.features;
+
+  // Build view-level snippets first (used inside the View() block)
+  const [viewSnippetsSwift, viewSnippetsKt] = await Promise.all([
+    buildViewSnippets(snippetsDir, features, data, 'swift'),
+    buildViewSnippets(snippetsDir, features, data, 'kt'),
+  ]);
+
+  // Build module-level snippets, passing the view snippets for injection
+  const [moduleSnippetsSwift, moduleSnippetsKt] = await Promise.all([
+    buildModuleSnippets(snippetsDir, features, data, 'swift', viewSnippetsSwift),
+    buildModuleSnippets(snippetsDir, features, data, 'kt', viewSnippetsKt),
+  ]);
+
+  // Build web module snippets and helpers
+  const webEventImport = features.includes('Event')
+    ? `\nimport { ${data.project.moduleName}Events } from './${data.project.name}.types';\n`
+    : '';
+  const webEventType = features.includes('Event') ? `${data.project.moduleName}Events` : '{}';
+  const webModuleSnippets = await buildWebModuleSnippets(snippetsDir, features, data);
+
+  // Build combined module import line for App.tsx
+  const needsDefaultImport = features.some((f) =>
+    (['Constant', 'Function', 'AsyncFunction', 'Event'] as string[]).includes(f)
+  );
+  const moduleNamedImports: string[] = [];
+  if (features.includes('View')) moduleNamedImports.push(data.project.viewName);
+  if (features.includes('SharedObject'))
+    moduleNamedImports.push(`use${data.project.sharedObjectName}`);
+
+  let appModuleCombinedImport = '';
+  if (needsDefaultImport || moduleNamedImports.length > 0) {
+    const parts: string[] = [];
+    if (needsDefaultImport) parts.push(data.project.name);
+    if (moduleNamedImports.length > 0) parts.push(`{ ${moduleNamedImports.join(', ')} }`);
+    appModuleCombinedImport = `import ${parts.join(', ')} from '${data.project.slug}';\n`;
+  }
+
+  const [appReactImportSnippets, appExternalImportSnippets, appHookSnippets, appJSXSnippets] =
+    await Promise.all([
+      buildAppSnippets(snippetsDir, features, data, 'react-imports'),
+      buildAppSnippets(snippetsDir, features, data, 'external-imports'),
+      buildAppSnippets(snippetsDir, features, data, 'hooks'),
+      buildAppSnippets(snippetsDir, features, data, 'jsx'),
+    ]);
+
+  const augmentedData = {
+    ...data,
+    moduleSnippetsSwift,
+    moduleSnippetsKt,
+    viewSnippetsSwift,
+    viewSnippetsKt,
+    webEventImport,
+    webEventType,
+    webModuleSnippets,
+    appModuleCombinedImport,
+    appExternalImportSnippets,
+    appReactImportSnippets,
+    appHookSnippets,
+    appJSXSnippets,
+  };
+
   const files = await getFilesAsync(templatePath);
 
-  // Iterate through all template files.
   for (const file of files) {
     // Skip platform-specific directories when the platform was not selected.
     const topLevelDir = file.split(path.sep)[0] ?? '';
@@ -514,7 +693,14 @@ async function createModuleFromTemplate(
       continue;
     }
 
-    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
+    // Skip standalone-only files and directories for local modules.
+    if (data.type === 'local') {
+      if (LOCAL_EXCLUDED_FILES.has(file) || LOCAL_EXCLUDED_DIRS.has(topLevelDir)) {
+        continue;
+      }
+    }
+
+    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), augmentedData, {
       openDelimiter: '{',
       closeDelimiter: '}',
       escape: (value: string) => value.replace(/\./g, path.sep),
@@ -522,13 +708,20 @@ async function createModuleFromTemplate(
     const fromPath = path.join(templatePath, file);
     const toPath = path.join(targetPath, renderedRelativePath);
     const template = await fs.promises.readFile(fromPath, 'utf8');
-    const renderedContent = ejs.render(template, data);
+    const renderedContent = ejs.render(template, augmentedData);
 
     if (!fs.existsSync(path.dirname(toPath))) {
       await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
     }
     await fs.promises.writeFile(toPath, renderedContent, 'utf8');
   }
+
+  await copyFileSnippets(
+    snippetsDir,
+    features,
+    augmentedData as SubstitutionData | LocalSubstitutionData,
+    targetPath
+  );
 }
 
 async function createGitRepositoryAsync(targetDir: string) {
@@ -605,9 +798,10 @@ async function askForSubstitutionDataAsync(
   const interactive = isInteractive();
 
   const platforms = await resolvePlatformsAsync(isLocal, interactive, options);
+  const features = await resolveFeaturesAsync(interactive, options);
 
   if (!interactive) {
-    return getSubstitutionDataFromOptions(slug, isLocal, options, platforms);
+    return getSubstitutionDataFromOptions(slug, isLocal, options, platforms, features);
   }
 
   // Interactive mode: prompt for values, but skip prompts for CLI-provided values
@@ -633,17 +827,8 @@ async function askForSubstitutionDataAsync(
 
   // Merge CLI-provided values with prompted values
   const rawName = options.name ?? promptedValues.name ?? slugToModuleName(slug);
-  const { name, wasRenamed } = ensureSafeModuleName(rawName);
+  const name = resolveModuleName(rawName);
   const projectPackage = options.package ?? promptedValues.package ?? slugToAndroidPackage(slug);
-
-  if (wasRenamed) {
-    console.log();
-    console.log(
-      chalk.yellow(
-        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
-      )
-    );
-  }
 
   if (isLocal) {
     return {
@@ -653,7 +838,9 @@ async function askForSubstitutionDataAsync(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
         platforms,
+        features,
       },
       type: 'local',
     };
@@ -678,12 +865,14 @@ async function askForSubstitutionDataAsync(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
       platforms,
+      features,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
     repo,
-    type: 'remote',
+    type: 'standalone',
   };
 }
 
@@ -718,20 +907,12 @@ async function getSubstitutionDataFromOptions(
   slug: string,
   isLocal: boolean,
   options: CommandOptions,
-  platforms: Platform[]
+  platforms: Platform[],
+  features: Feature[]
 ): Promise<SubstitutionData | LocalSubstitutionData> {
   const rawName = options.name ?? slugToModuleName(slug);
-  const { name, wasRenamed } = ensureSafeModuleName(rawName);
+  const name = resolveModuleName(rawName);
   const projectPackage = options.package ?? slugToAndroidPackage(slug);
-
-  if (wasRenamed) {
-    console.log();
-    console.log(
-      chalk.yellow(
-        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
-      )
-    );
-  }
 
   debug(`Non-interactive mode: name="${name}", package="${projectPackage}"`);
 
@@ -743,13 +924,15 @@ async function getSubstitutionDataFromOptions(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
         platforms,
+        features,
       },
       type: 'local',
     };
   }
 
-  // For remote modules, resolve author info
+  // For standalone modules, resolve author info
   const description = options.description ?? 'My new module';
   const authorName = options.authorName ?? (await findMyName()) ?? '';
   const authorEmail = options.authorEmail ?? (await findGitHubEmail()) ?? '';
@@ -770,12 +953,14 @@ async function getSubstitutionDataFromOptions(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
       platforms,
+      features,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
     repo,
-    type: 'remote',
+    type: 'standalone',
   };
 }
 
@@ -825,16 +1010,22 @@ async function generateBarrelFileAsync(
   targetPath: string,
   data: LocalSubstitutionData
 ): Promise<void> {
-  const { moduleName, viewName, name } = data.project;
-  const content = [
+  const { moduleName, viewName, sharedObjectName, name, features } = data.project;
+  const lines = [
     `// Re-export the native module. On web, it will be resolved to ${moduleName}.web.ts`,
     `// and on native platforms to ${moduleName}.ts`,
     `export { default } from './src/${moduleName}';`,
-    `export { default as ${viewName} } from './src/${viewName}';`,
-    `export * from './src/${name}.types';`,
-    '',
-  ].join('\n');
-  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), content, 'utf8');
+  ];
+  if (features.includes('View')) {
+    lines.push(`export { default as ${viewName} } from './src/${viewName}';`);
+  }
+  if (features.includes('SharedObject')) {
+    lines.push(
+      `export { create${sharedObjectName}, use${sharedObjectName} } from './src/${sharedObjectName}';`
+    );
+  }
+  lines.push(`export * from './src/${name}.types';`, '');
+  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), lines.join('\n'), 'utf8');
 }
 
 /**
@@ -863,29 +1054,25 @@ function printFurtherInstructions(
 }
 
 function printFurtherLocalInstructions(
-  slug: string,
   moduleName: string,
   viewName: string,
   name: string,
-  barrel: boolean
+  barrel: boolean,
+  relativePath: string
 ) {
   console.log();
   console.log(`You can now import this module inside your application.`);
   console.log(`For example, you can add these lines to your App.tsx or App.js file:`);
   if (barrel) {
-    console.log(
-      chalk.gray.italic(`import ${moduleName}, { ${viewName} } from './modules/${slug}';`)
-    );
+    console.log(chalk.gray.italic(`import ${moduleName}, { ${viewName} } from '${relativePath}';`));
   } else {
     console.log(
-      chalk.gray.italic(`import ${moduleName} from './modules/${slug}/src/${moduleName}';`)
+      chalk.gray.italic(`import ${moduleName} from '${relativePath}/src/${moduleName}';`)
     );
     console.log(
-      chalk.gray.italic(
-        `import { default as ${viewName} } from './modules/${slug}/src/${viewName}';`
-      )
+      chalk.gray.italic(`import { default as ${viewName} } from '${relativePath}/src/${viewName}';`)
     );
-    console.log(chalk.gray.italic(`import type { } from './modules/${slug}/src/${name}.types';`));
+    console.log(chalk.gray.italic(`import type { } from '${relativePath}/src/${name}.types';`));
   }
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
@@ -932,10 +1119,19 @@ program
     '-p, --platform <platforms...>',
     `Target platforms for the module. Available values: ${ALL_PLATFORMS.join(', ')}.`
   )
+  .option(
+    '--features <features...>',
+    `Feature examples to include in the module. Use "all" to include all features, or specify any of: ${ALL_FEATURES.join(', ')}.`
+  )
+  .option('--full-example', 'Include all available feature examples.', false)
   .action(main);
 
-program
-  .hook('postAction', async () => {
-    await getTelemetryClient().flush?.();
-  })
-  .parse(process.argv);
+program.hook('postAction', async () => {
+  await getTelemetryClient().flush?.();
+});
+
+const isInProcessUnitTest =
+  !!process.env.JEST_WORKER_ID && !process.argv[1]?.includes('create-expo-module');
+if (!isInProcessUnitTest) {
+  program.parse(process.argv);
+}

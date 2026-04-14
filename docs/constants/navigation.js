@@ -248,7 +248,7 @@ export const general = [
     makeGroup('Router 101', [
       makePage('router/basics/core-concepts.mdx'),
       makePage('router/basics/notation.mdx'),
-      makePage('router/basics/layout.mdx'),
+      makePage('router/basics/navigation-layouts.mdx'),
       makePage('router/basics/navigation.mdx'),
       makePage('router/basics/common-navigation-patterns.mdx'),
     ]),
@@ -694,10 +694,20 @@ const versionsReference = VERSIONS.reduce(
       makeSection('Configuration files', pagesFromDir(`versions/${version}/config`), {
         expanded: true,
       }),
+      ...(fs.existsSync(path.resolve(PAGES_DIR, `versions/${version}/sdk/router`))
+        ? [
+            makeSection('Expo Router', pagesFromDir(`versions/${version}/sdk/router`), {
+              expanded: true,
+              hideIcon: true,
+            }),
+          ]
+        : []),
       makeSection(
         'Expo SDK',
         shiftEntryToFront(
-          pagesFromDir(`versions/${version}/sdk`).filter(entry => !entry.inExpoGo),
+          pagesFromDir(`versions/${version}/sdk`).filter(
+            entry => !entry.inExpoGo && entry.name !== 'Router'
+          ),
           entry => entry.name === 'Expo'
         ),
         { expanded: true }
