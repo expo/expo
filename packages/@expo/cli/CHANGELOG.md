@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Resolve `expo-splash-screen` image assets in the manifest middleware so Expo Go can display configured splash screens. ([#44732](https://github.com/expo/expo/pull/44732) by [@zoontek](https://github.com/zoontek))
 - Output logs to `.expo` folder for agent processes. ([#44146](https://github.com/expo/expo/pull/44146) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow `expo start`, `expo export`, and `expo config` to work without `react-native` installed for web-only projects. ([#44294](https://github.com/expo/expo/pull/44294) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass optional name to metro require for async modules. ([#44224](https://github.com/expo/expo/pull/44224) by [@EvanBacon](https://github.com/EvanBacon))

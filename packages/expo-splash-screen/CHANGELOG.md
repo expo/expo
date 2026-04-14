@@ -16,6 +16,7 @@
 
 ### 💡 Others
 
+- Elevate resolved splash screen configs to the manifest so Expo Go honors `expo-splash-screen` plugin props. ([#44732](https://github.com/expo/expo/pull/44732) by [@zoontek](https://github.com/zoontek))
 - Moved splash screen config plugins from `@expo/prebuild-config` into `expo-splash-screen`. ([#44598](https://github.com/expo/expo/pull/44598) by [@zoontek](https://github.com/zoontek))
 - [Android] Updated `androidx.core:core-splashscreen` from `1.2.0-alpha02` to `1.2.0`. ([#44584](https://github.com/expo/expo/pull/44584) by [@zoontek](https://github.com/zoontek))
 - Make `backgroundColor` plugin prop optional, defaulting to `#ffffff`. ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
