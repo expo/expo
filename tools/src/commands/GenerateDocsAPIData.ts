@@ -42,6 +42,8 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/group': ['swift-ui/Group/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/host': ['swift-ui/Host/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/hstack': ['swift-ui/HStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/lazyhstack': ['swift-ui/LazyHStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/lazyvstack': ['swift-ui/LazyVStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/image': ['swift-ui/Image/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/label': ['swift-ui/Label/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/linearprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
