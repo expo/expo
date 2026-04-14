@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace tar dependency logic with `multitars` package ([#44764](https://github.com/expo/expo/pull/44764) by [@kitten](https://github.com/kitten))
+
 ## 3.6.12 — 2026-04-13
 
 _This version does not introduce any user-facing changes._
