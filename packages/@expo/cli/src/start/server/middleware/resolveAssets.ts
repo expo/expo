@@ -108,12 +108,18 @@ export async function resolveSplashScreenAssets(
     );
   };
 
-  const androidImageKeys = ['image', 'mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'] satisfies Array<
-    keyof NonNullable<AndroidSplashConfig['dark']>
-  >;
-  const iosImageKeys = ['image', 'tabletImage'] satisfies Array<
-    keyof NonNullable<IOSSplashConfig['dark']>
-  >;
+  const androidImageKeys = [
+    'image',
+    'mdpi',
+    'hdpi',
+    'xhdpi',
+    'xxhdpi',
+    'xxxhdpi',
+  ] satisfies (keyof NonNullable<AndroidSplashConfig['dark']>)[];
+
+  const iosImageKeys = ['image', 'tabletImage'] satisfies (keyof NonNullable<
+    IOSSplashConfig['dark']
+  >)[];
 
   await Promise.all([
     resolveKeys(splash.android, androidImageKeys),
