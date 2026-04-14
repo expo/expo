@@ -4,16 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RecomposeScope
 import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.key
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
@@ -23,34 +19,22 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.ViewEvent
 import expo.modules.kotlin.viewevent.ViewEventDelegate
 
-data class ComposableScope(
-  val rowScope: RowScope? = null,
-  val columnScope: ColumnScope? = null,
-  val boxScope: BoxScope? = null,
-  val nestedScrollConnection: NestedScrollConnection? = null
-)
+/**
+ * A scope interface passed through the compose view hierarchy.
+ * Downstream packages (e.g. expo-ui) can implement this interface
+ * to provide strongly-typed layout and context properties.
+ */
+interface ComposableScope
 
-inline fun ComposableScope.withIf(
+private object EmptyComposableScope : ComposableScope
+
+fun ComposableScope(): ComposableScope = EmptyComposableScope
+
+inline fun <T : ComposableScope> T.withIf(
   condition: Boolean,
-  block: ComposableScope.() -> ComposableScope
-): ComposableScope {
+  block: T.() -> T
+): T {
   return if (condition) block() else this
-}
-
-fun ComposableScope.with(rowScope: RowScope?): ComposableScope {
-  return this.copy(rowScope = rowScope)
-}
-
-fun ComposableScope.with(columnScope: ColumnScope?): ComposableScope {
-  return this.copy(columnScope = columnScope)
-}
-
-fun ComposableScope.with(boxScope: BoxScope?): ComposableScope {
-  return this.copy(boxScope = boxScope)
-}
-
-fun ComposableScope.with(nestedScrollConnection: NestedScrollConnection?): ComposableScope {
-  return this.copy(nestedScrollConnection = nestedScrollConnection)
 }
 
 /**
