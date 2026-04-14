@@ -10,6 +10,7 @@
     "./package.json": "./package.json",
     "./static/template/*": "./static/template/*",
     ".": "./build/bin/cli",
+    "./ts-declarations/react-server-dom-webpack": "./ts-declarations/react-server-dom-webpack/index.d.ts",
     "./ts-declarations/*": "./ts-declarations/*",
     "./*": "./*.js",
     "./*.js": "./*.js"

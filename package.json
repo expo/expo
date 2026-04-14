@@ -40,6 +40,6 @@
     "expotools": "workspace:*",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^6.0.2"
   }
 }
