@@ -8,20 +8,29 @@ import { joinWithCommasAnd } from '../utils/strings';
 
 /**
  * Dependency traversal chains for critical transitive dependencies that should
- * not have their versions overridden via resolutions/overrides. Each chain is
- * an array of package names representing a path through the dependency graph.
- * The last entry is the package whose installed version is checked against the
- * range declared by its parent (second-to-last entry). Each package is resolved
- * from the previous package's directory using Node resolution, so this works
- * correctly with isolated node_modules layouts (e.g. pnpm). If any package
- * along the chain cannot be resolved, the check is skipped (e.g. expo-router
- * is optional).
+ * not have their versions overridden via resolutions/overrides.
+ *
+ * When users upgrade, they tend to run into issues if they've added resolutions
+ * or overrides that break our expectations of which versions of packages are installed.
+ * There's a few internal dependencies that should never not pass version checks.
+ *
+ * To check these, we walk the dependency paths defined here and check the last
+ * package's version against the penultimate package's range.
+ *
+ * NOTE: Only add packages here that cannot be overridden in most cases, and are known
+ * to cause build failures if they are overridden! Typically, that doesn't include
+ * Expo Modules.
  */
 const dependencyChains: [...string[], string, string][] = [
+  // these are critical versions tied to an SDK release that mustn't be changed
   ['expo', '@expo/cli'],
+  ['expo', '@expo/config'],
+  ['expo', '@expo/metro-config'],
 
+  // @expo/metro-runtime is a peer, and often resolved to mute peer warnings, instead of being upgraded
   ['expo-router', '@expo/metro-runtime'],
 
+  // metro packages are commonly resolved, and this will cause issues
   ['expo', '@expo/metro', 'metro'],
   ['expo', '@expo/metro', 'metro-babel-transformer'],
   ['expo', '@expo/metro', 'metro-cache'],
