@@ -28,6 +28,7 @@
 
 ### 🎉 New features
 
+- [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44681](https://github.com/expo/expo/pull/44681) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `ObservableState` shared object and `useNativeState` hook for controlling native Compose state from JS. ([#44655](https://github.com/expo/expo/pull/44655) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))
 - add ExposedDropdownMenuBox ([#44201](https://github.com/expo/expo/pull/44201) by [@vonovak](https://github.com/vonovak))
