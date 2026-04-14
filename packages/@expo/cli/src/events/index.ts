@@ -44,16 +44,13 @@ export function getWellKnownTemporaryLogFile(projectRoot: string, command: strin
   return path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`);
 }
 
-
 /** Activates the event logger.
  *
  * Accepts either a log target string (file path, fd number, or `$LOG_EVENTS`),
  * or a `projectRoot` + `command` pair to log to `.expo/dev/logs/<command>.log`.
  * Subsequent calls are no-ops — the first activated destination wins.
  */
-export function installEventLogger(
-  env: string | undefined = process.env.LOG_EVENTS,
-) {
+export function installEventLogger(env: string | undefined = process.env.LOG_EVENTS) {
   if (logStream) return;
   const eventLogDestination = parseLogTarget(env);
   if (eventLogDestination) {

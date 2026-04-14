@@ -1,4 +1,5 @@
 import { Writable } from 'node:stream';
+
 import { getWellKnownTemporaryLogFile } from '..';
 
 const originalConsole = globalThis.console;

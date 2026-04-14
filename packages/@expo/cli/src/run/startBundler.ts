@@ -1,13 +1,13 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { getWellKnownTemporaryLogFile, installEventLogger } from '../events';
 import * as Log from '../log';
 import { startInterfaceAsync } from '../start/interface/startInterface';
 import { BundlerStartOptions } from '../start/server/BundlerDevServer';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
-import { getWellKnownTemporaryLogFile, installEventLogger } from '../events';
 
 export async function startBundlerAsync(
   projectRoot: string,
