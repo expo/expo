@@ -51,15 +51,15 @@ class NetworkModule : Module() {
       // defensively on all API 29+ devices.
       //
       // Instead, we compare the lost network against the current active network.
-      // If they match (or activeNetwork is null), there is no replacement 
-      // network and we emit a disconnected state directly. If a different 
-      // network is active (e.g. cellular), we emit 
+      // If they match (or activeNetwork is null), there is no replacement
+      // network and we emit a disconnected state directly. If a different
+      // network is active (e.g. cellular), we emit
       // its state instead.
       //
-      // Note: android.net.Network.equals() compares by netId, so the check 
+      // Note: android.net.Network.equals() compares by netId, so the check
       // below is a reliable "same network" comparison.
       //
-      // We still post to the main looper because sendEvent must run on the 
+      // We still post to the main looper because sendEvent must run on the
       // main thread; we just skip the artificial delay.
       mainHandler.post {
         try {
@@ -81,13 +81,13 @@ class NetworkModule : Module() {
           Log.w(TAG, "expo-network could not read network state in onLost: missing ACCESS_NETWORK_STATE permission", e)
         } catch (e: Exception) {
           // The runnable may outlive the module if the React context is torn
-          // down between the ConnectivityManager.NetworkCallback firing and 
+          // down between the ConnectivityManager.NetworkCallback firing and
           // the posted runnable executing. In that case, the `connectivityManager`
           // getter throws `ReactContextLost` when it
-          // attempts to resolve `appContext.reactContext`. Since 
-          // unregisterNetworkCallback only prevents future callbacks and 
-          // cannot cancel a runnable that is already in the queue, we must 
-          // catch teardown-time exceptions here to avoid crashing the 
+          // attempts to resolve `appContext.reactContext`. Since
+          // unregisterNetworkCallback only prevents future callbacks and
+          // cannot cancel a runnable that is already in the queue, we must
+          // catch teardown-time exceptions here to avoid crashing the
           // host app's main thread.
           Log.w(TAG, "expo-network dropped a network state update during teardown (the module or React context is no longer available)", e)
         }
