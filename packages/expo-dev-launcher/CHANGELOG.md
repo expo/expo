@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [macOS] Fix LocalNetworkPermissionView max height ([#44745](https://github.com/expo/expo/pull/44745) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 55.0.36 — 2026-05-19
