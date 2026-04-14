@@ -1,37 +1,27 @@
-import { createGlobFilter, modifyFileDuringPipe } from '../createFileTransform';
+import { TarTypeFlag } from 'multitars';
 
-describe(modifyFileDuringPipe, () => {
+import { createEntryRenamer, createGlobFilter } from '../createFileTransform';
+
+describe(createEntryRenamer, () => {
+  const rename = createEntryRenamer('');
+
   it(`renames _vscode to .vscode`, () => {
-    expect(
-      modifyFileDuringPipe({
-        path: 'package/_vscode/',
-        type: 'File',
-      }).path
-    ).toEqual('package/.vscode/');
+    expect(rename('package/_vscode/', TarTypeFlag.FILE)).toEqual('package/.vscode/');
   });
   it(`renames files within _vscode to .vscode`, () => {
-    expect(
-      modifyFileDuringPipe({
-        path: 'package/_vscode/settings.json',
-        type: 'File',
-      }).path
-    ).toEqual('package/.vscode/settings.json');
+    expect(rename('package/_vscode/settings.json', TarTypeFlag.FILE)).toEqual(
+      'package/.vscode/settings.json'
+    );
   });
   it(`does not rename extraneous _ segments`, () => {
-    expect(
-      modifyFileDuringPipe({
-        path: '_package/_vscode/settings.json',
-        type: 'File',
-      }).path
-    ).toEqual('_package/.vscode/settings.json');
+    expect(rename('_package/_vscode/settings.json', TarTypeFlag.FILE)).toEqual(
+      '_package/.vscode/settings.json'
+    );
   });
   it(`does not rename multiple instances of _vscode`, () => {
-    expect(
-      modifyFileDuringPipe({
-        path: '_package/_vscode/foo/_vscode/settings.json',
-        type: 'File',
-      }).path
-    ).toEqual('_package/.vscode/foo/_vscode/settings.json');
+    expect(rename('_package/_vscode/foo/_vscode/settings.json', TarTypeFlag.FILE)).toEqual(
+      '_package/.vscode/foo/_vscode/settings.json'
+    );
   });
 });
 

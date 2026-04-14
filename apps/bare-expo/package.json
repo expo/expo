@@ -25,8 +25,7 @@
       "exclude": [
         "expo-ads-facebook",
         "expo-ads-admob",
-        "expo-module-template",
-        "expo-module-template-local"
+        "expo-module-template"
       ],
       "ios": {
         "flags": {

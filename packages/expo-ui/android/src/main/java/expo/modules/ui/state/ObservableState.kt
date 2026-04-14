@@ -17,4 +17,9 @@ class ObservableState(initialValue: Any? = null) : SharedObject() {
     set(v) {
       _state.value = v
     }
+
+  @Suppress("UNCHECKED_CAST")
+  fun <T> binding(fallback: T): T {
+    return (_state.value as? T) ?: fallback
+  }
 }

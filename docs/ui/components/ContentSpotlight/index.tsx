@@ -112,7 +112,7 @@ export function ContentSpotlight({
       {caption && (
         <figcaption
           className={mergeClasses(
-            'text-secondary mt-3.5 cursor-text px-8 py-2 text-center text-xs',
+            'text-secondary mt-3.5 cursor-text px-8 py-2 text-center text-sm',
             isVideo && 'bg-transparent'
           )}>
           {caption}

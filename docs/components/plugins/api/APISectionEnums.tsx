@@ -46,7 +46,7 @@ function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefin
             </H4>
             <APISectionPlatformTags comment={enumValue.comment} disableFallback className="mb-1" />
           </div>
-          <MONOSPACE className="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere">
+          <MONOSPACE className="text-tertiary mb-2 inline-flex text-xs wrap-anywhere">
             {`${name}.${enumValue.name} ＝ ${renderEnumValue(
               enumValue.type.value,
               enumValue.type.name

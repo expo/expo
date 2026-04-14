@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @config '../tailwind.config.cjs';
 
+@import './tailwind-compat.css';
+
 @layer base {
   html {
     @apply bg-default;
@@ -149,7 +151,7 @@ div.tippy-box {
 /* Diff */
 
 .diff-unified {
-  @apply text-2xs;
+  @apply text-xs;
   border-collapse: collapse;
   white-space: pre-wrap;
   width: 100%;
@@ -177,7 +179,7 @@ div.tippy-box {
 }
 
 .diff-gutter {
-  @apply text-3xs px-1;
+  @apply px-1 text-xs;
   text-align: right;
   user-select: none;
 }

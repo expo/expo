@@ -92,16 +92,21 @@ const withLocalNetworkPermission = (config) => {
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {}) => {
     (0, pluginConfig_1.validateConfig)(props);
+    const androidDefaultLaunchURL = props.android?.defaultLaunchURL ?? props.defaultLaunchURL;
+    const iosDefaultLaunchURL = props.ios?.defaultLaunchURL ?? props.defaultLaunchURL;
     const iOSLaunchMode = props.ios?.launchMode ??
         props.launchMode ??
         props.ios?.launchModeExperimental ??
         props.launchModeExperimental;
-    if (iOSLaunchMode === 'launcher') {
-        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+    config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+        if (iOSLaunchMode === 'launcher') {
             config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
-            return config;
-        });
-    }
+        }
+        if (iosDefaultLaunchURL) {
+            config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URL'] = iosDefaultLaunchURL;
+        }
+        return config;
+    });
     const iOSToolsButton = props.ios?.toolsButton ?? props.toolsButton;
     if (iOSToolsButton !== undefined) {
         config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
@@ -120,13 +125,16 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
         props.launchMode ??
         props.android?.launchModeExperimental ??
         props.launchModeExperimental;
-    if (androidLaunchMode === 'launcher') {
-        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
-            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+    config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+        if (androidLaunchMode === 'launcher') {
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE', false?.toString());
-            return config;
-        });
-    }
+        }
+        if (androidDefaultLaunchURL) {
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'DEV_CLIENT_DEFAULT_LAUNCHER_URL', androidDefaultLaunchURL);
+        }
+        return config;
+    });
     const androidToolsButton = props.android?.toolsButton ?? props.toolsButton;
     if (androidToolsButton !== undefined) {
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
