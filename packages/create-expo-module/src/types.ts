@@ -23,6 +23,8 @@ export type CommandOptions = {
   authorEmail?: string;
   authorUrl?: string;
   repo?: string;
+  license?: string;
+  moduleVersion?: string;
   platform?: Platform[];
   features?: Feature[];
   fullExample?: boolean;

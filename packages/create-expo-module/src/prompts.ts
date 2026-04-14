@@ -124,6 +124,20 @@ export async function getSubstitutionDataPrompts(slug: string): Promise<PromptOb
       initial: async (_, answers: Answers<string>) => await guessRepoUrl(answers.authorUrl, slug),
       validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
     },
+    {
+      type: 'text',
+      name: 'license',
+      message: 'What license does the module use?',
+      initial: 'MIT',
+      validate: (input) => !!input || 'The license cannot be empty',
+    },
+    {
+      type: 'text',
+      name: 'version',
+      message: 'What is the initial version of the module?',
+      initial: '0.1.0',
+      validate: (input) => !!input || 'The version cannot be empty',
+    },
   ];
 }
 
