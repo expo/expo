@@ -208,6 +208,7 @@ function Screen(props: {
   return (
     <Tabs.Screen
       {...options}
+      pointerEvents={isFocused ? 'box-none' : 'none'}
       overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets}
       tabBarItemBadgeBackgroundColor={
         standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor
