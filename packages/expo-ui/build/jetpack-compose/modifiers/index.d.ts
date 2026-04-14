@@ -167,6 +167,13 @@ export declare const align: (alignment: Alignment) => import("./createModifier")
  */
 export declare const matchParentSize: () => import("./createModifier").ModifierConfig;
 /**
+ * Marks a composable as the anchor for an `ExposedDropdownMenuBox`.
+ * Only works when used inside `ExposedDropdownMenuBox`.
+ * @param type - Anchor type. Currently only `'primaryNotEditable'` is supported.
+ * @param enabled - Whether the anchor is enabled. Defaults to `true`.
+ */
+export declare const menuAnchor: (type?: "primaryNotEditable", enabled?: boolean) => import("./createModifier").ModifierConfig;
+/**
  * Makes the view clickable.
  * @param handler - Function to call when clicked.
  * @param options - Optional configuration.
