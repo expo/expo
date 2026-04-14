@@ -45,7 +45,3 @@ struct DevMenuRootView: View {
 #endif
   }
 }
-
-#Preview {
-  DevMenuRootView()
-}
