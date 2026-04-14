@@ -82,36 +82,33 @@ export class DependencyVersionOverrideCheck implements DoctorCheck {
 
     const allOverrides = getOverridesEntries(pkg);
 
-    for (const chain of dependencyChains) {
+    const checkChain = (chain: [...string[], string, string]) => {
       const dependencyName = chain[chain.length - 1]!;
       const parentName = chain[chain.length - 2]!;
 
       // Walk the chain, resolving each package from the previous package's directory
       let resolveDir = projectRoot;
       let parentResolved: ResolvedPackage | undefined;
-      let chainValid = true;
       for (let idx = 0; idx < chain.length - 1; idx++) {
         const parentPackageName = chain[idx]!;
         const childPackageName = chain[idx + 1]!;
         const resolved = resolvePackage(resolveDir, parentPackageName);
-        if (!resolved || !resolved?.pkg.dependencies?.[childPackageName]) {
-          chainValid = false;
-          break;
+        if (!resolved?.pkg.dependencies?.[childPackageName]) {
+          return;
         }
         resolveDir = resolved.dir;
         parentResolved = resolved;
       }
 
-      const childPackageName = chain[chain.length - 1]!;
-      const expectedRange = parentResolved?.pkg.dependencies?.[childPackageName];
-      if (!chainValid || !parentResolved || !expectedRange) {
-        continue;
+      const expectedRange = parentResolved?.pkg.dependencies?.[dependencyName];
+      if (!parentResolved || !expectedRange) {
+        return;
       }
 
-      const installedResolved = resolvePackage(parentResolved.dir, childPackageName);
+      const installedResolved = resolvePackage(parentResolved.dir, dependencyName);
       const actualVersion = installedResolved?.pkg.version;
       if (!actualVersion || !semver.valid(actualVersion)) {
-        continue;
+        return;
       }
 
       if (!semver.satisfies(actualVersion, expectedRange)) {
@@ -122,6 +119,10 @@ export class DependencyVersionOverrideCheck implements DoctorCheck {
           overriddenPackages.push(dependencyName);
         }
       }
+    };
+
+    for (const chain of dependencyChains) {
+      checkChain(chain);
     }
 
     const advice: string[] = [];
