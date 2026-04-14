@@ -666,8 +666,6 @@ function getViewTypesDeclarationsForModule(
   return joinTSNodesWithNewlines([
     getPrefix(),
 
-    getOneNamedImport('SharedObject', 'expo'),
-    getOneNamedImport('ViewProps', 'react-native'),
     [...undeclaredTypeIdentifiers].map((identifier) =>
       getIdentifierUnknownDeclaration(
         identifier,
@@ -733,7 +731,6 @@ function getGeneratedJSXIntrinsicsViewDeclarationForModule(
 
   return joinTSNodesWithNewlines([
     getPrefix(),
-    getOneNamedImport('ViewProps', 'react-native'),
     [...undeclaredTypeIdentifiers].map((identifier) =>
       getIdentifierUnknownDeclaration(
         identifier,
@@ -769,8 +766,6 @@ function getGeneratedFileDeclarationsForModule(
   return joinTSNodesWithNewlines([
     getPrefix(),
     getOneNamedImport('NativeModule', 'expo'),
-    mainView ? getOneNamedImport('SharedObject', 'expo') : [],
-    mainView ? getOneNamedImport('ViewProps', 'react-native') : [],
     getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers),
     recordTypes.flatMap(recordDeclarationMap),
     enumTypes.flatMap(enumDeclarationMap),
