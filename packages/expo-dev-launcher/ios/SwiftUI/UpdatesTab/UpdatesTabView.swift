@@ -26,6 +26,9 @@ struct UpdatesTabView: View {
   }
 }
 
+#if compiler(>=5.9)
+@available(iOS 17.0, *)
 #Preview {
   UpdatesTabView()
 }
+#endif

@@ -191,7 +191,10 @@ struct UpdatesListView: View {
   }
 }
 
+#if compiler(>=5.9)
+@available(iOS 17.0, *)
 #Preview {
   UpdatesListView()
 }
+#endif
 // swiftlint:enable closure_body_length

@@ -40,6 +40,9 @@ struct NotSignedInView: View {
   }
 }
 
+#if compiler(>=5.9)
+@available(iOS 17.0, *)
 #Preview {
   NotSignedInView()
 }
+#endif

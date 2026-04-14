@@ -272,7 +272,10 @@ struct SettingsTabView: View {
   #endif
 }
 
+#if compiler(>=5.9)
+@available(iOS 17.0, *)
 #Preview {
   SettingsTabView()
     .environmentObject(DevLauncherViewModel())
 }
+#endif
