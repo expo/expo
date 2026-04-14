@@ -1,6 +1,6 @@
+import { TarTypeFlag } from 'multitars';
 import path from 'path';
 import picomatch from 'picomatch';
-import type { ReadEntry } from 'tar';
 
 const debug = require('debug')('expo:init:fileTransform') as typeof console.log;
 
@@ -17,50 +17,39 @@ const SUPPORTED_DIRECTORIES_PATTERN = new RegExp(
   `(^|/|\\\\)_(${SUPPORTED_DIRECTORIES.join('|')})(/|\\\\|$)`
 );
 
-function applyNameDuringPipe(entry: Pick<ReadEntry, 'path'>, name: string) {
-  if (name) {
-    // Rewrite paths for bare workflow
-    entry.path = entry.path
-      .replace(
-        /HelloWorld/g,
-        entry.path.includes('android') ? sanitizedName(name.toLowerCase()) : sanitizedName(name)
-      )
-      .replace(/helloworld/g, sanitizedName(name).toLowerCase());
-  }
-  return entry;
-}
-
-const ENTRY_FILE_PATTERN = /^file$/i;
-const ENTRY_FILE_OR_DIRECTORY_PATTERN = /^(file|directory)$/i;
-
-export function modifyFileDuringPipe(entry: Pick<ReadEntry, 'path' | 'type'>) {
-  if (!entry.type) return entry;
-
-  if (ENTRY_FILE_PATTERN.test(entry.type) && path.basename(entry.path) === 'gitignore') {
-    // Rename `gitignore` because npm ignores files named `.gitignore` when publishing.
-    // See: https://github.com/npm/npm/issues/1862
-    entry.path = entry.path.replace(/gitignore$/, '.gitignore');
-  }
-
-  if (ENTRY_FILE_OR_DIRECTORY_PATTERN.test(entry.type)) {
+function renameDirectories(input: string, typeflag: TarTypeFlag): string {
+  if (typeflag === TarTypeFlag.FILE || typeflag === TarTypeFlag.DIRECTORY) {
     // Detect if the file contains one of the supported directories
     // and rename it to the correct format.
     // For example, if the file is `_vscode`, we want to rename it to `.vscode`.
-
-    // Match one instance of the supported directory name, starting with an underscore, and containing slashes on both sides.
-    entry.path = entry.path.replace(
-      SUPPORTED_DIRECTORIES_PATTERN,
-      (match, p1, p2, p3) => `${p1}.${p2}${p3}`
-    );
+    input = input.replace(SUPPORTED_DIRECTORIES_PATTERN, (match, p1, p2, p3) => `${p1}.${p2}${p3}`);
   }
-
-  return entry;
+  return input;
 }
 
-export function createEntryResolver(name: string) {
-  return (entry: ReadEntry) => {
-    applyNameDuringPipe(entry, name);
-    modifyFileDuringPipe(entry);
+function renameConfigs(input: string, typeflag: TarTypeFlag): string {
+  if (typeflag === TarTypeFlag.FILE && path.basename(input) === 'gitignore') {
+    // Rename `gitignore` because npm ignores files named `.gitignore` when publishing.
+    // See: https://github.com/npm/npm/issues/1862
+    input = input.replace(/gitignore$/, '.gitignore');
+  }
+  return input;
+}
+
+export function createEntryRenamer(name: string) {
+  return (input: string, typeflag: TarTypeFlag): string => {
+    if (name) {
+      // Rewrite paths for bare workflow
+      input = input
+        .replace(
+          /HelloWorld/g,
+          input.includes('android') ? sanitizedName(name.toLowerCase()) : sanitizedName(name)
+        )
+        .replace(/helloworld/g, sanitizedName(name).toLowerCase());
+    }
+    input = renameConfigs(input, typeflag);
+    input = renameDirectories(input, typeflag);
+    return input;
   };
 }
 

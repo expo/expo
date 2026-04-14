@@ -2944,6 +2944,9 @@ importers:
       glob:
         specifier: ^13.0.0
         version: 13.0.6
+      multitars:
+        specifier: ^0.2.3
+        version: 0.2.4
       nock:
         specifier: ^14.0.10
         version: 14.0.11
@@ -2956,9 +2959,6 @@ importers:
       prompts:
         specifier: ^2.4.2
         version: 2.4.2
-      tar:
-        specifier: ^7.5.12
-        version: 7.5.12
       update-check:
         specifier: ^1.5.4
         version: 1.5.4
@@ -3022,15 +3022,15 @@ importers:
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
+      multitars:
+        specifier: ^0.2.3
+        version: 0.2.4
       ora:
         specifier: ^5.4.1
         version: 5.4.1
       prompts:
         specifier: ^2.4.2
         version: 2.4.2
-      tar:
-        specifier: ^7.5.12
-        version: 7.5.12
       validate-npm-package-name:
         specifier: ^6.0.2
         version: 6.0.2
