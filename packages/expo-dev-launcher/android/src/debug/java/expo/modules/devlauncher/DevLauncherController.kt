@@ -281,7 +281,20 @@ class DevLauncherController private constructor(
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
+  fun launchDefaultUrlOrNavigateToLauncher(scope: CoroutineScope, defaultLaunchUrl: Uri, activityToBeInvalidated: ReactActivity?) {
+    scope.launch{
+      try {
+        loadApp(defaultLaunchUrl, activityToBeInvalidated)
+      } catch (_: Throwable) {
+        navigateToLauncher()
+      }
+    }
+  }
+
   override fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
+    val defaultLaunchUrlValue = getMetadataValue(context, "DEV_CLIENT_DEFAULT_LAUNCHER_URL", "")
+    val defaultLaunchUrl = defaultLaunchUrlValue.toUri()
+    val useDefaultLaunchUrlFallback = defaultLaunchUrlValue.isNotEmpty()
     intent
       ?.data
       ?.let { uri ->
@@ -298,6 +311,11 @@ class DevLauncherController private constructor(
         if (!hasUrlQueryParam(uri)) {
           // edge case: this is a dev launcher url but it does not specify what url to open
           // fallback to navigating to the launcher home screen
+
+          if (useDefaultLaunchUrlFallback) {
+            launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+            return true
+          }
           navigateToLauncher()
           return true
         }
@@ -322,13 +340,12 @@ class DevLauncherController private constructor(
       val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
-        coroutineScope.launch {
-          try {
-            loadApp(lastOpenedApp.url.toUri(), activityToBeInvalidated)
-          } catch (_: Throwable) {
-            navigateToLauncher()
-          }
-        }
+        launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+        return true
+      }
+
+      if (useDefaultLaunchUrlFallback) {
+        launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
         return true
       }
       return handleExternalIntent(it)
