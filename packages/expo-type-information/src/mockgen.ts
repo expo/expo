@@ -189,14 +189,14 @@ function getMockedFunctionDeclaration(
   async: boolean,
   exported: boolean
 ): ts.FunctionDeclaration {
-  return getTsFunction(
+  return getTsFunction({
     functionDeclaration,
     async,
-    false,
+    method: false,
     exported,
-    false,
-    maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation)
-  ) as ts.FunctionDeclaration;
+    declaration: false,
+    returnStatement: maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation)
+  }) as ts.FunctionDeclaration;
 }
 
 function getMockedClass(

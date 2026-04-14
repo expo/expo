@@ -155,7 +155,14 @@ function getFunctionReturnBlock(functionDeclaration, fileTypeInformation) {
     return maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation);
 }
 function getMockedFunctionDeclaration(functionDeclaration, fileTypeInformation, async, exported) {
-    return (0, typescriptGeneration_1.getTsFunction)(functionDeclaration, async, false, exported, false, maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation));
+    return (0, typescriptGeneration_1.getTsFunction)({
+        functionDeclaration,
+        async,
+        method: false,
+        exported,
+        declaration: false,
+        returnStatement: maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation)
+    });
 }
 function getMockedClass(classDeclaration, fileTypeInformation) {
     return (0, typescriptGeneration_1.getTsClassDeclaration)(classDeclaration, fileTypeInformation, true, false, getFunctionReturnBlock);
