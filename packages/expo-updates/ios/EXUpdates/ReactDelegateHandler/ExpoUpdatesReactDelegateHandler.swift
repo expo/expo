@@ -146,7 +146,6 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
 
     return view
   }
-#endif
 
   /**
    Finds the nearest view controller that owns the given view by walking
@@ -163,6 +162,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     }
     return nil
   }
+#endif
 
   private func getWindow() -> UIWindow {
     #if os(macOS)
