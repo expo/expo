@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- Add `useClipboard` hook that returns the current clipboard text and a setter, with automatic re-renders on clipboard changes. ([#44734](https://github.com/expo/expo/pull/44734) by [@Nedunchezhiyan-M](https://github.com/Nedunchezhiyan-M))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

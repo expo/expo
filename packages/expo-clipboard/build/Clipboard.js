@@ -1,4 +1,6 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
+import { useCallback, useEffect, useState } from 'react';
+import { ContentType } from './Clipboard.types';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 /**
@@ -184,6 +186,51 @@ export function removeClipboardListener(subscription) {
  * `true` if the component is available, and `false` otherwise.
  */
 export const isPasteButtonAvailable = Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
+/**
+ * React hook that returns the current clipboard text content and a setter to update it.
+ * Automatically re-renders when the clipboard content changes.
+ *
+ * On Android and iOS, the hook subscribes to `addClipboardListener` to track changes.
+ * On web, `addClipboardListener` is a no-op, so changes from external sources are not tracked.
+ *
+ * @returns A tuple `[clipboardText, setClipboardText]` where:
+ * - `clipboardText` is the current plain-text content of the clipboard (empty string if unavailable).
+ * - `setClipboardText` is an async function that writes a string to the clipboard and updates the state.
+ *
+ * @example
+ * ```tsx
+ * import * as Clipboard from 'expo-clipboard';
+ *
+ * export default function App() {
+ *   const [clipboardText, setClipboardText] = Clipboard.useClipboard();
+ *
+ *   return (
+ *     <View>
+ *       <Text>Clipboard: {clipboardText}</Text>
+ *       <Button title="Copy 'hello'" onPress={() => setClipboardText('hello')} />
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
+export function useClipboard() {
+    const [clipboardText, setClipboardText] = useState('');
+    useEffect(() => {
+        getStringAsync().then(setClipboardText);
+        const subscription = addClipboardListener(({ contentTypes }) => {
+            if (contentTypes.includes(ContentType.PLAIN_TEXT) ||
+                contentTypes.includes(ContentType.HTML)) {
+                getStringAsync().then(setClipboardText);
+            }
+        });
+        return () => subscription.remove();
+    }, []);
+    const setClipboard = useCallback(async (text) => {
+        await setStringAsync(text);
+        setClipboardText(text);
+    }, []);
+    return [clipboardText, setClipboard];
+}
 export * from './Clipboard.types';
 export { ClipboardPasteButton };
 //# sourceMappingURL=Clipboard.js.map

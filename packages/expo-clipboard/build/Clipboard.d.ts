@@ -136,6 +136,34 @@ export declare function removeClipboardListener(subscription: EventSubscription)
  * `true` if the component is available, and `false` otherwise.
  */
 export declare const isPasteButtonAvailable: boolean;
+/**
+ * React hook that returns the current clipboard text content and a setter to update it.
+ * Automatically re-renders when the clipboard content changes.
+ *
+ * On Android and iOS, the hook subscribes to `addClipboardListener` to track changes.
+ * On web, `addClipboardListener` is a no-op, so changes from external sources are not tracked.
+ *
+ * @returns A tuple `[clipboardText, setClipboardText]` where:
+ * - `clipboardText` is the current plain-text content of the clipboard (empty string if unavailable).
+ * - `setClipboardText` is an async function that writes a string to the clipboard and updates the state.
+ *
+ * @example
+ * ```tsx
+ * import * as Clipboard from 'expo-clipboard';
+ *
+ * export default function App() {
+ *   const [clipboardText, setClipboardText] = Clipboard.useClipboard();
+ *
+ *   return (
+ *     <View>
+ *       <Text>Clipboard: {clipboardText}</Text>
+ *       <Button title="Copy 'hello'" onPress={() => setClipboardText('hello')} />
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
+export declare function useClipboard(): [string, (text: string) => Promise<void>];
 export * from './Clipboard.types';
 export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
 export { ClipboardPasteButton };
