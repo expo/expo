@@ -70,11 +70,11 @@ function formatMessage(message: string | { message: string } | { message: string
   lines = message.split('\n');
 
   // Remove leading newline
-  if (lines.length > 2 && lines[1].trim() === '') {
+  if (lines.length > 2 && lines[1]!.trim() === '') {
     lines.splice(1, 1);
   }
   // Clean up file name
-  lines[0] = lines[0].replace(/^(.*) \d+:\d+-\d+$/, '$1');
+  lines[0] = lines[0]!.replace(/^(.*) \d+:\d+-\d+$/, '$1');
 
   // Cleans up verbose "module not found" messages for files and packages.
   if (lines[1] && lines[1].indexOf('Module not found: ') === 0) {
@@ -103,7 +103,8 @@ function formatMessage(message: string | { message: string } | { message: string
 
   // Remove duplicated newlines
   lines = lines.filter(
-    (line, index, arr) => index === 0 || line.trim() !== '' || line.trim() !== arr[index - 1].trim()
+    (line, index, arr) =>
+      index === 0 || line.trim() !== '' || line.trim() !== arr[index - 1]!.trim()
   );
 
   // Reassemble the message

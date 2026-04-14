@@ -174,7 +174,7 @@ export const runServer = async (
         const { pathname } = parse(request.url!);
         if (pathname != null && websocketEndpoints[pathname]) {
           websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
-            websocketEndpoints[pathname].emit('connection', ws, request);
+            websocketEndpoints[pathname]?.emit('connection', ws, request);
           });
         } else {
           socket.destroy();

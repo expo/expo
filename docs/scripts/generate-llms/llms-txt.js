@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 
-import { generateCrossLinksSection } from './shared.js';
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
+import { generateCrossLinksSection } from './shared.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
@@ -83,8 +83,8 @@ function readFrontmatterAttributes(filePath) {
   try {
     const { attributes } = frontmatter(fs.readFileSync(filePath, 'utf-8'));
     return {
-      title: attributes.title || '',
-      description: attributes.description || '',
+      title: attributes.title ?? '',
+      description: attributes.description ?? '',
     };
   } catch (error) {
     console.warn(`Error reading MDX file ${filePath}:`, error.message);
@@ -106,7 +106,7 @@ function processPageData(pageHref, pageName) {
 
   return title || pageName
     ? {
-        title: title || pageName,
+        title: title ?? pageName,
         url: `https://docs.expo.dev${pageHref}`,
         description,
       }
@@ -118,7 +118,7 @@ function processPage(page) {
 }
 
 function processGroup(group) {
-  const items = (group.children || [])
+  const items = (group.children ?? [])
     .filter(child => child.type === 'page')
     .map(processPage)
     .filter(Boolean);
@@ -127,7 +127,7 @@ function processGroup(group) {
 }
 
 function hasContent(section) {
-  return section?.items?.length || section?.groups?.length || section?.sections?.length;
+  return section?.items?.length ?? section?.groups?.length ?? section?.sections?.length;
 }
 
 function processSection(node) {
@@ -142,7 +142,7 @@ function processSection(node) {
     sections: [],
   };
 
-  (node.children || []).forEach(child => {
+  (node.children ?? []).forEach(child => {
     switch (child.type) {
       case 'page': {
         const pageData = processPage(child);

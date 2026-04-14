@@ -10,7 +10,7 @@ const registerCommand_1 = require("../registerCommand");
 function findTest(config, test) {
     for (const appName in config.applications) {
         const app = config.applications[appName];
-        for (const testName in app.tests) {
+        for (const testName in app?.tests) {
             if (test === testName) {
                 return [appName, app];
             }
@@ -21,6 +21,9 @@ function findTest(config, test) {
 async function runTestAsync(config, options) {
     const [appName, app] = findTest(config, options.test);
     const test = app.tests[options.test];
+    if (test == null) {
+        return;
+    }
     if (app.preset === 'detox') {
         console.log(`Using ${chalk_1.default.green('detox')} preset.`);
         const preset = new TemplateProject_1.default(app, appName, options.platform, options.configFile);

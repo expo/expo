@@ -124,7 +124,7 @@ export async function createFromFixtureAsync(
       for (const pkg of linkExpoPackages) {
         const link = createPackageLink(projectRoot, `packages/${pkg}`);
         log('Linked into dependencies', pkg);
-        dependencies[pkg] = '*'
+        dependencies[pkg] = '*';
         resolutions[pkg] = link;
       }
 
@@ -238,7 +238,7 @@ export function getHtmlHelpers(outputDir: string) {
       // Remove scripts without a src attribute
       .filter((script) => !!script.attributes.src)
       .map((script) => {
-        expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+        expect(fs.existsSync(path.join(outputDir, script.attributes.src ?? ''))).toBe(true);
 
         return script.attributes.src;
       });
@@ -248,8 +248,8 @@ export function getHtmlHelpers(outputDir: string) {
     return tags;
   }
 
-  function ensureEntryChunk(relativePath: string) {
-    expect(fs.readFileSync(path.join(outputDir, relativePath), 'utf8')).toMatch(
+  function ensureEntryChunk(relativePath: string | undefined) {
+    expect(fs.readFileSync(path.join(outputDir, relativePath ?? ''), 'utf8')).toMatch(
       /__BUNDLE_START_TIME__/
     );
   }

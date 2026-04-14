@@ -470,4 +470,31 @@ struct JavaScriptValueTests {
       _ = try numberValue.asPromise()
     }
   }
+
+  // MARK: - Unsafe pointee access
+
+  @Test
+  func `withUnsafePointee returns non-null pointee`() {
+    let value = JavaScriptValue(runtime, 42)
+    value.withUnsafePointee { valuePointee in
+      #expect(valuePointee != UnsafeRawPointer(bitPattern: 0))
+    }
+  }
+
+  @Test
+  func `withUnsafePointee returns value from closure`() {
+    let value = JavaScriptValue(runtime, 42)
+    let result = value.withUnsafePointee { _ in
+      return "hello"
+    }
+    #expect(result == "hello")
+  }
+
+  @Test
+  func `withUnsafePointee returns same pointee across calls`() {
+    let value = JavaScriptValue(runtime, 42)
+    let pointee1 = value.withUnsafePointee { return $0 }
+    let pointee2 = value.withUnsafePointee { return $0 }
+    #expect(pointee1 == pointee2)
+  }
 }

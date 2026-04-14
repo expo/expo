@@ -985,14 +985,6 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
-internal struct LineLimitModifier: ViewModifier, Record {
-  @Field var limit: Int?
-
-  func body(content: Content) -> some View {
-    content.lineLimit(limit)
-  }
-}
-
 internal enum Prominence: String, Enumerable {
   case standard
   case increased
@@ -1826,12 +1818,28 @@ extension ViewModifierRegistry {
       return try TagModifier(from: params, appContext: appContext)
     }
 
+    register("scrollTargetBehavior") { params, appContext, _ in
+      return try ScrollTargetBehaviorModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollTargetLayout") { params, appContext, _ in
+      return try ScrollTargetLayoutModifier(from: params, appContext: appContext)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
 
     register("submitLabel") { params, appContext, _ in
       return try SubmitLabelModifier(from: params, appContext: appContext)
+    }
+
+    register("textInputAutocapitalization") { params, appContext, _ in
+      return try TextInputAutocapitalizationModifier(from: params, appContext: appContext)
+    }
+
+    register("textContentType") { params, appContext, _ in
+      return try TextContentTypeModifier(from: params, appContext: appContext)
     }
 
     register("datePickerStyle") { params, appContext, _ in
@@ -1896,6 +1904,18 @@ extension ViewModifierRegistry {
 
     register("widgetURL") { params, appContext, _ in
       return try WidgetURLModifier(from: params, appContext: appContext)
+    }
+
+    register("keyboardType") { params, appContext, _ in
+      return try KeyboardTypeModifier(from: params, appContext: appContext)
+    }
+
+    register("autocorrectionDisabled") { params, appContext, _ in
+      return try AutocorrectionDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("onSubmit") { params, appContext, eventDispatcher in
+      return try OnSubmitModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
   }
 }

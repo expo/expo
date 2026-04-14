@@ -55,7 +55,7 @@ export function splitNpmNameAndTag(npmPackageName: string): [string, string | un
     return ['@' + components[0], components[1]];
   }
 
-  return [components[0], components[1]];
+  return [components[0] ?? '', components[1]];
 }
 
 /**

@@ -17,9 +17,9 @@ import * as PrimaryColor from './PrimaryColor';
 import * as Properties from './Properties';
 import * as Resources from './Resources';
 import * as Scheme from './Scheme';
-import * as StatusBar from './StatusBar';
 import * as Strings from './Strings';
 import * as Styles from './Styles';
+import * as SystemBars from './SystemBars';
 import * as Updates from './Updates';
 import * as Version from './Version';
 import * as WindowSoftInputMode from './WindowSoftInputMode';
@@ -39,7 +39,7 @@ export {
   Orientation,
   Package,
   PrimaryColor,
-  StatusBar,
+  SystemBars,
   Updates,
   Version,
   WindowSoftInputMode,

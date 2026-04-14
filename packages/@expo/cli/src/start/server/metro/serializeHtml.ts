@@ -1,4 +1,9 @@
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import {
+  createInjectedCssElements,
+  createInjectedScriptElements,
+  getHydrationFlagScript,
+} from '@expo/router-server/build/utils/html';
 import type { RouteNode } from 'expo-router/build/Route';
 
 const debug = require('debug')('expo:metro:html') as typeof console.log;
@@ -75,10 +80,7 @@ function htmlFromSerialAssets(
     .map(({ type, metadata, filename, source }) => {
       if (type === 'css') {
         if (isExporting) {
-          return [
-            `<link rel="preload" href="${combineUrlPath(baseUrl, filename)}" as="style">`,
-            `<link rel="stylesheet" href="${combineUrlPath(baseUrl, filename)}">`,
-          ].join('');
+          return createInjectedCssElements([combineUrlPath(baseUrl, filename)]);
         } else {
           return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
         }
@@ -128,13 +130,12 @@ function htmlFromSerialAssets(
             // return `<script src="${combineUrlPath(baseUrl, filename)" defer></script>`;
           }
 
-          return `<script src="${combineUrlPath(baseUrl, filename)}" defer></script>`;
+          return createInjectedScriptElements([combineUrlPath(baseUrl, filename)]);
         })
         .join('');
 
   if (hydrate) {
-    const hydrateScript = `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
-    template = template.replace('</head>', `${hydrateScript}</head>`);
+    template = template.replace('</head>', `${getHydrationFlagScript()}</head>`);
   }
 
   return template

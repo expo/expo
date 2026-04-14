@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeCachedDependenciesLinker = makeCachedDependenciesLinker;
+exports.isNativeModuleAsync = isNativeModuleAsync;
 exports.scanDependencyResolutionsForPlatform = scanDependencyResolutionsForPlatform;
 exports.scanExpoModuleResolutionsForPlatform = scanExpoModuleResolutionsForPlatform;
 const fs_1 = __importDefault(require("fs"));
@@ -64,6 +65,13 @@ function makeCachedDependenciesLinker(params) {
         },
     };
 }
+async function isNativeModuleAsync(resolution, reactNativeProjectConfig, platform, excludeNames) {
+    const [reactNativeModule, expoModule] = await Promise.all([
+        (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, excludeNames),
+        (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames),
+    ]);
+    return !!reactNativeModule || !!expoModule;
+}
 async function scanDependencyResolutionsForPlatform(linker, platform, extraInclude) {
     const opts = await linker.getOptionsForPlatform(platform, extraInclude);
     const reactNativeProjectConfig = await linker.loadReactNativeProjectConfig();
@@ -91,11 +99,8 @@ async function scanDependencyResolutionsForPlatform(linker, platform, extraInclu
                 }
             }
             else {
-                const [reactNativeModule, expoModule] = await Promise.all([
-                    (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, opts.excludeNames),
-                    (0, findModules_1.resolveExpoModule)(resolution, platform, opts.excludeNames),
-                ]);
-                if (!reactNativeModule && !expoModule) {
+                const isNativeModule = await isNativeModuleAsync(resolution, reactNativeProjectConfig, platform, opts.excludeNames);
+                if (!isNativeModule) {
                     return null;
                 }
             }

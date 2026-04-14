@@ -56,7 +56,7 @@ describe('NativeToolbarButton', () => {
       render(<NativeToolbarButton {...defaultProps} imageRenderingMode="original" />);
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: undefined,
+        tint: undefined,
       });
     });
 
@@ -66,7 +66,7 @@ describe('NativeToolbarButton', () => {
       );
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: undefined,
+        tint: undefined,
       });
     });
 
@@ -76,7 +76,7 @@ describe('NativeToolbarButton', () => {
       );
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: 'red',
+        tint: 'red',
       });
     });
 
@@ -84,7 +84,7 @@ describe('NativeToolbarButton', () => {
       render(<NativeToolbarButton {...defaultProps} imageRenderingMode="template" />);
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: 'dynamic:onSurface',
+        tint: 'dynamic:onSurface',
       });
     });
 
@@ -92,7 +92,7 @@ describe('NativeToolbarButton', () => {
       render(<NativeToolbarButton {...defaultProps} tintColor="red" />);
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: 'red',
+        tint: 'red',
       });
     });
 
@@ -100,7 +100,7 @@ describe('NativeToolbarButton', () => {
       render(<NativeToolbarButton {...defaultProps} />);
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: 'dynamic:onSurface',
+        tint: 'dynamic:onSurface',
       });
     });
   });
@@ -118,7 +118,7 @@ describe('NativeToolbarButton', () => {
       renderWithColors(defaultProps, { tintColor: 'context-tint' });
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: 'context-tint',
+        tint: 'context-tint',
       });
     });
 
@@ -126,7 +126,7 @@ describe('NativeToolbarButton', () => {
       renderWithColors({ ...defaultProps, tintColor: 'prop-tint' }, { tintColor: 'context-tint' });
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: 'prop-tint',
+        tint: 'prop-tint',
       });
     });
 
@@ -134,7 +134,7 @@ describe('NativeToolbarButton', () => {
       renderWithColors(defaultProps, {});
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: 'dynamic:onSurface',
+        tint: 'dynamic:onSurface',
       });
     });
 
@@ -145,7 +145,7 @@ describe('NativeToolbarButton', () => {
       );
 
       expect(MockedIcon.mock.calls[0][0]).toMatchObject({
-        tintColor: undefined,
+        tint: undefined,
       });
     });
   });

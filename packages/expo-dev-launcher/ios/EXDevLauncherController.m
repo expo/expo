@@ -270,7 +270,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 {
   NSAssert([NSThread isMainThread], @"This function must be called on main thread");
 
-  [_appBridge invalidate];
   [self invalidateDevMenuApp];
 
   self.networkInterceptor = nil;
@@ -581,11 +580,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (BOOL)isAppRunning
 {
-  if([_appBridge isProxy]){
-    return [self.delegate isReactInstanceValid];
-  }
-
-  return [_appBridge isValid];
+  return [self.delegate isReactInstanceValid];
 }
 
 #if !TARGET_OS_OSX

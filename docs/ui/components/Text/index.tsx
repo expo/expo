@@ -30,11 +30,12 @@ export const createPermalinkedComponent = (
   return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = Children.map(children, child => {
       if (isValidElement<PropsWithChildren<{ href: string }>>(child) && child?.props?.href) {
-        isDev &&
+        if (isDev) {
           console.warn(
             `It looks like the header on this page includes a link, this is an invalid pattern, nested link will be removed!`,
             child?.props?.href
           );
+        }
         return child?.props?.children;
       }
       return child;
@@ -195,11 +196,14 @@ export const RawH5 = createTextComponent(
   )
 );
 
-export const P = createTextComponent(TextElement.P, 'font-normal text-base [&_strong]:break-words');
+export const P = createTextComponent(
+  TextElement.P,
+  'font-normal text-base [&_strong]:wrap-break-word'
+);
 export const CODE = createTextComponent(
   TextElement.CODE,
   mergeClasses(
-    'text-[13px] leading-[130%] font-normal tracking-[-0.003rem]',
+    'text-xs leading-[130%] font-normal',
     'border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5'
   )
 );
@@ -220,10 +224,7 @@ export const SPAN = createTextComponent(
   TextElement.SPAN,
   'font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem]'
 );
-export const FOOTNOTE = createTextComponent(
-  TextElement.P,
-  'font-normal text-[13px] leading-[1.6154] tracking-[-0.003rem]'
-);
+export const FOOTNOTE = createTextComponent(TextElement.P, 'font-normal text-xs');
 export const CAPTION = createTextComponent(
   TextElement.P,
   'font-normal text-[12px] leading-[1.6154]'
@@ -242,7 +243,7 @@ export const KBD = createTextComponent(
   TextElement.KBD,
   mergeClasses(
     'border-secondary bg-subtle shadow-kbd relative -top-px inline-block min-h-[20px] min-w-[22px] rounded-sm border px-1',
-    'text-2xs text-secondary text-center leading-[20px] font-semibold',
+    'text-secondary text-center text-xs leading-[20px] font-semibold',
     'dark:bg-element'
   )
 );

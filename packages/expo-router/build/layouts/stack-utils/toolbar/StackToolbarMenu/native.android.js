@@ -46,10 +46,10 @@ const NativeToolbarMenu = (props) => {
     // Non-inline nested: DropdownMenu with DropdownMenuItem trigger
     if (isNested) {
         const trailingIcon = (<jetpack_compose_1.DropdownMenuItem.TrailingIcon>
-        <jetpack_compose_1.Icon source={arrowRightIcon} tintColor={tintColor} size={24}/>
+        <jetpack_compose_1.Icon source={arrowRightIcon} tint={tintColor} size={24}/>
       </jetpack_compose_1.DropdownMenuItem.TrailingIcon>);
         const leadingIcon = props.source ? (<jetpack_compose_1.DropdownMenuItem.LeadingIcon>
-        <jetpack_compose_1.Icon source={props.source} tintColor={tintColor} size={24}/>
+        <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
       </jetpack_compose_1.DropdownMenuItem.LeadingIcon>) : null;
         return (<jetpack_compose_1.DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
         <jetpack_compose_1.DropdownMenu.Trigger>
@@ -84,7 +84,7 @@ const NativeToolbarMenu = (props) => {
       <jetpack_compose_1.DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
         <jetpack_compose_1.DropdownMenu.Trigger>
           <jetpack_compose_1.IconButton onClick={() => setExpanded(true)} enabled={!props.disabled} modifiers={[(0, modifiers_1.background)(backgroundColor)]}>
-            <jetpack_compose_1.Icon source={props.source} tintColor={tintColor} size={24}/>
+            <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
           </jetpack_compose_1.IconButton>
         </jetpack_compose_1.DropdownMenu.Trigger>
         <jetpack_compose_1.DropdownMenu.Items>
@@ -123,10 +123,10 @@ const NativeToolbarMenuAction = (props) => {
         <jetpack_compose_1.Text color={tintColor}>{label}</jetpack_compose_1.Text>
       </jetpack_compose_1.DropdownMenuItem.Text>
       {props.source && (<jetpack_compose_1.DropdownMenuItem.LeadingIcon>
-          <jetpack_compose_1.Icon source={props.source} tintColor={tintColor} size={24}/>
+          <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
         </jetpack_compose_1.DropdownMenuItem.LeadingIcon>)}
       {props.isOn && (<jetpack_compose_1.DropdownMenuItem.TrailingIcon>
-          <jetpack_compose_1.Icon source={checkmarkIcon} tintColor={tintColor} size={24}/>
+          <jetpack_compose_1.Icon source={checkmarkIcon} tint={tintColor} size={24}/>
         </jetpack_compose_1.DropdownMenuItem.TrailingIcon>)}
     </jetpack_compose_1.DropdownMenuItem>);
 };

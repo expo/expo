@@ -23,6 +23,7 @@ const MINIFY_JSON = true;
 
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
+  'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
   'expo-ui/datetime-picker': ['datetime-picker/index.tsx', 'expo-ui'],
 
   // Swift UI
@@ -49,12 +50,14 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
   'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/overlay': ['swift-ui/Overlay/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/popover': ['swift-ui/Popover/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/progressview': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/rnhostview': ['swift-ui/RNHostView.tsx', 'expo-ui'],
   'expo-ui/swift-ui/scrollview': ['swift-ui/ScrollView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/section': ['swift-ui/Section/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
@@ -64,6 +67,8 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
 
   // Jetpack Compose
+  'expo-ui/jetpack-compose/badge': ['jetpack-compose/Badge/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/badgedbox': ['jetpack-compose/BadgedBox/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/alertdialog': ['jetpack-compose/AlertDialog/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/basicalertdialog': [
     'jetpack-compose/BasicAlertDialog/index.tsx',
@@ -119,8 +124,9 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/checkbox': ['jetpack-compose/Checkbox/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/text': ['jetpack-compose/Text/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {

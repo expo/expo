@@ -166,8 +166,8 @@ public final class FileSystemModule: Module {
         return try file.bytes()
       }
 
-      Function("open") { (file, _mode: String?) in
-        return try FileSystemFileHandle(file: file)
+      Function("open") { (file: FileSystemFile, mode: FileMode?) in
+        return try FileSystemFileHandle(file: file, mode: mode)
       }
 
       Function("info") { (file: FileSystemFile, options: InfoOptions?) in
@@ -227,11 +227,19 @@ public final class FileSystemModule: Module {
         try file.create(options ?? CreateOptions())
       }
 
-      Function("copy") { (file, to: FileSystemPath, options: RelocationOptions?) in
+      AsyncFunction("copy") { (file, to: FileSystemPath, options: RelocationOptions?) in
         try file.copy(to: to, options: options ?? RelocationOptions())
       }
 
-      Function("move") { (file, to: FileSystemPath, options: RelocationOptions?) in
+      Function("copySync") { (file, to: FileSystemPath, options: RelocationOptions?) in
+        try file.copy(to: to, options: options ?? RelocationOptions())
+      }
+
+      AsyncFunction("move") { (file, to: FileSystemPath, options: RelocationOptions?) in
+        try file.move(to: to, options: options ?? RelocationOptions())
+      }
+
+      Function("moveSync") { (file, to: FileSystemPath, options: RelocationOptions?) in
         try file.move(to: to, options: options ?? RelocationOptions())
       }
 
@@ -295,11 +303,19 @@ public final class FileSystemModule: Module {
         try directory.create(options ?? CreateOptions())
       }
 
-      Function("copy") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+      AsyncFunction("copy") { (directory, to: FileSystemPath, options: RelocationOptions?) in
         try directory.copy(to: to, options: options ?? RelocationOptions())
       }
 
-      Function("move") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+      Function("copySync") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+        try directory.copy(to: to, options: options ?? RelocationOptions())
+      }
+
+      AsyncFunction("move") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+        try directory.move(to: to, options: options ?? RelocationOptions())
+      }
+
+      Function("moveSync") { (directory, to: FileSystemPath, options: RelocationOptions?) in
         try directory.move(to: to, options: options ?? RelocationOptions())
       }
 

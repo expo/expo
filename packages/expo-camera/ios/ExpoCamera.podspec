@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
-barcode_scanner_enabled = podfile_properties.fetch('expo-camera.barcode-scanner-enabled', 'true') != 'false'
+barcode_scanner_enabled = podfile_properties.fetch('expo.camera.barcode-scanner-enabled', 'true') != 'false'
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoCamera'

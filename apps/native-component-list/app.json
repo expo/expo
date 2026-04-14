@@ -12,9 +12,6 @@
     "privacy": "public",
     "icon": "./assets/icons/icon.png",
     "scheme": "ncl",
-    "splash": {
-      "image": "./assets/icons/loadingIcon.png"
-    },
     "developmentClient": {
       "silentLaunch": true
     },
@@ -27,9 +24,6 @@
     },
     "web": {
       "bundler": "metro"
-    },
-    "androidStatusBar": {
-      "backgroundColor": "#4630eb"
     },
     "newArchEnabled": true,
     "android": {
@@ -71,6 +65,14 @@
       "assets/**",
       "node_modules/react-navigation/src/**/*.png",
       "node_modules/@expo/vector-icons/fonts/*.ttf"
+    ],
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icons/loadingIcon.png"
+        }
+      ]
     ],
     "extra": {
       "eas": {

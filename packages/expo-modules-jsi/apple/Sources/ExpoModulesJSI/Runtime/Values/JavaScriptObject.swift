@@ -401,12 +401,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
    Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
    - TODO: throw a type error if this object is a proxy or host object.
    */
-  public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) {
+  public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) throws(JavaScriptNativeState.NativeStateReleasedError) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
     guard let nativeStatePointee = nativeState.pointee else {
-      FatalError.nativeStateReleased()
+      throw JavaScriptNativeState.NativeStateReleasedError()
     }
     expo.setNativeState(runtime.pointee, pointee, nativeStatePointee)
   }

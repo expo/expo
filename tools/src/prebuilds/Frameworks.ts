@@ -7,7 +7,13 @@ import { getPrecompileDir } from '../Directories';
 import logger from '../Logger';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
-import { getBuildFolderPrefixForPlatform, getBuildPlatformsForProduct, SPMBuild } from './SPMBuild';
+import {
+  enrichFrameworkWithHeaders,
+  findFirstExisting,
+  getBuildFolderPrefixForPlatform,
+  getBuildPlatformsForProduct,
+  SPMBuild,
+} from './SPMBuild';
 import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
@@ -76,7 +82,8 @@ export const Frameworks = {
     const xcframeworkOutputPath = Frameworks.getFrameworkPath(
       pkg.buildPath,
       product.name,
-      buildType
+      buildType,
+      pkg.outputVersionPrefix
     );
 
     // Collect frameworks for each build platform
@@ -147,12 +154,23 @@ export const Frameworks = {
   /**
    * Gets the output path for xcframeworks for the given package.
    * XCFrameworks are stored under: <buildPath>/output/<flavor>/xcframeworks/
+   * For versioned 3rd-party packages: <buildPath>/output/<versionPrefix>/<flavor>/xcframeworks/
    * @param buildPath Package build path (centralized under packages/precompile/.build/<pkg>/)
    * @param buildType Build flavor
+   * @param versionPrefix Optional version prefix for 3rd-party packages (e.g. "1.2.3/0.83.0/1.0.0")
    * @returns Output path for xcframeworks
    */
-  getFrameworksOutputPath: (buildPath: string, buildType: BuildFlavor): string => {
-    return path.join(buildPath, 'output', buildType.toLowerCase(), 'xcframeworks');
+  getFrameworksOutputPath: (
+    buildPath: string,
+    buildType: BuildFlavor,
+    versionPrefix?: string
+  ): string => {
+    const parts = [buildPath, 'output'];
+    if (versionPrefix) {
+      parts.push(versionPrefix);
+    }
+    parts.push(buildType.toLowerCase(), 'xcframeworks');
+    return path.join(...parts);
   },
 
   /**
@@ -160,11 +178,17 @@ export const Frameworks = {
    * @param buildPath Package build path (centralized under packages/precompile/.build/<pkg>/)
    * @param productName SPM product name
    * @param buildType Build flavor
+   * @param versionPrefix Optional version prefix for 3rd-party packages
    * @returns Full path to the built XCFramework
    */
-  getFrameworkPath: (buildPath: string, productName: string, buildType: BuildFlavor): string => {
+  getFrameworkPath: (
+    buildPath: string,
+    productName: string,
+    buildType: BuildFlavor,
+    versionPrefix?: string
+  ): string => {
     return path.join(
-      Frameworks.getFrameworksOutputPath(buildPath, buildType),
+      Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
       `${productName}.xcframework`
     );
   },
@@ -174,11 +198,17 @@ export const Frameworks = {
    * @param buildPath Package build path (centralized under packages/precompile/.build/<pkg>/)
    * @param productName SPM product name
    * @param buildType Build flavor
+   * @param versionPrefix Optional version prefix for 3rd-party packages
    * @returns Full path to the product tarball
    */
-  getTarballPath: (buildPath: string, productName: string, buildType: BuildFlavor): string => {
+  getTarballPath: (
+    buildPath: string,
+    productName: string,
+    buildType: BuildFlavor,
+    versionPrefix?: string
+  ): string => {
     return path.join(
-      Frameworks.getFrameworksOutputPath(buildPath, buildType),
+      Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
       `${productName}.tar.gz`
     );
   },
@@ -214,6 +244,29 @@ export const Frameworks = {
    */
   hasSharedSPMDepFramework: (productName: string, buildType: BuildFlavor): boolean => {
     return fs.existsSync(Frameworks.getSharedSPMDepFrameworkPath(productName, buildType));
+  },
+
+  /**
+   * Computes the output version prefix for a dependency package, given the building
+   * package's version prefix and the dependency's package version.
+   *
+   * Version prefixes have the format: <packageVersion>/<reactNativeVersion>/<hermesVersion>
+   * The RN and Hermes version parts are shared across all external packages in a build,
+   * so we extract them from the building package's prefix and combine with the dep's version.
+   *
+   * @param buildingPkgVersionPrefix The building package's outputVersionPrefix (e.g. "4.2.2/0.85.0/1.0.0")
+   * @param depPackageVersion The dependency package's version (e.g. "0.16.0")
+   * @returns The computed version prefix for the dependency (e.g. "0.16.0/0.85.0/1.0.0")
+   */
+  computeVersionPrefixForDependency: (
+    buildingPkgVersionPrefix: string,
+    depPackageVersion: string
+  ): string => {
+    // Split prefix into parts: [packageVersion, rnVersion, hermesVersion]
+    const parts = buildingPkgVersionPrefix.split(path.sep);
+    // Replace the first part (building package's version) with the dep's version
+    // Keep the RN and Hermes version parts (index 1 and beyond)
+    return path.join(depPackageVersion, ...parts.slice(1));
   },
 };
 
@@ -415,7 +468,11 @@ const copySPMDependencyXCFrameworksAsync = async (
     return;
   }
 
-  const outputDir = Frameworks.getFrameworksOutputPath(pkg.buildPath, buildType);
+  const outputDir = Frameworks.getFrameworksOutputPath(
+    pkg.buildPath,
+    buildType,
+    pkg.outputVersionPrefix
+  );
   const buildPath = SPMBuild.getPackageBuildPath(pkg, product, buildType);
 
   for (const spmPkg of spmPackages) {
@@ -446,35 +503,15 @@ const copySPMDependencyXCFrameworksAsync = async (
       continue;
     }
 
-    // Look for the pre-built xcframework in SourcePackages/artifacts/<packageName>/<productName>/
-    const artifactsDir = path.join(
-      buildPath,
-      'SourcePackages',
-      'artifacts',
-      packageName,
-      productName
-    );
-
     const xcframeworkName = `${productName}.xcframework`;
-    const sourceXCFrameworkPath = path.join(artifactsDir, xcframeworkName);
-
-    if (!(await fs.pathExists(sourceXCFrameworkPath))) {
-      logger.warn(
-        `⚠️  SPM dependency xcframework not found at ${path.relative(pkg.path, sourceXCFrameworkPath)}`
-      );
-      continue;
-    }
-
     const destXCFrameworkPath = path.join(outputDir, xcframeworkName);
-
-    // Use xcodebuild -create-xcframework to re-compose with only the slices matching
-    // the product's platforms. The source xcframework may contain macOS/tvOS/visionOS
-    // slices with Versions/Current/ symlink structures that cause fs.copy to fail.
-    // By extracting only the iOS frameworks from the build output, we avoid both the
-    // symlink issues and shipping unnecessary platform slices.
     const productBuildPlatforms = getBuildPlatformsForProduct(product);
 
-    // Collect the matching frameworks from the SPM build output
+    // Collect built frameworks from Build/Products/ — this covers source-built SPM
+    // dependencies (e.g., ZXingObjC fetched from a git URL and compiled by Xcode).
+    // SPM places dependency frameworks in PackageFrameworks/ subdirectory; check there
+    // first, then the top-level build products dir.
+    const checkoutDir = path.join(buildPath, 'SourcePackages', 'checkouts', packageName);
     const depFrameworks: { frameworkPath: string; debugSymbolsPath?: string }[] = [];
     for (const buildPlatform of productBuildPlatforms) {
       const buildFolderPrefix = getBuildFolderPrefixForPlatform(buildPlatform);
@@ -484,29 +521,60 @@ const copySPMDependencyXCFrameworksAsync = async (
         'Products',
         `${buildType}-${buildFolderPrefix}`
       );
-      const frameworkPath = path.join(buildProductsDir, `${productName}.framework`);
-      const dsymPath = path.join(buildProductsDir, `${productName}.framework.dSYM`);
+      const candidatePaths = [
+        path.join(buildProductsDir, 'PackageFrameworks', `${productName}.framework`),
+        path.join(buildProductsDir, `${productName}.framework`),
+      ];
+      const frameworkPath = await findFirstExisting(candidatePaths);
+      const dsymPath = await findFirstExisting(candidatePaths.map((p) => `${p}.dSYM`));
 
-      if (await fs.pathExists(frameworkPath)) {
+      if (frameworkPath) {
+        // SPM's PackageFrameworks/ output may lack Headers/ and Modules/ — they live
+        // in build intermediates. Enrich the framework so the xcframework is usable
+        // as a build dependency with module imports.
+        if (await fs.pathExists(checkoutDir)) {
+          await enrichFrameworkWithHeaders(
+            frameworkPath,
+            productName,
+            checkoutDir,
+            buildPath,
+            buildFolderPrefix,
+            buildType
+          );
+        }
         depFrameworks.push({
           frameworkPath,
-          debugSymbolsPath: (await fs.pathExists(dsymPath)) ? dsymPath : undefined,
+          debugSymbolsPath: dsymPath ?? undefined,
         });
       }
     }
 
     if (depFrameworks.length === 0) {
-      // Fallback: the dependency may be a binary target (not built locally).
-      // In that case, the framework only exists inside the xcframework slices in
-      // SourcePackages/artifacts. Use rsync to copy while preserving symlinks.
-      logger.info(
-        `📦 Copying SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
+      // No locally-built frameworks found. Check SourcePackages/artifacts/ for binary
+      // targets (pre-built xcframeworks distributed via SPM, not compiled locally).
+      const artifactsDir = path.join(
+        buildPath,
+        'SourcePackages',
+        'artifacts',
+        packageName,
+        productName
       );
-      await fs.remove(destXCFrameworkPath);
-      execSync(`rsync -a --delete "${sourceXCFrameworkPath}/" "${destXCFrameworkPath}/"`, {
-        stdio: 'pipe',
-      });
-      logger.info(`✅ Copied ${xcframeworkName} alongside ${product.name}.xcframework`);
+      const sourceXCFrameworkPath = path.join(artifactsDir, xcframeworkName);
+
+      if (await fs.pathExists(sourceXCFrameworkPath)) {
+        logger.info(
+          `📦 Copying SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
+        );
+        await fs.remove(destXCFrameworkPath);
+        execSync(`rsync -a --delete "${sourceXCFrameworkPath}/" "${destXCFrameworkPath}/"`, {
+          stdio: 'pipe',
+        });
+        logger.info(`✅ Copied ${xcframeworkName} alongside ${product.name}.xcframework`);
+      } else {
+        logger.warn(
+          `⚠️  SPM dependency ${chalk.cyan(productName)} not found in Build/Products/ or SourcePackages/artifacts/`
+        );
+      }
       continue;
     }
 
@@ -559,8 +627,17 @@ const createProductTarballAsync = async (
   buildType: BuildFlavor,
   bundleSharedDeps?: boolean
 ): Promise<void> => {
-  const outputDir = Frameworks.getFrameworksOutputPath(pkg.buildPath, buildType);
-  const tarballPath = Frameworks.getTarballPath(pkg.buildPath, product.name, buildType);
+  const outputDir = Frameworks.getFrameworksOutputPath(
+    pkg.buildPath,
+    buildType,
+    pkg.outputVersionPrefix
+  );
+  const tarballPath = Frameworks.getTarballPath(
+    pkg.buildPath,
+    product.name,
+    buildType,
+    pkg.outputVersionPrefix
+  );
 
   // Collect all xcframework directories to include in the tarball
   const xcframeworkEntries = [`${product.name}.xcframework`];

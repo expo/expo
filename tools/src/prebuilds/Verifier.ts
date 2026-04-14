@@ -213,7 +213,8 @@ export const FrameworkVerifier = {
         const xcframeworkPath = Frameworks.getFrameworkPath(
           pkg.buildPath,
           product.name,
-          buildFlavor
+          buildFlavor,
+          pkg.outputVersionPrefix
         );
 
         // Find all slices in the xcframework
@@ -262,7 +263,12 @@ export const FrameworkVerifier = {
       );
       // Still add a failed report so caller knows about the failure
       results.set(product.name, {
-        xcframeworkPath: Frameworks.getFrameworkPath(pkg.buildPath, product.name, buildFlavor),
+        xcframeworkPath: Frameworks.getFrameworkPath(
+          pkg.buildPath,
+          product.name,
+          buildFlavor,
+          pkg.outputVersionPrefix
+        ),
         infoPlistValid: { success: false, message: String(error) },
         codesignValid: { success: true, message: 'Skipped' },
         junkFiles: [],
@@ -1274,7 +1280,12 @@ const verifyAsync = async (
   buildFlavor: BuildFlavor,
   options?: XCFrameworkVerifyOptions
 ): Promise<XCFrameworkVerificationReport> => {
-  const xcframeworkPath = Frameworks.getFrameworkPath(pkg.buildPath, product.name, buildFlavor);
+  const xcframeworkPath = Frameworks.getFrameworkPath(
+    pkg.buildPath,
+    product.name,
+    buildFlavor,
+    pkg.outputVersionPrefix
+  );
 
   // Verify it's a valid xcframework
   validateXCFramework(xcframeworkPath);

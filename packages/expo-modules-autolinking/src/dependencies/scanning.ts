@@ -45,6 +45,21 @@ async function resolveDependency(
   }
 }
 
+/** Create a mock resolution for a local search path dependency at the given path */
+export async function mockDependencyAtPath(originPath: string): Promise<DependencyResolution> {
+  const realPath = await maybeRealpath(originPath);
+  const packageJson = await loadPackageJson(fastJoin(realPath || originPath, 'package.json'));
+  return {
+    source: DependencyResolutionSource.SEARCH_PATH,
+    name: packageJson?.name || 'local-module', // NOTE: Mock name
+    version: packageJson?.version ?? '',
+    path: realPath ?? originPath,
+    originPath,
+    duplicates: null,
+    depth: 0,
+  };
+}
+
 interface ResolutionOptions {
   shouldIncludeDependency?(name: string): boolean;
 }
@@ -104,8 +119,7 @@ export async function scanDependenciesInSearchPath(
     });
   }
 
-  for (let idx = 0; idx < resolvedDependencies.length; idx++) {
-    const resolution = resolvedDependencies[idx];
+  for (const resolution of resolvedDependencies) {
     const prevEntry = searchResults[resolution.name];
     if (prevEntry != null && resolution.path !== prevEntry.path) {
       (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push({

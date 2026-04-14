@@ -1,6 +1,7 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
   "compilerOptions": {
+    "lib": ["dom", "DOM.Iterable", "esnext"],
     "allowJs": true,
     "outDir": "./build",
     "sourceMap": true

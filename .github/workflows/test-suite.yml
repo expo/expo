@@ -57,7 +57,8 @@ jobs:
         with:
           android-paths: >-
             "packages/**/android/**",
-            "apps/bare-expo/**/android/**"
+            "apps/bare-expo/**/android/**",
+            "packages/expo-modules-core/expo-module-gradle-plugin/**"
 
           ios-paths: >-
             "packages/**/ios/**",
@@ -71,6 +72,7 @@ jobs:
             "packages/**",
             "!packages/@expo/cli/**",
             "!packages/{create-expo,create-expo-nightly,create-expo-module}/**",
+            "!packages/expo-modules-core/expo-module-gradle-plugin/**",
             pnpm-lock.yaml,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
@@ -81,6 +83,7 @@ jobs:
         with:
           android-paths: >-
             "packages/expo-modules-core/**/android/**",
+            "packages/expo-modules-core/expo-module-gradle-plugin/**",
             "packages/expo-modules-autolinking/**/android/**",
             "packages/expo/**/android/**",
             "packages/expo-constants/**/android/**",
@@ -117,6 +120,7 @@ jobs:
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/expo-modules-core/**",
+            "!packages/expo-modules-core/expo-module-gradle-plugin/**",
             "packages/expo-modules-autolinking/**",
             "packages/expo/**",
             "packages/expo-constants/**",
@@ -145,9 +149,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: 🍺 Install required tools
@@ -247,9 +249,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
@@ -358,9 +358,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
@@ -452,9 +450,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🌠 Download builds
         uses: actions/download-artifact@v4
         with:

@@ -27,7 +27,7 @@ export function parseMetroError(message: string): ParsedBuildError | null {
     return null;
   }
 
-  const [, content, fileName, row, column, codeFrame] = e;
+  const [, content = '', fileName = '', row = '', column = '', codeFrame = ''] = e;
   return {
     content,
     fileName,
@@ -44,7 +44,7 @@ export function parseBabelTransformError(message: string): ParsedBuildError | nu
   }
 
   // Transform errors are thrown from inside the Babel transformer.
-  const [, fileName, content, row, column, codeFrame] = e;
+  const [, fileName = '', content = '', row = '', column = '', codeFrame = ''] = e;
   return {
     content,
     fileName,
@@ -61,7 +61,7 @@ export function parseBabelCodeFrameError(message: string): ParsedBuildError | nu
   }
 
   // Codeframe errors are thrown from any use of buildCodeFrameError.
-  const [, fileName, content, codeFrame] = e;
+  const [, fileName = '', content = '', codeFrame = ''] = e;
 
   //TODO: In the future we should send metadata from @expo/cli, but at the moment
   // parsing the message is the only way that work across all LogBox scenarios

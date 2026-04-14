@@ -30,6 +30,12 @@ internal fun Project.applyDefaultPlugins() {
   }
 }
 
+internal fun Project.applyPikaPlugin() {
+  if (!plugins.hasPlugin("io.github.lukmccall.pika")) {
+    plugins.apply("io.github.lukmccall.pika")
+  }
+}
+
 internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
   extra.set("kotlinVersion", kotlinVersion)
   extra.set("kspVersion", kspVersion)

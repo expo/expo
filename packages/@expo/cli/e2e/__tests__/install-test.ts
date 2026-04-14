@@ -8,7 +8,6 @@ import {
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
-  stripWhitespace,
 } from './utils';
 import { executePnpmAsync, executeExpoAsync } from '../utils/expo';
 

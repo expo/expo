@@ -13,23 +13,23 @@ import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
-import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
+import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.functions.createAsyncFunctionComponent
 import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.types.TypeConverterProvider
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.types.toArgsArray
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 @DefinitionMarker
 class ViewDefinitionBuilder<T : View>(
   @PublishedApi internal val viewClass: KClass<T>,
-  @PublishedApi internal val viewType: KType,
+  @PublishedApi internal val viewType: TypeDescriptor,
   @PublishedApi internal val converters: TypeConverterProvider? = null
 ) {
   @PublishedApi

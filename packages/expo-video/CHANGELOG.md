@@ -13,7 +13,10 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix crash when loading PHAsset url fails ([#43373](https://github.com/expo/expo/pull/43373) by [@fractalbeauty](https://github.com/fractalbeauty))
-- [iOS] Fix crashes when `VideoTrack` properties are non-finite.
+- [iOS] Fix crashes when `VideoTrack` properties are non-finite. ([#44108](https://github.com/expo/expo/pull/44108) by [@behenate](https://github.com/behenate))
+- [Android] Fix PiP exiting immediately after auto-entering from fullscreen. ([#44157](https://github.com/expo/expo/pull/44157) by [@behenate](https://github.com/behenate))
+- [Android] Fix broken layout after returning from PiP when auto-enter if off. ([#44163](https://github.com/expo/expo/pull/44163) by [@behenate](https://github.com/behenate))
+- [Android] Hide the surface until the first frame after replacing the video source so the previous stream does not remain visible when switching to a different resolution. ([#44385](https://github.com/expo/expo/issues/44385)) ([#44467](https://github.com/expo/expo/pull/44467) by [@vj2303](https://github.com/vj2303))
 
 ### 💡 Others
 

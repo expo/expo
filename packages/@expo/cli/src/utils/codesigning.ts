@@ -350,7 +350,7 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
     certificateChain: certificatePEMs,
     scopeKey,
   } = codeSigningInfo;
-  if (!privateKeyPEM || !certificatePEMs) {
+  if (!privateKeyPEM || !certificatePEMs?.length) {
     return null;
   }
 
@@ -373,7 +373,7 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
   return {
     keyId: 'expo-go',
     certificateChainForResponse: certificatePEMs,
-    certificateForPrivateKey: certificatePEMs[0],
+    certificateForPrivateKey: certificatePEMs[0]!,
     privateKey: privateKeyPEM,
     scopeKey,
   };

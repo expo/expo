@@ -55,7 +55,7 @@ async function extractIpaAsync(ipaPath: string, outputPath: string): Promise<str
     throw new Error('No .app directory found in the IPA');
   }
 
-  return appBinPaths[0];
+  return appBinPaths[0]!;
 }
 
 async function assertProvisionedForSimulator(appPath: string) {

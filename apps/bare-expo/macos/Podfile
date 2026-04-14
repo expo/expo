@@ -16,7 +16,9 @@ target 'BareExpo-macOS' do
     'react-native-config',
     '--json',
     '--platform',
-    'ios'
+    'ios',
+    '--source-dir',
+    File.expand_path('.', __dir__)
   ]
   config = use_native_modules!(config_command)
 

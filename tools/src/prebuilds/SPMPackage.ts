@@ -649,7 +649,7 @@ async function resolveSourceTarget(
   buildType: BuildFlavor,
   artifactPaths?: ArtifactPaths,
   spmProductToPackage?: Map<string, string>,
-  xcframeworkPaths?: Map<string, { buildPath: string; productName: string }>
+  xcframeworkPaths?: Map<string, { buildPath: string; productName: string; versionPrefix?: string }>
 ): Promise<ResolvedTarget> {
   // Get directory of Package.swift and create the target
   const packageSwiftDir = path.dirname(packageSwiftPath);
@@ -838,7 +838,7 @@ function buildCSettings(
   pkgPath: string,
   buildPath: string,
   buildType: BuildFlavor,
-  xcframeworkPaths?: Map<string, { buildPath: string; productName: string }>
+  xcframeworkPaths?: Map<string, { buildPath: string; productName: string; versionPrefix?: string }>
 ): {
   cSettings: string[];
   cxxSettings: string[];
@@ -955,12 +955,14 @@ function buildCSettings(
         const debugXcfwPath = Frameworks.getFrameworkPath(
           depInfo.buildPath,
           depInfo.productName,
-          'Debug'
+          'Debug',
+          depInfo.versionPrefix
         );
         const releaseXcfwPath = Frameworks.getFrameworkPath(
           depInfo.buildPath,
           depInfo.productName,
-          'Release'
+          'Release',
+          depInfo.versionPrefix
         );
         const debugHeaders = findXCFrameworkHeadersDir(debugXcfwPath);
         const releaseHeaders = findXCFrameworkHeadersDir(releaseXcfwPath);
@@ -1199,7 +1201,10 @@ async function buildPackageSwiftContext(
   // so a single Package.swift works for both debug and release builds.
   // Only includes flavor-dependent deps (expo/external packages), not RN ecosystem deps
   // whose headers are already handled by collectVfsAndHeaderMapFlags.
-  const xcframeworkPaths = new Map<string, { buildPath: string; productName: string }>();
+  const xcframeworkPaths = new Map<
+    string,
+    { buildPath: string; productName: string; versionPrefix?: string }
+  >();
 
   // Add external dependencies as binary targets
   const externalDeps = product.externalDependencies || [];
@@ -1262,10 +1267,22 @@ async function buildPackageSwiftContext(
     // This handles dependencies between external packages in node_modules
     const externalPkg = getExternalPackageByProductName(depName);
     if (externalPkg) {
+      // Compute the dependency's version prefix from the building package's prefix.
+      // The building package (pkg) has outputVersionPrefix set (e.g. "4.2.2/0.85.0-rc.5/0.16.0"),
+      // but the fresh ExternalPackage from getExternalPackageByProductName doesn't.
+      // We reuse the RN/Hermes version parts and substitute the dep's own package version.
+      const depVersionPrefix = pkg.outputVersionPrefix
+        ? Frameworks.computeVersionPrefixForDependency(
+            pkg.outputVersionPrefix,
+            externalPkg.packageVersion
+          )
+        : undefined;
+
       const xcframeworkPath = Frameworks.getFrameworkPath(
         externalPkg.buildPath,
         depName,
-        buildType
+        buildType,
+        depVersionPrefix
       );
 
       if (await fs.pathExists(xcframeworkPath)) {
@@ -1280,7 +1297,11 @@ async function buildPackageSwiftContext(
           dependencies: [],
           linkedFrameworks: [],
         });
-        xcframeworkPaths.set(depName, { buildPath: externalPkg.buildPath, productName: depName });
+        xcframeworkPaths.set(depName, {
+          buildPath: externalPkg.buildPath,
+          productName: depName,
+          versionPrefix: depVersionPrefix,
+        });
         continue;
       } else {
         throw new SpinnerError(

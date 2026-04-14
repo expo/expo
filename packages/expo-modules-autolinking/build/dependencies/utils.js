@@ -129,7 +129,7 @@ async function filterMapResolutionResult(results, filterMap) {
     return output;
 }
 function mergeResolutionResults(results, base) {
-    if (base == null && results.length === 1) {
+    if (base == null && results.length === 1 && results[0] != null) {
         return results[0];
     }
     const output = base == null ? Object.create(null) : base;
