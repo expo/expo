@@ -33,11 +33,16 @@ export function ScrollView({
     ...(disabled ? { opacity: 0.5, pointerEvents: 'none' } : undefined),
   };
 
+  // react-native-web does not support separate vertical and horizontal indicator props,
+  // so we map both to its single `showsIndicators` prop.
+  const showVerticalIndicator = showsIndicators;
+  const showHorizontalIndicator = showsIndicators;
+
   return (
     <RNScrollView
       horizontal={isHorizontal}
-      showsVerticalScrollIndicator={!isHorizontal && showsIndicators}
-      showsHorizontalScrollIndicator={isHorizontal && showsIndicators}
+      showsVerticalScrollIndicator={showVerticalIndicator}
+      showsHorizontalScrollIndicator={showHorizontalIndicator}
       style={containerStyle}
       nestedScrollEnabled
       testID={testID}>
