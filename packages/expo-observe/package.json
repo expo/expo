@@ -32,8 +32,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-eas-client": "workspace:*",
-    "expo-updates-interface": "workspace:*"
+    "expo-eas-client": "workspace:~55.0.2",
+    "expo-updates-interface": "workspace:~55.1.3"
   },
   "devDependencies": {
     "expo-module-scripts": "workspace:*"
