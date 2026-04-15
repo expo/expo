@@ -17,21 +17,23 @@ object LanguageUtils {
     }
   }
 
+  private fun getLanguageISO(locale: Locale) =
+    try {
+      languageISOCodes[locale.isO3Language]?.language
+    } catch (_: MissingResourceException) {
+      null
+    } ?: locale.language
+
+  private fun getCountryISO(locale: Locale) =
+    try {
+      locale.isO3Country.takeIf { it.isNotEmpty() }?.let { countryISOCodes[it]?.country }
+    } catch (_: MissingResourceException) {
+      null
+    } ?: locale.country
+
   fun getISOCode(locale: Locale): String {
-    val language =
-      try {
-        languageISOCodes[locale.isO3Language]?.language
-      } catch (_: MissingResourceException) {
-        null
-      } ?: locale.language
-
-    val country =
-      try {
-        locale.isO3Country.takeIf { it != "" }?.let { countryISOCodes[it]?.country }
-      } catch (_: MissingResourceException) {
-        null
-      } ?: locale.country
-
+    val language = getLanguageISO(locale)
+    val country = getCountryISO(locale)
     return if (country.isNotEmpty()) "$language-$country" else language
   }
 }
