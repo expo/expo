@@ -1,4 +1,4 @@
-import { PermissionHookOptions, PermissionResponse } from 'expo';
+import { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
 import { GranularPermission } from './types/GranularPermission';
 export * from './MediaLibraryNext.types';
@@ -34,12 +34,15 @@ export declare function getPermissionsAsync(writeOnly?: boolean, granularPermiss
  *
  * @example
  * ```ts
- * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({
+ *   writeOnly: true,
+ *   granularPermissions: ['photo'],
+ * });
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<{
     writeOnly?: boolean;
     granularPermissions?: GranularPermission[];
-}>) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+}> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 export type { PermissionHookOptions };
 //# sourceMappingURL=index.d.ts.map

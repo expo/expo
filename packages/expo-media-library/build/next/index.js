@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
 export * from './MediaLibraryNext.types';
@@ -56,4 +56,20 @@ export async function getPermissionsAsync(writeOnly = false, granularPermissions
     }
     return await ExpoMediaLibraryNext.getPermissionsAsync(writeOnly);
 }
+/**
+ * Check or request permissions to access the media library.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({
+ *   writeOnly: true,
+ *   granularPermissions: ['photo'],
+ * });
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+    getMethod: (options) => getPermissionsAsync(options?.writeOnly, options?.granularPermissions),
+    requestMethod: (options) => requestPermissionsAsync(options?.writeOnly, options?.granularPermissions),
+});
 //# sourceMappingURL=index.js.map
