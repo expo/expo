@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.AsyncFunctionHandlerScope
+import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -219,9 +219,9 @@ private fun String?.toImeAction(): ImeAction = when (this) {
 @Composable
 fun FunctionalComposableScope.TextFieldContent(
   props: TextFieldProps,
-  onSetText: AsyncFunctionHandlerScope<String>,
-  onFocus: AsyncFunctionHandlerScope<Unit>,
-  onBlur: AsyncFunctionHandlerScope<Unit>,
+  setText: AsyncFunctionHandle<String>,
+  focus: AsyncFunctionHandle<Unit>,
+  blur: AsyncFunctionHandle<Unit>,
   onValueChanged: (GenericEventPayload1<String>) -> Unit,
   onFocusChange: (GenericEventPayload1<Boolean>) -> Unit,
   onKeyboardActionTriggered: (KeyboardActionEvent) -> Unit
@@ -230,13 +230,13 @@ fun FunctionalComposableScope.TextFieldContent(
   val focusRequester = remember { FocusRequester() }
   val textState = remember { mutableStateOf<String?>(null) }
 
-  onSetText { text ->
+  setText.handle { text ->
     textState.value = text
   }
-  onFocus {
+  focus.handle {
     focusRequester.requestFocus()
   }
-  onBlur {
+  blur.handle {
     focusManager.clearFocus()
   }
 

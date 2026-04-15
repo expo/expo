@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.AsyncFunctionHandlerScope
+import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.FunctionalComposableScope
 
 data class ModalBottomSheetPropertiesRecord(
@@ -38,13 +38,13 @@ data class ModalBottomSheetViewProps(
 @Composable
 fun FunctionalComposableScope.ModalBottomSheetContent(
   props: ModalBottomSheetViewProps,
-  onHide: AsyncFunctionHandlerScope<Unit>,
+  hide: AsyncFunctionHandle<Unit>,
   onDismissRequest: () -> Unit
 ) {
   val sheetState = rememberModalBottomSheetState(props.skipPartiallyExpanded)
   val scope = rememberCoroutineScope()
 
-  onHide {
+  hide.handle {
     try {
       withContext(scope.coroutineContext) {
         sheetState.hide()

@@ -16,7 +16,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.views.AsyncFunctionHandlerScope
+import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
@@ -77,13 +77,13 @@ data class TooltipBoxViewProps(
 @Composable
 fun FunctionalComposableScope.TooltipBoxContent(
   props: TooltipBoxViewProps,
-  onShow: AsyncFunctionHandlerScope<Unit>,
-  onDismiss: AsyncFunctionHandlerScope<Unit>
+  show: AsyncFunctionHandle<Unit>,
+  dismiss: AsyncFunctionHandle<Unit>
 ) {
   val tooltipState = rememberTooltipState(isPersistent = props.isPersistent)
   val scope = rememberCoroutineScope()
 
-  onShow {
+  show.handle {
     try {
       withContext(scope.coroutineContext) {
         tooltipState.show()
@@ -94,7 +94,7 @@ fun FunctionalComposableScope.TooltipBoxContent(
     }
   }
 
-  onDismiss {
+  dismiss.handle {
     try {
       withContext(scope.coroutineContext) {
         tooltipState.dismiss()
