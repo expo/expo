@@ -37,6 +37,7 @@
 
 ### 💡 Others
 
+- Prevent launching the browser or focusing the simulator in non-interactive environments.
 - Remove react-native-web requirement for `expo start`. ([#44300](https://github.com/expo/expo/pull/44300) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove dom components warning. ([#44253](https://github.com/expo/expo/pull/44253) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `@react-navigation/core` and `@react-navigation/native` to autolinking resolution ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
