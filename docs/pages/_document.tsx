@@ -1,44 +1,30 @@
-import { getThemeFromCookieHeader } from '@expo/styleguide';
-import Document, {
-  Html,
-  Head,
-  Main,
-  NextScript,
-  DocumentContext,
-  DocumentProps,
-} from 'next/document';
+import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 
-type Props = DocumentProps & {
-  serverTheme: 'dark' | 'light' | null;
-};
+export default class DocsDocument extends Document {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  static async getInitialProps(ctx: DocumentContext) {
+    const initialProps = await Document.getInitialProps(ctx);
+    return {
+      ...initialProps,
+      styles: <>{initialProps.styles}</>,
+    };
+  }
 
-export default function DocsDocument({ serverTheme }: Props) {
-  return (
-    <Html
-      lang="en"
-      className={serverTheme === 'dark' ? 'dark-theme' : undefined}
-      data-expo-theme={serverTheme ?? undefined}
-      suppressHydrationWarning>
-      <Head>
-        {!serverTheme && (
+  render() {
+    return (
+      <Html lang="en" data-expo-theme>
+        <Head>
           <script
             dangerouslySetInnerHTML={{
-              __html: `(function(){if(window.matchMedia("(prefers-color-scheme:dark)").matches){document.documentElement.classList.add("dark-theme")}})()`,
+              __html: `(function(){try{var m=document.cookie.match(/(?:^|; )expo-theme=([^;]*)/);var t=m&&decodeURIComponent(m[1]);var isDark=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme:dark)").matches);if(isDark){document.documentElement.classList.add("dark-theme")}}catch(e){}})()`,
             }}
           />
-        )}
-      </Head>
-      <body className="text-pretty">
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
-  );
+        </Head>
+        <body className="text-pretty">
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
 }
-
-DocsDocument.getInitialProps = async (ctx: DocumentContext) => {
-  const initialProps = await Document.getInitialProps(ctx);
-  const cookieHeader = ctx.req?.headers?.cookie;
-  const serverTheme = cookieHeader ? getThemeFromCookieHeader(cookieHeader) : null;
-  return { ...initialProps, serverTheme };
-};
