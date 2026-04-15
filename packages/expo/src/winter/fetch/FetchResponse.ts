@@ -144,3 +144,13 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     this.removeAllListeners('didFailWithError');
   };
 }
+
+// Identify FetchResponse instances as standard Fetch `Response` objects via
+// `Symbol.toStringTag`. Libraries such as `ky` use `Object.prototype.toString.call(res)`
+// to detect spec-compatible Response instances when the prototype identity
+// differs from globalThis.Response (which is the case under expo/fetch).
+// See expo/expo#44781.
+Object.defineProperty(FetchResponse.prototype, Symbol.toStringTag, {
+  value: 'Response',
+  configurable: true,
+});
