@@ -14,6 +14,7 @@
 
 - Prevent `original*` globals from being enumerable or from being created for globals with getters, since these may be side-effectful ([#44407](https://github.com/expo/expo/pull/44407) by [@kitten](https://github.com/kitten))
 - Resolve paths relative to project root instead of server root in `expo/scripts/resolveAppEntry.js` ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
+- Identify `FetchResponse` as a standard `Response` via `Symbol.toStringTag` so `Object.prototype.toString.call(res)` returns `'[object Response]'`. ([#44795](https://github.com/expo/expo/pull/44795) by [@SAY-5](https://github.com/SAY-5))
 
 ### 💡 Others
 
