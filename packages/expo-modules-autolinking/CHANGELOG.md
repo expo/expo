@@ -183,7 +183,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- [iOS] Added modular headers for companion pods
+- [iOS] Added modular headers for companion pods ([#44805](https://github.com/expo/expo/pull/44805) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile ([#39479](https://github.com/expo/expo/pull/39479) by [@chrfalch](https://github.com/chrfalch))
 - Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
 - [iOS] Force codegen for `FBReactNativeSpec` when generated files are missing in React Native source ([#39512](https://github.com/expo/expo/pull/39512) by [@kitten](https://github.com/kitten))
