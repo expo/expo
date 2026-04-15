@@ -1,8 +1,8 @@
 package expo.modules.devlauncher.services
 
 import androidx.core.net.toUri
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.devlauncher.helpers.await
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 
@@ -32,20 +32,7 @@ data class DevelopmentSession(
 class HttpClientService() {
   private var currentSession: String? = null
 
-  val httpClient = OkHttpClient.Builder()
-    .addInterceptor { chain ->
-      val originalRequest = chain.request()
-      val session = currentSession
-      if (session == null || !originalRequest.url.toString().startsWith(restEndpoint)) {
-        return@addInterceptor chain.proceed(originalRequest)
-      }
-
-      val newRequest = originalRequest.newBuilder()
-        .header("expo-session", session)
-        .build()
-      chain.proceed(newRequest)
-    }
-    .build()
+  val httpClient = OkHttpClientProvider.getOkHttpClient()
 
   internal fun setSession(sessionSecret: String?) {
     currentSession = sessionSecret

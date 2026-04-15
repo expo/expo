@@ -16,6 +16,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.DevLauncherUrl
@@ -46,7 +47,6 @@ import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
   Intent.FLAG_ACTIVITY_CLEAR_TASK or
@@ -64,7 +64,7 @@ class DevLauncherController private constructor(
   val nullableContext: Context?
     get() = contextHolder.get()
 
-  val httpClient by lazy { OkHttpClient() }
+  val httpClient by lazy { OkHttpClientProvider.getOkHttpClient() }
   val lifecycle by lazy { DevLauncherLifecycle() }
   private val pendingIntentRegistry by lazy { DevLauncherIntentRegistry() }
   private val installationIDHelper by lazy { DevLauncherInstallationIDHelper() }

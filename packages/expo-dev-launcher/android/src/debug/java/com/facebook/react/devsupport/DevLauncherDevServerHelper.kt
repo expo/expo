@@ -2,20 +2,18 @@ package com.facebook.react.devsupport
 
 import android.content.Context
 import androidx.core.net.toUri
+import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.PackagerConnectionSettings
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 private const val PACKAGER_OK_STATUS = "packager-status:running"
-private const val HTTP_CONNECT_TIMEOUT_MS = 5000L
 private const val PACKAGER_STATUS_ENDPOINT = "status"
 
 class DevLauncherDevServerHelper(
@@ -25,13 +23,7 @@ class DevLauncherDevServerHelper(
   packagerConnection: PackagerConnectionSettings
 ) : DevServerHelper(devSettings, context, packagerConnection) {
 
-  private val httpClient: OkHttpClient by lazy {
-    OkHttpClient.Builder()
-      .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-      .readTimeout(0, TimeUnit.MILLISECONDS)
-      .writeTimeout(0, TimeUnit.MILLISECONDS)
-      .build()
-  }
+  private val httpClient = OkHttpClientProvider.getOkHttpClient()
 
   override fun getDevServerBundleURL(jsModulePath: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getDevServerBundleURL(jsModulePath)
