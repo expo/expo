@@ -22,10 +22,6 @@ const outDir: string = workerData.outDir;
 const pagesDir: string = workerData.pagesDir;
 const SCENE_MODE_HEADING = '## How would you like to develop?';
 const NEXT_STEP_HEADING = '## Next step';
-const LLMS_DIRECTIVE =
-  '> ## Documentation Index\n' +
-  '> Fetch the complete documentation index at: https://docs.expo.dev/llms.txt\n' +
-  '> Use this file to discover all available pages before exploring further.\n\n';
 
 function toPosixPath(filePath: string): string {
   return filePath.split(path.sep).join('/');
@@ -187,15 +183,13 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
       markdown = injectSceneVariants(markdown, sceneSections, defaultVariantHeading);
     }
 
-    // Prepend frontmatter from the MDX source file (if available) and the llms.txt
-    // directive. The blockquote tells agents where to find the documentation index;
-    // it sits after frontmatter so it lands near the top of the rendered content.
+    // Prepend frontmatter from the MDX source file if available
     const mdxPath = findMdxSource(htmlPath, outDir, pagesDir);
-    const frontmatter = mdxPath ? extractFrontmatter(mdxPath) : null;
-    if (frontmatter) {
-      markdown = frontmatter + '\n' + LLMS_DIRECTIVE + markdown;
-    } else {
-      markdown = LLMS_DIRECTIVE + markdown;
+    if (mdxPath) {
+      const frontmatter = extractFrontmatter(mdxPath);
+      if (frontmatter) {
+        markdown = frontmatter + '\n' + markdown;
+      }
     }
 
     const warnings = checkMarkdownQuality(markdown, relHtmlPath);
