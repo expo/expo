@@ -347,12 +347,20 @@ module Expo
       # podspec is patched to use the xcframework. For source builds, CocoaPods
       # builds from source via :podspec.
       #
+      # Companion pods are production-only code (they never declare test specs) and
+      # typically depend on their sibling main pod. When the Podfile calls
+      # `use_expo_modules_tests!` (tests_only), main pods without test specs are skipped,
+      # so registering a companion that depends on a skipped main pod would fail
+      # dependency resolution. Skip companions entirely in tests-only mode.
+      #
       # Example spm.config.json:
       #   "autolinkWhen": {
       #     "podfileProperty": "expo.camera.barcode-scanner-enabled",
       #     "disabledValue": "false"
       #   }
-      def register_companion_pods(podfile, target_definition, project_directory)
+      def register_companion_pods(podfile, target_definition, project_directory, tests_only: false)
+        return if tests_only
+
         properties = read_podfile_properties(project_directory)
 
         pod_lookup_map.each do |pod_name, info|
