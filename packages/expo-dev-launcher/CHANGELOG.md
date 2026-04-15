@@ -18,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix JSI crash (`EXC_BAD_ACCESS` in `jsi::Pointer::~Pointer`) when an embedded `main.jsbundle` and dev-launcher race on startup. ([#44799](https://github.com/expo/expo/pull/44799) by [@fabriziocucci](https://github.com/fabriziocucci))
 - [iOS] Fixed deep links not reaching the app because `EXDevLauncherController.isAppRunning` always returned `false`. ([#44609](https://github.com/expo/expo/pull/44609) by [@vonovak](https://github.com/vonovak))
 - [Android] Fix `DevLauncherErrorActivity` dark theme. ([#44529](https://github.com/expo/expo/pull/44529) by [@zoontek](https://github.com/zoontek))
 - [iOS] Fix issue when using `fullScreenModal` with `expo-router`. ([#43520](https://github.com/expo/expo/pull/43520) by [@alanjhughes](https://github.com/alanjhughes))

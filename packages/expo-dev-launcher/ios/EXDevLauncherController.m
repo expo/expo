@@ -215,6 +215,15 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     });
   };
 
+  // When a local bundle is available, skip trying to reload the last-opened app.
+  // The autoload logic in DevLauncherViewController.viewDidLoad will load it instead.
+  // Without this guard, loadApp's error handler would call navigateToLauncher and
+  // invalidate the bridge that loadLocalBundle created, causing a JSI crash.
+  if ([[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"] != nil) {
+    [self navigateToLauncher];
+    return;
+  }
+
 #if TARGET_OS_SIMULATOR
   BOOL hasGrantedNetworkPermission = YES;
 #else
