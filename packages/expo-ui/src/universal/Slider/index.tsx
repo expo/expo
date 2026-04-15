@@ -40,3 +40,5 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   cursor: 'pointer',
 };
+
+export * from './types';

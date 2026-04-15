@@ -1,7 +1,8 @@
 import { Pressable, View, type ViewStyle } from 'react-native';
 
-import type { ColumnProps, UniversalAlignment } from './types';
+import type { ColumnProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
+import type { UniversalAlignment } from '../types';
 
 const alignmentMap: Record<UniversalAlignment, ViewStyle['alignItems']> = {
   start: 'flex-start',
@@ -43,3 +44,5 @@ export function Column({
     </Container>
   );
 }
+
+export * from './types';

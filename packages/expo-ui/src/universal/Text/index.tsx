@@ -44,3 +44,5 @@ export function Text({
     </RNText>
   );
 }
+
+export * from './types';

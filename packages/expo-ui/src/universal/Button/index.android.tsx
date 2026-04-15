@@ -48,3 +48,5 @@ const variantComponentMap: Record<
   outlined: OutlinedButton,
   text: TextButton,
 };
+
+export * from './types';

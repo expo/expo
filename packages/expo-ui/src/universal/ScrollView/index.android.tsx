@@ -33,3 +33,5 @@ export function ScrollView({
 
   return <Column modifiers={[...modifiers, verticalScroll()]}>{children}</Column>;
 }
+
+export * from './types';
