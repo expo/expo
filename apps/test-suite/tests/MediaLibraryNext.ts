@@ -311,6 +311,41 @@ export async function test(t) {
         t.expect(assetsAfter.length).toBe(1);
         t.expect(assetsAfter.find((a) => a.id === newAsset.id)).toBeUndefined();
       });
+
+      t.it('does nothing when called with an empty array', async () => {
+        const albumName = createAlbumName('does nothing when called with an empty array');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(1);
+
+        await album.removeAssets([]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+      });
+
+      t.it('does nothing when asset does not belong to the album', async () => {
+        const albumName = createAlbumName('does nothing when asset does not belong to the album');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const outsideAsset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(outsideAsset);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(1);
+
+        await album.removeAssets([outsideAsset]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+
+        // Verify the asset still exists in the library
+        const height = await outsideAsset.getHeight();
+        t.expect(height).toBeDefined();
+      });
     });
   }
 
