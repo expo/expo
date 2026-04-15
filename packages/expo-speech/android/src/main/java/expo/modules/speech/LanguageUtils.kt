@@ -19,13 +19,18 @@ object LanguageUtils {
 
   fun getISOCode(locale: Locale): String {
     val language =
-      runCatching { languageISOCodes[locale.isO3Language]?.language }.getOrNull() ?: locale.language
+      try {
+        languageISOCodes[locale.isO3Language]?.language
+      } catch (_: MissingResourceException) {
+        null
+      } ?: locale.language
 
     val country =
-      runCatching {
-          locale.isO3Country.takeIf { it.isNotEmpty() }?.let { countryISOCodes[it]?.country }
-        }
-        .getOrNull() ?: locale.country
+      try {
+        locale.isO3Country.takeIf { it != "" }?.let { countryISOCodes[it]?.country }
+      } catch (_: MissingResourceException) {
+        null
+      } ?: locale.country
 
     return if (country.isNotEmpty()) "$language-$country" else language
   }
