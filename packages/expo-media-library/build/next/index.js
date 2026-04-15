@@ -24,7 +24,7 @@ export class Album extends ExpoMediaLibraryNext.Album {
 }
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
- * @param writeOnly
+ * @param writeOnly - Whether to request write-only access without read permissions. Defaults to `false`.
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
  * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  *
@@ -42,7 +42,7 @@ export async function requestPermissionsAsync(writeOnly = false, granularPermiss
 }
 /**
  * Checks user's permissions for accessing media library.
- * @param writeOnly
+ * @param writeOnly - Whether to check write-only access without read permissions. Defaults to `false`.
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has
  * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.

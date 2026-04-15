@@ -71,7 +71,7 @@ export declare class Album {
      *
      * @param name - Name of the new album.
      * @param assetsRefs - List of {@link Asset} objects or file paths (file:///...) to include.
-     * @param moveAssets - On Android, whether to move assets into the album.
+     * @param moveAssets - On Android, whether to move assets into the album. Defaults to `true`.
      * @returns A promise resolving to the created {@link Album}.
      *
      * @example
@@ -83,8 +83,9 @@ export declare class Album {
     static create(name: string, assetsRefs: string[] | Asset[], moveAssets?: boolean): Promise<Album>;
     /**
      * A static function. Deletes multiple albums at once.
+     * On Android, assets are always deleted along with the album regardless of `deleteAssets`.
      * @param albums - An array of {@link Album} instances to delete.
-     * @param deleteAssets - Whether to delete the assets in the albums as well.
+     * @param deleteAssets - On iOS, whether to delete the assets in the albums as well. Defaults to `false`.
      * @returns A promise that resolves once the albums have been deleted.
      *
      * @example
@@ -93,7 +94,7 @@ export declare class Album {
      * await Album.delete([album]);
      * ```
      */
-    static delete(albums: Album[], deleteAssets: boolean): Promise<void>;
+    static delete(albums: Album[], deleteAssets?: boolean): Promise<void>;
     /**
      * A static function. Retrieves an album by its title.
      * @param title - The title of the album to retrieve.

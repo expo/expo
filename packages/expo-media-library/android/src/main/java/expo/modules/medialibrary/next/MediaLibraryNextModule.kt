@@ -169,7 +169,7 @@ class MediaLibraryNextModule : Module() {
         albumQuery.getAlbum(title)
       }
 
-      StaticAsyncFunction("delete") Coroutine { albums: List<Album>, deleteAssets: Boolean ->
+      StaticAsyncFunction("delete") Coroutine { albums: List<Album>, deleteAssets: Boolean? ->
         val contentUris = albums
           .map { it.getAssets() }
           .flatten()
@@ -177,11 +177,11 @@ class MediaLibraryNextModule : Module() {
         assetDeleter.delete(contentUris)
       }
 
-      StaticAsyncFunction("create") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, move: Boolean ->
+      StaticAsyncFunction("create") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, moveAssets: Boolean? ->
         val assetListKClass = toKClass<List<Asset>>()
         if (assetRefs.`is`(assetListKClass)) {
           val assetList = assetRefs.get(assetListKClass)
-          return@Coroutine albumFactory.createFromAssets(name, assetList, move)
+          return@Coroutine albumFactory.createFromAssets(name, assetList, moveAssets ?: true)
         }
         val assetPaths = assetRefs.get(toKClass<List<Uri>>())
         return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
@@ -245,12 +245,12 @@ class MediaLibraryNextModule : Module() {
       }
     }
 
-    AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-      systemPermissionsDelegate.requestPermissions(writeOnly, permissions, promise)
+    AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean?, permissions: List<GranularPermission>?, promise: Promise ->
+      systemPermissionsDelegate.requestPermissions(writeOnly ?: false, permissions, promise)
     }
 
-    AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-      systemPermissionsDelegate.getPermissions(writeOnly, permissions, promise)
+    AsyncFunction("getPermissionsAsync") { writeOnly: Boolean?, permissions: List<GranularPermission>?, promise: Promise ->
+      systemPermissionsDelegate.getPermissions(writeOnly ?: false, permissions, promise)
     }
 
     RegisterActivityContracts {

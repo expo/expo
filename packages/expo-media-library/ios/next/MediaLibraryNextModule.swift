@@ -183,10 +183,10 @@ public final class MediaLibraryNextModule: Module {
         return Album(id: collection.localIdentifier)
       }
 
-      StaticAsyncFunction("delete") { (albums: [Album], deleteAssets: Bool) async throws in
+      StaticAsyncFunction("delete") { (albums: [Album], deleteAssets: Bool?) async throws in
         try await checkIfPermissionGranted()
         let albumsIds = albums.map { $0.id }
-        try await AssetCollectionRepository.shared.delete(by: albumsIds, deleteAssets: deleteAssets)
+        try await AssetCollectionRepository.shared.delete(by: albumsIds, deleteAssets: deleteAssets ?? false)
       }
 
       StaticAsyncFunction("create") { (name: String, assetRefs: Either<[Asset], [URL]>, moveAssets: Bool?) async throws -> Album in
@@ -205,21 +205,21 @@ public final class MediaLibraryNextModule: Module {
       return collections.map { Album(id: $0.localIdentifier) }
     }
 
-    AsyncFunction("getPermissionsAsync") { (writeOnly: Bool, promise: Promise) in
+    AsyncFunction("getPermissionsAsync") { (writeOnly: Bool?, promise: Promise) in
       appContext?
         .permissions?
         .getPermissionUsingRequesterClass(
-          requesterClass(writeOnly),
+          requesterClass(writeOnly ?? false),
           resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
     }
 
-    AsyncFunction("requestPermissionsAsync") { (writeOnly: Bool, promise: Promise) in
+    AsyncFunction("requestPermissionsAsync") { (writeOnly: Bool?, promise: Promise) in
       appContext?
         .permissions?
         .askForPermission(
-          usingRequesterClass: requesterClass(writeOnly),
+          usingRequesterClass: requesterClass(writeOnly ?? false),
           resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
