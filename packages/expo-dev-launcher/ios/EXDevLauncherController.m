@@ -196,6 +196,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     });
   };
 
+  if ([[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"] != nil) {
+    [self navigateToLauncher];
+    return;
+  }
+
 #if TARGET_OS_SIMULATOR
   BOOL hasGrantedNetworkPermission = YES;
 #else
