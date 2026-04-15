@@ -16,28 +16,6 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
 
-  public required override init() {
-    super.init()
-
-    // Initialize and start the controller as soon as the handler is constructed,
-    // which happens during ExpoAppDelegate setup — well before the first React
-    // root view is requested. Doing it here (instead of in createReactRootView)
-    // means createReactRootView can be safely invoked multiple times, which is
-    // required for brownfield setups where the host app may mount and unmount
-    // RN views many times during its lifetime.
-    if UpdatesUtils.isUsingCustomInitialization() {
-      return
-    }
-
-    AppController.initializeWithoutStarting()
-    let controller = AppController.sharedInstance
-    guard controller.isActiveController else {
-      return
-    }
-    controller.delegate = self
-    controller.start()
-  }
-
   public override func createReactRootView(
     reactDelegate: ExpoReactDelegate,
     moduleName: String,
@@ -48,27 +26,19 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       return nil
     }
 
+    AppController.initializeWithoutStarting()
     let controller = AppController.sharedInstance
     if !controller.isActiveController {
       return nil
     }
 
-    // If startup has already completed, create the view directly with the launch
-    // asset URL the controller resolved. This is the path hit on every brownfield
-    // re-mount, and on standard apps when the React view is created after startup.
-    if let launchAssetUrl = controller.launchAssetUrl() {
-      return reactDelegate.reactNativeFactory.recreateRootView(
-        withBundleURL: launchAssetUrl,
-        moduleName: moduleName,
-        initialProps: initialProperties,
-        launchOptions: launchOptions
-      )
-    }
-
-    // Startup is still in-flight. Return a deferred placeholder; the delegate
-    // callback will swap in the real view once startup finishes.
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
+    if !controller.isStarted {
+      controller.delegate = self
+      controller.start()
+    }
+
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
     self.deferredRootView = EXDeferredRCTRootView()
@@ -104,11 +74,8 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     if UpdatesUtils.isUsingCustomInitialization() {
       return
     }
-    // No deferred view waiting — startup completed before any React view was
-    // requested. The view will be created on demand via createReactRootView,
-    // which will use the now-resolved launchAssetUrl directly.
     guard let reactDelegate = self.reactDelegate else {
-      return
+      fatalError("`reactDelegate` should not be nil")
     }
 
     let rootView = reactDelegate.reactNativeFactory.recreateRootView(
