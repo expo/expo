@@ -9,6 +9,13 @@ export type CommandOptions = {
     withChangelog: boolean;
     example: boolean;
     local: boolean;
+    name?: string;
+    description?: string;
+    package?: string;
+    authorName?: string;
+    authorEmail?: string;
+    authorUrl?: string;
+    repo?: string;
 };
 /**
  * Represents an object that is passed to `ejs` when rendering the template.

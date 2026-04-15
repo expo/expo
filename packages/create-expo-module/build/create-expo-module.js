@@ -12,11 +12,14 @@ const fs_1 = __importDefault(require("fs"));
 const getenv_1 = require("getenv");
 const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
+const validate_npm_package_name_1 = __importDefault(require("validate-npm-package-name"));
 const createExampleApp_1 = require("./createExampleApp");
 const packageManager_1 = require("./packageManager");
 const prompts_2 = require("./prompts");
 const resolvePackageManager_1 = require("./resolvePackageManager");
 const telemetry_1 = require("./telemetry");
+const git_1 = require("./utils/git");
+const github_1 = require("./utils/github");
 const ora_1 = require("./utils/ora");
 const debug = require('debug')('create-expo-module:main');
 const packageJson = require('../package.json');
@@ -37,6 +40,41 @@ const IGNORES_PATHS = [
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
+/**
+ * Determines if we're in an interactive environment.
+ * Non-interactive when: CI=1/true or non-TTY stdin.
+ */
+function isInteractive() {
+    // Check for CI environment
+    const ci = process.env.CI;
+    if (ci === '1' || ci === 'true' || ci?.toLowerCase() === 'true') {
+        return false;
+    }
+    // Check for TTY
+    if (!process.stdin.isTTY) {
+        return false;
+    }
+    return true;
+}
+/**
+ * Converts a slug to a native module name (PascalCase).
+ */
+function slugToModuleName(slug) {
+    return slug
+        .replace(/^@/, '')
+        .replace(/^./, (match) => match.toUpperCase())
+        .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
+}
+/**
+ * Converts a slug to an Android package name.
+ */
+function slugToAndroidPackage(slug) {
+    const namespace = slug
+        .replace(/\W/g, '')
+        .replace(/^(expo|reactnative)/, '')
+        .toLowerCase();
+    return `expo.modules.${namespace}`;
+}
 async function getCorrectLocalDirectory(targetOrSlug) {
     let packageJsonPath = null;
     for (let dir = CWD; path_1.default.dirname(dir) !== dir; dir = path_1.default.dirname(dir)) {
@@ -60,12 +98,16 @@ async function getCorrectLocalDirectory(targetOrSlug) {
  * @param options An options object for `commander`.
  */
 async function main(target, options) {
+    const interactive = isInteractive();
+    if (!interactive) {
+        debug('Running in non-interactive mode');
+    }
     if (options.local) {
         console.log();
         console.log(`${chalk_1.default.gray('The local module will be created in the ')}${chalk_1.default.gray.bold.italic('modules')} ${chalk_1.default.gray('directory in the root of your project. Learn more: ')}${chalk_1.default.gray.bold(FYI_LOCAL_DIR)}`);
         console.log();
     }
-    const slug = await askForPackageSlugAsync(target, options.local);
+    const slug = await askForPackageSlugAsync(target, options.local, options);
     const targetDir = options.local
         ? await getCorrectLocalDirectory(target || slug)
         : path_1.default.join(CWD, target || slug);
@@ -73,9 +115,9 @@ async function main(target, options) {
         return;
     }
     await fs_1.default.promises.mkdir(targetDir, { recursive: true });
-    await confirmTargetDirAsync(targetDir);
+    await confirmTargetDirAsync(targetDir, options);
     options.target = targetDir;
-    const data = await askForSubstitutionDataAsync(slug, options.local);
+    const data = await askForSubstitutionDataAsync(slug, options.local, options);
     // Make one line break between prompts and progress logs
     console.log();
     const packageManager = (0, resolvePackageManager_1.resolvePackageManager)();
@@ -287,8 +329,19 @@ async function createGitRepositoryAsync(targetDir) {
 }
 /**
  * Asks the user for the package slug (npm package name).
+ * In non-interactive mode, uses the target path or 'my-module' as default.
  */
-async function askForPackageSlugAsync(customTargetPath, isLocal = false) {
+async function askForPackageSlugAsync(customTargetPath, isLocal, options) {
+    const interactive = isInteractive();
+    // In non-interactive mode, derive slug from target path or use default
+    if (!interactive) {
+        const targetBasename = customTargetPath && path_1.default.basename(customTargetPath);
+        const slug = targetBasename && (0, validate_npm_package_name_1.default)(targetBasename).validForNewPackages
+            ? targetBasename
+            : 'my-module';
+        debug(`Non-interactive mode: using slug "${slug}"`);
+        return slug;
+    }
     const { slug } = await (0, prompts_1.default)((isLocal ? prompts_2.getLocalFolderNamePrompt : prompts_2.getSlugPrompt)(customTargetPath), {
         onCancel: () => process.exit(0),
     });
@@ -297,14 +350,31 @@ async function askForPackageSlugAsync(customTargetPath, isLocal = false) {
 /**
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
+ * In non-interactive mode, uses defaults or CLI-provided values.
  */
-async function askForSubstitutionDataAsync(slug, isLocal = false) {
+async function askForSubstitutionDataAsync(slug, isLocal, options) {
+    const interactive = isInteractive();
+    // Non-interactive mode: use CLI options and defaults
+    if (!interactive) {
+        return getSubstitutionDataFromOptions(slug, isLocal, options);
+    }
+    // Interactive mode: prompt for values, but skip prompts for CLI-provided values
     const promptQueries = await (isLocal ? prompts_2.getLocalSubstitutionDataPrompts : prompts_2.getSubstitutionDataPrompts)(slug);
+    // Filter out prompts for values already provided via CLI
+    const filteredPrompts = promptQueries.filter((prompt) => {
+        const name = prompt.name;
+        const cliValue = getCliValueForPrompt(name, options);
+        return cliValue === undefined;
+    });
     // Stop the process when the user cancels/exits the prompt.
     const onCancel = () => {
         process.exit(0);
     };
-    const { name, description, package: projectPackage, authorName, authorEmail, authorUrl, repo, } = await (0, prompts_1.default)(promptQueries, { onCancel });
+    // Get values from prompts
+    const promptedValues = filteredPrompts.length > 0 ? await (0, prompts_1.default)(filteredPrompts, { onCancel }) : {};
+    // Merge CLI-provided values with prompted values
+    const name = options.name ?? promptedValues.name ?? slugToModuleName(slug);
+    const projectPackage = options.package ?? promptedValues.package ?? slugToAndroidPackage(slug);
     if (isLocal) {
         return {
             project: {
@@ -317,6 +387,78 @@ async function askForSubstitutionDataAsync(slug, isLocal = false) {
             type: 'local',
         };
     }
+    const description = options.description ?? promptedValues.description ?? 'My new module';
+    const authorName = options.authorName ?? promptedValues.authorName ?? (await (0, git_1.findMyName)()) ?? '';
+    const authorEmail = options.authorEmail ?? promptedValues.authorEmail ?? (await (0, git_1.findGitHubEmail)()) ?? '';
+    const authorUrl = options.authorUrl ??
+        promptedValues.authorUrl ??
+        (authorEmail ? ((await (0, github_1.findGitHubUserFromEmail)(authorEmail)) ?? '') : '');
+    const repo = options.repo ?? promptedValues.repo ?? (await (0, github_1.guessRepoUrl)(authorUrl, slug)) ?? '';
+    return {
+        project: {
+            slug,
+            name,
+            version: '0.1.0',
+            description,
+            package: projectPackage,
+            moduleName: handleSuffix(name, 'Module'),
+            viewName: handleSuffix(name, 'View'),
+        },
+        author: `${authorName} <${authorEmail}> (${authorUrl})`,
+        license: 'MIT',
+        repo,
+        type: 'remote',
+    };
+}
+/**
+ * Gets the CLI value for a given prompt name.
+ */
+function getCliValueForPrompt(promptName, options) {
+    switch (promptName) {
+        case 'name':
+            return options.name;
+        case 'description':
+            return options.description;
+        case 'package':
+            return options.package;
+        case 'authorName':
+            return options.authorName;
+        case 'authorEmail':
+            return options.authorEmail;
+        case 'authorUrl':
+            return options.authorUrl;
+        case 'repo':
+            return options.repo;
+        default:
+            return undefined;
+    }
+}
+/**
+ * Gets substitution data from CLI options and defaults (for non-interactive mode).
+ */
+async function getSubstitutionDataFromOptions(slug, isLocal, options) {
+    const name = options.name ?? slugToModuleName(slug);
+    const projectPackage = options.package ?? slugToAndroidPackage(slug);
+    debug(`Non-interactive mode: name="${name}", package="${projectPackage}"`);
+    if (isLocal) {
+        return {
+            project: {
+                slug,
+                name,
+                package: projectPackage,
+                moduleName: handleSuffix(name, 'Module'),
+                viewName: handleSuffix(name, 'View'),
+            },
+            type: 'local',
+        };
+    }
+    // For remote modules, resolve author info
+    const description = options.description ?? 'My new module';
+    const authorName = options.authorName ?? (await (0, git_1.findMyName)()) ?? '';
+    const authorEmail = options.authorEmail ?? (await (0, git_1.findGitHubEmail)()) ?? '';
+    const authorUrl = options.authorUrl ?? (authorEmail ? ((await (0, github_1.findGitHubUserFromEmail)(authorEmail)) ?? '') : '');
+    const repo = options.repo ?? (await (0, github_1.guessRepoUrl)(authorUrl, slug)) ?? '';
+    debug(`Non-interactive mode: description="${description}", authorName="${authorName}", authorEmail="${authorEmail}", authorUrl="${authorUrl}", repo="${repo}"`);
     return {
         project: {
             slug,
@@ -335,10 +477,17 @@ async function askForSubstitutionDataAsync(slug, isLocal = false) {
 }
 /**
  * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
+ * In non-interactive mode, automatically continues (assumes intent to overwrite).
  */
-async function confirmTargetDirAsync(targetDir) {
+async function confirmTargetDirAsync(targetDir, options) {
     const files = await fs_1.default.promises.readdir(targetDir);
     if (files.length === 0) {
+        return;
+    }
+    // In non-interactive mode, proceed automatically
+    if (!isInteractive()) {
+        debug(`Non-interactive mode: target directory "${targetDir}" is not empty, continuing anyway`);
+        console.log(chalk_1.default.yellow(`Warning: Target directory ${chalk_1.default.magenta(targetDir)} is not empty, continuing anyway.`));
         return;
     }
     const { shouldContinue } = await (0, prompts_1.default)({
@@ -390,6 +539,14 @@ program
     .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
     .option('--no-example', 'Whether to skip creating the example app.', false)
     .option('--local', 'Whether to create a local module in the current project, skipping installing node_modules and creating the example directory.', false)
+    // Module configuration options (skip prompts when provided)
+    .option('--name <name>', 'Native module name (e.g., MyModule).')
+    .option('--description <description>', 'Module description.')
+    .option('--package <package>', 'Android package name (e.g., expo.modules.mymodule).')
+    .option('--author-name <name>', 'Author name for package.json.')
+    .option('--author-email <email>', 'Author email for package.json.')
+    .option('--author-url <url>', "URL to the author's profile (e.g., GitHub profile).")
+    .option('--repo <url>', 'URL of the repository.')
     .action(main);
 program
     .hook('postAction', async () => {
