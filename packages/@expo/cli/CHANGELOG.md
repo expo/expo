@@ -16,6 +16,7 @@
 
 ### 🐛 Bug fixes
 
+- Load environment variables from `.env` files before resolving options in `expo export` to match `expo start` behavior. ([#44132](https://github.com/expo/expo/pull/44132) by [@savaryna](https://github.com/savaryna))
 - Prevent opening Expo Go on Apple Watch. ([#44147](https://github.com/expo/expo/pull/44147) by [@EvanBacon](https://github.com/EvanBacon))
 - Support files >= 2 GiB in AFC device upload ([#43755](https://github.com/expo/expo/pull/43755) by [@yocontra](https://github.com/yocontra))
 - Revert the `-quiet` change to ensure build env vars are always printed. ([#43906](https://github.com/expo/expo/pull/43906) by [@EvanBacon](https://github.com/EvanBacon))
