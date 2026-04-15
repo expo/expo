@@ -1,0 +1,138 @@
+---
+title: Set up EAS Observe
+sidebar_title: Get started
+description: Learn how to install EAS Observe and start collecting performance metrics from your production app.
+searchRank: 9
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+EAS Observe tracks your app's startup performance in production. This guide walks you through installation, setup, and viewing your first metrics.
+
+## Prerequisites
+
+<Collapsible summary="An Expo user account">
+
+EAS Observe is available to anyone with an Expo account. You can sign up at [expo.dev/signup](https://expo.dev/signup).
+
+</Collapsible>
+
+<Collapsible summary="Expo SDK 55 or later">
+
+EAS Observe requires SDK 55 or later. Run `npx expo-doctor` to check your SDK version and `npx expo install --fix` to update dependencies.
+
+</Collapsible>
+
+<Collapsible summary="An EAS project">
+
+Your app must be linked to an EAS project. Ensure `extra.eas.projectId` in your app config includes the project ID, or create one by running `eas build:configure`.
+
+</Collapsible>
+
+<Step label="1">
+
+## Install the library
+
+Make sure you are using the latest version of `expo`, then install `expo-observe`:
+
+<Terminal
+  cmd={[
+    '$ npx expo install --fix',
+    '$ npx expo install expo-observe',
+  ]}
+/>
+
+</Step>
+
+<Step label="2">
+
+## Wrap your root layout
+
+Wrap your root layout with `AppMetricsRoot`. This higher-order component (HOC) automatically measures Time to First Render for you.
+
+```jsx
+import { AppMetricsRoot } from 'expo-observe';
+
+function RootLayout() {
+  return (
+    // your layout
+  );
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
+```
+
+</Step>
+
+<Step label="3">
+
+## Mark interactive
+
+Call `markInteractive()` when your app is fully ready for user interaction. This should be called **after** any initialization work behind the splash screen completes, such as:
+
+- Checking for updates
+- Authenticating the user
+- Fetching initial data
+- Animating the splash screen
+
+```jsx
+import { useEffect, useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import { AppMetrics } from 'expo-observe';
+
+export default function App() {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      await authenticateUser();
+      await fetchInitialData();
+      setIsReady(true);
+    }
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if (isReady) {
+      SplashScreen.hide();
+      AppMetrics.markInteractive();
+    }
+  }, [isReady]);
+
+  // ...
+}
+```
+
+> **info** `markInteractive()` can safely be called multiple times per session, only the first call records the measurement. If your app has multiple entry screens (for example, an onboarding flow, login flow, or deep link targets), call `markInteractive` on **every one of these screens**. If you only place it on one screen, TTI will not be recorded when the app opens via a deep link to a different screen.
+
+</Step>
+
+<Step label="4">
+
+## Create a new build
+
+After installing `expo-observe` and adding the instrumentation, create a new build of your app:
+
+<Terminal cmd={['$ eas build']} />
+
+> **info** By default, metrics from the `development` environment are not dispatched. To test your integration during development, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development).
+
+</Step>
+
+<Step label="5">
+
+## View your metrics
+
+Navigate to your project's Observe dashboard to view metrics from your app:
+
+```text
+https://expo.dev/accounts/[accountName]/projects/[projectName]/observe
+```
+
+For details on filtering, release comparison, and session investigation, see the [Dashboard guide](/eas/observe/dashboard/).
+
+You can also query metrics from the terminal using the [CLI commands](/eas/observe/cli/).
+
+</Step>

@@ -1,0 +1,83 @@
+---
+title: Configure EAS Observe
+sidebar_title: Configuration
+description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+## `configure()`
+
+Use the `configure()` method to control how EAS Observe behaves at runtime:
+
+```js
+import ExpoObserve from 'expo-observe';
+
+ExpoObserve.configure({
+  environment: 'production',
+  dispatchingEnabled: true,
+});
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `environment` | `string` | `process.env.NODE_ENV` | The environment label for observability events |
+| `dispatchingEnabled` | `boolean` | `true` | Whether to send collected events to the server |
+
+## `dispatchEvents()`
+
+Events are automatically dispatched when the app moves to the background. On iOS, this happens when the app resigns active state or is about to terminate. On Android, a background worker dispatches events once network connectivity is available.
+
+To flush events manually (for example, during testing or to ensure events are sent before a specific point), call `dispatchEvents()`:
+
+```js
+import ExpoObserve from 'expo-observe';
+
+await ExpoObserve.dispatchEvents();
+```
+
+## Enable metrics in development
+
+By default, metrics with the `development` environment are filtered out and not dispatched to the server. To collect development metrics (for example, to test your integration), set `enableInDebug` to `true` in your **app config**:
+
+```json
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "observe": {
+          "enableInDebug": true
+        }
+      }
+    }
+  }
+}
+```
+
+> **warning** Enable this only when testing your EAS Observe integration. Development performance differs significantly from production, so collecting development metrics may affect the results shown in your dashboard.
+
+## Custom endpoint
+
+If you need to change the endpoint for the observability API, set the `endpointUrl` value in your **app config**:
+
+```json
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "observe": {
+          "endpointUrl": "https://your-custom-endpoint.com"
+        }
+      }
+    }
+  }
+}
+```
+
+After changing the endpoint, run `npx expo prebuild` to regenerate native code.
+
+## Environments
+
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default, or can be overridden using `configure({ environment })`.
+
+Metrics with the `development` environment are filtered out before dispatching unless `enableInDebug` is set to `true` in your app config (see above). You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.

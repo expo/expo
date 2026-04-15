@@ -1,0 +1,104 @@
+---
+title: Observe CLI commands
+sidebar_title: CLI
+description: Query app performance metrics and events from the terminal using EAS CLI observe commands.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+The EAS CLI includes commands for querying your Observe metrics from the terminal. All commands are available under `eas observe:`.
+
+> **info** While EAS Observe is in preview, these commands are subject to breaking changes.
+
+## `eas observe:metrics`
+
+Display app performance metrics grouped by app version.
+
+<Terminal cmd={['$ eas observe:metrics [OPTIONS]']} />
+
+| Flag | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--platform` | string | all | Filter by platform (`ios`, `android`) |
+| `--metric` | string (repeatable) | all metrics | Metric to display: `tti`, `ttr`, `cold_launch`, `warm_launch`, `bundle_load` |
+| `--stat` | string (repeatable) | `median`, `eventCount` | Statistic to display: `min`, `max`, `median` (or `med`), `average` (or `avg`), `p80`, `p90`, `p99`, `eventCount` |
+| `--start` | string | 60 days ago | Start of time range (ISO date) |
+| `--end` | string | now | End of time range (ISO date) |
+| `--days` | integer | - | Show metrics from the last N days (mutually exclusive with `--start`/`--end`) |
+| `--project-id` | string | auto-detected | EAS project ID |
+| `--json` | boolean | false | Enable JSON output (implies `--non-interactive`) |
+| `--non-interactive` | boolean | false | Run in non-interactive mode |
+
+### Examples
+
+```bash
+# View all metrics for the last 7 days
+eas observe:metrics --days 7
+
+# View cold launch P90 for iOS
+eas observe:metrics --metric cold_launch --stat p90 --platform ios
+
+# View multiple metrics with multiple stats as JSON
+eas observe:metrics --metric tti --metric ttr --stat median --stat p99 --json
+```
+
+## `eas observe:events`
+
+Display individual app performance events ordered by metric value.
+
+<Terminal cmd={['$ eas observe:events [METRIC] [OPTIONS]']} />
+
+The `METRIC` argument is required in non-interactive mode. Options: `tti`, `ttr`, `cold_launch`, `warm_launch`, `bundle_load`.
+
+| Flag | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--sort` | string | `oldest` | Sort order: `slowest`, `fastest`, `newest`, `oldest` |
+| `--platform` | string | all | Filter by platform (`ios`, `android`) |
+| `--limit` | integer | 10 | Number of items to fetch (1 to 100) |
+| `--after` | string | - | Cursor for pagination (use `endCursor` from a previous query) |
+| `--start` | string | 60 days ago | Start of time range (ISO date) |
+| `--end` | string | now | End of time range (ISO date) |
+| `--days` | integer | - | Show events from the last N days (mutually exclusive with `--start`/`--end`) |
+| `--app-version` | string | - | Filter by app version |
+| `--update-id` | string | - | Filter by EAS update ID |
+| `--project-id` | string | auto-detected | EAS project ID |
+| `--json` | boolean | false | Enable JSON output (implies `--non-interactive`) |
+| `--non-interactive` | boolean | false | Run in non-interactive mode |
+
+### Examples
+
+```bash
+# View the 20 slowest TTI events from the last 7 days
+eas observe:events tti --days 7 --sort slowest --limit 20
+
+# View cold launch events for a specific app version
+eas observe:events cold_launch --app-version 1.2.0
+
+# Paginate through results
+eas observe:events ttr --after <endCursor-from-previous-query>
+```
+
+## `eas observe:versions`
+
+Display app versions with build and update details.
+
+<Terminal cmd={['$ eas observe:versions [OPTIONS]']} />
+
+| Flag | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--platform` | string | all | Filter by platform (`ios`, `android`) |
+| `--start` | string | 60 days ago | Start of time range (ISO date) |
+| `--end` | string | now | End of time range (ISO date) |
+| `--days` | integer | - | Show versions from the last N days (mutually exclusive with `--start`/`--end`) |
+| `--project-id` | string | auto-detected | EAS project ID |
+| `--json` | boolean | false | Enable JSON output (implies `--non-interactive`) |
+| `--non-interactive` | boolean | false | Run in non-interactive mode |
+
+### Examples
+
+```bash
+# View all versions
+eas observe:versions
+
+# View Android versions from the last 30 days as JSON
+eas observe:versions --platform android --days 30 --json
+```
