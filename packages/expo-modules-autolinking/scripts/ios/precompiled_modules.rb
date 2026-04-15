@@ -384,13 +384,29 @@ module Expo
 
           podspec_rel = Pathname.new(podspec_file).relative_path_from(project_directory).to_s
 
-          if enabled? && has_prebuilt_xcframework?(pod_name)
-            Pod::UI.message "— #{pod_name.green} (prebuilt companion, gated by #{property})"
-          else
-            Pod::UI.message "— #{pod_name.green} (companion, gated by #{property})"
+          # Enable modular headers for the companion pod's transitive Objective-C dependencies so
+          # the Swift pod can `import` them. Mirrors the logic in autolinking_manager.rb's
+          # `use_modular_headers_for_dependencies`.
+          begin
+            spec = Pod::Specification.from_file(podspec_file)
+            spec.all_dependencies.each do |dep|
+              root_spec_name = dep.name.partition('/').first
+              unless target_definition.build_pod_as_module?(root_spec_name)
+                target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
+              end
+            end
+          rescue => e
+            Pod::UI.warn "[Expo] Companion pod #{pod_name}: failed to enable modular headers for dependencies: #{e.message}"
           end
 
-          podfile.pod(pod_name, :podspec => podspec_rel)
+          if enabled? && has_prebuilt_xcframework?(pod_name)
+            Pod::UI.message "— #{pod_name.green} (prebuilt companion, gated by #{property})"
+            podfile.pod(pod_name, :podspec => podspec_rel)
+          else
+            Pod::UI.message "— #{pod_name.green} (companion, gated by #{property})"
+            podspec_dir_rel = Pathname.new(info[:podspec_dir]).relative_path_from(project_directory).to_s
+            podfile.pod(pod_name, :path => podspec_dir_rel)
+          end
         end
       end
 
