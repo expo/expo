@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Remove `#Preview` SwiftUI blocks that cause build failures when consuming the package as a dependency. ([#44775](https://github.com/expo/expo/pull/44775) by [@fabriziocucci](https://github.com/fabriziocucci))
+
 ### 💡 Others
 
 ## 55.0.23 — 2026-04-11
