@@ -1,9 +1,10 @@
+import { THEME_COOKIE_NAME } from '@expo/styleguide';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 
 const BLOCKING_THEME_SCRIPT = `
 (function() {
   function getCookieTheme() {
-    var match = document.cookie.match(/(?:^|;\\s*)expo-theme=([^;]*)/);
+    var match = document.cookie.match(/(?:^|;\\s*)${THEME_COOKIE_NAME}=([^;]*)/);
     var val = match && match[1];
     return val === 'dark' || val === 'light' ? val : null;
   }
