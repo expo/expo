@@ -47,6 +47,7 @@
 - Exclude ExpoModulesMacros.swift from SPM prebuild ([#44354](https://github.com/expo/expo/pull/44354) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove legacy `ExpoBridgeModule` ([#44351](https://github.com/expo/expo/pull/44351) by [@tsapeta](https://github.com/tsapeta))
 - Refactored `ComposableScope` and allow extensibility. ([#44698](https://github.com/expo/expo/pull/44698) by [@kudo](https://github.com/kudo))
+- [iOS] Added broader colors support to convertibles. ([#44630](https://github.com/expo/expo/pull/44630) by [@kudo](https://github.com/kudo))
 
 ## 55.0.12 — 2026-02-25
 
