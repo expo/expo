@@ -34,6 +34,7 @@ var dependencies_1 = require("./dependencies");
 Object.defineProperty(exports, "makeCachedDependenciesLinker", { enumerable: true, get: function () { return dependencies_1.makeCachedDependenciesLinker; } });
 Object.defineProperty(exports, "scanDependencyResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.scanDependencyResolutionsForPlatform; } });
 Object.defineProperty(exports, "scanExpoModuleResolutionsForPlatform", { enumerable: true, get: function () { return dependencies_1.scanExpoModuleResolutionsForPlatform; } });
+__exportStar(require("./utilities"), exports);
 /** @deprecated */
 async function mergeLinkingOptionsAsync(argumentsOptions) {
     const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)(argumentsOptions);

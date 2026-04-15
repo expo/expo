@@ -18,8 +18,7 @@
   "expo": {
     "autolinking": {
       "exclude": [
-        "expo-module-template",
-        "expo-module-template-local"
+        "expo-module-template"
       ],
       "ios": {
         "flags": {

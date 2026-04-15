@@ -1,5 +1,4 @@
 import type { Endpoints } from '@octokit/types';
-import { Readable } from 'stream';
 
 import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
@@ -60,8 +59,9 @@ async function isValidGitHubRepoAsync(repo: GitHubRepoInfo): Promise<boolean> {
 async function extractRemoteGitHubTarballAsync(
   url: string,
   repo: GitHubRepoInfo,
+  output: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   const response = await fetch(url);
 
   if (!response.ok) throw new Error(`Unexpected response: ${response.statusText} (${url})`);
@@ -72,7 +72,7 @@ async function extractRemoteGitHubTarballAsync(
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
   // Only extract the relevant (sub)directories, ignoring irrelevant files
-  // The filder auto-ignores dotfiles, unless explicitly included
+  // The filter auto-ignores dotfiles, unless explicitly included
   const filter = createGlobFilter(
     !directory.length
       ? ['*/**', '*/ios/.xcode.env']
@@ -83,13 +83,18 @@ async function extractRemoteGitHubTarballAsync(
     }
   );
 
-  await extractNpmTarballAsync(Readable.fromWeb(response.body), { ...props, filter, strip });
+  return await extractNpmTarballAsync(response.body, output, {
+    ...props,
+    filter,
+    strip,
+  });
 }
 
 export async function downloadAndExtractGitHubRepositoryAsync(
   repoUrl: URL,
+  output: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   debug('Looking for GitHub repository');
 
   const info = await getGitHubRepoAsync(repoUrl);
@@ -106,5 +111,5 @@ export async function downloadAndExtractGitHubRepositoryAsync(
   debug('Resolved GitHub repository', info);
   debug('Downloading GitHub repository from:', url);
 
-  await extractRemoteGitHubTarballAsync(url, info, props);
+  return await extractRemoteGitHubTarballAsync(url, info, output, props);
 }

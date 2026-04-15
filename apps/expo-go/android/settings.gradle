@@ -33,7 +33,6 @@ expoAutolinking.searchPaths = [
 ]
 expoAutolinking.exclude = [
   'expo-module-template',
-  'expo-module-template-local',
   'react-native-reanimated',
   'expo-dev-launcher',
   'expo-dev-client',

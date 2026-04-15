@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `CFBundleTypeRole` to `URLScheme` type ([#44650](https://github.com/expo/expo/pull/44650) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 55.0.6 — 2026-02-25

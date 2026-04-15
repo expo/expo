@@ -118,17 +118,23 @@ export default createRunOncePlugin<PluginConfigType>(
   (config, props = {}) => {
     validateConfig(props);
 
+    const androidDefaultLaunchURL = props.android?.defaultLaunchURL ?? props.defaultLaunchURL;
+    const iosDefaultLaunchURL = props.ios?.defaultLaunchURL ?? props.defaultLaunchURL;
     const iOSLaunchMode =
       props.ios?.launchMode ??
       props.launchMode ??
       props.ios?.launchModeExperimental ??
       props.launchModeExperimental;
-    if (iOSLaunchMode === 'launcher') {
-      config = withInfoPlist(config, (config) => {
+
+    config = withInfoPlist(config, (config) => {
+      if (iOSLaunchMode === 'launcher') {
         config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
-        return config;
-      });
-    }
+      }
+      if (iosDefaultLaunchURL) {
+        config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URL'] = iosDefaultLaunchURL;
+      }
+      return config;
+    });
 
     const iOSToolsButton = props.ios?.toolsButton ?? props.toolsButton;
     if (iOSToolsButton !== undefined) {
@@ -151,18 +157,25 @@ export default createRunOncePlugin<PluginConfigType>(
       props.launchMode ??
       props.android?.launchModeExperimental ??
       props.launchModeExperimental;
-    if (androidLaunchMode === 'launcher') {
-      config = withAndroidManifest(config, (config) => {
-        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
+    config = withAndroidManifest(config, (config) => {
+      const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+      if (androidLaunchMode === 'launcher') {
         AndroidConfig.Manifest.addMetaDataItemToMainApplication(
           mainApplication,
           'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE',
           false?.toString()
         );
-        return config;
-      });
-    }
+      }
+      if (androidDefaultLaunchURL) {
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'DEV_CLIENT_DEFAULT_LAUNCHER_URL',
+          androidDefaultLaunchURL
+        );
+      }
+      return config;
+    });
 
     const androidToolsButton = props.android?.toolsButton ?? props.toolsButton;
     if (androidToolsButton !== undefined) {

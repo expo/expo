@@ -79,7 +79,7 @@ private fun BranchBadge(
 }
 
 @Composable
-private fun NeedToSingInComponent(
+private fun NeedToSignInComponent(
   onProfileClick: () -> Unit = {}
 ) {
   Box(
@@ -93,7 +93,7 @@ private fun NeedToSingInComponent(
     ) {
       Icon(
         painter = painterResource(R.drawable.log_in),
-        contentDescription = "Sign In Icon",
+        contentDescription = "Log in icon",
         tint = NewAppTheme.colors.icon.info
       )
 
@@ -103,7 +103,7 @@ private fun NeedToSingInComponent(
         modifier = Modifier.fillMaxWidth()
       ) {
         NewText(
-          "Sign in to view updates",
+          "Log in to view updates",
           style = NewAppTheme.font.lg.merge(
             fontWeight = FontWeight.SemiBold,
             lineHeight = 20.sp,
@@ -112,7 +112,7 @@ private fun NeedToSingInComponent(
         )
 
         NewText(
-          "Sign in to your Expo account to see available\nEAS updates for this project.",
+          "Log in to your Expo account to see available\nupdates for this project.",
           style = NewAppTheme.font.sm.merge(
             lineHeight = 19.6.sp,
             textAlign = TextAlign.Center
@@ -122,7 +122,7 @@ private fun NeedToSingInComponent(
       }
 
       ActionButton(
-        "Sign In",
+        "Log in",
         foreground = Color.White,
         background = Color.Black,
         fill = false,
@@ -154,7 +154,7 @@ fun BranchesScreen(
     }
 
     if (needToSignIn) {
-      NeedToSingInComponent(onProfileClick)
+      NeedToSignInComponent(onProfileClick)
       return@Column
     }
 

@@ -1,0 +1,91 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+
+import ExpoModulesCore
+import ExpoAppMetrics
+
+internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
+
+internal struct Config: Record {
+  @Field var environment: String?
+  @Field var dispatchingEnabled: Bool?
+}
+
+public final class ObserveModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoObserve")
+
+    OnCreate {
+      // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,
+      // which is not great as it requires the app context. Ideally if we move EAS-specific config to `expo-eas-client` at some point.
+      if let manifest = getManifest(appContext), let projectId = getProjectId(manifest: manifest) {
+        let baseUrl = getBaseUrl(manifest)
+        let enableInDebug = getEnableInDebug(manifest)
+        let useOpenTelemetry = getUseOpenTelemetry(manifest)
+        ObservabilityManager.setEnableInDebug(enableInDebug)
+        ObservabilityManager.setUseOpenTelemetry(useOpenTelemetry)
+        // Set the endpoint URL after enabling Open Telemetry
+        ObservabilityManager.setEndpointUrl(baseUrl, projectId: projectId)
+      }
+    }
+
+    AsyncFunction("dispatchEvents") {
+      await ObservabilityManager.dispatch()
+    }
+
+    Function("configure") { (config: Config) in
+      AppMetricsActor.isolated {
+        if let enabled = config.dispatchingEnabled {
+          ObserveUserDefaults.dispatchingEnabled = enabled
+        }
+        if let environment = config.environment {
+          AppMetrics.setEnvironment(environment)
+        }
+      }
+    }
+  }
+}
+
+private func getManifest(_ appContext: AppContext?) -> [String: Any]? {
+  guard let manifest = appContext?.constants?.constants()["manifest"] as? [String: Any] else {
+    observeLogger.warn("[EAS Observe] Unable to read the manifest")
+    return nil
+  }
+  return manifest
+}
+
+private func getProjectId(manifest: [String: Any]) -> String? {
+  let value = getManifestProperty("extra.eas.projectId", manifest)
+  guard let projectId = value as? String else {
+    observeLogger.warn("[EAS Observe] Unable to get the project ID")
+    return nil
+  }
+  return projectId
+}
+
+private func getBaseUrl(_ manifest: [String: Any]) -> String? {
+  return getManifestProperty("extra.eas.observe.endpointUrl", manifest) as? String
+}
+
+private func getEnableInDebug(_ manifest: [String: Any]) -> Bool? {
+  return getManifestProperty("extra.eas.observe.enableInDebug", manifest) as? Bool
+}
+
+private func getUseOpenTelemetry(_ manifest: [String: Any]) -> Bool? {
+  return getManifestProperty("extra.eas.observe.useOpenTelemetry", manifest) as? Bool
+}
+
+/**
+ * Traverses the manifest using a dot-separated property chain.
+ * For example, "extra.eas.projectId" will navigate manifest["extra"]["eas"]["projectId"].
+ */
+private func getManifestProperty(_ propertyChain: String, _ manifest: [String: Any]) -> Any? {
+  let keys = propertyChain.split(separator: ".").map { String($0) }
+  var value: Any? = manifest
+  for key in keys {
+    guard let nestedValue = value as? [String: Any], let nextValue = nestedValue[key] else {
+      return nil
+    }
+    value = nextValue
+  }
+  return value
+}

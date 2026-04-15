@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `NullPointerException` in `LanguageUtils.getISOCode` when the TTS engine returns a voice with a non-standard locale. ([#44807](https://github.com/expo/expo/pull/44807) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25

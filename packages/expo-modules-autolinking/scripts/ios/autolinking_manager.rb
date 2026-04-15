@@ -71,9 +71,10 @@ module Expo
               next
             end
 
-            # Skip if the podspec doesn't include the platform for the current target.
+            # Skip if the podspec doesn't include the platform for the current target or if deployment targets are incompatible.
             unless pod.supports_platform?(@target_definition.platform)
-              UI.message '- ' << package.name.green << " doesn't support #{@target_definition.platform.string_name} platform".yellow
+              reason = pod.platform_skip_reason(@target_definition.platform)
+              UI.warn "[Expo] ".blue << package.name.green << " was not linked: #{reason}".yellow
               next
             end
 
@@ -134,6 +135,7 @@ module Expo
       }
 
       Expo::PrecompiledModules.register_external_pods(@podfile, @target_definition, project_directory)
+      Expo::PrecompiledModules.register_companion_pods(@podfile, @target_definition, project_directory, tests_only: tests_only)
 
       self
     end

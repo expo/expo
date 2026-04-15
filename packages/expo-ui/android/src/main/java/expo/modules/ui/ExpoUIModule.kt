@@ -28,7 +28,13 @@ import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
-import expo.modules.ui.menu.ItemPressedEvent
+import expo.modules.kotlin.jni.worklets.Worklet
+import expo.modules.ui.state.ObservableState
+import expo.modules.ui.state.WorkletCallback
+import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
+import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
+import expo.modules.ui.menu.ExposedDropdownMenuContent
+import expo.modules.ui.menu.ExposedDropdownMenuProps
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
@@ -47,6 +53,30 @@ class ExpoUIModule : Module() {
       okHttpClient?.connectionPool?.evictAll()
       okHttpClient?.cache?.close()
       okHttpClient = null
+    }
+
+    // MARK: - Observable State
+
+    Class(WorkletCallback::class) {
+      Constructor { worklet: Worklet ->
+        val callback = WorkletCallback()
+        callback.worklet = worklet
+        callback
+      }
+    }
+
+    Class(ObservableState::class) {
+      Constructor { initial: Map<String, Any?> ->
+        ObservableState(initial["value"])
+      }
+
+      Function("getValue") { state: ObservableState ->
+        state.value
+      }
+
+      Function("setValue") { state: ObservableState, wrapper: Map<String, Any?> ->
+        state.value = wrapper["value"]
+      }
     }
 
     //region Views use expo-modules-core DSL for uncommon features
@@ -92,6 +122,7 @@ class ExpoUIModule : Module() {
     }
     View(IconView::class)
     View(LazyColumnView::class)
+    View(LazyRowView::class)
 
     //endregion Views use expo-modules-core DSL for uncommon features
 
@@ -255,8 +286,8 @@ class ExpoUIModule : Module() {
     ExpoUIView("DropdownMenuItemView", events = {
       Events("onItemPressed")
     }) { props: DropdownMenuItemProps ->
-      val onItemPressed by remember { EventDispatcher<ItemPressedEvent>() }
-      DropdownMenuItemContent(props) { onItemPressed(it) }
+      val onItemPressed by remember { EventDispatcher<Unit>() }
+      DropdownMenuItemContent(props) { onItemPressed(Unit) }
     }
 
     ExpoUIView("LinearProgressIndicatorView") { props: LinearProgressIndicatorProps ->
@@ -468,6 +499,25 @@ class ExpoUIModule : Module() {
     }) { props: FloatingActionButtonProps ->
       val onButtonPressed by remember { EventDispatcher<Unit>() }
       FloatingActionButtonContent(props) { onButtonPressed(Unit) }
+    }
+
+    // Experimental Compose state support to trigger synchronous state updates from UI worklet.
+    ExpoUIView("SyncSwitchView") { props: SyncSwitchProps ->
+      SyncSwitchContent(props)
+    }
+
+    ExpoUIView("ExposedDropdownMenuBoxView", events = {
+      Events("onExpandedChange")
+    }) { props: ExposedDropdownMenuBoxProps ->
+      val onExpandedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      ExposedDropdownMenuBoxContent(props) { onExpandedChange(GenericEventPayload1(it)) }
+    }
+
+    ExpoUIView("ExposedDropdownMenuView", events = {
+      Events("onDismissRequest")
+    }) { props: ExposedDropdownMenuProps ->
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ExposedDropdownMenuContent(props) { onDismissRequest(Unit) }
     }
 
     //endregion Expo UI views
