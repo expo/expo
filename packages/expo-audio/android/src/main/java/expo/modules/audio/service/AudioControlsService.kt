@@ -84,12 +84,6 @@ class AudioControlsService : MediaSessionService() {
 
   override fun onCreate() {
     super.onCreate()
-<<<<<<< HEAD
-||||||| parent of 9ad7edbfcc2 ([android][audio] Fix lock screen controls on android 12 (#44754))
-    audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-=======
-    audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
->>>>>>> 9ad7edbfcc2 ([android][audio] Fix lock screen controls on android 12 (#44754))
     createNotificationChannelIfNeeded()
   }
 
