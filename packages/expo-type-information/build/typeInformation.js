@@ -110,14 +110,14 @@ var TypeInferenceOption;
     TypeInferenceOption[TypeInferenceOption["NO_INFERENCE"] = 0] = "NO_INFERENCE";
     /** Basic type inference will be applied. */
     TypeInferenceOption[TypeInferenceOption["SIMPLE_INFERENCE"] = 1] = "SIMPLE_INFERENCE";
-    /** * Preprocesses the file by injecting returns to extract more type info from sourcekitten. */
+    /** Preprocesses the file by injecting returns to extract more type info from sourcekitten. */
     TypeInferenceOption[TypeInferenceOption["PREPROCESS_AND_INFERENCE"] = 2] = "PREPROCESS_AND_INFERENCE";
 })(TypeInferenceOption || (exports.TypeInferenceOption = TypeInferenceOption = {}));
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
- * * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
+ * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
  * the function will create a temporary file with the (optionally preprocessed) content to facilitate parsing.
- * * @param options - Configuration object containing the input source (file or string) and the desired level of type inference.
+ * @param options - Configuration object containing the input source (file or string) and the desired level of type inference.
  * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it returns `null`.
  */
 async function getFileTypeInformation({ input, typeInference, }) {

@@ -278,16 +278,20 @@ function getConstantExportDeclaration(name: string, type: Type, value: string): 
 }
 
 function getClassPropertyDeclaration(declaration: PropertyDeclaration): ts.PropertyDeclaration {
-  return getPropertyDeclaration({modifiers: [readonlyModifier], name: declaration.name, typeNode: mapTypeToTsTypeNode(declaration.type)})
+  return getPropertyDeclaration({
+    modifiers: [readonlyModifier],
+    name: declaration.name,
+    typeNode: mapTypeToTsTypeNode(declaration.type),
+  });
 }
 
 function getClassDeclarationInModule(classDeclaration: ClassDeclaration): ts.ClassElement {
   return getPropertyDeclaration({
-    // TODO that's a hack, but I couldn't find a proper way to do this
+    // TODO(@HubertBer) that's a hack, but I couldn't find a proper way to do this
     // The problem is that declare class semantics seem somewhat different than class semantics.
     name: classDeclaration.name,
     typeNode: ts.factory.createTypeReferenceNode('typeof ' + classDeclaration.name),
-  })
+  });
 }
 
 function getExportedModuleDeclaration(moduleClassDeclaration: ModuleClassDeclaration): ts.Node[] {
@@ -457,7 +461,7 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
     // for example when creating arguemnt adding the '?' token.
     //
     // However we can just make it (type | undefined) in here.
-    // TODO Maybe also need null?
+    // TODO(@HubertBer) Maybe also need null?
     case TypeKind.OPTIONAL:
       return ts.factory.createUnionTypeNode([
         mapTypeToTsTypeNode(type.type as Type),
@@ -483,7 +487,7 @@ export function getClassConstructorDeclaration(
   );
 }
 
-// TODO figure out what about inheritance, should or should not inherit SharedObject
+// TODO(@HubertBer) figure out what about inheritance, should or should not inherit SharedObject
 export function getTsClassDeclaration(
   classDeclaration: ClassDeclaration,
   fileTypeInformation: FileTypeInformation,
@@ -904,7 +908,7 @@ function getStableFileDeclarationsForModule(
             name: mainView.name,
             initializer: getCallExpression({
               expression: 'requireNativeView',
-              args: [ts.factory.createStringLiteral(moduleClassDeclaration.name)]
+              args: [ts.factory.createStringLiteral(moduleClassDeclaration.name)],
             }),
           }),
         ]

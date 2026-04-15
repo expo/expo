@@ -67,7 +67,7 @@ function maybeWrapWithReturnStatement(type, fileTypeInformation) {
             return [];
         }
     }
-    // TODO maybe add a comment when we couldn't create a mock for the return type
+    // TODO(@HubertBer) maybe add a comment when we couldn't create a mock for the return type
     const returnExpression = getMockedValueForType(type, fileTypeInformation);
     if (returnExpression || type.kind !== typeInformation_1.TypeKind.BASIC || type.type === typeInformation_1.BasicType.UNRESOLVED) {
         return [typescript_1.default.factory.createReturnStatement(returnExpression)];
@@ -161,7 +161,7 @@ function getMockedFunctionDeclaration(functionDeclaration, fileTypeInformation, 
         method: false,
         exported,
         declaration: false,
-        returnStatement: maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation)
+        returnStatement: maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation),
     });
 }
 function getMockedClass(classDeclaration, fileTypeInformation) {

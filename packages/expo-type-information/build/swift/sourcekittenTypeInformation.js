@@ -12,7 +12,7 @@ const yaml_1 = __importDefault(require("yaml"));
 const util_1 = require("util");
 const execAsync = (0, util_1.promisify)(child_process_1.exec);
 const typeInformation_1 = require("../typeInformation");
-// TODO maybe take the taskAll from cli?
+// TODO(@HubertBer) maybe take the taskAll from cli?
 const taskAll = (inputs, map) => {
     return Promise.all(inputs.map(map));
 };
@@ -204,7 +204,7 @@ async function findReturnType(structure, file, options) {
     if (structure['key.kind'] === 'source.lang.swift.decl.var.local' &&
         structure['key.name'].startsWith('returnValueDeclaration_') &&
         options.typeInference) {
-        // TODO this return type inference is really costly
+        // TODO(@HubertBer) this return type inference is really costly
         return getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
     }
     if (hasSubstructure(structure)) {
@@ -233,7 +233,7 @@ async function extractDeclarationType(structure, file, options) {
     if (structure['key.typename']) {
         return mapSwiftTypeToTsType(structure['key.typename']);
     }
-    // TODO this type inference is really costly
+    // TODO(@HubertBer) this type inference is really costly
     if (options.typeInference) {
         const inferReturn = await getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
         return inferReturn ? mapSwiftTypeToTsType(inferReturn) : getUnresolvedType();
@@ -241,7 +241,7 @@ async function extractDeclarationType(structure, file, options) {
     return getUnresolvedType();
 }
 // Read type description with sourcekitten, works only for variables
-// TODO This function is extremely slow and inefficient
+// TODO(@HubertBer) This function is extremely slow and inefficient
 // consider other options
 async function getTypeOfByteOffsetVariable(byteOffset, file) {
     const request = {
@@ -299,7 +299,7 @@ async function parseClosureTypes(structure, file, options) {
 async function parseModuleConstructorDeclaration(substructure, file, options) {
     const definitionParams = substructure['key.substructure'];
     let types = null;
-    // TODO rethink this maybe split based on what closure is expected
+    // TODO(@HubertBer) rethink this maybe split based on what closure is expected
     // Maybe this should be the last substructure
     if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
         types = await parseClosureTypes(definitionParams[1], file, options);
@@ -308,7 +308,7 @@ async function parseModuleConstructorDeclaration(substructure, file, options) {
         types = await parseClosureTypes(definitionParams[0], file, options);
     }
     else {
-        // TODO REDO THIS
+        // TODO(@HubertBer) REDO THIS
         // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
     }
     return {
@@ -327,7 +327,7 @@ async function parseModuleConstantSubstructure(substructure, file, options) {
         types = await parseClosureTypes(definitionParams[1], file, options);
     }
     else {
-        // TODO REDO THIS
+        // TODO(@HubertBer) REDO THIS
         // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
     }
     return {
@@ -374,13 +374,13 @@ async function parseModuleFunctionSubstructure(substructure, file, options) {
         types = await parseClosureTypes(definitionParams[1], file, options);
     }
     else {
-        // TODO REDO THIS
+        // TODO(@HubertBer) REDO THIS
         // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
     }
     return {
         name,
         returnType: mapSwiftTypeToTsType(types?.returnType ?? undefined), // any or void ? Probably any
-        parameters: [], // TODO Module function is not generic. I think so. Check it
+        parameters: [], // TODO(@HubertBer) Module function is not generic. I think so. Check it
         arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
         definitionOffset: substructure['key.offset'],
     };
@@ -396,7 +396,7 @@ async function parseModulePropDeclaration(substructure, file, options) {
         types = await parseClosureTypes(definitionParams[1], file, options);
     }
     else {
-        // TODO REDO THIS
+        // TODO(@HubertBer) REDO THIS
         // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
     }
     return {
@@ -733,7 +733,7 @@ function returnExpressionEnd(fileContent, returnIndex) {
     let escaped = false;
     let parenCount = 0;
     let braceCount = 0;
-    // TODO figure out what also changes the typical end of expression
+    // TODO(@HubertBer) figure out what also changes the typical end of expression
     let i = returnIndex;
     while (i < fileContent.length) {
         const char = fileContent[i];
