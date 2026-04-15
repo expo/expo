@@ -270,23 +270,23 @@ export default function DocumentationPage({
       sidebar={sidebarElement}
       sidebarActiveGroup={sidebarActiveGroup}
       isMobileMenuVisible={isMobileMenuVisible}
-      setMobileMenuVisible={(newState) => {
+      setMobileMenuVisible={newState => {
         setMobileMenuVisible(newState);
       }}
     />
   );
 
   const flattenStructure = routes
-    .map((route) => appendSectionToRoute(route))
+    .map(route => appendSectionToRoute(route))
     .flat()
-    .map((route) => {
+    .map(route => {
       if (route?.type === 'page') {
         return route;
       } else {
         const sectionRoutes = appendSectionToRoute(route);
         if (Array.isArray(sectionRoutes)) {
           return sectionRoutes
-            .map((subRoute) =>
+            .map(subRoute =>
               subRoute?.type === 'page' ? subRoute : appendSectionToRoute(subRoute)
             )
             .flat();
@@ -296,7 +296,7 @@ export default function DocumentationPage({
     })
     .flat();
 
-  const pageIndex = flattenStructure.findIndex((page) =>
+  const pageIndex = flattenStructure.findIndex(page =>
     isRouteActive(page, router?.asPath, router?.pathname)
   );
 
