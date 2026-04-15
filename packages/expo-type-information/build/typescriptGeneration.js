@@ -142,11 +142,15 @@ function getConstantExportDeclaration(name, type, value) {
     return getPropertyDeclaration({ modifiers, name, typeNode, initializer });
 }
 function getClassPropertyDeclaration(declaration) {
-    return getPropertyDeclaration({ modifiers: [readonlyModifier], name: declaration.name, typeNode: mapTypeToTsTypeNode(declaration.type) });
+    return getPropertyDeclaration({
+        modifiers: [readonlyModifier],
+        name: declaration.name,
+        typeNode: mapTypeToTsTypeNode(declaration.type),
+    });
 }
 function getClassDeclarationInModule(classDeclaration) {
     return getPropertyDeclaration({
-        // TODO that's a hack, but I couldn't find a proper way to do this
+        // TODO(@HubertBer) that's a hack, but I couldn't find a proper way to do this
         // The problem is that declare class semantics seem somewhat different than class semantics.
         name: classDeclaration.name,
         typeNode: typescript_1.default.factory.createTypeReferenceNode('typeof ' + classDeclaration.name),
@@ -244,7 +248,7 @@ function mapTypeToTsTypeNode(type) {
         // for example when creating arguemnt adding the '?' token.
         //
         // However we can just make it (type | undefined) in here.
-        // TODO Maybe also need null?
+        // TODO(@HubertBer) Maybe also need null?
         case typeInformation_1.TypeKind.OPTIONAL:
             return typescript_1.default.factory.createUnionTypeNode([
                 mapTypeToTsTypeNode(type.type),
@@ -258,7 +262,7 @@ function mapTypeToTsTypeNode(type) {
 function getClassConstructorDeclaration(constructor, declaration = true) {
     return typescript_1.default.factory.createConstructorDeclaration(undefined, constructor.arguments.map(getArgumentDeclaration), declaration ? undefined : typescript_1.default.factory.createBlock([]));
 }
-// TODO figure out what about inheritance, should or should not inherit SharedObject
+// TODO(@HubertBer) figure out what about inheritance, should or should not inherit SharedObject
 function getTsClassDeclaration(classDeclaration, fileTypeInformation, exported, declaration, getFunctionReturnBlock) {
     const constructorDeclaration = classDeclaration.constructor
         ? getClassConstructorDeclaration(classDeclaration.constructor, declaration)
@@ -485,7 +489,7 @@ function getStableFileDeclarationsForModule(moduleClassDeclaration, fileTypeInfo
                     name: mainView.name,
                     initializer: getCallExpression({
                         expression: 'requireNativeView',
-                        args: [typescript_1.default.factory.createStringLiteral(moduleClassDeclaration.name)]
+                        args: [typescript_1.default.factory.createStringLiteral(moduleClassDeclaration.name)],
                     }),
                 }),
             ]

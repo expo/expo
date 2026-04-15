@@ -248,7 +248,7 @@ export enum TypeInferenceOption {
   NO_INFERENCE,
   /** Basic type inference will be applied. */
   SIMPLE_INFERENCE,
-  /** * Preprocesses the file by injecting returns to extract more type info from sourcekitten. */
+  /** Preprocesses the file by injecting returns to extract more type info from sourcekitten. */
   PREPROCESS_AND_INFERENCE,
 }
 
@@ -275,9 +275,9 @@ export type GetFileTypeInformationOptions = {
 
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
- * * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
+ * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
  * the function will create a temporary file with the (optionally preprocessed) content to facilitate parsing.
- * * @param options - Configuration object containing the input source (file or string) and the desired level of type inference.
+ * @param options - Configuration object containing the input source (file or string) and the desired level of type inference.
  * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it returns `null`.
  */
 export async function getFileTypeInformation({
