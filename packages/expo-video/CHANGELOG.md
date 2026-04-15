@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- [Android] Bump media3 version to 1.9.0.
+
 ## 55.0.9 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

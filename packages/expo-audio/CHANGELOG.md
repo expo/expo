@@ -23,6 +23,7 @@
 ### 💡 Others
 
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Bump media3 version to 1.9.0.
 
 ## 55.0.8 — 2026-02-25
 
