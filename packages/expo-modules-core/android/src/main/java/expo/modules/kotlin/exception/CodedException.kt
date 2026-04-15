@@ -228,7 +228,7 @@ internal class FieldCastException private constructor(
     providedType: Any?,
     cause: CodedException
   ) : this(
-    message = "Cannot cast '$providedType' for field '$fieldName' ('$fieldType').",
+    message = "Cannot cast value for field '$fieldName' ('$fieldType') in record '$providedType'.",
     cause = cause
   )
 

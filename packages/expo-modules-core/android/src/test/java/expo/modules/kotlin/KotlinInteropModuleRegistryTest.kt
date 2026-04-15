@@ -143,7 +143,7 @@ class KotlinInteropModuleRegistryTest {
       ) to """
         Call to function 'test-1.f2' has been rejected.
         → Caused by: The 1st argument cannot be cast to type class expo.modules.kotlin.TestRecord (received class com.facebook.react.bridge.JavaOnlyMap)
-        → Caused by: Cannot cast value for field 'string' ('kotlin.String') in record 'class expo.modules.kotlin.TestRecord'.
+        → Caused by: Cannot cast value for field 'string' ('class java.lang.String') in record 'class expo.modules.kotlin.TestRecord'.
         → Caused by: java.lang.ClassCastException: class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
       """.trimIndent()
     )
