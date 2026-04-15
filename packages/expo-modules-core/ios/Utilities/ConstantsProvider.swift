@@ -87,9 +87,27 @@ private func getDeviceName() -> String {
   #endif
 }
 
+private func findEXConstantsBundle() -> Bundle? {
+  let bundleName = "EXConstants.bundle"
+
+  // Check the main app bundle first (standard CocoaPods setup)
+  if let bundleUrl = Bundle.main.resourceURL?.appendingPathComponent(bundleName),
+     let bundle = Bundle(url: bundleUrl) {
+    return bundle
+  }
+
+  // Fall back to the bundle containing this code, which handles the case where
+  // EXConstants.bundle is embedded inside a dynamic framework (e.g. expo-brownfield xcframework)
+  if let bundleUrl = Bundle(for: ConstantsProvider.self).resourceURL?.appendingPathComponent(bundleName),
+     let bundle = Bundle(url: bundleUrl) {
+    return bundle
+  }
+
+  return nil
+}
+
 private func getManifest() -> [String: Any]? {
-  guard let bundleUrl = Bundle.main.resourceURL?.appendingPathComponent("EXConstants.bundle"),
-        let bundle = Bundle(url: bundleUrl),
+  guard let bundle = findEXConstantsBundle(),
         let url = bundle.url(forResource: "app", withExtension: "config") else {
     log.error("Unable to find the embedded app config")
     return nil
