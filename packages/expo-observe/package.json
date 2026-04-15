@@ -1,0 +1,46 @@
+{
+  "name": "expo-observe",
+  "version": "0.1.1",
+  "description": "Expo module that dispatches collected app metrics to EAS Observe",
+  "main": "src/index.ts",
+  "types": "build/index.d.ts",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "homepage": "https://docs.expo.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-observe"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-observe",
+    "ExpoObserve",
+    "EAS",
+    "observe",
+    "observability"
+  ],
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "expo-eas-client": "~55.0.5",
+    "expo-updates-interface": "~55.1.6"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^55.0.2"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-app-metrics": "*",
+    "react-native": "*"
+  }
+}

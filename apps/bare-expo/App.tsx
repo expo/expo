@@ -1,4 +1,5 @@
 import { ThemeProvider } from 'ThemeProvider';
+import { AppMetricsRoot } from 'expo-app-metrics';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
@@ -86,5 +87,9 @@ export default function Main() {
 
   const isLoaded = useLoaded();
 
-  return <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>;
+  return (
+    <AppMetricsRoot>
+      <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>
+    </AppMetricsRoot>
+  );
 }
