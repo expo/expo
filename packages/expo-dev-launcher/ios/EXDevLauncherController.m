@@ -55,6 +55,9 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 @property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
+@property (nonatomic, strong) NSString *defaultLaunchURLString;
+@property (nonatomic, strong) NSURL *defaultLaunchURL;
+@property (nonatomic) BOOL useDefaultLaunchUrlFallback;
 
 @end
 
@@ -84,6 +87,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.dependencyProvider = [RCTAppDependencyProvider new];
     self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
+
+    self.defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URL"];
+    self.useDefaultLaunchUrlFallback = self.defaultLaunchURLString.length != 0;
+    self.defaultLaunchURL = [NSURL URLWithString:self.defaultLaunchURLString];
   }
   return self;
 }
@@ -196,6 +203,27 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     });
   };
 
+  void (^launchDefaultUrlFallbackOrNavigateToLauncher)(NSError *) = ^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+
+      [self launchDefaultUrlFallbackOrNavigateToLauncher];
+    });
+  };
+
+  // When a local bundle is available, skip trying to reload the last-opened app.
+  // The autoload logic in DevLauncherViewController.viewDidLoad will load it instead.
+  // Without this guard, loadApp's error handler would call navigateToLauncher and
+  // invalidate the bridge that loadLocalBundle created, causing a JSI crash.
+  if ([[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"] != nil) {
+    [self navigateToLauncher];
+    return;
+  }
+
 #if TARGET_OS_SIMULATOR
   BOOL hasGrantedNetworkPermission = YES;
 #else
@@ -210,17 +238,40 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
+  BOOL useDefaultLaunchUrlFallback = self.useDefaultLaunchUrlFallback;
 
   if (!hasGrantedNetworkPermission) {
     shouldTryToLaunchLastOpenedBundle = NO;
+    useDefaultLaunchUrlFallback = NO;
   }
   
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
     // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
-    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:launchDefaultUrlFallbackOrNavigateToLauncher];
     return;
   }
+
+  [self useDefaultLaunchUrlFallback];
+}
+
+- (void)launchDefaultUrlFallbackOrNavigateToLauncher {
+  void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+
+      [self navigateToLauncher];
+    });
+  };
+
+  if (self.useDefaultLaunchUrlFallback) {
+    [self loadApp: self.defaultLaunchURL withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
+  }
+
   [self navigateToLauncher];
 }
 
@@ -253,7 +304,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
     // edgecase: this is a dev launcher url but it doesnt specify what url to open
     // fallback to navigating to the launcher home screen
-    [self navigateToLauncher];
+    [self launchDefaultUrlFallbackOrNavigateToLauncher];
     return true;
   }
 

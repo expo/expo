@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "expo": "workspace:*",
+    "expo-background-task": "workspace:*",
     "expo-clipboard": "workspace:*",
     "expo-dev-client": "workspace:*",
     "expo-router": "workspace:*",
@@ -31,8 +32,7 @@
         "expo-ads-facebook",
         "expo-ads-admob",
         "expo-apple-authentication",
-        "expo-module-template",
-        "expo-module-template-local"
+        "expo-module-template"
       ],
       "ios": {
         "flags": {

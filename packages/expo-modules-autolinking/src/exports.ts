@@ -27,6 +27,8 @@ export {
   scanExpoModuleResolutionsForPlatform,
 } from './dependencies';
 
+export * from './utilities';
+
 /** @deprecated */
 export async function mergeLinkingOptionsAsync<Options extends Partial<AutolinkingCommonArguments>>(
   argumentsOptions: Options

@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 
 package expo.modules.ui
 
@@ -10,6 +10,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,14 +27,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
-import expo.modules.ui.convertibles.resolveAnimatable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
@@ -43,8 +46,10 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
@@ -55,6 +60,7 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.ui.convertibles.AlignmentType
 import expo.modules.ui.convertibles.CompositingStrategyType
 import expo.modules.ui.convertibles.GraphicsLayerParams
+import expo.modules.ui.convertibles.resolveAnimatable
 
 typealias ModifierType = Map<String, Any?>
 typealias ModifierList = List<ModifierType>
@@ -185,6 +191,11 @@ internal data class SelectableParams(
   @Field val role: String? = null
 ) : Record
 
+internal data class OnVisibilityChangedParams(
+  @Field val minDurationMs: Long = 0,
+  @Field val minFractionVisible: Float = 1f
+) : Record
+
 internal data class ClickableParams(
   @Field val indication: Boolean = true
 ) : Record
@@ -199,6 +210,15 @@ internal enum class SemanticRoleType(val value: String) : Enumerable {
 internal data class ToggleableParams(
   @Field val value: Boolean = false,
   @Field val role: SemanticRoleType? = null
+) : Record
+
+internal enum class MenuAnchorType(val value: String) : Enumerable {
+  PRIMARY_NOT_EDITABLE("primaryNotEditable")
+}
+
+internal data class MenuAnchorParams(
+  @Field val type: MenuAnchorType = MenuAnchorType.PRIMARY_NOT_EDITABLE,
+  @Field val enabled: Boolean = true
 ) : Record
 
 // endregion
@@ -510,6 +530,16 @@ object ModifierRegistry {
       } ?: Modifier
     }
 
+    register("onVisibilityChanged") { map, _, _, eventDispatcher ->
+      val params = recordFromMap<OnVisibilityChangedParams>(map)
+      Modifier.onVisibilityChanged(
+        minDurationMs = params.minDurationMs,
+        minFractionVisible = params.minFractionVisible,
+      ) { isVisible ->
+        eventDispatcher("onVisibilityChanged", mapOf("isVisible" to isVisible))
+      }
+    }
+
     register("clickable") { map, _, _, eventDispatcher ->
       val params = recordFromMap<ClickableParams>(map)
       if (params.indication) {
@@ -559,6 +589,29 @@ object ModifierRegistry {
         role = role,
         onValueChange = { eventDispatcher("toggleable", emptyMap()) }
       )
+    }
+
+    // ExposedDropdownMenuBox scope-dependent modifier
+    register("menuAnchor") { map, scope, _, _ ->
+      val dropdownScope = scope?.exposedDropdownMenuBoxScope
+        ?: error("menuAnchor modifier can only be used inside ExposedDropdownMenuBox")
+      val params = recordFromMap<MenuAnchorParams>(map)
+      with(dropdownScope) {
+        Modifier.menuAnchor(
+          type = when (params.type) {
+            MenuAnchorType.PRIMARY_NOT_EDITABLE -> ExposedDropdownMenuAnchorType.PrimaryNotEditable
+          },
+          enabled = params.enabled
+        )
+      }
+    }
+
+    register("verticalScroll") { _, _, _, _ ->
+      Modifier.verticalScroll(rememberScrollState())
+    }
+
+    register("horizontalScroll") { _, _, _, _ ->
+      Modifier.horizontalScroll(rememberScrollState())
     }
   }
 }

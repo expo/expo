@@ -17,6 +17,18 @@ namespace expo {
 
 class JSDecoratorsBridgingObject;
 
+/**
+ * NativeState attached to the class prototype in the worklet runtime.
+ * Owns the decorators (and their MethodMetadata shared_ptrs) so that the
+ * weak_ptrs captured by prototype host functions stay valid.
+ * Released automatically when the prototype is garbage-collected.
+ */
+struct ClassPrototypeState : public jsi::NativeState {
+  std::vector<std::unique_ptr<JSDecorator>> prototypeDecorators;
+  std::vector<std::unique_ptr<JSDecorator>> constructorDecorators;
+  std::shared_ptr<MethodMetadata> constructor;
+};
+
 class JSClassesDecorator : public JSDecorator {
 public:
   void registerClass(
@@ -35,6 +47,13 @@ public:
     jsi::Object &jsObject
   ) override;
 
+  /**
+   * Worklet runtime path - installs classes in classRegistry, transfers
+   * decorator ownership to each prototype via NativeState, and drains this
+   * decorator. Must only be called once.
+   */
+  void consumeForWorklet(jsi::Runtime &runtime);
+
 private:
   struct ClassEntry {
     std::vector<std::unique_ptr<JSDecorator>> prototypeDecorators;
@@ -43,6 +62,12 @@ private:
     jni::global_ref<jclass> ownerClass;
     bool isSharedRef;
   };
+
+  std::shared_ptr<jsi::Function> installClass(
+    jsi::Runtime &runtime,
+    const std::string &name,
+    ClassEntry &classInfo
+  );
 
   static jsi::Function createClass(
     jsi::Runtime &runtime,

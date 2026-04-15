@@ -39,7 +39,7 @@ class SlotView(context: Context, appContext: AppContext) :
  */
 @Composable
 fun SlotView.renderSlot() {
-  with(ComposableScope()) { with(this@renderSlot) { Content() } }
+  with(UIComposableScope()) { with(this@renderSlot) { Content() } }
 }
 
 fun isSlotWithName(view: ExpoComposeView<*>, slotName: String): Boolean {

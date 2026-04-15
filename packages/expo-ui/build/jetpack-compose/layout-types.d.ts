@@ -21,6 +21,6 @@ export declare function transformProps<T extends PrimitiveBaseProps>(props: T): 
             payload: [eventName: string, params: Record<string, any>];
         };
     }) => void) | undefined;
-    modifiers: import("../types").ModifierConfig[] | undefined;
+    modifiers: import("./modifiers").ModifierConfig[] | undefined;
 } & Omit<T, "modifiers">;
 //# sourceMappingURL=layout-types.d.ts.map

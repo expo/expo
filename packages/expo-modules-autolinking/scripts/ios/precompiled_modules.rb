@@ -336,6 +336,107 @@ module Expo
         end
       end
 
+      # Registers companion pods gated by a Podfile property.
+      # A product can declare `autolinkWhen` in its spm.config.json to opt into this flow.
+      # The pod is auto-registered when:
+      #   1. The podspec exists (source build) or prebuilt xcframework exists (precompiled)
+      #   2. The gating Podfile.properties.json value is not the disabled value
+      #   3. It's not already registered in the Podfile
+      #   4. All of its local dependencies (pods in the lookup map) are already registered
+      #
+      # Works for both precompiled and source builds. For precompiled builds, the
+      # podspec is patched to use the xcframework. For source builds, CocoaPods
+      # builds from source via :podspec.
+      #
+      # Companion pods are production-only code (they never declare test specs) and
+      # typically depend on their sibling main pod. When the Podfile calls
+      # `use_expo_modules_tests!` (tests_only), main pods without test specs are skipped,
+      # so registering a companion that depends on a skipped main pod would fail
+      # dependency resolution. Skip companions entirely in tests-only mode.
+      #
+      # Example spm.config.json:
+      #   "autolinkWhen": {
+      #     "podfileProperty": "expo.camera.barcode-scanner-enabled",
+      #     "disabledValue": "false"
+      #   }
+      def register_companion_pods(podfile, target_definition, project_directory, tests_only: false)
+        return if tests_only
+
+        properties = read_podfile_properties(project_directory)
+
+        pod_lookup_map.each do |pod_name, info|
+          condition = info[:autolink_when]
+          next unless condition
+          next if target_definition.dependencies.any? { |dep| dep.name == pod_name }
+
+          property = condition['podfileProperty']
+          disabled_value = condition['disabledValue']
+          next unless property
+
+          current_value = properties[property]
+          # Only skip if the property is explicitly set to the disabled value
+          next if current_value == disabled_value
+
+          podspec_file = File.join(info[:podspec_dir], "#{pod_name}.podspec")
+          unless File.exist?(podspec_file)
+            Pod::UI.warn "[Expo] Companion pod #{pod_name}: podspec not found at #{podspec_file}"
+            next
+          end
+
+          podspec_rel = Pathname.new(podspec_file).relative_path_from(project_directory).to_s
+
+          # Parse the companion podspec to inspect its dependencies.
+          begin
+            spec = Pod::Specification.from_file(podspec_file)
+          rescue => e
+            Pod::UI.warn "[Expo] Companion pod #{pod_name}: failed to parse podspec: #{e.message}"
+            next
+          end
+
+          # Skip companion pods whose local dependencies (sibling pods from the same
+          # monorepo / node_modules) aren't registered in the Podfile. For example,
+          # ExpoCameraBarcodeScanning depends on ExpoCamera — if expo-camera isn't
+          # installed in the project, ExpoCamera won't be in the Podfile and CocoaPods
+          # would fail with "Unable to find a specification for ExpoCamera".
+          registered_pod_names = target_definition.dependencies.map(&:name)
+          missing_local_dep = spec.all_dependencies.find do |dep|
+            root_spec_name = dep.name.partition('/').first
+            pod_lookup_map.key?(root_spec_name) && !registered_pod_names.include?(root_spec_name)
+          end
+          if missing_local_dep
+            Pod::UI.message "[Expo] Skipping companion pod #{pod_name}: dependency #{missing_local_dep.name} is not installed"
+            next
+          end
+
+          # Enable modular headers for the companion pod's transitive Objective-C dependencies so
+          # the Swift pod can `import` them. Mirrors the logic in autolinking_manager.rb's
+          # `use_modular_headers_for_dependencies`.
+          spec.all_dependencies.each do |dep|
+            root_spec_name = dep.name.partition('/').first
+            unless target_definition.build_pod_as_module?(root_spec_name)
+              target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
+            end
+          end
+
+          if enabled? && has_prebuilt_xcframework?(pod_name)
+            Pod::UI.message "— #{pod_name.green} (prebuilt companion, gated by #{property})"
+            podfile.pod(pod_name, :podspec => podspec_rel)
+          else
+            Pod::UI.message "— #{pod_name.green} (companion, gated by #{property})"
+            podspec_dir_rel = Pathname.new(info[:podspec_dir]).relative_path_from(project_directory).to_s
+            podfile.pod(pod_name, :path => podspec_dir_rel)
+          end
+        end
+      end
+
+      # Reads Podfile.properties.json from the Podfile's directory (installation root).
+      # Returns an empty hash if the file doesn't exist or fails to parse.
+      def read_podfile_properties(_project_directory)
+        props_path = File.join(Pod::Config.instance.installation_root.to_s, 'Podfile.properties.json')
+        return {} unless File.exist?(props_path)
+        JSON.parse(File.read(props_path)) rescue {}
+      end
+
       # ──────────────────────────────────────────────────────────────────────
       # Spec patching (called from sandbox.rb / podspecs)
       # ──────────────────────────────────────────────────────────────────────
@@ -554,6 +655,11 @@ module Expo
       # 1. Creates a non-framework modulemap so <React/X.h> resolves through -isystem + VFS
       # 2. Patches framework modulemaps to remove `framework module React` (keep React_RCTAppDelegate)
       # 3. Injects -isystem and -fmodule-map-file into all pod and aggregate xcconfigs
+      #
+      # The modulemap is placed in Target Support Files/ rather than in the pod
+      # directory itself, because React Native's replace-rncore-version.js script
+      # phase deletes and re-extracts the entire React-Core-prebuilt/ directory at
+      # build time when switching Debug↔Release configurations.
       def configure_use_frameworks(installer)
         return unless prebuilt_react_active?
         return if linkage(installer).nil?
@@ -562,9 +668,12 @@ module Expo
         xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
         return unless File.exist?(xcframework_path)
 
-        create_nonframework_modulemap(react_prebuilt_dir)
+        target_support_dir = File.join(installer.sandbox.root, 'Target Support Files', 'React-Core-prebuilt')
+        FileUtils.mkdir_p(target_support_dir)
+
+        create_nonframework_modulemap(target_support_dir, installer.sandbox.root)
         patch_framework_modulemaps(xcframework_path)
-        inject_isystem_flags(installer, react_prebuilt_dir)
+        inject_isystem_flags(installer, target_support_dir)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
       end
@@ -702,11 +811,12 @@ module Expo
       # ──────────────────────────────────────────────────────────────────────
 
       # Creates a non-framework modulemap so <React/X.h> resolves through -isystem + VFS.
-      def create_nonframework_modulemap(react_prebuilt_dir)
-        modulemap_path = File.join(react_prebuilt_dir, 'React-use-frameworks.modulemap')
+      def create_nonframework_modulemap(target_support_dir, pods_root)
+        modulemap_path = File.join(target_support_dir, 'React-use-frameworks.modulemap')
+        umbrella_header = File.join(pods_root, 'React-Core-prebuilt', 'React.xcframework', 'Headers', 'React_Core', 'React_Core-umbrella.h')
         modulemap_content = <<~MODULEMAP
           module React {
-            umbrella header "React.xcframework/Headers/React_Core/React_Core-umbrella.h"
+            umbrella header "#{umbrella_header}"
             export *
           }
         MODULEMAP
@@ -732,10 +842,10 @@ module Expo
 
       # Injects -fmodule-map-file and -isystem into all pod and aggregate xcconfigs.
       # Module builds don't inherit -I (HEADER_SEARCH_PATHS) but DO inherit -isystem.
-      def inject_isystem_flags(installer, react_prebuilt_dir)
-        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+      def inject_isystem_flags(installer, target_support_dir)
+        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/Target\\ Support\\ Files/React-Core-prebuilt/React-use-frameworks.modulemap\""
         extra_isystem = "-isystem \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
-        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/Target\\ Support\\ Files/React-Core-prebuilt/React-use-frameworks.modulemap\""
         swift_extra_isystem = "-Xcc -isystem -Xcc \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
         skip_marker = 'React-use-frameworks.modulemap'
 
@@ -1226,7 +1336,8 @@ module Expo
             codegen_name: codegen_name,
             product_name: product_name,
             targets: targets,
-            spm_dependency_frameworks: spm_dependency_frameworks
+            spm_dependency_frameworks: spm_dependency_frameworks,
+            autolink_when: product['autolinkWhen']
           }
         end
       rescue JSON::ParserError, StandardError => e
@@ -1296,7 +1407,8 @@ module Expo
           codegen_name: codegen_name,
           product_name: product_name,
           targets: targets,
-          spm_dependency_frameworks: spm_dependency_frameworks
+          spm_dependency_frameworks: spm_dependency_frameworks,
+          autolink_when: product['autolinkWhen']
         }
       end
 

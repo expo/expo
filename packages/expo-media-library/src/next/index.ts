@@ -1,4 +1,9 @@
-import { PermissionResponse, UnavailabilityError } from 'expo-modules-core';
+import {
+  createPermissionHook,
+  PermissionHookOptions,
+  PermissionResponse,
+  UnavailabilityError,
+} from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
@@ -9,16 +14,6 @@ export * from './MediaLibraryNext.types';
 export class Query extends ExpoMediaLibraryNext.Query {}
 
 export class Asset extends ExpoMediaLibraryNext.Asset {
-  // @hidden
-  static create(filePath: string, album?: Album): Promise<Asset> {
-    return ExpoMediaLibraryNext.createAsset(filePath, album);
-  }
-
-  // @hidden
-  static delete(assets: Asset[]): Promise<void> {
-    return ExpoMediaLibraryNext.deleteAssets(assets);
-  }
-
   // @hidden
   getFavorite(): Promise<boolean> {
     if (Platform.OS !== 'ios') {
@@ -36,37 +31,11 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
   }
 }
 
-export class Album extends ExpoMediaLibraryNext.Album {
-  // @hidden
-  static create(
-    name: string,
-    assetsRefs: string[] | Asset[],
-    moveAssets: boolean = true
-  ): Promise<Album> {
-    if (Platform.OS === 'ios') {
-      return ExpoMediaLibraryNext.createAlbum(name, assetsRefs);
-    }
-    return ExpoMediaLibraryNext.createAlbum(name, assetsRefs, moveAssets);
-  }
-
-  // @hidden
-  static delete(albums: Album[], deleteAssets: boolean = false): Promise<void> {
-    if (Platform.OS === 'ios') {
-      return ExpoMediaLibraryNext.deleteAlbums(albums, deleteAssets);
-    } else {
-      return ExpoMediaLibraryNext.deleteAlbums(albums);
-    }
-  }
-
-  // @hidden
-  static get(title: string): Promise<Album | null> {
-    return ExpoMediaLibraryNext.getAlbum(title);
-  }
-}
+export class Album extends ExpoMediaLibraryNext.Album {}
 
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
- * @param writeOnly
+ * @param writeOnly - Whether to request write-only access without read permissions. Defaults to `false`.
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
  * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  *
@@ -88,7 +57,7 @@ export async function requestPermissionsAsync(
 
 /**
  * Checks user's permissions for accessing media library.
- * @param writeOnly
+ * @param writeOnly - Whether to check write-only access without read permissions. Defaults to `false`.
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has
  * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
@@ -105,3 +74,26 @@ export async function getPermissionsAsync(
   }
   return await ExpoMediaLibraryNext.getPermissionsAsync(writeOnly);
 }
+
+/**
+ * Check or request permissions to access the media library.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({
+ *   writeOnly: true,
+ *   granularPermissions: ['photo'],
+ * });
+ * ```
+ */
+export const usePermissions = createPermissionHook<
+  PermissionResponse,
+  { writeOnly?: boolean; granularPermissions?: GranularPermission[] }
+>({
+  getMethod: (options) => getPermissionsAsync(options?.writeOnly, options?.granularPermissions),
+  requestMethod: (options) =>
+    requestPermissionsAsync(options?.writeOnly, options?.granularPermissions),
+});
+
+export type { PermissionHookOptions };

@@ -10,13 +10,6 @@ declare class ExpoMediaLibraryNextModule extends NativeModule {
   Album: typeof Album;
   Query: typeof Query;
 
-  createAsset(filePath: string, album?: Album): Promise<Asset>;
-  deleteAssets(assets: Asset[]): Promise<void>;
-
-  createAlbum(name: string, assetsRefs: string[] | Asset[], moveAssets?: boolean): Promise<Album>;
-  deleteAlbums(albums: Album[], deleteAssets?: boolean): Promise<void>;
-  getAlbum(title: string): Promise<Album | null>;
-
   getPermissionsAsync(
     writeOnly?: boolean,
     granularPermissions?: GranularPermission[]

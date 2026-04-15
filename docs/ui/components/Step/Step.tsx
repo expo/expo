@@ -14,7 +14,7 @@ export const Step = ({ children, label }: Props) => {
         theme="secondary"
         className={mergeClasses(
           'bg-element mt-1 flex h-7 min-w-[28px] items-center justify-center rounded-full',
-          label.length >= 3 && 'text-xs!'
+          label.length >= 3 && 'text-sm!'
         )}>
         {label}
       </HEADLINE>

@@ -120,7 +120,7 @@ export default function DocumentationNestedScrollLayout({
                     </span>
                   </Button>
                 </Tooltip.Trigger>
-                <Tooltip.Content sideOffset={8} className="max-w-[260px] text-center text-xs">
+                <Tooltip.Content sideOffset={8} className="max-w-[260px] text-center text-sm">
                   Use Cmd/Ctrl + Shift + Enter to toggle immersive mode.
                 </Tooltip.Content>
               </Tooltip.Root>

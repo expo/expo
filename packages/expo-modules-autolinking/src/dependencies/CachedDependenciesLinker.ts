@@ -4,7 +4,7 @@ import { PackageRevision, SupportedPlatform } from '../types';
 import { scanDependenciesRecursively } from './resolution';
 import { scanDependenciesFromRNProjectConfig } from './rncliLocal';
 import { scanDependenciesInSearchPath } from './scanning';
-import { type ResolutionResult, DependencyResolutionSource } from './types';
+import { type ResolutionResult, DependencyResolution, DependencyResolutionSource } from './types';
 import { filterMapResolutionResult, mergeResolutionResults } from './utils';
 import { resolveExpoModule } from '../autolinking/findModules';
 import { AutolinkingOptions, createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
@@ -94,6 +94,19 @@ export function makeCachedDependenciesLinker(params: {
   };
 }
 
+export async function isNativeModuleAsync(
+  resolution: DependencyResolution,
+  reactNativeProjectConfig: RNConfigReactNativeProjectConfig | null,
+  platform: SupportedPlatform,
+  excludeNames: Set<string>
+) {
+  const [reactNativeModule, expoModule] = await Promise.all([
+    resolveReactNativeModule(resolution, reactNativeProjectConfig, platform, excludeNames),
+    resolveExpoModule(resolution, platform, excludeNames),
+  ]);
+  return !!reactNativeModule || !!expoModule;
+}
+
 export async function scanDependencyResolutionsForPlatform(
   linker: CachedDependenciesLinker,
   platform: SupportedPlatform,
@@ -131,16 +144,13 @@ export async function scanDependencyResolutionsForPlatform(
           return null;
         }
       } else {
-        const [reactNativeModule, expoModule] = await Promise.all([
-          resolveReactNativeModule(
-            resolution,
-            reactNativeProjectConfig,
-            platform,
-            opts.excludeNames
-          ),
-          resolveExpoModule(resolution, platform, opts.excludeNames),
-        ]);
-        if (!reactNativeModule && !expoModule) {
+        const isNativeModule = await isNativeModuleAsync(
+          resolution,
+          reactNativeProjectConfig,
+          platform,
+          opts.excludeNames
+        );
+        if (!isNativeModule) {
           return null;
         }
       }
