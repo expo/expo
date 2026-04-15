@@ -271,8 +271,3 @@ struct SettingsTabView: View {
   }
   #endif
 }
-
-#Preview {
-  SettingsTabView()
-    .environmentObject(DevLauncherViewModel())
-}
