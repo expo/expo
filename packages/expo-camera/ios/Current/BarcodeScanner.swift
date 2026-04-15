@@ -37,10 +37,21 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
 
   func setSettings(_ newSettings: [String: [AVMetadataObject.ObjectType]]) {
     for (key, value) in newSettings where key == BARCODE_TYPES_KEY {
+      // AVFoundation distinguishes `.itf14` (14-digit ITF) from `.interleaved2of5`
+      // (generic Interleaved 2 of 5), and sometimes reports a given barcode under
+      // either type. Android's ML Kit uses a single `FORMAT_ITF` for both. To mirror
+      // that behavior and avoid silently dropping detections, when `.itf14` is
+      // requested we also register `.interleaved2of5` so both variants are scanned
+      // for and the delegate's type-match succeeds. Results are normalized back to
+      // `itf14` in `BarcodeRecord.toBarcodeType(type:)`.
+      var augmentedValue = value
+      if augmentedValue.contains(.itf14) && !augmentedValue.contains(.interleaved2of5) {
+        augmentedValue.append(.interleaved2of5)
+      }
       let previousTypes = Set(settings[BARCODE_TYPES_KEY] ?? [])
-      let newTypes = Set(value)
+      let newTypes = Set(augmentedValue)
       if previousTypes != newTypes {
-        settings[BARCODE_TYPES_KEY] = value
+        settings[BARCODE_TYPES_KEY] = augmentedValue
         let zxingCoveredTypes = Set(zxingBarcodeReaders.keys)
         zxingEnabled = !zxingCoveredTypes.isDisjoint(with: newTypes)
         maybeStartBarcodeScanning()
