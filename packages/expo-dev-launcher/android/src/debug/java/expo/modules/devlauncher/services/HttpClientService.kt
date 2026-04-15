@@ -32,7 +32,20 @@ data class DevelopmentSession(
 class HttpClientService() {
   private var currentSession: String? = null
 
-  val httpClient = OkHttpClientProvider.getOkHttpClient()
+  val httpClient = OkHttpClientProvider.getOkHttpClient().newBuilder()
+    .addInterceptor { chain ->
+      val originalRequest = chain.request()
+      val session = currentSession
+      if (session == null || !originalRequest.url.toString().startsWith(restEndpoint)) {
+        return@addInterceptor chain.proceed(originalRequest)
+      }
+
+      val newRequest = originalRequest.newBuilder()
+        .header("expo-session", session)
+        .build()
+      chain.proceed(newRequest)
+    }
+    .build()
 
   internal fun setSession(sessionSecret: String?) {
     currentSession = sessionSecret
