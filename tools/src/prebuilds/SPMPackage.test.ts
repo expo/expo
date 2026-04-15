@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { findSiblingProductDependencies } from './SPMPackage';
 import type { SPMProduct } from './SPMConfig.types';
+import { findSiblingProductDependencies } from './SPMPackage';
 
 function makeProduct(name: string, targetDeps: string[] = []): SPMProduct {
   return {
