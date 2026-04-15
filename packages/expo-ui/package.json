@@ -86,6 +86,9 @@
     "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
     "react-native-reanimated": {
       "optional": true
     },
