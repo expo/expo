@@ -1,6 +1,5 @@
 import { DevServerManager } from './DevServerManager';
 import { AbortCommandError } from '../../utils/errors';
-import { isInteractive } from '../../utils/interactive';
 import { Options } from '../resolveOptions';
 
 /** Launch the app on various platforms in parallel. */
@@ -11,7 +10,6 @@ export async function openPlatformsAsync(
   const results = await Promise.allSettled([
     options.android ? devServerManager.getDefaultDevServer().openPlatformAsync('emulator') : null,
     options.ios ? devServerManager.getDefaultDevServer().openPlatformAsync('simulator') : null,
-    // Don't automatically open the browser in non-interactive mode (CI).
     options.web
       ? devServerManager
           .ensureWebDevServerRunningAsync()

@@ -1,11 +1,6 @@
 import { AbortCommandError } from '../../../utils/errors';
-import { isInteractive } from '../../../utils/interactive';
 import { DevServerManager } from '../DevServerManager';
 import { openPlatformsAsync } from '../openPlatforms';
-
-jest.mock('../../../utils/interactive', () => ({
-  isInteractive: jest.fn(() => true),
-}));
 
 function createDevServerManager() {
   return {
@@ -49,22 +44,6 @@ it(`opens web only`, async () => {
   expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(0);
   expect(manager.getWebDevServer).toHaveBeenCalledTimes(1);
   expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(1);
-});
-
-it(`does not open browser in non-interactive mode`, async () => {
-  jest.mocked(isInteractive).mockReturnValueOnce(false);
-  const options = {
-    android: false,
-    ios: false,
-    web: true,
-  };
-  const manager = createDevServerManager();
-
-  await openPlatformsAsync(manager, options);
-
-  expect(manager.getDefaultDevServer).toHaveBeenCalledTimes(0);
-  expect(manager.getWebDevServer).toHaveBeenCalledTimes(0);
-  expect(manager.ensureWebDevServerRunningAsync).toHaveBeenCalledTimes(0);
 });
 
 it(`rethrows assertions`, async () => {
