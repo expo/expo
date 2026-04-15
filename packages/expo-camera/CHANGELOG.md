@@ -21,6 +21,7 @@
 ### 💡 Others
 
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Extract barcode scanning (ZXingObjC) into a separate `ExpoCameraBarcodeScanning` companion pod. Disabling barcode scanning via config plugin now correctly excludes ZXingObjC from precompiled builds, reducing binary size. (by [@chrfalch](https://github.com/chrfalch)) ([#44766](https://github.com/expo/expo/pull/44766) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.9 — 2026-02-25
 
