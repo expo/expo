@@ -10,7 +10,9 @@ import androidx.media3.common.util.UnstableApi
 import com.google.common.util.concurrent.ListenableFuture
 
 @OptIn(UnstableApi::class)
-class AudioMediaSessionCallback : MediaSession.Callback {
+class AudioMediaSessionCallback(
+  private val seekIntervalProvider: () -> Pair<Long, Long> = { Pair(AudioControlsService.DEFAULT_SEEK_INTERVAL_MS, AudioControlsService.DEFAULT_SEEK_INTERVAL_MS) }
+) : MediaSession.Callback {
   override fun onConnect(
     session: MediaSession,
     controller: MediaSession.ControllerInfo
@@ -49,12 +51,13 @@ class AudioMediaSessionCallback : MediaSession.Callback {
     command: SessionCommand,
     args: Bundle
   ): ListenableFuture<SessionResult> {
+    val (forwardMs, backwardMs) = seekIntervalProvider()
     when (command.customAction) {
       AudioControlsService.ACTION_SEEK_FORWARD -> {
-        session.player.seekTo(session.player.currentPosition + AudioControlsService.SEEK_INTERVAL_MS)
+        session.player.seekTo(session.player.currentPosition + forwardMs)
       }
       AudioControlsService.ACTION_SEEK_BACKWARD -> {
-        session.player.seekTo(session.player.currentPosition - AudioControlsService.SEEK_INTERVAL_MS)
+        session.player.seekTo(session.player.currentPosition - backwardMs)
       }
     }
     return super.onCustomCommand(session, controller, command, args)

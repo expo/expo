@@ -15,5 +15,15 @@ export type AudioLockScreenOptions = {
      * and scrub bar, and disable seek controls.
      */
     isLiveStream?: boolean;
+    /**
+     * Duration in seconds for the seek forward button on the lock screen.
+     * Must be a positive number. Defaults to `10`.
+     */
+    seekForwardIntervalSeconds?: number;
+    /**
+     * Duration in seconds for the seek backward button on the lock screen.
+     * Must be a positive number. Defaults to `10`.
+     */
+    seekBackwardIntervalSeconds?: number;
 };
 //# sourceMappingURL=AudioConstants.d.ts.map
