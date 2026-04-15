@@ -15,12 +15,12 @@ import { promptAppleDeviceAsync } from './promptAppleDevice';
 import * as SimControl from './simctl';
 import { delayAsync, waitForActionAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
+import { isInteractive } from '../../../utils/interactive';
 import { parsePlistAsync } from '../../../utils/plist';
 import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import { BaseResolveDeviceProps } from '../PlatformManager';
-import { isInteractive } from '../../../utils/interactive';
 
 const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as typeof console.log;
 

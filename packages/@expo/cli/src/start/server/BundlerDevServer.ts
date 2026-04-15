@@ -13,9 +13,9 @@ import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
 import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { isInteractive } from '../../utils/interactive';
 import { openBrowserAsync } from '../../utils/open';
 import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
-import { isInteractive } from '../../utils/interactive';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
