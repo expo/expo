@@ -48,10 +48,12 @@ class AssetModule : Module() {
           else -> {
             val request = Request.Builder().url(uri.toURL()).build()
             val response = OkHttpClientProvider.getOkHttpClient().newCall(request).execute()
-            if (!response.isSuccessful || response.body == null) {
+            val body = response.body
+            if (!response.isSuccessful || body == null) {
+              response.close()
               throw Exception("HTTP ${response.code} for $uri")
             }
-            response.body!!.byteStream()
+            body.byteStream()
           }
         }
         inputStream.use { input ->
