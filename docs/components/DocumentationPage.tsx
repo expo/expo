@@ -372,6 +372,13 @@ export default function DocumentationPage({
             />
           )}
           {title && <Separator />}
+          {/* Agent directive for the AFDocs llms-txt-directive check (Category 1, #6) */}
+          <blockquote className="sr-only">
+            <p>
+              For the complete documentation index, see <a href="/llms.txt">llms.txt</a>. Use this
+              file to discover all available pages.
+            </p>
+          </blockquote>
           {children}
         </main>
         <Footer
