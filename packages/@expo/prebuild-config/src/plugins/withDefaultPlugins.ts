@@ -50,6 +50,9 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Version.withBuildNumber,
     IOSConfig.Version.withVersion,
     IOSConfig.Google.withGoogleServicesFile,
+    // Deployment Target
+    IOSConfig.DeploymentTarget.withDeploymentTarget,
+    IOSConfig.DeploymentTarget.withDeploymentTargetPodfileProps,
     // Entitlements
     IOSConfig.Entitlements.withAssociatedDomains,
     // XcodeProject

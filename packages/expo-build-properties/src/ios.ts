@@ -57,6 +57,7 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
   'withIosBuildProperties'
 );
 
+/** @deprecated use built-in `ios.deploymentTarget` property instead. */
 export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, props) => {
   const deploymentTarget = props.ios?.deploymentTarget;
   if (!deploymentTarget) {

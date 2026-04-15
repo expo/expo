@@ -41,7 +41,7 @@ export interface ExpoConfig {
      */
     version?: string;
     /**
-     * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`.
+     * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`. If `react-dom` is installed, `web` is also included by default.
      */
     platforms?: ('android' | 'ios' | 'web')[];
     /**
@@ -305,6 +305,10 @@ export interface IOS {
      * Build number for your iOS standalone app. Corresponds to `CFBundleVersion` and must match Apple's [specified format](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion). (Note: Transporter will pull the value for `Version Number` from `expo.version` and NOT from `expo.ios.buildNumber`.)
      */
     buildNumber?: string;
+    /**
+     * Sets the iOS deployment target (minimum iOS version). The value should be in the format `MAJOR.MINOR` (e.g., `"18.6"`) or just a major version (e.g., `"26"`). This sets the minimum iOS version your app will support.
+     */
+    deploymentTarget?: string;
     /**
      * The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present. Requires `expo-system-ui` be installed in your project to work on iOS.
      */
