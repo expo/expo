@@ -1,5 +1,5 @@
 import AVFoundation
-import ZXingObjC
+internal import ZXingObjC
 import ExpoCamera
 
 @objc(ExpoCameraZXingProvider)

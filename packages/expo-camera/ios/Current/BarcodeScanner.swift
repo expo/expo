@@ -98,7 +98,11 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       return
     }
 
-    if metadataOutput == nil || (barcodeProvider != nil && videoDataOutput == nil) {
+    guard barcodeProvider != nil else {
+      return
+    }
+
+    if metadataOutput == nil || videoDataOutput == nil {
       addOutputs()
       if metadataOutput == nil {
         return
@@ -122,8 +126,6 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
 
   private func addOutputs() {
     guard let barcodeProvider else {
-      // No barcode provider — scanning is unavailable
-      onBarcodeScanned?(nil)
       return
     }
 
