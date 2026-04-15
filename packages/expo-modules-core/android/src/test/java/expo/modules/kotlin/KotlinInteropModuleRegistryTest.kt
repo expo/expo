@@ -17,9 +17,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.lang.ref.WeakReference
+import expo.modules.kotlin.types.Introspectable
 
 private class TestException : CodedException("Something went wrong")
 
+@Introspectable
 private class TestRecord : Record {
   @Field
   lateinit var string: String

@@ -2,8 +2,8 @@ package expo.modules.kotlin.types.descriptors
 
 import android.util.Log
 import io.github.lukmccall.pika.PTypeDescriptor
-import io.github.lukmccall.pika.pTypeDescriptorOf
 import kotlin.reflect.typeOf
+import io.github.lukmccall.pika.typeDescriptorOf as pikaTypeDescriptorOf
 
 @PublishedApi
 internal fun PTypeDescriptor.toRawTypeDescriptor(): RawTypeDescriptor {
@@ -11,14 +11,16 @@ internal fun PTypeDescriptor.toRawTypeDescriptor(): RawTypeDescriptor {
     is PTypeDescriptor.Concrete -> {
       if (this is PTypeDescriptor.Concrete.Parameterized) {
         RawTypeDescriptor.Parameterized(
-          pType.kClass,
+          pType.jClass,
           isNullable,
-          argumentsPTypes.map { it.toRawTypeDescriptor() }
+          introspection,
+          parameters.map { it.toRawTypeDescriptor() }
         )
       } else {
         RawTypeDescriptor.Simple(
-          pType.kClass,
-          isNullable
+          pType.jClass,
+          isNullable,
+          introspection
         )
       }
     }
@@ -28,15 +30,18 @@ internal fun PTypeDescriptor.toRawTypeDescriptor(): RawTypeDescriptor {
 }
 
 @PublishedApi
-internal inline fun <reified T> cpTypeDescriptorOf(): TypeDescriptor {
+internal inline fun <reified T> ctTypeDescriptorOf(): TypeDescriptor {
+  val typeDescriptor = pikaTypeDescriptorOf<T>().toRawTypeDescriptor()
+  val kTypeProvider = { typeOf<T>() }
+
   return TypeDescriptor(
-    typeInfo = pTypeDescriptorOf<T>().toRawTypeDescriptor(),
-    kTypeProvider = { typeOf<T>() }
+    typeDescriptor,
+    kTypeProvider
   )
 }
 
 inline fun <reified T> typeDescriptorOf(): TypeDescriptor {
-  val typeDescriptor = runCatching { cpTypeDescriptorOf<T>() }
+  val typeDescriptor = runCatching { ctTypeDescriptorOf<T>() }
     .onFailure {
       Log.e("ExpoModulesCore", "Failed to get type info for ${T::class.java.name}", it)
     }

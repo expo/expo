@@ -5,8 +5,10 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.toJSValueExperimental
 import org.junit.Test
+import expo.modules.kotlin.types.Introspectable
 
 class FormatterTest {
+  @Introspectable
   class MyRecord(
     @Field val a: String = "a",
     @Field val b: String? = "b",
@@ -73,11 +75,13 @@ class FormatterTest {
 
   @Test
   fun `nested record`() {
+    @Introspectable
     class NestedRecord(
       @Field val a: String = "a",
       @Field val b: String = "b"
     ) : Record
 
+    @Introspectable
     class MyRecordWithNested(
       @Field val nested: NestedRecord = NestedRecord()
     ) : Record

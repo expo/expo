@@ -49,7 +49,7 @@ class ModuleConvertersBuilder {
 
       private fun findNonNullableTypeConverter(typeDescriptor: TypeDescriptor): TypeConverter<*>? {
         return converters.find { (converterType, _) ->
-          converterType.kClass == typeDescriptor.kClass && converterType.params == typeDescriptor.params
+          converterType.jClass == typeDescriptor.jClass && converterType.params == typeDescriptor.params
         }?.second
       }
     }

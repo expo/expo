@@ -4,6 +4,7 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import org.junit.Test
+import expo.modules.kotlin.types.Introspectable
 
 class NullableTypeConversionTest {
   @Test
@@ -77,10 +78,13 @@ class NullableTypeConversionTest {
 
   @Test
   fun should_convert_null_in_deep_nested_structure() {
+    @Introspectable
     class NestedRecord : Record {
       @Field
       var a: Int? = 10
     }
+
+    @Introspectable
     class MyRecord : Record {
       @Field
       val nestedRecord: NestedRecord = NestedRecord()

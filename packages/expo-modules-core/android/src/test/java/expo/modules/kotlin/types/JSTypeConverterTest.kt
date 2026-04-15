@@ -126,6 +126,7 @@ class JSTypeConverterTest {
   @Test
   fun `should convert Record`() {
     @Suppress("unused")
+    @Introspectable
     class MyRecord : Record {
       @Field
       val int: Int = 2
@@ -147,6 +148,7 @@ class JSTypeConverterTest {
   @Test
   fun `should convert complex structures`() {
     @Suppress("unused")
+    @Introspectable
     class MyRecord : Record {
       inner class InnerRecord : Record {
         @Field
