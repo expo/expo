@@ -12,8 +12,10 @@ import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 private const val PACKAGER_OK_STATUS = "packager-status:running"
+private const val HTTP_CONNECT_TIMEOUT_MS = 5000L
 private const val PACKAGER_STATUS_ENDPOINT = "status"
 
 class DevLauncherDevServerHelper(
@@ -23,7 +25,11 @@ class DevLauncherDevServerHelper(
   packagerConnection: PackagerConnectionSettings
 ) : DevServerHelper(devSettings, context, packagerConnection) {
 
-  private val httpClient = OkHttpClientProvider.getOkHttpClient()
+  private val httpClient = OkHttpClientProvider.getOkHttpClient().newBuilder()
+    .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+    .readTimeout(0, TimeUnit.MILLISECONDS)
+    .writeTimeout(0, TimeUnit.MILLISECONDS)
+    .build()
 
   override fun getDevServerBundleURL(jsModulePath: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getDevServerBundleURL(jsModulePath)
