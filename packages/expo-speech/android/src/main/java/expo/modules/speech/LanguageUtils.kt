@@ -17,18 +17,21 @@ object LanguageUtils {
     }
   }
 
-  // NOTE: These helpers are null-unsafe and should be called ONLY with codes
-  // returned by Locale.getISO3Country() and Locale.getISO3Language() respectively
-  private fun transformCountryISO(code: String) = countryISOCodes[code]!!.country
-  private fun transformLanguageISO(code: String) = languageISOCodes[code]!!.language
-
   fun getISOCode(locale: Locale): String {
-    var language = transformLanguageISO(locale.isO3Language)
-    val country = locale.isO3Country
-    if (country != "") {
-      val countryCode = transformCountryISO(country)
-      language += "-$countryCode"
-    }
-    return language
+    val language =
+      runCatching {
+          val isO3Language = locale.isO3Language
+          languageISOCodes[isO3Language]?.language
+        }
+        .getOrNull() ?: locale.language
+
+    val country =
+      runCatching {
+          val isO3Country = locale.isO3Country
+          isO3Country.takeIf { it.isNotEmpty() }?.let { countryISOCodes[it]?.country }
+        }
+        .getOrNull() ?: locale.country
+
+    return if (country.isNotEmpty()) "$language-$country" else language
   }
 }
