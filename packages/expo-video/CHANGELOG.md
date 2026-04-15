@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- [iOS] Add `keepFullscreenOnPiPStop` property. ([#44811](https://github.com/expo/expo/pull/44811) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
