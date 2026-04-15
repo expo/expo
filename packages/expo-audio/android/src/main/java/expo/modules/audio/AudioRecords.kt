@@ -98,7 +98,9 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
 class AudioLockScreenOptions(
   @Field val showSeekForward: Boolean,
   @Field val showSeekBackward: Boolean,
-  @Field val isLiveStream: Boolean? = null
+  @Field val isLiveStream: Boolean? = null,
+  @Field val seekForwardIntervalSeconds: Double = 10.0,
+  @Field val seekBackwardIntervalSeconds: Double = 10.0
 ) : Record
 
 enum class InterruptionMode(val value: String) : Enumerable {

@@ -103,6 +103,12 @@ class AudioPlayer(
       this.lockScreenOptions = options
       this.isActiveForLockScreen = true
 
+      // Update ExoPlayer seek increments for Media3 built-in commands (headphones, Android Auto, etc.)
+      val fwdMs = ((options?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+      val bwdMs = ((options?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+      ref.setSeekForwardIncrementMs(fwdMs)
+      ref.setSeekBackIncrementMs(bwdMs)
+
       if (serviceConnection.bindingState == ServiceBindingState.UNBOUND) {
         serviceConnection.bindWithService()
       }

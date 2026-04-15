@@ -81,8 +81,14 @@ class AudioControlsService : MediaSessionService() {
             currentPlayerRef.play()
           }
 
-        ACTION_SEEK_FORWARD -> currentPlayerRef.seekTo(currentPlayerRef.currentPosition + SEEK_INTERVAL_MS)
-        ACTION_SEEK_BACKWARD -> currentPlayerRef.seekTo(currentPlayerRef.currentPosition - SEEK_INTERVAL_MS)
+        ACTION_SEEK_FORWARD -> {
+          val intervalMs = ((currentOptions?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+          currentPlayerRef.seekTo(currentPlayerRef.currentPosition + intervalMs)
+        }
+        ACTION_SEEK_BACKWARD -> {
+          val intervalMs = ((currentOptions?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+          currentPlayerRef.seekTo(currentPlayerRef.currentPosition - intervalMs)
+        }
       }
     }
 
@@ -328,7 +334,11 @@ class AudioControlsService : MediaSessionService() {
         val context = appContext?.reactContext ?: return@launch
         val sessionPlayer = resolveSessionPlayer(player, options)
         val session = MediaSession.Builder(context, sessionPlayer)
-          .setCallback(AudioMediaSessionCallback())
+          .setCallback(AudioMediaSessionCallback {
+            val fwd = ((currentOptions?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+            val bwd = ((currentOptions?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+            Pair(fwd, bwd)
+          })
           .build()
 
         // Replace the basic media session with a session connected to our playback service.
@@ -403,7 +413,11 @@ class AudioControlsService : MediaSessionService() {
         val context = appContext?.reactContext ?: return@launch
         val sessionPlayer = resolveSessionPlayer(player, options)
         val session = MediaSession.Builder(context, sessionPlayer)
-          .setCallback(AudioMediaSessionCallback())
+          .setCallback(AudioMediaSessionCallback {
+            val fwd = ((currentOptions?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+            val bwd = ((currentOptions?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+            Pair(fwd, bwd)
+          })
           .build()
 
         player.mediaSession.release()
@@ -508,6 +522,6 @@ class AudioControlsService : MediaSessionService() {
     const val ACTION_SEEK_FORWARD = "expo.modules.audio.action.SEEK_FORWARD"
     const val ACTION_SEEK_BACKWARD = "expo.modules.audio.action.SEEK_BACKWARD"
 
-    const val SEEK_INTERVAL_MS = 10000L
+    const val DEFAULT_SEEK_INTERVAL_MS = 10_000L
   }
 }
