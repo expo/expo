@@ -358,11 +358,13 @@ class AudioControlsService : MediaSessionService() {
           updateMetadata(metadata)
         }
         val session = MediaSession.Builder(context, sessionPlayer)
-          .setCallback(AudioMediaSessionCallback {
-            val fwd = ((currentOptions?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
-            val bwd = ((currentOptions?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
-            Pair(fwd, bwd)
-          })
+          .setCallback(
+            AudioMediaSessionCallback {
+              val fwd = ((currentOptions?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+              val bwd = ((currentOptions?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+              Pair(fwd, bwd)
+            }
+          )
           .build()
 
         // Replace the basic media session with a session connected to our playback service.
@@ -443,11 +445,13 @@ class AudioControlsService : MediaSessionService() {
           updateMetadata(metadata)
         }
         val session = MediaSession.Builder(context, sessionPlayer)
-          .setCallback(AudioMediaSessionCallback {
-            val fwd = ((currentOptions?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
-            val bwd = ((currentOptions?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
-            Pair(fwd, bwd)
-          })
+          .setCallback(
+            AudioMediaSessionCallback {
+              val fwd = ((currentOptions?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+              val bwd = ((currentOptions?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+              Pair(fwd, bwd)
+            }
+          )
           .build()
 
         player.mediaSession.release()
