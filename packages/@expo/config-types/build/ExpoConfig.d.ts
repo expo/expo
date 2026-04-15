@@ -41,7 +41,7 @@ export interface ExpoConfig {
      */
     version?: string;
     /**
-     * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`.
+     * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`. If `react-dom` is installed, `web` is also included by default.
      */
     platforms?: ('android' | 'ios' | 'web')[];
     /**
@@ -306,7 +306,7 @@ export interface IOS {
      */
     buildNumber?: string;
     /**
-     * Sets the iOS deployment target (minimum iOS version). The value should be a string in the format `MAJOR.MINOR` (e.g., `"15.1"`). This sets the minimum iOS version your app will support.
+     * Sets the iOS deployment target (minimum iOS version). The value should be in the format `MAJOR.MINOR` (e.g., `"18.6"`) or just a major version (e.g., `"26"`). This sets the minimum iOS version your app will support.
      */
     deploymentTarget?: string;
     /**
