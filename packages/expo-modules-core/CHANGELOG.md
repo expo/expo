@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix finding EXConstants.bundle inside framework bundle for brownfield ([#44810](https://github.com/expo/expo/pull/44810) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 55.0.22 — 2026-04-09
