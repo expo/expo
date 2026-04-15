@@ -140,5 +140,11 @@ export declare class Asset {
      */
     setFavorite(isFavorite: boolean): Promise<void>;
     static create(filePath: string, album?: Album): Promise<Asset>;
+    /**
+     * A static function. Deletes multiple assets from the device's media store.
+     * @param assets - An array of {@link Asset} instances to delete.
+     * @returns A promise that resolves once the deletion has completed.
+     */
+    static delete(assets: Asset[]): Promise<void>;
 }
 //# sourceMappingURL=Asset.d.ts.map
