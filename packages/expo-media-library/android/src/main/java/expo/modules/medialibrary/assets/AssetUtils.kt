@@ -227,7 +227,7 @@ fun getAssetDimensionsFromCursor(
     val width = cursor.getInt(widthIndex)
     val height = cursor.getInt(heightIndex)
     if (width > 0 && height > 0) {
-      val orientationIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
+      val orientationIndex = cursor.getColumnIndex(MediaStore.MediaColumns.ORIENTATION)
       val orientation = cursor.getInt(orientationIndex)
 
       return maybeRotateAssetSize(width, height, orientation)
