@@ -228,7 +228,8 @@ class AudioControlsService : MediaSessionService() {
 
     // Add seek backward button if enabled
     if (currentOptions?.showSeekBackward == true) {
-      val backwardSeconds = (currentOptions?.seekBackwardIntervalSeconds ?: 10.0).toInt()
+      val backwardInterval = currentOptions?.seekBackwardIntervalSeconds ?: 10.0
+      val backwardSeconds = if (backwardInterval == backwardInterval.toLong().toDouble()) backwardInterval.toInt() else -1
       mediaButtons.add(
         CommandButton.Builder(skipBackIcon(backwardSeconds))
           .setDisplayName("Seek Backward")
@@ -251,7 +252,8 @@ class AudioControlsService : MediaSessionService() {
 
     // Add seek forward button if enabled
     if (currentOptions?.showSeekForward == true) {
-      val forwardSeconds = (currentOptions?.seekForwardIntervalSeconds ?: 10.0).toInt()
+      val forwardInterval = currentOptions?.seekForwardIntervalSeconds ?: 10.0
+      val forwardSeconds = if (forwardInterval == forwardInterval.toLong().toDouble()) forwardInterval.toInt() else -1
       mediaButtons.add(
         CommandButton.Builder(skipForwardIcon(forwardSeconds))
           .setDisplayName("Seek Forward")
