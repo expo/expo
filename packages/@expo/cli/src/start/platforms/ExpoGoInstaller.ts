@@ -6,10 +6,10 @@ import * as Log from '../../log';
 import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { isInteractive } from '../../utils/interactive';
 import { learnMore } from '../../utils/link';
 import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
-import { isInteractive } from '../../utils/interactive';
 
 const debug = require('debug')('expo:utils:ExpoGoInstaller') as typeof console.log;
 
@@ -91,7 +91,7 @@ export class ExpoGoInstaller<IDevice> {
       if (isInteractive()) {
         confirm = await confirmAsync({
           initial: true,
-          message: message,
+          message,
         });
       } else {
         // Install best version automatically in non-interactive environments since we can't prompt the user, and it's better to have the correct version than not have Expo Go work at all.
