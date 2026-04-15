@@ -11,6 +11,8 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.services.FilePermissionService
 import kotlinx.coroutines.withContext
+import com.facebook.react.modules.network.OkHttpClientProvider
+import okhttp3.Request
 import java.io.File
 import java.net.URI
 import java.security.MessageDigest
@@ -43,7 +45,16 @@ class AssetModule : Module() {
         val inputStream = when {
           uri.toString().contains(":").not() -> openAssetResourceStream(context, uri.toString())
           uri.toString().startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE) -> openAndroidResStream(context, uri.toString())
-          else -> uri.toURL().openStream()
+          else -> {
+            val request = Request.Builder().url(uri.toURL()).build()
+            val response = OkHttpClientProvider.getOkHttpClient().newCall(request).execute()
+            val body = response.body
+            if (!response.isSuccessful || body == null) {
+              response.close()
+              throw Exception("HTTP ${response.code} for $uri")
+            }
+            body.byteStream()
+          }
         }
         inputStream.use { input ->
           localUrl.outputStream().use { output ->
