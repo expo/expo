@@ -50,10 +50,13 @@ describe('installEventLogger', () => {
     jest.isolateModules(() => {
       const LogStream = jest.fn().mockImplementation(() => ({
         writable: true,
-        _write: jest.fn(),
+        _writeln: jest.fn(),
         _end: jest.fn(),
       }));
-      jest.doMock('../stream', () => ({ LogStream }));
+      jest.doMock('../stream', () => ({
+        LogStream,
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
 
       const { installEventLogger, isEventLoggerActive } = require('..') as typeof import('..');
 
@@ -73,10 +76,13 @@ describe('installEventLogger', () => {
     jest.isolateModules(() => {
       const LogStream = jest.fn().mockImplementation(() => ({
         writable: true,
-        _write: jest.fn(),
+        _writeln: jest.fn(),
         _end: jest.fn(),
       }));
-      jest.doMock('../stream', () => ({ LogStream }));
+      jest.doMock('../stream', () => ({
+        LogStream,
+        writeEvent: jest.requireActual('../stream').writeEvent,
+      }));
 
       const { installEventLogger } = require('..') as typeof import('..');
 
@@ -98,9 +104,10 @@ describe('installEventLogger', () => {
         LogStream: jest.fn().mockImplementation(() => ({
           writable: true,
           file: mockFile,
-          _write: jest.fn(),
+          _writeln: jest.fn(),
           _end: jest.fn(),
         })),
+        writeEvent: jest.requireActual('../stream').writeEvent,
       }));
 
       const { installEventLogger, getLogFile } = require('..') as typeof import('..');
