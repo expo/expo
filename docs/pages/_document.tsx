@@ -1,5 +1,21 @@
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 
+const BLOCKING_THEME_SCRIPT = `
+(function() {
+  function getCookieTheme() {
+    var match = document.cookie.match(/(?:^|;\\s*)expo-theme=([^;]*)/);
+    var val = match && match[1];
+    return val === 'dark' || val === 'light' ? val : null;
+  }
+  var theme = getCookieTheme();
+  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark-theme');
+  } else {
+    document.documentElement.classList.remove('dark-theme');
+  }
+})();
+`;
+
 export default class DocsDocument extends Document {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   static async getInitialProps(ctx: DocumentContext) {
@@ -14,11 +30,7 @@ export default class DocsDocument extends Document {
     return (
       <Html lang="en" data-expo-theme>
         <Head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `(function(){try{var m=document.cookie.match(/(?:^|; )expo-theme=([^;]*)/);var t=m&&decodeURIComponent(m[1]);var isDark=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme:dark)").matches);if(isDark){document.documentElement.classList.add("dark-theme")}}catch(e){}})()`,
-            }}
-          />
+          <script dangerouslySetInnerHTML={{ __html: BLOCKING_THEME_SCRIPT }} />
         </Head>
         <body className="text-pretty">
           <Main />
