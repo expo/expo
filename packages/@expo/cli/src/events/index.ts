@@ -40,10 +40,18 @@ function getInitMetadata(): InitMetadata {
   };
 }
 
-/** Activates the event logger based on the input env var
- * @param env - The target to write the logs to; defaults to `$LOG_EVENTS`
+export function getWellKnownTemporaryLogFile(projectRoot: string, command: string): string {
+  return path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`);
+}
+
+/** Activates the event logger.
+ *
+ * Accepts either a log target string (file path, fd number, or `$LOG_EVENTS`),
+ * or a `projectRoot` + `command` pair to log to `.expo/dev/logs/<command>.log`.
+ * Subsequent calls are no-ops — the first activated destination wins.
  */
-export function installEventLogger(env = process.env.LOG_EVENTS) {
+export function installEventLogger(env: string | undefined = process.env.LOG_EVENTS) {
+  if (logStream) return;
   const eventLogDestination = parseLogTarget(env);
   if (eventLogDestination) {
     if (eventLogDestination === 1) {
@@ -64,6 +72,9 @@ export function installEventLogger(env = process.env.LOG_EVENTS) {
 
 /** Returns whether the event logger is active */
 export const isEventLoggerActive = () => !!logStream?.writable;
+
+/** Returns the file path of the active event log, if any */
+export const getLogFile = () => logStream?.file ?? undefined;
 
 /** Whether logs shown in the terminal should be reduced.
  * @remarks

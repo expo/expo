@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { shouldReduceLogs } from '../events';
+import { getLogFile, shouldReduceLogs } from '../events';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
@@ -70,6 +70,10 @@ export async function startAsync(
 ) {
   if (!shouldReduceLogs()) {
     Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+    const logFile = getLogFile();
+    if (!isInteractive() && logFile) {
+      Log.log(chalk.gray(`Logs: ${logFile}`));
+    }
   }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
