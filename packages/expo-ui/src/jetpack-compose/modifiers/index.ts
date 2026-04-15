@@ -468,3 +468,21 @@ export const Shapes = {
  * @param shape - A shape from `Shapes`, e.g. `Shapes.Circle` or `Shapes.Material.Heart`.
  */
 export const clip = (shape: BuiltinShape) => createModifier('clip', { shape });
+
+// =============================================================================
+// Scroll Modifiers
+// =============================================================================
+
+/**
+ * Makes the view vertically scrollable.
+ * Wraps `Modifier.verticalScroll(rememberScrollState())`.
+ * Use on a Column to create a non-lazy scrollable container.
+ */
+export const verticalScroll = () => createModifier('verticalScroll');
+
+/**
+ * Makes the view horizontally scrollable.
+ * Wraps `Modifier.horizontalScroll(rememberScrollState())`.
+ * Use on a Row to create a non-lazy scrollable container.
+ */
+export const horizontalScroll = () => createModifier('horizontalScroll');

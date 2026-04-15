@@ -303,4 +303,16 @@ export declare const Shapes: {
  * @param shape - A shape from `Shapes`, e.g. `Shapes.Circle` or `Shapes.Material.Heart`.
  */
 export declare const clip: (shape: BuiltinShape) => import("./createModifier").ModifierConfig;
+/**
+ * Makes the view vertically scrollable.
+ * Wraps `Modifier.verticalScroll(rememberScrollState())`.
+ * Use on a Column to create a non-lazy scrollable container.
+ */
+export declare const verticalScroll: () => import("./createModifier").ModifierConfig;
+/**
+ * Makes the view horizontally scrollable.
+ * Wraps `Modifier.horizontalScroll(rememberScrollState())`.
+ * Use on a Row to create a non-lazy scrollable container.
+ */
+export declare const horizontalScroll: () => import("./createModifier").ModifierConfig;
 //# sourceMappingURL=index.d.ts.map
