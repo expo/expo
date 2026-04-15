@@ -20,7 +20,7 @@ export function BottomSheet({
       }}>
       <Drawer.Portal>
         <Drawer.Overlay style={overlayStyle} />
-        <Drawer.Content style={contentStyle}>
+        <Drawer.Content style={{ ...contentStyle, ...(showDragIndicator && dragIndicatorSpacing) }}>
           {showDragIndicator && <Drawer.Handle />}
           <div style={innerStyle} data-testid={testID}>
             {children}
@@ -56,4 +56,8 @@ const contentStyle: React.CSSProperties = {
 const innerStyle: React.CSSProperties = {
   padding: 16,
   overflow: 'auto',
+};
+
+const dragIndicatorSpacing: React.CSSProperties = {
+  paddingTop: 16,
 };
