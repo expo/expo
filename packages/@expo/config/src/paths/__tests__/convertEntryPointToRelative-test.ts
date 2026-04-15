@@ -188,4 +188,26 @@ describe(convertEntryPointToRelative, () => {
       convertEntryPointToRelative(p('/monorepo/packages/app'), p('/monorepo/packages/app/index.js'))
     ).toBe('packages/app/index');
   });
+
+  it('resolves entry through symlinked node_modules in git worktree', () => {
+    // Simulates a git worktree where node_modules is symlinked from the main checkout.
+    // The entry resolves through the symlink to a path outside the worktree.
+    const p = setup({
+      files: {
+        '/project/node_modules/expo-router/entry.js': '',
+        '/project/.worktrees/branch/app/index.js': '',
+      },
+      symlinks: {
+        '/project/.worktrees/branch/node_modules': '/project/node_modules',
+      },
+    });
+    // resolveFrom would return the path through the parent's node_modules (not the worktree's),
+    // because symlink resolution follows the worktree/node_modules symlink.
+    expect(
+      convertEntryPointToRelative(
+        p('/project/.worktrees/branch'),
+        p('/project/node_modules/expo-router/entry.js')
+      )
+    ).toBe('node_modules/expo-router/entry');
+  });
 });
