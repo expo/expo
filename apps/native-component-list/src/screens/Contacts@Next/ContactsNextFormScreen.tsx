@@ -1,4 +1,4 @@
-import { Contact } from 'expo-contacts/next';
+import { Contact, requestPermissionsAsync } from 'expo-contacts/next';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 
@@ -10,7 +10,7 @@ export default function ContactApiScreen() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    Contact.requestPermissionsAsync();
+    requestPermissionsAsync();
   }, []);
 
   const execute = async (fn: () => Promise<any>) => {

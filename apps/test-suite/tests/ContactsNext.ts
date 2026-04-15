@@ -7,6 +7,7 @@ import {
   Container,
   ContactsSortOrder,
   addContactsChangeListener,
+  requestPermissionsAsync,
 } from 'expo-contacts/next';
 import { Paths, File } from 'expo-file-system';
 import { Platform } from 'react-native';
@@ -26,7 +27,7 @@ export async function test(t) {
   const contacts: Contact[] = [];
 
   t.beforeAll(async () => {
-    const permission = await Contact.requestPermissionsAsync();
+    const permission = await requestPermissionsAsync();
     t.expect(permission.granted).toBe(true);
   });
 
