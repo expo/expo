@@ -206,14 +206,31 @@ class AudioControlsService : MediaSessionService() {
     return builder.build()
   }
 
+  private fun skipBackIcon(seconds: Int): Int = when (seconds) {
+    5 -> CommandButton.ICON_SKIP_BACK_5
+    10 -> CommandButton.ICON_SKIP_BACK_10
+    15 -> CommandButton.ICON_SKIP_BACK_15
+    30 -> CommandButton.ICON_SKIP_BACK_30
+    else -> CommandButton.ICON_SKIP_BACK
+  }
+
+  private fun skipForwardIcon(seconds: Int): Int = when (seconds) {
+    5 -> CommandButton.ICON_SKIP_FORWARD_5
+    10 -> CommandButton.ICON_SKIP_FORWARD_10
+    15 -> CommandButton.ICON_SKIP_FORWARD_15
+    30 -> CommandButton.ICON_SKIP_FORWARD_30
+    else -> CommandButton.ICON_SKIP_FORWARD
+  }
+
   private fun updateSessionCustomLayout(isPlaying: Boolean) {
     val session = mediaSession ?: return
     val mediaButtons = mutableListOf<CommandButton>()
 
     // Add seek backward button if enabled
     if (currentOptions?.showSeekBackward == true) {
+      val backwardSeconds = (currentOptions?.seekBackwardIntervalSeconds ?: 10.0).toInt()
       mediaButtons.add(
-        CommandButton.Builder(CommandButton.ICON_SKIP_BACK_10)
+        CommandButton.Builder(skipBackIcon(backwardSeconds))
           .setDisplayName("Seek Backward")
           .setEnabled(true)
           .setSessionCommand(SessionCommand(ACTION_SEEK_BACKWARD, Bundle.EMPTY))
@@ -234,8 +251,9 @@ class AudioControlsService : MediaSessionService() {
 
     // Add seek forward button if enabled
     if (currentOptions?.showSeekForward == true) {
+      val forwardSeconds = (currentOptions?.seekForwardIntervalSeconds ?: 10.0).toInt()
       mediaButtons.add(
-        CommandButton.Builder(CommandButton.ICON_SKIP_FORWARD_10)
+        CommandButton.Builder(skipForwardIcon(forwardSeconds))
           .setDisplayName("Seek Forward")
           .setEnabled(true)
           .setSessionCommand(SessionCommand(ACTION_SEEK_FORWARD, Bundle.EMPTY))
