@@ -71,7 +71,6 @@ function createMetroOpenStackFrameMiddleware(
   metroConfig: Pick<MetroConfig, 'projectRoot'>
 ): connect.NextHandleFunction {
   return async (req, res, next) => {
-
     if (req.method !== 'POST') {
       return next();
     }
