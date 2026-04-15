@@ -94,6 +94,7 @@ struct ErrorView: View {
             .cornerRadius(8)
         }
 
+        #if !os(tvOS)
         Button(action: {
           #if !os(macOS)
           UIPasteboard.general.string = errorText
@@ -114,6 +115,7 @@ struct ErrorView: View {
             .background(Color.expoSystemGray5)
             .cornerRadius(8)
         }
+        #endif
       }
     }
     .padding(.horizontal, 20)
