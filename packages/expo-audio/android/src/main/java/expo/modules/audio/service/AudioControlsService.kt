@@ -308,15 +308,28 @@ class AudioControlsService : MediaSessionService() {
 
   private fun resolveSessionPlayer(player: AudioPlayer, options: AudioLockScreenOptions?): Player {
     val isLive = options?.isLiveStream ?: player.isLive
-    if (!isLive) {
-      return player.ref
-    }
+    val forwardMs = ((options?.seekForwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
+    val backwardMs = ((options?.seekBackwardIntervalSeconds ?: 10.0) * 1000).toLong().coerceAtLeast(100)
 
     return object : ForwardingPlayer(player.ref) {
+      override fun getSeekForwardIncrement(): Long = forwardMs
+
+      override fun getSeekBackIncrement(): Long = backwardMs
+
+      override fun seekForward() {
+        seekTo(currentPosition + forwardMs)
+      }
+
+      override fun seekBack() {
+        seekTo((currentPosition - backwardMs).coerceAtLeast(0))
+      }
+
       override fun getAvailableCommands(): Player.Commands {
-        return super.getAvailableCommands().buildUpon()
-          .remove(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM)
-          .build()
+        val commands = super.getAvailableCommands().buildUpon()
+        if (isLive) {
+          commands.remove(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM)
+        }
+        return commands.build()
       }
     }
   }
