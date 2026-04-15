@@ -9,6 +9,8 @@ export type PageIndexDisplayMode = 'automatic' | 'always' | 'never';
  *  - `'automatic'` — SwiftUI's default tab-bar style. Children must apply the
  *    `tabItem({...})` modifier (icon and/or label), otherwise the tab bar
  *    renders blank slots.
+ *  - `'sidebarAdaptable'` — iOS 18+. Sidebar on iPad/Mac, bottom bar on
+ *    iPhone. Children must be `<Tab>` components for this style to work.
  */
 export type TabViewStyleConfig =
   | {
@@ -21,6 +23,9 @@ export type TabViewStyleConfig =
     }
   | {
       type: 'automatic';
+    }
+  | {
+      type: 'sidebarAdaptable';
     };
 
 /**

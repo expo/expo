@@ -46,6 +46,11 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     )
       .focused($isFocused)
       .onAppear {
+        // See `TextFieldView` for rationale — guard lives on the
+        // textManager because @State has been observed to reset on
+        // sibling insert in a SwiftUI TabView ForEach.
+        guard !textManager.didInitialize else { return }
+        textManager.didInitialize = true
         textManager.text = props.defaultValue
         if props.autoFocus {
           isFocused = true

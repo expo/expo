@@ -19,6 +19,11 @@ final class TextFieldProps: UIBaseViewProps {
 class TextFieldManager: ObservableObject {
   @Published var text: String
   @Published var isFocused: Bool
+  // One-time `defaultValue` / `autoFocus` seeding flag. Stored on the manager
+  // (not in @State on the View) because @State has been observed to reset
+  // when sibling views are inserted in a SwiftUI TabView's ForEach, while
+  // the @ObservedObject manager's lifetime survives that operation.
+  var didInitialize: Bool = false
 
 #if !os(tvOS)
   @Published var _selection: Any?
@@ -119,6 +124,15 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   var body: some View {
     let baseView = textField
       .onAppear {
+        // `.onAppear` fires every time the view enters the visible viewport,
+        // not just on first mount. Seeding the field text and auto-focus
+        // must happen at most once per view's lifetime, otherwise SwiftUI
+        // containers like TabView (page style) clobber the user's input on
+        // every swipe or sibling insert. We track this on the manager
+        // instead of in @State because @State has been observed to reset
+        // when a sibling is inserted in a TabView's ForEach.
+        guard !textManager.didInitialize else { return }
+        textManager.didInitialize = true
         textManager.text = props.defaultValue
         if props.autoFocus {
           isFocused = true
