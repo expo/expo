@@ -12,7 +12,7 @@
 - [iOS] Added `isLiveStream` option to `AudioLockScreenOptions` to hide duration and scrub bar for live streams. ([#43088](https://github.com/expo/expo/pull/43088) by [@robrechtme](https://github.com/robrechtme))
 - [android] Add support for playsInSilentMode ([#43117](https://github.com/expo/expo/pull/43117) by [@blazejkustra](https://github.com/blazejkustra))
 - Added `isLive`, `currentOffsetFromLive`, and `error` fields to `AudioStatus` for live stream detection and error handling. ([#44441](https://github.com/expo/expo/pull/44441) by [@alanjhughes](https://github.com/alanjhughes))
-- Added `seekForwardIntervalSeconds` and `seekBackwardIntervalSeconds` options to `AudioLockScreenOptions` for customizable lock screen skip intervals. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@radko93](https://github.com/radko93))
+- Added `seekForwardIntervalSeconds` and `seekBackwardIntervalSeconds` options to `AudioLockScreenOptions` for customizable lock screen skip intervals. ([#44804](https://github.com/expo/expo/pull/44804) by [@radko93](https://github.com/radko93))
 
 ### 🐛 Bug fixes
 
