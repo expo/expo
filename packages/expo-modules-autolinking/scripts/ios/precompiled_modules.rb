@@ -342,6 +342,7 @@ module Expo
       #   1. The podspec exists (source build) or prebuilt xcframework exists (precompiled)
       #   2. The gating Podfile.properties.json value is not the disabled value
       #   3. It's not already registered in the Podfile
+      #   4. All of its local dependencies (pods in the lookup map) are already registered
       #
       # Works for both precompiled and source builds. For precompiled builds, the
       # podspec is patched to use the xcframework. For source builds, CocoaPods
@@ -384,19 +385,37 @@ module Expo
 
           podspec_rel = Pathname.new(podspec_file).relative_path_from(project_directory).to_s
 
+          # Parse the companion podspec to inspect its dependencies.
+          begin
+            spec = Pod::Specification.from_file(podspec_file)
+          rescue => e
+            Pod::UI.warn "[Expo] Companion pod #{pod_name}: failed to parse podspec: #{e.message}"
+            next
+          end
+
+          # Skip companion pods whose local dependencies (sibling pods from the same
+          # monorepo / node_modules) aren't registered in the Podfile. For example,
+          # ExpoCameraBarcodeScanning depends on ExpoCamera — if expo-camera isn't
+          # installed in the project, ExpoCamera won't be in the Podfile and CocoaPods
+          # would fail with "Unable to find a specification for ExpoCamera".
+          registered_pod_names = target_definition.dependencies.map(&:name)
+          missing_local_dep = spec.all_dependencies.find do |dep|
+            root_spec_name = dep.name.partition('/').first
+            pod_lookup_map.key?(root_spec_name) && !registered_pod_names.include?(root_spec_name)
+          end
+          if missing_local_dep
+            Pod::UI.message "[Expo] Skipping companion pod #{pod_name}: dependency #{missing_local_dep.name} is not installed"
+            next
+          end
+
           # Enable modular headers for the companion pod's transitive Objective-C dependencies so
           # the Swift pod can `import` them. Mirrors the logic in autolinking_manager.rb's
           # `use_modular_headers_for_dependencies`.
-          begin
-            spec = Pod::Specification.from_file(podspec_file)
-            spec.all_dependencies.each do |dep|
-              root_spec_name = dep.name.partition('/').first
-              unless target_definition.build_pod_as_module?(root_spec_name)
-                target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
-              end
+          spec.all_dependencies.each do |dep|
+            root_spec_name = dep.name.partition('/').first
+            unless target_definition.build_pod_as_module?(root_spec_name)
+              target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
             end
-          rescue => e
-            Pod::UI.warn "[Expo] Companion pod #{pod_name}: failed to enable modular headers for dependencies: #{e.message}"
           end
 
           if enabled? && has_prebuilt_xcframework?(pod_name)
