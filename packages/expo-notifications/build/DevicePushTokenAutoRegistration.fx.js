@@ -3,7 +3,7 @@ import { UnavailabilityError } from 'expo-modules-core';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
-import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal } from './utils/updateDevicePushTokenAsync';
+import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal, hasDeviceTokenChangedAsync, } from './utils/updateDevicePushTokenAsync';
 let lastAbortController = null;
 async function updatePushTokenAsync(token) {
     // Abort current update process
@@ -25,7 +25,23 @@ export async function setAutoServerRegistrationEnabledAsync(enabled) {
     if (!ServerRegistrationModule.setRegistrationInfoAsync) {
         throw new UnavailabilityError('ServerRegistrationModule', 'setRegistrationInfoAsync');
     }
-    await ServerRegistrationModule.setRegistrationInfoAsync(enabled ? JSON.stringify({ isEnabled: enabled }) : null);
+    if (!enabled) {
+        await ServerRegistrationModule.setRegistrationInfoAsync(null);
+    }
+    else {
+        // Preserve existing stored data (e.g. last registered token fingerprint)
+        // while updating the isEnabled flag.
+        let existing = {};
+        try {
+            const info = await ServerRegistrationModule.getRegistrationInfoAsync?.();
+            if (info) {
+                existing = JSON.parse(info);
+            }
+        }
+        catch { }
+        existing.isEnabled = true;
+        await ServerRegistrationModule.setRegistrationInfoAsync(JSON.stringify(existing));
+    }
 }
 // note(Chmiela): This function is exported only for testing purposes.
 export async function __handlePersistedRegistrationInfoAsync(registrationInfo) {
@@ -48,6 +64,13 @@ export async function __handlePersistedRegistrationInfoAsync(registrationInfo) {
         // Since the registration is enabled, fetching a "new" device token
         // shouldn't be a problem.
         const latestDevicePushToken = await getDevicePushTokenAsync();
+        // Skip the server request if the device token and metadata have not changed
+        // since the last successful registration. This avoids millions of redundant
+        // requests from devices that re-open their app without any token change.
+        const changed = await hasDeviceTokenChangedAsync(latestDevicePushToken);
+        if (!changed) {
+            return;
+        }
         await updatePushTokenAsync(latestDevicePushToken);
     }
     catch (e) {
