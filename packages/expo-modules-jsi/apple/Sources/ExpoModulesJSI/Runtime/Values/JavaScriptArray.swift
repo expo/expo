@@ -525,6 +525,8 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
 extension JavaScriptArray {
   /**
    Returns an array of `(offset, element)` pairs, similar to `Sequence.enumerated()`.
+
+   - Note: Eagerly evaluates all elements. For large arrays, prefer `forEach(_:)`.
    */
   public func enumerated() -> [(offset: Int, element: JavaScriptValue)] {
     return (0..<length).map { index in

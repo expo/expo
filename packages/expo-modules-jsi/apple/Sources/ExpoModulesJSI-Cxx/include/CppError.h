@@ -61,8 +61,8 @@ public:
   inline static Result tryCatch(jsi::Runtime &runtime, Result(^block)(void)) {
     try {
       return block();
-    } catch (const jsi::JSError &e) {
-      _current = std::make_unique<CppError>(e);
+    } catch (jsi::JSError e) {
+      _current = std::make_unique<CppError>(std::move(e));
     } catch (const std::exception &e) {
       _current = std::make_unique<CppError>(jsi::JSError(runtime, e.what()));
     } catch (...) {

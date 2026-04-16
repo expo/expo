@@ -130,7 +130,9 @@ struct JavaScriptNativeStateTests {
     #expect(deallocatorCalled == true)
   }
 
-  @Test
+  // TODO: Fix setNativeState in JSIUtils.h to share a single std::shared_ptr across objects
+  // instead of creating independent shared_ptrs from the same raw pointer.
+  @Test(.disabled("Each setNativeState creates an independent shared_ptr — unsetting one deallocates immediately"))
   func `deallocator is called once when shared native state is released`() throws {
     var deallocatorCallCount = 0
     let object1 = runtime.createObject()
@@ -142,15 +144,15 @@ struct JavaScriptNativeStateTests {
     try object1.setNativeState(nativeState)
     try object2.setNativeState(nativeState)
 
-//    // Unset from the first object — deallocator should not fire yet.
-//    object1.unsetNativeState()
-//    try runtime.eval("gc() && gc() && gc()")
-//    #expect(deallocatorCallCount == 0)
-//
-//    // Unset from the second object — now the deallocator should fire exactly once.
-//    object2.unsetNativeState()
-//    try runtime.eval("gc() && gc() && gc()")
-//    #expect(deallocatorCallCount == 1)
+    // Unset from the first object — deallocator should not fire yet.
+    object1.unsetNativeState()
+    try runtime.eval("gc() && gc() && gc()")
+    #expect(deallocatorCallCount == 0)
+
+    // Unset from the second object — now the deallocator should fire exactly once.
+    object2.unsetNativeState()
+    try runtime.eval("gc() && gc() && gc()")
+    #expect(deallocatorCallCount == 1)
   }
 }
 

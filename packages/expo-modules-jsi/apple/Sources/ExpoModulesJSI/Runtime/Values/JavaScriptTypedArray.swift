@@ -75,6 +75,9 @@ public struct JavaScriptTypedArray: ~Copyable {
     return JavaScriptArrayBuffer(runtime, arrayBuffer)
   }
 
+  /**
+   Returns the typed array as a `JavaScriptValue`.
+   */
   public func asValue() -> JavaScriptValue {
     guard let runtime else {
       FatalError.runtimeLost()
