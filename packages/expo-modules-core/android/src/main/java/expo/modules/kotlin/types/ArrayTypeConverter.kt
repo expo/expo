@@ -65,7 +65,7 @@ class ArrayTypeConverter(
   @Suppress("UNCHECKED_CAST")
   private fun createTypedArray(size: Int): Array<Any?> {
     return java.lang.reflect.Array.newInstance(
-      (arrayType.params.first().kClass).java,
+      arrayType.params.first().jClass,
       size
     ) as Array<Any?>
   }
@@ -77,7 +77,7 @@ class ArrayTypeConverter(
 }
 
 internal fun isPrimitiveArray(typeDescriptor: TypeDescriptor): Boolean {
-  return when (typeDescriptor.kClass.java) {
+  return when (typeDescriptor.jClass) {
     BooleanArray::class.java,
     ByteArray::class.java,
     CharArray::class.java,
