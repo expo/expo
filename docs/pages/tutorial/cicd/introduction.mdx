@@ -1,0 +1,211 @@
+---
+title: 'CI/CD Tutorial: Introduction'
+sidebar_title: Introduction
+description: An introduction to EAS Workflows tutorial and the core concepts for setting up a CI/CD pipeline for Expo and React Native apps.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+This tutorial will give us proficiency with [EAS Workflows](/eas/workflows/introduction/), a Continuous Integration (CI)/Continuous Delivery (CD) service from Expo Application Services (EAS).
+
+## What is EAS Workflows and why use it?
+
+**EAS Workflows** is a CI/CD service that automates repeated tasks in our development and release process of our Expo and React Native apps. It provides building Android and iOS binaries, publishing over-the-air updates (OTA), submitting to app stores, running end-to-end (E2E) tests with Maestro, and deploying web apps to EAS Hosting.
+
+**EAS Workflows** run in managed cloud environments with preconfigured jobs designed specifically for mobile app development. We use a linked GitHub project so that our team members can trigger workflows from GitHub events (such as push, pull request, use tags or labels) or schedules (cron), or run them manually using [EAS CLI](/eas/cli/).
+
+## Topics covered
+
+The tutorial covers the following topics:
+
+- Use EAS Workflows to create custom jobs and understand how these jobs run and how to debug them
+- Automate [development builds](/develop/development-builds/introduction/) with fingerprinting to skip triggering unnecessary builds
+- Create a preview workflow and preview builds, trigger Slack notifications on completion
+- Use PR preview updates to share work in progress with teammates and stakeholders using OTA
+- Run E2E tests with Maestro in a workflow
+- Create a production workflow that uses fingerprinting to choose between creating a native build or publishing an OTA
+- Switch production deployments to versioned tags
+- Add web deployment to existing workflows using [EAS Hosting](/eas/hosting/introduction/)
+
+After completing this tutorial, we will have solid understanding on how to set up a professional CI/CD pipeline.
+
+## Before we write any YAML
+
+> **info** **Tip:** If you are already familiar with EAS Build and EAS Update, you can skip to the next section.
+
+Adding YAML files to our project is how we define jobs to create and run workflows. EAS Workflows automates these jobs that most Expo and React Native developers do by hand.
+
+Before we create our first workflow, the following are few concepts that we should know to make most sense of this tutorial:
+
+<Collapsible summary="Where an Expo and React Native can ship from?">
+
+An Expo and React Native app can target three deployment surfaces by default. Each one uses a different EAS service or a combination of two services:
+
+| Surface           | EAS service            | When to use                                                                    |
+| ----------------- | ---------------------- | ------------------------------------------------------------------------------ |
+| App stores        | EAS Build + EAS Submit | New releases, native code changes                                              |
+| Installed devices | EAS Update             | TypeScript (TS)/ JavaScript (JS) only fixes, delivered over the air in seconds |
+| Web               | EAS Hosting            | Web app alongside native releases                                              |
+
+</Collapsible>
+
+<Collapsible summary="Build profiles">
+
+[EAS Build](/build/introduction/) is a service for building app binaries for our Expo and React Native projects. It supports three build profiles by default and each profile corresponds to a different stage of development. We are going to use each of these three profiles in this tutorial. If you are already familiar with the concept of build profiles, you can use your own custom profiles instead.
+
+</Collapsible>
+
+<Collapsible summary="Builds vs Updates">
+
+Like EAS Build, [EAS Update](/eas-update/introduction/) is a service that serves OTA updates for Expo and React Native projects using [`expo-updates`](/versions/latest/sdk/updates/) library. It is important to understand the difference between the two services:
+
+- EAS Build compiles native code into a full app binary. It requires longer time to execute. A new build is needed when native code in our project changes. For example, we add a new native library, or change permissions, or upgrade the Expo SDK.
+- EAS Update deliver TypeScript/JavaScript changes over-the-air to devices that already have a build installed. Compatibility between a build and an update published is significant. It takes seconds to publish an update. For example, an update can be published for fixing a UI bug, or changing the copy of a button.
+
+Depending on what type of change we do in our project, both services are useful and essential. With the help of EAS Workflows, we can create a pipeline that automates the process of when to trigger a new build or publish a new update.
+
+</Collapsible>
+
+## Prerequisites
+
+> **info** **Tip:** If you already have an Expo project setup with EAS Build and EAS Update, you can skip to the next chapter.
+
+This tutorial is a hands-on experience. To make progress, we need to an existing Expo project that uses [Continuous Native Generation](/workflow/continuous-native-generation/) to follow along and set it up on machine and EAS with the following requirements:
+
+<Prerequisites numberOfRequirements={7}>
+
+<Requirement number={1} title="A Expo account">
+
+You will need to [sign up](https://expo.dev/signup) for an Expo account.
+
+</Requirement>
+
+<Requirement number={2} title="Install EAS CLI and log in">
+
+To install EAS CLI, run the following command:
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add -g eas-cli'],
+    bun: ['$ bun add -g eas-cli'],
+  }}
+/>
+
+Then, run the following login command to authenticate EAS CLI with your Expo account:
+
+<Terminal cmd={['$ eas login']} />
+
+</Requirement>
+
+<Requirement number={3} title="Create an Expo project">
+
+To create a new Expo and React Native project, run the following command:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-55'],
+    yarn: ['$ yarn create expo-app --template default@sdk-55'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-55'],
+    bun: ['$ bun create expo --template default@sdk-55'],
+  }}
+/>
+
+Creating a new project with `create-expo-app` will set up a project without native **android** and **ios** directories committed. This is what we call a Continuous Native Generation (CNG) project and creating native project directories will be handled by EAS Build automatically for us.
+
+</Requirement>
+
+<Requirement number={4} title="Initialize EAS in the project">
+
+To initialize EAS in your project, run the following command:
+
+<Terminal cmd={['$ eas build:configure']} />
+
+This will generate **eas.json** file in the root of your project and create an EAS project linked to your local project.
+
+</Requirement>
+
+<Requirement number={5} title="EAS Update configured">
+
+To configure EAS Update, you need to install `expo-updates` library. Run the following command to install it:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-updates'],
+    yarn: ['$ yarn dlx expo install expo-updates'],
+    pnpm: ['$ pnpm dlx expo install expo-updates'],
+    bun: ['$ bunx expo install expo-updates'],
+  }}
+/>
+
+</Requirement>
+
+<Requirement number={6} title="EAS Build configured">
+
+> **important** We need EAS Build to trigger builds for each profile at least once for both Android and iOS. This is required because EAS CLI needs to create/manage credentials on EAS. When you run each command below, you will be prompted by the EAS CLI on how to generate credentials.
+
+You can run the following commands to trigger builds for each profile:
+
+<Terminal
+  cmd={[
+    '# For development build profile',
+    '$ eas build --profile development --platform all',
+    '# For preview build profile',
+    '$ eas build --profile preview --platform all',
+    '# For production build profile',
+    '$ eas build --profile production --platform all',
+  ]}
+/>
+
+Since we have already configured EAS Update, each build profile will be linked to a channel which is required to publish updates for that build profile.
+
+</Requirement>
+
+<Requirement number={7} title="GitHub repository linked with EAS dashboard">
+
+You will need to have GitHub repository for your project. You can create a new repository or use an existing one. The repository should be linked to your local Expo project and pushed to GitHub.
+
+Then, link your GitHub repository to EAS dashboard by
+
+1. Navigate to your project's [GitHub settings](https://expo.dev/accounts/[account]/projects/[projectName]/github).
+2. Follow the UI in the dashboard to install the Expo GitHub app.
+3. Select the GitHub repository that matches the Expo project and connect it.
+
+</Requirement>
+
+<Requirement number={8} title="Store submission credentials for EAS Submit (optional)">
+
+Only needed for Chapter 5 submit jobs workflow. See the [Google Play Store](/submit/android/) and [Apple App Store](/submit/ios/) guides for instructions on how to store credentials for EAS Submit.
+
+</Requirement>
+
+</Prerequisites>
+
+## A quick note on YAML
+
+EAS Workflows files are written using [YAML](https://en.wikipedia.org/wiki/YAML) syntax.
+
+It is a it is a human-friendly data serialization standard that is commonly used for configuration files. It uses indentation to show nesting and key-value pairs that look like `key: value`. It also heavily uses lists, and each list item looks like `- item`.
+
+## Coming from GitHub Actions?
+
+EAS Workflow files live inside **.eas/workflows/** directory at the root of an Expo project. For projects that have used GitHub Actions before, they might be using **.github/workflows/**.
+
+The trigger syntax (`on.push`, `on.pull_request`, and so on) are similar between EAS Workflows and GitHub Actions but are not identical. The biggest difference is pre-packaged jobs and there is no `runs-on`, no `checkout`, no `setup-node`. You set `type: build` and EAS handles the execution environment, dependencies, and artifacts. We will cover these topics throughout the tutorial.
+
+## Next step
+
+Once our project is set up, we can proceed to the next chapter to create and run our first workflow with EAS Workflows.
+
+<BoxLink
+  title="Start"
+  description="Let's start by creating and running our first workflow with EAS Workflows."
+  Icon={BookOpen02Icon}
+  href="/tutorial/cicd/first-workflow/"
+/>

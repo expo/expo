@@ -1,0 +1,237 @@
+---
+title: 'Hello, EAS Workflows'
+sidebar_title: Hello, EAS Workflows
+description: Learn how to create, run, and chain jobs from scratch using EAS Workflows.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+In this chapter, let's create our first workflow, run it on EAS using EAS CLI, look into logs once the job is complete, and chain multiple jobs together from a single workflow file.
+
+## How workflow files work
+
+EAS Workflows are YAML files stored in our project's **.eas/workflows/** directory. Each file defines how many workflow jobs should run and what steps each job should follow to complete its own execution.
+
+A workflow file typically contains a name, an optional trigger, and one or more jobs. When a workflow runs, EAS reads the file, provisions the environment, and execute the defined job(s).
+
+## Type of jobs in EAS Workflows
+
+EAS Workflows has two type of jobs:
+
+- **Pre-packaged job:** This job type has a `type` field that references a pre-configured job definition and parameters already defined. Such jobs tells an EAS environment which operation to run, for example: build, submit, update, and so on. The environment will then run the pre-configured steps to complete the job execution and handle the underlying complexity of running the job.
+- **Custom job:** This type of job uses `steps` instead of `type` field. We write our own commands using `run` for each step. A custom job allows us to control what happens when a workflow runs and when to run a specific command.
+
+## Create our first workflow
+
+Let's create our first workflow using a custom job and run it on EAS.
+
+<Step label="1">
+
+### Create the workflow directory
+
+Create the **.eas/workflows/** directory at the root of our project. EAS looks for workflow files only in this location.
+
+<Terminal cmd={['$ mkdir -p .eas/workflows']} />
+
+</Step>
+
+<Step label="2">
+
+### Create hello.yml file
+
+Inside **.eas/workflows/**, create a file named **hello.yml**. This file defines our first workflow using a single custom job. We are triggering a simple `"Hello, Workflows"` message using a shell command:
+
+```yaml .eas/workflows/hello.yml
+name: Hello
+
+jobs:
+  greet:
+    steps:
+      - run: echo "Hello, Workflows" # Any shell command works here
+```
+
+The above workflow uses the following syntax:
+
+- `name` is the human-friendly name of the workflow. It is displayed on the EAS dashboard on the workflows list page and as the title of the workflow's detail page.
+- `jobs` contains one or more jobs to run. Each job has a unique ID (in this case, `greet`).
+- `steps` is a sequence of tasks the job executes in order. A job with `steps` but no `type` field is a custom job.
+- `run` is the shell command to run in a step. Here, it runs `echo` to print a message. Any valid shell command works here.
+
+</Step>
+
+<Step label="3">
+
+### Manually run the workflow
+
+To run the workflow in EAS dashboard, run the following command from a terminal window:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/hello.yml']} />
+
+In the above command, the `eas workflow:run` command uploads the workflow file to EAS and runs any job defined inside the file. After it runs, the EAS CLI prints a URL to the EAS dashboard where we can see the job's execution in real time.
+
+</Step>
+
+<Step label="4">
+
+### View the job logs
+
+Open the URL from the previous step in a browser window. On the workflow page, we can see the `greet` job and its status. Once the job completes, expand the step output to see the logged message: `Hello, Workflows`.
+
+<ContentSpotlight
+  alt="View job logs in EAS dashboard."
+  src="/static/images/tutorial/cicd/first-workflow-01.png"
+  className="max-w-160"
+/>
+
+The above EAS dashboard is what we can use to see and debug any workflow job. The **Workflow graph** shows the information about how our job was triggered and job's unique ID.
+
+If we switch the tab to **Workflow file**, we can notice that it shows the same workflow file from Step 2.
+
+> **info** **Tip:** To view all of our project's workflow or filter them by status or by the workflow type, we can go to [Workflows page](https://expo.dev/accounts/[account]/projects/[project]/workflows) and view the list.
+
+</Step>
+
+## Automatically run a workflow
+
+Running `eas workflow:run` command from terminal works for our use case but most developer teams prefer to use a version control platform. They manage their project's source code and collaborate on it multiple times a day using a platform like GitHub.
+
+A workflow that triggers automatically on each push or on command within GitHub's interface means no one has to remember to run it and there are fewer chances of mis-configuration.
+
+> **info** **Note:** A trigger is a rule that tells a CI/CD pipeline when to start. It defines the event (such as a code push, a pull request, or a schedule) that causes the pipeline to run automatically instead of requiring manual execution.
+
+EAS Workflows connects to GitHub events through an `on` trigger in the workflow file. When we add it to our file, EAS watches for the matching GitHub event and starts the workflow without us having to run it manually.
+
+<Step label="1">
+
+Let's add `on.push.branches` trigger to our existing workflow file.
+
+- The `on` key defines which GitHub event to trigger
+- `push` field defines when to trigger
+- The `branches` field allow us to specify that whenever the code is pushed to the `main` branch, the workflow should run automatically
+
+```yaml .eas/workflows/hello.yml
+name: Hello
+
+# @tutinfo #
+on:
+  push:
+    branches: ['main'] # Fires on every push to main branch
+# @end #
+
+jobs:
+  greet:
+    steps:
+      - run: echo "Hello, Workflows"
+```
+
+The `branches` field can include any valid branch name that exists remotely in a GitHub repository. We can also specify multiple branches such as, ['main', 'develop', 'staging'], to trigger the workflow when the code is pushed to either of those branches.
+
+</Step>
+
+<Step label="2">
+
+Commit the workflow file and push it to `main` branch:
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/hello.yml',
+    '$ git commit -m "Add hello workflow"',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add .eas/workflows/hello.yml && git commit -m 'Add hello workflow' && git push origin main"
+/>
+
+</Step>
+
+<Step label="3">
+
+### Verify the automatic trigger
+
+Let's open our project's [Workflow page](https://expo.dev/accounts/[account]/projects/[project]/workflows) on EAS dashboard to see the new job.
+
+<ContentSpotlight
+  alt="View the automatically triggered workflow job in EAS dashboard from GitHub."
+  src="/static/images/tutorial/cicd/first-workflow-02.png"
+  className="max-w-160"
+/>
+
+In the EAS dashboard, notice that the **Workflow graph** tab shows the commit message, `main` branch reference, and the commit hash. In the status under the workflow header, the **Trigger** and **Triggered by** reflect the same information.
+
+</Step>
+
+## Other trigger types
+
+There are other trigger types for `on` that we will use later in this tutorial:
+
+- `on.pull_request`: Runs when a pull request opens or updates against a matching branch
+- `on.push` with `tags`: Runs when a matching tag pattern is pushed to the GitHub repository
+- `on.pull_request_labeled`: Runs when a specific label gets added to a pull request
+
+## Chain jobs together
+
+So far, we have implemented a single job in our workflow file. A workflow file can have multiple jobs and a job's input can depend on the output of the previous job.
+
+In this section, let's see how we can chain multiple jobs together in a workflow file.
+
+<Step label="1">
+
+### Update hello.yml
+
+Let's update the **hello.yml** file to add a custom job and a pre-packaged job. This pre-packaged job is called [`doc`](/eas/workflows/pre-packaged-jobs/#doc) and it renders Markdown on the EAS dashboard:
+
+```yaml .eas/workflows/hello.yml
+name: Hello
+
+jobs:
+  greet:
+    outputs:
+      greeting: ${{ steps.set_greeting.outputs.greeting }}
+    steps:
+      - id: set_greeting
+        run: set-output greeting "Hello from EAS Workflows"
+  show_info:
+    needs: [greet]
+    type: doc
+    params:
+      md: |
+        # Workflow Output
+        **${{ needs.greet.outputs.greeting }}**
+```
+
+The above workflow file does the following:
+
+- Defines a `greet` job, which is a custom job. It uses [`set-output`](/eas/workflows/syntax/#set-output) shell function to set a value called `greeting`. The `outputs` field at the job level exposes the step output so other jobs can reference it.
+- Defines a `show_info` job which uses `needs: [greet]` to wait for the `greet` job to complete and access its output. Then, it uses the pre-packaged `doc` job type to render a Markdown document in EAS dashboard. The Markdown content includes the value of `greeting` set in the previous job.
+
+> **info** **Tip:** In EAS Workflows, the `needs` is a list of job IDs where a previous job must complete successfully before the current job that uses `needs` can start. If a job in the `needs` list fails, the dependent job is skipped.
+
+</Step>
+
+<Step label="2">
+
+### Manually run the workflow
+
+Run the following command from a terminal window to see the chained jobs in action:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/hello.yml']} />
+
+Then, open the EAS dashboard link shared in the EAS CLI. After opening the link, under **Logs**, notice that the `greet` job runs first and once it completes, the `show_info` job runs and renders the Markdown content with the output from the previous job.
+
+<ContentSpotlight
+  alt="View chained jobs in EAS dashboard."
+  src="/static/images/tutorial/cicd/first-workflow-03.png"
+  className="max-w-160"
+/>
+
+</Step>
+
+## Clean up
+
+After completing this chapter, let's delete the **hello.yml** file. For the next chapters, we don't need it. If you keep it, consider removing the `on.push` trigger so it does not create unnecessary workflow runs on every push to `main` branch in the GitHub repository.
+
+## Next step
