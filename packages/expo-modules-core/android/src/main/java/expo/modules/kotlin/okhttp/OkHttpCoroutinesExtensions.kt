@@ -23,13 +23,13 @@ suspend fun Call.await(): Response =
 
         override fun onResponse(
           call: Call,
-          response: Response,
+          response: Response
         ) {
           continuation.resume(response) { _, value, _ ->
             value.closeQuietly()
           }
         }
-      },
+      }
     )
   }
 
