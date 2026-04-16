@@ -186,6 +186,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
 
   // MARK: - Asserting conversions ("get functions")
 
+  @available(*, deprecated, message: "Use typed accessors (getBool, getInt, getString, getObject, getArray) instead")
   public func getAny() -> Any {
     if isUndefined() || isNull() {
       return NSNull()
