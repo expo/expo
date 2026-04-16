@@ -21,7 +21,7 @@ For this chapter, we are going to use `development` build profile from our proje
 
 <Step label="1">
 
-### Create a build.yml
+### Add a build.yml
 
 In **.eas/workflows/**, add a new new file called **build.yml**. It uses the `build` job type to run development builds for both Android and iOS. By extending `build` job type and passing the `profile` and `platform` parameters, we can run tell EAS Workflows to create the type of build we want.
 
@@ -285,7 +285,7 @@ Our team can now pull the latest from `main` branch, run `npx expo start`, and t
 
 When working in a team, we want to make sure that every change pushed to `main` branch passes tests before triggering a new build. To do that, we use unit tests as part of our development.
 
-Without automation, our team member will have to remember to run tests locally before pushing to the GitHub branch. If they forget and the code has a failing test, the workflow triggered can create a build from broken code.
+Without automation, our team member will have to remember to run tests locally before pushing to the Git branch. If they forget and the code has a failing test, the workflow triggered can create a build from broken code.
 
 With **EAS Workflows**, we can automate this process by mixing a custom job with our existing pre-packaged jobs. This custom job runs before fingerprint and build jobs. If a test fails, the rest of the workflow will not run and no build will be created.
 
