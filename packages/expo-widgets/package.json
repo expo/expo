@@ -38,11 +38,14 @@
     "@expo/spawn-async": "^1.7.2",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
+    "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
+    "react-native": "0.85.0",
     "resolve-workspace-root": "^2.0.0"
   },
   "peerDependencies": {
     "expo": "workspace:*",
-    "react": "*"
+    "react": "*",
+    "react-native": "*"
   }
 }
