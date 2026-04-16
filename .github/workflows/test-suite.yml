@@ -82,8 +82,9 @@ jobs:
         uses: ./.github/actions/detect-platform-change
         with:
           android-paths: >-
-            "packages/expo-modules-core/**/android/**",
             "packages/expo-modules-core/expo-module-gradle-plugin/**",
+            "packages/**/{settings,build}.gradle",
+            "packages/expo-modules-core/**/android/**",
             "packages/expo-modules-autolinking/**/android/**",
             "packages/expo/**/android/**",
             "packages/expo-constants/**/android/**",
