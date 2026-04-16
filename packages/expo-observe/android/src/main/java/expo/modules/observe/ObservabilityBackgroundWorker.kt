@@ -1,10 +1,15 @@
 package expo.modules.observe
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -51,6 +56,21 @@ class ObservabilityBackgroundWorker(
     )
   }
 
+  override suspend fun getForegroundInfo(): ForegroundInfo {
+    val channelId = "expo-observe-background"
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val channel = NotificationChannel(channelId, "Metrics dispatch", NotificationManager.IMPORTANCE_LOW)
+      val manager = applicationContext.getSystemService(NotificationManager::class.java)
+      manager.createNotificationChannel(channel)
+    }
+    val notification = NotificationCompat.Builder(applicationContext, channelId)
+      .setSmallIcon(android.R.drawable.ic_popup_sync)
+      .setContentTitle("Sending metrics")
+      .setPriority(NotificationCompat.PRIORITY_LOW)
+      .build()
+    return ForegroundInfo(NOTIFICATION_ID, notification)
+  }
+
   override suspend fun doWork(): Result {
     return try {
       if (observabilityManager == null) {
@@ -73,6 +93,7 @@ class ObservabilityBackgroundWorker(
 
   companion object {
     private const val WORK_NAME = "eas-observe-dispatch"
+    private val NOTIFICATION_ID = WORK_NAME.hashCode()
 
     fun scheduleBackgroundDispatch(
       context: Context,
