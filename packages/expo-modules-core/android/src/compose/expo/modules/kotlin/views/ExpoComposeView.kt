@@ -262,7 +262,8 @@ class FunctionalComposableScope(
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val p0 = args[0]; val p1 = args[1]
+        val p0 = args[0]
+        val p1 = args[1]
         enforceType<P0, P1>(p0, p1)
         currentHandler.value(p0, p1)
       }
@@ -276,7 +277,9 @@ class FunctionalComposableScope(
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]
+        val p0 = args[0]
+        val p1 = args[1]
+        val p2 = args[2]
         enforceType<P0, P1, P2>(p0, p1, p2)
         currentHandler.value(p0, p1, p2)
       }
@@ -290,7 +293,10 @@ class FunctionalComposableScope(
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]; val p3 = args[3]
+        val p0 = args[0]
+        val p1 = args[1]
+        val p2 = args[2]
+        val p3 = args[3]
         enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
         currentHandler.value(p0, p1, p2, p3)
       }
@@ -304,7 +310,11 @@ class FunctionalComposableScope(
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]; val p3 = args[3]; val p4 = args[4]
+        val p0 = args[0]
+        val p1 = args[1]
+        val p2 = args[2]
+        val p3 = args[3]
+        val p4 = args[4]
         enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
         currentHandler.value(p0, p1, p2, p3, p4)
       }
@@ -318,7 +328,12 @@ class FunctionalComposableScope(
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]; val p3 = args[3]; val p4 = args[4]; val p5 = args[5]
+        val p0 = args[0]
+        val p1 = args[1]
+        val p2 = args[2]
+        val p3 = args[3]
+        val p4 = args[4]
+        val p5 = args[5]
         enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
         currentHandler.value(p0, p1, p2, p3, p4, p5)
       }
@@ -332,7 +347,13 @@ class FunctionalComposableScope(
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]; val p3 = args[3]; val p4 = args[4]; val p5 = args[5]; val p6 = args[6]
+        val p0 = args[0]
+        val p1 = args[1]
+        val p2 = args[2]
+        val p3 = args[3]
+        val p4 = args[4]
+        val p5 = args[5]
+        val p6 = args[6]
         enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
         currentHandler.value(p0, p1, p2, p3, p4, p5, p6)
       }
