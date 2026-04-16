@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix 'occured' -> 'occurred' typo in error messages. ([#44831](https://github.com/expo/expo/pull/44831) by [@SAY-5](https://github.com/SAY-5))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25
