@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Request media audio focus on `AudioPlayer`'s ExoPlayer so playback actually starts after another component held non-media audio focus (e.g. a recording library that grabbed `STREAM_VOICE_CALL` focus). Previously `AudioAttributes.DEFAULT, false` caused the player to report `playing=true` while streaming to a dead output and auto-unload within ~200 ms, silently dropping short TTS clips. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@louiscavalcante](https://github.com/louiscavalcante))
+
 ### 💡 Others
 
 ## 0.4.9 — 2025-08-22
