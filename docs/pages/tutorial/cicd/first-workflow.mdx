@@ -5,9 +5,10 @@ description: Learn how to create, run, and chain jobs from scratch using EAS Wor
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { JobTypes } from '~/ui/components/FlowDiagram/Diagrams/JobTypes';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { JobTypes } from '~/ui/components/FlowDiagram/Diagrams/JobTypes';
 
 In this chapter, let's learn how to create our first workflow, run it on EAS using EAS CLI, look into logs once the job is complete, and chain multiple jobs together from a single workflow file.
 
@@ -238,4 +239,13 @@ Then, open the EAS dashboard link shared in the EAS CLI. After opening the link,
 
 After completing this chapter, let's delete the **hello.yml** file. For the next chapters, we don't need it. If you keep it, consider removing the `on.push` trigger so it does not create unnecessary workflow runs on every push to `main` branch in the GitHub repository.
 
-## Next step
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={0}
+  name="CICD_TUTORIAL"
+  summary="We created a custom job workflow, triggered it manually and automatically, chained jobs using needs and outputs, and used the EAS dashboard to verify job execution."
+  nextChapterDescription="In the next chapter, learn how to automate development builds with fingerprinting to skip unnecessary rebuilds."
+  nextChapterTitle="Development builds"
+  nextChapterLink="/tutorial/cicd/development-builds/"
+/>

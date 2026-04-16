@@ -7,6 +7,7 @@ description: Learn how to automate development builds with EAS Workflows using f
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FingerprintFlow } from '~/ui/components/FlowDiagram/Diagrams/FingerprintFlow';
 import { UnitTestGate } from '~/ui/components/FlowDiagram/Diagrams/UnitTestGate';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -364,3 +365,14 @@ After triggering the workflow, open the EAS dashboard and notice the flow of the
 />
 
 </Step>
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={1}
+  name="CICD_TUTORIAL"
+  summary="We automated development builds using pre-packaged jobs, added fingerprints to skip unnecessary rebuilds, and integrated unit tests as a custom job before the build pipeline."
+  nextChapterDescription="In the next chapter, learn how to create preview builds with Slack notifications and PR preview updates."
+  nextChapterTitle="Preview builds"
+  nextChapterLink="/tutorial/cicd/preview-builds/"
+/>

@@ -26,12 +26,15 @@ export function ProgressTracker({
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
-  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
+  const { chapters, setChapters, getStartedChapters, setGetStartedChapters, cicdChapters, setCicdChapters } =
     useTutorialChapterCompletion();
   const isGetStartedTutorial = name === 'GET_STARTED';
-  const currentChapter = isGetStartedTutorial
-    ? getStartedChapters[currentChapterIndex]
-    : chapters[currentChapterIndex];
+  const isCicdTutorial = name === 'CICD_TUTORIAL';
+  const currentChapter = isCicdTutorial
+    ? cicdChapters[currentChapterIndex]
+    : isGetStartedTutorial
+      ? getStartedChapters[currentChapterIndex]
+      : chapters[currentChapterIndex];
 
   const handleChapterComplete = () => {
     const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
@@ -73,6 +76,26 @@ export function ProgressTracker({
     setGetStartedChapters(updatedChapters);
   };
 
+  const handleCicdChapterComplete = () => {
+    const updatedChapters = cicdChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: true };
+      }
+      return chapter;
+    });
+    setCicdChapters(updatedChapters);
+  };
+
+  const handleCicdChapterIncomplete = () => {
+    const updatedChapters = cicdChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: false };
+      }
+      return chapter;
+    });
+    setCicdChapters(updatedChapters);
+  };
+
   const handleCheckboxChange = () => {
     if (currentChapter.completed) {
       handleChapterIncomplete();
@@ -86,6 +109,14 @@ export function ProgressTracker({
       handleGetStartedChapterIncomplete();
     } else {
       handleGetStartedChapterComplete();
+    }
+  };
+
+  const handleCheckboxChangeForCicd = () => {
+    if (currentChapter.completed) {
+      handleCicdChapterIncomplete();
+    } else {
+      handleCicdChapterComplete();
     }
   };
 
@@ -114,7 +145,11 @@ export function ProgressTracker({
               currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
             }
             onChange={
-              isGetStartedTutorial ? handleCheckboxChangeForGetStarted : handleCheckboxChange
+              isCicdTutorial
+                ? handleCheckboxChangeForCicd
+                : isGetStartedTutorial
+                  ? handleCheckboxChangeForGetStarted
+                  : handleCheckboxChange
             }
           />
         </div>
