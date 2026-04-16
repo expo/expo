@@ -274,6 +274,8 @@ function getIconElement(iconName?: string) {
       return HandWaveIcon;
     case 'EAS tutorial':
       return PlanEnterpriseIcon;
+    case 'CI/CD tutorial':
+      return Dataflow03Icon;
     default:
       return undefined;
   }

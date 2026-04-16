@@ -645,6 +645,11 @@ export const learn = [
     ],
     { expanded: true }
   ),
+  makeSection(
+    'CI/CD tutorial',
+    [makePage('tutorial/cicd/introduction.mdx'), makePage('tutorial/cicd/first-workflow.mdx')],
+    { expanded: true }
+  ),
   makeSection('More', [makePage('additional-resources/index.mdx')]),
 ];
 
