@@ -85,7 +85,7 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
     expect(updateDevicePushTokenAsync).not.toHaveBeenCalled();
   });
 
-  it(`registers if hasDeviceTokenChangedAsync throws`, async () => {
+  it(`does not crash if hasDeviceTokenChangedAsync throws`, async () => {
     const mockPendingDevicePushToken: DevicePushToken = {
       data: 'some-token',
       type: 'ios',
@@ -98,11 +98,9 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
       JSON.stringify(ENABLED_REGISTRATION_FIXTURE)
     );
-    // When hasDeviceTokenChangedAsync throws, the outer catch in
-    // __handlePersistedRegistrationInfoAsync catches it and logs a warning.
-    // The registration is not attempted because the error propagates before
-    // updatePushTokenAsync is called. This is acceptable — the next app open
-    // will retry.
+    // The error propagates to the outer catch which logs a warning.
+    // Registration is not attempted — the next app open will retry.
+    expect(updateDevicePushTokenAsync).not.toHaveBeenCalled();
     spy.mockRestore();
   });
 });

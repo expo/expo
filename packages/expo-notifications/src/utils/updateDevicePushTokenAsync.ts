@@ -7,40 +7,20 @@ import type { DevicePushToken } from '../Tokens.types';
 
 const updateDevicePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
 
-/**
- * Key used to persist the last successfully registered device token data in
- * ServerRegistrationModule. This allows us to skip redundant registration
- * requests when the token and device metadata have not changed.
- */
 const LAST_TOKEN_KEY = 'lastRegisteredDeviceToken';
 
-/**
- * Shape of the device registration data stored alongside the isEnabled flag
- * in ServerRegistrationModule. Stored as an object (not a stringified string)
- * to avoid double JSON encoding.
- */
 type StoredTokenData = {
   deviceToken: string;
   appId: string | null;
   development: boolean;
   type: string;
-  /** Epoch milliseconds when this registration was last confirmed with the server. */
   registeredAt: number;
 };
 
-/**
- * Maximum age of a stored registration before we force a re-registration regardless
- * of whether the token has changed. This ensures the server has fresh data even if
- * it lost the device record (cleanup, migration, etc.).
- *
- * 7 days in milliseconds.
- */
+// Force re-registration after 7 days even if nothing changed, in case the
+// server lost the device record (cleanup, migration, etc.).
 const REGISTRATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-/**
- * Reads the last successfully registered token data from native storage.
- * Returns null if no data is stored or if the storage is unavailable/corrupted.
- */
 async function getLastRegisteredTokenDataAsync(): Promise<StoredTokenData | null> {
   try {
     if (!ServerRegistrationModule.getRegistrationInfoAsync) {
@@ -57,11 +37,6 @@ async function getLastRegisteredTokenDataAsync(): Promise<StoredTokenData | null
   }
 }
 
-/**
- * Persists the token data of a successfully registered device alongside
- * the existing registration info (isEnabled flag). This is best-effort —
- * if it fails, the device will simply re-register on the next app open.
- */
 async function setLastRegisteredTokenDataAsync(tokenData: StoredTokenData): Promise<void> {
   try {
     if (
@@ -75,17 +50,13 @@ async function setLastRegisteredTokenDataAsync(tokenData: StoredTokenData): Prom
     existing[LAST_TOKEN_KEY] = tokenData;
     await ServerRegistrationModule.setRegistrationInfoAsync(JSON.stringify(existing));
   } catch {
-    // Best-effort — if persistence fails, we'll register again next time
+    // Best-effort — next app open will re-register
   }
 }
 
 /**
- * Returns true if the device token or metadata (appId, development, type) has
- * changed since the last successful registration. Used to skip redundant server
- * requests when the app opens.
- *
- * Returns true (assume changed) if the comparison cannot be performed, to ensure
- * registration is never silently suppressed due to a storage error.
+ * Returns `true` if the device token or metadata has changed since the last
+ * successful registration, or if the check cannot be performed (fail-open).
  */
 export async function hasDeviceTokenChangedAsync(token: DevicePushToken): Promise<boolean> {
   try {
@@ -96,9 +67,6 @@ export async function hasDeviceTokenChangedAsync(token: DevicePushToken): Promis
       return true;
     }
 
-    // Force re-registration if the stored data is older than the TTL. This ensures
-    // the server has fresh data even if it lost the device record due to cleanup,
-    // database migration, or other server-side changes.
     const age = Date.now() - (lastTokenData.registeredAt ?? 0);
     if (age >= REGISTRATION_TTL_MS) {
       return true;
@@ -111,7 +79,6 @@ export async function hasDeviceTokenChangedAsync(token: DevicePushToken): Promis
       getTypeOfToken(token) !== lastTokenData.type
     );
   } catch {
-    // If we can't determine, assume changed to be safe
     return true;
   }
 }
@@ -149,8 +116,6 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
       }
 
       if (response.ok) {
-        // Persist the token data only after a successful registration so that
-        // on next app open we can skip the request if nothing changed.
         await setLastRegisteredTokenDataAsync({
           deviceToken: token.data,
           appId: Application.applicationId,
