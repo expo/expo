@@ -509,6 +509,9 @@ jobs:
     params:
       build_id: string # required
       profile: string # optional - default: production
+    hooks:
+      before_submit: step[] # optional - steps to run before the submission starts.
+      after_submit: step[] # optional - steps to run after the submission completes.
 ```
 
 #### Parameters
@@ -852,6 +855,9 @@ jobs:
       android_system_image_package: string # optional
       device_identifier: string | { android: string, ios: string } # optional
       output_format: string # optional - defaults to junit
+    hooks:
+      before_maestro_tests: step[] # optional - steps to run before the tests start.
+      after_maestro_tests: step[] # optional - steps to run after the tests complete.
 ```
 
 #### Parameters
