@@ -580,7 +580,11 @@ class ExpoUIModule : Module() {
       val onButtonPressed by Event<Unit>()
 
       Content { props ->
-        val clickHandler = if (props.clickable) { { onButtonPressed(Unit) } } else null
+        val clickHandler = if (props.clickable) {
+          { onButtonPressed(Unit) }
+        } else {
+          null
+        }
         RadioButtonContent(props, clickHandler)
       }
     }

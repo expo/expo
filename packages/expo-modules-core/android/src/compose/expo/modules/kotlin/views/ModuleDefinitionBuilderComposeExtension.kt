@@ -205,8 +205,7 @@ class ComposeViewBuilderScope<Props : ComposeProps> @PublishedApi internal const
    *
    * Usage: `val onValueChange by Event<String>()`
    */
-  inline fun <reified T> Event(noinline coalescingKey: CoalescingKey<T>? = null):
-    PropertyDelegateProvider<Any?, EventHandle<T>> {
+  inline fun <reified T> Event(noinline coalescingKey: CoalescingKey<T>? = null): PropertyDelegateProvider<Any?, EventHandle<T>> {
     val scope = this
     return PropertyDelegateProvider { _, property ->
       scope.eventNames += property.name
