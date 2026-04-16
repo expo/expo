@@ -27,6 +27,7 @@ type FlowDiagramProps = {
   nodes: DiagramNode[];
   edges: DiagramEdge[];
   height?: number;
+  minWidth?: number;
   alt: string;
 };
 
@@ -70,16 +71,16 @@ const nodeTypes = {
   tutorialNode: TutorialNode,
 };
 
-export function FlowDiagram({ nodes, edges, height = 320, alt }: FlowDiagramProps) {
+export function FlowDiagram({ nodes, edges, height = 320, minWidth = 700, alt }: FlowDiagramProps) {
   const [rfNodes] = useNodesState(toReactFlowNodes(nodes));
   const [rfEdges] = useEdgesState(toReactFlowEdges(edges));
 
   return (
     <div
-      className={mergeClasses('border-default bg-default relative mb-4 w-full overflow-hidden rounded-lg border')}
-      style={{ height }}
+      className={mergeClasses('border-default bg-default mb-4 w-full overflow-x-auto overflow-y-hidden rounded-lg border')}
       data-md="diagram"
       data-md-alt={alt}>
+      <div className="relative" style={{ height, minWidth }}>
       <DottedBackground />
       <ReactFlow
         disableKeyboardA11y
@@ -103,6 +104,7 @@ export function FlowDiagram({ nodes, edges, height = 320, alt }: FlowDiagramProp
         }}
         attributionPosition="bottom-right"
       />
+      </div>
     </div>
   );
 }
