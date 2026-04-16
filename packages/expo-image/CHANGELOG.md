@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fixed images being invisible when styled via third-party style systems (e.g. `react-native-unistyles` v3) by flattening the `style` prop and importing `View` from `react-native` instead of `react-native-web`. ([#44844](https://github.com/expo/expo/pull/44844) by [@naimkhrof](https://github.com/naimkhrof))
 - [iOS] Fixed `contentPosition` misalignment by using the unrounded cover/contain layout size for offset math. ([#44497](https://github.com/expo/expo/pull/44497) by [@alicenoknow](https://github.com/alicenoknow))
 - [Android] Apply `ApplicationVersionSignature` to local resource URIs (`res:/` scheme) to prevent stale cached images after app updates. by [@linkeryoon](https://github.com/linkeryoon) ([#44355](https://github.com/expo/expo/pull/44355) by [@Yoon-Hae-Min](https://github.com/Yoon-Hae-Min))
 - Added `tintColor` option to `ImageLoadOptions`. This resolves [#42007](https://github.com/expo/expo/issues/42007). ([#42821](https://github.com/expo/expo/pull/42821)) by [@HubertBer](https://github.com/HubertBer).
