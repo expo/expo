@@ -89,4 +89,13 @@ final class AssetCollectionRepository {
       }
     }
   }
+
+  func remove(assets: [PHAsset], from collection: PHAssetCollection) async throws {
+    try await PHPhotoLibrary.shared().performChanges {
+      let fetchResult = PHAsset.fetchAssets(in: collection, options: nil)
+      if let changeRequest = PHAssetCollectionChangeRequest(for: collection, assets: fetchResult) {
+        changeRequest.removeAssets(assets as NSFastEnumeration)
+      }
+    }
+  }
 }

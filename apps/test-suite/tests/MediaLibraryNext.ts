@@ -274,6 +274,81 @@ export async function test(t) {
     });
   });
 
+  if (Platform.OS === 'ios') {
+    t.describe('Remove assets from album', () => {
+      t.it('removes an asset from an album without deleting it from the library', async () => {
+        const albumName = createAlbumName('remove asset');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const assetToRemove = (await album.getAssets())[0];
+        await album.removeAssets([assetToRemove]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(0);
+
+        const query = new Query();
+        const allAssets = await query.exe();
+        t.expect(allAssets.find((a) => a.id === assetToRemove.id)).not.toBeUndefined();
+        assetsContainer.push(assetToRemove);
+      });
+
+      t.it('removes only specified assets, leaving others in the album', async () => {
+        const albumName = createAlbumName('remove partial');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const newAsset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(newAsset);
+        await album.add(newAsset);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(2);
+
+        await album.removeAssets([newAsset]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+        t.expect(assetsAfter.find((a) => a.id === newAsset.id)).toBeUndefined();
+      });
+
+      t.it('does nothing when called with an empty array', async () => {
+        const albumName = createAlbumName('does nothing when called with an empty array');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(1);
+
+        await album.removeAssets([]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+      });
+
+      t.it('does nothing when asset does not belong to the album', async () => {
+        const albumName = createAlbumName('does nothing when asset does not belong to the album');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const outsideAsset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(outsideAsset);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(1);
+
+        await album.removeAssets([outsideAsset]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+
+        // Verify the asset still exists in the library
+        const height = await outsideAsset.getHeight();
+        t.expect(height).toBeDefined();
+      });
+    });
+  }
+
   t.describe('Image asset properties', () => {
     let asset: Asset;
 
