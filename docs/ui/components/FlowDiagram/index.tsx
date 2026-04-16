@@ -1,5 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
-import { ConnectionMode, Edge, Node, Position, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react';
+import {
+  ConnectionMode,
+  Edge,
+  Node,
+  Position,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
+} from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import React from 'react';
 
@@ -77,33 +85,35 @@ export function FlowDiagram({ nodes, edges, height = 320, minWidth = 700, alt }:
 
   return (
     <div
-      className={mergeClasses('border-default bg-default mb-4 w-full overflow-x-auto overflow-y-hidden rounded-lg border')}
+      className={mergeClasses(
+        'border-default bg-default mb-4 w-full overflow-x-auto overflow-y-hidden rounded-lg border'
+      )}
       data-md="diagram"
       data-md-alt={alt}>
       <div className="relative" style={{ height, minWidth }}>
-      <DottedBackground />
-      <ReactFlow
-        disableKeyboardA11y
-        nodes={rfNodes}
-        edges={rfEdges}
-        nodeTypes={nodeTypes}
-        preventScrolling={false}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        panOnScroll={false}
-        zoomOnScroll={false}
-        zoomOnDoubleClick={false}
-        panOnDrag={false}
-        zoomOnPinch={false}
-        connectionMode={ConnectionMode.Strict}
-        fitView
-        fitViewOptions={{
-          padding: 0.15,
-          minZoom: 0.25,
-          maxZoom: 1,
-        }}
-        attributionPosition="bottom-right"
-      />
+        <DottedBackground />
+        <ReactFlow
+          disableKeyboardA11y
+          nodes={rfNodes}
+          edges={rfEdges}
+          nodeTypes={nodeTypes}
+          preventScrolling={false}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          panOnScroll={false}
+          zoomOnScroll={false}
+          zoomOnDoubleClick={false}
+          panOnDrag={false}
+          zoomOnPinch={false}
+          connectionMode={ConnectionMode.Strict}
+          fitView
+          fitViewOptions={{
+            padding: 0.15,
+            minZoom: 0.25,
+            maxZoom: 1,
+          }}
+          attributionPosition="bottom-right"
+        />
       </div>
     </div>
   );

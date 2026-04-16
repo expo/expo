@@ -35,8 +35,14 @@ import { SidebarTitle } from './SidebarTitle';
 import { SidebarNodeProps } from './types';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
-  const { chapters, setChapters, getStartedChapters, setGetStartedChapters, cicdChapters, setCicdChapters } =
-    useTutorialChapterCompletion();
+  const {
+    chapters,
+    setChapters,
+    getStartedChapters,
+    setGetStartedChapters,
+    cicdChapters,
+    setCicdChapters,
+  } = useTutorialChapterCompletion();
   const router = useRouter();
 
   const title = route.sidebarTitle ?? route.name;
@@ -145,16 +151,13 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
         {route.children.map(child => {
           const childSlug = child.href;
           const completed = isCicdChapterCompleted(childSlug);
-          const isSelected = isRouteActive(child, router?.asPath, router?.pathname);
 
           return (
             <SidebarLink
               info={{ ...child, hasVideoLink: false }}
               className="flex flex-1"
               key={`${route.name}-${child.name}`}>
-              <span className="inline">
-                {child.sidebarTitle ?? child.name}
-              </span>
+              <span className="inline">{child.sidebarTitle ?? child.name}</span>
               {completed && <CheckIcon className="icon-sm ml-auto" />}
             </SidebarLink>
           );

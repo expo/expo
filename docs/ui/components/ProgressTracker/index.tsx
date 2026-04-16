@@ -26,8 +26,14 @@ export function ProgressTracker({
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
-  const { chapters, setChapters, getStartedChapters, setGetStartedChapters, cicdChapters, setCicdChapters } =
-    useTutorialChapterCompletion();
+  const {
+    chapters,
+    setChapters,
+    getStartedChapters,
+    setGetStartedChapters,
+    cicdChapters,
+    setCicdChapters,
+  } = useTutorialChapterCompletion();
   const isGetStartedTutorial = name === 'GET_STARTED';
   const isCicdTutorial = name === 'CICD_TUTORIAL';
   const currentChapter = isCicdTutorial
