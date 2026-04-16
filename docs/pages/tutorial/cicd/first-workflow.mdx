@@ -7,12 +7,15 @@ description: Learn how to create, run, and chain jobs from scratch using EAS Wor
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { JobTypes } from '~/ui/components/FlowDiagram/Diagrams/JobTypes';
 
 In this chapter, let's create our first workflow, run it on EAS using EAS CLI, look into logs once the job is complete, and chain multiple jobs together from a single workflow file.
 
 ## How workflow files work
 
 EAS Workflows are YAML files stored in our project's **.eas/workflows/** directory. Each file defines how many workflow jobs should run and what steps each job should follow to complete its own execution.
+
+<JobTypes />
 
 A workflow file typically contains a name, an optional trigger, and one or more jobs. When a workflow runs, EAS reads the file, provisions the environment, and execute the defined job(s).
 
@@ -105,6 +108,8 @@ EAS Workflows connects to GitHub events through an `on` trigger in the workflow 
 
 <Step label="1">
 
+### Add an automatic trigger
+
 Let's add `on.push.branches` trigger to our existing workflow file.
 
 - The `on` key defines which GitHub event to trigger
@@ -131,6 +136,8 @@ The `branches` field can include any valid branch name that exists remotely in a
 </Step>
 
 <Step label="2">
+
+### Commit the change and push to GitHub
 
 Commit the workflow file and push it to `main` branch:
 
