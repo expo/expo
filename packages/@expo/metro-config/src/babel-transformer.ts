@@ -210,6 +210,7 @@ const transform: BabelTransformer['transform'] = ({
 
       babelrc:
         typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+      ...(options.enableBabelRCLookup === false && { configFile: false }),
 
       plugins,
 

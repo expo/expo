@@ -136,6 +136,7 @@ plugins, }) => {
             // Load the project babel config file.
             ...(0, loadBabelConfig_1.loadBabelConfig)(options),
             babelrc: typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+            ...(options.enableBabelRCLookup === false && { configFile: false }),
             plugins,
             // NOTE(EvanBacon): We heavily leverage the caller functionality to mutate the babel config.
             // This compensates for the lack of a format plugin system in Metro. Users can modify the

@@ -56,6 +56,7 @@ const buildConfig = {
   },
   transformer: {
     ...config.transformer,
+    enableBabelRCLookup: false,
     getTransformOptions: async () => ({
       transform: { experimentalImportSupport: false, inlineRequires: false },
     }),
