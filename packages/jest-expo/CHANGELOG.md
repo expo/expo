@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Add `jest` as a peer dependency to prevent silent major version mismatches when tools like Dependabot upgrade `jest` to an incompatible version. ([#44167](https://github.com/expo/expo/pull/44167) by [@ForestSpark](https://github.com/ForestSpark))
 - Add `@react-native/babel-preset` to ignored transform patterns, since it's part of the transformer pipeline ([#44152](https://github.com/expo/expo/pull/44152) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
