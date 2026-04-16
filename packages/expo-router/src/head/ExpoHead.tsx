@@ -1,4 +1,5 @@
 import React from 'react';
+import Constants from 'expo-constants';
 
 import { Helmet, HelmetProvider } from '../../vendor/react-helmet-async/lib';
 import { useIsFocused } from '../useIsFocused';
@@ -14,6 +15,16 @@ export const Head: React.FC<{ children?: React.ReactNode }> & {
   if (!isFocused) {
     return null;
   }
+
+  const manifest = Constants.expoConfig;
+  if (manifest) {
+    if (__DEV__ && manifest.extra?.router?.unstable_useServerRendering) {
+      console.warn(
+        '<Head> is not supported when server rendering is enabled. Use `generateMetadata()` to generate page metadata instead'
+      );
+    }
+  }
+
   return <FocusedHelmet>{children}</FocusedHelmet>;
 };
 
