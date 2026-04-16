@@ -707,9 +707,6 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (55.0.9):
     - ExpoModulesCore
-  - ExpoWidgets (55.0.1):
-    - ExpoModulesCore
-    - ExpoUI
   - EXStructuredHeaders (55.0.0)
   - EXStructuredHeaders/Tests (55.0.0)
   - EXUpdates (55.0.11):
@@ -3350,7 +3347,6 @@ DEPENDENCIES:
   - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
-  - ExpoWidgets (from `../../../packages/expo-widgets/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
@@ -3716,9 +3712,6 @@ EXTERNAL SOURCES:
   ExpoWebBrowser:
     inhibit_warnings: false
     :path: "../../../packages/expo-web-browser/ios"
-  ExpoWidgets:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-widgets/ios"
   EXStructuredHeaders:
     inhibit_warnings: false
     :path: "../../../packages/expo-structured-headers/ios"
@@ -4007,7 +4000,6 @@ SPEC CHECKSUMS:
   ExpoVideo: eca730ba53ec45c2a188aa9dbfe11f7f809d66a1
   ExpoVideoThumbnails: 2340f0b7f599c9ce6ba49a885f783de919cf4dd3
   ExpoWebBrowser: b65b3921741b51c5513e2a369f59c37076987d9b
-  ExpoWidgets: 1eb210168e72d813f7d3ea38dc601ceee391ef7c
   EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
   EXUpdates: a0f980531cbcf45906b2489febd4e11a5895f332
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
