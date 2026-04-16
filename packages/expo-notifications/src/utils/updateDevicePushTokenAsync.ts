@@ -7,6 +7,82 @@ import type { DevicePushToken } from '../Tokens.types';
 
 const updateDevicePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
 
+/**
+ * Key used to persist the last successfully registered device token data in
+ * ServerRegistrationModule. This allows us to skip redundant registration
+ * requests when the token and device metadata have not changed.
+ */
+const LAST_TOKEN_KEY = 'lastRegisteredDeviceToken';
+
+/**
+ * Builds a stable fingerprint of the device registration data so we can detect
+ * changes across app launches without storing sensitive token data in plain text.
+ */
+function buildRegistrationFingerprint(
+  deviceToken: string,
+  appId: string | null,
+  development: boolean,
+  type: string
+): string {
+  return JSON.stringify({ deviceToken, appId, development, type });
+}
+
+/**
+ * Reads the last successfully registered fingerprint from native storage.
+ */
+async function getLastRegisteredFingerprintAsync(): Promise<string | null> {
+  try {
+    if (!ServerRegistrationModule.getRegistrationInfoAsync) {
+      return null;
+    }
+    const info = await ServerRegistrationModule.getRegistrationInfoAsync();
+    if (!info) return null;
+    const parsed = JSON.parse(info);
+    return parsed?.[LAST_TOKEN_KEY] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Persists the fingerprint of a successfully registered device token alongside
+ * the existing registration info (isEnabled flag).
+ */
+async function setLastRegisteredFingerprintAsync(fingerprint: string): Promise<void> {
+  try {
+    if (!ServerRegistrationModule.getRegistrationInfoAsync || !ServerRegistrationModule.setRegistrationInfoAsync) {
+      return;
+    }
+    const info = await ServerRegistrationModule.getRegistrationInfoAsync();
+    const existing = info ? JSON.parse(info) : {};
+    existing[LAST_TOKEN_KEY] = fingerprint;
+    await ServerRegistrationModule.setRegistrationInfoAsync(JSON.stringify(existing));
+  } catch {
+    // Best-effort persistence — if it fails, we'll just register again next time
+  }
+}
+
+/**
+ * Returns true if the device registration data has not changed since the last
+ * successful registration. Used to skip redundant server requests on app open.
+ */
+export async function hasDeviceTokenChangedAsync(token: DevicePushToken): Promise<boolean> {
+  try {
+    const [development] = await Promise.all([shouldUseDevelopmentNotificationService()]);
+    const currentFingerprint = buildRegistrationFingerprint(
+      token.data,
+      Application.applicationId,
+      development,
+      getTypeOfToken(token)
+    );
+    const lastFingerprint = await getLastRegisteredFingerprintAsync();
+    return currentFingerprint !== lastFingerprint;
+  } catch {
+    // If we can't determine, assume it changed to be safe
+    return true;
+  }
+}
+
 export async function updateDevicePushTokenAsync(signal: AbortSignal, token: DevicePushToken) {
   const doUpdateDevicePushTokenAsync = async (retry: () => void) => {
     const [development, deviceId] = await Promise.all([
@@ -20,6 +96,13 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
       appId: Application.applicationId,
       type: getTypeOfToken(token),
     };
+
+    const fingerprint = buildRegistrationFingerprint(
+      token.data,
+      Application.applicationId,
+      development,
+      getTypeOfToken(token)
+    );
 
     try {
       const response = await fetch(updateDevicePushTokenUrl, {
@@ -37,6 +120,12 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
           '[expo-notifications] Error encountered while updating the device push token with the server:',
           await response.text()
         );
+      }
+
+      if (response.ok) {
+        // Persist the fingerprint only after a successful registration so that
+        // on next app open we can skip the request if nothing changed.
+        await setLastRegisteredFingerprintAsync(fingerprint);
       }
 
       // Retry if request failed

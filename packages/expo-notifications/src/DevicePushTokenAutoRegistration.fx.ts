@@ -5,7 +5,10 @@ import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import type { DevicePushToken } from './Tokens.types';
 import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
-import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal } from './utils/updateDevicePushTokenAsync';
+import {
+  updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal,
+  hasDeviceTokenChangedAsync,
+} from './utils/updateDevicePushTokenAsync';
 
 let lastAbortController: AbortController | null = null;
 async function updatePushTokenAsync(token: DevicePushToken) {
@@ -71,6 +74,15 @@ export async function __handlePersistedRegistrationInfoAsync(
     // Since the registration is enabled, fetching a "new" device token
     // shouldn't be a problem.
     const latestDevicePushToken = await getDevicePushTokenAsync();
+
+    // Skip the server request if the device token and metadata have not changed
+    // since the last successful registration. This avoids millions of redundant
+    // requests from devices that re-open their app without any token change.
+    const changed = await hasDeviceTokenChangedAsync(latestDevicePushToken);
+    if (!changed) {
+      return;
+    }
+
     await updatePushTokenAsync(latestDevicePushToken);
   } catch (e) {
     console.warn(
