@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Use `OkHttpClientProvider` instead of bare `OkHttpClient` so custom interceptors are applied. ([#44798](https://github.com/expo/expo/pull/44798) by [@fabriziocucci](https://github.com/fabriziocucci))
+- [iOS] Fix JSI crash (`EXC_BAD_ACCESS` in `jsi::Pointer::~Pointer`) when an embedded `main.jsbundle` and dev-launcher race on startup. ([#44799](https://github.com/expo/expo/pull/44799) by [@fabriziocucci](https://github.com/fabriziocucci))
 
 ### 💡 Others
 

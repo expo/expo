@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Walk into installed optional peer dependencies during dependency resolution so duplicates auto-installed by package managers (when the project's version doesn't satisfy the peer range) are detected by `AutolinkingDependencyDuplicatesCheck`. ([#44802](https://github.com/expo/expo/pull/44802) by [@zoontek](https://github.com/zoontek))
 - Fix missing deep object merging that should allow a project config to override a dependency's per-platform config options selectively ([#44668](https://github.com/expo/expo/pull/44668) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

@@ -734,7 +734,7 @@ describe(scanDependenciesRecursively, () => {
     expect(resultAB['dep']?.version).toBe('2.0.0');
   });
 
-  itWithMemoize('ignores transitive optional peer dependencies', async () => {
+  itWithMemoize('ignores uninstalled transitive optional peer dependencies', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -744,16 +744,15 @@ describe(scanDependenciesRecursively, () => {
           'react-native-third-party': mockedNodeModule('react-native-third-party', {
             pkgExtra: {
               peerDependencies: {
-                'react-native-third-party': '*',
+                'react-native-dependency': '*',
               },
               peerDependenciesMeta: {
-                'react-native-third-party': {
+                'react-native-dependency': {
                   optional: true,
                 },
               },
             },
           }),
-          'react-native-dependency': mockedNodeModule('react-native-dependency'),
         },
       },
       projectRoot
@@ -774,6 +773,57 @@ describe(scanDependenciesRecursively, () => {
         },
       }
     `);
+  });
+
+  itWithMemoize('discovers installed transitive optional peer dependencies', async () => {
+    // When a package manager (npm 7+) auto-installs an optional peer because the project's
+    // version doesn't satisfy its range, we must walk into the nested copy to detect duplicates.
+    vol.fromNestedJSON(
+      {
+        ...mockedNodeModule('root', {
+          pkgDependencies: {
+            'react-native-third-party': '*',
+            'react-native-dependency': '*',
+          },
+        }),
+        node_modules: {
+          'react-native-third-party': {
+            ...mockedNodeModule('react-native-third-party', {
+              pkgExtra: {
+                peerDependencies: {
+                  'react-native-dependency': '^2.0.0',
+                },
+                peerDependenciesMeta: {
+                  'react-native-dependency': {
+                    optional: true,
+                  },
+                },
+              },
+            }),
+            node_modules: {
+              'react-native-dependency': mockedNodeModule('react-native-dependency', {
+                pkgVersion: '2.0.0',
+              }),
+            },
+          },
+          'react-native-dependency': mockedNodeModule('react-native-dependency', {
+            pkgVersion: '1.0.0',
+          }),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await scanDependenciesRecursively(projectRoot);
+
+    expect(result['react-native-dependency']?.version).toBe('1.0.0');
+    expect(result['react-native-dependency']?.duplicates).toEqual([
+      expect.objectContaining({
+        name: 'react-native-dependency',
+        version: '2.0.0',
+        path: '/fake/project/node_modules/react-native-third-party/node_modules/react-native-dependency',
+      }),
+    ]);
   });
 
   itWithMemoize('populates versions while stopping recursion at deepest dependency', async () => {
