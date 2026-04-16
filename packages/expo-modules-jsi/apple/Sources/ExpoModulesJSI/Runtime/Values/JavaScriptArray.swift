@@ -294,7 +294,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
    ```swift
    let array = try runtime.eval("[1, 2, 3]").getArray()
    let value = array[1]           // JavaScriptValue(2)
-   let outOfRange = array[10]     // JavaScriptValue.undefined()
+   let outOfRange = array[10]     // JavaScriptValue.undefined
    ```
 
    ## Setting Values
@@ -314,7 +314,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
    */
   public subscript(index: Int) -> JavaScriptValue {
     get {
-      return (try? self.getValue(at: index)) ?? .undefined()
+      return (try? self.getValue(at: index)) ?? .undefined
     }
     nonmutating set {
       guard let runtime else {

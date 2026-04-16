@@ -1,3 +1,4 @@
+import Foundation
 internal import jsi
 internal import ExpoModulesJSI_Cxx
 
@@ -77,9 +78,9 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     // Some simple value kinds do not require the runtime.
     switch kind {
     case .undefined:
-      return .undefined()
+      return .undefined
     case .null:
-      return .null()
+      return .null
     case .bool:
       return .init(nil, facebook.jsi.Value(getBool()))
     case .number:
@@ -177,7 +178,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
 
   public func getAny() -> Any {
     if isUndefined() || isNull() {
-      return Any?.none as Any
+      return NSNull()
     }
     if isBool() {
       return getBool()
@@ -455,7 +456,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
    try obj.jsonStringify(replacer: replacer) // {"name":"Alice"}
 
    // Undefined returns nil
-   let undefined = JavaScriptValue.undefined()
+   let undefined = JavaScriptValue.undefined
    try undefined.jsonStringify() // nil
    ```
 
@@ -601,8 +602,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
    where a runtime is not available or needed. The resulting value can be passed to
    JavaScript functions or used in comparisons.
    */
-  public static func undefined() -> JavaScriptValue {
-    return JavaScriptValue(nil, facebook.jsi.Value.undefined())
+  public static var undefined: JavaScriptValue {
+    JavaScriptValue(nil, facebook.jsi.Value.undefined())
   }
 
   /**
@@ -610,8 +611,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
    where a runtime is not available or needed. The resulting value represents
    JavaScript's `null`, which is distinct from `undefined`.
    */
-  public static func null() -> JavaScriptValue {
-    return JavaScriptValue(nil, facebook.jsi.Value.null())
+  public static var null: JavaScriptValue {
+    JavaScriptValue(nil, facebook.jsi.Value.null())
   }
 
   /**
@@ -648,7 +649,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     if let value = value as? JavaScriptRepresentable {
       return value.toJavaScriptValue(in: runtime)
     }
-    return .undefined()
+    return .undefined
   }
 }
 

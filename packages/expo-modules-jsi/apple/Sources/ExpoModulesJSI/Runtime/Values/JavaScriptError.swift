@@ -31,7 +31,7 @@ public struct JavaScriptError: JavaScriptType, ~Copyable {
 }
 
 public struct ScriptEvaluationError: Error {
-  var message: String
+  public var message: String
 }
 
 // MARK: - JavaScriptRepresentable

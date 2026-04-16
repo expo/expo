@@ -43,7 +43,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     let setup = runtime.createFunction { [resolveFunction, rejectFunction] this, arguments in
       resolveFunction.reset(arguments[0])
       rejectFunction.reset(arguments[1])
-      return .undefined()
+      return .undefined
     }
 
     self.object = try! runtime
@@ -124,14 +124,14 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       Task.immediate_polyfill {
         await deferredPromise.resolve(value)
       }
-      return .undefined()
+      return .undefined
     }
     let onRejected = runtime.createFunction { [deferredPromise] this, arguments in
       let error = arguments[0]
       Task.immediate_polyfill {
         await deferredPromise.reject(error)
       }
-      return .undefined()
+      return .undefined
     }
     try object.callFunction(.cached(runtime, "then"), arguments: onFulfilled.asValue(), onRejected.asValue())
   }

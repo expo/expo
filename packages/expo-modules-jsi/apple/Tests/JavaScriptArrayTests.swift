@@ -132,8 +132,8 @@ struct JavaScriptArrayTests {
     let array = try runtime.eval("[1, 2, 3, 4, 5]").getArray()
     try array.set(value: JavaScriptValue(runtime, "hello"), at: 0)
     try array.set(value: JavaScriptValue(runtime, true), at: 1)
-    try array.set(value: JavaScriptValue.null(), at: 2)
-    try array.set(value: JavaScriptValue.undefined(), at: 3)
+    try array.set(value: JavaScriptValue.null, at: 2)
+    try array.set(value: JavaScriptValue.undefined, at: 3)
 
     #expect(try array.getValue(at: 0).getString() == "hello")
     #expect(try array.getValue(at: 1).getBool() == true)

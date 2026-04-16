@@ -28,7 +28,7 @@ struct JavaScriptRuntimeTests {
   @Test
   func `create function`() {
     let fn = runtime.createFunction("function name") { this, arguments in
-      return .undefined()
+      return .undefined
     }
     #expect(fn.asValue().isFunction() == true)
   }
@@ -127,7 +127,7 @@ struct JavaScriptRuntimeTests {
         if name == "foo" {
           return JavaScriptValue(self.runtime, 42)
         }
-        return .undefined()
+        return .undefined
       },
       set: { _, _ in },
       getPropertyNames: { ["foo"] },
@@ -147,7 +147,7 @@ struct JavaScriptRuntimeTests {
         if name == "value", let storedValue {
           return JavaScriptValue(self.runtime, storedValue)
         }
-        return .undefined()
+        return .undefined
       },
       set: { name, value in
         if name == "value" {
@@ -170,7 +170,7 @@ struct JavaScriptRuntimeTests {
         switch name {
         case "a": return JavaScriptValue(self.runtime, 1)
         case "b": return JavaScriptValue(self.runtime, 2)
-        default: return .undefined()
+        default: return .undefined
         }
       },
       set: { _, _ in },
@@ -193,7 +193,7 @@ struct JavaScriptRuntimeTests {
         if name == "greeting" {
           return JavaScriptValue(self.runtime, "hello")
         }
-        return .undefined()
+        return .undefined
       },
       set: { _, _ in },
       getPropertyNames: { ["greeting"] },
