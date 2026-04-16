@@ -57,7 +57,7 @@ An Expo and React Native app can target three deployment surfaces by default. Ea
 
 <Collapsible summary="Build profiles">
 
-[EAS Build](/build/introduction/) is a service for building app binaries for our Expo and React Native projects. It supports three build profiles by default and each profile corresponds to a different stage of development. We are going to use each of these three profiles in this tutorial. If you are already familiar with the concept of build profiles, you can use your own custom profiles instead.
+[EAS Build](/build/introduction/) is a service for building app binaries for our Expo and React Native projects. It supports three build profiles by default and each profile corresponds to a different stage of development. We are going to use each of these three profiles in this tutorial.
 
 </Collapsible>
 
@@ -202,7 +202,7 @@ It is a it is a human-friendly data serialization standard that is commonly used
 
 EAS Workflow files live inside **.eas/workflows/** directory at the root of an Expo project. For projects that have used GitHub Actions before, they might be using **.github/workflows/**.
 
-The trigger syntax (`on.push`, `on.pull_request`, and so on) are similar between EAS Workflows and GitHub Actions but are not identical. The biggest difference is pre-packaged jobs and there is no `runs-on`, no `checkout`, no `setup-node`. You set `type: build` and EAS handles the execution environment, dependencies, and artifacts. We will cover these topics throughout the tutorial.
+The trigger syntax (`on.push`, `on.pull_request`, and so on) are similar between EAS Workflows and GitHub Actions but are not identical. The biggest difference is pre-packaged jobs and there is no `runs-on`, no `checkout`, no `setup-node`. On setting the `type: build`, the EAS handles the execution environment, dependencies, and artifacts. We will cover these topics throughout the tutorial.
 
 ## Next step
 

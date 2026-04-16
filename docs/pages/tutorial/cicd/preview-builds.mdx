@@ -111,7 +111,7 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 
 1. Go to [api.slack.com/apps](https://api.slack.com/apps) and create a new Slack app (or use an existing one).
 2. Under **Features**, select **Incoming Webhooks** and toggle it on.
-3. Click **Add New Webhook** and select the channel where you want notifications.
+3. Click **Add New Webhook** and select the channel to publish notifications.
 4. Copy the webhook URL. It looks like: `https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX`
 
 </Step>
@@ -161,7 +161,7 @@ Run the workflow manually using the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-On EAS dashboard, you can verify that "Notify on Slack" job runs successfully.
+On EAS dashboard, we can verify that "Notify on Slack" job runs successfully.
 
 <ContentSpotlight
   alt="In EAS dashboard, the Notify on Slack job runs successfully after build jobs."
@@ -170,7 +170,7 @@ On EAS dashboard, you can verify that "Notify on Slack" job runs successfully.
   caption="In the above image, we can see that the Notify on Slack job runs successfully after the build jobs."
 />
 
-You can also verify this in the Slack channel you integrated the app.
+We can also verify this in the Slack channel integrated with the app.
 
 <ContentSpotlight
   alt="Slack notification with the status of preview builds for Android and iOS."
@@ -216,7 +216,7 @@ jobs:
     type: github-comment
 ```
 
-> **important** Before testing the above workflow, ensure that **pr-preview.yml** file is committed and pushed to the `main` branch of your GitHub repository. **EAS Workflows reads workflow files from the default branch.**
+> **important** Before testing the above workflow, we need to ensure that **pr-preview.yml** file is committed and pushed to the `main` branch of our GitHub repository. **EAS Workflows reads workflow files from the default branch.**
 
 </Step>
 
