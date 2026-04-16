@@ -35,6 +35,7 @@
 - [iOS] Resolve `react-native-worklets` from existing podspec, falling back to peer resolution ([#44232](https://github.com/expo/expo/pull/44232) by [@kitten](https://github.com/kitten))
 - [iOS] Fixed adding SwiftUI views to tabs BottomAccessory. ([#44247](https://github.com/expo/expo/pull/44247) by [@t0maboro](https://github.com/t0maboro))
 - [iOS] Fix finding EXConstants.bundle inside framework bundle for brownfield ([#44810](https://github.com/expo/expo/pull/44810) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix missing jsi headers when building static frameworks ([#44865](https://github.com/expo/expo/pull/44865) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
