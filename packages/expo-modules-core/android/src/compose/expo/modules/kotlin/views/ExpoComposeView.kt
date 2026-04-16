@@ -8,14 +8,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.RecomposeScope
 import androidx.compose.runtime.currentRecomposeScope
-import androidx.compose.runtime.key
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.viewevent.CoalescingKey
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.ViewEvent
@@ -241,81 +242,100 @@ class FunctionalComposableScope(
    * For no-argument functions the lambda parameter is [Unit] and can be
    * ignored: `focus.handle { focusRequester.requestFocus() }`.
    */
-  @Suppress("UNCHECKED_CAST")
+  @SuppressLint("ComposableNaming")
   @Composable
-  fun <P0> AsyncFunctionHandle<P0>.handle(handler: suspend (P0) -> Any?) {
+  inline fun <reified P0> AsyncFunctionHandle<P0>.handle(noinline handler: suspend (P0) -> Any?) {
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val arg = if (args.isEmpty()) Unit as P0 else args[0] as P0
+        val arg = if (args.isEmpty()) Unit else args[0]
+        enforceType<P0>(arg)
         currentHandler.value(arg)
       }
       onDispose { view.functionHandlers.remove(name) }
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
+  @SuppressLint("ComposableNaming")
   @Composable
-  @JvmName("handle2")
-  fun <P0, P1> AsyncFunctionHandle2<P0, P1>.handle(handler: suspend (P0, P1) -> Any?) {
+  inline fun <reified P0, reified P1> AsyncFunctionHandle2<P0, P1>.handle(noinline handler: suspend (P0, P1) -> Any?) {
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
-      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1) }
+      view.functionHandlers[name] = { args ->
+        val p0 = args[0]; val p1 = args[1]
+        enforceType<P0, P1>(p0, p1)
+        currentHandler.value(p0, p1)
+      }
       onDispose { view.functionHandlers.remove(name) }
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
+  @SuppressLint("ComposableNaming")
   @Composable
-  @JvmName("handle3")
-  fun <P0, P1, P2> AsyncFunctionHandle3<P0, P1, P2>.handle(handler: suspend (P0, P1, P2) -> Any?) {
+  inline fun <reified P0, reified P1, reified P2> AsyncFunctionHandle3<P0, P1, P2>.handle(noinline handler: suspend (P0, P1, P2) -> Any?) {
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
-      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2) }
+      view.functionHandlers[name] = { args ->
+        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]
+        enforceType<P0, P1, P2>(p0, p1, p2)
+        currentHandler.value(p0, p1, p2)
+      }
       onDispose { view.functionHandlers.remove(name) }
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
+  @SuppressLint("ComposableNaming")
   @Composable
-  @JvmName("handle4")
-  fun <P0, P1, P2, P3> AsyncFunctionHandle4<P0, P1, P2, P3>.handle(handler: suspend (P0, P1, P2, P3) -> Any?) {
+  inline fun <reified P0, reified P1, reified P2, reified P3> AsyncFunctionHandle4<P0, P1, P2, P3>.handle(noinline handler: suspend (P0, P1, P2, P3) -> Any?) {
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
-      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3) }
+      view.functionHandlers[name] = { args ->
+        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]; val p3 = args[3]
+        enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
+        currentHandler.value(p0, p1, p2, p3)
+      }
       onDispose { view.functionHandlers.remove(name) }
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
+  @SuppressLint("ComposableNaming")
   @Composable
-  @JvmName("handle5")
-  fun <P0, P1, P2, P3, P4> AsyncFunctionHandle5<P0, P1, P2, P3, P4>.handle(handler: suspend (P0, P1, P2, P3, P4) -> Any?) {
+  inline fun <reified P0, reified P1, reified P2, reified P3, reified P4> AsyncFunctionHandle5<P0, P1, P2, P3, P4>.handle(noinline handler: suspend (P0, P1, P2, P3, P4) -> Any?) {
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
-      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4) }
+      view.functionHandlers[name] = { args ->
+        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]; val p3 = args[3]; val p4 = args[4]
+        enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
+        currentHandler.value(p0, p1, p2, p3, p4)
+      }
       onDispose { view.functionHandlers.remove(name) }
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
+  @SuppressLint("ComposableNaming")
   @Composable
-  @JvmName("handle6")
-  fun <P0, P1, P2, P3, P4, P5> AsyncFunctionHandle6<P0, P1, P2, P3, P4, P5>.handle(handler: suspend (P0, P1, P2, P3, P4, P5) -> Any?) {
+  inline fun <reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncFunctionHandle6<P0, P1, P2, P3, P4, P5>.handle(noinline handler: suspend (P0, P1, P2, P3, P4, P5) -> Any?) {
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
-      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5) }
+      view.functionHandlers[name] = { args ->
+        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]; val p3 = args[3]; val p4 = args[4]; val p5 = args[5]
+        enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
+        currentHandler.value(p0, p1, p2, p3, p4, p5)
+      }
       onDispose { view.functionHandlers.remove(name) }
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
+  @SuppressLint("ComposableNaming")
   @Composable
-  @JvmName("handle7")
-  fun <P0, P1, P2, P3, P4, P5, P6> AsyncFunctionHandle7<P0, P1, P2, P3, P4, P5, P6>.handle(handler: suspend (P0, P1, P2, P3, P4, P5, P6) -> Any?) {
+  inline fun <reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncFunctionHandle7<P0, P1, P2, P3, P4, P5, P6>.handle(noinline handler: suspend (P0, P1, P2, P3, P4, P5, P6) -> Any?) {
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
-      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, args[6] as P6) }
+      view.functionHandlers[name] = { args ->
+        val p0 = args[0]; val p1 = args[1]; val p2 = args[2]; val p3 = args[3]; val p4 = args[4]; val p5 = args[5]; val p6 = args[6]
+        enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
+        currentHandler.value(p0, p1, p2, p3, p4, p5, p6)
+      }
       onDispose { view.functionHandlers.remove(name) }
     }
   }
