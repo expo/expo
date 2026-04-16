@@ -90,10 +90,14 @@ compute_hash() {
   )
   # Force C locale so sort order is consistent regardless of the environment.
   # Xcode build phases run without locale variables, which changes sort ordering.
-  echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
-    echo "$file"
-    cat "$file"
-  done | shasum -a 256 | cut -d' ' -f1
+  (
+    # Include PODS_ROOT so switching between worktrees invalidates the cache.
+    echo "PODS_ROOT=${PODS_ROOT:-}"
+    echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
+      echo "$file"
+      cat "$file"
+    done
+  ) | shasum -a 256 | cut -d' ' -f1
 }
 
 # Resolves the xcodebuild destination for a given platform name.
@@ -230,16 +234,19 @@ symlink_dependencies() {
   # in sync when PODS_ROOT changes.
   local hermes_destroot="${sources}/hermes-engine/destroot"
   if [[ -d "${PODS_ROOT}/hermes-engine/destroot" ]]; then
+    [[ -d "$hermes_destroot" && ! -L "$hermes_destroot" ]] && rm -rf "$hermes_destroot"
     ln -sfn "${PODS_ROOT}/hermes-engine/destroot" "$hermes_destroot"
   fi
 
   local react_xcframework="${sources}/React/React.xcframework"
   if [[ -d "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" ]]; then
+    [[ -d "$react_xcframework" && ! -L "$react_xcframework" ]] && rm -rf "$react_xcframework"
     ln -sfn "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" "$react_xcframework"
   fi
 
   local rndeps_xcframework="${sources}/ReactNativeDependencies/ReactNativeDependencies.xcframework"
   if [[ -d "${PODS_ROOT}/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework" ]]; then
+    [[ -d "$rndeps_xcframework" && ! -L "$rndeps_xcframework" ]] && rm -rf "$rndeps_xcframework"
     ln -sfn "${PODS_ROOT}/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework" "$rndeps_xcframework"
   fi
 
@@ -250,11 +257,18 @@ symlink_dependencies() {
   local vfs_output="${sources}/React/React-VFS.yaml"
   local vfs_source="${PODS_ROOT}/React-Core-prebuilt/React-VFS.yaml"
   if [[ -f "$vfs_source" ]] && [[ ! -f "$vfs_output" || "$vfs_source" -nt "$vfs_output" ]]; then
+    log "Regenerating React VFS overlay"
     sed "s|${PODS_ROOT}/React-Core-prebuilt|${sources}/React|g" "$vfs_source" > "$vfs_output"
   fi
 }
 
 # --- Main ---
+
+if [[ -n "${PODS_ROOT:-}" ]]; then
+  # Resolve to an absolute path so symlinks and the build hash are stable
+  # regardless of whether PODS_ROOT was passed as relative or absolute.
+  PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
+fi
 
 if [[ "$CLEAN" == true ]]; then
   rm -rf "$XCFRAMEWORK_PATH" "$SLICES_DIR"
