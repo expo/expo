@@ -22,6 +22,8 @@ Please describe how you tested this change and how a reviewer could reproduce yo
 Please check the appropriate items below if they apply to your diff.
 -->
 
-- [ ] I added a `changelog.md` entry and rebuilt the package sources according to [this short guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-before-submitting)
+- [ ] I added a `CHANGELOG.md` entry (in the modified package or the root `CHANGELOG.md`) and rebuilt modified package sources according to [this short guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-before-submitting)
+- [ ] If I modified files in `packages/`, I ran `pnpm build`, `pnpm lint --fix` (and verified `pnpm lint` passes), and `pnpm test` in each modified package.
+- [ ] I removed all `console.log`s and commented out code blocks.
 - [ ] This diff will work correctly for `npx expo prebuild` & EAS Build (eg: updated a module plugin).
 - [ ] Conforms with the [Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)
