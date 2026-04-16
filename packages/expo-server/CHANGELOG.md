@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Omit origin from redirect `Location` header value; discovered by @yavuzselimkolbasar - thank you! ([#44782](https://github.com/expo/expo/pull/44782) by [@kitten](https://github.com/kitten))
+- Replace invalid platform basepath stripping regex with slicing; discovered by @yavuzselimkolbasar - thank you! ([#44783](https://github.com/expo/expo/pull/44783) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

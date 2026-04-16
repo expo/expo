@@ -49,12 +49,14 @@ export function getRscMiddleware(options) {
                 },
             });
         }
-        let encodedInput = url.pathname.replace(
         // TODO: baseUrl support
-        rscPathPrefix, '');
+        let encodedInput = url.pathname.replace(rscPathPrefix, '');
         // First segment should be the target platform.
         // This is used for aligning with production exports which are statically exported to a single location at build-time.
-        encodedInput = encodedInput.replace(new RegExp(`^${platform}/`), '');
+        const platformPrefix = `${platform}/`;
+        if (encodedInput.toLowerCase().startsWith(platformPrefix)) {
+            encodedInput = encodedInput.slice(platformPrefix.length);
+        }
         try {
             encodedInput = decodeInput(encodedInput);
         }
