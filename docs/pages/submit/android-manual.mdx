@@ -1,0 +1,122 @@
+---
+title: Manually submit an Android app to the Google Play Store
+sidebar_title: Manual Android submission
+description: Step-by-step guide for uploading an Android app to Google Play Console for the first time.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+If you are submitting your Android app to the Google Play Store **for the first time**, Google requires you to upload it manually through Google Play Console — a web UI. This guide walks through the steps to create your first release in Play Console.
+
+> **info** After you have submitted your app manually once, you can use [`eas submit --platform android`](/submit/android/) for every subsequent submission.
+
+> **warning** The Google Play Console dashboard changes over time. If a screenshot or label in this guide does not match what you see, please [open an issue](https://github.com/expo/expo/issues/new/choose) to let us know.
+
+## Steps to create your first release
+
+1. Open [Google Play Console](https://play.google.com/apps/publish/) and click **Create app**.
+
+<ContentSpotlight
+  alt="Google Play Console home screen with the Create app button"
+  src="/static/images/submit/first-android-submission/01-open-google-play-console.png"
+/>
+
+2. Enter **App name**, select **Default language**, **App or game**, **Free or paid**, and click **Create app**.
+
+<ContentSpotlight
+  alt="Create application form in Play Console"
+  src="/static/images/submit/first-android-submission/02-create-application.png"
+/>
+
+3. You will be redirected to the **Dashboard**, where you provide all the information about your Android app.
+
+<ContentSpotlight
+  alt="Play Console Dashboard showing setup tasks"
+  src="/static/images/submit/first-android-submission/03-dashboard.png"
+/>
+
+4. Go through the steps to fill out the app details. Start by preparing your app's internal testing version — click **View tasks** under **Start testing now**.
+
+> **info** This step is important. Otherwise, you will see errors related to the app information when you try to publish.
+
+<ContentSpotlight
+  alt="Dashboard task list with View tasks button"
+  src="/static/images/submit/first-android-submission/04-steps.png"
+/>
+
+5. On the **Internal testing** page, under **Testers**, click **Create email list** and add users to share the internal test release with. After creating (or selecting an existing) testers list, click **Save**.
+
+<ContentSpotlight
+  alt="Creating an email list of testers"
+  src="/static/images/submit/first-android-submission/05-create-email-list.png"
+/>
+
+<ContentSpotlight
+  alt="Internal testing tab showing the saved testers list"
+  src="/static/images/submit/first-android-submission/05-testing.png"
+/>
+
+6. Click **Create new release**.
+
+<ContentSpotlight
+  alt="Create new release button on the internal testing page"
+  src="/static/images/submit/first-android-submission/06-create-release.png"
+/>
+
+7. You will be redirected to the App integrity screen. Select **Choose signing key** > **Google-generated key**. Using a Google-generated key lets you upload your app even if you lose your Android keystore.
+
+<ContentSpotlight
+  alt="Selecting Google-generated signing key"
+  src="/static/images/submit/first-android-submission/07-google-app-signing.png"
+/>
+
+8. Under **App bundles**, click **Upload** and choose the **.aab** file from your computer. If you haven't created your build yet, [create one with `eas build`](/tutorial/eas/android-production-build/#create-a-production-build).
+
+<ContentSpotlight
+  alt="Uploading the aab archive"
+  src="/static/images/submit/first-android-submission/08-upload-aab-archive.png"
+/>
+
+9. Once the upload completes, you will see the archive type and the **Version code**. The **Version code** identifies each release — every new release must have a unique value. In an Expo project, set this with `expo.android.versionCode` in your app config, or use [remote version source](/build-reference/app-versions/) to increment it automatically.
+
+<ContentSpotlight
+  alt="Viewing the uploaded archive's version code"
+  src="/static/images/submit/first-android-submission/09-view-version-code.png"
+/>
+
+10. Enter the **Release name** and click **Next**. On the **Preview and confirm** screen, you may see a warning about _"... no deobfuscation file associated with this App Bundle ..."_ — you can skip this for now, or [enable ProGuard rules with `expo-build-properties`](/versions/latest/sdk/build-properties/#pluginconfigtypeandroid). Click **Save and publish**.
+
+<ContentSpotlight
+  alt="Submit first release screen"
+  src="/static/images/submit/first-android-submission/10-submit-first-release.png"
+/>
+
+11. You will land on the **Internal testing** > **Releases** summary. Click **Promote release** to make your app available to testers or production.
+
+<ContentSpotlight
+  alt="Release summary page"
+  src="/static/images/submit/first-android-submission/11-release-summary.png"
+/>
+
+12. To share the release with the testers list you created, click **Testers** > **Copy link** and share the link. Testers can install the app on their device from that link.
+
+<ContentSpotlight
+  alt="Copying the testers link"
+  src="/static/images/submit/first-android-submission/12-testers-copy-link.png"
+/>
+
+## Next steps
+
+Go back to the **Dashboard** and complete the remaining tasks for your app — privacy policy, store assets, and other details. This is required before the app can go to production.
+
+<ContentSpotlight
+  alt="Dashboard with pending tasks"
+  src="/static/images/submit/first-android-submission/13-pending-tasks.png"
+/>
+
+### Further reading
+
+- [Missing privacy policy](https://expo.fyi/missing-privacy-policy) error in Play Console
+- [Create store assets](/guides/store-assets/) for your app's store page
+- [Creating a Google Service Account key](https://expo.fyi/creating-google-service-account) — required to use `eas submit --platform android` for subsequent releases
+- [Submit to the Google Play Store with EAS Submit](/submit/android/)

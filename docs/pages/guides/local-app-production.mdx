@@ -4,6 +4,7 @@ sidebar_title: Release
 description: Learn how to create a release (production) build for your Expo app locally.
 ---
 
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
 import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStoreIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -119,8 +120,8 @@ Google Play Store requires manual app submission when submitting the **.aab** fi
 
 <BoxLink
   title="Manual submission of an Android app"
-  description="Follow the steps from the FYI guide on manually submitting your app to Google Play Store for the first time."
-  href="https://expo.fyi/first-android-submission"
+  description="Follow the step-by-step guide on manually submitting your app to Google Play Store for the first time."
+  href="/submit/android-manual/"
   Icon={GoogleAppStoreIcon}
 />
 
@@ -184,11 +185,13 @@ To build your app for release, From the menu bar, open **Product** > **Build**. 
 
 ### App submission using App Store Connect
 
-Once the build is complete, you can distribute your app to TestFlight or submit it to the App Store using App Store Connect:
+Once the build is complete, you can archive your app and upload it to App Store Connect from Xcode.
 
-1. From the menu bar, open **Product** > **Archive**.
-2. Under **Archives**, click **Distribute App** from the right sidebar.
-3. Click **App Store Connect** and follow the prompts shown in the window. This step will create an app store record and upload your app to the App Store.
-4. Now you can go to your App Store Connect account, select your app under Apps, and submit it for testing using TestFlight or prepare it for final release by following the steps in the App Store Connect dashboard.
+<BoxLink
+  title="Manually submit an iOS app with Xcode"
+  description="Archive and upload an iOS app to App Store Connect using Xcode."
+  href="/submit/ios-manual/"
+  Icon={AppleAppStoreIcon}
+/>
 
 </Step>

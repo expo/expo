@@ -1,0 +1,61 @@
+---
+title: Manually submit an iOS app to the Apple App Store
+sidebar_title: Manual iOS submission
+description: Archive and upload an iOS app to App Store Connect using Xcode on macOS.
+---
+
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+This guide walks through archiving an iOS app with Xcode and uploading it to [App Store Connect](https://appstoreconnect.apple.com/) — useful if you aren't using EAS, or as a fallback if EAS Submit is temporarily unavailable. For most teams, [EAS Submit](/submit/ios/) is simpler and works from any OS.
+
+## Prerequisites
+
+- A paid Apple Developer membership
+- [Xcode installed](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-xcode-and-watchman) on a Mac
+- An **ios** directory generated in your project. If you use [CNG](/workflow/continuous-native-generation/), run `npx expo prebuild` to generate it.
+- An app record in [App Store Connect](https://appstoreconnect.apple.com/) with a matching bundle identifier. If you haven't created one, sign in to App Store Connect, click the blue **+** next to **Apps**, and choose **New App**.
+
+<Step label="1">
+
+## Open the iOS workspace in Xcode
+
+From your project directory, open the iOS workspace in Xcode:
+
+<Terminal cmd={['$ xed ios']} />
+
+Then:
+
+1. In the left sidebar, select your app's workspace.
+2. Go to **Signing & Capabilities** and select **All** or **Release**.
+3. Under **Signing** > **Team**, choose your Apple Developer team. Xcode will generate an automatically managed provisioning profile and signing certificate.
+
+</Step>
+
+<Step label="2">
+
+## Configure a release scheme
+
+1. From the menu bar, open **Product** > **Scheme** > **Edit Scheme**.
+2. Select **Run** in the sidebar and set **Build configuration** to **Release**.
+
+</Step>
+
+<Step label="3">
+
+## Build the app for release
+
+From the menu bar, open **Product** > **Build**. Xcode will build the release binary.
+
+</Step>
+
+<Step label="4">
+
+## Archive and upload to App Store Connect
+
+1. From the menu bar, open **Product** > **Archive**.
+2. Under **Archives**, click **Distribute App** from the right sidebar.
+3. Click **App Store Connect** and follow the prompts. Xcode will upload your build to App Store Connect.
+4. Sign in to [App Store Connect](https://appstoreconnect.apple.com/), select your app, and submit it to TestFlight or for App Review from the App Store Connect dashboard.
+
+</Step>
