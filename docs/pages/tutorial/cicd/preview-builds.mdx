@@ -10,15 +10,15 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this chapter, we'll create a workflow and use `preview` build profiles with fingerprints, add Slack notifications, and set up pull request (PR) previews using OTA.
+In this chapter, we'll create our initial workflow to use `preview` build profiles with fingerprints, add Slack notifications, and set up a separate workflow for pull request (PR) previews using OTA.
 
 ## Using `build` job type for preview builds
 
 Preview builds are used for team and stakeholder testing. Teams distribute them via internal distribution so members can test the changes on real devices or emulators/simulators before a production release. They don't have to run a development server on their local machine or check a Git branch to test the changes.
 
-Like development builds, we will add fingerprints to avoid unnecessary rebuilds when native code doesn't change.
-
 <PreviewPipeline />
+
+Like development builds, we will add fingerprints to avoid unnecessary rebuilds when native code doesn't change.
 
 <Step label="1">
 
@@ -118,7 +118,7 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 
 <Step label="2">
 
-## Add a Slack notification job
+### Add a Slack notification job
 
 Let's update **preview.yml** to add a `notify` job after the build jobs. The `notify` job uses a `webhook_url` and a `message` (or a `payload` for rich formatting using [Slack Block Kit](https://docs.slack.dev/block-kit)) parameters. We have to add the webhook URL directly in the workflow file.
 
@@ -195,6 +195,8 @@ To achieve this in EAS Workflows, we will use [`github-comment`](/eas/workflows/
 
 <Step label="1">
 
+### Create a pr-preview.yml
+
 Inside **.eas/workflows/**, let's add a new file called **pr-preview.yml**. This workflow runs on creating a pull request using `on.pull_request` trigger. It only publishes an update using the `update` job type and then posts a comment on the PR with the link to the update.
 
 ```yaml pr-preview.yml
@@ -222,7 +224,7 @@ jobs:
 
 <Step label="2">
 
-## Test with a pull request
+### Test with a pull request
 
 Let's test the workflow by creating a pull request in our GitHub repository. A pull request requires a separate branch from the `main`. Ru the following command to create and switch to a new branch:
 
