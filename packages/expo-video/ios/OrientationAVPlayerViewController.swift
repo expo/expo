@@ -214,17 +214,7 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
     _ playerViewController: AVPlayerViewController,
     restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void
   ) {
-    let shouldRestore: Bool
-    switch keepFullscreenOnPiPStop {
-    case .always:
-      shouldRestore = true
-    case .autoEnter:
-      shouldRestore = pipWasAutoEntered
-    case .never:
-      shouldRestore = false
-    }
-
-    if shouldRestore && wasInFullscreenWhenPiPStarted {
+    if keepFullscreenOnPiPStop.shouldRestore(pipWasAutoEntered: pipWasAutoEntered) && wasInFullscreenWhenPiPStarted {
       pendingPiPCompletionHandler = completionHandler
       self.enterFullscreen(selectorUnsupportedFallback: { [weak self] in
         self?.pendingPiPCompletionHandler?(false)
