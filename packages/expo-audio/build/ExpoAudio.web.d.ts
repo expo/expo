@@ -19,5 +19,6 @@ export declare function preload(source: AudioSource, _options?: PreloadOptions):
 export declare function clearPreloadedSource(source: AudioSource): void;
 export declare function clearAllPreloadedSources(): void;
 export declare function getPreloadedSources(): string[];
+export { useAudioStream } from './AudioStream.web';
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.web.d.ts.map
