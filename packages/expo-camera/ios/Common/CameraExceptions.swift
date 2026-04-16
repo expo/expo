@@ -50,7 +50,7 @@ internal final class CameraMetadataDecodingException: Exception {
 
 internal final class CameraInvalidPhotoData: Exception {
   override var reason: String {
-    "An error occured while generating photo data"
+    "An error occurred while generating photo data"
   }
 }
 
