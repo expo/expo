@@ -68,7 +68,7 @@ class ObservabilityBackgroundWorker(
       .setContentTitle("Sending metrics")
       .setPriority(NotificationCompat.PRIORITY_LOW)
       .build()
-    return ForegroundInfo(NOTIFICATION_ID, notification)
+    return ForegroundInfo(WORK_NAME.hashCode(), notification)
   }
 
   override suspend fun doWork(): Result {
@@ -93,7 +93,6 @@ class ObservabilityBackgroundWorker(
 
   companion object {
     private const val WORK_NAME = "eas-observe-dispatch"
-    private val NOTIFICATION_ID = WORK_NAME.hashCode()
 
     fun scheduleBackgroundDispatch(
       context: Context,
