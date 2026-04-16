@@ -1,19 +1,24 @@
 /**
  Context that captures Swift types to pass them to JSI host object as an unmanaged pointer for interoperability with C++.
  */
-internal final class HostObjectContext {
+internal final class HostObjectContext: Sendable {
+  typealias Getter = @JavaScriptActor (_ propertyName: String) -> JavaScriptValue
+  typealias Setter = @JavaScriptActor (_ propertyName: String, _ value: JavaScriptValue) -> Void
+  typealias PropertyNamesGetter = @JavaScriptActor () -> [String]
+  typealias Deallocator = @JavaScriptActor () -> Void
+
   weak let runtime: JavaScriptRuntime?
-  let get: (String) -> JavaScriptValue
-  let set: (String, JavaScriptValue) -> Void
-  let getPropertyNames: () -> [String]
-  let dealloc: () -> Void
+  let get: Getter
+  let set: Setter
+  let getPropertyNames: PropertyNamesGetter
+  let dealloc: Deallocator
 
   init(
     runtime: JavaScriptRuntime,
-    _ get: @escaping (String) -> JavaScriptValue,
-    _ set: @escaping (String, JavaScriptValue) -> Void,
-    _ getPropertyNames: @escaping () -> [String],
-    _ dealloc: @escaping () -> Void
+    _ get: @escaping Getter,
+    _ set: @escaping Setter,
+    _ getPropertyNames: @escaping PropertyNamesGetter,
+    _ dealloc: @escaping Deallocator
   ) {
     self.runtime = runtime
     self.get = get
