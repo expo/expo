@@ -946,6 +946,29 @@ jobs:
 
 </Collapsible>
 
+<Collapsible summary="Generate Maestro flows before running tests">
+
+This workflow uses a hook to generate the `maestro_tests` directory right before Maestro starts running tests.
+
+```yaml .eas/workflows/maestro-hooks.yml
+name: Maestro Hooks
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    environment: preview
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      flow_path: ./maestro_tests
+    hooks:
+      before_maestro_tests:
+        - name: Generate Maestro flows
+          run: npx tsx scripts/generate-maestro-tests.ts
+```
+
+</Collapsible>
+
 <Collapsible summary="Recording screen and using a specific device">
 
 This workflow runs Maestro tests on an Android emulator build with a specific device and records the screen.
@@ -985,6 +1008,32 @@ appId: com.myapp
 ```
 
 The assets will be available within the "Maestro Test Results" artifact in the Artifacts section.
+
+</Collapsible>
+
+<Collapsible summary="Report Maestro artifacts to an external service">
+
+This workflow saves screenshots and recordings to `MAESTRO_TESTS_DIR`, then runs a script after the tests finish to upload those files or send a summary to an external service.
+
+```yaml .eas/workflows/maestro-report-artifacts.yml
+name: Maestro Artifact Reporting
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    environment: preview
+    env:
+      REPORTING_WEBHOOK_URL: ${{ env.REPORTING_WEBHOOK_URL }}
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      flow_path: ./maestro/flows
+      record_screen: true
+    hooks:
+      after_maestro_tests:
+        - name: Report Maestro artifacts
+          run: npx tsx scripts/report-maestro-artifacts.ts "$MAESTRO_TESTS_DIR"
+```
 
 </Collapsible>
 
@@ -1141,30 +1190,6 @@ jobs:
     params:
       webhook_url: ${{ env.SLACK_WEBHOOK_URL }} # make sure to set it up in the right environment (see "environment: ..." above)
       message: 'Tests complete: ${{ after.maestro_test.outputs.successful_flows_count }}/${{ after.maestro_test.outputs.total_flows_count }} passed'
-```
-
-</Collapsible>
-
-<Collapsible summary="Generate Maestro flows before uploading to Maestro Cloud">
-
-This workflow uses a hook to generate the `maestro_tests` directory right before it gets uploaded to Maestro Cloud.
-
-```yaml .eas/workflows/maestro-cloud-hooks.yml
-name: Maestro Cloud Hooks
-
-jobs:
-  maestro_tests:
-    name: Run Maestro Cloud Tests
-    type: maestro-cloud
-    environment: preview
-    params:
-      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
-      maestro_project_id: proj_01jw6hxgmdffrbye9fqn0pyzm0
-      flows: ./maestro_tests
-    hooks:
-      before_maestro_cloud:
-        - name: Generate Maestro flows
-          run: npx tsx scripts/generate-maestro-tests.ts
 ```
 
 </Collapsible>
