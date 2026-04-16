@@ -20,7 +20,7 @@
 
 ### 💡 Others
 
-- [Android] Bump media3 version to 1.9.0.
+- [Android] Bump media3 version to 1.9.0. ([#44823](https://github.com/expo/expo/pull/44823) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.9 — 2026-02-25
 
