@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix 'occured' -> 'occurred' typo in error messages. ([#44831](https://github.com/expo/expo/pull/44831) by [@SAY-5](https://github.com/SAY-5))
+
 - [iOS] Fix crash when loading PHAsset url fails ([#43373](https://github.com/expo/expo/pull/43373) by [@fractalbeauty](https://github.com/fractalbeauty))
 - [iOS] Fix crashes when `VideoTrack` properties are non-finite. ([#44108](https://github.com/expo/expo/pull/44108) by [@behenate](https://github.com/behenate))
 - [Android] Fix PiP exiting immediately after auto-entering from fullscreen. ([#44157](https://github.com/expo/expo/pull/44157) by [@behenate](https://github.com/behenate))
