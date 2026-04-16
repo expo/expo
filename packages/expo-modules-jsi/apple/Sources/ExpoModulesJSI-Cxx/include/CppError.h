@@ -10,12 +10,12 @@ namespace expo {
 namespace jsi = facebook::jsi;
 
 /**
- A thread-safe error handling class for capturing and propagating C++ exceptions
- across the C++/Swift boundary when working with JavaScript runtimes.
+ A thread-safe error handling class for capturing and propagating JavaScript
+ errors across the C++/Swift boundary when working with JavaScript runtimes.
 
- This class provides a mechanism to catch exceptions thrown during JavaScript
- operations and store them in thread-local storage, allowing Swift code to
- retrieve and handle errors after calling C++ functions.
+ Wraps a `jsi::JSError`, preserving its underlying JavaScript value (an Error
+ object) so that downstream consumers can access the full error including
+ message, stack, and any custom properties (like `code` and `userInfo`).
 
  ## Thread Safety
  Each thread maintains its own error state using thread-local storage, making
@@ -24,104 +24,83 @@ namespace jsi = facebook::jsi;
 class CppError {
 public:
   /**
-   Creates a CppError with a custom error message describing what went wrong.
+   Creates a CppError from a `jsi::JSError`.
    */
-  CppError(const std::string &message) : message(message) {}
+  CppError(jsi::JSError jsError) : jsError(std::move(jsError)) {}
 
   /**
-   Creates a CppError from a JavaScript error.
+   The wrapped `jsi::JSError`.
    */
-  CppError(const jsi::JSError &jsError) : message(jsError.getMessage()) {}
+  jsi::JSError jsError;
 
   /**
-   Creates a CppError from a JSI exception.
+   Returns the error message of the wrapped `jsi::JSError`.
+   Renamed to `_message` in Swift so that an extension can expose a clean
+   `message: String` accessor that wraps the underlying `std::string`.
+   See `expo.CppError` extension in `JavaScriptError.swift`.
    */
-  CppError(const jsi::JSIException &jsiException) : message(jsiException.what()) {}
+  SWIFT_COMPUTED_PROPERTY
+  inline std::string getMessage() const SWIFT_NAME(_getMessage()) {
+    return jsError.getMessage();
+  }
 
   /**
-   The error message describing what went wrong.
+   Returns the underlying JavaScript value of the wrapped `jsi::JSError`.
+   This is a JavaScript Error object with all its properties preserved.
    */
-  std::string message SWIFT_NAME(_message);
-
-  /**
-   Converts this error into a JavaScript value that can be thrown or returned to JavaScript.
-   */
-  const jsi::Value asValue(jsi::Runtime &runtime) noexcept {
-    return jsi::Value(runtime, jsi::String::createFromUtf8(runtime, message));
+  inline jsi::Value asValue(jsi::Runtime &runtime) noexcept {
+    return jsi::Value(runtime, jsError.value());
   }
 
   /**
    Executes a block of code and catches any C++ exceptions that are thrown.
-   If an exception is caught, it's stored in thread-local storage and can be
-   retrieved using `getCurrent()`. The function returns `nullptr` when an
-   exception occurs.
-
-   Catches the following exception types:
-   - `jsi::JSError` - JavaScript runtime errors
-   - `jsi::JSIException` - JSI-specific exceptions
-   - `...` - All other C++ exceptions (reported as "Unknown C++ error")
-
-   @tparam Result The return type of the block. Must be a pointer or nullable type.
-   @param block A block to execute within the try-catch wrapper.
-   @return The result of the block if successful, or `nullptr` if an exception occurred.
-
-   ## Example
-   ```cpp
-   jsi::Value result = CppError::tryCatch(^{
-     return function.call(runtime, args, count);
-   });
-
-   if (result.isNull()) {
-     // An error occurred, check getCurrent()
-   }
-   ```
+   Caught exceptions are stored in thread-local storage and can be retrieved
+   using `getCurrent()`. The function returns `nullptr` when an exception occurs.
    */
   template <typename Result>
-  inline static Result tryCatch(Result(^block)(void)) {
+  inline static Result tryCatch(jsi::Runtime &runtime, Result(^block)(void)) {
     try {
       return block();
-    } catch (jsi::JSError &e) {
+    } catch (const jsi::JSError &e) {
       _current = std::make_unique<CppError>(e);
-    } catch (jsi::JSIException &e) {
-      _current = std::make_unique<CppError>(e);
+    } catch (const std::exception &e) {
+      _current = std::make_unique<CppError>(jsi::JSError(runtime, e.what()));
     } catch (...) {
-      _current = std::make_unique<CppError>("Unknown C++ error");
+      _current = std::make_unique<CppError>(jsi::JSError(runtime, "Unknown C++ error"));
     }
     return nullptr;
   }
 
   /**
    Retrieves the current thread's error and transfers ownership to the caller.
-   After calling this method, the thread-local error state is reset to `nullptr`, and the caller becomes responsible for deleting the returned pointer.
-
-   @return A pointer to the current error, or `nullptr` if no error exists. The caller must delete this pointer when done.
-
-   ## Important
-   - This method transfers ownership of the error to the caller
-   - The caller must delete the returned pointer to avoid memory leaks
-   - Each thread has its own independent error state
-   - Calling this method resets the current thread's error state
-
-   ## Example
-   ```cpp
-   CppError* error = CppError::getCurrent();
-   if (error) {
-     std::string msg = error->message;
-     delete error; // Don't forget to clean up!
-   }
-   ```
+   After calling this method, the thread-local error state is reset to `nullptr`,
+   and the caller becomes responsible for deleting the returned pointer.
    */
   inline static CppError* getCurrent() {
-    if (!_current) {
-      return nullptr;
-    }
     return _current.release();
+  }
+
+  /**
+   Sets the current thread's error from a pre-built `jsi::JSError`.
+   Called from Swift when a host function closure throws a JavaScriptThrowable error.
+   */
+  inline static void setCurrent(jsi::JSError jsError) {
+    _current = std::make_unique<CppError>(std::move(jsError));
+  }
+
+  /**
+   Sets the current thread's error by creating a `jsi::JSError` from the given message.
+   Called from Swift when a host function closure throws a plain error.
+   */
+  inline static void setCurrent(jsi::Runtime &runtime, const std::string &message) {
+    _current = std::make_unique<CppError>(jsi::JSError(runtime, message));
   }
 
 private:
   /**
-   Pointer to the last thrown and caught error. Each thread maintains its own error pointer,
-   eliminating the need for synchronization and preventing errors from one thread affecting another.
+   Pointer to the last thrown and caught error. Each thread maintains its own
+   error pointer, eliminating the need for synchronization and preventing errors
+   from one thread affecting another.
    */
   inline static thread_local std::unique_ptr<CppError> _current;
 

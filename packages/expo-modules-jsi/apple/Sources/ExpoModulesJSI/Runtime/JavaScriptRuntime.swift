@@ -510,9 +510,14 @@ private func createFunctionClosure(runtime: JavaScriptRuntime, name: String? = n
         let thisValue = JavaScriptValue(runtime, this)
         let result = try context.call(thisValue, argumentsRef.take())
         return result.asJSIValue()
+      } catch let throwable as JavaScriptThrowable {
+        // Store the error in thread-local storage so the C++ caller can
+        // retrieve it and throw a jsi::JSError after this closure returns.
+        let jsError = JavaScriptError(runtime, from: throwable)
+        expo.CppError.setCurrent(jsError.toJSError())
+        return .undefined()
       } catch let error {
-        // TODO: Implement throwing `facebook.jsi.JSError`, returns `undefined` until then
-        print("Calling '\(context.name ?? "anonymous")' function has failed: \(error)")
+        expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
         return .undefined()
       }
     }

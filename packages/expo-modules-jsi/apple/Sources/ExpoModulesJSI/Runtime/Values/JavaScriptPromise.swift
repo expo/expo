@@ -103,7 +103,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // `reject` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
       // Create a JS error from any (native) error.
-      let errorValue = JavaScriptError(runtime, message: error.localizedDescription).asValue()
+      let errorMessage = String(describing: error)
+      let errorValue = JavaScriptError(runtime, message: errorMessage).asValue()
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
