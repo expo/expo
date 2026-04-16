@@ -41,9 +41,21 @@ export async function setAutoServerRegistrationEnabledAsync(enabled: boolean) {
     throw new UnavailabilityError('ServerRegistrationModule', 'setRegistrationInfoAsync');
   }
 
-  await ServerRegistrationModule.setRegistrationInfoAsync(
-    enabled ? JSON.stringify({ isEnabled: enabled }) : null
-  );
+  if (!enabled) {
+    await ServerRegistrationModule.setRegistrationInfoAsync(null);
+  } else {
+    // Preserve existing stored data (e.g. last registered token fingerprint)
+    // while updating the isEnabled flag.
+    let existing: Record<string, unknown> = {};
+    try {
+      const info = await ServerRegistrationModule.getRegistrationInfoAsync?.();
+      if (info) {
+        existing = JSON.parse(info);
+      }
+    } catch {}
+    existing.isEnabled = true;
+    await ServerRegistrationModule.setRegistrationInfoAsync(JSON.stringify(existing));
+  }
 }
 
 // note(Chmiela): This function is exported only for testing purposes.
