@@ -4614,8 +4614,8 @@ importers:
   packages/expo-modules-core:
     dependencies:
       '@expo/expo-modules-macros-plugin':
-        specifier: ~0.0.7
-        version: 0.0.7
+        specifier: ~0.0.8
+        version: 0.0.8
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
@@ -7049,8 +7049,8 @@ packages:
   '@expo/devcert@1.2.1':
     resolution: {integrity: sha512-qC4eaxmKMTmJC2ahwyui6ud8f3W60Ss7pMkpBq40Hu3zyiAaugPXnZ24145U7K36qO9UHdZUVxsCvIpz2RYYCA==}
 
-  '@expo/expo-modules-macros-plugin@0.0.7':
-    resolution: {integrity: sha512-PPgH9LjbArypVY0f0suCXq4uzBZLs2PxF34N9lSqyuPuG7X65sAeqkFOOwsV/iL7RnA2OPOTdN6fBUKvUoylVg==}
+  '@expo/expo-modules-macros-plugin@0.0.8':
+    resolution: {integrity: sha512-ZHH+Hgle/ZyVfTSd9L+ON/0a7BouMEQ3wJKGmOilPLYMTjx5NOcbNZVaJ3iAHKCplvDIHHjPdmqVPorWMHm19A==}
 
   '@expo/json-file@8.3.3':
     resolution: {integrity: sha512-eZ5dld9AD0PrVRiIWpRkm5aIoWBw3kAyd8VkuWEy92sEthBKDDDHAnK2a0dw0Eil6j7rK7lS/Qaq/Zzngv2h5A==}
@@ -16733,7 +16733,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@expo/expo-modules-macros-plugin@0.0.7': {}
+  '@expo/expo-modules-macros-plugin@0.0.8': {}
 
   '@expo/json-file@8.3.3':
     dependencies:

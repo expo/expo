@@ -509,7 +509,6 @@ PODS:
     - ExpoModulesCore
   - ExpoModulesCore (55.0.12):
     - ExpoModulesJSI
-    - ExpoModulesMacros
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -534,7 +533,6 @@ PODS:
     - Yoga
   - ExpoModulesCore/Tests (55.0.12):
     - ExpoModulesJSI
-    - ExpoModulesMacros
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -568,8 +566,6 @@ PODS:
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesMacros (0.0.7)
-  - ExpoModulesMacros/Tests (0.0.7)
   - ExpoModulesTestCore (55.0.2):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
@@ -3314,8 +3310,6 @@ DEPENDENCIES:
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
-  - "ExpoModulesMacros (from `../../../node_modules/.pnpm/@expo+expo-modules-macros-plugin@0.0.7/node_modules/@expo/expo-modules-macros-plugin/apple`)"
-  - "ExpoModulesMacros/Tests (from `../../../node_modules/.pnpm/@expo+expo-modules-macros-plugin@0.0.7/node_modules/@expo/expo-modules-macros-plugin/apple`)"
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
@@ -3630,9 +3624,6 @@ EXTERNAL SOURCES:
   ExpoModulesJSI:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core"
-  ExpoModulesMacros:
-    inhibit_warnings: false
-    :path: "../../../node_modules/.pnpm/@expo+expo-modules-macros-plugin@0.0.7/node_modules/@expo/expo-modules-macros-plugin/apple"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoModulesWorklets:
@@ -3966,9 +3957,8 @@ SPEC CHECKSUMS:
   ExpoMaps: 94294944cff46ad1170ce4f92800adecbcdd04ac
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
   ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
-  ExpoModulesCore: 175c54e26f394abfc6da4371b3fb4f8d2d0716c8
+  ExpoModulesCore: a3dfc5e19028675ac402beedd870eae5a6d4a4d2
   ExpoModulesJSI: 793687b04cbaa73ee8548bfdbcfba85954d1b2b5
-  ExpoModulesMacros: 6e01118aed19527180871e271177089c34d90dd2
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoModulesWorklets: fe2384a395429f5148f20204d229fb50926f9392
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007

@@ -795,6 +795,11 @@ module Expo
         installer.pods_project.save
       end
 
+      # Returns the package_root for a given pod name, or nil if not found.
+      def package_root_for(pod_name)
+        pod_lookup_map[pod_name]&.dig(:package_root)
+      end
+
       private
 
       # ──────────────────────────────────────────────────────────────────────

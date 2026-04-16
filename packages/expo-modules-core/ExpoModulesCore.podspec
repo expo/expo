@@ -104,8 +104,6 @@ Pod::Spec.new do |s|
     s.dependency 'React-jsc'
   end
 
-  s.dependency 'ExpoModulesMacros'
-
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
   s.dependency 'React-NativeModulesApple'
