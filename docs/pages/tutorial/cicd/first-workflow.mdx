@@ -9,7 +9,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { JobTypes } from '~/ui/components/FlowDiagram/Diagrams/JobTypes';
 
-In this chapter, let's create our first workflow, run it on EAS using EAS CLI, look into logs once the job is complete, and chain multiple jobs together from a single workflow file.
+In this chapter, let's learn how to create our first workflow, run it on EAS using EAS CLI, look into logs once the job is complete, and chain multiple jobs together from a single workflow file.
 
 ## How workflow files work
 
@@ -119,7 +119,7 @@ Let's add `on.push.branches` trigger to our existing workflow file.
 ```yaml .eas/workflows/hello.yml
 name: Hello
 
-# @tutinfo #
+# @info #
 on:
   push:
     branches: ['main'] # Fires on every push to main branch
