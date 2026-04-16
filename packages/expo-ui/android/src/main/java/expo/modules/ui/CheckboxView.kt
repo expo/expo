@@ -11,7 +11,9 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class CheckboxColors(
   @Field val checkedColor: Color? = null,
   @Field val disabledCheckedColor: Color? = null,

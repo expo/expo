@@ -18,7 +18,9 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class ModalBottomSheetPropertiesRecord(
   @Field val shouldDismissOnBackPress: Boolean = true,
   @Field val shouldDismissOnClickOutside: Boolean = true

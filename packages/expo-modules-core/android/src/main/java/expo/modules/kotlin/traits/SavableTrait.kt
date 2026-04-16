@@ -11,7 +11,7 @@ import expo.modules.kotlin.weak
 import java.io.File
 import java.util.UUID
 import kotlin.reflect.KClass
-import expo.modules.kotlin.types.Introspectable
+import expo.modules.kotlin.types.OptimizedRecord
 
 class SavableTrait<InputType> @PublishedApi internal constructor(
   val exportImpl: (AppContext) -> ObjectDefinitionData
@@ -19,7 +19,7 @@ class SavableTrait<InputType> @PublishedApi internal constructor(
   override fun export(appContext: AppContext) = exportImpl(appContext)
 
   companion object {
-    @Introspectable
+    @OptimizedRecord
     data class SavableBitmapOptions(
       val compression: Int = 100
     ) : Record

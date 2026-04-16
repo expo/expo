@@ -6,6 +6,7 @@ import expo.modules.image.calcXTranslation
 import expo.modules.image.calcYTranslation
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
 /**
  * Represents a position value that might be either `Double` or `String`.
@@ -21,6 +22,7 @@ private typealias CalcAxisOffset = (
   isReverse: Boolean
 ) -> Float
 
+@OptimizedRecord
 class ContentPosition : Record {
   @Field
   val top: ContentPositionValue? = null

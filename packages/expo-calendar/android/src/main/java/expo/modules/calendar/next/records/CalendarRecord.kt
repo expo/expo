@@ -4,7 +4,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.Required
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class CalendarInputRecord(
   @Required @Field var title: String,
   @Field val name: String?,
@@ -36,6 +38,7 @@ enum class CalendarAccessLevel(val value: String) : Enumerable {
   NONE("none")
 }
 
+@OptimizedRecord
 data class Source(
   @Field
   val id: String? = null,

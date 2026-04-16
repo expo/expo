@@ -5,12 +5,12 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.formatter
 import org.junit.Test
-import expo.modules.kotlin.types.Introspectable
+import expo.modules.kotlin.types.OptimizedRecord
 
 class FormatterTest {
   @Test
   fun uses_formatter_in_sync_function() {
-    @Introspectable
+    @OptimizedRecord
     class MyRecord(
       @Field val a: String = "a",
       @Field val b: String? = "b",
@@ -51,7 +51,7 @@ class FormatterTest {
 
   @Test
   fun uses_formatter_in_async_function() {
-    @Introspectable
+    @OptimizedRecord
     class MyRecord(
       @Field val a: String = "a",
       @Field val b: String? = "b",

@@ -8,7 +8,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
 import java.util.Locale
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class SubtitleTrack(
   @Field val id: String,
   @Field val language: String?,
@@ -39,6 +41,7 @@ class SubtitleTrack(
   }
 }
 
+@OptimizedRecord
 class AudioTrack(
   @Field val id: String,
   @Field val language: String?,
@@ -70,6 +73,7 @@ class AudioTrack(
 }
 
 @OptIn(UnstableApi::class)
+@OptimizedRecord
 class VideoTrack(
   @Field val id: String,
   @Field val url: Uri?,

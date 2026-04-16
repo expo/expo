@@ -16,7 +16,9 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class SliderColors : Record {
   @Field
   val thumbColor: Color? = null
@@ -44,6 +46,7 @@ data class SliderProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
+@OptimizedRecord
 data class SliderValueChangedEvent(
   @Field val value: Float
 ) : Record

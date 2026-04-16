@@ -3,7 +3,9 @@ package expo.modules.calendar.next.records
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class AttendeeRecord(
   @Field
   var id: String? = null,

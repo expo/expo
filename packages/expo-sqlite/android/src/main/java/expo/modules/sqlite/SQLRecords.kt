@@ -5,7 +5,9 @@ package expo.modules.sqlite
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 internal data class Query(
   @Field
   val sql: String,

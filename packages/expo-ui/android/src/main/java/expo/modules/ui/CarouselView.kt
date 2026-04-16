@@ -18,12 +18,14 @@ import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class FlingBehaviorType(val value: String) : Enumerable {
   SINGLE_ADVANCE("singleAdvance"),
   NO_SNAP("noSnap")
 }
 
+@OptimizedRecord
 class PaddingValuesRecord : Record {
   @Field val start: Float? = null
   @Field val top: Float? = null

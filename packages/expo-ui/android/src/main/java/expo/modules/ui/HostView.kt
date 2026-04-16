@@ -42,6 +42,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.types.OptimizedRecord
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -249,6 +250,7 @@ internal class HostView(context: Context, appContext: AppContext) :
   }
 }
 
+@OptimizedRecord
 internal data class LayoutContentEvent(
   @Field
   val width: Double?,
