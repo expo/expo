@@ -1,6 +1,5 @@
 import React from 'react';
-// TODO(@kitten): We shouldn't be importing all of react-native-web or rely on it for a web module in this way optimally
-import { View } from 'react-native-web';
+import { StyleSheet as RNStyleSheet, View } from 'react-native';
 
 import type { ImageNativeProps, ImageSource, ImageLoadEventData, ImageRef } from './Image.types';
 import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
@@ -82,6 +81,11 @@ export default function ExpoImage({
   draggable,
   ...props
 }: ImageNativeProps) {
+  // Flatten the style to ensure compatibility with third-party style systems
+  // (e.g. react-native-unistyles) that may return opaque style references
+  // instead of plain objects on web.
+  const flatStyle = RNStyleSheet.flatten(style);
+
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
@@ -168,7 +172,7 @@ export default function ExpoImage({
       ref={containerViewRef}
       // @ts-expect-error: TODO(@kitten): This is related to react-native-web presumably
       dataSet={{ expoimage: true }}
-      style={[{ overflow: 'hidden' }, style]}
+      style={[{ overflow: 'hidden' }, flatStyle]}
       {...props}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
