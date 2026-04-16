@@ -73,7 +73,7 @@ class EventDispatcher(
         }
 
         val response = call.execute()
-        Log.d(TAG, "Server responded with: ${response.body.string()}")
+        Log.d(TAG, "Server responded with: ${response.body?.string()}")
 
         continuation.resume(response.code in 200..299)
       } catch (e: Exception) {
