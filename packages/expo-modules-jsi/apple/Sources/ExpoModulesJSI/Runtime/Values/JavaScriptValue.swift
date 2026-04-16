@@ -160,6 +160,16 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
   }
 
   /**
+   Checks whether the value is an `ArrayBuffer`.
+   */
+  public func isArrayBuffer() -> Bool {
+    guard let jsiRuntime = runtime?.pointee else {
+      FatalError.runtimeLost()
+    }
+    return pointee.isObject() && pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
+  }
+
+  /**
    Checks whether the value is an instance of a global class of the given name.
    For example `value.is("Promise")` checks whether the value is a promise.
    */
@@ -306,6 +316,17 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
   }
 
   /**
+   Returns the value as an array buffer, or asserts if it is not an array buffer.
+   */
+  public func getArrayBuffer() -> JavaScriptArrayBuffer {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    assert(isArrayBuffer(), "Value is not an array buffer")
+    return JavaScriptArrayBuffer(runtime, pointee.getObject(runtime.pointee).getArrayBuffer(runtime.pointee))
+  }
+
+  /**
    Returns the value as a promise, or asserts if it is not a promise.
    */
   @JavaScriptActor
@@ -397,6 +418,19 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
       throw TypeError(type: JavaScriptPromise.self)
     }
     return getPromise()
+  }
+
+  /**
+   Returns the value as a `JavaScriptArrayBuffer`.
+   Throws `TypeError` if the value is not an object or not an `ArrayBuffer`.
+   */
+  @JavaScriptActor
+  public func asArrayBuffer() throws(TypeError) -> JavaScriptArrayBuffer {
+    let object = try asObject()
+    guard object.isArrayBuffer() else {
+      throw TypeError(type: JavaScriptArrayBuffer.self)
+    }
+    return object.getArrayBuffer()
   }
 
   // MARK: - Serializing

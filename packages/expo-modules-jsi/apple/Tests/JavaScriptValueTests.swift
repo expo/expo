@@ -471,6 +471,55 @@ struct JavaScriptValueTests {
     }
   }
 
+  // MARK: - ArrayBuffer
+
+  @Test
+  func `isArrayBuffer returns true for ArrayBuffer`() throws {
+    let value = try runtime.eval("new ArrayBuffer(16)")
+    #expect(value.isArrayBuffer() == true)
+  }
+
+  @Test
+  func `isArrayBuffer returns false for non-ArrayBuffer`() throws {
+    let array = try runtime.eval("[1, 2, 3]")
+    let object = try runtime.eval("({ key: 'value' })")
+    let typedArray = try runtime.eval("new Uint8Array(4)")
+
+    #expect(array.isArrayBuffer() == false)
+    #expect(object.isArrayBuffer() == false)
+    #expect(typedArray.isArrayBuffer() == false)
+  }
+
+  @Test
+  func `getArrayBuffer round-trip preserves size`() throws {
+    let ab = runtime.createArrayBuffer(size: 32)
+    let value = ab.asValue()
+    let recovered = value.getArrayBuffer()
+
+    #expect(recovered.size == 32)
+    #expect(recovered.byteLength == 32)
+  }
+
+  @Test
+  func `asArrayBuffer returns ArrayBuffer for valid value`() throws {
+    let value = try runtime.eval("new ArrayBuffer(8)")
+    let ab = try value.asArrayBuffer()
+    #expect(ab.size == 8)
+  }
+
+  @Test
+  func `asArrayBuffer throws TypeError for non-ArrayBuffer`() throws {
+    let object = try runtime.eval("({ key: 'value' })")
+    let number = JavaScriptValue(runtime, 42)
+
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try object.asArrayBuffer()
+    }
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try number.asArrayBuffer()
+    }
+  }
+
   // MARK: - Unsafe pointee access
 
   @Test

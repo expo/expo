@@ -9,6 +9,7 @@
 #include "CppError.h"
 #include "MemoryBuffer.h"
 #include "NativeState.h"
+#include "TypedArray.h"
 
 namespace jsi = facebook::jsi;
 
@@ -119,6 +120,13 @@ inline jsi::Value callAsConstructor(jsi::Runtime &runtime, const jsi::Function &
  */
 inline jsi::Value valueFromArrayBuffer(jsi::Runtime &runtime, const jsi::ArrayBuffer &arrayBuffer) {
   return jsi::Value(runtime, arrayBuffer);
+}
+
+/**
+ * Converts a `expo::TypedArray` to a `jsi::Value`.
+ */
+inline jsi::Value valueFromTypedArray(jsi::Runtime &runtime, const TypedArray &typedArray) {
+  return jsi::Value(runtime, typedArray);
 }
 
 /**

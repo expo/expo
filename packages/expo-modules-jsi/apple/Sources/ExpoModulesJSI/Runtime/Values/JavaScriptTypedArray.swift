@@ -61,6 +61,27 @@ public struct JavaScriptTypedArray: ~Copyable {
    */
   public let length: Int
 
+  // MARK: - Conversions
+
+  /**
+   Returns the underlying `ArrayBuffer` that this typed array is a view of.
+   Equivalent to the JavaScript `.buffer` property.
+   */
+  public func getArrayBuffer() -> JavaScriptArrayBuffer {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let arrayBuffer = pointee.getPropertyAsObject(runtime.pointee, "buffer").getArrayBuffer(runtime.pointee)
+    return JavaScriptArrayBuffer(runtime, arrayBuffer)
+  }
+
+  public func asValue() -> JavaScriptValue {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return JavaScriptValue(runtime, expo.valueFromTypedArray(runtime.pointee, pointee))
+  }
+
   // MARK: - Providing JavaScriptObject API
 
   public func getProperty(_ name: String) -> JavaScriptValue {
