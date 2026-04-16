@@ -16,7 +16,7 @@
     "@react-native-picker/picker": "2.11.4",
     "@react-native-segmented-control/segmented-control": "2.5.7",
     "@shopify/react-native-skia": "2.4.18",
-    "@stripe/stripe-react-native": "0.58.0",
+    "@stripe/stripe-react-native": "0.63.0",
     "expo": "workspace:*",
     "expo-application": "workspace:*",
     "expo-asset": "workspace:*",
