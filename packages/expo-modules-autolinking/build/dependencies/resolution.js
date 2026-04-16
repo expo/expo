@@ -42,13 +42,17 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
         Object.assign(dependencies, packageJson.devDependencies);
     }
     if (packageJson.peerDependencies != null && typeof packageJson.peerDependencies === 'object') {
+        const peerDependenciesMeta = packageJson.peerDependenciesMeta != null &&
+            typeof packageJson.peerDependenciesMeta === 'object'
+            ? packageJson.peerDependenciesMeta
+            : undefined;
         for (const dependencyName in packageJson.peerDependencies) {
-            // NOTE: We always attempt to resolve peer dependencies — including optional ones — because
-            // package managers (npm 7+) will auto-install an optional peer when the project's version
-            // doesn't satisfy its range. Walking into those auto-installed copies is required to detect
-            // duplicates of bundled native modules. `resolveDependency` already returns null when the
-            // package isn't on disk, so genuinely uninstalled optional peers are still filtered out.
-            dependencies[dependencyName] = '';
+            // NOTE(@kitten): We only check peer dependencies because some package managers auto-install them
+            // which would mean they'd have no reference in any dependencies. However, optional peer dependencies
+            // don't auto-install and we can skip them
+            if (!isOptionalPeerDependencyMeta(peerDependenciesMeta, dependencyName)) {
+                dependencies[dependencyName] = '';
+            }
         }
     }
     const resolveDependency = async (dependencyName) => {
@@ -123,4 +127,11 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
     });
     return searchResults;
 }
+const isOptionalPeerDependencyMeta = (peerDependenciesMeta, packageName) => {
+    return (peerDependenciesMeta &&
+        peerDependenciesMeta[packageName] != null &&
+        typeof peerDependenciesMeta[packageName] === 'object' &&
+        'optional' in peerDependenciesMeta[packageName] &&
+        !!peerDependenciesMeta[packageName].optional);
+};
 //# sourceMappingURL=resolution.js.map
