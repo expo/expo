@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Omit origin from redirect `Location` header value; discovered by @yavuzselimkolbasar - thank you! ([#44782](https://github.com/expo/expo/pull/44782) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-04-02
