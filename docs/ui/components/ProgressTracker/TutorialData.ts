@@ -75,6 +75,11 @@ export const CICD_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
     completed: false,
     slug: '/tutorial/cicd/development-builds',
   },
+  {
+    title: 'Chapter 3: Preview builds',
+    completed: false,
+    slug: '/tutorial/cicd/preview-builds',
+  },
 ];
 
 // The following data is for the Get started Tutorial (/tutorial/).
