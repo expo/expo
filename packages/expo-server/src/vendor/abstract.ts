@@ -129,7 +129,7 @@ export function createRequestHandler({
         }
 
         // Replace URL and Request with rewrite target
-        url = getRedirectRewriteLocation(url, request, route);
+        url = new URL(getRedirectRewriteLocation(url, request, route), url);
         request = new Request(url, request);
       }
     }
@@ -334,6 +334,9 @@ export function createRequestHandler({
       status = route.permanent ? 308 : 307;
     }
 
-    return Response.redirect(target, status);
+    return new Response(null, {
+      status,
+      headers: { Location: target },
+    });
   }
 }

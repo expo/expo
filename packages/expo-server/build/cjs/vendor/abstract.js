@@ -75,7 +75,7 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
                     continue;
                 }
                 // Replace URL and Request with rewrite target
-                url = (0, matchers_1.getRedirectRewriteLocation)(url, request, route);
+                url = new URL((0, matchers_1.getRedirectRewriteLocation)(url, request, route), url);
                 request = new Request(url, request);
             }
         }
@@ -241,7 +241,10 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
         else {
             status = route.permanent ? 308 : 307;
         }
-        return Response.redirect(target, status);
+        return new Response(null, {
+            status,
+            headers: { Location: target },
+        });
     }
 }
 //# sourceMappingURL=abstract.js.map

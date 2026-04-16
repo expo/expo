@@ -44,7 +44,7 @@ function getRedirectRewriteLocation(url, request, route) {
         }
     })
         .join('/');
-    const targetUrl = new URL(target, url.origin);
+    const targetUrl = new URL(target, 'http://localhost');
     // NOTE: React Navigation doesn't differentiate between a path parameter
     // and a search parameter. We have to preserve leftover search parameters
     // to ensure we don't lose any intentional parameters with special meaning
@@ -58,7 +58,10 @@ function getRedirectRewriteLocation(url, request, route) {
             targetUrl.searchParams.append(key, value);
         }
     }
-    return targetUrl;
+    // When the hostname is the resolved `localhost` (see above on new URL) we just output the path
+    return targetUrl.hostname === 'localhost'
+        ? targetUrl.pathname + targetUrl.search
+        : targetUrl.toString();
 }
 /** Match `[page]` -> `page`
  * @privateRemarks Ported from `expo-router/src/matchers.tsx`
