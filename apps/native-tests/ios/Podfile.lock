@@ -1929,6 +1929,28 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - react-native-webview (13.16.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - React-NativeModulesApple (0.85.0):
     - hermes-engine
     - React-callinvoker
@@ -2648,6 +2670,7 @@ DEPENDENCIES:
   - "React-Mapbuffer (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon`)"
   - "React-microtasksnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.0_@babel+core@7.29.0_@react-nati_85e0bf7fc2651b209a9ea434ab882945/node_modules/react-native-safe-area-context`)"
+  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.0_react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-_fedb10ab70bceed7f2969543e6d25c73/node_modules/react-native-webview`)"
   - "React-NativeModulesApple (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
   - "React-networking (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/networking`)"
   - "React-oscompat (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/oscompat`)"
@@ -2840,6 +2863,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-safe-area-context:
     :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.0_@babel+core@7.29.0_@react-nati_85e0bf7fc2651b209a9ea434ab882945/node_modules/react-native-safe-area-context"
+  react-native-webview:
+    :path: "../../../node_modules/.pnpm/react-native-webview@13.16.0_react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-_fedb10ab70bceed7f2969543e6d25c73/node_modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -2943,7 +2968,7 @@ SPEC CHECKSUMS:
   EXUpdates: a0f980531cbcf45906b2489febd4e11a5895f332
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
   FBLazyVector: c00c20551d40126351a6783c47ce75f5b374851b
-  hermes-engine: 10b65ce39e488a1f4f84f3cb25949418ea87cb3d
+  hermes-engine: 407f52f1dca2c25263c5f76e80cc38a39e0f6ec0
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -2959,7 +2984,7 @@ SPEC CHECKSUMS:
   React: 1b1536b9099195944034e65b1830f463caaa8390
   React-callinvoker: 6dff6d17d1d6cc8fdf85468a649bafed473c65f5
   React-Core: 00faa4d038298089a1d5a5b21dde8660c4f0820d
-  React-Core-prebuilt: a245f9ce5303eb2841466c7ffe2025345a9645d6
+  React-Core-prebuilt: 3fb4a39af3de556a21a2d3ed972218ef68ce6218
   React-CoreModules: a17807f849bfd86045b0b9a75ec8c19373b482f6
   React-cxxreact: c7b53ace5827be54048288bce5c55f337c41e95f
   React-debug: e1f00fcd2cef58a2897471a6d76a4ef5f5f90c74
@@ -2988,6 +3013,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 7f8bfbe3fcb2203db4ccb3975414af8cabe4bcd0
   React-microtasksnativemodule: ca1f33f7c98b76d923f550d39631eb4e05fa9aec
   react-native-safe-area-context: 91a90d98c310adcc90a511e5aeb6046d7c19d885
+  react-native-webview: 96c45c7e019eeaae562589b78b67924d5816d2c1
   React-NativeModulesApple: 9c1f8815ebd72cc1c75587fe588513f6dd9cb708
   React-networking: 8f75f882c6794e91e28b458b5bc1461034098c80
   React-oscompat: 5361d0fa7905ba1c3b3c5e7c464d6be9d2d85f4b
@@ -3021,7 +3047,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 5787b37b8e2e51dfeab697ec031cc7c4080dcea2
   ReactCodegen: 77e63e24e8167e69586359b57874d7c35d7e987f
   ReactCommon: fe2a3af8975e63efa60f95fca8c34dc85deee360
-  ReactNativeDependencies: 84c286f727a3bdb58abcdf5cf2b51935513301af
+  ReactNativeDependencies: 536ba8be1c7a97b32f58080f77615c68dce01cad
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
   RNGestureHandler: c84901d120acdae2f6f27b5889a7cf144e64e6ec
   RNReanimated: 6e536dcd6b715b36db98376cea6f58370148c25a

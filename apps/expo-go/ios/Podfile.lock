@@ -91,6 +91,9 @@ PODS:
     - ExpoModulesCore
   - ExpoBackgroundTask (55.0.8):
     - ExpoModulesCore
+  - ExpoBackgroundTask/Tests (55.0.8):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoBattery (55.0.8):
     - ExpoModulesCore
   - ExpoBlob (55.0.8):
@@ -103,6 +106,8 @@ PODS:
     - ExpoModulesCore
   - ExpoCamera (55.0.9):
     - ExpoModulesCore
+  - ExpoCameraBarcodeScanning (55.0.9):
+    - ExpoCamera
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
   - ExpoCellular (55.0.8):
@@ -3999,12 +4004,14 @@ DEPENDENCIES:
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
+  - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
+  - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
@@ -4255,6 +4262,8 @@ EXTERNAL SOURCES:
   ExpoCalendar:
     :path: "../../../packages/expo-calendar/ios"
   ExpoCamera:
+    :path: "../../../packages/expo-camera/ios"
+  ExpoCameraBarcodeScanning:
     :path: "../../../packages/expo-camera/ios"
   ExpoCellular:
     :path: "../../../packages/expo-cellular/ios"
@@ -4569,13 +4578,14 @@ SPEC CHECKSUMS:
   ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27
   ExpoAudio: 40c883c60ed3bb17ecb3744a00732fb47029535b
   ExpoBackgroundFetch: ee315c8d1a54a3f358fc0cedb68e808e95935c57
-  ExpoBackgroundTask: da109d7e8e8bafe08fafb76c22fca8d6a10b8c86
+  ExpoBackgroundTask: efe66eaab7afbb341b03ef11f9919552797a286a
   ExpoBattery: 978934da47fa3414103aea2b61aeaa459658e06d
   ExpoBlob: 8aadbb43ad4e2cdabc9a10fd26344d7911bb9805
   ExpoBlur: d3a8f3dbdfadac5f4f7ebe201deb245678257b72
   ExpoBrightness: d1d486e406bcc66acbd5d0101bf7785d5f35fd88
   ExpoCalendar: d21041bc88e41a4d187196157568fd1310b59fc7
-  ExpoCamera: 3482cd1985d1ffb6251f8edcc6a0cc01fb367c50
+  ExpoCamera: e95e370de0bf60152a6ccfd23e5d9492b947b701
+  ExpoCameraBarcodeScanning: 0fd8335acfaef17a1690461ae6f0c2b817948668
   ExpoCellular: 7d53af5a8e82d326a5c7bc79443166eca4515fc5
   ExpoClipboard: 0acdce934cb6a71b507da1117399645265e51ed5
   ExpoContacts: 9b79a617546de1855e2267550e1f7a026afd2e9c
@@ -4764,6 +4774,6 @@ SPEC CHECKSUMS:
   Yoga: 7549f28c2f55a71280f339554f8980f4a1414b0f
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 73864670647a86fa25c542477e3c06e12784f88f
+PODFILE CHECKSUM: cd6045f91d2ea37f1012b961820f37cc8d7d9bc0
 
 COCOAPODS: 1.16.2
