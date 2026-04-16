@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix 'occured' -> 'occurred' typo in error messages. ([#44831](https://github.com/expo/expo/pull/44831) by [@SAY-5](https://github.com/SAY-5))
+
 - [Web] Fix `isAvailableAsync` returning `true` on devices without a camera. ([#43932](https://github.com/expo/expo/pull/43932) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Use runtime camera availability checks in Simulator so camera code paths can run when a runtime video device is present while preserving fallback behavior when no device is available. (by [@kmagiera](https://github.com/kmagiera)) ([#44159](https://github.com/expo/expo/pull/44159) by [@kmagiera](https://github.com/kmagiera))
 - [iOS] Fix orientation issue caused by upstream changes. ([#44171](https://github.com/expo/expo/pull/44171) by [@alanjhughes](https://github.com/alanjhughes))
