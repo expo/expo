@@ -23,7 +23,7 @@ For this chapter, we are going to use `development` build profile from our proje
 
 ### Add a build.yml
 
-In **.eas/workflows/**, add a new new file called **build.yml**. It uses the `build` job type to run development builds for both Android and iOS. By extending `build` job type and passing the `profile` and `platform` parameters, we can run tell EAS Workflows to create the type of build we want.
+In **.eas/workflows/**, add a new file called **build.yml**. It uses the `build` job type to run development builds for both Android and iOS. By extending `build` job type and passing the `profile` and `platform` parameters, we can tell EAS Workflows to create the type of build we want.
 
 Add the following code to the **build.yml** file:
 
@@ -45,8 +45,6 @@ jobs:
       profile: development
 ```
 
-In the above workflow, we are using `on.push` trigger to run the workflow on every push to the `main` branch from our GitHub repository.
-
 Then, we are adding two jobs: `build_android` and `build_ios`. Both of these jobs are of type `build`, but with different parameters to specify the platform and build profile.
 
 The `params` key for each job includes:
@@ -58,7 +56,7 @@ The `params` key for each job includes:
 
 <Step label="2">
 
-### Rub the workflow manually
+### Run the workflow manually
 
 Let's run the workflow manually using the command:
 

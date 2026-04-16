@@ -136,8 +136,6 @@ jobs:
     # ...
   build_ios:
     # ...
-  build_ios:
-    # ...
   # @info #
   notify:
     name: Notify on Slack
@@ -145,7 +143,7 @@ jobs:
     type: slack
     params:
       webhook_url: https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX
-      message: "Preview builds are ready - Android: ${{ after.build_android.status }}, iOS: ${{ after.build_ios.status }}"
+      message: 'Preview builds are ready - Android: ${{ after.build_android.status }}, iOS: ${{ after.build_ios.status }}'
   # @end #
 ```
 
@@ -187,7 +185,7 @@ You can also verify this in the Slack channel you integrated the app.
 
 When a PR reviewer looks at a pull request, they can read the diff but cannot see the changes visually or test them on a device without checking out the branch and starting a development server locally.
 
-Traditionally, the problem described above is solved by deploy previews. When a pull request is created, a CI/CD workflow runs and generates the preview link for the reviewers. They can click and test the changes live. This is also know as preview links or staging environment.
+Traditionally, the problem described above is solved by deploy previews. When a pull request is created, a CI/CD workflow runs and generates the preview link for the reviewers. They can click and test the changes live. This is also known as preview links or staging environment.
 
 On mobile for Android and iOS apps, the equivalent for web deployment previews can be set up using [EAS Update](/eas-update/introduction/). It is a service that delivers JavaScript bundle to devices that already have a compatible build installed. Publishing an update is fast because it skips the native compilation step. For PR reviews, we want an update and not a build because reviewers should be able to test and provide feedback to the PR.
 
@@ -226,19 +224,15 @@ jobs:
 
 ### Test with a pull request
 
-Let's test the workflow by creating a pull request in our GitHub repository. A pull request requires a separate branch from the `main`. Ru the following command to create and switch to a new branch:
+Let's test the workflow by creating a pull request in our GitHub repository. A pull request requires a separate branch from the `main`. Run the following command to create and switch to a new branch:
 
 <Terminal cmd={['$ git checkout -b test-preview']} />
 
-Now, let's a visible change in the app (for example, change a text string or background color). Then, commit, and push the branch:
-
-git add .
-git commit -m "Test PR preview"
-git push origin test-preview
+Now, let's make a visible change in the Expo project (for example, change a text string or background color). Then, commit, and push the branch:
 
 <Terminal
   cmd={['$ git add .', '$ git commit -m "Test PR preview"', '$ git push origin test-preview']}
-  ccmdCopy="git add . && git commit -m 'Test PR preview' && git push origin test-preview"
+  cmdCopy="git add . && git commit -m 'Test PR preview' && git push origin test-preview"
 />
 
 Open a pull request from `test-preview` to `main` on GitHub. The workflow will run automatically after we have created a pull request. On the EAS dashboard, we can verify that the `publish_preview` job runs first and the `comment` job runs after it succeeds.
