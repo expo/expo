@@ -68,15 +68,23 @@ export function removeFileSystemDots(filePath: string): string {
 }
 
 export function stripGroupSegmentsFromPath(path: string): string {
-  return path
-    .split('/')
-    .reduce((acc, v) => {
-      if (matchGroupName(v) == null) {
-        acc.push(v);
-      }
-      return acc;
-    }, [] as string[])
-    .join('/');
+  // Separate query string and hash from the pathname to avoid
+  // stripping parenthesized values in query params (e.g., ?key=(value))
+  const searchIndex = path.search(/[?#]/);
+  const pathname = searchIndex === -1 ? path : path.substring(0, searchIndex);
+  const suffix = searchIndex === -1 ? '' : path.substring(searchIndex);
+
+  return (
+    pathname
+      .split('/')
+      .reduce((acc, v) => {
+        if (matchGroupName(v) == null) {
+          acc.push(v);
+        }
+        return acc;
+      }, [] as string[])
+      .join('/') + suffix
+  );
 }
 
 export function stripInvisibleSegmentsFromPath(path: string): string {

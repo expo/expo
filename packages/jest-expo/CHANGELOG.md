@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix babel config resolution to distinguish project-wide configs (`babel.config.*`) from directory-scoped configs (`.babelrc`). ([#44189](https://github.com/expo/expo/pull/44189) by [@mvincentong](https://github.com/mvincentong))
 - Add `@react-native/babel-preset` to ignored transform patterns, since it's part of the transformer pipeline ([#44152](https://github.com/expo/expo/pull/44152) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

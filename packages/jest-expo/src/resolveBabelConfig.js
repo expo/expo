@@ -5,15 +5,20 @@ const path = require('node:path');
  * Resolve the babel `configFile` option.
  */
 function resolveBabelConfig(projectRoot) {
-  // TODO(EvanBacon): We might want to disable babelrc lookup when the user specifies `enableBabelRCLookup: false`.
-  const possibleBabelRCPaths = ['.babelrc', '.babelrc.js', 'babel.config.js'];
-  const foundBabelRCPath = possibleBabelRCPaths.find((configFileName) =>
-    fs.existsSync(path.resolve(process.cwd(), configFileName))
+  // Project-wide configs (babel.config.*) apply to all files including those
+  // in node_modules, so Babel's default resolution handles everything.
+  const projectWideConfigs = ['babel.config.js', 'babel.config.cjs', 'babel.config.mjs', 'babel.config.json'];
+  const hasProjectWideConfig = projectWideConfigs.some((configFileName) =>
+    fs.existsSync(path.resolve(projectRoot, configFileName))
   );
-  if (foundBabelRCPath) {
-    // If the user has a babel config file, we should return null and use the default configFile resolution from babel.
+  if (hasProjectWideConfig) {
     return null;
   }
+
+  // Directory-scoped configs (.babelrc, .babelrc.js) only apply to files
+  // within their directory tree. They won't transform files outside that tree
+  // (e.g. node_modules/react-native/jest/setup.js), so we must still provide
+  // the expo babel preset via configFile.
 
   try {
     return require.resolve('expo/internal/babel-preset');
