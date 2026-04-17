@@ -135,10 +135,36 @@ exports[`APISection expo-apple-authentication 1`] = `
         class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
-your screen. The App Store Guidelines require you to use this component to start the
-authentication process instead of a custom button. Limited customization of the button is
-available via the provided properties.
+        This component displays Apple's proprietary "Sign In with Apple" / "Continue with Apple" button
+using the native 
+        <a
+          class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+          href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <code
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            data-text="true"
+          >
+            ASAuthorizationAppleIDButton
+          </code>
+        </a>
+        .
+Apple's 
+        <a
+          class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+          href="https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Human Interface Guidelines
+        </a>
+        
+allow custom buttons as long as they follow Apple's branding rules (approved title, official
+logo asset, approved colors, proportions, and minimum size). Using this component is the easiest
+way to meet those requirements, since the system button is automatically Apple-approved,
+localized, and accessible.
       </p>
       
 
@@ -236,7 +262,7 @@ button.
         class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        Make sure to attach height and width via the style props as without these styles, the button will
+        Make sure to attach height and width via the style props, since without them the button will
 not appear on the screen.
       </p>
       <blockquote
@@ -2072,7 +2098,12 @@ server-side, or using
           class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
           href="./securestore"
         >
-          SecureStore
+          <code
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            data-text="true"
+          >
+            expo-secure-store
+          </code>
         </a>
         , so that the data persists across app installs.
 You can use 
