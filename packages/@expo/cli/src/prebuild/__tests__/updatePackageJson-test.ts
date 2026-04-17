@@ -26,19 +26,9 @@ describe(hashForDependencyMap, () => {
 describe(updatePackageJSONAsync, () => {
   beforeAll(() => {
     (isModuleSymlinked as any).mockImplementation(() => false);
-    // Return the project's spec string so existing tests (which use matching versions
-    // between pkg and template) still resolve to "installed === recommended" and emit no warning.
-    (resolveInstalledVersion as any).mockImplementation(
-      (_projectRoot: string, packageName: string) => {
-        if (packageName === 'expo') {
-          return '1.0.0';
-        }
-        if (packageName === 'react-native') {
-          return '0.1.0';
-        }
-        return null;
-      }
-    );
+    // Simulate "module not installed" so the version check is skipped. These tests
+    // don't assert on Log.warn — they exercise dependency merging and script updates.
+    (resolveInstalledVersion as any).mockImplementation(() => null);
   });
 
   it(`has no changes`, async () => {
