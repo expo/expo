@@ -12,17 +12,17 @@ import android.util.Log
 import androidx.core.app.RemoteInput
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.notifications.BuildConfig
+import expo.modules.notifications.notifications.categories.NotificationActionRecord
 import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.*
-import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.delegates.ExpoSchedulingDelegate
-import expo.modules.notifications.service.interfaces.CategoriesDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import expo.modules.notifications.service.interfaces.SchedulingDelegate
 import kotlin.concurrent.thread
+import kotlinx.parcelize.parcelableCreator
 
 /**
  * Central dispatcher for all the notifications-related actions.
@@ -47,9 +47,6 @@ open class NotificationsService : BroadcastReceiver() {
     private const val RECEIVE_TYPE = "receive"
     private const val RECEIVE_RESPONSE_TYPE = "receiveResponse"
     private const val DROPPED_TYPE = "dropped"
-    private const val GET_CATEGORIES_TYPE = "getCategories"
-    private const val SET_CATEGORY_TYPE = "setCategory"
-    private const val DELETE_CATEGORY_TYPE = "deleteCategory"
     private const val SCHEDULE_TYPE = "schedule"
     private const val TRIGGER_TYPE = "trigger"
     private const val GET_ALL_SCHEDULED_TYPE = "getAllScheduled"
@@ -72,13 +69,10 @@ open class NotificationsService : BroadcastReceiver() {
     const val NOTIFICATION_KEY = "notification"
     const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
     const val TEXT_INPUT_NOTIFICATION_RESPONSE_KEY = "textInputNotificationResponse"
-    const val SUCCEEDED_KEY = "succeeded"
     const val IDENTIFIERS_KEY = "identifiers"
     const val IDENTIFIER_KEY = "identifier"
     const val NOTIFICATION_BEHAVIOR_KEY = "notificationBehavior"
     const val NOTIFICATIONS_KEY = "notifications"
-    const val NOTIFICATION_CATEGORY_KEY = "notificationCategory"
-    const val NOTIFICATION_CATEGORIES_KEY = "notificationCategories"
     const val NOTIFICATION_REQUEST_KEY = "notificationRequest"
     const val NOTIFICATION_REQUESTS_KEY = "notificationRequests"
     const val NOTIFICATION_ACTION_KEY = "notificationAction"
@@ -192,72 +186,6 @@ open class NotificationsService : BroadcastReceiver() {
         context,
         Intent(NOTIFICATION_EVENT_ACTION).apply {
           putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "get notification categories" command to the service.
-     *
-     * @param context Context where to start the service.
-     */
-    fun getCategories(context: Context, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE)
-          putExtra(RECEIVER_KEY, receiver)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "set notification category" command to the service.
-     *
-     * @param context Context where to start the service.
-     * @param category Notification category to be set
-     */
-    fun setCategory(context: Context, category: NotificationCategory, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .appendPath(category.identifier)
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE)
-          putExtra(NOTIFICATION_CATEGORY_KEY, category as Parcelable)
-          putExtra(RECEIVER_KEY, receiver)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "delete notification category" command to the service.
-     *
-     * @param context Context where to start the service.
-     * @param identifier Category Identifier
-     */
-    fun deleteCategory(context: Context, identifier: String, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .appendPath(identifier)
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
-          putExtra(IDENTIFIER_KEY, identifier)
-          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -448,7 +376,7 @@ open class NotificationsService : BroadcastReceiver() {
      * @param action Notification action being undertaken
      * @return [PendingIntent] triggering [NotificationsService], triggering "response received" event
      */
-    fun createNotificationResponseIntent(context: Context, notification: Notification, action: NotificationAction): PendingIntent {
+    fun createNotificationResponseIntent(context: Context, notification: Notification, action: NotificationActionRecord): PendingIntent {
       val intent = Intent(
         NOTIFICATION_EVENT_ACTION,
         getUriBuilder()
@@ -475,7 +403,7 @@ open class NotificationsService : BroadcastReceiver() {
       // [notification trampolines](https://developer.android.com/about/versions/12/behavior-changes-12#identify-notification-trampolines)
       // are not allowed. If the notification wants to open foreground app,
       // we should use the dedicated Activity pendingIntent.
-      if (action.opensAppToForeground() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      if (action.options.opensAppToForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent)
       }
 
@@ -497,17 +425,13 @@ open class NotificationsService : BroadcastReceiver() {
       val extras = intent?.extras
       // Fallback to byte arrays when Parcelable extras are null (see https://github.com/expo/expo/issues/38908)
       val notification = extras?.getParcelable<Notification>(NOTIFICATION_KEY) ?: unmarshalObject(Notification.CREATOR, extras?.getByteArray(NOTIFICATION_BYTES_KEY))
-      val action = extras?.getParcelable<NotificationAction>(NOTIFICATION_ACTION_KEY) ?: unmarshalObject(NotificationAction.CREATOR, extras?.getByteArray(NOTIFICATION_ACTION_BYTES_KEY))
+      val action = unmarshalActionRecord(extras)
       if (notification == null || action == null) {
         throw IllegalArgumentException("notification ($notification) and action ($action) should not be null")
       }
       val textResponse = intent?.let { RemoteInput.getResultsFromIntent(it) }?.getString(USER_TEXT_RESPONSE_KEY)
-      val isTextInputResponse = textResponse != null && action is TextInputNotificationAction
-      val backgroundAction = if (isTextInputResponse) {
-        TextInputNotificationAction(action.identifier, action.title, false, action.placeholder)
-      } else {
-        NotificationAction(action.identifier, action.title, false)
-      }
+      val isTextInputResponse = textResponse != null && action.textInput != null
+      val backgroundAction = action.copy(options = action.options.copy(opensAppToForeground = false))
       val broadcastIntent = Intent(
         NOTIFICATION_EVENT_ACTION,
         getUriBuilder()
@@ -539,10 +463,9 @@ open class NotificationsService : BroadcastReceiver() {
       val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)
         ?: unmarshalObject(Notification.CREATOR, intent.getByteArrayExtra(NOTIFICATION_BYTES_KEY))
         ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
-      val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY)
-        ?: unmarshalObject(NotificationAction.CREATOR, intent.getByteArrayExtra(NOTIFICATION_ACTION_BYTES_KEY))
+      val action = unmarshalActionRecord(intent.extras)
         ?: throw IllegalArgumentException("$NOTIFICATION_ACTION_KEY not found in the intent extras.")
-      val response = if (action is TextInputNotificationAction) {
+      val response = if (action.textInput != null) {
         val userText = RemoteInput.getResultsFromIntent(intent)?.getString(USER_TEXT_RESPONSE_KEY) ?: ""
         TextInputNotificationResponse(action, notification, userText)
       } else {
@@ -592,6 +515,22 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     /**
+     * Reads a [NotificationActionRecord] from intent extras, handling both the new format
+     * and the legacy [NotificationAction] format (from PendingIntents created before the migration).
+     * Falls back to byte arrays when Parcelable extras are null (Android 11/12 bug).
+     */
+    private fun unmarshalActionRecord(extras: Bundle?): NotificationActionRecord? {
+      // Try Parcelable extra (handles both new and legacy formats)
+      NotificationActionRecord.fromParcelableExtra(extras, NOTIFICATION_ACTION_KEY)?.let { return it }
+      // Fallback to byte arrays (see https://github.com/expo/expo/issues/38908)
+      val bytes = extras?.getByteArray(NOTIFICATION_ACTION_BYTES_KEY) ?: return null
+      unmarshalObject(parcelableCreator<NotificationActionRecord>(), bytes)?.let { return it }
+      // Try legacy byte array format
+      unmarshalObject(NotificationAction.CREATOR, bytes)?.let { return NotificationActionRecord.fromLegacy(it) }
+      return null
+    }
+
+    /**
      * UNmarshals [Parcelable] object from a byte array given a [Parcelable.Creator].
      * @return Object instance or null if the process failed.
      */
@@ -617,9 +556,6 @@ open class NotificationsService : BroadcastReceiver() {
 
   protected open fun getHandlingDelegate(context: Context): HandlingDelegate =
     ExpoHandlingDelegate(context)
-
-  protected open fun getCategoriesDelegate(context: Context): CategoriesDelegate =
-    ExpoCategoriesDelegate(context)
 
   protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate =
     ExpoSchedulingDelegate(context)
@@ -662,15 +598,6 @@ open class NotificationsService : BroadcastReceiver() {
           DISMISS_SELECTED_TYPE -> onDismissNotifications(context, intent)
 
           DISMISS_ALL_TYPE -> onDismissAllNotifications(context, intent)
-
-          GET_CATEGORIES_TYPE ->
-            resultData = onGetCategories(context, intent)
-
-          SET_CATEGORY_TYPE ->
-            resultData = onSetCategory(context, intent)
-
-          DELETE_CATEGORY_TYPE ->
-            resultData = onDeleteCategory(context, intent)
 
           GET_ALL_SCHEDULED_TYPE ->
             resultData = onGetAllScheduledNotifications(context, intent)
@@ -750,39 +677,6 @@ open class NotificationsService : BroadcastReceiver() {
   open fun onNotificationsDropped(context: Context, intent: Intent) =
     getHandlingDelegate(context).handleNotificationsDropped()
 
-  //endregion
-
-  //region Category handling
-
-  open fun onGetCategories(context: Context, intent: Intent) =
-    Bundle().apply {
-      putParcelableArrayList(
-        NOTIFICATION_CATEGORIES_KEY,
-        ArrayList(
-          getCategoriesDelegate(context).getCategories()
-        )
-      )
-    }
-
-  open fun onSetCategory(context: Context, intent: Intent) =
-    Bundle().apply {
-      putParcelable(
-        NOTIFICATION_CATEGORY_KEY,
-        getCategoriesDelegate(context).setCategory(
-          intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!
-        )
-      )
-    }
-
-  open fun onDeleteCategory(context: Context, intent: Intent) =
-    Bundle().apply {
-      putBoolean(
-        SUCCEEDED_KEY,
-        getCategoriesDelegate(context).deleteCategory(
-          intent.extras?.getString(IDENTIFIER_KEY)!!
-        )
-      )
-    }
   //endregion
 
   //region Scheduling notifications
