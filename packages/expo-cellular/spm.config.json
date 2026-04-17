@@ -5,7 +5,7 @@
       "name": "ExpoCellular",
       "podName": "ExpoCellular",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

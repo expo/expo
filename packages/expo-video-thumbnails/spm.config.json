@@ -5,7 +5,7 @@
       "name": "ExpoVideoThumbnails",
       "podName": "ExpoVideoThumbnails",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
