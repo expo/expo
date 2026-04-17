@@ -3,8 +3,8 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./build",
-    "module": "commonjs",
-    "moduleResolution": "node10",
+    "module": "node16",
+    "moduleResolution": "node16",
     "verbatimModuleSyntax": false,
     "noEmit": false,
     "resolveJsonModule": true,
