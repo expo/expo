@@ -3,11 +3,12 @@ import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { intersects as semverIntersects, Range as SemverRange } from 'semver';
+import { satisfies as semverSatisfies } from 'semver';
 
 import * as Log from '../log';
 import { isModuleSymlinked } from '../utils/isModuleSymlinked';
 import { logNewSection } from '../utils/ora';
+import { resolveInstalledVersion } from '../utils/resolveInstalledVersion';
 
 export type DependenciesMap = { [key: string]: string | number };
 
@@ -165,16 +166,19 @@ export function updatePkgDependencies(
         continue;
       }
 
-      // Warn users for outdated dependencies when prebuilding
-      const hasRecommendedVersion = versionRangesIntersect(
-        pkg.dependencies[dependencyKey],
-        String(defaultDependencies[dependencyKey]),
-        true
-      );
-      if (!hasRecommendedVersion) {
+      // Warn users for outdated dependencies when prebuilding. Compare against the
+      // actually-installed version rather than the raw `package.json` spec so that
+      // indirect specifiers (pnpm catalogs, workspace:*, npm: aliases, file:/link:/
+      // portal:/patch:, git refs, tarballs, etc.) don't trigger a misleading warning.
+      // If the module isn't installed yet (prebuild can run pre-install), skip —
+      // the spec string may not be valid semver and a false warning is worse than
+      // none; the check will re-run correctly after install.
+      const recommendedRange = String(defaultDependencies[dependencyKey]);
+      const installedVersion = resolveInstalledVersion(projectRoot, dependencyKey);
+      if (installedVersion && !versionSatisfies(installedVersion, recommendedRange)) {
         nonRecommendedPackages.push([
-          `${dependencyKey}@${pkg.dependencies[dependencyKey]}`,
-          `${dependencyKey}@${defaultDependencies[dependencyKey]}`,
+          `${dependencyKey}@${installedVersion}`,
+          `${dependencyKey}@${recommendedRange}`,
         ]);
       }
     }
@@ -286,16 +290,12 @@ export function createFileHash(contents: string): string {
 }
 
 /**
- * Determine if two semver ranges are overlapping or intersecting.
- * This is a safe version of `semver.intersects` that does not throw.
+ * Determine if a version satisfies a semver range.
+ * This is a safe version of `semver.satisfies` that does not throw.
  */
-function versionRangesIntersect(
-  rangeA: string | SemverRange,
-  rangeB: string | SemverRange,
-  includePrerelease: boolean = false
-) {
+function versionSatisfies(version: string, range: string): boolean {
   try {
-    return semverIntersects(rangeA, rangeB, { includePrerelease });
+    return semverSatisfies(version, range, { includePrerelease: true });
   } catch {
     return false;
   }
