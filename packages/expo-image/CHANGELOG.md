@@ -15,6 +15,7 @@
 - [iOS] Fixed `contentPosition` misalignment by using the unrounded cover/contain layout size for offset math. ([#44497](https://github.com/expo/expo/pull/44497) by [@alicenoknow](https://github.com/alicenoknow))
 - [Android] Apply `ApplicationVersionSignature` to local resource URIs (`res:/` scheme) to prevent stale cached images after app updates. by [@linkeryoon](https://github.com/linkeryoon) ([#44355](https://github.com/expo/expo/pull/44355) by [@Yoon-Hae-Min](https://github.com/Yoon-Hae-Min))
 - Added `tintColor` option to `ImageLoadOptions`. This resolves [#42007](https://github.com/expo/expo/issues/42007). ([#42821](https://github.com/expo/expo/pull/42821)) by [@HubertBer](https://github.com/HubertBer).
+- [iOS] Fixed `Image` swallowing touches intended for ancestor gesture recognizers (e.g. a surrounding `Pressable`) by disabling user interaction on the underlying `ExpoView`, matching `UIImageView`'s default. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 💡 Others
 

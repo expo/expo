@@ -117,6 +117,15 @@ public final class ImageView: ExpoView {
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
 
+    // Match `UIImageView`'s default so the image view does not intercept
+    // touches intended for ancestor gesture recognizers. `ExpoView`
+    // inherits from `UIView`, whose default `isUserInteractionEnabled` is
+    // `true` — which causes hit-testing to stop at the image and prevents
+    // a surrounding `Pressable` (especially ones that rely on
+    // `react-native-gesture-handler` for press detection, such as
+    // Tamagui's native `Pressable`) from receiving taps.
+    isUserInteractionEnabled = false
+
     clipsToBounds = true
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
