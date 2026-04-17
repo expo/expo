@@ -13,6 +13,10 @@
 
 namespace jsi = facebook::jsi;
 
+// All pointers in this header are non-null by default. Use `_Nullable` for
+// pointers that may legitimately be null (e.g. `getNativeState` return value).
+#pragma clang assume_nonnull begin
+
 namespace expo {
 
 inline jsi::Value valueFromFunction(jsi::Runtime &runtime, const jsi::Function &function) {
@@ -91,19 +95,19 @@ inline jsi::Value evaluateJavaScript(jsi::Runtime &runtime, const std::shared_pt
   });
 }
 
-inline jsi::Value callFunction(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value *args, size_t count) {
+inline jsi::Value callFunction(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, ^{
     return function.call(runtime, args, count);
   });
 }
 
-inline jsi::Value callFunctionWithThis(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *args, size_t count) {
+inline jsi::Value callFunctionWithThis(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, ^{
     return function.callWithThis(runtime, jsThis, args, count);
   });
 }
 
-inline jsi::Value callAsConstructor(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value *args, size_t count) {
+inline jsi::Value callAsConstructor(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, ^{
     return function.callAsConstructor(runtime, args, count);
   });
@@ -194,5 +198,7 @@ inline expo::NativeState *_Nullable getNativeState(jsi::Runtime &runtime, const 
 }
 
 } // namespace expo
+
+#pragma clang assume_nonnull end
 
 #endif // __cplusplus

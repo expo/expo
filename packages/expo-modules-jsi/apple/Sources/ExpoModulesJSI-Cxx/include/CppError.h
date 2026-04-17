@@ -21,7 +21,10 @@ namespace jsi = facebook::jsi;
  Each thread maintains its own error state using thread-local storage, making
  this class safe to use across multiple threads without synchronization overhead.
  */
-class CppError {
+// Marked unchecked Sendable because instances live in thread-local storage and
+// ownership is transferred by move — they are never shared across threads.
+// `jsi::JSError` itself is not Sendable, so Swift cannot verify this automatically.
+class SWIFT_UNCHECKED_SENDABLE CppError {
 public:
   /**
    Creates a CppError from a `jsi::JSError`.
