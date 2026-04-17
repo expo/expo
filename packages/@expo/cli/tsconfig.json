@@ -6,6 +6,7 @@
     "lib": ["dom", "esnext"],
     "rootDir": "./src",
     "outDir": "./build",
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "types": ["jest"]
   }
 }
