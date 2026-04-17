@@ -4,7 +4,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./build",
-    "types": ["node"]
+    "types": ["jest", "node"]
   },
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]
