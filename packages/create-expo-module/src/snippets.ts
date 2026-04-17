@@ -192,21 +192,19 @@ const FILE_SNIPPET_SPECS: FileSnippetSpec[] = [
   },
 ];
 
-/**
- * Copies whole-file snippets (view classes, SharedObject classes) to the target directory.
- */
-export async function copyFileSnippets(
+async function copySnippetsInternal(
   snippetsDir: string,
   features: string[],
   data: AnySubstitutionData,
-  targetDir: string
+  targetDir: string,
+  filter: (spec: (typeof FILE_SNIPPET_SPECS)[0]) => boolean
 ): Promise<void> {
   const selectedPlatforms: string[] = data.project.platforms;
 
   for (const spec of FILE_SNIPPET_SPECS) {
     if (!features.includes(spec.feature)) continue;
-    if (spec.platform === 'apple' && !selectedPlatforms.includes('apple')) continue;
-    if (spec.platform === 'android' && !selectedPlatforms.includes('android')) continue;
+    if (spec.platform && !selectedPlatforms.includes(spec.platform)) continue;
+    if (!filter(spec)) continue;
 
     const template = await readSnippet(snippetsDir, spec.feature, spec.source);
     if (!template) continue;
@@ -218,3 +216,12 @@ export async function copyFileSnippets(
     await fs.promises.writeFile(destPath, rendered, 'utf8');
   }
 }
+
+export const copyFileSnippets = (s: string, f: string[], d: AnySubstitutionData, t: string) =>
+  copySnippetsInternal(s, f, d, t, () => true);
+
+export const copyNativeFileSnippets = (s: string, f: string[], d: AnySubstitutionData, t: string) =>
+  copySnippetsInternal(s, f, d, t, (spec) => !!spec.platform);
+
+export const copyWebFileSnippets = (s: string, f: string[], d: AnySubstitutionData, t: string) =>
+  copySnippetsInternal(s, f, d, t, (spec) => spec.source.includes('.web.'));
