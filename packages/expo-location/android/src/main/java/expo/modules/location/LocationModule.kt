@@ -210,6 +210,14 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       return@Coroutine getBackgroundPermissionsAsync()
     }
 
+    AsyncFunction("getMotionActivityPermissionsAsync") Coroutine { ->
+      return@Coroutine getMotionActivityPermissionsAsync()
+    }
+
+    AsyncFunction("requestMotionActivityPermissionsAsync") Coroutine { ->
+      return@Coroutine requestMotionActivityPermissionsAsync()
+    }
+
     AsyncFunction("getLastKnownPositionAsync") Coroutine { options: LocationLastKnownOptions ->
       return@Coroutine getLastKnownPositionAsync(options)
     }
@@ -256,7 +264,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     }
 
-    AsyncFunction("watchMotionActivityImplAsync") { watchId: Int ->
+    AsyncFunction("watchMotionActivityImplAsync") Coroutine { watchId: Int ->
       if (isMissingActivityRecognitionPermission()) {
         throw MotionActivityUnauthorizedException()
       }
@@ -817,15 +825,19 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
   // region motion activity
 
-  private fun startMotionActivityWatch(watchId: Int) {
+  private suspend fun startMotionActivityWatch(watchId: Int) {
     mMotionActivityWatchId = watchId
     registerMotionActivityReceiver()
     val pendingIntent = getOrCreateMotionActivityPendingIntent()
-    ActivityRecognition.getClient(mContext)
-      .requestActivityUpdates(MOTION_ACTIVITY_INTERVAL_MS, pendingIntent)
-      .addOnFailureListener { e ->
-        Log.e(TAG, "Failed to request activity updates: ${e.message}")
-      }
+    suspendCoroutine { continuation ->
+      ActivityRecognition.getClient(mContext)
+        .requestActivityUpdates(MOTION_ACTIVITY_INTERVAL_MS, pendingIntent)
+        .addOnSuccessListener { continuation.resume(Unit) }
+        .addOnFailureListener { e ->
+          stopMotionActivityWatch()
+          continuation.resumeWithException(MotionActivityUnavailableException(e))
+        }
+    }
   }
 
   private fun stopMotionActivityWatch() {
@@ -882,6 +894,37 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       Intent(MOTION_ACTIVITY_INTENT_ACTION).apply { setPackage(mContext.packageName) },
       PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
     ).also { mMotionActivityPendingIntent = it }
+  }
+
+  private suspend fun getMotionActivityPermissionsAsync(): PermissionRequestResponse {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return PermissionRequestResponse(
+        canAskAgain = true,
+        expires = "never",
+        granted = true,
+        status = "granted",
+        android = null
+      )
+    }
+    appContext.permissions?.let {
+      return LocationHelpers.getPermissionsWithPermissionsManager(it, Manifest.permission.ACTIVITY_RECOGNITION)
+    } ?: throw NoPermissionsModuleException()
+  }
+
+  private suspend fun requestMotionActivityPermissionsAsync(): PermissionRequestResponse {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return PermissionRequestResponse(
+        canAskAgain = true,
+        expires = "never",
+        granted = true,
+        status = "granted",
+        android = null
+      )
+    }
+    appContext.permissions?.let {
+      val bundle = LocationHelpers.askForPermissionsWithPermissionsManager(it, Manifest.permission.ACTIVITY_RECOGNITION)
+      return PermissionRequestResponse(bundle)
+    } ?: throw NoPermissionsModuleException()
   }
 
   private fun isMissingActivityRecognitionPermission(): Boolean {
@@ -963,7 +1006,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     private const val MOTION_ACTIVITY_EVENT_NAME = "Expo.motionActivityChanged"
     private const val MOTION_ACTIVITY_INTENT_ACTION = "expo.modules.location.MOTION_ACTIVITY_UPDATE"
     private const val MOTION_ACTIVITY_REQUEST_CODE = 43
-    private const val MOTION_ACTIVITY_INTERVAL_MS = 10_000L
+    private const val MOTION_ACTIVITY_INTERVAL_MS = 0L
     private const val CHECK_SETTINGS_REQUEST_CODE = 42
 
     const val ACCURACY_LOWEST = 1

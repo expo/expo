@@ -154,6 +154,22 @@ export default {
     async watchMotionActivityImplAsync(_watchId) {
         console.warn('Location.watchMotionActivityAsync: is not supported on web');
     },
+    async getMotionActivityPermissionsAsync() {
+        return {
+            status: PermissionStatus.UNDETERMINED,
+            granted: false,
+            canAskAgain: false,
+            expires: 'never',
+        };
+    },
+    async requestMotionActivityPermissionsAsync() {
+        return {
+            status: PermissionStatus.UNDETERMINED,
+            granted: false,
+            canAskAgain: false,
+            expires: 'never',
+        };
+    },
     async requestForegroundPermissionsAsync() {
         return getPermissionsAsync(true);
     },

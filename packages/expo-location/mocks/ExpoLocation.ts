@@ -41,3 +41,7 @@ export async function stopGeofencingAsync(taskName: string): Promise<any> {}
 export async function hasStartedGeofencingAsync(taskName: string): Promise<any> {}
 
 export async function watchMotionActivityImplAsync(watchId: number): Promise<any> {}
+
+export async function getMotionActivityPermissionsAsync(): Promise<any> {}
+
+export async function requestMotionActivityPermissionsAsync(): Promise<any> {}

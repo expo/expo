@@ -346,6 +346,51 @@ export async function hasServicesEnabledAsync(): Promise<boolean> {
   return await ExpoLocation.hasServicesEnabledAsync();
 }
 
+// @needsAudit
+/**
+ * Checks user's permissions for accessing motion activity data.
+ * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+ *
+ * @platform android
+ * @platform ios
+ */
+export async function getMotionActivityPermissionsAsync(): Promise<PermissionResponse> {
+  return await ExpoLocation.getMotionActivityPermissionsAsync();
+}
+
+// @needsAudit
+/**
+ * Asks the user to grant permissions for motion activity detection.
+ * On Android 10+, this requests the `ACTIVITY_RECOGNITION` runtime permission.
+ * On iOS, this triggers the system prompt for Motion & Fitness access the first time it is called.
+ * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+ *
+ * @platform android
+ * @platform ios
+ */
+export async function requestMotionActivityPermissionsAsync(): Promise<PermissionResponse> {
+  return await ExpoLocation.requestMotionActivityPermissionsAsync();
+}
+
+// @needsAudit
+/**
+ * Check or request permissions for motion activity detection.
+ * This uses both `requestMotionActivityPermissionsAsync` and `getMotionActivityPermissionsAsync`
+ * to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useMotionActivityPermissions();
+ * ```
+ *
+ * @platform android
+ * @platform ios
+ */
+export const useMotionActivityPermissions = createPermissionHook({
+  getMethod: getMotionActivityPermissionsAsync,
+  requestMethod: requestMotionActivityPermissionsAsync,
+});
+
 // --- Motion activity
 
 // @needsAudit

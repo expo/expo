@@ -156,6 +156,38 @@ export declare const useBackgroundPermissions: (options?: import("expo-modules-c
  */
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
 /**
+ * Checks user's permissions for accessing motion activity data.
+ * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+ *
+ * @platform android
+ * @platform ios
+ */
+export declare function getMotionActivityPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Asks the user to grant permissions for motion activity detection.
+ * On Android 10+, this requests the `ACTIVITY_RECOGNITION` runtime permission.
+ * On iOS, this triggers the system prompt for Motion & Fitness access the first time it is called.
+ * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+ *
+ * @platform android
+ * @platform ios
+ */
+export declare function requestMotionActivityPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions for motion activity detection.
+ * This uses both `requestMotionActivityPermissionsAsync` and `getMotionActivityPermissionsAsync`
+ * to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useMotionActivityPermissions();
+ * ```
+ *
+ * @platform android
+ * @platform ios
+ */
+export declare const useMotionActivityPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+/**
  * Fetches the current motion activity status of the device by subscribing to the first available
  * activity update and immediately unsubscribing afterwards. Resolves with the same object shape
  * as the `watchMotionActivityAsync` callback.

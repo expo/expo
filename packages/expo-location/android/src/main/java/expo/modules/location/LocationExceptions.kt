@@ -66,8 +66,9 @@ internal class MotionActivityUnauthorizedException :
       "and request it at runtime before calling this method"
   )
 
-internal class MotionActivityUnavailableException :
+internal class MotionActivityUnavailableException(cause: Throwable? = null) :
   CodedException(
-    "Activity recognition is not available on this device. " +
-      "Make sure Google Play Services is installed and up to date"
+    message = "Activity recognition is not available on this device. " +
+      "Make sure Google Play Services is installed and up to date.",
+    cause = cause
   )

@@ -71,7 +71,9 @@ extension Exceptions {
 
   internal final class MotionActivityUnavailable: Exception {
     override var reason: String {
-      "Motion activity is not available on this device"
+      "Motion activity is not available on this device. " +
+        "CMMotionActivityManager requires a physical device with a motion coprocessor (iPhone 5s or later). " +
+        "It is not supported on the iOS Simulator."
     }
   }
 
