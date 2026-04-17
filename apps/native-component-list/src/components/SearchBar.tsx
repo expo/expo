@@ -1,28 +1,19 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
-import { StyleSheet, TextInput, TextStyle, TouchableOpacity, View, Platform } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View, Platform } from 'react-native';
 
-import { Colors } from '../constants';
+import { useTheme } from '../../../common/ThemeProvider';
 
 export default function SearchBar({
-  selectionColor,
-  tintColor = Colors.tintColor,
-  placeholderTextColor = '#ccc',
-  underlineColorAndroid = '#ccc',
-  textColor,
   onSubmit,
   onChangeQuery,
   initialValue = '',
 }: {
   initialValue?: string;
-  selectionColor?: string;
-  tintColor: string;
-  placeholderTextColor?: string;
-  underlineColorAndroid?: string;
-  textColor?: string;
   onSubmit?: (query: string) => void;
   onChangeQuery?: (query: string) => void;
 }) {
+  const { theme } = useTheme();
   const [text, setText] = React.useState(initialValue);
   const _textInput = React.useRef<TextInput>(null);
 
@@ -45,25 +36,19 @@ export default function SearchBar({
     _textInput.current?.blur();
   };
 
-  const searchInputStyle: TextStyle = {};
-  if (textColor) {
-    searchInputStyle.color = textColor;
-  }
-
   return (
     <View style={styles.container}>
       <TextInput
         ref={_textInput}
         placeholder="Search"
-        placeholderTextColor={placeholderTextColor}
+        placeholderTextColor={theme.text.quaternary}
         value={text}
         autoCapitalize="none"
         autoCorrect={false}
-        selectionColor={selectionColor}
-        underlineColorAndroid={underlineColorAndroid}
+        underlineColorAndroid={theme.background.default}
         onSubmitEditing={_handleSubmit}
         onChangeText={_handleChangeText}
-        style={[styles.searchInput, searchInputStyle]}
+        style={styles.searchInput}
       />
       <View style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
         {text ? (
@@ -71,7 +56,7 @@ export default function SearchBar({
             onPress={_handleClear}
             hitSlop={{ top: 15, left: 10, right: 15, bottom: 15 }}
             style={{ padding: 5 }}>
-            <Ionicons name="close" size={25} color={tintColor} />
+            <Ionicons name="close" size={25} color={theme.icon.info} />
           </TouchableOpacity>
         ) : null}
       </View>

@@ -1,16 +1,7 @@
 import { Checkbox } from 'expo-checkbox';
 import Constants from 'expo-constants';
 import * as React from 'react';
-import {
-  type EmitterSubscription,
-  Alert,
-  FlatList,
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../common/ThemeProvider';
@@ -23,40 +14,44 @@ import {
 import PlatformTouchable from '../components/PlatformTouchable';
 import { routeNames } from '../constants/routeNames';
 
-function ListItem({ title, onPressItem, selected, id }) {
+function ListItem({
+  title,
+  onPressItem,
+  selectedSet,
+  id,
+}: {
+  title: string;
+  onPressItem: (id: string) => void;
+  selectedSet: Set<string>;
+  id: string;
+}) {
   const { theme } = useTheme();
   const onPress = () => onPressItem(id);
 
   return (
     <PlatformTouchable onPress={onPress}>
       <View style={[styles.listItem, { borderBottomColor: theme.border.secondary }]}>
-        <Text style={styles.label}>{title}</Text>
+        <Text style={[styles.label, { color: theme.text.default }]}>{title}</Text>
         <View style={{ pointerEvents: 'none' }}>
-          <Checkbox color={theme.icon.info} value={selected} />
+          <Checkbox color={theme.icon.info} value={selectedSet.has(id)} />
         </View>
       </View>
     </PlatformTouchable>
   );
 }
 
-export default class SelectScreen extends React.PureComponent<
-  { navigation: any },
-  { selected: Set<string>; modules: Module[] }
-> {
-  state = {
-    selected: new Set<string>(),
-    modules: [],
-  };
-  _openUrlSubscription: EmitterSubscription = null;
+export default function SelectScreen({ navigation }) {
+  const { theme } = useTheme();
+  const [selected, setSelected] = React.useState<Set<string>>(new Set());
+  const selectedRef = React.useRef(selected);
+  selectedRef.current = selected;
+  const [modules, setModules] = React.useState<Module[]>([]);
 
-  constructor(props) {
-    super(props);
-
+  React.useEffect(() => {
     if (global.ErrorUtils) {
       const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
 
       global.ErrorUtils.setGlobalHandler((error, isFatal) => {
-        // Prevent optionalRequire from failing
         if (
           isFatal &&
           (error.message.includes('Native module cannot be null') ||
@@ -70,131 +65,114 @@ export default class SelectScreen extends React.PureComponent<
         }
       });
     }
-  }
+  }, []);
 
-  componentWillUnmount() {
-    if (this._openUrlSubscription != null) {
-      this._openUrlSubscription?.remove();
-      this._openUrlSubscription = null;
-    }
-  }
+  const handleOpenURL = React.useCallback(
+    ({ url }: { url: string }) => {
+      url = url || '';
+      // TODO: Use Expo Linking library once parseURL is implemented for web
+      if (url.includes(`/${routeNames.select}/`)) {
+        const selectedTests = url.split('/').pop();
+        if (selectedTests) {
+          const tests = getSelectedTestNames(selectedTests);
+          const query = createQueryString(tests);
+          navigation.navigate(routeNames.run, { tests: query });
+          return;
+        }
+      }
 
-  checkLinking = (incomingTests: string) => {
-    const tests = getSelectedTestNames(incomingTests);
-    const query = createQueryString(tests);
-    this.props.navigation.navigate(routeNames.run, { tests: query });
-  };
-
-  _handleOpenURL = ({ url }: { url: string }) => {
-    url = url || '';
-    // TODO: Use Expo Linking library once parseURL is implemented for web
-    if (url.includes(`/${routeNames.select}/`)) {
-      const selectedTests = url.split('/').pop();
-      if (selectedTests) {
-        this.checkLinking(selectedTests);
+      if (url.includes('/all')) {
+        const query = createQueryString(getTestModules().map((m) => m.name));
+        navigation.navigate(routeNames.run, { tests: query });
         return;
       }
-    }
 
-    if (url.includes('/all')) {
-      // Test all available modules
-      const query = createQueryString(getTestModules().map((m) => m.name));
+      // Application wasn't started from a deep link which we handle. So, we can load test modules.
+      setModules(getTestModules());
+    },
+    [navigation]
+  );
 
-      this.props.navigation.navigate(routeNames.run, {
-        tests: query,
-      });
-      return;
-    }
-
-    // Application wasn't started from a deep link which we handle. So, we can load test modules.
-    this._loadTestModules();
-  };
-
-  _loadTestModules = () => {
-    this.setState({
-      modules: getTestModules(),
-    });
-  };
-
-  componentDidMount() {
-    this._openUrlSubscription = Linking.addEventListener('url', this._handleOpenURL);
+  React.useEffect(() => {
+    const subscription = Linking.addEventListener('url', handleOpenURL);
 
     Linking.getInitialURL()
       .then((url) => {
-        this._handleOpenURL({ url });
+        handleOpenURL({ url });
       })
       .catch((err) => console.error('Failed to load initial URL', err));
-  }
 
-  _keyExtractor = ({ name }) => name;
+    return () => {
+      subscription?.remove();
+    };
+  }, [handleOpenURL]);
 
-  _onPressItem = (id) => {
-    this.setState((state) => {
-      const selected = new Set(state.selected);
-      if (selected.has(id)) selected.delete(id);
-      else selected.add(id);
-      return { selected };
+  const keyExtractor = React.useCallback(({ name }) => name, []);
+
+  const onPressItem = React.useCallback((id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
     });
-  };
+  }, []);
 
-  _renderItem = ({ item }: { item: Module }) => {
-    const { name } = item;
-    const id = getScreenIdForLinking(item);
-    return (
-      <ListItem
-        id={id}
-        onPressItem={this._onPressItem}
-        selected={this.state.selected.has(id)}
-        title={name}
-      />
-    );
-  };
+  const renderItem = React.useCallback(
+    ({ item }: { item: Module }) => {
+      const { name } = item;
+      const id = getScreenIdForLinking(item);
+      return (
+        <ListItem
+          id={id}
+          onPressItem={onPressItem}
+          selectedSet={selectedRef.current}
+          title={name}
+        />
+      );
+    },
+    [onPressItem]
+  );
 
-  _selectAll = () => {
-    this.setState((prevState) => {
-      if (prevState.selected.size === prevState.modules.length) {
-        return { selected: new Set<string>() };
+  const selectAll = React.useCallback(() => {
+    setSelected((prev) => {
+      if (prev.size === modules.length) {
+        return new Set<string>();
       }
-      const selected = new Set<string>(prevState.modules.map(getScreenIdForLinking));
-      return { selected };
+      return new Set<string>(modules.map(getScreenIdForLinking));
     });
-  };
+  }, [modules]);
 
-  _navigateToTests = () => {
-    const { selected } = this.state;
+  const navigateToTests = React.useCallback(() => {
     if (selected.size === 0) {
       Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
     } else {
       const query = createQueryString(Array.from(selected.values()));
-
-      this.props.navigation.navigate(routeNames.run, { tests: query });
+      navigation.navigate(routeNames.run, { tests: query });
     }
-  };
+  }, [selected, navigation]);
 
-  render() {
-    const { selected, modules } = this.state;
-    const allSelected = selected.size === modules.length;
-    const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
+  const allSelected = selected.size === modules.length;
+  const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
 
-    return (
-      <>
-        <FlatList<Module>
-          data={modules}
-          contentContainerStyle={{ backgroundColor: '#fff' }}
-          extraData={this.state}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
-          initialNumToRender={15}
-        />
-        <Footer
-          buttonTitle={buttonTitle}
-          canRunTests={selected.size}
-          onRun={this._navigateToTests}
-          onToggle={this._selectAll}
-        />
-      </>
-    );
-  }
+  return (
+    <>
+      <FlatList<Module>
+        data={modules}
+        extraData={selected}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        initialNumToRender={15}
+        style={{ backgroundColor: theme.background.screen }}
+      />
+      <Footer
+        buttonTitle={buttonTitle}
+        canRunTests={selected.size}
+        onRun={navigateToTests}
+        onToggle={selectAll}
+      />
+    </>
+  );
 }
 
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
@@ -245,9 +223,6 @@ function FooterButton({ title, style, ...props }) {
 const HORIZONTAL_MARGIN = 20;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
   footerButtonTitle: {
     fontSize: 16,
   },
@@ -265,7 +240,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   label: {
-    color: 'black',
     fontSize: 16,
   },
   buttonRow: {
@@ -273,9 +247,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: StyleSheet.hairlineWidth,
-    backgroundColor: 'white',
-  },
-  contentContainerStyle: {
-    paddingBottom: 128,
   },
 });
