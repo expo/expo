@@ -5361,9 +5361,6 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.3
 
   packages/expo-tracking-transparency:
     dependencies:
