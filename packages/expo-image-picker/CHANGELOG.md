@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix UCrop overflow popup menu text invisible in dark mode by switching crop activity theme to `DayNight`. ([#44324](https://github.com/expo/expo/pull/44324) by [@Nedunchezhiyan-M](https://github.com/Nedunchezhiyan-M))
 - [android] Handle edge-to-edge display in crop activity. ([#44208](https://github.com/expo/expo/pull/44208) by [@zoontek](https://github.com/zoontek))
 - fix potential `null` mime type reported ([#43734](https://github.com/expo/expo/pull/43734) by [@vonovak](https://github.com/vonovak))
 - [android] fix cropper default colors in light mode ([#42437](https://github.com/expo/expo/pull/42437) by [@fobos531](https://github.com/fobos531))
