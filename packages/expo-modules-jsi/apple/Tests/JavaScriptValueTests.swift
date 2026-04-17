@@ -8,16 +8,16 @@ struct JavaScriptValueTests {
 
   @Test
   func `create undefined`() {
-    #expect(JavaScriptValue.undefined().isUndefined() == true)
-    #expect(JavaScriptValue.undefined().isNull() == false)
-    #expect(JavaScriptValue.undefined().isNumber() == false)
+    #expect(JavaScriptValue.undefined.isUndefined() == true)
+    #expect(JavaScriptValue.undefined.isNull() == false)
+    #expect(JavaScriptValue.undefined.isNumber() == false)
   }
 
   @Test
   func `create null`() {
-    #expect(JavaScriptValue.null().isNull() == true)
-    #expect(JavaScriptValue.null().isUndefined() == false)
-    #expect(JavaScriptValue.null().isString() == false)
+    #expect(JavaScriptValue.null.isNull() == true)
+    #expect(JavaScriptValue.null.isUndefined() == false)
+    #expect(JavaScriptValue.null.isString() == false)
   }
 
   @Test
@@ -54,8 +54,8 @@ struct JavaScriptValueTests {
   func `equality`() {
     let number = JavaScriptValue(runtime, 21)
     let string = JavaScriptValue(runtime, "test")
-    let null = JavaScriptValue.null()
-    let undefined = JavaScriptValue.undefined()
+    let null = JavaScriptValue.null
+    let undefined = JavaScriptValue.undefined
     #expect((number == number) == true)
     #expect((string == string) == true)
     #expect((number == string) == false)
@@ -93,7 +93,7 @@ struct JavaScriptValueTests {
   func `isSymbol for non-symbol values`() {
     #expect(JavaScriptValue(runtime, "string").isSymbol() == false)
     #expect(JavaScriptValue(runtime, 42).isSymbol() == false)
-    #expect(JavaScriptValue.undefined().isSymbol() == false)
+    #expect(JavaScriptValue.undefined.isSymbol() == false)
   }
 
   @Test
@@ -212,7 +212,7 @@ struct JavaScriptValueTests {
 
   @Test
   func `jsonStringify returns nil for undefined`() throws {
-    let undefined = JavaScriptValue.undefined()
+    let undefined = JavaScriptValue.undefined
     let json = try undefined.jsonStringify()
     #expect(json == nil)
   }
@@ -248,7 +248,7 @@ struct JavaScriptValueTests {
 
   @Test
   func `jsonStringify for null`() throws {
-    let null = JavaScriptValue.null()
+    let null = JavaScriptValue.null
     let json = try null.jsonStringify()
     #expect(json == "null")
   }
@@ -337,7 +337,7 @@ struct JavaScriptValueTests {
   @Test
   func `asDouble throws TypeError for non-number values`() throws {
     let stringValue = try runtime.eval("'3.14'")
-    let nullValue = JavaScriptValue.null()
+    let nullValue = JavaScriptValue.null
 
     #expect(throws: JavaScriptValue.TypeError.self) {
       try stringValue.asDouble()
@@ -468,6 +468,55 @@ struct JavaScriptValueTests {
     }
     #expect(throws: JavaScriptValue.TypeError.self) {
       _ = try numberValue.asPromise()
+    }
+  }
+
+  // MARK: - ArrayBuffer
+
+  @Test
+  func `isArrayBuffer returns true for ArrayBuffer`() throws {
+    let value = try runtime.eval("new ArrayBuffer(16)")
+    #expect(value.isArrayBuffer() == true)
+  }
+
+  @Test
+  func `isArrayBuffer returns false for non-ArrayBuffer`() throws {
+    let array = try runtime.eval("[1, 2, 3]")
+    let object = try runtime.eval("({ key: 'value' })")
+    let typedArray = try runtime.eval("new Uint8Array(4)")
+
+    #expect(array.isArrayBuffer() == false)
+    #expect(object.isArrayBuffer() == false)
+    #expect(typedArray.isArrayBuffer() == false)
+  }
+
+  @Test
+  func `getArrayBuffer round-trip preserves size`() throws {
+    let ab = runtime.createArrayBuffer(size: 32)
+    let value = ab.asValue()
+    let recovered = value.getArrayBuffer()
+
+    #expect(recovered.size == 32)
+    #expect(recovered.byteLength == 32)
+  }
+
+  @Test
+  func `asArrayBuffer returns ArrayBuffer for valid value`() throws {
+    let value = try runtime.eval("new ArrayBuffer(8)")
+    let ab = try value.asArrayBuffer()
+    #expect(ab.size == 8)
+  }
+
+  @Test
+  func `asArrayBuffer throws TypeError for non-ArrayBuffer`() throws {
+    let object = try runtime.eval("({ key: 'value' })")
+    let number = JavaScriptValue(runtime, 42)
+
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try object.asArrayBuffer()
+    }
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try number.asArrayBuffer()
     }
   }
 
