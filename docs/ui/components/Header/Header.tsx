@@ -3,7 +3,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { Star01DuotoneIcon } from '@expo/styleguide-icons/duotone/Star01DuotoneIcon';
 import { Menu01Icon } from '@expo/styleguide-icons/outline/Menu01Icon';
 import { Star01Icon } from '@expo/styleguide-icons/outline/Star01Icon';
-import { type ReactNode } from 'react';
+import { Activity, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 import { SidebarFooter } from '~/ui/components/Sidebar/SidebarFooter';
 import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
@@ -16,7 +16,7 @@ type HeaderProps = {
   sidebar: ReactNode;
   sidebarActiveGroup: string;
   isMobileMenuVisible: boolean;
-  setMobileMenuVisible: (isMobileMenuVisible: boolean) => void;
+  setMobileMenuVisible: Dispatch<SetStateAction<boolean>>;
 };
 
 export const Header = ({
@@ -81,14 +81,16 @@ export const Header = ({
                 isMobileMenuVisible && 'bg-hover'
               )}
               onClick={() => {
-                setMobileMenuVisible(!isMobileMenuVisible);
+                setMobileMenuVisible(
+                  (isPrevMobileMenuVisible: boolean) => !isPrevMobileMenuVisible
+                );
               }}>
               <Menu01Icon className="icon-sm" />
             </Button>
           </div>
         </div>
       </header>
-      {isMobileMenuVisible && (
+      <Activity mode={isMobileMenuVisible ? 'visible' : 'hidden'}>
         <nav
           className={mergeClasses(
             'border-default bg-default relative z-10 mx-auto hidden h-[60px] items-center justify-between border-b p-0 px-4',
@@ -101,14 +103,15 @@ export const Header = ({
             <ThemeSelector />
           </div>
         </nav>
-      )}
-      {isMobileMenuVisible && (
+      </Activity>
+
+      <Activity mode={isMobileMenuVisible ? 'visible' : 'hidden'}>
         <div className="bg-subtle h-[calc(100dvh-(60px*2))] overflow-x-hidden overflow-y-auto">
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
           <SidebarFooter isMobileMenuVisible={isMobileMenuVisible} />
         </div>
-      )}
+      </Activity>
     </>
   );
 };

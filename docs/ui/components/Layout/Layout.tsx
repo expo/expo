@@ -1,5 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
-import { type PropsWithChildren, type ReactNode } from 'react';
+import { type PropsWithChildren, type ReactNode, Activity } from 'react';
 
 import { Header } from '~/ui/components/Header';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
@@ -55,7 +55,9 @@ export function Layout({
             {children}
           </article>
         </LayoutScroll>
-        {sidebar && <aside className="max-md-gutters:hidden basis-[288px]">{sidebar}</aside>}
+        <Activity mode={sidebar ? 'visible' : 'hidden'}>
+          <aside className="max-md-gutters:hidden basis-[288px]">{sidebar}</aside>
+        </Activity>
       </main>
     </>
   );

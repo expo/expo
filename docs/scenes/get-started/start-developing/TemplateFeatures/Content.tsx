@@ -28,7 +28,7 @@ export function Content({ imgSrc, darkImgSrc, alt, href, content }: Props) {
       <div className="bg-screen flex items-center justify-center">
         <picture className="relative">
           {isDarkMode && <source srcSet={darkImgSrc} type="image/png" />}
-          <img src={imgSrc} alt={alt} className="size-[300px]" />
+          <img src={imgSrc} alt={alt} className="size-[300px]" decoding="async" />
         </picture>
       </div>
       <div className="border-default bg-default flex flex-col items-start gap-3 border-t px-6 pb-6">

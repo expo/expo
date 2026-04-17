@@ -19,6 +19,7 @@ const DocumentationHead = ({ title, description, canonicalUrl, children }: HeadP
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/png" href="/static/images/favicon.ico" sizes="32x32" />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+      <meta name="theme-color" content="#111113" />
 
       <meta name="description" content={description === '' ? BASE_DESCRIPTION : description} />
       <meta property="og:title" content={title} />

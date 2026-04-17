@@ -1,5 +1,6 @@
 import { THEME_COOKIE_NAME } from '@expo/styleguide';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
+import Script from 'next/script';
 
 const BLOCKING_THEME_SCRIPT = `
 (function() {
@@ -31,7 +32,7 @@ export default class DocsDocument extends Document {
     return (
       <Html lang="en" data-expo-theme>
         <Head>
-          <script dangerouslySetInnerHTML={{ __html: BLOCKING_THEME_SCRIPT }} />
+          <Script id="theme-blocking-script" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: BLOCKING_THEME_SCRIPT }} />
         </Head>
         <body className="text-pretty">
           <Main />

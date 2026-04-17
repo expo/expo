@@ -118,7 +118,7 @@ export function Select({
                         </SelectPrimitive.Icon>
                       )}
                       {imageUrl && (
-                        <img alt={String(id)} src={imageUrl} className="size-8 rounded-full" />
+                        <img alt={String(id)} src={imageUrl} className="size-8 rounded-full" decoding="async" />
                       )}
                       {label}
                       {rightSlot}

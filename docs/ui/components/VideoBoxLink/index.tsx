@@ -60,6 +60,7 @@ export function VideoBoxLink({
             className="aspect-video transition duration-300 group-hover:scale-105 group-focus-visible:scale-105"
             alt={title}
             aria-label={`Video thumbnail for ${title}`}
+            decoding="async"
           />
           <div
             className="absolute top-[calc(50%-22px)] right-[calc(50%-22px)] flex size-[44px] items-center justify-center rounded-full bg-[#000a]"

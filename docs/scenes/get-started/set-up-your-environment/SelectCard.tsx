@@ -47,6 +47,7 @@ export function SelectCard({
               src={imgSrc}
               alt={alt}
               className={mergeClasses(isSelected ? 'grayscale-0' : 'opacity-80 grayscale')}
+              decoding="async"
             />
           </picture>
         </div>
