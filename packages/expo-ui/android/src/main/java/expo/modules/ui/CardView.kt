@@ -13,12 +13,15 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class CardColors(
   @Field val containerColor: Color? = null,
   @Field val contentColor: Color? = null
 ) : Record
 
+@OptimizedRecord
 data class CardBorder(
   @Field val width: Float = 1f,
   @Field val color: Color? = null

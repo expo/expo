@@ -6,6 +6,7 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.ui.UIComposableScope
 import expo.modules.kotlin.views.FunctionalComposableScope
@@ -14,6 +15,7 @@ import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.composeOrNull
 import expo.modules.ui.findChildSlotView
 
+@OptimizedRecord
 class DropdownMenuItemColors : Record {
   @Field val textColor: Color? = null
   @Field val leadingIconColor: Color? = null

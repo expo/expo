@@ -9,7 +9,9 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.EitherOfThree
 import java.security.SecureRandom
 import javax.crypto.spec.GCMParameterSpec
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class EncryptOptions : Record {
   @Field
   val nonce: EitherOfThree<String, ByteArray, Int>? = null

@@ -11,7 +11,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.weak
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class DevMenuCallback(
   @Field
   val name: String,

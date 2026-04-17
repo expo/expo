@@ -13,7 +13,9 @@ import expo.modules.kotlin.records.Record
 
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class SegmentedButtonColors(
   @Field val activeBorderColor: Color? = null,
   @Field val activeContentColor: Color? = null,

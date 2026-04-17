@@ -20,9 +20,12 @@ import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.shapeFromShapeRecord
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 open class ButtonPressedEvent() : Record, Serializable
 
+@OptimizedRecord
 class ButtonColors : Record {
   @Field val containerColor: Color? = null
   @Field val contentColor: Color? = null
@@ -30,6 +33,7 @@ class ButtonColors : Record {
   @Field val disabledContentColor: Color? = null
 }
 
+@OptimizedRecord
 class ContentPaddingRecord : Record {
   @Field val start: Double? = null
   @Field val top: Double? = null

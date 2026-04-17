@@ -61,6 +61,7 @@ import expo.modules.ui.convertibles.AlignmentType
 import expo.modules.ui.convertibles.CompositingStrategyType
 import expo.modules.ui.convertibles.GraphicsLayerParams
 import expo.modules.ui.convertibles.resolveAnimatable
+import expo.modules.kotlin.types.OptimizedRecord
 
 typealias ModifierType = Map<String, Any?>
 typealias ModifierList = List<ModifierType>
@@ -69,10 +70,12 @@ typealias ModifierFactory = @Composable (ModifierType, ComposableScope?, AppCont
 
 // region Modifier Params
 
+@OptimizedRecord
 internal data class PaddingAllParams(
   @Field val all: Int = 0
 ) : Record
 
+@OptimizedRecord
 internal data class PaddingParams(
   @Field val start: Int = 0,
   @Field val top: Int = 0,
@@ -80,86 +83,106 @@ internal data class PaddingParams(
   @Field val bottom: Int = 0
 ) : Record
 
+@OptimizedRecord
 internal data class SizeParams(
   @Field val width: Int = 0,
   @Field val height: Int = 0
 ) : Record
 
+@OptimizedRecord
 internal data class FillMaxSizeParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
+@OptimizedRecord
 internal data class FillMaxWidthParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
+@OptimizedRecord
 internal data class FillMaxHeightParams(
   @Field val fraction: Float = 1.0f
 ) : Record
 
+@OptimizedRecord
 internal data class WidthParams(
   @Field val width: Int = 0
 ) : Record
 
+@OptimizedRecord
 internal data class HeightParams(
   @Field val height: Int = 0
 ) : Record
 
+@OptimizedRecord
 internal data class WrapContentWidthParams(
   @Field val alignment: AlignmentType? = null
 ) : Record
 
+@OptimizedRecord
 internal data class WrapContentHeightParams(
   @Field val alignment: AlignmentType? = null
 ) : Record
 
+@OptimizedRecord
 internal data class OffsetParams(
   @Field val x: Int = 0,
   @Field val y: Int = 0
 ) : Record
 
+@OptimizedRecord
 internal data class BackgroundParams(
   @Field val color: Color? = null
 ) : Record
 
+@OptimizedRecord
 internal data class BorderParams(
   @Field val borderWidth: Int = 1,
   @Field val borderColor: Color? = null
 ) : Record
 
+@OptimizedRecord
 internal data class ShadowParams(
   @Field val elevation: Int = 0
 ) : Record
 
+@OptimizedRecord
 internal data class AlphaParams(
   @Field val alpha: Float = 1.0f
 ) : Record
 
+@OptimizedRecord
 internal data class BlurParams(
   @Field val radius: Int = 0
 ) : Record
 
+@OptimizedRecord
 internal data class RotateParams(
   @Field val degrees: Float = 0f
 ) : Record
 
+@OptimizedRecord
 internal data class ZIndexParams(
   @Field val index: Float = 0f
 ) : Record
 
+@OptimizedRecord
 internal data class AnimateContentSizeParams(
   @Field val dampingRatio: Float = Spring.DampingRatioNoBouncy,
   @Field val stiffness: Float = Spring.StiffnessMedium
 ) : Record
 
+@OptimizedRecord
 internal data class WeightParams(
   @Field val weight: Float = 1f
 ) : Record
 
+@OptimizedRecord
 internal data class AlignParams(
   @Field val alignment: AlignmentType? = null
 ) : Record
 
+@OptimizedRecord
 internal data class TestIDParams(
   @Field val testID: String? = null
 ) : Record
@@ -172,6 +195,7 @@ internal enum class BuiltinShapeType(val value: String) : Enumerable {
   MATERIAL("material")
 }
 
+@OptimizedRecord
 internal data class BuiltinShapeRecord(
   @Field val type: BuiltinShapeType = BuiltinShapeType.RECTANGLE,
   @Field val radius: Float? = null,
@@ -182,20 +206,24 @@ internal data class BuiltinShapeRecord(
   @Field val name: MaterialShapeType? = null
 ) : Record
 
+@OptimizedRecord
 internal data class ClipParams(
   @Field val shape: BuiltinShapeRecord? = null
 ) : Record
 
+@OptimizedRecord
 internal data class SelectableParams(
   @Field val selected: Boolean = false,
   @Field val role: String? = null
 ) : Record
 
+@OptimizedRecord
 internal data class OnVisibilityChangedParams(
   @Field val minDurationMs: Long = 0,
   @Field val minFractionVisible: Float = 1f
 ) : Record
 
+@OptimizedRecord
 internal data class ClickableParams(
   @Field val indication: Boolean = true
 ) : Record
@@ -207,6 +235,7 @@ internal enum class SemanticRoleType(val value: String) : Enumerable {
   TAB("tab")
 }
 
+@OptimizedRecord
 internal data class ToggleableParams(
   @Field val value: Boolean = false,
   @Field val role: SemanticRoleType? = null

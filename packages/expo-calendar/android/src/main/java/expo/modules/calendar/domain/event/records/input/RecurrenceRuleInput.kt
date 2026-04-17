@@ -6,7 +6,9 @@ import expo.modules.calendar.extensions.getTimeInMillis
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.util.Calendar
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class RecurrenceRuleInput(
   @Field val frequency: String = "",
   @Field val interval: Int? = null,

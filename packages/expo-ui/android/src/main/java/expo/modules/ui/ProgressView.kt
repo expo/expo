@@ -18,9 +18,11 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
 // region LinearProgressIndicator
 
+@OptimizedRecord
 class DrawStopIndicatorConfig : Record {
   @Field val color: Color? = null
   @Field val strokeCap: String? = null

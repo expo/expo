@@ -4,7 +4,9 @@ package expo.modules.sqlite
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 internal data class OpenDatabaseOptions(
   @Field
   val enableChangeListener: Boolean = false,

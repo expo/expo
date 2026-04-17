@@ -7,7 +7,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import java.util.Locale
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class EventInputRecord(
   @Field val startDate: String,
   @Field val endDate: String,
@@ -30,6 +32,7 @@ data class EventInputRecord(
   @Field val instanceId: String? = null
 ) : Record
 
+@OptimizedRecord
 data class AlarmRecord(
   @Field
   val relativeOffset: Int?,
@@ -37,6 +40,7 @@ data class AlarmRecord(
   val method: AlarmMethod?
 ) : Record
 
+@OptimizedRecord
 data class RecurrenceRuleRecord(
   @Field
   val endDate: String? = null,
@@ -85,6 +89,7 @@ data class RecurrenceRuleRecord(
   }
 }
 
+@OptimizedRecord
 data class RecurringEventOptions(
   @Field
   val instanceStartDate: String? = null,

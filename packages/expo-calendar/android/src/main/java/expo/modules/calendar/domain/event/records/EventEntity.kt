@@ -4,7 +4,9 @@ import expo.modules.calendar.domain.event.enums.Availability
 import expo.modules.calendar.domain.event.enums.EventAccessLevel
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class EventEntity(
   @Field val id: String,
   @Field val calendarId: String?,

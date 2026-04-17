@@ -35,7 +35,9 @@ import expo.modules.ui.ExpoUIModule
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class Source(
   @Field val uri: String,
   @Field val width: Int = 0,

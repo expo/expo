@@ -4,7 +4,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.IntrospectableRecordConversionStrategy
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.ReflectionRecordConversionStrategy
-import expo.modules.kotlin.types.Introspectable
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.types.TypeConverterProviderImpl
 import expo.modules.kotlin.types.descriptors.toTypeDescriptor
 import expo.modules.kotlin.types.descriptors.typeDescriptorOf
@@ -31,7 +31,7 @@ class RecordConversionStrategyBenchmarkTest {
     var enabled: Boolean = false
   }
 
-  @Introspectable
+  @OptimizedRecord
   class IntrospectableRecord : Record {
     @Field
     var id: Int = 0

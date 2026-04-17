@@ -3,7 +3,9 @@ package expo.modules.calendar.next.records
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.ValueOrUndefined
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class CalendarUpdateRecord(
   @Field val name: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   @Field val title: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
