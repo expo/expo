@@ -87,7 +87,7 @@ struct ErrorView: View {
         Button(action: onGoHome) {
           Text("Go home")
             .font(.headline)
-            .foregroundColor(.black)
+            .foregroundColor(.primary)
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.expoSystemGray5)
@@ -109,7 +109,7 @@ struct ErrorView: View {
         }) {
           Text(copied ? "Copied!" : "Copy")
             .font(.headline)
-            .foregroundColor(.black)
+            .foregroundColor(.primary)
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.expoSystemGray5)

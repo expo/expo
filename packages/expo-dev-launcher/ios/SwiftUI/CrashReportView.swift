@@ -26,7 +26,7 @@ struct CrashReportView: View {
       Button(action: onDismiss) {
         Text("Close")
           .font(.headline)
-          .foregroundColor(.black)
+          .foregroundColor(.primary)
           .frame(maxWidth: .infinity)
           .padding()
 #if !os(tvOS) && !os(macOS)
