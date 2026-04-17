@@ -6,6 +6,7 @@ import {
   getSwiftFileTypeInformation,
   preprocessSwiftFile,
 } from './swift/sourcekittenTypeInformation';
+import { randomUUID } from 'crypto';
 
 export enum IdentifierKind {
   BASIC,
@@ -298,8 +299,9 @@ export async function getFileTypeInformation({
       : input.fileContent;
   const preprocessedContent = shouldPreprocessFile ? preprocessSwiftFile(fileContent) : fileContent;
 
+  const tempFilePath = `TypeInformationTemporaryFile${randomUUID()}.swift`;
   const tmp = os.tmpdir();
-  const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
+  const filePath = path.resolve(tmp, tempFilePath);
   fs.writeFileSync(filePath, preprocessedContent, 'utf8');
   const fileTypeInfo = await getSwiftFileTypeInformation(filePath, {
     typeInference: typeInferenceOn,
