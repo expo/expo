@@ -13,6 +13,7 @@ import { resolve } from 'path';
 
 const pkg = require('../../package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
+const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to detect your current motion activity';
 
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
@@ -158,6 +159,14 @@ export type Props = {
    */
   locationWhenInUsePermission?: string | false;
   /**
+   * A string to set the `NSMotionUsageDescription` permission message shown when
+   * `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time.
+   * Set to `false` to omit the key (the app must then add it manually).
+   * @default "Allow $(PRODUCT_NAME) to detect your current motion activity"
+   * @platform ios
+   */
+  motionUsagePermission?: string | false;
+  /**
    * Whether to enable location in `UIBackgroundModes`.
    * @default false
    * @platform ios
@@ -188,6 +197,7 @@ const withLocation: ConfigPlugin<Props | void> = (
     locationAlwaysAndWhenInUsePermission,
     locationAlwaysPermission,
     locationWhenInUsePermission,
+    motionUsagePermission,
     isIosBackgroundLocationEnabled,
     isAndroidBackgroundLocationEnabled,
     isAndroidForegroundServiceEnabled,
@@ -204,10 +214,12 @@ const withLocation: ConfigPlugin<Props | void> = (
     NSLocationAlwaysAndWhenInUseUsageDescription: LOCATION_USAGE,
     NSLocationAlwaysUsageDescription: LOCATION_USAGE,
     NSLocationWhenInUseUsageDescription: LOCATION_USAGE,
+    NSMotionUsageDescription: MOTION_USAGE,
   })(config, {
     NSLocationAlwaysAndWhenInUseUsageDescription: locationAlwaysAndWhenInUsePermission,
     NSLocationAlwaysUsageDescription: locationAlwaysPermission,
     NSLocationWhenInUseUsageDescription: locationWhenInUsePermission,
+    NSMotionUsageDescription: motionUsagePermission,
   });
 
   // If the user has not specified a value for isAndroidForegroundServiceEnabled,

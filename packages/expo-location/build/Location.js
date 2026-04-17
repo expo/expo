@@ -2,7 +2,7 @@ import { isRunningInExpoGo } from 'expo';
 import { createPermissionHook, Platform } from 'expo-modules-core';
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy, } from './Location.types';
-import { LocationSubscriber, HeadingSubscriber, LocationErrorSubscriber, } from './LocationSubscribers';
+import { LocationSubscriber, HeadingSubscriber, LocationErrorSubscriber, MotionActivitySubscriber, } from './LocationSubscribers';
 // Flag for warning about background services not being available in Expo Go
 let warnAboutExpoGoDisplayed = false;
 // @needsAudit
@@ -272,6 +272,68 @@ export const useBackgroundPermissions = createPermissionHook({
  */
 export async function hasServicesEnabledAsync() {
     return await ExpoLocation.hasServicesEnabledAsync();
+}
+// --- Motion activity
+// @needsAudit
+/**
+ * Fetches the current motion activity status of the device by subscribing to the first available
+ * activity update and immediately unsubscribing afterwards. Resolves with the same object shape
+ * as the `watchMotionActivityAsync` callback.
+ *
+ * The method uses the platform's motion coprocessor (iOS) or Google Play Services activity
+ * recognition (Android) and does **not** require location permissions. On iOS, the system will
+ * prompt the user for motion & fitness access the first time this method is called.
+ * On Android 10+, the `ACTIVITY_RECOGNITION` runtime permission must be granted beforehand.
+ *
+ * @return A promise which fulfills with a [`MotionActivityObject`](#motionactivityobject).
+ *
+ * @platform android
+ * @platform ios
+ */
+export async function getMotionActivityAsync() {
+    return new Promise(async (resolve, reject) => {
+        let subscriber;
+        try {
+            subscriber = await watchMotionActivityAsync((activity) => {
+                subscriber?.remove();
+                resolve(activity);
+            }, (reason) => {
+                subscriber?.remove();
+                reject(new Error(reason));
+            });
+        }
+        catch (e) {
+            reject(e);
+        }
+    });
+}
+// @needsAudit
+/**
+ * Subscribes to motion activity updates from the device. The callback fires whenever the
+ * platform's motion coprocessor detects a change in the user's activity. Only foreground use
+ * is supported — updates pause when the app is backgrounded and resume when it returns to
+ * the foreground.
+ *
+ * @param callback This function is called on each motion activity update. It receives an object
+ * of type [`MotionActivityObject`](#motionactivityobject) as the first argument.
+ * @param errorHandler This function is called if the platform reports an error (for example,
+ * when activity recognition permission is denied). It receives a string message as the
+ * first argument.
+ * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
+ *
+ * @platform android
+ * @platform ios
+ */
+export async function watchMotionActivityAsync(callback, errorHandler) {
+    const watchId = MotionActivitySubscriber.registerCallback(callback);
+    errorHandler && LocationErrorSubscriber.registerCallbackForId(watchId, errorHandler);
+    await ExpoLocation.watchMotionActivityImplAsync(watchId);
+    return {
+        remove() {
+            MotionActivitySubscriber.unregisterCallback(watchId);
+            errorHandler && LocationErrorSubscriber.unregisterCallback(watchId);
+        },
+    };
 }
 // --- Background location updates
 function _validate(taskName) {

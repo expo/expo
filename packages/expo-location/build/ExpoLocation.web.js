@@ -151,6 +151,9 @@ export default {
             resolve(watchId);
         });
     },
+    async watchMotionActivityImplAsync(_watchId) {
+        console.warn('Location.watchMotionActivityAsync: is not supported on web');
+    },
     async requestForegroundPermissionsAsync() {
         return getPermissionsAsync(true);
     },

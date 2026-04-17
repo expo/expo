@@ -12,6 +12,7 @@ declare const _default: {
     geocodeAsync(): Promise<any[]>;
     reverseGeocodeAsync(): Promise<any[]>;
     watchPositionImplAsync(watchId: number, options: PositionOptions): Promise<number>;
+    watchMotionActivityImplAsync(_watchId: number): Promise<void>;
     requestForegroundPermissionsAsync(): Promise<PermissionResponse>;
     requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
     getForegroundPermissionsAsync(): Promise<PermissionResponse>;

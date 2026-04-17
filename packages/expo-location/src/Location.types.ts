@@ -512,3 +512,109 @@ export type LocationPermissionResponse = PermissionResponse & {
 };
 
 export type { PermissionResponse };
+
+// @needsAudit
+/**
+ * Confidence level for motion activity detection. Maps directly to `CMMotionActivityConfidence`
+ * on iOS. On Android the raw `DetectedActivity` confidence (0–100) is bucketed into these
+ * three levels.
+ */
+export enum MotionActivityConfidence {
+  /**
+   * The activity determination has low confidence.
+   */
+  Low = 0,
+  /**
+   * The activity determination has medium confidence.
+   */
+  Medium = 1,
+  /**
+   * The activity determination has high confidence.
+   */
+  High = 2,
+}
+
+// @needsAudit
+/**
+ * The type of physical activity the user is currently performing.
+ *
+ * On iOS this maps to the boolean properties of `CMMotionActivity` (the highest-priority
+ * truthy property wins). On Android it maps to `DetectedActivity` constants from
+ * Google Play Services.
+ */
+export enum MotionActivityType {
+  /**
+   * The device is in a motorised vehicle (car, bus, train, etc.).
+   */
+  Automotive = 'automotive',
+  /**
+   * The user is riding a bicycle.
+   */
+  Cycling = 'cycling',
+  /**
+   * The user is running.
+   */
+  Running = 'running',
+  /**
+   * The user is walking.
+   */
+  Walking = 'walking',
+  /**
+   * The device is not moving.
+   */
+  Stationary = 'stationary',
+  /**
+   * The activity cannot be determined.
+   */
+  Unknown = 'unknown',
+}
+
+// @needsAudit
+/**
+ * Detection state for a single activity type.
+ * When `detected` is `false`, `confidence` is always `Low`.
+ */
+export type MotionActivityState = {
+  /**
+   * Whether this activity was detected.
+   */
+  detected: boolean;
+  /**
+   * Confidence level of the detection.
+   * On iOS this is the overall reading confidence from `CMMotionActivityConfidence`, shared by all
+   * detected activities. On Android each activity type has its own confidence derived from the
+   * `DetectedActivity` probability value.
+   */
+  confidence: MotionActivityConfidence;
+};
+
+// @needsAudit
+/**
+ * Type returned by `getMotionActivityAsync` and the `watchMotionActivityAsync` callback.
+ * Contains one entry per `MotionActivityType` so callers can inspect each activity
+ * independently without searching through an array.
+ *
+ * @example
+ * ```ts
+ * const { activities } = await Location.getMotionActivityAsync();
+ * if (activities.automotive.detected) {
+ *   console.log('driving, confidence:', activities.automotive.confidence);
+ * }
+ * ```
+ */
+export type MotionActivityObject = {
+  /**
+   * An object keyed by `MotionActivityType`, each value being a `MotionActivityState`.
+   */
+  activities: Record<MotionActivityType, MotionActivityState>;
+  /**
+   * The time at which the activity snapshot was taken, in milliseconds since Unix epoch.
+   */
+  timestamp: number;
+};
+
+// @needsAudit
+/**
+ * Represents the `watchMotionActivityAsync` callback.
+ */
+export type MotionActivityCallback = (activity: MotionActivityObject) => any;

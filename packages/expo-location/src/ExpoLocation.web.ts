@@ -182,6 +182,10 @@ export default {
     });
   },
 
+  async watchMotionActivityImplAsync(_watchId: number): Promise<void> {
+    console.warn('Location.watchMotionActivityAsync: is not supported on web');
+  },
+
   async requestForegroundPermissionsAsync(): Promise<PermissionResponse> {
     return getPermissionsAsync(true);
   },

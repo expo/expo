@@ -1,9 +1,9 @@
-import { LocationCallback, LocationErrorCallback, LocationHeadingCallback } from './Location.types';
+import { LocationCallback, LocationErrorCallback, LocationHeadingCallback, MotionActivityCallback } from './Location.types';
 type EventObject = {
     watchId: number;
     [key: string]: any;
 };
-declare class Subscriber<CallbackType extends LocationCallback | LocationHeadingCallback | LocationErrorCallback> {
+declare class Subscriber<CallbackType extends LocationCallback | LocationHeadingCallback | LocationErrorCallback | MotionActivityCallback> {
     private eventName;
     private eventDataField;
     private callbacks;
@@ -29,6 +29,7 @@ declare class Subscriber<CallbackType extends LocationCallback | LocationHeading
 export declare const LocationSubscriber: Subscriber<LocationCallback>;
 export declare const HeadingSubscriber: Subscriber<LocationHeadingCallback>;
 export declare const LocationErrorSubscriber: Subscriber<LocationErrorCallback>;
+export declare const MotionActivitySubscriber: Subscriber<MotionActivityCallback>;
 /**
  * @private Necessary for some unit tests.
  */

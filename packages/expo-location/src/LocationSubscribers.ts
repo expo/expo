@@ -1,7 +1,12 @@
 import { type EventSubscription } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
-import { LocationCallback, LocationErrorCallback, LocationHeadingCallback } from './Location.types';
+import {
+  LocationCallback,
+  LocationErrorCallback,
+  LocationHeadingCallback,
+  MotionActivityCallback,
+} from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 
 type EventObject = {
@@ -12,7 +17,11 @@ type EventObject = {
 let nextWatchId = 0;
 
 class Subscriber<
-  CallbackType extends LocationCallback | LocationHeadingCallback | LocationErrorCallback,
+  CallbackType extends
+    | LocationCallback
+    | LocationHeadingCallback
+    | LocationErrorCallback
+    | MotionActivityCallback,
 > {
   private eventName: string;
   private eventDataField: string;
@@ -98,6 +107,11 @@ export const HeadingSubscriber = new Subscriber<LocationHeadingCallback>(
 export const LocationErrorSubscriber = new Subscriber<LocationErrorCallback>(
   'Expo.locationError',
   'reason'
+);
+
+export const MotionActivitySubscriber = new Subscriber<MotionActivityCallback>(
+  'Expo.motionActivityChanged',
+  'activity'
 );
 
 /**

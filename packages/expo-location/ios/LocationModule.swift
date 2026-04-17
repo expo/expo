@@ -1,14 +1,17 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import CoreLocation
+import CoreMotion
 import ExpoModulesCore
 
 private let EVENT_LOCATION_CHANGED = "Expo.locationChanged"
 private let EVENT_HEADING_CHANGED = "Expo.headingChanged"
 private let EVENT_LOCATION_ERROR = "Expo.locationError"
+private let EVENT_MOTION_ACTIVITY_CHANGED = "Expo.motionActivityChanged"
 
 public final class LocationModule: Module {
   private lazy var locationStreamers = [Int: BaseStreamer]()
+  private lazy var motionActivityStreamers = [Int: MotionActivityStreamer]()
 
   private var taskManager: EXTaskManagerInterface {
     get throws {
@@ -22,7 +25,7 @@ public final class LocationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLocation")
 
-    Events(EVENT_LOCATION_CHANGED, EVENT_HEADING_CHANGED, EVENT_LOCATION_ERROR)
+    Events(EVENT_LOCATION_CHANGED, EVENT_HEADING_CHANGED, EVENT_LOCATION_ERROR, EVENT_MOTION_ACTIVITY_CHANGED)
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
@@ -117,11 +120,61 @@ public final class LocationModule: Module {
       }
     }
 
+    AsyncFunction("watchMotionActivityImplAsync") { (watchId: Int) in
+      guard CMMotionActivityManager.isActivityAvailable() else {
+        throw Exceptions.MotionActivityUnavailable()
+      }
+      let authorizationStatus = CMMotionActivityManager.authorizationStatus()
+      guard authorizationStatus != .denied && authorizationStatus != .restricted else {
+        throw Exceptions.MotionActivityUnauthorized()
+      }
+
+      let streamer = MotionActivityStreamer()
+      motionActivityStreamers[watchId] = streamer
+
+      // Start streaming in a detached task so the returned promise resolves immediately.
+      Task {
+        do {
+          for try await activity in try streamer.streamMotionActivity() {
+            // CMMotionActivity reports one confidence value for the whole reading.
+            // Detected entries receive that confidence; undetected entries receive 0 (Low).
+            let confidence = activity.confidence.rawValue
+            func entry(_ detected: Bool) -> [String: Any] {
+              ["detected": detected, "confidence": detected ? confidence : 0]
+            }
+            sendEvent(EVENT_MOTION_ACTIVITY_CHANGED, [
+              "watchId": watchId,
+              "activity": [
+                "activities": [
+                  "automotive": entry(activity.automotive),
+                  "cycling":    entry(activity.cycling),
+                  "running":    entry(activity.running),
+                  "walking":    entry(activity.walking),
+                  "stationary": entry(activity.stationary),
+                  "unknown":    entry(activity.unknown),
+                ],
+                "timestamp": activity.startDate.timeIntervalSince1970 * 1000
+              ]
+            ])
+          }
+        } catch let exception as Exception {
+          sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": exception.reason])
+        } catch {
+          sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": error.localizedDescription])
+        }
+      }
+    }
+
     AsyncFunction("removeWatchAsync") { (watchId: Int) in
       if let streamer = locationStreamers[watchId] {
         streamer.stopStreaming()
       }
       locationStreamers[watchId] = nil
+
+      if let streamer = motionActivityStreamers[watchId] {
+        streamer.stopStreaming()
+      }
+      motionActivityStreamers[watchId] = nil
     }
 
     AsyncFunction("geocodeAsync") { (address: String) in
