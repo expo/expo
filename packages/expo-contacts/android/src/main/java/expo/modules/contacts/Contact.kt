@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-// TODO: MaidenName Nickname
+// TODO: MaidenName Nickname something
 class Contact(var contactId: String, var appContext: AppContext) {
   private var rawContactId: String? = null
   var lookupKey: String? = null
