@@ -776,6 +776,53 @@ export async function test(t) {
     });
   });
 
+  t.describe('asset.getAlbums()', () => {
+    if (Platform.OS === 'ios') {
+      t.it('returns all albums the asset belongs to', async () => {
+        // given
+        const asset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(asset);
+        const album1 = await Album.create(createAlbumName('getAlbums_ios_1'), [asset], false);
+        const album2 = await Album.create(createAlbumName('getAlbums_ios_2'), [asset], false);
+        albumsContainer.push(album1);
+        albumsContainer.push(album2);
+        // when
+        const albums = await asset.getAlbums();
+        // then
+        t.expect(albums.find((a) => a.id === album1.id)).toBeDefined();
+        t.expect(albums.find((a) => a.id === album2.id)).toBeDefined();
+      });
+    }
+
+    if (Platform.OS === 'android') {
+      t.it('returns only the album the asset currently resides in', async () => {
+        // given
+        const asset = await Asset.create(jpgFile.localUri);
+        assetsContainer.push(asset);
+        const album1 = await Album.create(
+          createAlbumName('returns only the album the asset currently resides in 1'),
+          [asset],
+          true
+        );
+        albumsContainer.push(album1);
+        const otherAsset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(otherAsset);
+        const album2 = await Album.create(
+          createAlbumName('returns only the album the asset currently resides in 2'),
+          [otherAsset],
+          true
+        );
+        albumsContainer.push(album2);
+        await album2.add(asset);
+        // when
+        const albums = await asset.getAlbums();
+        // then
+        t.expect(albums.length).toBe(1);
+        t.expect(albums[0].id).toBe(album2.id);
+      });
+    }
+  });
+
   t.describe('Exif interface', () => {
     t.it('returns location for jpg image', async () => {
       // given

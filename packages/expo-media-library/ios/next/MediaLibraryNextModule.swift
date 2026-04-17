@@ -30,6 +30,10 @@ public final class MediaLibraryNextModule: Module {
         try await this.getFilename()
       }
 
+      AsyncFunction("getAlbums") { (this: Asset) in
+        try await this.getAlbums()
+      }
+
       AsyncFunction("getHeight") { (this: Asset) in
         try await this.getHeight()
       }
