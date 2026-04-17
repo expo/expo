@@ -11,7 +11,7 @@ export default function Suites({ suites, done, numFailed, results, selectionQuer
 
   return (
     <FlatList
-      style={styles.list}
+      style={[styles.list, { backgroundColor: theme.background.screen }]}
       contentContainerStyle={styles.contentContainerStyle}
       data={[...suites]}
       keyExtractor={(item) => item.get('result').get('id')}
@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    backgroundColor: '#fff',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });
