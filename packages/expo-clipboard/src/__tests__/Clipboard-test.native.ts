@@ -13,4 +13,7 @@ describe('Clipboard', () => {
   it('removeClipboardListener', () => {
     expect(Clipboard.removeClipboardListener).toBeDefined();
   });
+  it('useClipboard', () => {
+    expect(Clipboard.useClipboard).toBeDefined();
+  });
 });
