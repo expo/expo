@@ -28,7 +28,7 @@ export function CollapsibleTalksGridWrapper({ items }: CollapsibleGridProps) {
           <Button
             theme="secondary"
             onClick={() => {
-              setShowAll((prevShowAll) => !prevShowAll);
+              setShowAll(prevShowAll => !prevShowAll);
             }}>
             {showAll ? 'Show Less' : 'Show More'}
           </Button>

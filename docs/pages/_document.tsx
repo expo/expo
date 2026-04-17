@@ -32,7 +32,11 @@ export default class DocsDocument extends Document {
     return (
       <Html lang="en" data-expo-theme>
         <Head>
-          <Script id="theme-blocking-script" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: BLOCKING_THEME_SCRIPT }} />
+          <Script
+            id="theme-blocking-script"
+            strategy="beforeInteractive"
+            dangerouslySetInnerHTML={{ __html: BLOCKING_THEME_SCRIPT }}
+          />
         </Head>
         <body className="text-pretty">
           <Main />
