@@ -31,7 +31,7 @@ dependencies {
   implementation(gradleApi())
   compileOnly("com.android.tools.build:gradle:8.5.0")
   implementation("com.facebook.react:react-native-gradle-plugin")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
   implementation("io.github.lukmccall.pika:pika-gradle:0.1.4-2.1.20")
 
   if (isExpoAutolinkingSettingsPluginAvailable) {
