@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `expo-modules-core` dependency. ([#44874](https://github.com/expo/expo/issues/44874) by [@zoontek](https://github.com/zoontek))
+- Add missing `expo-modules-core` dependency. ([#44874](https://github.com/expo/expo/pull/44874) by [@zoontek](https://github.com/zoontek))
 - Add `@react-native/babel-preset` to ignored transform patterns, since it's part of the transformer pipeline ([#44152](https://github.com/expo/expo/pull/44152) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
