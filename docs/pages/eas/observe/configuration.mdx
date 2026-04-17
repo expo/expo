@@ -4,8 +4,6 @@ sidebar_title: Configuration
 description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-
 ## `configure()`
 
 Use the `configure()` method to control how EAS Observe behaves at runtime:
@@ -19,10 +17,10 @@ ExpoObserve.configure({
 });
 ```
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `environment` | `string` | `process.env.NODE_ENV` | The environment label for observability events |
-| `dispatchingEnabled` | `boolean` | `true` | Whether to send collected events to the server |
+| Option               | Type      | Default                | Description                                    |
+| -------------------- | --------- | ---------------------- | ---------------------------------------------- |
+| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events |
+| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server |
 
 ## `dispatchEvents()`
 

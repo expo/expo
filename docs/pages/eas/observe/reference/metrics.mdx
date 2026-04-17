@@ -23,7 +23,7 @@ This allows you to see metrics across multiple sessions for the same user withou
 
 ## Metrics
 
-### Cold Launch Time
+### Cold launch time
 
 Time to launch the app from scratch when the app's native code and resources are not in memory. This is a native-only metric that is measured before the JavaScript bundle starts executing.
 
@@ -31,7 +31,7 @@ A cold launch occurs after a fresh install, app upgrade, device reboot, or when 
 
 This metric is collected automatically.
 
-### Warm Launch Time
+### Warm launch time
 
 Time to launch the app when native libraries, app's state, and resources are already cached in memory. This is a native-only metric that is measured before the JavaScript bundle starts executing.
 
@@ -39,19 +39,19 @@ During a warm launch, the system only needs to recreate the UI and restore any p
 
 This metric is collected automatically.
 
-### Bundle Load Time
+### Bundle load time
 
 How long it takes to evaluate your JavaScript bundle. This measures the time the JavaScript runtime spends parsing and executing your bundle code.
 
 This metric is collected automatically.
 
-### Time to First Render
+### Time to first render
 
 Time from app launch until your app first renders content to the screen.
 
 This metric is collected automatically when you wrap your root layout with `AppMetricsRoot` (see [Get started](/eas/observe/get-started/)). You can also call `AppMetrics.markFirstRender()` manually if needed.
 
-### Time to Interactive
+### Time to interactive
 
 Time from app launch until your app is fully ready for user interaction. This is measured when you call `AppMetrics.markInteractive()`.
 

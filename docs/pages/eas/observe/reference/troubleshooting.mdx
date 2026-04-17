@@ -15,7 +15,7 @@ import { Step } from '~/ui/components/Step';
 2. Check that you are viewing the correct project in the EAS dashboard.
 3. If testing in development, ensure `enableInDebug` is set to `true` in your app config. See [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development).
 
-### Time to First Render not showing
+### Time to first render not showing
 
 Verify that your root layout is wrapped with `AppMetricsRoot`:
 
@@ -29,7 +29,7 @@ function RootLayout() {
 export default AppMetricsRoot.wrap(RootLayout);
 ```
 
-### Time to Interactive not showing
+### Time to interactive not showing
 
 This metric requires manual instrumentation. Verify that:
 
@@ -44,12 +44,7 @@ If you were previously using `expo-eas-observe`, follow these steps to migrate t
 
 ### Replace the package
 
-<Terminal
-  cmd={[
-    '$ npx expo install expo-observe',
-    '$ npm uninstall expo-eas-observe',
-  ]}
-/>
+<Terminal cmd={['$ npx expo install expo-observe', '$ npm uninstall expo-eas-observe']} />
 
 If you previously installed `expo-eas-client` as a separate dependency, you can remove it:
 
