@@ -14,7 +14,7 @@ In this chapter, we'll create our initial workflow to use `preview` build profil
 
 ## Using `build` job type for preview builds
 
-Preview builds are used for team and stakeholder testing. Teams distribute them via internal distribution so members can test the changes on real devices or emulators/simulators before a production release. They don't have to run a development server on their local machine or check a Git branch to test the changes.
+Teams use preview builds for stakeholder testing. They distribute them via internal distribution so members can test changes on real devices or emulators/simulators before a production release. They don't have to run a development server on their local machine or check a Git branch to test the changes.
 
 <PreviewPipeline />
 
@@ -99,9 +99,9 @@ In EAS dashboard, notice that the workflow follows the same fingerprint pattern 
 
 ## Slack notifications
 
-> **info** This section is optional. If you don't use Slack or want to skip this part, you can jump to the next section about PR previews.
+> **info** This section is optional. Not using Slack? Skip to the next section about PR previews.
 
-Slack notifications are popular with teams that are distributed. When a build completes (or skips), the team can be notified within the Slack by using [`slack`](/eas/workflows/pre-packaged-jobs/#slack) pre-packaged job.
+Slack notifications are popular with distributed teams. When a build completes (or skips), the [`slack`](/eas/workflows/pre-packaged-jobs/#slack) pre-packaged job notifies the team in Slack.
 
 <Step label="1">
 
@@ -185,7 +185,7 @@ We can also verify this in the Slack channel integrated with the app.
 
 When a PR reviewer looks at a pull request, they can read the diff but cannot see the changes visually or test them on a device without checking out the branch and starting a development server locally.
 
-Traditionally, the problem described above is solved by deploy previews. When a pull request is created, a CI/CD workflow runs and generates the preview link for the reviewers. They can click and test the changes live. This is also known as preview links or staging environment.
+Traditionally, deploy previews solve this problem. When someone opens a pull request, a CI/CD workflow runs and generates a preview link for the reviewers. They can click and test the changes live. Some teams call this pattern preview links or a staging environment.
 
 On mobile for Android and iOS apps, the equivalent for web deployment previews can be set up using [EAS Update](/eas-update/introduction/). It is a service that delivers JavaScript bundle to devices that already have a compatible build installed. Publishing an update is fast because it skips the native compilation step. For PR reviews, we want an update and not a build because reviewers should be able to test and provide feedback to the PR.
 

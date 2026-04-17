@@ -87,11 +87,11 @@ Wait for both builds to complete before moving to the next step. After the build
 
 ## Using fingerprints to skip unnecessary builds
 
-When there is only TypeScript/JavaScript changes in our project, we can avoid creating a new development build. A development build is only needed to be rebuilt when native code changes.
+When our project has only TypeScript/JavaScript changes, we can avoid creating a new development build. We only need to rebuild a development build when native code changes.
 
-For JavaScript changes, the existing development build is still compatible. Developers on our team can pull the latest changes from `main` branch, run `npx expo start` to start the development server, and the JS only changes will be served to the existing build on a device or emulator/simulator.
+For JavaScript changes, the existing development build is still compatible. Developers on our team can pull the latest changes from `main` branch, run `npx expo start` to start the development server, and the development server delivers the JS-only changes to the existing build on a device or emulator/simulator.
 
-[**Expo Fingerprint**](/versions/latest/sdk/fingerprint/) automates this decision. It hashes the project's native characteristics (dependencies, native project files, configuration). If the hash matches an existing build, native code has not changed and a rebuild is skipped. If the hash is different, native code changed and a new build is created.
+[**Expo Fingerprint**](/versions/latest/sdk/fingerprint/) automates this decision. It hashes the project's native characteristics (dependencies, native project files, configuration). If the hash matches an existing build, native code has not changed and EAS skips the rebuild. If the hash is different, native code changed and EAS creates a new build.
 
 <FingerprintFlow />
 
@@ -101,7 +101,7 @@ In this section, let's update our **build.yml** workflow step by step to detect 
 
 ### Add a fingerprint job
 
-The [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) pre-packaged job hashes the project's native characteristics and outputs a fingerprint hash for each platform. The `environment` field tells EAS which [environment](/eas/environment-variables/) configuration to use.
+The [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) pre-packaged job hashes the project's native characteristics and outputs a fingerprint hash for each platform. The `environment` field tells EAS which [environment variable configuration](/eas/environment-variables/) to use. Note that `environment` and `profile` can share the same name but refer to different things. `profile` points to a build profile in **eas.json** (how to build). `environment` points to environment variables configured on EAS (which values to inject at build time).
 
 Update **build.yml** to add the `fingerprint` job before the build jobs:
 
@@ -281,11 +281,13 @@ Our team can now pull the latest from `main` branch, run `npx expo start`, and t
 
 ## Custom jobs for unit testing
 
+> **info** This section assumes Jest is set up in the project. For setup instructions, see [Unit testing with Jest](/develop/unit-testing/).
+
 When working in a team, we want to make sure that every change pushed to `main` branch passes tests before triggering a new build. To do that, we use unit tests as part of our development.
 
-Without automation, our team member will have to remember to run tests locally before pushing to the Git branch. If they forget and the code has a failing test, the workflow triggered can create a build from broken code.
+Without automation, our team member will have to remember to run tests locally before pushing to the Git branch. If they forget and the code has a failing test, the next workflow can create a build from broken code.
 
-With **EAS Workflows**, we can automate this process by mixing a custom job with our existing pre-packaged jobs. This custom job runs before fingerprint and build jobs. If a test fails, the rest of the workflow will not run and no build will be created.
+With **EAS Workflows**, we can automate this process by mixing a custom job with our existing pre-packaged jobs. This custom job runs before fingerprint and build jobs. If a test fails, EAS stops the workflow and creates no build.
 
 <UnitTestGate />
 
