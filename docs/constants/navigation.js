@@ -585,7 +585,6 @@ export const eas = [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
-    makePage('eas/observe/cli.mdx'),
     makePage('eas/observe/configuration.mdx'),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
