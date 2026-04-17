@@ -12,10 +12,11 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  * resolves to `true`. This component will render nothing if it is not available, and you will get
  * a warning in development mode (`__DEV__ === true`).
  *
- * The properties of this component extend from `View`. However, setting `backgroundColor` or
- * `borderRadius` via the `style` prop has no effect on the native button, and Apple's branding
- * rules also restrict the allowed colors and corner styling. Use the `buttonStyle` property to
- * choose an approved color and the `cornerRadius` property to set the corner radius.
+ * The properties of this component extend from `View`; however, you should not attempt to set
+ * `backgroundColor` or `borderRadius` with the `style` property. This will not work and is against
+ * the App Store Guidelines. Instead, you should use the `buttonStyle` property to choose one of the
+ * predefined color styles and the `cornerRadius` property to change the border radius of the
+ * button.
  *
  * Make sure to attach height and width via the style props, since without them the button will
  * not appear on the screen.
