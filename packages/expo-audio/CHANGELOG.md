@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Request media audio focus on `AudioPlayer`'s ExoPlayer so playback actually starts after another component held non-media audio focus (e.g. a recording library that grabbed `STREAM_VOICE_CALL` focus). Previously `AudioAttributes.DEFAULT, false` caused the player to report `playing=true` while streaming to a dead output and auto-unload within ~200 ms, silently dropping short TTS clips. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@louiscavalcante](https://github.com/louiscavalcante))
+- [Android] Set `AudioAttributes` to `USAGE_MEDIA` on `AudioPlayer`'s ExoPlayer so Android routes the AudioTrack to `STREAM_MUSIC` after a peer component releases non-media audio focus (e.g. a recording library that held `STREAM_VOICE_CALL` focus). Previously `AudioAttributes.DEFAULT` declared `USAGE_UNKNOWN`, leaving the AudioTrack pinned to a stale voice-call sink — the player reported `playing=true` with `currentTime=0` before auto-unloading within ~200 ms. ([#44869](https://github.com/expo/expo/pull/44869) by [@louiscavalcante](https://github.com/louiscavalcante))
 
 ### 💡 Others
 
