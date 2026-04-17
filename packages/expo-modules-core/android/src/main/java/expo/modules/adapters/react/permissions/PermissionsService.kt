@@ -27,6 +27,7 @@ import java.util.Queue
 
 private const val PERMISSIONS_REQUEST: Int = 13
 private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
+private const val PERMANENTLY_DENIED_SUFFIX = "_permanently_denied"
 
 open class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private var mActivityProvider: ActivityProvider? = null
@@ -42,6 +43,22 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   private lateinit var mAskedPermissionsCache: SharedPreferences
 
   private fun didAsk(permission: String): Boolean = mAskedPermissionsCache.getBoolean(permission, false)
+
+  private fun isPermanentlyDenied(permission: String): Boolean =
+    mAskedPermissionsCache.getBoolean("$permission$PERMANENTLY_DENIED_SUFFIX", false)
+
+  private fun updatePermanentDenialState(permissions: Array<out String>, grantResults: IntArray) {
+    mAskedPermissionsCache.edit(commit = true) {
+      permissions.zip(grantResults.toList()).forEach { (permission, result) ->
+        val key = "$permission$PERMANENTLY_DENIED_SUFFIX"
+        when {
+          result == PackageManager.PERMISSION_GRANTED -> putBoolean(key, false)
+          canAskAgain(permission) -> putBoolean(key, false)
+          else -> putBoolean(key, true)
+        }
+      }
+    }
+  }
 
   private fun addToAskedPermissionsCache(permissions: Array<out String>) {
     mAskedPermissionsCache.edit(commit = true) {
@@ -228,18 +245,16 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   }
 
   private fun getPermissionResponseFromNativeResponse(permission: String, result: Int): PermissionsResponse {
+    val showRationale = canAskAgain(permission)
     val status = when {
       result == PackageManager.PERMISSION_GRANTED -> PermissionsStatus.GRANTED
-      didAsk(permission) -> PermissionsStatus.DENIED
+      showRationale -> PermissionsStatus.DENIED
+      isPermanentlyDenied(permission) -> PermissionsStatus.DENIED
       else -> PermissionsStatus.UNDETERMINED
     }
     return PermissionsResponse(
       status,
-      if (status == PermissionsStatus.DENIED) {
-        canAskAgain(permission)
-      } else {
-        true
-      }
+      if (status == PermissionsStatus.DENIED) showRationale else true
     )
   }
 
@@ -275,6 +290,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     return PermissionListener { requestCode, receivePermissions, grantResults ->
       if (requestCode == PERMISSIONS_REQUEST) {
         synchronized(this@PermissionsService) {
+          updatePermanentDenialState(receivePermissions, grantResults)
           val currentListener = requireNotNull(mCurrentPermissionListener)
           currentListener.onResult(parseNativeResult(receivePermissions, grantResults))
           mCurrentPermissionListener = null
