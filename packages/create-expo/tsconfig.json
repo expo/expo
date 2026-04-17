@@ -7,6 +7,7 @@
     "outDir": "build",
     "module": "preserve",
     "moduleResolution": "bundler",
-    "declaration": false
+    "declaration": false,
+    "types": ["jest"]
   }
 }
