@@ -35,11 +35,21 @@ class ManagedAppSplashScreenConfiguration private constructor() {
     }
 
     private fun parseBackgroundColor(manifest: Manifest): Int? {
-      val splashInfo = manifest.getSplashInfo() ?: return null
-      val backgroundColor = splashInfo.getNullable<String>("backgroundColor")
+      val backgroundColor =
+        manifest.getSplashInfo()?.getNullable<String>("backgroundColor") ?: return null
 
-      return if (ColorParser.isValid(backgroundColor)) {
-        Color.parseColor(backgroundColor)
+      val normalizedBackgroundColor = when {
+        Regex("^#([0-9a-fA-F]{3})$").matches(backgroundColor) -> {
+          val r = backgroundColor[1]
+          val g = backgroundColor[2]
+          val b = backgroundColor[3]
+          "#$r$r$g$g$b$b"
+        }
+        else -> backgroundColor
+      }
+
+      return if (ColorParser.isValid(normalizedBackgroundColor)) {
+        Color.parseColor(normalizedBackgroundColor)
       } else {
         null
       }
@@ -64,9 +74,7 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       return imageUrl ?: manifest.getIconUrl()
     }
 
-    private fun parseImageWidth(manifest: Manifest): Int? {
-      val splashInfo = manifest.getSplashInfo()
-      return splashInfo?.getNullable("imageWidth")
-    }
+    private fun parseImageWidth(manifest: Manifest): Int? =
+      manifest.getSplashInfo()?.getNullable("imageWidth")
   }
 }
