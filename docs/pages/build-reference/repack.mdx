@@ -118,37 +118,37 @@ Usage: @expo/repack-app [options] [project-root]
 
 ### Arguments
 
-| Argument | Description |
-| --- | --- |
+| Argument         | Description                                                          |
+| ---------------- | -------------------------------------------------------------------- |
 | `[project-root]` | Path to the project root. Defaults to the current working directory. |
 
 ### Options
 
-| Option | Description |
-| --- | --- |
-| `-p, --platform <platform>` | **Required.** Platform to repack the app for (`android` or `ios`). |
-| `--source-app <path>` | **Required.** Path to the source app (APK for Android; IPA or **.app** for iOS). The output format matches the input. |
-| `-o, --output <path>` | Path to the output artifact. Defaults to `repacked.apk`, `repacked.ipa`, or `repacked.app` in the project root, matching the source format. |
-| `-w, --working-directory <path>` | Path to the working directory for temporary files. |
-| `--skip-working-dir-cleanup` | Skip cleaning up the working directory after the repack completes. Useful for debugging. |
-| `-v, --verbose` | Enable verbose logging. |
-| `--js-bundle-only` | Only update the JS bundle and skip native config updates (such as app name, version, and other metadata). |
-| `--embed-bundle-assets` | Force running `npx expo export:embed` to generate the JS bundle and assets, even for debug builds where the bundle is normally loaded from a dev server. |
-| `--bundle-assets-sourcemap-output <path>` | Generate a source map at the specified path. Requires `--embed-bundle-assets`. |
+| Option                                    | Description                                                                                                                                              |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p, --platform <platform>`               | **Required.** Platform to repack the app for (`android` or `ios`).                                                                                       |
+| `--source-app <path>`                     | **Required.** Path to the source app (APK for Android; IPA or **.app** for iOS). The output format matches the input.                                    |
+| `-o, --output <path>`                     | Path to the output artifact. Defaults to `repacked.apk`, `repacked.ipa`, or `repacked.app` in the project root, matching the source format.              |
+| `-w, --working-directory <path>`          | Path to the working directory for temporary files.                                                                                                       |
+| `--skip-working-dir-cleanup`              | Skip cleaning up the working directory after the repack completes. Useful for debugging.                                                                 |
+| `-v, --verbose`                           | Enable verbose logging.                                                                                                                                  |
+| `--js-bundle-only`                        | Only update the JS bundle and skip native config updates (such as app name, version, and other metadata).                                                |
+| `--embed-bundle-assets`                   | Force running `npx expo export:embed` to generate the JS bundle and assets, even for debug builds where the bundle is normally loaded from a dev server. |
+| `--bundle-assets-sourcemap-output <path>` | Generate a source map at the specified path. Requires `--embed-bundle-assets`.                                                                           |
 
 ### Android-specific options
 
-| Option | Description |
-| --- | --- |
-| `--ks <path>` | Path to the keystore file. |
-| `--ks-pass <password>` | Keystore password. Defaults to `pass:android`. Supported formats: `pass:<password>`, `env:<name>`, `file:<file>`. |
-| `--ks-key-alias <alias>` | Keystore key alias. |
-| `--ks-key-pass <password>` | Keystore key password. Supported formats: `pass:<password>`, `env:<name>`, `file:<file>`. |
-| `--android-build-tools-dir <path>` | Path to the Android SDK build-tools directory. |
+| Option                             | Description                                                                                                       |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `--ks <path>`                      | Path to the keystore file.                                                                                        |
+| `--ks-pass <password>`             | Keystore password. Defaults to `pass:android`. Supported formats: `pass:<password>`, `env:<name>`, `file:<file>`. |
+| `--ks-key-alias <alias>`           | Keystore key alias.                                                                                               |
+| `--ks-key-pass <password>`         | Keystore key password. Supported formats: `pass:<password>`, `env:<name>`, `file:<file>`.                         |
+| `--android-build-tools-dir <path>` | Path to the Android SDK build-tools directory.                                                                    |
 
 ### iOS-specific options
 
-| Option | Description |
-| --- | --- |
-| `--signing-identity <identity>` | Code signing identity. |
+| Option                          | Description                                                                                                                            |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `--signing-identity <identity>` | Code signing identity.                                                                                                                 |
 | `--provisioning-profile <path>` | Path to a provisioning profile. Alternatively, a JSON-encoded value for multi-target apps (for example, when bundling app extensions). |
