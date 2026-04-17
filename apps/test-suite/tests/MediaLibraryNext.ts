@@ -234,6 +234,35 @@ export async function test(t) {
     });
   });
 
+  t.describe('Album getAll', () => {
+    t.it('includes a newly created album', async () => {
+      // given
+      const albumName = createAlbumName('getAll includes new album');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+
+      // when
+      const albums = await Album.getAll();
+
+      // then
+      t.expect(albums.find((a) => a.id === album.id)).toBeDefined();
+    });
+
+    t.it('does not include a deleted album', async () => {
+      // given
+      const albumName = createAlbumName('getAll excludes deleted album');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      assetsContainer.push(await album.getAssets());
+      await album.delete();
+
+      // when
+      const albums = await Album.getAll();
+
+      // then
+      t.expect(albums.find((a) => a.id === album.id)).toBeUndefined();
+    });
+  });
+
   t.describe('Album deletion', () => {
     t.it('deletes an album', async () => {
       const albumName = createAlbumName('album deletion');

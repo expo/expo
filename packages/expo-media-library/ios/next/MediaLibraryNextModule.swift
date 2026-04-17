@@ -179,6 +179,11 @@ public final class MediaLibraryNextModule: Module {
         try await album.delete()
       }
 
+      StaticAsyncFunction("getAll") {
+        try await checkIfPermissionGranted()
+        return try await Album.getAll()
+      }
+
       StaticAsyncFunction("get") { (title: String) -> Album? in
         try await checkIfPermissionGranted()
         guard let collection = AssetCollectionRepository.shared.get(byTitle: title) else {
@@ -201,12 +206,6 @@ public final class MediaLibraryNextModule: Module {
         try await AssetCollectionRepository.shared.add(assets: phAssetsToAdd, to: newCollectionId)
         return Album(id: newCollectionId)
       }
-    }
-
-    AsyncFunction("getAllAlbums") {
-      try await checkIfPermissionGranted()
-      let collections = AssetCollectionRepository.shared.getAll()
-      return collections.map { Album(id: $0.localIdentifier) }
     }
 
     AsyncFunction("getPermissionsAsync") { (writeOnly: Bool?, promise: Promise) in

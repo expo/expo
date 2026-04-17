@@ -169,6 +169,10 @@ class MediaLibraryNextModule : Module() {
         albumQuery.getAlbum(title)
       }
 
+      StaticAsyncFunction("getAll") Coroutine { ->
+        albumQuery.getAllAlbums()
+      }
+
       StaticAsyncFunction("delete") Coroutine { albums: List<Album>, deleteAssets: Boolean? ->
         val contentUris = albums
           .map { it.getAssets() }
