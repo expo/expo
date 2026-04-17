@@ -32,7 +32,3 @@ struct NotUsingUpdatesView: View {
     }
   }
 }
-
-#Preview {
-  NotUsingUpdatesView()
-}

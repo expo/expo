@@ -14,10 +14,11 @@ import androidx.compose.runtime.setValue
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.getValue
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class SliderColors : Record {
   @Field
   val thumbColor: Color? = null
@@ -45,6 +46,7 @@ data class SliderProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
+@OptimizedRecord
 data class SliderValueChangedEvent(
   @Field val value: Float
 ) : Record
@@ -97,7 +99,7 @@ fun FunctionalComposableScope.SliderContent(props: SliderProps) {
     colors = sliderColors,
     thumb = { sliderState ->
       if (thumbSlotView != null) {
-        with(ComposableScope()) { with(thumbSlotView) { Content() } }
+        with(UIComposableScope()) { with(thumbSlotView) { Content() } }
       } else {
         SliderDefaults.Thumb(
           interactionSource = interactionSource,
@@ -108,7 +110,7 @@ fun FunctionalComposableScope.SliderContent(props: SliderProps) {
     },
     track = { sliderState ->
       if (trackSlotView != null) {
-        with(ComposableScope()) { with(trackSlotView) { Content() } }
+        with(UIComposableScope()) { with(trackSlotView) { Content() } }
       } else {
         SliderDefaults.Track(
           sliderState = sliderState,

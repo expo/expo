@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Switch app config generation from `@expo/config` to `expo/config` public API ([#44721](https://github.com/expo/expo/pull/44721) by [@kitten](https://github.com/kitten))
 
 ## 55.0.7 — 2026-02-25
 

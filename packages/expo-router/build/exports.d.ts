@@ -9,6 +9,7 @@ export { Sitemap } from './views/Sitemap';
 export { useSitemap, SitemapType } from './views/useSitemap';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
+export { SuspenseFallback, type SuspenseFallbackProps } from './views/SuspenseFallback';
 export type { ScreenProps } from './useScreens';
 /**
  * @hidden
@@ -23,5 +24,9 @@ export type { SingularOptions } from './useScreens';
 export type * from './types';
 export { Badge, BadgeProps, Icon, IconProps, Label, LabelProps, VectorIcon, VectorIconProps, } from './primitives';
 export { unstable_navigationEvents } from './navigationEvents';
+/**
+ * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
+ */
 export { Tabs } from './layouts/Tabs';
+export * from './react-navigation';
 //# sourceMappingURL=exports.d.ts.map

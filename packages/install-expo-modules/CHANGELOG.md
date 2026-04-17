@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- Skip pods install on non-darwin platforms. ([#44633](https://github.com/expo/expo/pull/44633) by [@radoslawrolka](https://github.com/radoslawrolka))
 - Added react-native 0.83 support. ([#43855](https://github.com/expo/expo/pull/43855) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes

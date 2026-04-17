@@ -10,7 +10,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -30,11 +29,11 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "devDependencies": {
-    "expo-crypto": "^55.0.8",
-    "expo-module-scripts": "^55.0.2"
+    "expo-crypto": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo-crypto": "^55.0.8"
+    "expo-crypto": "workspace:^55.0.8"
   },
   "dependencies": {}
 }

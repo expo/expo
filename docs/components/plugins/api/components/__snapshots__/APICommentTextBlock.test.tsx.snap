@@ -49,7 +49,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
             </g>
           </svg>
           <span
-            class="text-3xs! leading-none! font-normal whitespace-nowrap"
+            class="text-xs! leading-none! font-normal whitespace-nowrap"
           >
             Android
           </span>
@@ -68,7 +68,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
         target="_blank"
       >
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 break-words"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           Install Referrer API
@@ -81,11 +81,11 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       class="mb-2.5 [table_&]:last:mb-0 [&>*:last-child]:mb-0!"
     >
       <p
-        class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-2xs text-tertiary flex border-y px-4 py-2 font-medium -mx-4 mt-1 mb-3"
+        class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-tertiary flex border-y px-4 py-2 text-xs font-medium -mx-4 mt-1 mb-3"
         data-text="true"
       >
         <span
-          class="tracking-[-0.006rem] text-2xs text-tertiary flex flex-row items-center gap-2 font-medium"
+          class="tracking-[-0.006rem] text-tertiary flex flex-row items-center gap-2 text-xs font-medium"
           data-text="true"
         >
           <svg
@@ -119,7 +119,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
           class="w-fit p-4"
         >
           <code
-            class="text-2xs text-default"
+            class="text-default text-xs"
           >
             <span
               class="token keyword"

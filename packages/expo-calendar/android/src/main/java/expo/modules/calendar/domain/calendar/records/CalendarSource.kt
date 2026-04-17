@@ -4,6 +4,7 @@ import android.provider.CalendarContract
 import expo.modules.calendar.exceptions.FieldMissingException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
 /**
  * This is used for both input and return type
@@ -13,6 +14,7 @@ import expo.modules.kotlin.records.Record
  * - When returning to JS, none field is required
  *   - `isLocalAccount` is inferred based on `type`
  */
+@OptimizedRecord
 class CalendarSource : Record {
   constructor(name: String?, type: String?) {
     this.name = name

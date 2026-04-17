@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 import { type AnimatedValue } from './animation';
-export { type ExpoModifier } from '../../types';
+export { type ExpoModifier, type ModifierConfig } from '../../types';
 export { animated, spring, tween, snap, keyframes, type AnimationSpec, type AnimatedValue, } from './animation';
 export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
 /**
@@ -167,6 +167,13 @@ export declare const align: (alignment: Alignment) => import("./createModifier")
  */
 export declare const matchParentSize: () => import("./createModifier").ModifierConfig;
 /**
+ * Marks a composable as the anchor for an `ExposedDropdownMenuBox`.
+ * Only works when used inside `ExposedDropdownMenuBox`.
+ * @param type - Anchor type. Currently only `'primaryNotEditable'` is supported.
+ * @param enabled - Whether the anchor is enabled. Defaults to `true`.
+ */
+export declare const menuAnchor: (type?: "primaryNotEditable", enabled?: boolean) => import("./createModifier").ModifierConfig;
+/**
  * Makes the view clickable.
  * @param handler - Function to call when clicked.
  * @param options - Optional configuration.
@@ -197,6 +204,17 @@ export declare const selectableGroup: () => import("./createModifier").ModifierC
  */
 export declare const toggleable: (value: boolean, handler: () => void, options?: {
     role?: "checkbox" | "radioButton" | "switch" | "tab";
+}) => import("./createModifier").ModifierConfig;
+/**
+ * Calls the handler when the composable's visibility changes (for example, enters or leaves the viewport in a lazy list).
+ * @param handler - Function called with `true` when visible, `false` when not.
+ * @param options - Optional configuration.
+ * @param options.minDurationMs - Minimum duration in ms before the callback fires. Default is 0.
+ * @param options.minFractionVisible - Fraction of the view that must be visible (0.0 to 1.0). Default is 1.0.
+ */
+export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void, options?: {
+    minDurationMs?: number;
+    minFractionVisible?: number;
 }) => import("./createModifier").ModifierConfig;
 /**
  * Sets the test ID for testing frameworks.
@@ -285,4 +303,16 @@ export declare const Shapes: {
  * @param shape - A shape from `Shapes`, e.g. `Shapes.Circle` or `Shapes.Material.Heart`.
  */
 export declare const clip: (shape: BuiltinShape) => import("./createModifier").ModifierConfig;
+/**
+ * Makes the view vertically scrollable.
+ * Wraps `Modifier.verticalScroll(rememberScrollState())`.
+ * Use on a Column to create a non-lazy scrollable container.
+ */
+export declare const verticalScroll: () => import("./createModifier").ModifierConfig;
+/**
+ * Makes the view horizontally scrollable.
+ * Wraps `Modifier.horizontalScroll(rememberScrollState())`.
+ * Use on a Row to create a non-lazy scrollable container.
+ */
+export declare const horizontalScroll: () => import("./createModifier").ModifierConfig;
 //# sourceMappingURL=index.d.ts.map

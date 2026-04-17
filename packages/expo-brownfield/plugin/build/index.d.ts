@@ -1,4 +1,3 @@
-import type { ConfigPlugin } from 'expo/config-plugins';
-import type { PluginProps } from './types';
-declare const withExpoBrownfieldTargetPlugin: ConfigPlugin<PluginProps>;
-export default withExpoBrownfieldTargetPlugin;
+import { PluginPropsType as Props } from './types';
+declare const _default: (props?: Props) => [string, Props];
+export default _default;

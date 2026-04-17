@@ -1,6 +1,22 @@
 import React from 'react';
 import { type ColorValue } from 'react-native';
-import { type ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
+import { ShapeJSXElement } from '../Shape';
+/**
+ * Border stroke configuration.
+ */
+export type SurfaceBorder = {
+    /**
+     * Border width in dp.
+     * @default 1
+     */
+    width?: number;
+    /**
+     * Border color.
+     * @default MaterialTheme.colorScheme.outline
+     */
+    color?: ColorValue;
+};
 export type SurfaceProps = {
     /**
      * The content to display inside the surface.
@@ -30,9 +46,43 @@ export type SurfaceProps = {
      */
     shadowElevation?: number;
     /**
+     * Shape configuration for clipping the surface.
+     */
+    shape?: ShapeJSXElement;
+    /**
+     * Border stroke drawn around the surface.
+     */
+    border?: SurfaceBorder;
+    /**
+     * Whether the surface is enabled and responds to user interaction.
+     *
+     * @default true
+     */
+    enabled?: boolean;
+    /**
+     * Whether the surface is in a selected state. When provided together with `onClick`,
+     * the surface becomes a selectable surface that visually reflects its selection state.
+     */
+    selected?: boolean;
+    /**
+     * Whether the surface is in a checked (toggled on) state. When provided together with
+     * `onCheckedChange`, the surface becomes a toggleable surface.
+     */
+    checked?: boolean;
+    /**
+     * Called when the surface is clicked. Providing this callback makes the surface clickable.
+     * When combined with `selected`, the surface becomes a selectable variant.
+     */
+    onClick?: () => void;
+    /**
+     * Called when the checked state of a toggleable surface changes.
+     * Providing this callback together with `checked` enables the toggleable variant.
+     */
+    onCheckedChange?: (checked: boolean) => void;
+    /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * A Material Design surface container. Surface is responsible for:

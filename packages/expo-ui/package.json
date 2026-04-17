@@ -7,6 +7,10 @@
   ],
   "exports": {
     "./package.json": "./package.json",
+    ".": {
+      "types": "./build/universal/index.d.ts",
+      "default": "./src/universal/index.ts"
+    },
     "./swift-ui": {
       "types": "./build/swift-ui/index.d.ts",
       "default": "./src/swift-ui/index.tsx"
@@ -26,6 +30,10 @@
     "./datetimepicker": {
       "types": "./build/datetime-picker/index.d.ts",
       "default": "./src/datetime-picker/index.tsx"
+    },
+    "./community/segmented-control": {
+      "types": "./build/community/segmented-control/index.d.ts",
+      "default": "./src/community/segmented-control/index.tsx"
     }
   },
   "scripts": {
@@ -33,7 +41,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -44,27 +51,49 @@
     "directory": "packages/expo-ui"
   },
   "keywords": [
+    "react",
     "react-native",
     "expo",
     "UI components",
     "SwiftUI",
-    "Jetpack Compose"
+    "Jetpack Compose",
+    "cross platform",
+    "web",
+    "universal"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "sf-symbols-typescript": "^2.1.0"
+    "sf-symbols-typescript": "^2.1.0",
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^13.3.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*",
+    "react-native-reanimated": "4.3.0",
+    "react-native-worklets": "0.8.1"
   },
   "jest": {
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*",
-    "react-native": "*"
+    "react-dom": "*",
+    "react-native": "*",
+    "react-native-reanimated": "*",
+    "react-native-worklets": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-worklets": {
+      "optional": true
+    }
   }
 }

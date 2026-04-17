@@ -40,6 +40,64 @@ struct ModuleRegistryTests {
     #expect(moduleRegistry.get(moduleWithName: "TestModule") is TestModule)
   }
 
+  @Test
+  func `concurrent registrations are thread safe`() async {
+    let iterations = 1000
+    let initialModulesCount = appContext.moduleRegistry.getModuleNames().count
+
+    await withTaskGroup(of: Void.self) { group in
+      for i in 0..<iterations {
+        group.addTask {
+          appContext.moduleRegistry.register(moduleType: UnnamedModule.self, name: "Module\(i)")
+        }
+      }
+    }
+
+    #expect(appContext.moduleRegistry.getModuleNames().count == initialModulesCount + iterations)
+  }
+
+  @Test
+  func `concurrent reads and writes are thread safe`() async {
+    let iterations = 1000
+    let initialModulesCount = appContext.moduleRegistry.getModuleNames().count
+
+    await withTaskGroup(of: Void.self) { group in
+      for i in 0..<iterations {
+        group.addTask {
+          appContext.moduleRegistry.register(moduleType: UnnamedModule.self, name: "Module\(i)")
+        }
+        group.addTask {
+          _ = appContext.moduleRegistry.has(moduleWithName: "Module\(i)")
+        }
+        group.addTask {
+          _ = appContext.moduleRegistry.get(moduleWithName: "Module\(i)")
+        }
+      }
+    }
+
+    #expect(appContext.moduleRegistry.getModuleNames().count == initialModulesCount + iterations)
+  }
+
+  @Test
+  func `concurrent unregistrations are thread safe`() async {
+    let iterations = 1000
+    let initialModulesCount = appContext.moduleRegistry.getModuleNames().count
+
+    for i in 0..<iterations {
+      appContext.moduleRegistry.register(moduleType: UnnamedModule.self, name: "Module\(i)")
+    }
+
+    await withTaskGroup(of: Void.self) { group in
+      for i in 0..<iterations {
+        group.addTask {
+          appContext.moduleRegistry.unregister(moduleName: "Module\(i)")
+        }
+      }
+    }
+
+    #expect(appContext.moduleRegistry.getModuleNames().count == initialModulesCount)
+  }
+
   private func testRegister<ModuleType: AnyModule>(moduleType: ModuleType.Type, name: String) {
     let moduleRegistry = appContext.moduleRegistry
 

@@ -1,11 +1,3 @@
-import { ConfigPlugin } from 'expo/config-plugins';
-import { WidgetConfig } from './types/WidgetConfig.type';
-type ExpoWidgetsConfigPluginProps = {
-    bundleIdentifier?: string;
-    groupIdentifier?: string;
-    enablePushNotifications?: boolean;
-    frequentUpdates?: boolean;
-    widgets?: WidgetConfig[];
-};
-declare const _default: ConfigPlugin<ExpoWidgetsConfigPluginProps | undefined>;
+import { ExpoWidgetsConfigPluginProps as Props } from './withWidgets';
+declare const _default: (props?: Props) => [string, Props];
 export default _default;

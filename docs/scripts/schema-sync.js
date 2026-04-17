@@ -6,7 +6,6 @@
  */
 
 import parser from '@apidevtools/json-schema-ref-parser';
-import axios from 'axios';
 import fs from 'fs-extra';
 import path from 'node:path';
 
@@ -20,10 +19,12 @@ async function run() {
   }
 
   if (version === 'unversioned') {
-    const response = await axios.get(
+    console.log('Fetching schema for unversioned from production...');
+    const response = await fetch(
       `http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`
     );
-    const schema = await preprocessSchema(response.data.data.schema);
+    const responseJson = await response.json();
+    const schema = await preprocessSchema(responseJson.data.schema);
 
     await fs.writeFile(
       `public/static/schemas/unversioned/app-config-schema.json`,
@@ -47,10 +48,11 @@ async function fetchAndWriteSchema(version, staging) {
 
   const hostname = staging ? 'staging.exp.host' : 'exp.host';
 
-  const response = await axios.get(
+  const response = await fetch(
     `http://${hostname}/--/api/v2/project/configuration/schema/${version}.0.0`
   );
-  const schema = await preprocessSchema(response.data.data.schema);
+  const responseJson = await response.json();
+  const schema = await preprocessSchema(responseJson.data.schema);
 
   await fs.writeFile(schemaPath, JSON.stringify(schema.properties), 'utf8');
 }

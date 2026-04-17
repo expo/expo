@@ -10,7 +10,7 @@ public final class ExpoGLModule: Module {
       EXGLObjectManager.shared.takeSnapshot(
         withContextId: contextId as NSNumber,
         andOptions: options,
-        resolver: promise.resolver,
+        resolver: promise.legacyResolver,
         rejecter: promise.legacyRejecter
       )
     }
@@ -34,7 +34,7 @@ public final class ExpoGLModule: Module {
     AsyncFunction("destroyContextAsync") { (contextId: UInt, promise: Promise) in
       EXGLObjectManager.shared.destroyContext(
         withId: contextId as NSNumber,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -42,7 +42,7 @@ public final class ExpoGLModule: Module {
     AsyncFunction("destroyObjectAsync") { (objectId: UInt, promise: Promise) in
       EXGLObjectManager.shared.destroyObjectAsync(
         objectId as NSNumber,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -55,7 +55,7 @@ public final class ExpoGLModule: Module {
       EXGLObjectManager.shared.createTextureForContext(
         withId: contextId as NSNumber,
         cameraView: cameraView,
-        resolver: promise.resolver,
+        resolver: promise.legacyResolver,
         rejecter: promise.legacyRejecter
       )
     }

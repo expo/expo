@@ -111,7 +111,7 @@ export async function configurePackageManager(
 
     case 'yarn': {
       const yarnVersion = await manager.versionAsync();
-      const majorVersion = parseInt(yarnVersion.split('.')[0], 10);
+      const majorVersion = parseInt(yarnVersion.split('.')[0] ?? '', 10);
 
       if (majorVersion >= 2) {
         await manager.runAsync(['config', 'set', 'nodeLinker', 'node-modules']);

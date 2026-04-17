@@ -160,9 +160,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     videoRecording = CameraVideoRecording(delegate: self)
     session = sessionManager.session
 
-    #if !targetEnvironment(simulator)
     setupPreview()
-    #endif
     barcodeScanner = createBarcodeScanner()
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.addObserver(
@@ -208,14 +206,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   private func updatePictureSize() {
-#if !targetEnvironment(simulator)
     sessionQueue.async {
       if self.mode == .picture {
         let preset = self.pictureSize.toCapturePreset()
         self.sessionManager.updateSessionPreset(preset: preset)
       }
     }
-#endif
   }
 
   func setBarcodeScannerSettings(settings: BarcodeSettings) {

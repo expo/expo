@@ -1,0 +1,78 @@
+name: Prebuild External iOS XCFrameworks
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Space-separated external package names (leave empty for all external packages)'
+        required: false
+        default: ''
+      concurrency:
+        description: 'Max parallel packages (default: auto)'
+        required: false
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prebuild:
+    runs-on: macos-15
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        flavor: [Debug, Release]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+
+      - name: Add bin to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install node modules
+        run: pnpm install --frozen-lockfile
+
+      - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
+        env:
+          INPUT_PACKAGES: ${{ github.event.inputs.packages }}
+          INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
+        run: |
+          ARGS="-f ${{ matrix.flavor }} -v --external-only"
+
+          if [ -n "$INPUT_PACKAGES" ]; then
+            ARGS="$ARGS $INPUT_PACKAGES"
+          fi
+
+          if [ -n "$INPUT_CONCURRENCY" ]; then
+            ARGS="$ARGS -j $INPUT_CONCURRENCY"
+          fi
+
+          echo "Running: et prebuild $ARGS"
+          et prebuild $ARGS
+
+      - name: Upload XCFrameworks
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: xcframeworks-${{ matrix.flavor }}
+          path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true

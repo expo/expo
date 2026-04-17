@@ -22,7 +22,7 @@ const getPrebuiltSettingsLines = () => {
 const addNewPodsTarget = (podfile, targetName) => {
     const targetLines = getTargetNameLines(targetName);
     let podFileLines = podfile.split('\n');
-    if (podFileLines.find((line) => line.includes(targetLines[0].trim()))) {
+    if (podFileLines.find((line) => targetLines[0] != null && line.includes(targetLines[0].trim()))) {
         console.info(`Target for ${targetName} is already added. Skipping...`);
         return podfile;
     }
@@ -39,7 +39,7 @@ exports.addNewPodsTarget = addNewPodsTarget;
 const addPrebuiltSettings = (podfile) => {
     const prebuiltSettingsLines = getPrebuiltSettingsLines();
     let podFileLines = podfile.split('\n');
-    if (podFileLines.find((line) => line.includes(prebuiltSettingsLines[4].trim()))) {
+    if (podFileLines.find((line) => prebuiltSettingsLines[4] != null && line.includes(prebuiltSettingsLines[4].trim()))) {
         console.info('Prebuilt settings are already added. Skipping...');
         return podfile;
     }

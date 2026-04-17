@@ -104,7 +104,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     await installAppAsync(androidProjectRoot, props);
   }
 
-  await manager.getDefaultDevServer().openCustomRuntimeAsync<AndroidOpenInCustomProps>(
+  await manager.getDefaultDevServer().openCustomRuntimeAsync(
     'emulator',
     {
       applicationId: props.packageName,

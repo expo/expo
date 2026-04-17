@@ -5,6 +5,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.ui.BuiltinShapeRecord
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class CompositingStrategyType(val value: String) : Enumerable {
   AUTO("auto"),
@@ -12,6 +13,7 @@ enum class CompositingStrategyType(val value: String) : Enumerable {
   MODULATE("modulate")
 }
 
+@OptimizedRecord
 internal data class GraphicsLayerParams(
   @Field val cameraDistance: Float = 8f,
   @Field val transformOriginX: Float = 0.5f,

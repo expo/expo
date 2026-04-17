@@ -23,6 +23,6 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   }
 }

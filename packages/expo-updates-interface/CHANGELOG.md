@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Native interface access to state machine context. ([#44361](https://github.com/expo/expo/pull/44361) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 

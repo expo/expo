@@ -556,7 +556,7 @@ export function getPathVariations(routePath: string): string[] {
 
     const [head, ...rest] = segments;
 
-    if (matchGroupName(head)) {
+    if (head && matchGroupName(head)) {
       const groups = head.slice(1, -1).split(',');
 
       if (groups.length > 1) {
@@ -570,10 +570,10 @@ export function getPathVariations(routePath: string): string[] {
         generateVariations(rest, current ? `${current}/(${groups[0]})` : `(${groups[0]})`);
         // This code will continue and add paths without this group included`
       }
-    } else if (current) {
+    } else if (head && current) {
       current = `${current}/${head}`;
     } else {
-      current = head;
+      current = head ?? current;
     }
 
     generateVariations(rest, current);

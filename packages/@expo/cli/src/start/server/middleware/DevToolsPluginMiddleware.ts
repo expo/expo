@@ -42,10 +42,10 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
 
   private queryPossiblePluginName(pathname: string): string {
     const parts = pathname.split('/');
-    if (parts[0][0] === '@' && parts.length > 1) {
+    if (parts[0]![0] === '@' && parts.length > 1) {
       // Scoped package name
       return `${parts[0]}/${parts[1]}`;
     }
-    return parts[0];
+    return parts[0]!;
   }
 }

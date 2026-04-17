@@ -20,14 +20,13 @@ const node_path_1 = __importDefault(require("node:path"));
  */
 exports.loadBabelConfig = (function () {
     let babelRC = null;
-    return function _getBabelRC({ projectRoot }) {
+    return function _getBabelRC({ projectRoot, enableBabelRCLookup = true, }) {
         if (babelRC !== null) {
             return babelRC;
         }
         babelRC = {};
-        if (projectRoot) {
+        if (projectRoot && enableBabelRCLookup) {
             // Check for various babel config files in the project root
-            // TODO(EvanBacon): We might want to disable babelrc lookup when the user specifies `enableBabelRCLookup: false`.
             const possibleBabelRCPaths = ['.babelrc', '.babelrc.js', 'babel.config.js'];
             const foundBabelRCPath = possibleBabelRCPaths.find((configFileName) => node_fs_1.default.existsSync(node_path_1.default.resolve(projectRoot, configFileName)));
             // Extend the config if a babel config file is found

@@ -1,7 +1,7 @@
-import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import { type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
+import type { NativeStackHeaderItemButton } from '../../../react-navigation/native-stack';
 import { type BasicTextStyle } from '../../../utils/font';
 export interface StackHeaderItemSharedProps {
     children?: ReactNode;
@@ -44,6 +44,8 @@ export declare function extractXcassetName(props: StackHeaderItemSharedProps): s
  * @internal
  */
 export declare function extractIconRenderingMode(props: StackHeaderItemSharedProps): 'template' | 'original' | undefined;
+export declare function areAllChildrenPrimitiveValues(children: ReactNode): boolean;
+export declare function convertChildrenToString(children: ReactNode): string;
 export declare function convertStackHeaderSharedPropsToRNSharedHeaderItem(props: StackHeaderItemSharedProps, isBottomPlacement?: boolean): RNSharedHeaderItem;
 export {};
 //# sourceMappingURL=shared.d.ts.map

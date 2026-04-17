@@ -1,4 +1,4 @@
-import { NavigationProp, NavigationState } from '@react-navigation/native';
+import { NavigationProp, NavigationState } from '../react-navigation/native';
 type GenericNavigation = NavigationProp<ReactNavigation.RootParamList> & {
     getState(): NavigationState | undefined;
 };

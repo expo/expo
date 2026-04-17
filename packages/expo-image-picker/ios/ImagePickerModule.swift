@@ -75,8 +75,8 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       return promise.reject(PermissionsModuleNotFoundException())
     }
     switch operationType {
-    case .get: permissions.getPermissionUsingRequesterClass(requesterClass, resolve: promise.resolver, reject: promise.legacyRejecter)
-    case .ask: permissions.askForPermission(usingRequesterClass: requesterClass, resolve: promise.resolver, reject: promise.legacyRejecter)
+    case .get: permissions.getPermissionUsingRequesterClass(requesterClass, resolve: promise.legacyResolver, reject: promise.legacyRejecter)
+    case .ask: permissions.askForPermission(usingRequesterClass: requesterClass, resolve: promise.legacyResolver, reject: promise.legacyRejecter)
     }
   }
 

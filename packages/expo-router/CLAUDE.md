@@ -101,7 +101,10 @@ File-based routing library for React Native and web applications. Built on top o
 ├── server.d.ts                # Re-exports types from `@expo/router-server`
 ├── drawer.js                  # Drawer navigator - import { Drawer } from "expo-router/drawer"
 ├── stack.js                   # Stack navigator - import { Stack } from "expo-router/stack"
-├── tabs.js                    # Tab navigator - import { Tabs } from "expo-router/tabs"
+├── js-stack.js                # JS stack navigator - import { Stack } from "expo-router/js-stack"
+├── tabs.js                    # JS tab navigator (deprecated) - import { Tabs } from "expo-router/tabs"
+├── js-tabs.js                 # JS tab navigator - import { Tabs } from "expo-router/js-tabs"
+├── js-top-tabs.js             # JS top tab navigator - import { TopTabs } from "expo-router/js-top-tabs"
 ├── html.js                    # HTML document wrapper for web - import { Html } from "expo-router/html"
 ├── ui.js                      # Headless UI tabs components - import { Tabs } from "expo-router/ui"
 ├── unstable-native-tabs.js    # Native bottom tabs - import { NativeTabs } from "expo-router/unstable-native-tabs"
@@ -116,16 +119,16 @@ Run tests with jest-expo multi-platform presets:
 
 ```bash
 # Run all tests
-yarn test
+pnpm test
 
 # Run specific test file
-yarn test src/__tests__/navigation.test.ios.tsx
+pnpm test src/__tests__/navigation.test.ios.tsx
 ```
 
 To verify if the types used in tests are correct, run:
 
 ```bash
-yarn test:types
+pnpm test:types
 ```
 
 ### Swift Tests (iOS)
@@ -277,8 +280,8 @@ Native tabs (`expo-router/unstable-native-tabs`) provide native bottom tab navig
 
 **Running tests/apps:**
 
-- From `packages/@expo/cli`: `yarn test:e2e <PROJECT_NAME>` or `yarn test:playwright <PROJECT_NAME>`
-- Maestro tests (native navigation): `yarn test:e2e` from `apps/router-e2e`
+- From `packages/@expo/cli`: `pnpm test:e2e <PROJECT_NAME>` or `pnpm test:playwright <PROJECT_NAME>`
+- Maestro tests (native navigation): `pnpm test:e2e` from `apps/router-e2e`
 - Some of the apps are only for manual testing
 
 **Manual Android testing:** Use the `/android-e2e-testing` skill for step-by-step guidance on testing Expo Router screens on Android emulators using ADB. This covers launching E2E apps, navigating via UI dumps, interacting with the app, and verifying results.
@@ -287,10 +290,10 @@ Native tabs (`expo-router/unstable-native-tabs`) provide native bottom tab navig
 
 After developing a feature, run these commands in `packages/expo-router`:
 
-1. `CI=1 yarn test` - Run all tests. During development use `yarn test [test file]` for efficiency. For RSC tests: `yarn test:rsc`
-2. `yarn build` - Build and verify TypeScript correctness. If you moved or deleted files, run `yarn clean` first.
-3. `yarn test:types` - Verify type correctness in tests
-4. `yarn lint` - Run last to find linting issues
+1. `CI=1 pnpm test` - Run all tests. During development use `pnpm test [test file]` for efficiency. For RSC tests: `pnpm test:rsc`
+2. `pnpm build` - Build and verify TypeScript correctness. If you moved or deleted files, run `pnpm clean` first.
+3. `pnpm test:types` - Verify type correctness in tests
+4. `pnpm lint` - Run last to find linting issues
 
 Then test the feature on the simulator using one of the `apps/router-e2e/__e2e__/` projects. For android, use the `/android-e2e-testing` skill for testing on emulators.
 
@@ -321,7 +324,7 @@ et generate-docs-api-data --packageName expo-router --sdk <VERSION>
 
 ### Testing docs changes
 
-To run the docs site locally run `yarn dev` in the `docs/` directory of the monorepo. The reference will be available at:
+To run the docs site locally run `pnpm dev` in the `docs/` directory of the monorepo. The reference will be available at:
 
 - http://localhost:3002/versions/unversioned/sdk/router/ for main router
 - http://localhost:3002/versions/unversioned/sdk/router-native-tabs/ for native tabs

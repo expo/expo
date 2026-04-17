@@ -9,20 +9,20 @@ import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 class MapTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val mapType: KType
+  private val mapType: TypeDescriptor
 ) : DynamicAwareTypeConverters<Map<*, *>>() {
   init {
-    require(mapType.arguments.first().type?.classifier == String::class) {
-      "The map key type should be String, but received ${mapType.arguments.first()}."
+    require(mapType.params.first().jClass == String::class.java) {
+      "The map key type should be String, but received ${mapType.params.first()}."
     }
   }
 
   private val valueConverter = converterProvider.obtainTypeConverter(
-    requireNotNull(mapType.arguments.getOrNull(1)?.type) {
+    requireNotNull(mapType.params.getOrNull(1)) {
       "The map type should contain the key type."
     }
   )
@@ -40,7 +40,7 @@ class MapTypeConverter(
         exceptionDecorator({ cause ->
           CollectionElementCastException(
             mapType,
-            mapType.arguments[1].type!!,
+            mapType.params[1],
             v!!::class,
             cause
           )
@@ -57,7 +57,7 @@ class MapTypeConverter(
     jsMap.entryIterator.forEach { (key, value) ->
       DynamicFromObject(value).recycle {
         exceptionDecorator({ cause ->
-          CollectionElementCastException(mapType, mapType.arguments[1].type!!, type, cause)
+          CollectionElementCastException(mapType, mapType.params[1], type, cause)
         }) {
           result[key] = valueConverter.convert(this, context, forceConversion)
         }

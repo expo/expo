@@ -12,6 +12,7 @@ const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 const server_actions_plugin_1 = require("./server-actions-plugin");
 const server_data_loaders_plugin_1 = require("./server-data-loaders-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
+const resolveModule_1 = require("./utils/resolveModule");
 const widgets_plugin_1 = require("./widgets-plugin");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
@@ -181,7 +182,7 @@ function babelPresetExpo(api, options = {}) {
     if (bundler !== 'webpack') {
         extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
     }
-    if ((0, common_1.hasModule)('expo-router')) {
+    if ((0, resolveModule_1.hasModule)(api, 'expo-router/package.json')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
         // Process `loader()` functions for client, loader and server bundles (excluding RSC)
         // - Client bundles: Remove loader exports, they run on server only
@@ -206,7 +207,7 @@ function babelPresetExpo(api, options = {}) {
     extraPlugins.push(environment_restricted_imports_1.environmentRestrictedImportsPlugin);
     // Transform widget component JSX expressions to capture widget components for native-side evaluation.
     // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
-    if ((0, common_1.hasModule)('expo-widgets')) {
+    if ((0, resolveModule_1.hasModule)(api, 'expo-widgets/package.json')) {
         extraPlugins.push(widgets_plugin_1.widgetsPlugin);
     }
     if (platformOptions.enableReactFastRefresh ||
@@ -222,7 +223,7 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.disableImportExportTransform) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
-    const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
+    const polyfillImportMeta = platformOptions.transformImportMeta !== false;
     extraPlugins.push((0, import_meta_transform_plugin_1.expoImportMetaTransformPluginFactory)(polyfillImportMeta === true));
     return {
         presets: [
@@ -314,15 +315,23 @@ function babelPresetExpo(api, options = {}) {
                 require('@babel/plugin-proposal-decorators'),
                 platformOptions.decorators ?? { legacy: true },
             ],
-            // Automatically add `react-native-reanimated/plugin` when the package is installed.
-            // TODO: Move to be a customTransformOption.
-            (0, common_1.hasModule)('react-native-worklets') &&
-                platformOptions.worklets !== false &&
-                platformOptions.reanimated !== false
-                ? [require('react-native-worklets/plugin')]
-                : (0, common_1.hasModule)('react-native-reanimated') &&
-                    platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
-        ].filter(Boolean),
+            // Automatically add worklets or reanimated plugin when package is installed.
+            (() => {
+                if (platformOptions.worklets !== false && platformOptions.reanimated !== false) {
+                    const workletsPlugin = (0, resolveModule_1.resolveModule)(api, 'react-native-worklets/plugin');
+                    if (workletsPlugin) {
+                        return [require(workletsPlugin)];
+                    }
+                }
+                if (platformOptions.reanimated !== false) {
+                    const reanimatedPlugin = (0, resolveModule_1.resolveModule)(api, 'react-native-reanimated/plugin');
+                    if (reanimatedPlugin) {
+                        return [require(reanimatedPlugin)];
+                    }
+                }
+                return null;
+            })(),
+        ].filter((x) => !!x),
     };
 }
 exports.default = babelPresetExpo;

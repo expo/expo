@@ -3,8 +3,6 @@ import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
-import { InlineHelp } from 'ui/components/InlineHelp';
-import { PageHeader } from 'ui/components/PageHeader';
 import * as RoutesUtils from '~/common/routes';
 import { appendSectionToRoute, getBreadcrumbTrail, isRouteActive } from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
@@ -20,6 +18,8 @@ import { PageMetadata } from '~/types/common';
 import { AskPageAIOverlay } from '~/ui/components/AskPageAI';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { InlineHelp } from '~/ui/components/InlineHelp';
+import { PageHeader } from '~/ui/components/PageHeader';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
 import { StructuredData } from '~/ui/components/StructuredData';
@@ -372,6 +372,12 @@ export default function DocumentationPage({
             />
           )}
           {title && <Separator />}
+          <blockquote className="sr-only">
+            <p>
+              For the complete documentation index, see <A href="/llms.txt">llms.txt</A>. Use this
+              Use this file to discover all available pages.
+            </p>
+          </blockquote>
           {children}
         </main>
         <Footer

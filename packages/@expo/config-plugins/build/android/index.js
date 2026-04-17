@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.PredictiveBackGesture = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.Locales = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.CodeMod = exports.BuildProperties = exports.AllowBackup = void 0;
+exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.SystemBars = exports.Styles = exports.Strings = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.PredictiveBackGesture = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.Locales = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.CodeMod = exports.BuildProperties = exports.AllowBackup = void 0;
 function AllowBackup() {
   const data = _interopRequireWildcard(require("./AllowBackup"));
   AllowBackup = function () {
@@ -251,19 +251,6 @@ Object.defineProperty(exports, "Scheme", {
     return Scheme();
   }
 });
-function StatusBar() {
-  const data = _interopRequireWildcard(require("./StatusBar"));
-  StatusBar = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "StatusBar", {
-  enumerable: true,
-  get: function () {
-    return StatusBar();
-  }
-});
 function Strings() {
   const data = _interopRequireWildcard(require("./Strings"));
   Strings = function () {
@@ -288,6 +275,19 @@ Object.defineProperty(exports, "Styles", {
   enumerable: true,
   get: function () {
     return Styles();
+  }
+});
+function SystemBars() {
+  const data = _interopRequireWildcard(require("./SystemBars"));
+  SystemBars = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "SystemBars", {
+  enumerable: true,
+  get: function () {
+    return SystemBars();
   }
 });
 function Updates() {
@@ -342,6 +342,5 @@ Object.defineProperty(exports, "CodeMod", {
     return CodeMod();
   }
 });
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 //# sourceMappingURL=index.js.map

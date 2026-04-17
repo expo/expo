@@ -23,9 +23,11 @@ function directoryExistsSync(file) {
 function isEnableHermesManaged(expoConfig, platform) {
     switch (platform) {
         case 'android': {
+            // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
             return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
         }
         case 'ios': {
+            // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
             return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
         }
         default:

@@ -5,10 +5,6 @@
   "compilerOptions": {
     "outDir": "build",
     "rootDir": "src",
-    "sourceMap": true,
-    "typeRoots": [
-      "ts-declarations",
-      "../../expo-module-scripts/ts-declarations"
-    ]
+    "sourceMap": true
   },
 }

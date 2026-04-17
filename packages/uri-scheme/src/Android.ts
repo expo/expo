@@ -196,7 +196,7 @@ async function writeConfigAsync(path: string, result: any) {
  */
 export function escapeUri(uri: string) {
   const [protocol, uriWithoutProtocol] = uri.split('://', 2);
-  const [uriPath, uriParams] = uriWithoutProtocol.split('?', 2);
+  const [uriPath = '', uriParams] = uriWithoutProtocol?.split('?', 2) ?? '';
 
   // Escape special characters in the URI path using a single backslash
   // See: https://datatracker.ietf.org/doc/html/rfc1738#section-2.2

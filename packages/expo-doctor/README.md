@@ -30,9 +30,9 @@ For more information run `npx expo-doctor --help` (or `-h`)
 
 ## Testing and development
 
-1. (First time only) Setup an alias inside your **.zschrc** so you can run the development version on other projects, e.g., `alias nexpo-doctor="/path/to/expo/packages/expo-doctor/build/index.js"`
-2. Run `yarn watch` inside of project folder.
-3. In your test project, run `nexpo-doctor`
+Run `pnpm build` (or `pnpm watch`) inside of `expo-doctor`'s project folder.
+
+Then, in your test project, run `path-to-expo/packages/expo-doctor/bin/expo-doctor.js`
 
 ## License
 

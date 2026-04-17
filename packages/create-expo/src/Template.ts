@@ -16,7 +16,6 @@ import {
   applyBetaTag,
   applyKnownNpmPackageNameRules,
   downloadAndExtractNpmModuleAsync,
-  ExtractProps,
   getResolvedTemplateName,
 } from './utils/npm';
 
@@ -128,15 +127,13 @@ export async function extractAndPrepareTemplateAppAsync(
   const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-default');
 
   if (type === 'repository') {
-    await downloadAndExtractGitHubRepositoryAsync(uri, {
-      cwd: projectRoot,
-      name: projectName,
+    await downloadAndExtractGitHubRepositoryAsync(uri, projectRoot, {
+      expName: projectName,
     });
   } else {
     const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
-    await downloadAndExtractNpmModuleAsync(resolvedUri, {
-      cwd: projectRoot,
-      name: projectName,
+    await downloadAndExtractNpmModuleAsync(resolvedUri, projectRoot, {
+      expName: projectName,
       disableCache: type === 'file',
     });
   }
@@ -175,7 +172,7 @@ function escapeXMLCharacters(original: string): string {
  * specified.
  *
  * By convention, the app name of all templates is "HelloWorld". During
- * extraction, filepaths are transformed via `createEntryResolver()` in
+ * extraction, filepaths are transformed via `createEntryRenamer()` in
  * `createFileTransform.ts`, but the contents of files are left untouched.
  * Technically, the contents used to be transformed during extraction as well,
  * but due to poor configurability, we've moved to a post-extraction approach.
@@ -240,11 +237,16 @@ export async function getTemplateFilesToRenameAsync({
    * @see defaultRenameConfig
    */
   renameConfig: userConfig,
-}: Pick<ExtractProps, 'cwd'> & { renameConfig?: string[] }) {
+}: {
+  cwd: string;
+  renameConfig?: string[];
+}) {
   let config = userConfig ?? defaultRenameConfig;
 
   // Strip comments, trim whitespace, and remove empty lines.
-  config = config.map((line) => line.split(/(?<!\\)#/, 2)[0].trim()).filter((line) => line !== '');
+  config = config
+    .map((line) => line.split(/(?<!\\)#/, 2)[0]?.trim() ?? '')
+    .filter((line) => line !== '');
 
   return await glob(config, {
     cwd,
@@ -262,7 +264,9 @@ export async function renameTemplateAppNameAsync({
   cwd,
   name,
   files,
-}: Pick<ExtractProps, 'cwd' | 'name'> & {
+}: {
+  cwd: string;
+  name: string;
   /**
    * An array of files to transform. Usually provided by calling
    * getTemplateFilesToRenameAsync().

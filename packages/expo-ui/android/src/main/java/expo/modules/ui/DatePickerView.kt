@@ -28,7 +28,9 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 import java.util.Calendar
 import java.util.Date
 import android.graphics.Color as AndroidColor
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class DatePickerResult(
   @Field
   val date: Long?
@@ -54,6 +56,7 @@ enum class Variant(val value: String) : Enumerable {
   }
 }
 
+@OptimizedRecord
 class DateTimePickerColorOverrides : Record {
   // DatePicker colors
   @Field val containerColor: AndroidColor? = null
@@ -97,6 +100,7 @@ class DateTimePickerColorOverrides : Record {
   @Field val timeSelectorUnselectedContentColor: AndroidColor? = null
 }
 
+@OptimizedRecord
 class SelectableDatesRecord : Record {
   @Field val start: Long? = null
   @Field val end: Long? = null

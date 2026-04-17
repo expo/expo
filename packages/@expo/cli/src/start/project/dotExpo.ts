@@ -60,6 +60,7 @@ The ".expo" folder is created when an Expo project is started using "expo start"
 
 - "devices.json": contains information about devices that have recently opened this project. This is used to populate the "Development sessions" list in your development builds.
 - "settings.json": contains the server configuration that is used to serve the application manifest.
+- "dev/logs/": contains structured JSONL event logs from CLI commands (e.g. start.log, export.log). These are truncated on each run.
 
 > Should I commit the ".expo" folder?
 

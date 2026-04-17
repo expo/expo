@@ -25,28 +25,36 @@ public final class SharedObjectRegistry {
    */
   private weak var appContext: AppContext?
 
-  /**
-   The counter of IDs to assign to the shared object pairs.
-   The next pair added to the registry will be saved using this ID.
-   */
-  internal /* visible for testing */ var nextId: SharedObjectId = 1
+  internal struct State {
+    /**
+     A dictionary of shared object pairs.
+     */
+    var pairs = [SharedObjectId: SharedObjectPair]()
+
+    /**
+     The counter of IDs to assign to the shared object pairs.
+     The next pair added to the registry will be saved using this ID.
+     */
+    var nextId: SharedObjectId = 1
+  }
+
+  private let state = Mutex(State())
 
   /**
-   A dictionary of shared object pairs.
+   The next shared object ID, exposed for testing.
    */
-  private var pairs = [SharedObjectId: SharedObjectPair]()
-
-  /**
-   The lock to keep thread safety for internal data structures.
-   */
-  private let lock = NSLock()
+  internal var nextId: SharedObjectId {
+    return state.withLock {
+      return $0.nextId
+    }
+  }
 
   /**
    A number of all pairs stored in the registry.
    */
   internal var size: Int {
-    return lock.withLock {
-      return pairs.count
+    return state.withLock {
+      return $0.pairs.count
     }
   }
 
@@ -69,9 +77,9 @@ public final class SharedObjectRegistry {
    */
   @discardableResult
   internal func pullNextId() -> SharedObjectId {
-    return lock.withLock {
-      let id = nextId
-      nextId += 1
+    return state.withLock { state in
+      let id = state.nextId
+      state.nextId += 1
       return id
     }
   }
@@ -80,8 +88,8 @@ public final class SharedObjectRegistry {
    Returns a pair of shared objects with given ID or `nil` when there is no such pair in the registry.
    */
   internal func get(_ id: SharedObjectId) -> SharedObjectPair? {
-    return lock.withLock {
-      return pairs[id]
+    return state.withLock { state in
+      return state.pairs[id]
     }
   }
 
@@ -117,8 +125,8 @@ public final class SharedObjectRegistry {
 
     // Save the pair in the dictionary.
     let jsWeakObject = jsObject.createWeak()
-    lock.withLock {
-      self.pairs[id] = (native: nativeObject, javaScript: jsWeakObject)
+    state.withLock { state in
+      state.pairs[id] = (native: nativeObject, javaScript: jsWeakObject)
     }
 
     return id
@@ -128,14 +136,14 @@ public final class SharedObjectRegistry {
    Deletes the shared objects pair with a given ID.
    */
   internal func delete(_ id: SharedObjectId) {
-    lock.withLock {
-      if let pair = self.pairs[id] {
+    state.withLock { state in
+      if let pair = state.pairs[id] {
         pair.native.sharedObjectWillRelease()
         // Reset an ID on the objects.
         pair.native.sharedObjectId = 0
 
         // Delete the pair from the dictionary.
-        self.pairs[id] = nil
+        state.pairs[id] = nil
         pair.native.sharedObjectDidRelease()
       }
     }
@@ -146,8 +154,8 @@ public final class SharedObjectRegistry {
    */
   internal func toNativeObject(_ jsObject: JavaScriptObject) -> SharedObject? {
     if let objectId = try? jsObject.getProperty(sharedObjectIdPropertyName).asInt() {
-      return lock.withLock {
-        return pairs[objectId]?.native
+      return state.withLock { state in
+        return state.pairs[objectId]?.native
       }
     }
     return nil
@@ -158,8 +166,8 @@ public final class SharedObjectRegistry {
    */
   internal func toJavaScriptObject(_ nativeObject: SharedObject) -> JavaScriptObject? {
     let objectId = nativeObject.sharedObjectId
-    return lock.withLock {
-      return pairs[objectId]?.javaScript.lock()
+    return state.withLock { state in
+      return state.pairs[objectId]?.javaScript.lock()
     }
   }
 
@@ -184,8 +192,8 @@ public final class SharedObjectRegistry {
   }
 
   internal func clear() {
-    lock.withLock {
-      self.pairs.removeAll()
+    state.withLock { state in
+      state.pairs.removeAll()
     }
   }
 }

@@ -1,0 +1,580 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://expo.dev/schemas/spm.config.json",
+    "title": "SPM Config",
+    "description": "Configuration for Swift Package Manager packages and targets in Expo modules",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "JSON Schema reference"
+        },
+        "products": {
+            "type": "array",
+            "description": "List of SPM products to generate with their targets",
+            "items": {
+                "$ref": "#/definitions/product"
+            }
+        }
+    },
+    "required": [ "products" ],
+    "definitions": {
+        "spmPackageDependency": {
+            "type": "object",
+            "description": "A remote SPM package dependency fetched by Swift Package Manager",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "Git URL of the SPM package (e.g., https://github.com/airbnb/lottie-spm.git)"
+                },
+                "productName": {
+                    "type": "string",
+                    "description": "The product name exported by the package (what you import, e.g., 'Lottie')"
+                },
+                "packageName": {
+                    "type": "string",
+                    "description": "Optional: Override the package name for .product(package:) reference. Defaults to last URL path component without .git"
+                },
+                "version": {
+                    "$ref": "#/definitions/spmPackageVersion"
+                }
+            },
+            "required": [ "url", "productName", "version" ],
+            "additionalProperties": false
+        },
+        "spmPackageVersion": {
+            "type": "object",
+            "description": "Version specification for an SPM package. Use 'exact' for reproducible builds (recommended).",
+            "oneOf": [
+                {
+                    "properties": {
+                        "exact": {
+                            "type": "string",
+                            "description": "Exact version (e.g., '4.5.0'). Recommended for reproducible builds."
+                        }
+                    },
+                    "required": [ "exact" ],
+                    "additionalProperties": false
+                },
+                {
+                    "properties": {
+                        "from": {
+                            "type": "string",
+                            "description": "Minimum version with semver major range (e.g., '4.0.0' means >=4.0.0, <5.0.0)"
+                        }
+                    },
+                    "required": [ "from" ],
+                    "additionalProperties": false
+                },
+                {
+                    "properties": {
+                        "branch": {
+                            "type": "string",
+                            "description": "Git branch name (e.g., 'main'). Not recommended for production."
+                        }
+                    },
+                    "required": [ "branch" ],
+                    "additionalProperties": false
+                },
+                {
+                    "properties": {
+                        "revision": {
+                            "type": "string",
+                            "description": "Git commit SHA (e.g., 'abc123')"
+                        }
+                    },
+                    "required": [ "revision" ],
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "productPlatform": {
+            "type": "string",
+            "description": "Supported platform versions",
+            "enum": [
+                "iOS(.v15)",
+                "iOS(.v16)",
+                "macOS(.v11)",
+                "tvOS(.v15)",
+                "macCatalyst(.v15)",
+                "iOS(.v15_1)",
+                "tvOS(.v15_1)" ]
+        },
+        "product": {
+            "type": "object",
+            "description": "A Swift Package product definition with its targets",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the product"
+                },
+                "podName": {
+                    "type": "string",
+                    "description": "The CocoaPods pod name for this product. Must match the name in the corresponding .podspec file."
+                },
+                "codegenName": {
+                    "type": "string",
+                    "description": "The React Native codegen module name (from package.json codegenConfig.name). Only required for packages that use React Native codegen."
+                },
+                "platforms": {
+                    "type": "array",
+                    "description": "Supported platforms for this product",
+                    "items": {
+                        "$ref": "#/definitions/productPlatform"
+                    },
+                    "default": [ ]
+                },
+                "externalDependencies": {
+                    "type": "array",
+                    "description": "List of external Swift Package dependencies for this product (e.g., 'Hermes', 'ReactNativeDependencies', 'React', or expo packages)",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [ ]
+                },
+                "spmPackages": {
+                    "type": "array",
+                    "description": "Remote SPM package dependencies to be fetched by Swift Package Manager. Use this for third-party Swift packages that provide prebuilt binaries (like lottie-spm). Use exact versions for reproducible builds.",
+                    "items": {
+                        "$ref": "#/definitions/spmPackageDependency"
+                    },
+                    "default": [ ]
+                },
+                "swiftLanguageVersions": {
+                    "type": "array",
+                    "description": "Optional list of Swift language versions supported by this product",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [ ]
+                },
+                "textualHeaders": {
+                    "type": "array",
+                    "description": "Glob patterns for headers that should be marked as 'textual' in the final xcframework modulemap. Textual headers are not compiled as part of the module, which is necessary for headers that have external dependencies (like React headers) that won't be available at module compile time. This allows Swift to import the module without needing those dependencies at compile time.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [ ]
+                },
+                "excludeFromUmbrella": {
+                    "type": "array",
+                    "description": "Glob patterns for headers that should be excluded from the umbrella header. These headers won't be automatically imported when the module is imported. Use this for headers that reference files that don't exist in the xcframework (like Swift bridging headers for non-Swift modules).",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [ ]
+                },
+                "targets": {
+                    "type": "array",
+                    "description": "List of targets included in this product",
+                    "items": {
+                        "$ref": "#/definitions/target"
+                    }
+                }
+            },
+            "required": [ "name", "podName", "targets" ],
+            "additionalProperties": false
+        },
+        "target": {
+            "oneOf": [
+                { "$ref": "#/definitions/frameworkTarget" },
+                { "$ref": "#/definitions/objcTarget" },
+                { "$ref": "#/definitions/swiftTarget" },
+                { "$ref": "#/definitions/cppTarget" }
+            ]
+        },
+        "compilerFlagsPerLanguage": {
+            "type": "object",
+            "description": "Compiler flags separated by language (C vs C++)",
+            "properties": {
+                "c": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Flags for C/Objective-C compilation only"
+                },
+                "cxx": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Flags for C++/Objective-C++ compilation only"
+                }
+            },
+            "additionalProperties": false
+        },
+        "compilerFlagsVariant": {
+            "oneOf": [
+                {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Array of flags applied to both C and C++ compilation"
+                },
+                {
+                    "$ref": "#/definitions/compilerFlagsPerLanguage"
+                }
+            ]
+        },
+        "compilerFlagsDefinition": {
+            "oneOf": [
+                {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Shorthand: Array of flags applied to all builds for both C and C++"
+                },
+                {
+                    "type": "object",
+                    "description": "Structured compiler flags with build-type variants",
+                    "properties": {
+                        "common": {
+                            "$ref": "#/definitions/compilerFlagsVariant",
+                            "description": "Flags applied to all builds (Debug and Release)"
+                        },
+                        "debug": {
+                            "$ref": "#/definitions/compilerFlagsVariant",
+                            "description": "Flags applied only to Debug builds"
+                        },
+                        "release": {
+                            "$ref": "#/definitions/compilerFlagsVariant",
+                            "description": "Flags applied only to Release builds"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "frameworkTarget": {
+            "type": "object",
+            "description": "A binary xcframework target",
+            "properties": {
+                "type": {
+                    "const": "framework",
+                    "description": "Target type identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the target"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to the xcframework relative to package root"
+                },
+                "includeDirectories": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Header locations within the framework bundle",
+                    "default": [ ]
+                },
+                "vfsOverlayPath": {
+                    "type": "string",
+                    "description": "Path to a VFS overlay file (.yaml) for virtual filesystem mapping"
+                },
+                "linkedFrameworks": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "System frameworks to link",
+                    "default": [ ]
+                }
+            },
+            "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        },
+        "objcTarget": {
+            "type": "object",
+            "description": "An Objective-C source target",
+            "properties": {
+                "type": {
+                    "const": "objc",
+                    "description": "Target type identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the target"
+                },
+                "moduleName": {
+                    "type": "string",
+                    "description": "The module name to use when organizing headers in include directory (defaults to product name)"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to source files relative to package root"
+                },
+                "pattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter source files within the path"
+                },
+                "headerPattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter header files within the path"
+                },
+                "dependencies": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Names of other targets this target depends on",
+                    "default": [ ]
+                },
+                "exclude": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Paths to exclude from compilation",
+                    "default": [ ]
+                },
+                "includeDirectories": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Header search paths relative to the target path",
+                    "default": [ "include" ]
+                },
+                "linkedFrameworks": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "System frameworks to link (e.g., 'Foundation', 'UIKit')",
+                    "default": [ ]
+                },
+                "resources": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/resource" },
+                    "description": "Resources to bundle with the target (e.g., Metal shaders, assets)",
+                    "default": [ ]
+                },
+                "compilerFlags": {
+                    "$ref": "#/definitions/compilerFlagsDefinition",
+                    "description": "Compiler flags for C/C++/ObjC. Can be an array (applied to all builds) or an object with common/debug/release keys. Each key can be an array (both C and C++) or an object with c/cxx keys."
+                },
+                "linkerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Linker flags passed via .unsafeFlags() in linkerSettings (e.g., '-all_load', '-lz')",
+                    "default": [ ]
+                },
+                "fileMapping": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/fileMapping" },
+                    "description": "File mappings to reorganize files during source generation. Files matching 'from' pattern will be copied to the 'to' location",
+                    "default": [ ]
+                },
+                "moduleMapContent": {
+                    "type": "string",
+                    "description": "Custom module.modulemap content for this target. If provided, this will be written to the include directory instead of letting Clang auto-generate one. Useful for C++ headers that have conflicting type definitions and need to be marked as 'textual header'"
+                },
+                "publicHeaders": {
+                    "type": "boolean",
+                    "description": "Whether to expose headers as public module headers. Set to false to make headers private/internal, which prevents Clang from building a module from them. Default is true.",
+                    "default": true
+                }
+            },
+            "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        },
+        "swiftTarget": {
+            "type": "object",
+            "description": "A Swift source target",
+            "properties": {
+                "type": {
+                    "const": "swift",
+                    "description": "Target type identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the target"
+                },
+                "moduleName": {
+                    "type": "string",
+                    "description": "The module name to use when organizing headers in include directory (defaults to product name)"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to source files relative to package root"
+                },
+                "pattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter source files within the path"
+                },
+                "headerPattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter header files within the path"
+                },
+                "dependencies": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Names of other targets this target depends on",
+                    "default": [ ]
+                },
+                "exclude": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Paths to exclude from compilation",
+                    "default": [ ]
+                },
+                "includeDirectories": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Header search paths relative to the target path",
+                    "default": [ ]
+                },
+                "linkedFrameworks": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "System frameworks to link",
+                    "default": [ ]
+                },
+                "resources": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/resource" },
+                    "description": "Resources to bundle with the target (e.g., Metal shaders, assets)",
+                    "default": [ ]
+                },
+                "compilerFlags": {
+                    "$ref": "#/definitions/compilerFlagsDefinition",
+                    "description": "Compiler flags for C/C++/ObjC. Can be an array (applied to all builds) or an object with common/debug/release keys. Each key can be an array (both C and C++) or an object with c/cxx keys."
+                },
+                "linkerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Linker flags passed via .unsafeFlags() in linkerSettings (e.g., '-all_load', '-lz')",
+                    "default": [ ]
+                },
+                "fileMapping": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/fileMapping" },
+                    "description": "File mappings to reorganize files during source generation. Files matching 'from' pattern will be copied to the 'to' location",
+                    "default": [ ]
+                },
+                "moduleMapContent": {
+                    "type": "string",
+                    "description": "Custom module.modulemap content for this target. If provided, this will be written to the include directory instead of letting Clang auto-generate one. Useful for C++ headers that have conflicting type definitions and need to be marked as 'textual header'"
+                },
+                "publicHeaders": {
+                    "type": "boolean",
+                    "description": "Whether to expose headers as public module headers. Set to false to make headers private/internal, which prevents Clang from building a module from them. Default is true.",
+                    "default": true
+                }
+            },
+            "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        },
+        "cppTarget": {
+            "type": "object",
+            "description": "A C++ source target (extends ObjCTarget)",
+            "properties": {
+                "type": {
+                    "const": "cpp",
+                    "description": "Target type identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the target"
+                },
+                "moduleName": {
+                    "type": "string",
+                    "description": "The module name to use when organizing headers in include directory (defaults to product name)"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to source files relative to package root"
+                },
+                "pattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter source files within the path"
+                },
+                "headerPattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter header files within the path"
+                },
+                "dependencies": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Names of other targets this target depends on",
+                    "default": [ ]
+                },
+                "exclude": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Paths to exclude from compilation",
+                    "default": [ ]
+                },
+                "includeDirectories": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Header search paths relative to the target path",
+                    "default": [ "include" ]
+                },
+                "linkedFrameworks": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "System frameworks to link",
+                    "default": [ ]
+                },
+                "resources": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/resource" },
+                    "description": "Resources to bundle with the target (e.g., Metal shaders, assets)",
+                    "default": [ ]
+                },
+                "compilerFlags": {
+                    "$ref": "#/definitions/compilerFlagsDefinition",
+                    "description": "Compiler flags for C/C++/ObjC. Can be an array (applied to all builds) or an object with common/debug/release keys. Each key can be an array (both C and C++) or an object with c/cxx keys."
+                },
+                "linkerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Linker flags passed via .unsafeFlags() in linkerSettings (e.g., '-all_load', '-lz')",
+                    "default": [ ]
+                },
+                "fileMapping": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/fileMapping" },
+                    "description": "File mappings to reorganize files during source generation. Files matching 'from' pattern will be copied to the 'to' location",
+                    "default": [ ]
+                },
+                "moduleMapContent": {
+                    "type": "string",
+                    "description": "Custom module.modulemap content for this target. If provided, this will be written to the include directory instead of letting Clang auto-generate one. Useful for C++ headers that have conflicting type definitions and need to be marked as 'textual header'"
+                },
+                "publicHeaders": {
+                    "type": "boolean",
+                    "description": "Whether to expose headers as public module headers. Set to false to make headers private/internal, which prevents Clang from building a module from them. Default is true.",
+                    "default": true
+                }
+            },
+            "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        },
+        "resource": {
+            "type": "object",
+            "description": "A resource to include in the target bundle",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Path or glob pattern to the resource(s) relative to the package root"
+                },
+                "rule": {
+                    "type": "string",
+                    "enum": [ "process", "copy" ],
+                    "description": "How to handle the resource: 'process' optimizes for platform, 'copy' includes as-is",
+                    "default": "process"
+                }
+            },
+            "required": [ "path" ],
+            "additionalProperties": false
+        },
+        "fileMapping": {
+            "type": "object",
+            "description": "Defines how files from a source location should be copied to a different destination path during source generation",
+            "properties": {
+                "from": {
+                    "type": "string",
+                    "description": "Glob pattern to match source files relative to the target path, or source path for symlink type"
+                },
+                "to": {
+                    "type": "string",
+                    "description": "Destination path relative to the generated target folder. Use '{filename}' as placeholder for the matched filename"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [ "source", "header", "symlink" ],
+                    "description": "Whether this is for header files (placed in include/), source files (placed in target root), or symlink (creates directory symlink in include/)"
+                }
+            },
+            "required": [ "from", "to", "type" ],
+            "additionalProperties": false
+        }
+    }
+}

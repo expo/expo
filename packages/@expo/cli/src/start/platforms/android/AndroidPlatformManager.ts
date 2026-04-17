@@ -59,7 +59,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     options:
       | { runtime: 'expo' | 'web' }
       | { runtime: 'custom'; props?: Partial<AndroidOpenInCustomProps> },
-    resolveSettings?: Partial<BaseResolveDeviceProps<Device>>
+    resolveSettings?: BaseResolveDeviceProps<Device>
   ): Promise<{ url: string }> {
     await startAdbReverseAsync([this.port]);
 

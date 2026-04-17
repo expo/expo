@@ -111,6 +111,10 @@ export type GoogleMapsCircle = {
      * The width of the circle line.
      */
     lineWidth?: number;
+    /**
+     * The geographic coordinates of the click point on the map.
+     */
+    clickCoordinates?: Coordinates;
 };
 /**
  * @platform android

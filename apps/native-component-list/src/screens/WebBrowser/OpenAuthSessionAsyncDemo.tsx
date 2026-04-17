@@ -40,6 +40,7 @@ const FUNCTION_DESCRIPTION: FunctionDescription = {
       properties: [
         { name: 'createTask', type: 'boolean', initial: true },
         { name: 'preferEphemeralSession', type: 'boolean', platforms: ['ios'], initial: false },
+        { name: 'preferUniversalLinks', type: 'boolean', platforms: ['ios'], initial: true },
       ],
     },
   ],

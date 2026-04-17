@@ -1127,6 +1127,53 @@ describe(withExtendedResolver, () => {
       );
     });
 
+    it('resolves `../../App` from `expo/AppEntry.js` as `./App` from the project root', () => {
+      const platform = 'ios';
+      const modified = getModifiedConfig();
+
+      jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+        if (
+          context.originModulePath === '/root/node_modules/expo/AppEntry.js' &&
+          moduleName === '../../App'
+        ) {
+          throw new FailedToResolveNameError();
+        } else {
+          return { type: 'empty' };
+        }
+      });
+
+      modified.resolver.resolveRequest!(
+        getResolverContext({
+          originModulePath: '/root/node_modules/expo/AppEntry.js',
+        }),
+        '../../App',
+        platform
+      );
+
+      expect(getResolveFunc()).toHaveBeenCalledTimes(2);
+
+      // 1: Fails to resolve `../../App` from `expo/AppEntry.js`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          originModulePath: '/root/node_modules/expo/AppEntry.js',
+        }),
+        '../../App',
+        platform
+      );
+
+      // 2: Retries as `./App` from the project root
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          originModulePath: '/root/index.js',
+          nodeModulesPaths: [],
+        }),
+        './App',
+        platform
+      );
+    });
+
     it('resolves no fallback modules if no origin modules were found', () => {
       const platform = 'ios';
       const modified = getModifiedConfig();

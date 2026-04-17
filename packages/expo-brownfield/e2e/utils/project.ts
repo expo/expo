@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { glob } from 'glob';
 import fs from 'node:fs';
 import path from 'node:path';
-import tempDir from 'temp-dir';
+import os from 'node:os';
 
 import {
   executeCommandAsync,
@@ -15,7 +15,7 @@ import type { PluginProps, TemplateEntry } from './types';
 const PROJECT_NAME = 'testapp';
 const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
   ? path.resolve(process.env.EXPO_E2E_TEMP_DIR)
-  : tempDir;
+  : fs.realpathSync(os.tmpdir());
 
 export const projectName = (suffix: string) => PROJECT_NAME + suffix;
 
@@ -33,8 +33,8 @@ export const createTempProject = async (
   try {
     await createProjectWithTemplate(TEMP_DIR, projectName(suffix));
     await installPackage(projectRoot);
+    await addPlugin(projectRoot);
     if (prebuild) {
-      await addPlugin(projectRoot);
       await prebuildProject(projectRoot, undefined, install);
     }
   } catch (error) {
@@ -82,6 +82,8 @@ export const addPlugin = async (
     ...android,
   };
 
+  appConfig.expo.experiments.autolinkingModuleResolution = true;
+
   await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
 };
 
@@ -117,7 +119,7 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
 
   let tarballs = await glob('*.tgz', { cwd: templatePath });
   if (tarballs.length === 0) {
-    await executeCommandAsync(templatePath, 'npm', ['pack', '--json']);
+    await executeCommandAsync(templatePath, 'pnpm', ['pack', '--json']);
     tarballs = await glob('*.tgz', { cwd: templatePath });
     if (tarballs.length === 0) {
       throw new Error(`No tarballs found in template directory: ${templatePath}`);
@@ -128,6 +130,7 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     projectName,
     '--template',
     path.join(templatePath, tarballs[0]),
+    '--no-install',
   ]);
 };
 
@@ -138,7 +141,7 @@ const installPackage = async (projectRoot: string) => {
   const packageRoot = path.join(__dirname, '../../');
   let tarballs = await glob('*.tgz', { cwd: packageRoot });
   if (tarballs.length === 0) {
-    await executeCommandAsync(packageRoot, 'npm', ['pack', '--json']);
+    await executeCommandAsync(packageRoot, 'pnpm', ['pack', '--json']);
     tarballs = await glob('*.tgz', { cwd: packageRoot });
     if (tarballs.length === 0) {
       throw new Error(`No tarballs found in package directory: ${packageRoot}`);
@@ -152,10 +155,14 @@ const installPackage = async (projectRoot: string) => {
     force: true,
   });
 
-  // Use --legacy-peer-deps for better stability
-  await spawnAsync('npm', ['install', packageTarball, '--legacy-peer-deps'], {
+  // Strip npm_config_minimum_release_age inherited from the monorepo's pnpm-workspace.yaml,
+  // as it blocks recently published packages without the matching exclusion list.
+  const { npm_config_minimum_release_age, ...processEnv } = process.env;
+
+  await spawnAsync('pnpm', ['add', `./${packageTarball}`], {
     cwd: projectRoot,
     stdio: 'pipe',
+    env: processEnv,
   });
 };
 

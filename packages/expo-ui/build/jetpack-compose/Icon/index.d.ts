@@ -1,5 +1,5 @@
 import { type ColorValue, type ImageSourcePropType, type ImageResolvedAssetSource } from 'react-native';
-import { ExpoModifier } from '../../types';
+import { ModifierConfig } from '../../types';
 export type IconProps = {
     /**
      * The source of the icon. Can be a URI string or the result of `require()`.
@@ -18,11 +18,11 @@ export type IconProps = {
      *
      * @example
      * ```tsx
-     * <Icon source={require('./assets/star.xml')} tintColor="#007AFF" />
-     * <Icon source={require('./assets/star.xml')} tintColor="blue" />
+     * <Icon source={require('./assets/star.xml')} tint="#007AFF" />
+     * <Icon source={require('./assets/star.xml')} tint="blue" />
      * ```
      */
-    tintColor?: ColorValue;
+    tint?: ColorValue;
     /**
      * The size of the icon in density-independent pixels (dp).
      * If not specified, the icon will use its intrinsic size.
@@ -61,7 +61,7 @@ export type IconProps = {
      * />
      * ```
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * @hidden
@@ -90,7 +90,7 @@ export type NativeIconProps = Omit<IconProps, 'source'> & {
  * <Icon
  *   source={require('./assets/settings.xml')}
  *   size={24}
- *   tintColor="#007AFF"
+ *   tint="#007AFF"
  *   contentDescription="Settings icon"
  * />
  * ```

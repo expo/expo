@@ -31,7 +31,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
       </svg>
        On this page
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-full font-medium items-center whitespace-nowrap gap-1.5 h-8 text-3xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 mr-2 ml-auto px-2 transition-opacity duration-300 pointer-events-none opacity-0"
+        class="cursor-pointer inline-flex border border-solid rounded-full font-medium items-center whitespace-nowrap gap-1.5 h-8 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 mr-2 ml-auto px-2 transition-opacity duration-300 pointer-events-none opacity-0"
         type="button"
       >
         <span
@@ -104,7 +104,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           href="#code-heading-depth-1"
         >
           <code
-            class="leading-[1.6154] text-inherit text-secondary! hocus:text-link! w-full text-2xs! truncate"
+            class="leading-[1.6154] text-inherit text-secondary! hocus:text-link! w-full truncate text-xs!"
             data-text="true"
           >
             Code heading depth 1

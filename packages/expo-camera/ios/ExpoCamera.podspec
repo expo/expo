@@ -1,9 +1,6 @@
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
-podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
-
-barcode_scanner_enabled = podfile_properties.fetch('expo-camera.barcode-scanner-enabled', 'true') != 'false'
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoCamera'
@@ -14,28 +11,20 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1'
+    :ios => '16.4'
   }
   s.source         = { :git => "https://github.com/expo/expo.git" }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  if barcode_scanner_enabled
-    s.dependency 'ZXingObjC/PDF417'
-    s.dependency 'ZXingObjC/OneD'
-  end
 
   # Swift/Objective-C compatibility
-  xcconfig = {
+  s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  if barcode_scanner_enabled
-    xcconfig['GCC_PREPROCESSOR_DEFINITIONS'] = 'ZXINGOBJC_USE_SUBSPECS ZXINGOBJC_PDF417 ZXINGOBJC_ONED'
-  end
-
-  s.pod_target_xcconfig = xcconfig
+  s.exclude_files = "barcode-scanning/**"
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "**/*.h"

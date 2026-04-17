@@ -313,7 +313,7 @@ The following options are provided:
 
 #### Hosting with sub-paths
 
-> **important** Experimental functionality.
+> **important** [Experimental](/more/release-statuses/#experimental) functionality.
 
 You can configure the prefix for static assets by setting the `experiments.baseUrl` field in your [app config](/workflow/configuration/):
 
@@ -375,7 +375,7 @@ export default function Blog() {
 
 ### Exporting with webpack
 
-> **warning** **Deprecated**: In SDK 50 and later, Expo Webpack has been deprecated in favor of universal Metro (`npx expo export`). Learn more in [migrating from Webpack to Expo Router](/router/migrate/from-expo-webpack).
+> **warning** **[Deprecated](/more/release-statuses/#deprecated)**: In SDK 50 and later, Expo Webpack has been deprecated in favor of universal Metro (`npx expo export`). Learn more in [migrating from Webpack to Expo Router](/router/migrate/from-expo-webpack).
 
 You can export the JavaScript and assets for your web app using webpack by running the following:
 
@@ -563,7 +563,7 @@ From here, you can choose to generate basic project files like:
 | `EXPO_USE_METRO_REQUIRE`             | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="SDK 52+" /></div>Enable the use of Expo's custom Metro `require` implementation and `string` based module IDs. This enables better debugging and deterministic IDs for React Server Components. Does not support legacy RAM bundles.                                                                                                                               |
 | `EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH` | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and is less optimized for development bundling.                                                                                                                |
 | `EXPO_UNSTABLE_TREE_SHAKING`         | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable unstable tree shaking support across all platforms. See [tree shaking](/guides/tree-shaking) for more details.                                                                                                                                                                                          |
-| `EXPO_NO_REACT_NATIVE_WEB`           | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable experimental mode where React Native Web isn't required to run Expo apps on web.                                                                                                                                                                                                                        |
+| `EXPO_NO_REACT_NATIVE_WEB`           | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="deprecated" note="SDK 56+" /></div>Enable experimental mode where React Native Web isn't required to run Expo apps on web.                                                                                                                                                                                                                                         |
 | `EXPO_NO_DEPENDENCY_VALIDATION`      | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="SDK 52+" /></div>Disable built-in dependency validation when installing packages through `npx expo install` and `npx expo start`.                                                                                                                                                                                                                                  |
 | `EXPO_WEB_DEV_HYDRATE`               | **boolean** | Enable React hydration in development for a web project. This can help you identify hydration issues early.                                                                                                                                                                                                                                                                                                                     |
 | `EXPO_UNSTABLE_LIVE_BINDINGS`        | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 54+" /></div>Disable live binding in experimental import export support. Enabled by default. Live bindings improve circular dependencies support, but can lead to slightly worse performance.                                                                                                                               |

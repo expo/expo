@@ -5,12 +5,15 @@
 ### 🛠 Breaking changes
 
 - Removed deprecated `setString` function. Use `setStringAsync` instead. ([#41758](https://github.com/expo/expo/pull/41758) by [@barthap](https://github.com/barthap))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Instead of exporting the `ClipboardFileProvider` use `android:grantUriPermissions` to share image files. ([#44556](https://github.com/expo/expo/pull/44556) by [@behenate](https://github.com/behenate))
 
 ## 55.0.8 — 2026-02-25
 

@@ -12,7 +12,7 @@ import { Task } from '../../TasksRunner';
 import type { CommandOptions, Parcel, TaskArgs } from '../types';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
-const EXCLUDE = ['expo-module-template-local', 'expo-module-template'];
+const EXCLUDE = ['expo-module-template'];
 
 /**
  * Finds and removes stale build directories (*.cxx and android/build) that can cause build issues.
@@ -199,7 +199,7 @@ async function removeExistingPublications(pkg: Package) {
   const stringifyConfig = JSON.stringify(pkg.expoModuleConfig, null, 2);
 
   await fs.writeFile(pkg.expoModulesConfigPath, stringifyConfig, 'utf-8');
-  return spawnAsync('yarn', ['prettier', '--write', pkg.expoModulesConfigPath], {
+  return spawnAsync('pnpm', ['prettier', '--write', pkg.expoModulesConfigPath], {
     cwd: pkg.path,
   });
 }

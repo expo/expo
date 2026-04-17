@@ -132,6 +132,34 @@ module Expo
       end
     end
 
+    # Integrates the core macro plugins into the targets.
+    def self.integrate_core_macro_plugins(targets)
+      macro_flags = nil
+      targets.each do |target|
+        unless macro_flags
+          core_pod_target = target.pod_targets.find { |pod_target| pod_target.name == 'ExpoModulesCore' }
+          core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
+            File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
+          macros_plugin_dir = File.join(core_src_root, 'node_modules', '@expo', 'expo-modules-macros-plugin', 'apple')
+          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+        end
+
+        target.pod_targets.each do |pod_target|
+          has_core_dependency = pod_target.dependencies.find { |dependency| dependency == 'ExpoModulesCore' }
+          next unless has_core_dependency
+          pod_target.build_settings.each do |build_configuration_name, build_settings|
+            xcconfig = build_settings.xcconfig
+            swift_flags = xcconfig.attributes[SWIFT_FLAGS] || '$(inherited)'
+            unless swift_flags.include?(macro_flags)
+              xcconfig_path = pod_target.xcconfig_path(build_configuration_name)
+              xcconfig.attributes[SWIFT_FLAGS] = "#{swift_flags} #{macro_flags}"
+              xcconfig.save_as(xcconfig_path)
+            end
+          end
+        end
+      end
+    end
+
     # Makes sure that the build script configuring the project is installed,
     # is up-to-date and is placed before the "Compile Sources" phase.
     def self.integrate_build_script(autolinking_manager, project, target, native_target)

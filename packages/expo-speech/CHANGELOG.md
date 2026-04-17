@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- [Android] Fix `NullPointerException` in `LanguageUtils.getISOCode` when the TTS engine returns a voice with a non-standard locale. ([#44807](https://github.com/expo/expo/pull/44807) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 

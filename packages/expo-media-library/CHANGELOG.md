@@ -4,14 +4,27 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- [next] Add `asset.getAlbums()` ([#44604](https://github.com/expo/expo/pull/44604) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add `Album.getAll()` ([#44446](https://github.com/expo/expo/pull/44446) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Add `album.removeAssets()` ([#44455](https://github.com/expo/expo/pull/44455) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add usePermissions ([#44403](https://github.com/expo/expo/pull/44403) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Fixed `Query.limit(0)` returning all assets instead of an empty array ([#44245](https://github.com/expo/expo/pull/44245) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add getPermissionsAsync ([#44244](https://github.com/expo/expo/pull/44244) by [@Wenszel](https://github.com/Wenszel))
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [next][iOS] Added support to add or remove assets from Favorites smart album ([#43598](https://github.com/expo/expo/pull/43598) by [@awaisanjumx2](https://github.com/awaisanjumx2))
 - [iOS] Added support to add or remove assets to Favorites smart album ([#43459](https://github.com/expo/expo/pull/43459) by [@awaisanjumx2](https://github.com/awaisanjumx2))
 
 ### 🐛 Bug fixes
 
+- [Android] Read video dimensions from MediaStore cursor instead of opening each file with `MediaMetadataRetriever`, fixing extremely slow `getAssetsAsync` on devices with many videos. ([#44714](https://github.com/expo/expo/pull/44714) by [@oeddyo](https://github.com/oeddyo))
+
 ### 💡 Others
+
+- [next] Replace JS static overrides with StaticAsyncFunction ([#44473](https://github.com/expo/expo/pull/44473) by [@Wenszel](https://github.com/Wenszel))
 
 ### ⚠️ Notices
 

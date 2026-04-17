@@ -1,6 +1,6 @@
-import { RouterFactory, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
 import { StackRouter } from '../layouts/StackClient';
+import { RouterFactory, useNavigationBuilder } from '../react-navigation/native';
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
     contextKey: string;
     router: RouterFactory<any, any, any>;

@@ -16,7 +16,9 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import java.util.UUID
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class SetCameraPositionConfig(
   @Field
   val coordinates: Coordinates?,
@@ -28,6 +30,7 @@ data class SetCameraPositionConfig(
   val duration: Int?
 ) : Record
 
+@OptimizedRecord
 data class Coordinates(
   @Field
   val latitude: Double = 0.0,
@@ -44,6 +47,7 @@ data class Coordinates(
   }
 }
 
+@OptimizedRecord
 data class AnchorRecord(
   @Field
   val x: Float = 0.5f,
@@ -54,6 +58,7 @@ data class AnchorRecord(
   fun toOffset() = Offset(x = x, y = y)
 }
 
+@OptimizedRecord
 data class MarkerRecord(
   @Field
   val id: String = UUID.randomUUID().toString(),
@@ -83,6 +88,7 @@ data class MarkerRecord(
   val zIndex: Float = 0.0f
 ) : Record
 
+@OptimizedRecord
 data class PolylineRecord(
   @Field
   val id: String = UUID.randomUUID().toString(),
@@ -100,6 +106,7 @@ data class PolylineRecord(
   val width: Float = 10f
 ) : Record
 
+@OptimizedRecord
 data class PolygonRecord(
   @Field
   val id: String = UUID.randomUUID().toString(),
@@ -117,6 +124,7 @@ data class PolygonRecord(
   val color: Int = 0xFF0000FF.toInt()
 ) : Record
 
+@OptimizedRecord
 data class CameraPositionRecord(
   @Field
   val coordinates: Coordinates = Coordinates(),
@@ -125,6 +133,7 @@ data class CameraPositionRecord(
   val zoom: Float = 10f
 ) : Record
 
+@OptimizedRecord
 data class CircleRecord(
   @Field
   val id: String = UUID.randomUUID().toString(),
@@ -142,9 +151,13 @@ data class CircleRecord(
   val lineColor: Int? = null,
 
   @Field
-  val lineWidth: Float? = null
+  val lineWidth: Float? = null,
+
+  @Field
+  val clickCoordinates: Coordinates? = null
 ) : Record
 
+@OptimizedRecord
 data class UserLocationRecord(
   @Field
   val coordinates: Coordinates? = null,
@@ -153,6 +166,7 @@ data class UserLocationRecord(
   val followUserLocation: Boolean = false
 ) : Record
 
+@OptimizedRecord
 data class MapUiSettingsRecord(
   @Field
   val compassEnabled: Boolean = true,
@@ -207,11 +221,13 @@ enum class MapTypeEnum : Enumerable {
   }
 }
 
+@OptimizedRecord
 data class MapStyleOptionsRecord(
   @Field
   val json: String
 ) : Record
 
+@OptimizedRecord
 data class MapPropertiesRecord(
   @Field
   val isBuildingEnabled: Boolean = false,
@@ -247,6 +263,7 @@ data class MapPropertiesRecord(
   }
 }
 
+@OptimizedRecord
 data class POIRecord(
   @Field
   val name: String,
@@ -269,6 +286,7 @@ enum class MapColorSchemeEnum : Enumerable {
   }
 }
 
+@OptimizedRecord
 data class CameraMoveEvent(
   @Field
   val coordinates: Coordinates,
@@ -283,11 +301,13 @@ data class CameraMoveEvent(
   val bearing: Float
 ) : Record
 
+@OptimizedRecord
 data class MapClickEvent(
   @Field
   val coordinates: Coordinates
 ) : Record
 
+@OptimizedRecord
 data class CameraPositionStreetViewRecord(
   @Field
   val coordinates: Coordinates = Coordinates(),
@@ -302,6 +322,7 @@ data class CameraPositionStreetViewRecord(
   val bearing: Float = 0f
 ) : Record
 
+@OptimizedRecord
 data class MapContentPaddingRecord(
   @Field
   val start: Float = 0f,
@@ -316,11 +337,13 @@ data class MapContentPaddingRecord(
   val bottom: Float = 0f
 ) : Record
 
+@OptimizedRecord
 data class MapOptionsRecord(
   @Field
   val mapId: String? = null
 ) : Record
 
+@OptimizedRecord
 data class SelectOptionsRecord(
   @Field
   val zoom: Float? = null,

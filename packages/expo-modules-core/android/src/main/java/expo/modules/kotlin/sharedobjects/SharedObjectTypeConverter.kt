@@ -8,12 +8,13 @@ import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.toStrongReference
 import expo.modules.kotlin.types.NonNullableTypeConverter
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
 
 class SharedObjectTypeConverter<T : SharedObject>(
-  val type: KType
+  val typeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<T>() {
   @Suppress("UNCHECKED_CAST")
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): T {
@@ -36,13 +37,14 @@ class SharedObjectTypeConverter<T : SharedObject>(
 }
 
 class SharedRefTypeConverter<T : SharedRef<*>>(
-  val type: KType
+  val typeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<T>() {
-  private val sharedObjectTypeConverter = SharedObjectTypeConverter<T>(type)
+  private val sharedObjectTypeConverter = SharedObjectTypeConverter<T>(typeDescriptor)
 
   val sharedRefType: KType? by lazy {
-    var currentClass: KClass<*>? = type.classifier as? KClass<*>
-    var currentType: KType? = type
+    // TODO(@lukmccall): Remove KType and KClass usage
+    var currentClass: KClass<*>? = typeDescriptor.jClass.kotlin
+    var currentType: KType? = typeDescriptor.kType
     while (currentClass != null) {
       if (currentClass == SharedRef::class) {
         val firstArgument = currentType?.arguments?.first()
@@ -79,7 +81,7 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
       return sharedRef
     }
 
-    throw IncorrectRefTypeException(type, sharedRef.javaClass)
+    throw IncorrectRefTypeException(typeDescriptor, sharedRef.javaClass)
   }
 
   override fun getCppRequiredTypes() = sharedObjectTypeConverter.getCppRequiredTypes()

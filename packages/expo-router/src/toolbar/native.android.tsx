@@ -1,5 +1,11 @@
 import { Host, HorizontalFloatingToolbar, Box } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, height, padding, imePadding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  background,
+  fillMaxWidth,
+  height,
+  padding,
+  imePadding,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,7 +27,13 @@ export function RouterToolbarHost(props: RouterToolbarHostProps) {
     <View style={[StyleSheet.absoluteFill]} pointerEvents="box-none">
       <Host style={styles.host}>
         <Box modifiers={modifiers} contentAlignment="bottomCenter">
-          <HorizontalFloatingToolbar modifiers={[height(64)]}>
+          <HorizontalFloatingToolbar
+            // TODO: use toolbarContainerColor
+            // TODO: expose toolbarContainerColor from expo-ui
+            modifiers={[
+              height(64),
+              ...(props.backgroundColor ? [background(props.backgroundColor as string)] : []),
+            ]}>
             {props.children}
           </HorizontalFloatingToolbar>
         </Box>

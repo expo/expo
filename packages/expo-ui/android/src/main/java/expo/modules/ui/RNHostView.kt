@@ -88,19 +88,21 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
     wrapperState.value?.let { wrapper ->
       val childView = childViewState.value ?: return@let
-      if (matchContents) {
-        AndroidView(
-          factory = { wrapper },
-          modifier = applySizeFromYogaNodeModifier(childView)
-        )
+      val modifier = if (matchContents) {
+        applySizeFromYogaNodeModifier(childView)
       } else {
-        AndroidView(
-          factory = { wrapper },
-          modifier = Modifier
-            .fillMaxSize()
-            .then(reportSizeToYogaNodeModifier())
-        )
+        Modifier
+          .fillMaxSize()
+          .then(reportSizeToYogaNodeModifier())
       }
+
+      AndroidView(
+        factory = {
+          (wrapper.parent as? ViewGroup)?.removeView(wrapper)
+          wrapper
+        },
+        modifier = modifier
+      )
     }
   }
 

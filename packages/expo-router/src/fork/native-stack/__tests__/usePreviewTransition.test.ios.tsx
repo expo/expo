@@ -1,7 +1,7 @@
-import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import { renderHook, act, type RenderHookOptions } from '@testing-library/react-native';
 
 import { useLinkPreviewContext } from '../../../link/preview/LinkPreviewContext';
+import type { ParamListBase, StackNavigationState } from '../../../react-navigation/native';
 import type { NativeStackDescriptor, NativeStackDescriptorMap } from '../descriptors-context';
 import { usePreviewTransition } from '../usePreviewTransition';
 

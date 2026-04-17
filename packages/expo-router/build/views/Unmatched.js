@@ -6,7 +6,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unmatched = Unmatched;
-const native_1 = require("@react-navigation/native");
 const expo_linking_1 = require("expo-linking");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
@@ -15,6 +14,7 @@ const NoSSR_1 = require("./NoSSR");
 const Link_1 = require("../link/Link");
 const useNavigation_1 = require("../useNavigation");
 const useSafeLayoutEffect_1 = require("./useSafeLayoutEffect");
+const native_1 = require("../react-navigation/native");
 const stack_1 = require("../utils/stack");
 const Pressable_1 = require("../views/Pressable");
 /**

@@ -16,15 +16,16 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class FlingBehaviorType(val value: String) : Enumerable {
   SINGLE_ADVANCE("singleAdvance"),
   NO_SNAP("noSnap")
 }
 
+@OptimizedRecord
 class PaddingValuesRecord : Record {
   @Field val start: Float? = null
   @Field val top: Float? = null
@@ -88,7 +89,7 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
     maxSmallItemWidth = maxSmallItemWidth,
     contentPadding = contentPadding
   ) { itemIndex ->
-    Child(ComposableScope(), itemIndex)
+    Child(UIComposableScope(), itemIndex)
   }
 }
 
@@ -127,7 +128,7 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
     maxSmallItemWidth = maxSmallItemWidth,
     contentPadding = contentPadding
   ) { itemIndex ->
-    Child(ComposableScope(), itemIndex)
+    Child(UIComposableScope(), itemIndex)
   }
 }
 
@@ -160,6 +161,6 @@ fun FunctionalComposableScope.HorizontalUncontainedCarouselContent(props: Horizo
     userScrollEnabled = props.userScrollEnabled ?: true,
     contentPadding = contentPadding
   ) { itemIndex ->
-    Child(ComposableScope(), itemIndex)
+    Child(UIComposableScope(), itemIndex)
   }
 }

@@ -1,5 +1,5 @@
-import { EventMapBase, NavigationState } from '@react-navigation/native';
 import { ComponentProps, ComponentType, ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
+import { EventMapBase, NavigationState } from '../react-navigation/native';
 import { PickPartial } from '../types';
 import { ScreenProps } from '../useScreens';
 import { Protected } from '../views/Protected';

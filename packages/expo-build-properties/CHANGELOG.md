@@ -4,12 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+- Mark `ios.deploymentTarget` as deprecated in favor of the built-in `ios.deploymentTarget` property (SDK 56 and greater). ([#43700](https://github.com/expo/expo/pull/43700) by [@EvanBacon](https://github.com/EvanBacon))
 - Update useHermesV1 to support React Native 0.84 ([#43625](https://github.com/expo/expo/pull/43625) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 55.0.9 — 2026-02-25

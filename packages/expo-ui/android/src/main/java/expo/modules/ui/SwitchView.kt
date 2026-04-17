@@ -6,15 +6,17 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 open class CheckedChangeEvent(
   @Field open val value: Boolean = false
 ) : Record, Serializable
 
+@OptimizedRecord
 data class SwitchColors(
   @Field val checkedThumbColor: Color? = null,
   @Field val checkedTrackColor: Color? = null,
@@ -55,7 +57,7 @@ fun FunctionalComposableScope.SwitchContent(
     enabled = props.enabled,
     thumbContent = thumbContentSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) {
             Content()
           }

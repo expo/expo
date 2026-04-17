@@ -85,4 +85,73 @@ public protocol UpdatesStateChangeSubscription {
    * Call this to remove the subscription and stop receiving state change events
    */
   func remove()
+  /*
+   * When updates is enabled, returns the current state context as an instance of UpdatesNativeInterfaceStateContext
+   */
+  func getContext() -> Any?
+}
+
+/**
+ Expose the state machine context to the native interface.
+ */
+public struct UpdatesNativeInterfaceStateContext {
+  public struct Rollback {
+    public let commitTime: Date
+
+    public init(commitTime: Date) {
+      self.commitTime = commitTime
+    }
+  }
+  public let isUpdateAvailable: Bool
+  public let isUpdatePending: Bool
+  public let isChecking: Bool
+  public let isDownloading: Bool
+  public let isRestarting: Bool
+  public let restartCount: Int
+  public let latestManifest: [String: Any]?
+  public let downloadedManifest: [String: Any]?
+  public let rollback: Rollback?
+  public let checkError: [String: String]?
+  public let downloadError: [String: String]?
+  public let downloadProgress: Double
+  public let lastCheckForUpdateTime: Date?
+  public let sequenceNumber: Int
+  public let downloadStartTime: Date?
+  public let downloadFinishTime: Date?
+
+  public init(
+    isUpdateAvailable: Bool,
+    isUpdatePending: Bool,
+    isChecking: Bool,
+    isDownloading: Bool,
+    isRestarting: Bool,
+    restartCount: Int,
+    latestManifest: [String : Any]?,
+    downloadedManifest: [String : Any]?,
+    rollback: Rollback?,
+    checkError: [String : String]?,
+    downloadError: [String : String]?,
+    downloadProgress: Double,
+    lastCheckForUpdateTime: Date?,
+    sequenceNumber: Int,
+    downloadStartTime: Date?,
+    downloadFinishTime: Date?
+  ) {
+    self.isUpdateAvailable = isUpdateAvailable
+    self.isUpdatePending = isUpdatePending
+    self.isChecking = isChecking
+    self.isDownloading = isDownloading
+    self.isRestarting = isRestarting
+    self.restartCount = restartCount
+    self.latestManifest = latestManifest
+    self.downloadedManifest = downloadedManifest
+    self.rollback = rollback
+    self.checkError = checkError
+    self.downloadError = downloadError
+    self.downloadProgress = downloadProgress
+    self.lastCheckForUpdateTime = lastCheckForUpdateTime
+    self.sequenceNumber = sequenceNumber
+    self.downloadStartTime = downloadStartTime
+    self.downloadFinishTime = downloadFinishTime
+  }
 }

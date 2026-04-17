@@ -5,14 +5,20 @@
 ### 🛠 Breaking changes
 
 - [ios] rename option from 'usePrebuiltReactNative' to 'buildReactNativeFromSource' ([#43574](https://github.com/expo/expo/pull/43574) by [@pmleczek](https://github.com/pmleczek))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
 - [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
 - [ios] enable optional usage of prebuilt RN frameworks ([#43356](https://github.com/expo/expo/pull/43356) by [@pmleczek](https://github.com/pmleczek))
 - align using custom components between the platforms ([#43633](https://github.com/expo/expo/pull/43633) by [@pmleczek](https://github.com/pmleczek))
 - [state] shared state implementation improvements ([#43279](https://github.com/expo/expo/pull/43279) by [@pmleczek](https://github.com/pmleczek))
+- Use react-native prebuilds by default ([#44332](https://github.com/expo/expo/pull/44332) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added `Expo.plist` to the brownfield framework target. ([#44645](https://github.com/expo/expo/pull/44645) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add `DEFINE_MODULES=TRUE` build setting ([#44672](https://github.com/expo/expo/pull/44672) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [ios] Fix loading assets in brownfield. ([#44724](https://github.com/expo/expo/pull/44724) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
@@ -21,7 +27,7 @@
 - [test] add maestro e2e tests for dev menu ([#43421](https://github.com/expo/expo/pull/43421) by [@pmleczek](https://github.com/pmleczek))
 - [android] set react native version for all published artfacts ([#43693](https://github.com/expo/expo/pull/43693) by [@pmleczek](https://github.com/pmleczek))
 - [test] add fixes to ios debug e2es ([#43703](https://github.com/expo/expo/pull/43703) by [@pmleczek](https://github.com/pmleczek))
-
+- Validate package installation before running CLI commands ([#44210](https://github.com/expo/expo/pull/44210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 55.0.11 — 2026-02-25
 

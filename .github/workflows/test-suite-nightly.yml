@@ -29,9 +29,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: 🍺 Install required tools
@@ -44,15 +42,24 @@ jobs:
         with:
           bundler-cache: true
           ruby-version: 3.2.2
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-tools: 'true'
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform ios
+        run: pnpm expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
       - name: 🌳 Display pod environment
         run: pod env
@@ -90,9 +97,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
@@ -113,13 +118,20 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🍏 Run iOS tests
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
@@ -155,9 +167,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
@@ -165,16 +175,26 @@ jobs:
           java-version: '17'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-tools: 'true'
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform android
+        run: pnpm expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
       - name: 🤖 Gradle prebuild for Android project (workaround to fix build error)
         run: ./gradlew preBuild
@@ -207,9 +227,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🌠 Download builds
         uses: actions/download-artifact@v4
         with:
@@ -219,13 +237,20 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🤖 Run Android tests
         uses: ./.github/actions/use-android-emulator
         with:

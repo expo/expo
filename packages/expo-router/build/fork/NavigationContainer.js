@@ -4,15 +4,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NavigationContainer = void 0;
-const native_1 = require("@react-navigation/native");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
-const use_latest_callback_1 = __importDefault(require("use-latest-callback"));
 const useBackButton_1 = require("./useBackButton");
 const useDocumentTitle_1 = require("./useDocumentTitle");
 const useLinking_1 = require("./useLinking");
 const useThenable_1 = require("./useThenable");
 const imperative_api_1 = require("../imperative-api");
+const native_1 = require("../react-navigation/native");
+const useLatestCallback_1 = __importDefault(require("../utils/useLatestCallback"));
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 /**
  * Container component which holds the navigation state designed for React Native apps.
@@ -47,7 +47,7 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
     }, setLastUnhandledLink);
     const linkingContext = react_1.default.useMemo(() => ({ options: linking }), [linking]);
     const unhandledLinkingContext = react_1.default.useMemo(() => ({ lastUnhandledLink, setLastUnhandledLink }), [lastUnhandledLink, setLastUnhandledLink]);
-    const onReadyForLinkingHandling = (0, use_latest_callback_1.default)(() => {
+    const onReadyForLinkingHandling = (0, useLatestCallback_1.default)(() => {
         // If the screen path matches lastUnhandledLink, we do not track it
         const path = refContainer.current?.getCurrentRoute()?.path;
         setLastUnhandledLink((previousLastUnhandledLink) => {
@@ -58,7 +58,7 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
         });
         onReady?.();
     });
-    const onStateChangeForLinkingHandling = (0, use_latest_callback_1.default)((state) => {
+    const onStateChangeForLinkingHandling = (0, useLatestCallback_1.default)((state) => {
         // If the screen path matches lastUnhandledLink, we do not track it
         const path = refContainer.current?.getCurrentRoute()?.path;
         setLastUnhandledLink((previousLastUnhandledLink) => {

@@ -1,7 +1,15 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+// When building as part of ExpoModulesCore or ExpoModulesJSI modules (either SPM or xcframework),
+// we use typedefs instead of importing React headers to avoid header search path issues.
+// The actual React types are still available at runtime through linking.
+#if __building_module(ExpoModulesCore)
+typedef void (^RCTPromiseResolveBlock)(id result);
+typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
+#else
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCallInvoker.h>
+#endif
 
 #import <Foundation/Foundation.h>
 #import <ExpoModulesJSI/EXJavaScriptValue.h>
@@ -92,6 +100,20 @@ NS_SWIFT_NAME(JavaScriptRuntime)
                                              block:(nonnull JSSyncFunctionBlock)block NS_REFINED_FOR_SWIFT;
 
 /**
+ Creates a synchronous host function with type encoding for optimized primitive type handling.
+ This variant bypasses JavaScriptValue boxing for primitive types (Double, Int, String, Bool).
+ \param name The function name
+ \param typeEncoding Objective-C type encoding string (e.g., "d@?dd" for (Double, Double) -> Double)
+ \param argsCount Number of arguments
+ \param body The Swift closure to execute (will be wrapped in a typed block matching the encoding)
+ \return A JavaScript function represented as a `JavaScriptObject`.
+ */
+- (nonnull EXJavaScriptObject *)createSyncFunction:(nonnull NSString *)name
+                                      typeEncoding:(nonnull NSString *)typeEncoding
+                                         argsCount:(NSInteger)argsCount
+                                              body:(nonnull id)body NS_REFINED_FOR_SWIFT;
+
+/**
  Creates an asynchronous host function that runs given block when it's called.
  The block receives a resolver that you should call when the asynchronous operation
  succeeds and a rejecter to call whenever it fails.
@@ -101,12 +123,34 @@ NS_SWIFT_NAME(JavaScriptRuntime)
                                           argsCount:(NSInteger)argsCount
                                               block:(nonnull JSAsyncFunctionBlock)block;
 
+/**
+ Creates an optimized asynchronous host function with type encoding for primitive types.
+ Arguments are extracted directly from JSI values on the JS thread, then the block is
+ invoked on a background queue via NSInvocation. The result resolves a JS Promise.
+ \param name The function name
+ \param typeEncoding Objective-C type encoding string (e.g., "d@?dd" for (Double, Double) -> Double)
+ \param argsCount Number of arguments
+ \param body The Swift closure to execute
+ \return A JavaScript function represented as a `JavaScriptObject`.
+ */
+- (nonnull EXJavaScriptObject *)createAsyncFunction:(nonnull NSString *)name
+                                        typeEncoding:(nonnull NSString *)typeEncoding
+                                           argsCount:(NSInteger)argsCount
+                                                body:(nonnull id)body NS_REFINED_FOR_SWIFT;
+
 #pragma mark - Classes
 
 /**
  Creates a new object, using the provided object as the prototype.
  */
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype;
+
+#pragma mark - Value conversion
+
+/**
+ Wraps a JavaScript object as a JavaScript value.
+ */
+- (nonnull EXJavaScriptValue *)valueFromObject:(nonnull EXJavaScriptObject *)object NS_SWIFT_NAME(value(from:));
 
 #pragma mark - Script evaluation
 

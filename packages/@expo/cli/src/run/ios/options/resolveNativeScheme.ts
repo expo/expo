@@ -41,8 +41,8 @@ export async function promptOrQueryNativeSchemeAsync(
 
   if (scheme === true) {
     if (schemes.length === 1) {
-      Log.log(`Auto selecting only available scheme: ${schemes[0].name}`);
-      return schemes[0];
+      Log.log(`Auto selecting only available scheme: ${schemes[0]!.name}`);
+      return schemes[0]!;
     }
     const resolvedSchemeName = await selectAsync(
       'Select a scheme',
@@ -84,7 +84,7 @@ export function getDefaultNativeScheme(
   if (resolvedSchemes.length > 1) {
     const scheme =
       resolvedSchemes.find(({ type }) => type === IOSConfig.Target.TargetType.APPLICATION) ??
-      resolvedSchemes[0];
+      resolvedSchemes[0]!;
     debug(`Using default scheme: ${scheme.name}`);
     return scheme;
   }

@@ -11,11 +11,13 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :tvos => '16.4'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
+
+  s.source_files = "#{s.name}/**/*.{h,m,swift}"
 
   s.pod_target_xcconfig = {
     'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
@@ -23,13 +25,6 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
-
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-    s.source_files = "#{s.name}/**/*.h"
-    s.vendored_frameworks = "#{s.name}.xcframework"
-  else
-    s.source_files = "#{s.name}/**/*.{h,m,swift}"
-  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/*.{h,m,swift}'

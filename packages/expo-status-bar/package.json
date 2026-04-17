@@ -5,19 +5,19 @@
   "main": "src/StatusBar",
   "types": "build/StatusBar.d.ts",
   "exports": {
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
     ".": {
       "types": "./build/StatusBar.d.ts",
       "default": "./src/StatusBar.ts"
-    }
+    },
+    "./plugin": "./plugin/build/index.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -37,9 +37,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
-  "dependencies": {
-    "react-native-is-edge-to-edge": "^1.2.1"
-  },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -47,10 +44,10 @@
     "@testing-library/react-native": "^13.3.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   },

@@ -66,7 +66,7 @@ export const mdComponents: Components = {
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE className="inline! py-0 break-words">{children}</CODE>
+      <CODE className="inline! py-0 wrap-break-word">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,
@@ -248,7 +248,7 @@ export const resolveTypeName = (
       return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
     } else if (elementType?.declaration) {
       if (type === 'array') {
-        const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};
+        const { parameters, type: paramType } = elementType.declaration.indexSignatures?.[0] ?? {};
         if (parameters && paramType) {
           return (
             <>

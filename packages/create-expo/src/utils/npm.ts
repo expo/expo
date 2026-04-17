@@ -2,28 +2,22 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { Stream } from 'stream';
-import { extract as tarExtract, TarOptionsWithAliases } from 'tar';
-import { promisify } from 'util';
+import { Readable } from 'stream';
 
 import { env } from './env';
-import { createEntryResolver } from '../createFileTransform';
+import { extractStream } from './tar';
+import { createEntryRenamer } from '../createFileTransform';
 import { ALIASES } from '../legacyTemplates';
 import { Log } from '../log';
 
 const debug = require('debug')('expo:init:npm') as typeof console.log;
 
-export type ExtractProps = {
-  name: string;
-  cwd: string;
+export interface ExtractProps {
+  expName: string;
+  filter?(path: string): boolean | undefined | null;
   strip?: number;
-  fileList?: string[];
   disableCache?: boolean;
-  filter?: TarOptionsWithAliases['filter'];
-};
-
-// @ts-ignore
-const pipeline = promisify(Stream.pipeline);
+}
 
 function getTemporaryCacheFilePath(subdir: string = 'template-cache') {
   // This is cleared when the device restarts
@@ -55,7 +49,7 @@ export function splitNpmNameAndTag(npmPackageName: string): [string, string | un
     return ['@' + components[0], components[1]];
   }
 
-  return [components[0], components[1]];
+  return [components[0] ?? '', components[1]];
 }
 
 /**
@@ -107,36 +101,30 @@ export function applyKnownNpmPackageNameRules(name: string): string | null {
   );
 }
 
-export async function extractLocalNpmTarballAsync(
-  tarFilePath: string,
+/**
+ * Extracts a tarball stream to a directory.
+ */
+export async function extractNpmTarballAsync(
+  stream: ReadableStream,
+  output: string,
   props: ExtractProps
-): Promise<void> {
-  const readStream = fs.createReadStream(tarFilePath);
-  await extractNpmTarballAsync(readStream, props);
+): Promise<string> {
+  return await extractStream(stream, output, {
+    filter: props.filter,
+    rename: createEntryRenamer(props.expName),
+    strip: props.strip ?? 1,
+  });
 }
 
-export async function extractNpmTarballAsync(
-  stream: NodeJS.ReadableStream | null,
+export async function extractLocalNpmTarballAsync(
+  tarFilePath: string,
+  output: string,
   props: ExtractProps
-): Promise<void> {
-  if (!stream) {
-    throw new Error('Missing stream');
-  }
-  const { cwd, strip, name, fileList = [], filter } = props;
-
-  await fs.promises.mkdir(cwd, { recursive: true });
-
-  await pipeline(
-    stream,
-    tarExtract(
-      {
-        cwd,
-        filter,
-        onentry: createEntryResolver(name),
-        strip: strip ?? 1,
-      },
-      fileList
-    )
+): Promise<string> {
+  return await extractNpmTarballAsync(
+    Readable.toWeb(fs.createReadStream(tarFilePath)) as ReadableStream,
+    output,
+    props
   );
 }
 
@@ -259,8 +247,9 @@ async function fileExistsAsync(path: string): Promise<boolean> {
 
 export async function downloadAndExtractNpmModuleAsync(
   npmName: string,
+  output: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   const cachePath = getTemporaryCacheFilePath();
 
   debug(`Looking for NPM tarball (id: ${npmName}, cache: ${cachePath})`);
@@ -285,9 +274,8 @@ export async function downloadAndExtractNpmModuleAsync(
   }
 
   try {
-    await extractLocalNpmTarballAsync(cacheFilename, {
-      cwd: props.cwd,
-      name: props.name,
+    return await extractLocalNpmTarballAsync(cacheFilename, output, {
+      expName: props.expName,
     });
   } catch (error: any) {
     Log.error('Error extracting template package: ' + npmName);

@@ -54,7 +54,10 @@ export async function getImageFromCacheAsync(
   cacheKey: string
 ): Promise<null | Buffer> {
   try {
-    return await fs.promises.readFile(resolve(cacheKeys[cacheKey], fileName));
+    const cachedKey = cacheKeys[cacheKey];
+    return await fs.promises.readFile(
+      cachedKey != null ? resolve(cachedKey, fileName) : resolve(fileName)
+    );
   } catch {
     return null;
   }
@@ -66,7 +69,11 @@ export async function cacheImageAsync(
   cacheKey: string
 ): Promise<void> {
   try {
-    await fs.promises.writeFile(resolve(cacheKeys[cacheKey], fileName), buffer);
+    const cachedKey = cacheKeys[cacheKey];
+    await fs.promises.writeFile(
+      cachedKey != null ? resolve(cachedKey, fileName) : resolve(fileName),
+      buffer
+    );
   } catch (error: any) {
     console.warn(`Error caching image: "${fileName}". ${error.message}`);
   }

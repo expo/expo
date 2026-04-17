@@ -93,9 +93,9 @@ private fun injectDebugServerHost(
 }
 
 @OptIn(UnstableReactNativeAPI::class)
-fun injectLocalBundleLoader(
+fun injectBundleLoader(
   reactHost: ReactHost,
-  bundlePath: String
+  jsBundleLoader: JSBundleLoader
 ): Boolean {
   return try {
     check(reactHost is ReactHostImpl)
@@ -107,8 +107,6 @@ fun injectLocalBundleLoader(
     mAllowPackagerServerAccessField.isAccessible = true
     mAllowPackagerServerAccessField[reactHost] = false
 
-    val newJsBundleLoader = JSBundleLoader.createFileLoader(bundlePath)
-
     // [1] Replace the ReactHostDelegate.jsBundlerLoader with our new loader
     val mReactHostDelegateField = reactHostClass.getDeclaredField("reactHostDelegate")
     mReactHostDelegateField.isAccessible = true
@@ -117,23 +115,30 @@ fun injectLocalBundleLoader(
       reactHostDelegate.javaClass.setPrivateDeclaredFieldValue(
         "_jsBundleLoader",
         reactHostDelegate,
-        newJsBundleLoader
+        jsBundleLoader
       )
     } else if (reactHostDelegate is DefaultReactHostDelegate) {
       DefaultReactHostDelegate::class.java.setPrivateDeclaredFieldValue(
         "jsBundleLoader",
         reactHostDelegate,
-        newJsBundleLoader
+        jsBundleLoader
       )
     } else {
-      throw IllegalStateException("[injectLocalBundleLoader] Unsupported reactHostDelegate: ${reactHostDelegate.javaClass}")
+      throw IllegalStateException("[injectBundleLoader] Unsupported reactHostDelegate: ${reactHostDelegate.javaClass}")
     }
 
     true
   } catch (e: Exception) {
-    Log.e("DevLauncher", "Unable to load local bundle file", e)
+    Log.e("DevLauncher", "Unable to inject bundle loader", e)
     false
   }
+}
+
+fun injectLocalBundleLoader(
+  reactHost: ReactHost,
+  bundlePath: String
+): Boolean {
+  return injectBundleLoader(reactHost, JSBundleLoader.createFileLoader(bundlePath))
 }
 
 fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager, controller: DevLauncherControllerInterface?) {

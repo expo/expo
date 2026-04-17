@@ -89,7 +89,7 @@ function extractParams(
   const match = route.namedRegex.exec(pathname);
   if (match?.groups) {
     for (const [key, value] of Object.entries(match.groups)) {
-      const namedKey = route.routeKeys[key];
+      const namedKey = route.routeKeys[key]!;
       params[namedKey] = value;
     }
   }

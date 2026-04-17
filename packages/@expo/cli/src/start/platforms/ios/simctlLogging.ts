@@ -296,5 +296,5 @@ async function getImageNameFromBundleIdentifierAsync(
 }
 
 function getImageNameFromContainerPath(binaryPath: string): string {
-  return path.basename(binaryPath).split('.')[0];
+  return path.basename(binaryPath).split('.')[0]!;
 }

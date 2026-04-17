@@ -1,1 +1,1 @@
-{"version":3,"file":"native.android.d.ts","sourceRoot":"","sources":["../../src/toolbar/native.android.tsx"],"names":[],"mappings":"AAMA,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,gBAAgB,CAAC;AAE7D,wBAAgB,iBAAiB,CAAC,KAAK,EAAE,sBAAsB,+BAsB9D"}
+{"version":3,"file":"native.android.d.ts","sourceRoot":"","sources":["../../src/toolbar/native.android.tsx"],"names":[],"mappings":"AAYA,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,gBAAgB,CAAC;AAE7D,wBAAgB,iBAAiB,CAAC,KAAK,EAAE,sBAAsB,+BA4B9D"}

@@ -7,6 +7,7 @@ const config = getDefaultConfig(projectRoot);
 
 const expoStubPath = path.resolve(__dirname, './bundle/expo-module-stub.ts');
 const reactStubPath = path.resolve(__dirname, './bundle/react-stub.ts');
+const reactNativeStubPath = path.resolve(__dirname, './bundle/react-native-stub.ts');
 const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts');
 
 // The `projectRoot` won't be included by default, since we alter it to be `__dirname`
@@ -47,7 +48,7 @@ const buildConfig = {
         case 'react/jsx-dev-runtime':
           return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
         case 'react-native':
-          return { type: 'empty' };
+          return { type: 'sourceFile', filePath: reactNativeStubPath };
         default:
           return context.resolveRequest(context, moduleName, platform);
       }
@@ -55,6 +56,7 @@ const buildConfig = {
   },
   transformer: {
     ...config.transformer,
+    enableBabelRCLookup: false,
     getTransformOptions: async () => ({
       transform: { experimentalImportSupport: false, inlineRequires: false },
     }),

@@ -1,1 +1,1 @@
-export { generateModulesProviderAsync, resolveModuleAsync, resolveExtraBuildDependenciesAsync, } from './apple';
+export { getConfiguration, generateModulesProviderAsync, resolveModuleAsync, resolveExtraBuildDependenciesAsync, } from './apple';

@@ -11,6 +11,9 @@ jest.mock(`../../../utils/env`, () => ({
   envIsWebcontainer: jest.fn(() => false),
 }));
 jest.mock('../../../utils/open');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
 jest.mock('../AsyncWsTunnel');

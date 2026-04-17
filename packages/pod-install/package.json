@@ -8,9 +8,9 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepublishOnly": "yarn run clean && yarn run build:prod",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod",
     "typecheck": "expo-module typecheck",
-    "watch": "yarn run build --watch"
+    "watch": "pnpm run build --watch"
   },
   "bin": "./bin/pod-install.js",
   "files": [
@@ -34,10 +34,10 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
-    "@expo/package-manager": "^1.10.3",
+    "@expo/package-manager": "workspace:*",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
-    "expo-module-scripts": "^55.0.2",
+    "expo-module-scripts": "workspace:*",
     "terminal-link": "^2.1.1",
     "update-check": "^1.5.4"
   }

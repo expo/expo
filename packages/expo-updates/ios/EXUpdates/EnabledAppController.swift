@@ -16,6 +16,13 @@ internal class EnabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscrip
       updatesController.unsubscribeFromUpdatesStateChanges(subscriptionId)
     }
   }
+
+  func getContext() -> Any? {
+    if let updatesController = AppController.sharedInstance as? EnabledAppController {
+      return updatesController.getNativeInterfaceContext()
+    }
+    return nil
+  }
 }
 
 /**
@@ -32,7 +39,7 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public let isActiveController = true
-  private var isStarted = false
+  public private(set) var isStarted = false
   private var startupStartTime: DispatchTime?
   private var startupEndTime: DispatchTime?
 
@@ -188,6 +195,10 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     if stateChangeListeners[subscriptionId] != nil {
       stateChangeListeners.removeValue(forKey: subscriptionId)
     }
+  }
+
+  internal func getNativeInterfaceContext() -> UpdatesNativeInterfaceStateContext {
+    return stateMachine.context.nativeInterfaceContext
   }
 
   public var runtimeVersion: String? {

@@ -4,6 +4,7 @@ import androidx.biometric.BiometricManager
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
 internal enum class BiometricsSecurityLevel(val value: String) : Enumerable {
   WEAK("weak"),
@@ -17,6 +18,7 @@ internal enum class BiometricsSecurityLevel(val value: String) : Enumerable {
   }
 }
 
+@OptimizedRecord
 internal class AuthOptions : Record {
   @Field
   val promptMessage: String = ""
