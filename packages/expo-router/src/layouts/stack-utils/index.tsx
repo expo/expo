@@ -11,6 +11,8 @@ export {
   StackScreen,
   appendScreenStackPropsToOptions,
   validateStackPresentation,
+  type ExtendedStackNavigationOptions,
+  type WebModalStyle,
   type StackScreenProps,
 } from './StackScreen';
 

@@ -16,8 +16,61 @@ import type { ScreenProps as BaseScreenProps } from '../../useScreens';
 import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
 
+/**
+ * Additional web-only modal style options for Stack.Screen.
+ * @platform web
+ */
+export interface WebModalStyle {
+  /**
+   * Override the width of the modal (px or percentage). Only applies on web platform.
+   * @platform web
+   */
+  width?: number | string;
+  /**
+   * Override the height of the modal (px or percentage). Applies on web desktop.
+   * @platform web
+   */
+  height?: number | string;
+  /**
+   * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
+   * @platform web
+   */
+  minHeight?: number | string;
+  /**
+   * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
+   * @platform web
+   */
+  minWidth?: number | string;
+  /**
+   * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
+   * @platform web
+   */
+  border?: string;
+  /**
+   * Override the overlay background color (any valid CSS color or rgba/hsla value).
+   * @platform web
+   */
+  overlayBackground?: string;
+  /**
+   * Override the modal shadow filter (any valid CSS filter value, e.g. 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none').
+   * @platform web
+   */
+  shadow?: string;
+}
+
+/**
+ * Extended stack navigation options that include web-specific modal style props.
+ */
+export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
+  /**
+   * Web-only options for customizing the modal appearance on web platform.
+   * @platform web
+   */
+  webModalStyle?: WebModalStyle;
+};
+
 type StackBaseScreenProps = BaseScreenProps<
-  NativeStackNavigationOptions,
+  ExtendedStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   NativeStackNavigationEventMap
 >;
@@ -152,14 +205,14 @@ const VALID_PRESENTATIONS = [
 ] as const;
 
 export function validateStackPresentation(
-  options: NativeStackNavigationOptions
-): NativeStackNavigationOptions;
+  options: ExtendedStackNavigationOptions
+): ExtendedStackNavigationOptions;
 export function validateStackPresentation<
-  F extends (...args: never[]) => NativeStackNavigationOptions,
+  F extends (...args: never[]) => ExtendedStackNavigationOptions,
 >(options: F): F;
 export function validateStackPresentation(
-  options: NativeStackNavigationOptions | ((...args: never[]) => NativeStackNavigationOptions)
-): ((...args: never[]) => NativeStackNavigationOptions) | NativeStackNavigationOptions {
+  options: ExtendedStackNavigationOptions | ((...args: never[]) => ExtendedStackNavigationOptions)
+): ((...args: never[]) => ExtendedStackNavigationOptions) | ExtendedStackNavigationOptions {
   if (typeof options === 'function') {
     return (...args: never[]) => {
       const resolved = options(...args);
@@ -181,9 +234,9 @@ export function validateStackPresentation(
 }
 
 export function appendScreenStackPropsToOptions(
-  options: NativeStackNavigationOptions,
+  options: ExtendedStackNavigationOptions,
   props: StackScreenProps
-): NativeStackNavigationOptions {
+): ExtendedStackNavigationOptions {
   let updatedOptions = { ...options, ...props.options };
 
   validateStackPresentation(updatedOptions);
