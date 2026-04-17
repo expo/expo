@@ -15,7 +15,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
  *
  * Additionally, you will only receive Apple Authentication Credentials the first time users sign
  * into your app, so you must store it for later use. It's best to store this information either
- * server-side, or using [SecureStore](./securestore), so that the data persists across app installs.
+ * server-side, or using [`expo-secure-store`](./securestore), so that the data persists across app installs.
  * You can use [`AppleAuthenticationCredential.user`](#appleauthenticationcredential) to identify
  * the user, since this remains the same for apps released by the same developer.
  *
