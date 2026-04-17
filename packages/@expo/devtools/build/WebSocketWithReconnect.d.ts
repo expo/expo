@@ -63,7 +63,7 @@ export declare class WebSocketWithReconnect implements WebSocket {
     addEventListener(event: 'close', listener: (event: WebSocketCloseEvent) => void): void;
     removeEventListener(event: string, listener: (event: any) => void): void;
     private connect;
-    send(data: string | ArrayBufferView | Blob | ArrayBufferLike): void;
+    send(data: string | ArrayBufferView<ArrayBuffer> | Blob | ArrayBuffer): void;
     private emitEvent;
     private handleOpen;
     private handleMessage;
@@ -73,7 +73,7 @@ export declare class WebSocketWithReconnect implements WebSocket {
     private clearConnectTimeoutIfNeeded;
     private reconnectIfNeeded;
     private wsClose;
-    get readyState(): number;
+    get readyState(): 0 | 1 | 2 | 3;
     readonly CONNECTING = 0;
     readonly OPEN = 1;
     readonly CLOSING = 2;
