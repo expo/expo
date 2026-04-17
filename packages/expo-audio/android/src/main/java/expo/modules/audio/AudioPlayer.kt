@@ -39,7 +39,13 @@ class AudioPlayer(
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
-    .setAudioAttributes(AudioAttributes.DEFAULT, false)
+    .setAudioAttributes(
+      AudioAttributes.Builder()
+        .setUsage(C.USAGE_MEDIA)
+        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+        .build(),
+      false
+    )
     .build(),
   appContext
 ) {

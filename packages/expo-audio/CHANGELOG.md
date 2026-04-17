@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Set `AudioAttributes` to `USAGE_MEDIA` on `AudioPlayer`'s ExoPlayer so Android routes the AudioTrack to `STREAM_MUSIC` after a peer component releases non-media audio focus (e.g. a recording library that held `STREAM_VOICE_CALL` focus). Previously `AudioAttributes.DEFAULT` declared `USAGE_UNKNOWN`, leaving the AudioTrack pinned to a stale voice-call sink — the player reported `playing=true` with `currentTime=0` before auto-unloading within ~200 ms. ([#44869](https://github.com/expo/expo/pull/44869) by [@louiscavalcante](https://github.com/louiscavalcante))
+
 ### 💡 Others
 
 ## 0.4.9 — 2025-08-22
