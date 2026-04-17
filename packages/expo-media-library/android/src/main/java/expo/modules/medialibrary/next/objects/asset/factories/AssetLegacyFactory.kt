@@ -79,5 +79,4 @@ class AssetLegacyFactory(
         complete.resume(Pair(path, uri))
       }
     }
-
 }
