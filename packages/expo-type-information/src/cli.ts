@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import commander, {Command} from 'commander';
+import commander, { Command } from 'commander';
 import fs from 'fs';
 import path from 'path';
 
@@ -21,6 +21,7 @@ export type TypeInformationCommandCommonArguments = {
   inputPath: string;
   outputPath?: string;
   typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
+  watcher?: boolean;
 };
 
 function addCommonOptions(command: commander.Command): commander.Command {
@@ -34,7 +35,36 @@ function addCommonOptions(command: commander.Command): commander.Command {
       '-t, --type-inference <typeInference>',
       'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE',
       'PREPROCESS_AND_INFERENCE'
-    );
+    )
+    .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
+}
+
+/**
+ * Debounce a function to only run once after a period of inactivity
+ * If called while waiting, it will reset the timer
+ */
+function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  timeout: number = 500
+): (...args: Parameters<T>) => void {
+  let timer: ReturnType<typeof setTimeout>;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(...args);
+    }, timeout);
+  };
+}
+
+async function runCommandOnWatch(parsedArgs: ParsedArguments, command: () => Promise<void>) {
+  const debounced_command = debounce(command, 1000);
+  debounced_command();
+  if (!parsedArgs.watcher) return;
+
+  for await (const _ of fs.promises.watch(parsedArgs.realInputPath)) {
+    if (!fs.existsSync(parsedArgs.realInputPath)) return;
+    debounced_command();
+  }
 }
 
 function sanitizeAndValidatePath(rawPath: string): string | null {
@@ -90,14 +120,15 @@ function parseInferenceOption(option?: string): TypeInferenceOption | null {
 }
 
 interface ParsedArguments {
-  typeInfo: FileTypeInformation;
   realInputPath: string;
   realOutputPath?: string;
+  typeInference: TypeInferenceOption;
+  watcher: boolean;
 }
 
-async function parseCommonArgumentsAndGetFileTypeInformation(
+function parseCommandArguments(
   options: TypeInformationCommandCommonArguments
-): Promise<ParsedArguments | null> {
+): ParsedArguments | null {
   const realInputPath = sanitizeAndValidatePath(options.inputPath);
   if (!realInputPath) {
     console.error(`Path ${options.inputPath} is not a valid path to an existing file.`);
@@ -122,6 +153,14 @@ async function parseCommonArgumentsAndGetFileTypeInformation(
     return null;
   }
 
+  const watcher = options.watcher ?? false;
+  return { realInputPath, realOutputPath, typeInference, watcher };
+}
+
+async function getFileTypeInformationFromArgs({
+  realInputPath,
+  typeInference,
+}: ParsedArguments): Promise<FileTypeInformation | null> {
   const typeInfo = await getFileTypeInformation({
     input: { type: 'file', inputFileAbsolutePath: realInputPath },
     typeInference,
@@ -129,12 +168,11 @@ async function parseCommonArgumentsAndGetFileTypeInformation(
 
   if (!typeInfo) {
     console.log(
-      chalk.red(`Provided file: ${options.inputPath} couldn't be parsed for type information!`)
+      chalk.red(`Provided file: ${realInputPath} couldn't be parsed for type information!`)
     );
     return null;
   }
-
-  return { typeInfo, realOutputPath, realInputPath };
+  return typeInfo;
 }
 
 function writeStringToFileOrPrintToConsole(text: string, realOutputPath: string | undefined) {
@@ -148,13 +186,19 @@ function writeStringToFileOrPrintToConsole(text: string, realOutputPath: string 
 function typeInformationCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('type-information')).action(
     async (options: TypeInformationCommandCommonArguments) => {
-      const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
-      if (!parsed) return;
+      const parsedArgs = await parseCommandArguments(options);
+      if (!parsedArgs) return;
 
-      const { typeInfo, realOutputPath } = parsed;
-      const typeInfoSerialized = serializeTypeInformation(typeInfo);
-      const typeInfoSerializedString = JSON.stringify(typeInfoSerialized, null, 2);
-      writeStringToFileOrPrintToConsole(typeInfoSerializedString, realOutputPath);
+      const command = async () => {
+        const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+        if (!typeInfo) return;
+
+        const typeInfoSerialized = serializeTypeInformation(typeInfo);
+        const typeInfoSerializedString = JSON.stringify(typeInfoSerialized, null, 2);
+        writeStringToFileOrPrintToConsole(typeInfoSerializedString, parsedArgs.realOutputPath);
+      };
+
+      runCommandOnWatch(parsedArgs, command);
     }
   );
 }
@@ -162,15 +206,21 @@ function typeInformationCommand(cli: commander.Command) {
 function generateModuleTypesCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-module-types')).action(
     async (options: TypeInformationCommandCommonArguments) => {
-      const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
-      if (!parsed) return;
+      const parsedArgs = await parseCommandArguments(options);
+      if (!parsedArgs) return;
+      const { realInputPath, realOutputPath } = parsedArgs;
 
-      const { typeInfo, realInputPath, realOutputPath } = parsed;
-      const moduleTypesFileContent = await getGeneratedModuleTypesFileContent(
-        realInputPath,
-        typeInfo
-      );
-      writeStringToFileOrPrintToConsole(moduleTypesFileContent, realOutputPath);
+      const command = async () => {
+        const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+        if (!typeInfo) return;
+
+        const moduleTypesFileContent = await getGeneratedModuleTypesFileContent(
+          realInputPath,
+          typeInfo
+        );
+        writeStringToFileOrPrintToConsole(moduleTypesFileContent, realOutputPath);
+      };
+      runCommandOnWatch(parsedArgs, command);
     }
   );
 }
@@ -178,16 +228,26 @@ function generateModuleTypesCommand(cli: commander.Command) {
 function generateViewTypesCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-view-types')).action(
     async (options: TypeInformationCommandCommonArguments) => {
-      const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
-      if (!parsed) return;
+      const parsedArgs = await parseCommandArguments(options);
+      if (!parsedArgs) return;
+      const { realInputPath, realOutputPath } = parsedArgs;
 
-      const { typeInfo, realInputPath, realOutputPath } = parsed;
-      const viewTypesFileContent = await getGeneratedViewTypesFileContent(realInputPath, typeInfo);
-      if (!viewTypesFileContent) {
-        console.error("Couldn't generate view types!");
-        return;
-      }
-      writeStringToFileOrPrintToConsole(viewTypesFileContent, realOutputPath);
+      const command = async () => {
+        const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+        if (!typeInfo) return;
+
+        const viewTypesFileContent = await getGeneratedViewTypesFileContent(
+          realInputPath,
+          typeInfo
+        );
+        if (!viewTypesFileContent) {
+          console.error("Couldn't generate view types!");
+          return;
+        }
+        writeStringToFileOrPrintToConsole(viewTypesFileContent, realOutputPath);
+      };
+
+      runCommandOnWatch(parsedArgs, command);
     }
   );
 }
@@ -195,11 +255,15 @@ function generateViewTypesCommand(cli: commander.Command) {
 function generateMocksForFileCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-mocks-for-file')).action(
     async (options: TypeInformationCommandCommonArguments) => {
-      const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
-      if (!parsed) return;
+      const parsedArgs = await parseCommandArguments(options);
+      if (!parsedArgs) return;
 
-      const { typeInfo } = parsed;
-      generateMocks([typeInfo], 'typescript');
+      const command = async () => {
+        const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+        if (!typeInfo) return;
+        generateMocks([typeInfo], 'typescript');
+      };
+      runCommandOnWatch(parsedArgs, command);
     }
   );
 }
@@ -207,30 +271,46 @@ function generateMocksForFileCommand(cli: commander.Command) {
 function generateJsxIntrinsics(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-jsx-intrinsics')).action(
     async (options: TypeInformationCommandCommonArguments) => {
-      const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
-      if (!parsed) return;
+      const parsedArgs = await parseCommandArguments(options);
+      if (!parsedArgs) return;
+      const { realInputPath, realOutputPath } = parsedArgs;
 
-      const { typeInfo, realInputPath, realOutputPath } = parsed;
-      const jsxIntrinsicViewFileContent = await getGeneratedJSXIntrinsicsViewDeclaration(
-        realInputPath,
-        typeInfo
-      );
-      if (!jsxIntrinsicViewFileContent) {
-        console.error("Couldn't generate view types!");
-        return;
-      }
-      writeStringToFileOrPrintToConsole(jsxIntrinsicViewFileContent, realOutputPath);
+      const command = async () => {
+        const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+        if (!typeInfo) return;
+
+        const jsxIntrinsicViewFileContent = await getGeneratedJSXIntrinsicsViewDeclaration(
+          realInputPath,
+          typeInfo
+        );
+        if (!jsxIntrinsicViewFileContent) {
+          console.error("Couldn't generate view types!");
+          return;
+        }
+        writeStringToFileOrPrintToConsole(jsxIntrinsicViewFileContent, realOutputPath);
+      };
+      runCommandOnWatch(parsedArgs, command);
     }
   );
 }
 
 function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
-  addCommonOptions(cli.command('generate-concise-ts').summary('Creates concise ts interface, great with inline-modules.').description('Creates concise ts interface for an expo module. Overrites `ModuleName.generated.ts` and creates `ModuleName.ts` if not present. Can be used with inline-modules.')).action(
-    async (options: TypeInformationCommandCommonArguments) => {
-      const parsed = await parseCommonArgumentsAndGetFileTypeInformation(options);
-      if (!parsed) return;
+  addCommonOptions(
+    cli
+      .command('generate-concise-ts')
+      .summary('Creates concise ts interface, great with inline-modules.')
+      .description(
+        'Creates concise ts interface for an expo module. Overrites `ModuleName.generated.ts` and creates `ModuleName.ts` if not present. Can be used with inline-modules.'
+      )
+  ).action(async (options: TypeInformationCommandCommonArguments) => {
+    const parsedArgs = await parseCommandArguments(options);
+    if (!parsedArgs) return;
+    const { realInputPath, realOutputPath } = parsedArgs;
 
-      const { typeInfo, realInputPath, realOutputPath } = parsed;
+    const command = async () => {
+      const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+      if (!typeInfo) return;
+
       const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
         await getGeneratedModuleTypescriptInterface(realInputPath, typeInfo);
 
@@ -257,20 +337,23 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
           ),
         ]);
       } catch (e) {}
-    }
-  );
+    };
+
+    runCommandOnWatch(parsedArgs, command);
+  });
 }
 
 async function main(args: string[]) {
   const cli = new Command();
-  cli.name('expo-type-information')
+  cli
+    .name('expo-type-information')
     .version(require('../package.json').version)
     .description('CLI commands for retrieving type information from native files.');
 
   generateConciseExpoModuleTSInterfaceCommand(cli);
   generateMocksForFileCommand(cli);
-  
-  const otherCommands = cli.command('other').description('internal or very specific commands')
+
+  const otherCommands = cli.command('other').description('internal or very specific commands');
   typeInformationCommand(otherCommands);
   generateModuleTypesCommand(otherCommands);
   generateViewTypesCommand(otherCommands);

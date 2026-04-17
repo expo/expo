@@ -41,6 +41,7 @@ const fs = __importStar(require("fs"));
 const os = __importStar(require("os"));
 const path = __importStar(require("path"));
 const sourcekittenTypeInformation_1 = require("./swift/sourcekittenTypeInformation");
+const promises_1 = require("fs/promises");
 var IdentifierKind;
 (function (IdentifierKind) {
     IdentifierKind[IdentifierKind["BASIC"] = 0] = "BASIC";
@@ -132,13 +133,13 @@ async function getFileTypeInformation({ input, typeInference, }) {
         ? fs.readFileSync(input.inputFileAbsolutePath, 'utf-8')
         : input.fileContent;
     const preprocessedContent = shouldPreprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent) : fileContent;
-    const tmp = os.tmpdir();
-    const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
-    fs.writeFileSync(filePath, preprocessedContent, 'utf8');
+    const tempDir = await (0, promises_1.mkdtemp)(path.join(os.tmpdir(), 'type-gen-'));
+    const filePath = path.join(tempDir, `TypeInformationTemporaryFile.swift`);
+    await fs.promises.writeFile(filePath, preprocessedContent, 'utf8');
     const fileTypeInfo = await (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(filePath, {
         typeInference: typeInferenceOn,
     });
-    fs.rmSync(filePath);
+    await fs.promises.rm(tempDir, { recursive: true, force: true });
     return fileTypeInfo;
 }
 //# sourceMappingURL=typeInformation.js.map
