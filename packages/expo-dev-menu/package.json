@@ -42,7 +42,7 @@
     "babel-preset-expo": "~55.0.17",
     "expo-module-scripts": "^55.0.2",
     "react": "19.2.0",
-    "react-native": "0.83.5"
+    "react-native": "0.83.6"
   },
   "peerDependencies": {
     "expo": "*"

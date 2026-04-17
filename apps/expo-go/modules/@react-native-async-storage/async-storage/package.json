@@ -52,12 +52,12 @@
     "merge-options": "^3.0.4"
   },
   "peerDependencies": {
-    "react-native": "^0.83.5"
+    "react-native": "^0.83.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
     "@babel/preset-env": "^7.25.0",
-    "@react-native/babel-preset": "^0.83.5",
+    "@react-native/babel-preset": "^0.83.6",
     "@types/lodash": "^4.14.184",
     "@types/mocha": "^10.0.1",
     "@types/react": "^18.0.0",
@@ -76,7 +76,7 @@
     "prettier": "2.8.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-native": "^0.83.5",
+    "react-native": "^0.83.6",
     "react-native-builder-bob": "^0.33.3",
     "react-native-macos": "^0.76.1",
     "react-native-web": "~0.18.10",
