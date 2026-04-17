@@ -149,10 +149,10 @@ export declare const isPasteButtonAvailable: boolean;
  *
  * @example
  * ```tsx
- * import * as Clipboard from 'expo-clipboard';
+ * import { useClipboard } from 'expo-clipboard';
  *
  * export default function App() {
- *   const [clipboardText, setClipboardText] = Clipboard.useClipboard();
+ *   const [clipboardText, setClipboardText] = useClipboard();
  *
  *   return (
  *     <View>
