@@ -7,7 +7,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 [`@expo/repack-app`](https://www.npmjs.com/package/@expo/repack-app) is a CLI tool that repackages an existing Android APK, iOS IPA, or iOS **.app** bundle with an updated JavaScript bundle, assets, and app metadata — such as the app name, version, and bundle identifier — without performing a full native rebuild. It also handles Expo-specific concerns like the expo-updates manifest and embedded assets. Because no native compilation is involved, a repack is typically much faster than a full native build.
 
-To learn more about how fingerprint and repack work together to accelerate CI, see [Accelerating Continuous Integration with Fingerprint & Repack in EAS Workflows](https://expo.dev/blog/accelerating-continuous-integration-with-fingerprint-repack-in-eas-workflows).
+To learn more about how fingerprint and repack work together to accelerate CI, see [Accelerating Continuous Integration with Fingerprint and Repack in EAS Workflows](https://expo.dev/blog/accelerating-continuous-integration-with-fingerprint-repack-in-eas-workflows).
 
 ## Prerequisites
 
@@ -92,7 +92,7 @@ See the [iOS-specific options](#ios-specific-options) for the full list of signi
 
 EAS Workflows provides a pre-packaged `repack` job type that handles signing and build management automatically. See [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#repack) for full syntax, parameters, and examples.
 
-## JS-bundle-only mode
+## `--js-bundle-only` mode
 
 By default, repack updates the JS bundle, assets, and native metadata (app name, version, bundle identifier, and the expo-updates manifest). Pass `--js-bundle-only` when you intentionally want to update only the JS bundle and leave all native config untouched.
 
