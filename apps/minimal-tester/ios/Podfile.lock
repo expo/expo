@@ -228,6 +228,8 @@ PODS:
     - ExpoModulesCore
   - ExpoCamera (55.0.9):
     - ExpoModulesCore
+  - ExpoCameraBarcodeScanning (55.0.9):
+    - ExpoCamera
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
   - ExpoDomWebView (55.0.3):
@@ -2787,6 +2789,7 @@ DEPENDENCIES:
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrownfield (from `../../../packages/expo-brownfield/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
+  - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios`)
   - "ExpoDomWebView (from `../../../packages/@expo/dom-webview/ios`)"
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
   - ExpoFont (from `../../../packages/expo-font/ios`)
@@ -2926,6 +2929,8 @@ EXTERNAL SOURCES:
   ExpoBrownfield:
     :path: "../../../packages/expo-brownfield/ios"
   ExpoCamera:
+    :path: "../../../packages/expo-camera/ios"
+  ExpoCameraBarcodeScanning:
     :path: "../../../packages/expo-camera/ios"
   ExpoDomWebView:
     :path: "../../../packages/@expo/dom-webview/ios"
@@ -3127,7 +3132,8 @@ SPEC CHECKSUMS:
   ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27
   ExpoBlur: d3a8f3dbdfadac5f4f7ebe201deb245678257b72
   ExpoBrownfield: b154b7dd081e0315d7e55f3d52984ea151854413
-  ExpoCamera: 3482cd1985d1ffb6251f8edcc6a0cc01fb367c50
+  ExpoCamera: e95e370de0bf60152a6ccfd23e5d9492b947b701
+  ExpoCameraBarcodeScanning: 0fd8335acfaef17a1690461ae6f0c2b817948668
   ExpoDomWebView: f21393aa4accbb6b8512fbec1ae741c454894bec
   ExpoFileSystem: ad5826003c4064d55ab867193a8a79d19e85bce3
   ExpoFont: 387d22422f85258b053db3bdac0883974c304a96
