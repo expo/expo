@@ -39,13 +39,13 @@ export const linking: LinkingOptions<object> = {
 };
 
 export default function RootNavigation() {
-  const { name } = useTheme();
+  const { name: themeName } = useTheme();
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer
         linking={linking}
         fallback={<Text>Loading…</Text>}
-        theme={name === 'dark' ? DarkTheme : DefaultTheme}>
+        theme={themeName === 'dark' ? DarkTheme : DefaultTheme}>
         <Switch.Navigator screenOptions={{ presentation: 'modal', headerShown: false }}>
           <Switch.Screen name="main" component={MainTabNavigator} />
           <Switch.Screen name="redirect" component={RedirectScreen} />

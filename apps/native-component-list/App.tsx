@@ -32,16 +32,16 @@ function useSplashScreen(loadingFunction: () => Promise<void>) {
 }
 
 function AppContent() {
-  const { name } = useTheme();
+  const { name: themeName } = useTheme();
   const isLoadingCompleted = useSplashScreen(async () => {
     await loadAssetsAsync();
   });
 
   React.useEffect(() => {
     if (Platform.OS === 'ios') {
-      StatusBar.setBarStyle(name === 'dark' ? 'light-content' : 'dark-content', true);
+      StatusBar.setBarStyle(themeName === 'dark' ? 'light-content' : 'dark-content', true);
     }
-  }, [name]);
+  }, [themeName]);
 
   return isLoadingCompleted ? <RootNavigation /> : null;
 }

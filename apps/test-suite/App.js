@@ -17,9 +17,9 @@ const linking = {
 };
 
 function AppContent() {
-  const { name } = useTheme();
+  const { name: themeName } = useTheme();
   return (
-    <NavigationContainer linking={linking} theme={name === 'dark' ? DarkTheme : DefaultTheme}>
+    <NavigationContainer linking={linking} theme={themeName === 'dark' ? DarkTheme : DefaultTheme}>
       <TestStackNavigator />
     </NavigationContainer>
   );
