@@ -76,8 +76,7 @@ const AssetScreen = () => {
     const info = await selectedAsset.getInfo();
     const subtypes = await selectedAsset.getMediaSubtypes();
     if (Platform.OS === 'ios') {
-      let orient, networkAsset, pairedVideo;
-      [orient, networkAsset, pairedVideo] = await Promise.all([
+      const [orient, networkAsset, pairedVideo] = await Promise.all([
         selectedAsset.getOrientation(),
         selectedAsset.getIsInCloud(),
         selectedAsset.getLivePhotoVideoUri(),
