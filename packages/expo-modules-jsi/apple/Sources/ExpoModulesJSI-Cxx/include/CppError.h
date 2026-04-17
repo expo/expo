@@ -34,6 +34,17 @@ public:
   jsi::JSError jsError;
 
   /**
+   Moves the wrapped `jsi::JSError` out of this `CppError` and deletes `this`.
+   The caller takes ownership of the returned error. After this call, the
+   `CppError` pointer is invalid and must not be used.
+   */
+  jsi::JSError release() {
+    jsi::JSError error = std::move(jsError);
+    delete this;
+    return error;
+  }
+
+  /**
    Returns the error message of the wrapped `jsi::JSError`.
    Renamed to `_message` in Swift so that an extension can expose a clean
    `message: String` accessor that wraps the underlying `std::string`.

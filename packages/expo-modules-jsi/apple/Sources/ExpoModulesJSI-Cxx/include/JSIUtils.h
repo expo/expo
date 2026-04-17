@@ -71,11 +71,8 @@ inline jsi::Function createHostFunction(jsi::Runtime &runtime, const jsi::PropNa
 
     // If the Swift closure stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
-    auto *error = CppError::getCurrent();
-    if (error) {
-      jsi::JSError jsError = std::move(error->jsError);
-      delete error;
-      throw jsError;
+    if (auto *error = CppError::getCurrent()) {
+      throw error->release();
     }
     return result;
   });
