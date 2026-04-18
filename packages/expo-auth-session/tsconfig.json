@@ -5,6 +5,6 @@
     "rootDir": "./src",
     "outDir": "./build"
   },
-  "include": ["./src"],
+  "include": ["./src", "../expo/src/ts-declarations"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]
 }
