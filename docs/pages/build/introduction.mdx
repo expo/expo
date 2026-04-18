@@ -159,3 +159,106 @@ Android builds run on Linux runners hosted in Google Cloud Platform, and iOS bui
   href="/build-reference/limitations"
   Icon={Cube01Icon}
 />
+import React, { useEffect, useMemo, useState } from "react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Input } from "@/components/ui/input"; import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+
+export default function App() { const [user, setUser] = useState(""); const [logged, setLogged] = useState(false);
+
+const [source, setSource] = useState(""); const [amount, setAmount] = useState(""); const [transactions, setTransactions] = useState([]); const [balance, setBalance] = useState(0);
+
+useEffect(() => { const saved = JSON.parse(localStorage.getItem("money_app")); if (saved) { setTransactions(saved.transactions || []); setBalance(saved.balance || 0); } }, []);
+
+useEffect(() => { localStorage.setItem( "money_app", JSON.stringify({ transactions, balance }) ); }, [transactions, balance]);
+
+function login() { if (!user) return; setLogged(true); }
+
+function addTransaction() { const val = parseFloat(amount); if (!source || isNaN(val)) return;
+
+const newTx = {
+  id: Date.now(),
+  source,
+  amount: val,
+  date: new Date().toLocaleDateString()
+};
+
+setTransactions([newTx, ...transactions]);
+setBalance(balance + val);
+
+setSource("");
+setAmount("");
+
+}
+
+const chartData = useMemo(() => { let sum = 0; return transactions .slice() .reverse() .map((t) => { sum += t.amount; return { date: t.date, balance: sum }; }); }, [transactions]);
+
+if (!logged) { return ( <div className="flex h-screen items-center justify-center bg-slate-950"> <Card className="w-80 shadow-xl"> <CardContent className="p-4 space-y-3"> <h2 className="text-lg font-semibold">Login Dashboard</h2> <Input placeholder="Username" value={user} onChange={(e) => setUser(e.target.value)} /> <Button onClick={login} className="w-full"> Enter </Button> </CardContent> </Card> </div> ); }
+
+return ( <div className="p-6 max-w-4xl mx-auto space-y-4 bg-slate-950 min-h-screen text-white"> <h1 className="text-2xl font-bold">💼 Money Pro Dashboard</h1>
+
+<div className="grid md:grid-cols-3 gap-4">
+    <Card className="bg-slate-900">
+      <CardContent className="p-4">
+        <h2>Total Balance</h2>
+        <p className="text-3xl font-bold text-green-400">
+          ${balance.toFixed(2)}
+        </p>
+      </CardContent>
+    </Card>
+
+    <Card className="bg-slate-900 md:col-span-2">
+      <CardContent className="p-4 space-y-2">
+        <h2>Add Transaction</h2>
+        <Input
+          placeholder="Source (Natcash, PayPal, TikTok)"
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+        />
+        <Input
+          placeholder="Amount"
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+        <Button onClick={addTransaction}>Add</Button>
+      </CardContent>
+    </Card>
+  </div>
+
+  <Card className="bg-slate-900">
+    <CardContent className="p-4">
+      <h2>Balance Growth</h2>
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData}>
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="balance"
+              stroke="#22c55e"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </CardContent>
+  </Card>
+
+  <Card className="bg-slate-900">
+    <CardContent className="p-4">
+      <h2>Transactions</h2>
+      <div className="space-y-2 mt-2">
+        {transactions.map((t) => (
+          <div
+            key={t.id}
+            className="flex justify-between border-b border-slate-700 py-1"
+          >
+            <span>{t.source}</span>
+            <span className="text-green-400">+${t.amount}</span>
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+</div>
+
+); }
