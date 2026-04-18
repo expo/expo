@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  Dynamic type for values conforming to `Encodable` protocol.
  Note that currently it can only encode from native to JavaScript values, thus cannot be used for arguments.
