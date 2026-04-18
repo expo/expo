@@ -23,7 +23,7 @@ public final class FileSystemModule: Module {
       let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
       return nil
     }
-    return attributes[.systemFreeSize] as? Int64
+    return attributes[.systemSize] as? Int64
   }
 
   var availableDiskSpace: Int64? {
