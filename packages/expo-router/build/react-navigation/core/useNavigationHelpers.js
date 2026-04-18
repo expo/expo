@@ -1,54 +1,18 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useNavigationHelpers = useNavigationHelpers;
-const React = __importStar(require("react"));
-const react_1 = require("react");
-const routers_1 = require("../routers");
-const NavigationContext_1 = require("./NavigationContext");
-const types_1 = require("./types");
+import * as React from 'react';
+import { use } from 'react';
+import { CommonActions, } from '../routers';
+import { NavigationContext } from './NavigationContext';
+import { PrivateValueStore } from './types';
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-types_1.PrivateValueStore;
+PrivateValueStore;
 /**
  * Navigation object with helper methods to be used by a navigator.
  * This object includes methods for common actions as well as methods the parent screen's navigation object.
  */
-function useNavigationHelpers({ id: navigatorId, onAction, onUnhandledAction, getState, emitter, router, stateRef, }) {
-    const parentNavigationHelpers = (0, react_1.use)(NavigationContext_1.NavigationContext);
+export function useNavigationHelpers({ id: navigatorId, onAction, onUnhandledAction, getState, emitter, router, stateRef, }) {
+    const parentNavigationHelpers = use(NavigationContext);
     return React.useMemo(() => {
         const dispatch = (op) => {
             const action = typeof op === 'function' ? op(getState()) : op;
@@ -59,7 +23,7 @@ function useNavigationHelpers({ id: navigatorId, onAction, onUnhandledAction, ge
         };
         const actions = {
             ...router.actionCreators,
-            ...routers_1.CommonActions,
+            ...CommonActions,
         };
         const helpers = Object.keys(actions).reduce((acc, name) => {
             // @ts-expect-error: name is a valid key, but TypeScript is dumb
@@ -74,7 +38,7 @@ function useNavigationHelpers({ id: navigatorId, onAction, onUnhandledAction, ge
             isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
             canGoBack: () => {
                 const state = getState();
-                return (router.getStateForAction(state, routers_1.CommonActions.goBack(), {
+                return (router.getStateForAction(state, CommonActions.goBack(), {
                     routeNames: state.routeNames,
                     routeParamList: {},
                     routeGetIdList: {},

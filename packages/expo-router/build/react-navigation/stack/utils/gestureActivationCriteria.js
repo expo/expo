@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.gestureActivationCriteria = void 0;
-const getInvertedMultiplier_1 = require("./getInvertedMultiplier");
+import { getInvertedMultiplier } from './getInvertedMultiplier';
 /**
  * The distance of touch start from the edge of the screen where the gesture will be recognized
  */
 const GESTURE_RESPONSE_DISTANCE_HORIZONTAL = 50;
 const GESTURE_RESPONSE_DISTANCE_VERTICAL = 135;
-const gestureActivationCriteria = ({ direction, gestureDirection, gestureResponseDistance, layout, }) => {
+export const gestureActivationCriteria = ({ direction, gestureDirection, gestureResponseDistance, layout, }) => {
     const enableTrackpadTwoFingerGesture = true;
     const distance = gestureResponseDistance !== undefined
         ? gestureResponseDistance
@@ -32,7 +29,7 @@ const gestureActivationCriteria = ({ direction, gestureDirection, gestureRespons
     }
     else {
         const hitSlop = -layout.width + distance;
-        const invertedMultiplier = (0, getInvertedMultiplier_1.getInvertedMultiplier)(gestureDirection, direction === 'rtl');
+        const invertedMultiplier = getInvertedMultiplier(gestureDirection, direction === 'rtl');
         if (invertedMultiplier === 1) {
             return {
                 minOffsetX: 5,
@@ -51,5 +48,4 @@ const gestureActivationCriteria = ({ direction, gestureDirection, gestureRespons
         }
     }
 };
-exports.gestureActivationCriteria = gestureActivationCriteria;
 //# sourceMappingURL=gestureActivationCriteria.js.map

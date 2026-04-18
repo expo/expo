@@ -1,15 +1,10 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackScreen = void 0;
-exports.validateStackPresentation = validateStackPresentation;
-exports.appendScreenStackPropsToOptions = appendScreenStackPropsToOptions;
-const react_1 = require("react");
-const StackHeaderComponent_1 = require("./StackHeaderComponent");
-const screen_1 = require("./screen");
-const toolbar_1 = require("./toolbar");
-const children_1 = require("../../utils/children");
-const Screen_1 = require("../../views/Screen");
+import { Children, isValidElement, useMemo } from 'react';
+import { StackHeaderComponent, appendStackHeaderPropsToOptions } from './StackHeaderComponent';
+import { StackScreenTitle, appendStackScreenTitlePropsToOptions, StackScreenBackButton, appendStackScreenBackButtonPropsToOptions, } from './screen';
+import { StackToolbar, appendStackToolbarPropsToOptions } from './toolbar';
+import { isChildOfType } from '../../utils/children';
+import { Screen } from '../../views/Screen';
 /**
  * Component used to define a screen in a native stack navigator.
  *
@@ -50,19 +45,19 @@ const Screen_1 = require("../../views/Screen");
  * }
  * ```
  */
-exports.StackScreen = Object.assign(function StackScreen({ children, options, ...rest }) {
+export const StackScreen = Object.assign(function StackScreen({ children, options, ...rest }) {
     // This component will only render when used inside a page.
     if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
         console.warn('Stack.Screen: Function-form options are not supported inside page components. Pass an options object directly.');
     }
-    const ownOptions = (0, react_1.useMemo)(() => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})), [options]);
+    const ownOptions = useMemo(() => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})), [options]);
     return (<>
-        <Screen_1.Screen {...rest} options={ownOptions}/>
+        <Screen {...rest} options={ownOptions}/>
         {children}
       </>);
 }, {
-    Title: screen_1.StackScreenTitle,
-    BackButton: screen_1.StackScreenBackButton,
+    Title: StackScreenTitle,
+    BackButton: StackScreenBackButton,
 });
 const VALID_PRESENTATIONS = [
     'card',
@@ -74,7 +69,7 @@ const VALID_PRESENTATIONS = [
     'formSheet',
     'pageSheet',
 ];
-function validateStackPresentation(options) {
+export function validateStackPresentation(options) {
     if (typeof options === 'function') {
         return (...args) => {
             const resolved = options(...args);
@@ -89,25 +84,25 @@ function validateStackPresentation(options) {
     }
     return options;
 }
-function appendScreenStackPropsToOptions(options, props) {
+export function appendScreenStackPropsToOptions(options, props) {
     let updatedOptions = { ...options, ...props.options };
     validateStackPresentation(updatedOptions);
     function appendChildOptions(child, opts) {
-        if ((0, children_1.isChildOfType)(child, StackHeaderComponent_1.StackHeaderComponent)) {
-            return (0, StackHeaderComponent_1.appendStackHeaderPropsToOptions)(opts, child.props);
+        if (isChildOfType(child, StackHeaderComponent)) {
+            return appendStackHeaderPropsToOptions(opts, child.props);
         }
-        if ((0, children_1.isChildOfType)(child, screen_1.StackScreenTitle)) {
-            return (0, screen_1.appendStackScreenTitlePropsToOptions)(opts, child.props);
+        if (isChildOfType(child, StackScreenTitle)) {
+            return appendStackScreenTitlePropsToOptions(opts, child.props);
         }
-        if ((0, children_1.isChildOfType)(child, screen_1.StackScreenBackButton)) {
-            return (0, screen_1.appendStackScreenBackButtonPropsToOptions)(opts, child.props);
+        if (isChildOfType(child, StackScreenBackButton)) {
+            return appendStackScreenBackButtonPropsToOptions(opts, child.props);
         }
-        if ((0, children_1.isChildOfType)(child, toolbar_1.StackToolbar)) {
+        if (isChildOfType(child, StackToolbar)) {
             const placement = child.props.placement ?? 'bottom';
             if (placement === 'bottom') {
                 throw new Error(`Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen.`);
             }
-            return (0, toolbar_1.appendStackToolbarPropsToOptions)(opts, child.props);
+            return appendStackToolbarPropsToOptions(opts, child.props);
         }
         const typeName = typeof child.type === 'function'
             ? child.type.name || 'Unknown'
@@ -115,8 +110,8 @@ function appendScreenStackPropsToOptions(options, props) {
         console.warn(`Unknown child element passed to Stack.Screen: ${typeName}`);
         return opts;
     }
-    react_1.Children.forEach(props.children, (child) => {
-        if ((0, react_1.isValidElement)(child)) {
+    Children.forEach(props.children, (child) => {
+        if (isValidElement(child)) {
             updatedOptions = appendChildOptions(child, updatedOptions);
         }
     });

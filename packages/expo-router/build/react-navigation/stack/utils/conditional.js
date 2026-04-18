@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.conditional = conditional;
-const react_native_1 = require("react-native");
-const { add, multiply } = react_native_1.Animated;
+import { Animated } from 'react-native';
+const { add, multiply } = Animated;
 /**
  * Use an Animated Node based on a condition. Similar to Reanimated's `cond`.
  *
@@ -10,7 +7,7 @@ const { add, multiply } = react_native_1.Animated;
  * @param main Animated Node to use if the condition is `true`
  * @param fallback Animated Node to use if the condition is `false`
  */
-function conditional(condition, main, fallback) {
+export function conditional(condition, main, fallback) {
     // To implement this behavior, we multiply the main node with the condition.
     // So if condition is 0, result will be 0, and if condition is 1, result will be main node.
     // Then we multiple reverse of the condition (0 if condition is 1) with the fallback.

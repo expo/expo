@@ -1,23 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.forHorizontalIOS = forHorizontalIOS;
-exports.forHorizontalIOSInverted = forHorizontalIOSInverted;
-exports.forVerticalIOS = forVerticalIOS;
-exports.forModalPresentationIOS = forModalPresentationIOS;
-exports.forFadeFromBottomAndroid = forFadeFromBottomAndroid;
-exports.forRevealFromBottomAndroid = forRevealFromBottomAndroid;
-exports.forScaleFromCenterAndroid = forScaleFromCenterAndroid;
-exports.forFadeFromRightAndroid = forFadeFromRightAndroid;
-exports.forBottomSheetAndroid = forBottomSheetAndroid;
-exports.forFadeFromCenter = forFadeFromCenter;
-exports.forNoAnimation = forNoAnimation;
-const react_native_1 = require("react-native");
-const conditional_1 = require("../utils/conditional");
-const { add, multiply } = react_native_1.Animated;
+import { Animated, Platform } from 'react-native';
+import { conditional } from '../utils/conditional';
+const { add, multiply } = Animated;
 /**
  * Standard iOS-style slide in from the right.
  */
-function forHorizontalIOS({ current, next, inverted, layouts: { screen }, }) {
+export function forHorizontalIOS({ current, next, inverted, layouts: { screen }, }) {
     const translateFocused = multiply(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [screen.width, 0],
@@ -56,16 +43,16 @@ function forHorizontalIOS({ current, next, inverted, layouts: { screen }, }) {
 /**
  * iOS-style slide in from the left.
  */
-function forHorizontalIOSInverted({ inverted, ...rest }) {
+export function forHorizontalIOSInverted({ inverted, ...rest }) {
     return forHorizontalIOS({
         ...rest,
-        inverted: react_native_1.Animated.multiply(inverted, -1),
+        inverted: Animated.multiply(inverted, -1),
     });
 }
 /**
  * Standard iOS-style slide in from the bottom (used for modals).
  */
-function forVerticalIOS({ current, inverted, layouts: { screen }, }) {
+export function forVerticalIOS({ current, inverted, layouts: { screen }, }) {
     const translateY = multiply(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [screen.height, 0],
@@ -80,8 +67,8 @@ function forVerticalIOS({ current, inverted, layouts: { screen }, }) {
 /**
  * Standard iOS-style modal animation in iOS 13.
  */
-function forModalPresentationIOS({ index, current, next, inverted, layouts: { screen }, insets, }) {
-    const hasNotchIos = react_native_1.Platform.OS === 'ios' && !react_native_1.Platform.isPad && !react_native_1.Platform.isTV && insets.top > 20;
+export function forModalPresentationIOS({ index, current, next, inverted, layouts: { screen }, insets, }) {
+    const hasNotchIos = Platform.OS === 'ios' && !Platform.isPad && !Platform.isTV && insets.top > 20;
     const isLandscape = screen.width > screen.height;
     const topOffset = isLandscape ? 0 : 10;
     const statusBarHeight = insets.top;
@@ -144,13 +131,13 @@ function forModalPresentationIOS({ index, current, next, inverted, layouts: { sc
 /**
  * Standard Android-style fade in from the bottom for Android Oreo.
  */
-function forFadeFromBottomAndroid({ current, inverted, layouts: { screen }, closing, }) {
+export function forFadeFromBottomAndroid({ current, inverted, layouts: { screen }, closing, }) {
     const translateY = multiply(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [screen.height * 0.08, 0],
         extrapolate: 'clamp',
     }), inverted);
-    const opacity = (0, conditional_1.conditional)(closing, current.progress, current.progress.interpolate({
+    const opacity = conditional(closing, current.progress, current.progress.interpolate({
         inputRange: [0, 0.5, 0.9, 1],
         outputRange: [0, 0.25, 0.7, 1],
         extrapolate: 'clamp',
@@ -165,7 +152,7 @@ function forFadeFromBottomAndroid({ current, inverted, layouts: { screen }, clos
 /**
  * Standard Android-style reveal from the bottom for Android Pie.
  */
-function forRevealFromBottomAndroid({ current, next, inverted, layouts: { screen }, }) {
+export function forRevealFromBottomAndroid({ current, next, inverted, layouts: { screen }, }) {
     const containerTranslateY = multiply(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [screen.height, 0],
@@ -202,7 +189,7 @@ function forRevealFromBottomAndroid({ current, next, inverted, layouts: { screen
 /**
  * Standard Android-style zoom for Android 10.
  */
-function forScaleFromCenterAndroid({ current, next, closing, }) {
+export function forScaleFromCenterAndroid({ current, next, closing, }) {
     const progress = add(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
@@ -218,7 +205,7 @@ function forScaleFromCenterAndroid({ current, next, closing, }) {
         inputRange: [0, 0.75, 0.875, 1, 1.0825, 1.2075, 2],
         outputRange: [0, 0, 1, 1, 1, 1, 0],
     });
-    const scale = (0, conditional_1.conditional)(closing, current.progress.interpolate({
+    const scale = conditional(closing, current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [0.925, 1],
         extrapolate: 'clamp',
@@ -236,7 +223,7 @@ function forScaleFromCenterAndroid({ current, next, closing, }) {
 /**
  * Standard Android-style fade from right for Android 14.
  */
-function forFadeFromRightAndroid({ current, next, inverted, closing, }) {
+export function forFadeFromRightAndroid({ current, next, inverted, closing, }) {
     const translateFocused = multiply(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [96, 0],
@@ -249,7 +236,7 @@ function forFadeFromRightAndroid({ current, next, inverted, closing, }) {
             extrapolate: 'clamp',
         }), inverted)
         : 0;
-    const opacity = (0, conditional_1.conditional)(closing, current.progress.interpolate({
+    const opacity = conditional(closing, current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
         extrapolate: 'clamp',
@@ -269,13 +256,13 @@ function forFadeFromRightAndroid({ current, next, inverted, closing, }) {
 /**
  * Standard bottom sheet slide in from the bottom for Android.
  */
-function forBottomSheetAndroid({ current, inverted, layouts: { screen }, closing, }) {
+export function forBottomSheetAndroid({ current, inverted, layouts: { screen }, closing, }) {
     const translateY = multiply(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [screen.height * 0.8, 0],
         extrapolate: 'clamp',
     }), inverted);
-    const opacity = (0, conditional_1.conditional)(closing, current.progress, current.progress.interpolate({
+    const opacity = conditional(closing, current.progress, current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
         extrapolate: 'clamp',
@@ -296,7 +283,7 @@ function forBottomSheetAndroid({ current, inverted, layouts: { screen }, closing
 /**
  * Simple fade animation for dialogs
  */
-function forFadeFromCenter({ current: { progress }, }) {
+export function forFadeFromCenter({ current: { progress }, }) {
     return {
         cardStyle: {
             opacity: progress.interpolate({
@@ -313,7 +300,7 @@ function forFadeFromCenter({ current: { progress }, }) {
         },
     };
 }
-function forNoAnimation() {
+export function forNoAnimation() {
     return {};
 }
 //# sourceMappingURL=CardStyleInterpolators.js.map

@@ -1,15 +1,12 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeToolbarMenuAction = exports.NativeToolbarMenu = void 0;
-const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
-const modifiers_1 = require("@expo/ui/jetpack-compose/modifiers");
-const react_1 = require("react");
-const primitives_1 = require("../../../../primitives");
-const AnimatedItemContainer_1 = require("../../../../toolbar/AnimatedItemContainer");
-const children_1 = require("../../../../utils/children");
-const context_1 = require("../context");
-const defaults_1 = require("../defaults");
+import { DropdownMenu, DropdownMenuItem, HorizontalDivider, Icon, IconButton, Text as ComposeText, } from '@expo/ui/jetpack-compose';
+import { background } from '@expo/ui/jetpack-compose/modifiers';
+import { createContext, use, useCallback, useState } from 'react';
+import { Label } from '../../../../primitives';
+import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
+import { getFirstChildOfType } from '../../../../utils/children';
+import { useToolbarColors } from '../context';
+import { DEFAULT_DESTRUCTIVE_COLOR, DEFAULT_TOOLBAR_BACKGROUND_COLOR, DEFAULT_TOOLBAR_TINT_COLOR, } from '../defaults';
 const arrowRightIcon = require('../../../../../assets/arrow_right.xml');
 const checkmarkIcon = require('../../../../../assets/checkmark.xml');
 /**
@@ -17,61 +14,61 @@ const checkmarkIcon = require('../../../../../assets/checkmark.xml');
  * - `null` means root level (no parent menu)
  * - A function means nested level (call to close entire menu chain)
  */
-const ToolbarMenuCloseContext = (0, react_1.createContext)(null);
+const ToolbarMenuCloseContext = createContext(null);
 /**
  * Native toolbar menu component for Android bottom toolbar.
  * Renders as a DropdownMenu with IconButton trigger (root) or DropdownMenuItem trigger (nested).
  */
-const NativeToolbarMenu = (props) => {
-    const [expanded, setExpanded] = (0, react_1.useState)(false);
-    const parentClose = (0, react_1.use)(ToolbarMenuCloseContext);
+export const NativeToolbarMenu = (props) => {
+    const [expanded, setExpanded] = useState(false);
+    const parentClose = use(ToolbarMenuCloseContext);
     const isNested = parentClose !== null;
-    const toolbarColors = (0, context_1.useToolbarColors)();
+    const toolbarColors = useToolbarColors();
     const tintColor = props.imageRenderingMode === 'original'
         ? undefined
-        : (props.tintColor ?? toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)());
+        : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
     const backgroundColor = (toolbarColors.backgroundColor ??
-        (0, defaults_1.DEFAULT_TOOLBAR_BACKGROUND_COLOR)());
-    const closeMenu = (0, react_1.useCallback)(() => {
+        DEFAULT_TOOLBAR_BACKGROUND_COLOR());
+    const closeMenu = useCallback(() => {
         setExpanded(false);
         parentClose?.();
     }, [parentClose]);
     // Inline nested: render children directly with a divider separator
     if (isNested && props.inline) {
         return (<>
-        <jetpack_compose_1.HorizontalDivider />
+        <HorizontalDivider />
         {props.children}
       </>);
     }
     // Non-inline nested: DropdownMenu with DropdownMenuItem trigger
     if (isNested) {
-        const trailingIcon = (<jetpack_compose_1.DropdownMenuItem.TrailingIcon>
-        <jetpack_compose_1.Icon source={arrowRightIcon} tint={tintColor} size={24}/>
-      </jetpack_compose_1.DropdownMenuItem.TrailingIcon>);
-        const leadingIcon = props.source ? (<jetpack_compose_1.DropdownMenuItem.LeadingIcon>
-        <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
-      </jetpack_compose_1.DropdownMenuItem.LeadingIcon>) : null;
-        return (<jetpack_compose_1.DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
-        <jetpack_compose_1.DropdownMenu.Trigger>
-          <jetpack_compose_1.DropdownMenuItem onClick={() => {
+        const trailingIcon = (<DropdownMenuItem.TrailingIcon>
+        <Icon source={arrowRightIcon} tint={tintColor} size={24}/>
+      </DropdownMenuItem.TrailingIcon>);
+        const leadingIcon = props.source ? (<DropdownMenuItem.LeadingIcon>
+        <Icon source={props.source} tint={tintColor} size={24}/>
+      </DropdownMenuItem.LeadingIcon>) : null;
+        return (<DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
+        <DropdownMenu.Trigger>
+          <DropdownMenuItem onClick={() => {
                 if (!props.disabled)
                     setExpanded(true);
-            }} modifiers={[(0, modifiers_1.background)(backgroundColor)]} enabled={!props.disabled}>
+            }} modifiers={[background(backgroundColor)]} enabled={!props.disabled}>
             {leadingIcon}
-            <jetpack_compose_1.DropdownMenuItem.Text>
-              <jetpack_compose_1.Text color={typeof props.tintColor === 'string'
+            <DropdownMenuItem.Text>
+              <ComposeText color={typeof props.tintColor === 'string'
                 ? props.tintColor
-                : (toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)())}>
+                : (toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR())}>
                 {props.label}
-              </jetpack_compose_1.Text>
-            </jetpack_compose_1.DropdownMenuItem.Text>
+              </ComposeText>
+            </DropdownMenuItem.Text>
             {trailingIcon}
-          </jetpack_compose_1.DropdownMenuItem>
-        </jetpack_compose_1.DropdownMenu.Trigger>
-        <jetpack_compose_1.DropdownMenu.Items>
+          </DropdownMenuItem>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
           <ToolbarMenuCloseContext value={closeMenu}>{props.children}</ToolbarMenuCloseContext>
-        </jetpack_compose_1.DropdownMenu.Items>
-      </jetpack_compose_1.DropdownMenu>);
+        </DropdownMenu.Items>
+      </DropdownMenu>);
     }
     // Root: AnimatedItemContainer + IconButton trigger + DropdownMenu
     if (!props.source) {
@@ -80,33 +77,32 @@ const NativeToolbarMenu = (props) => {
         }
         return null;
     }
-    return (<AnimatedItemContainer_1.AnimatedItemContainer visible={!props.hidden}>
-      <jetpack_compose_1.DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
-        <jetpack_compose_1.DropdownMenu.Trigger>
-          <jetpack_compose_1.IconButton onClick={() => setExpanded(true)} enabled={!props.disabled} modifiers={[(0, modifiers_1.background)(backgroundColor)]}>
-            <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
-          </jetpack_compose_1.IconButton>
-        </jetpack_compose_1.DropdownMenu.Trigger>
-        <jetpack_compose_1.DropdownMenu.Items>
+    return (<AnimatedItemContainer visible={!props.hidden}>
+      <DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
+        <DropdownMenu.Trigger>
+          <IconButton onClick={() => setExpanded(true)} enabled={!props.disabled} modifiers={[background(backgroundColor)]}>
+            <Icon source={props.source} tint={tintColor} size={24}/>
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
           <ToolbarMenuCloseContext value={closeMenu}>{props.children}</ToolbarMenuCloseContext>
-        </jetpack_compose_1.DropdownMenu.Items>
-      </jetpack_compose_1.DropdownMenu>
-    </AnimatedItemContainer_1.AnimatedItemContainer>);
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </AnimatedItemContainer>);
 };
-exports.NativeToolbarMenu = NativeToolbarMenu;
 /**
  * Native toolbar menu action component for Android.
  * Renders as a DropdownMenuItem.
  */
-const NativeToolbarMenuAction = (props) => {
-    const closeMenu = (0, react_1.use)(ToolbarMenuCloseContext);
-    const toolbarColors = (0, context_1.useToolbarColors)();
+export const NativeToolbarMenuAction = (props) => {
+    const closeMenu = use(ToolbarMenuCloseContext);
+    const toolbarColors = useToolbarColors();
     const tintColor = props.destructive
-        ? (0, defaults_1.DEFAULT_DESTRUCTIVE_COLOR)()
-        : (toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)());
+        ? DEFAULT_DESTRUCTIVE_COLOR()
+        : (toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
     const backgroundColor = (toolbarColors.backgroundColor ??
-        (0, defaults_1.DEFAULT_TOOLBAR_BACKGROUND_COLOR)());
-    const handleClick = (0, react_1.useCallback)(() => {
+        DEFAULT_TOOLBAR_BACKGROUND_COLOR());
+    const handleClick = useCallback(() => {
         props.onPress?.();
         if (!props.unstable_keepPresented) {
             closeMenu?.();
@@ -115,20 +111,19 @@ const NativeToolbarMenuAction = (props) => {
     const areChildrenString = typeof props.children === 'string';
     const label = areChildrenString
         ? props.children
-        : ((0, children_1.getFirstChildOfType)(props.children, primitives_1.Label)?.props.children ?? '');
+        : (getFirstChildOfType(props.children, Label)?.props.children ?? '');
     if (props.hidden)
         return null;
-    return (<jetpack_compose_1.DropdownMenuItem onClick={handleClick} modifiers={[(0, modifiers_1.background)(backgroundColor)]} enabled={!props.disabled}>
-      <jetpack_compose_1.DropdownMenuItem.Text>
-        <jetpack_compose_1.Text color={tintColor}>{label}</jetpack_compose_1.Text>
-      </jetpack_compose_1.DropdownMenuItem.Text>
-      {props.source && (<jetpack_compose_1.DropdownMenuItem.LeadingIcon>
-          <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
-        </jetpack_compose_1.DropdownMenuItem.LeadingIcon>)}
-      {props.isOn && (<jetpack_compose_1.DropdownMenuItem.TrailingIcon>
-          <jetpack_compose_1.Icon source={checkmarkIcon} tint={tintColor} size={24}/>
-        </jetpack_compose_1.DropdownMenuItem.TrailingIcon>)}
-    </jetpack_compose_1.DropdownMenuItem>);
+    return (<DropdownMenuItem onClick={handleClick} modifiers={[background(backgroundColor)]} enabled={!props.disabled}>
+      <DropdownMenuItem.Text>
+        <ComposeText color={tintColor}>{label}</ComposeText>
+      </DropdownMenuItem.Text>
+      {props.source && (<DropdownMenuItem.LeadingIcon>
+          <Icon source={props.source} tint={tintColor} size={24}/>
+        </DropdownMenuItem.LeadingIcon>)}
+      {props.isOn && (<DropdownMenuItem.TrailingIcon>
+          <Icon source={checkmarkIcon} tint={tintColor} size={24}/>
+        </DropdownMenuItem.TrailingIcon>)}
+    </DropdownMenuItem>);
 };
-exports.NativeToolbarMenuAction = NativeToolbarMenuAction;
 //# sourceMappingURL=native.android.js.map

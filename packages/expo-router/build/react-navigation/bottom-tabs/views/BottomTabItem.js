@@ -1,45 +1,39 @@
-"use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BottomTabItem = BottomTabItem;
-const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
-const elements_1 = require("../../elements");
-const TabBarIcon_1 = require("./TabBarIcon");
-const color_1 = require("../../../utils/color");
-const native_1 = require("../../native");
-const renderButtonDefault = (props) => <elements_1.PlatformPressable {...props}/>;
-const SUPPORTS_LARGE_CONTENT_VIEWER = react_native_1.Platform.OS === 'ios' && parseInt(react_native_1.Platform.Version, 10) >= 13;
-function BottomTabItem({ route, href, focused, descriptor, label, icon, badge, badgeStyle, button = renderButtonDefault, accessibilityLabel, testID, onPress, onLongPress, horizontal, compact, sidebar, variant, activeTintColor: customActiveTintColor, inactiveTintColor: customInactiveTintColor, activeBackgroundColor: customActiveBackgroundColor, inactiveBackgroundColor = 'transparent', showLabel = true, 
+import React from 'react';
+import { Platform, StyleSheet, View, } from 'react-native';
+import { getLabel, Label, PlatformPressable } from '../../elements';
+import { TabBarIcon } from './TabBarIcon';
+import { Color } from '../../../utils/color';
+import { useTheme } from '../../native';
+const renderButtonDefault = (props) => <PlatformPressable {...props}/>;
+const SUPPORTS_LARGE_CONTENT_VIEWER = Platform.OS === 'ios' && parseInt(Platform.Version, 10) >= 13;
+export function BottomTabItem({ route, href, focused, descriptor, label, icon, badge, badgeStyle, button = renderButtonDefault, accessibilityLabel, testID, onPress, onLongPress, horizontal, compact, sidebar, variant, activeTintColor: customActiveTintColor, inactiveTintColor: customInactiveTintColor, activeBackgroundColor: customActiveBackgroundColor, inactiveBackgroundColor = 'transparent', showLabel = true, 
 // On iOS 13+, we use `largeContentTitle` for accessibility
 // So we don't need the font to scale up
 // https://developer.apple.com/documentation/uikit/uiview/3183939-largecontenttitle
 allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle, iconStyle, style, }) {
-    const { colors, fonts } = (0, native_1.useTheme)();
+    const { colors, fonts } = useTheme();
     const activeTintColor = customActiveTintColor ??
         (variant === 'uikit' && sidebar && horizontal
-            ? (0, color_1.Color)(colors.primary)?.isDark()
+            ? Color(colors.primary)?.isDark()
                 ? 'white'
-                : (0, color_1.Color)(colors.primary)?.darken(0.71).string()
+                : Color(colors.primary)?.darken(0.71).string()
             : undefined) ??
         colors.primary;
     const inactiveTintColor = customInactiveTintColor ??
         (variant === 'material'
-            ? (0, color_1.Color)(colors.text)?.alpha(0.68).string()
-            : (0, color_1.Color)(colors.text)?.alpha(0.5).string()) ??
+            ? Color(colors.text)?.alpha(0.68).string()
+            : Color(colors.text)?.alpha(0.5).string()) ??
         colors.text;
     const activeBackgroundColor = customActiveBackgroundColor ??
         (variant === 'material'
-            ? (0, color_1.Color)(activeTintColor)?.alpha(0.12).string()
+            ? Color(activeTintColor)?.alpha(0.12).string()
             : sidebar && horizontal
                 ? colors.primary
                 : 'transparent') ??
         'transparent';
     const { options } = descriptor;
-    const labelString = (0, elements_1.getLabel)({
+    const labelString = getLabel({
         label: typeof options.tabBarLabel === 'string' ? options.tabBarLabel : undefined,
         title: options.title,
     }, route.name);
@@ -62,7 +56,7 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
                 children: labelString,
             });
         }
-        return (<elements_1.Label style={[
+        return (<Label style={[
                 horizontal
                     ? [
                         styles.labelBeside,
@@ -80,7 +74,7 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
                 labelStyle,
             ]} allowFontScaling={allowFontScaling} tintColor={color}>
         {label}
-      </elements_1.Label>);
+      </Label>);
     };
     const renderIcon = ({ focused }) => {
         if (icon === undefined) {
@@ -88,13 +82,13 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
         }
         const activeOpacity = focused ? 1 : 0;
         const inactiveOpacity = focused ? 0 : 1;
-        return (<TabBarIcon_1.TabBarIcon route={route} variant={variant} size={compact ? 'compact' : 'regular'} badge={badge} badgeStyle={badgeStyle} activeOpacity={activeOpacity} allowFontScaling={allowFontScaling} inactiveOpacity={inactiveOpacity} activeTintColor={activeTintColor} inactiveTintColor={iconInactiveTintColor} renderIcon={icon} style={iconStyle}/>);
+        return (<TabBarIcon route={route} variant={variant} size={compact ? 'compact' : 'regular'} badge={badge} badgeStyle={badgeStyle} activeOpacity={activeOpacity} allowFontScaling={allowFontScaling} inactiveOpacity={inactiveOpacity} activeTintColor={activeTintColor} inactiveTintColor={iconInactiveTintColor} renderIcon={icon} style={iconStyle}/>);
     };
     const scene = { route, focused };
     const backgroundColor = focused ? activeBackgroundColor : inactiveBackgroundColor;
-    const { flex } = react_native_1.StyleSheet.flatten(style || {});
+    const { flex } = StyleSheet.flatten(style || {});
     const borderRadius = variant === 'material' ? (horizontal ? 56 : 16) : sidebar && horizontal ? 10 : 0;
-    return (<react_native_1.View style={[
+    return (<View style={[
             // Clip ripple effect on Android
             {
                 borderRadius,
@@ -111,7 +105,7 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
             accessibilityLargeContentTitle: labelString,
             accessibilityShowsLargeContentViewer: true,
             // FIXME: role: 'tab' doesn't seem to work as expected on iOS
-            role: react_native_1.Platform.select({ ios: 'button', default: 'tab' }),
+            role: Platform.select({ ios: 'button', default: 'tab' }),
             'aria-selected': focused,
             android_ripple: { borderless: true },
             hoverEffect: variant === 'material' || (sidebar && horizontal) ? { color: colors.text } : undefined,
@@ -138,9 +132,9 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
             {renderLabel(scene)}
           </>),
         })}
-    </react_native_1.View>);
+    </View>);
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     tab: {
         alignItems: 'center',
         // Roundness for iPad hover effect

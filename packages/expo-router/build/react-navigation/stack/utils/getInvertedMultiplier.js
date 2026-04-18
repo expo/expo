@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInvertedMultiplier = getInvertedMultiplier;
-function getInvertedMultiplier(gestureDirection, isRTL) {
+export function getInvertedMultiplier(gestureDirection, isRTL) {
     switch (gestureDirection) {
         case 'vertical':
             return 1;

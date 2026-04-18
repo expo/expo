@@ -1,14 +1,11 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLocale = useLocale;
-const react_1 = require("react");
-const LocaleDirContext_1 = require("./LocaleDirContext");
+import { use } from 'react';
+import { LocaleDirContext } from './LocaleDirContext';
 /**
  * Hook to access the text direction specified in the `NavigationContainer`.
  */
-function useLocale() {
-    const direction = (0, react_1.use)(LocaleDirContext_1.LocaleDirContext);
+export function useLocale() {
+    const direction = use(LocaleDirContext);
     if (direction === undefined) {
         throw new Error("Couldn't determine the text direction. Is your component inside NavigationContainer?");
     }

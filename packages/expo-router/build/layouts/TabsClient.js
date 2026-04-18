@@ -1,18 +1,13 @@
-"use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
-const withLayoutContext_1 = require("./withLayoutContext");
-const Link_1 = require("../link/Link");
-const bottom_tabs_1 = require("../react-navigation/bottom-tabs");
-const Protected_1 = require("../views/Protected");
+import React from 'react';
+import { Pressable, Platform } from 'react-native';
+import { withLayoutContext } from './withLayoutContext';
+import { Link } from '../link/Link';
+import { createBottomTabNavigator, } from '../react-navigation/bottom-tabs';
+import { Protected } from '../views/Protected';
 // This is the only way to access the navigator.
-const BottomTabNavigator = (0, bottom_tabs_1.createBottomTabNavigator)().Navigator;
-const ExpoTabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (screens) => {
+const BottomTabNavigator = createBottomTabNavigator().Navigator;
+const ExpoTabs = withLayoutContext(BottomTabNavigator, (screens) => {
     // Support the `href` shortcut prop.
     return screens.map((screen) => {
         if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
@@ -30,10 +25,10 @@ const ExpoTabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, 
                         if (href == null) {
                             return null;
                         }
-                        const children = react_native_1.Platform.OS === 'web' ? props.children : <react_native_1.Pressable>{props.children}</react_native_1.Pressable>;
+                        const children = Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
                         // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
                         //       While Link expects a TextStyle. We need to reconcile these types.
-                        return (<Link_1.Link {...props} style={[{ display: 'flex' }, props.style]} href={href} asChild={react_native_1.Platform.OS !== 'web'} children={children}/>);
+                        return (<Link {...props} style={[{ display: 'flex' }, props.style]} href={href} asChild={Platform.OS !== 'web'} children={children}/>);
                     },
                 },
             };
@@ -50,7 +45,7 @@ const Tabs = Object.assign((props) => {
     return <ExpoTabs {...props}/>;
 }, {
     Screen: ExpoTabs.Screen,
-    Protected: Protected_1.Protected,
+    Protected,
 });
-exports.default = Tabs;
+export default Tabs;
 //# sourceMappingURL=TabsClient.js.map

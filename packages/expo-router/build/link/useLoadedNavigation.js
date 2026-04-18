@@ -1,22 +1,18 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useLoadedNavigation = useLoadedNavigation;
-exports.useOptionalNavigation = useOptionalNavigation;
-const react_1 = require("react");
-const router_store_1 = require("../global-state/router-store");
-const native_1 = require("../react-navigation/native");
+import { useCallback, useState, useEffect, useRef } from 'react';
+import { store } from '../global-state/router-store';
+import { useNavigation } from '../react-navigation/native';
 /** Returns a callback which is invoked when the navigation state has loaded. */
-function useLoadedNavigation() {
-    const navigation = (0, native_1.useNavigation)();
-    const isMounted = (0, react_1.useRef)(true);
-    const pending = (0, react_1.useRef)([]);
-    (0, react_1.useEffect)(() => {
+export function useLoadedNavigation() {
+    const navigation = useNavigation();
+    const isMounted = useRef(true);
+    const pending = useRef([]);
+    useEffect(() => {
         isMounted.current = true;
         return () => {
             isMounted.current = false;
         };
     }, []);
-    const flush = (0, react_1.useCallback)(() => {
+    const flush = useCallback(() => {
         if (isMounted.current) {
             const pendingCallbacks = pending.current;
             pending.current = [];
@@ -25,23 +21,23 @@ function useLoadedNavigation() {
             });
         }
     }, [navigation]);
-    (0, react_1.useEffect)(() => {
-        if (router_store_1.store.navigationRef.current) {
+    useEffect(() => {
+        if (store.navigationRef.current) {
             flush();
         }
     }, [flush]);
-    const push = (0, react_1.useCallback)((fn) => {
+    const push = useCallback((fn) => {
         pending.current.push(fn);
-        if (router_store_1.store.navigationRef.current) {
+        if (store.navigationRef.current) {
             flush();
         }
     }, [flush]);
     return push;
 }
-function useOptionalNavigation() {
-    const [navigation, setNavigation] = (0, react_1.useState)(null);
+export function useOptionalNavigation() {
+    const [navigation, setNavigation] = useState(null);
     const loadNavigation = useLoadedNavigation();
-    (0, react_1.useEffect)(() => {
+    useEffect(() => {
         loadNavigation((nav) => setNavigation(nav));
     }, []);
     return navigation;

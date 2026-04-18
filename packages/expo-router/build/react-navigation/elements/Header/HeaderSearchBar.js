@@ -1,68 +1,29 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.HeaderSearchBar = void 0;
-const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const clear_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/clear-icon.png"));
-const close_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/close-icon.png"));
-const search_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/search-icon.png"));
-const color_1 = require("../../../utils/color");
-const PlatformPressable_1 = require("../PlatformPressable");
-const Text_1 = require("../Text");
-const HeaderButton_1 = require("./HeaderButton");
-const HeaderIcon_1 = require("./HeaderIcon");
-const native_1 = require("../../native");
+import * as React from 'react';
+import { Animated, Image, Platform, StyleSheet, TextInput, View, } from 'react-native';
+import clearIcon from '../../../../assets/react-navigation/elements/clear-icon.png';
+import closeIcon from '../../../../assets/react-navigation/elements/close-icon.png';
+import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
+import { Color } from '../../../utils/color';
+import { PlatformPressable } from '../PlatformPressable';
+import { Text } from '../Text';
+import { HeaderButton } from './HeaderButton';
+import { HeaderIcon } from './HeaderIcon';
+import { useNavigation, useTheme } from '../../native';
 const INPUT_TYPE_TO_MODE = {
     text: 'text',
     number: 'numeric',
     phone: 'tel',
     email: 'email',
 };
-const useNativeDriver = react_native_1.Platform.OS !== 'web';
+const useNativeDriver = Platform.OS !== 'web';
 function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, autoCapitalize, placeholder = 'Search', cancelButtonText = 'Cancel', enterKeyHint = 'search', onChangeText, onClose, tintColor, style, ...rest }) {
-    const navigation = (0, native_1.useNavigation)();
-    const { dark, colors, fonts } = (0, native_1.useTheme)();
+    const navigation = useNavigation();
+    const { dark, colors, fonts } = useTheme();
     const [value, setValue] = React.useState('');
     const [rendered, setRendered] = React.useState(visible);
-    const [visibleAnim] = React.useState(() => new react_native_1.Animated.Value(visible ? 1 : 0));
-    const [clearVisibleAnim] = React.useState(() => new react_native_1.Animated.Value(0));
+    const [visibleAnim] = React.useState(() => new Animated.Value(visible ? 1 : 0));
+    const [clearVisibleAnim] = React.useState(() => new Animated.Value(0));
     const visibleValueRef = React.useRef(visible);
     const clearVisibleValueRef = React.useRef(false);
     const inputRef = React.useRef(null);
@@ -71,7 +32,7 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
         if (visible === visibleValueRef.current) {
             return;
         }
-        react_native_1.Animated.timing(visibleAnim, {
+        Animated.timing(visibleAnim, {
             toValue: visible ? 1 : 0,
             duration: 100,
             useNativeDriver,
@@ -90,7 +51,7 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
         if (clearVisibleValueRef.current === hasText) {
             return;
         }
-        react_native_1.Animated.timing(clearVisibleAnim, {
+        Animated.timing(clearVisibleAnim, {
             toValue: hasText ? 1 : 0,
             duration: 100,
             useNativeDriver,
@@ -134,33 +95,33 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
         return null;
     }
     const textColor = tintColor ?? colors.text;
-    return (<react_native_1.Animated.View pointerEvents={visible ? 'auto' : 'none'} aria-live="polite" aria-hidden={!visible} style={[styles.container, { opacity: visibleAnim }, style]}>
-      <react_native_1.View style={styles.searchbarContainer}>
-        <HeaderIcon_1.HeaderIcon source={search_icon_png_1.default} tintColor={textColor} style={styles.inputSearchIcon}/>
-        <react_native_1.TextInput {...rest} ref={inputRef} onChange={onChangeText} onChangeText={setValue} autoFocus={autoFocus} autoCapitalize={autoCapitalize === 'systemDefault' ? undefined : autoCapitalize} inputMode={INPUT_TYPE_TO_MODE[inputType ?? 'text']} enterKeyHint={enterKeyHint} placeholder={placeholder} placeholderTextColor={(0, color_1.Color)(textColor)?.alpha(0.5).string()} cursorColor={colors.primary} selectionHandleColor={colors.primary} selectionColor={(0, color_1.Color)(colors.primary)?.alpha(0.3).string()} style={[
+    return (<Animated.View pointerEvents={visible ? 'auto' : 'none'} aria-live="polite" aria-hidden={!visible} style={[styles.container, { opacity: visibleAnim }, style]}>
+      <View style={styles.searchbarContainer}>
+        <HeaderIcon source={searchIcon} tintColor={textColor} style={styles.inputSearchIcon}/>
+        <TextInput {...rest} ref={inputRef} onChange={onChangeText} onChangeText={setValue} autoFocus={autoFocus} autoCapitalize={autoCapitalize === 'systemDefault' ? undefined : autoCapitalize} inputMode={INPUT_TYPE_TO_MODE[inputType ?? 'text']} enterKeyHint={enterKeyHint} placeholder={placeholder} placeholderTextColor={Color(textColor)?.alpha(0.5).string()} cursorColor={colors.primary} selectionHandleColor={colors.primary} selectionColor={Color(colors.primary)?.alpha(0.3).string()} style={[
             fonts.regular,
             styles.searchbar,
             {
-                backgroundColor: react_native_1.Platform.select({
+                backgroundColor: Platform.select({
                     ios: dark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
                     default: 'transparent',
                 }),
                 color: textColor,
-                borderBottomColor: (0, color_1.Color)(textColor)?.alpha(0.2).string() ??
+                borderBottomColor: Color(textColor)?.alpha(0.2).string() ??
                     (dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'),
             },
         ]}/>
-        {react_native_1.Platform.OS === 'ios' ? (<PlatformPressable_1.PlatformPressable onPress={onClear} style={[
+        {Platform.OS === 'ios' ? (<PlatformPressable onPress={onClear} style={[
                 {
                     opacity: clearVisibleAnim,
                     transform: [{ scale: clearVisibleAnim }],
                 },
                 styles.clearButton,
             ]}>
-            <react_native_1.Image source={clear_icon_png_1.default} resizeMode="contain" tintColor={textColor} style={styles.clearIcon}/>
-          </PlatformPressable_1.PlatformPressable>) : null}
-      </react_native_1.View>
-      {react_native_1.Platform.OS !== 'ios' ? (<HeaderButton_1.HeaderButton onPress={() => {
+            <Image source={clearIcon} resizeMode="contain" tintColor={textColor} style={styles.clearIcon}/>
+          </PlatformPressable>) : null}
+      </View>
+      {Platform.OS !== 'ios' ? (<HeaderButton onPress={() => {
                 if (value) {
                     onClear();
                 }
@@ -168,16 +129,16 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
                     onClose();
                 }
             }} style={styles.closeButton}>
-          <HeaderIcon_1.HeaderIcon source={close_icon_png_1.default} tintColor={textColor}/>
-        </HeaderButton_1.HeaderButton>) : null}
-      {react_native_1.Platform.OS === 'ios' ? (<PlatformPressable_1.PlatformPressable onPress={cancelSearch} style={styles.cancelButton}>
-          <Text_1.Text style={[fonts.regular, { color: tintColor ?? colors.primary }, styles.cancelText]}>
+          <HeaderIcon source={closeIcon} tintColor={textColor}/>
+        </HeaderButton>) : null}
+      {Platform.OS === 'ios' ? (<PlatformPressable onPress={cancelSearch} style={styles.cancelButton}>
+          <Text style={[fonts.regular, { color: tintColor ?? colors.primary }, styles.cancelText]}>
             {cancelButtonText}
-          </Text_1.Text>
-        </PlatformPressable_1.PlatformPressable>) : null}
-    </react_native_1.Animated.View>);
+          </Text>
+        </PlatformPressable>) : null}
+    </Animated.View>);
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
@@ -186,9 +147,9 @@ const styles = react_native_1.StyleSheet.create({
     inputSearchIcon: {
         position: 'absolute',
         opacity: 0.5,
-        left: react_native_1.Platform.select({ ios: 16, default: 4 }),
-        top: react_native_1.Platform.select({ ios: -1, default: 17 }),
-        ...react_native_1.Platform.select({
+        left: Platform.select({ ios: 16, default: 4 }),
+        top: Platform.select({ ios: -1, default: 17 }),
+        ...Platform.select({
             ios: {
                 height: 18,
                 width: 18,
@@ -199,8 +160,8 @@ const styles = react_native_1.StyleSheet.create({
     closeButton: {
         position: 'absolute',
         opacity: 0.5,
-        right: react_native_1.Platform.select({ ios: 0, default: 8 }),
-        top: react_native_1.Platform.select({ ios: -2, default: 17 }),
+        right: Platform.select({ ios: 0, default: 8 }),
+        top: Platform.select({ ios: -2, default: 17 }),
     },
     clearButton: {
         position: 'absolute',
@@ -226,7 +187,7 @@ const styles = react_native_1.StyleSheet.create({
     searchbarContainer: {
         flex: 1,
     },
-    searchbar: react_native_1.Platform.select({
+    searchbar: Platform.select({
         ios: {
             flex: 1,
             fontSize: 17,
@@ -248,5 +209,5 @@ const styles = react_native_1.StyleSheet.create({
         },
     }),
 });
-exports.HeaderSearchBar = HeaderSearchBarInternal;
+export const HeaderSearchBar = HeaderSearchBarInternal;
 //# sourceMappingURL=HeaderSearchBar.js.map

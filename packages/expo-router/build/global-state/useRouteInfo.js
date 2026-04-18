@@ -1,14 +1,11 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useRouteInfo = useRouteInfo;
-const react_1 = require("react");
-const routeInfoCache_1 = require("./routeInfoCache");
-const store_1 = require("./store");
-const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
-function useRouteInfo() {
-    const routeInfo = (0, react_1.useSyncExternalStore)(routeInfoCache_1.routeInfoSubscribe, store_1.store.getRouteInfo, store_1.store.getRouteInfo);
-    const { isPreview, segments, params, pathname } = (0, PreviewRouteContext_1.usePreviewInfo)();
+import { useSyncExternalStore } from 'react';
+import { routeInfoSubscribe } from './routeInfoCache';
+import { store } from './store';
+import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
+export function useRouteInfo() {
+    const routeInfo = useSyncExternalStore(routeInfoSubscribe, store.getRouteInfo, store.getRouteInfo);
+    const { isPreview, segments, params, pathname } = usePreviewInfo();
     if (isPreview) {
         return {
             pathname: pathname ?? '',

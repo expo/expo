@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabs = void 0;
 // We need this file to re-export the navigator
 // Otherwise rsc would fail
-const NativeBottomTabsNavigator_1 = require("./NativeBottomTabsNavigator");
-const NativeTabTrigger_1 = require("./NativeTabTrigger");
-const elements_1 = require("./common/elements");
-const hooks_1 = require("./hooks");
-const BottomAccessory = Object.assign(elements_1.NativeTabsBottomAccessory, {
-    usePlacement: hooks_1.usePlacement,
+import { NativeTabsNavigatorWrapper } from './NativeBottomTabsNavigator';
+import { NativeTabTrigger } from './NativeTabTrigger';
+import { NativeTabsBottomAccessory } from './common/elements';
+import { usePlacement } from './hooks';
+const BottomAccessory = Object.assign(NativeTabsBottomAccessory, {
+    usePlacement,
 });
 /**
  * The component used to create native tabs layout.
@@ -27,7 +24,7 @@ const BottomAccessory = Object.assign(elements_1.NativeTabsBottomAccessory, {
  * }
  * ```
  */
-exports.NativeTabs = Object.assign((props) => {
-    return <NativeBottomTabsNavigator_1.NativeTabsNavigatorWrapper {...props}/>;
-}, { Trigger: NativeTabTrigger_1.NativeTabTrigger, BottomAccessory });
+export const NativeTabs = Object.assign((props) => {
+    return <NativeTabsNavigatorWrapper {...props}/>;
+}, { Trigger: NativeTabTrigger, BottomAccessory });
 //# sourceMappingURL=NativeTabs.js.map

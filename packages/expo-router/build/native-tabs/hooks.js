@@ -1,9 +1,6 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.usePlacement = exports.BottomAccessoryPlacementContext = void 0;
-const react_1 = require("react");
-exports.BottomAccessoryPlacementContext = (0, react_1.createContext)(undefined);
+import { createContext, use } from 'react';
+export const BottomAccessoryPlacementContext = createContext(undefined);
 /**
  * A hook which returns the bottom accessory environment for given component.
  *
@@ -46,12 +43,11 @@ exports.BottomAccessoryPlacementContext = (0, react_1.createContext)(undefined);
  *
  * @platform iOS 26+
  */
-const usePlacement = () => {
-    const value = (0, react_1.use)(exports.BottomAccessoryPlacementContext);
+export const usePlacement = () => {
+    const value = use(BottomAccessoryPlacementContext);
     if (!value) {
         throw new Error('usePlacement can only be used within a <NativeTabs.BottomAccessory> component.');
     }
     return value;
 };
-exports.usePlacement = usePlacement;
 //# sourceMappingURL=hooks.js.map

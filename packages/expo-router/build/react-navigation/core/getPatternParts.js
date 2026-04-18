@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPatternParts = getPatternParts;
 /**
  * Parse a path into an array of parts with information about each segment.
  */
-function getPatternParts(path) {
+export function getPatternParts(path) {
     const parts = [];
     let current = { segment: '' };
     let isRegex = false;

@@ -1,12 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TabActions = void 0;
-exports.TabRouter = TabRouter;
-const non_secure_1 = require("nanoid/non-secure");
-const BaseRouter_1 = require("./BaseRouter");
-const createParamsFromAction_1 = require("./createParamsFromAction");
+import { nanoid } from 'nanoid/non-secure';
+import { BaseRouter } from './BaseRouter';
+import { createParamsFromAction } from './createParamsFromAction';
 const TYPE_ROUTE = 'route';
-exports.TabActions = {
+export const TabActions = {
     jumpTo(name, params) {
         return {
             type: 'JUMP_TO',
@@ -95,7 +91,7 @@ const changeIndex = (state, index, backBehavior, initialRouteName) => {
 // TODO(@ubax): add REPLACE action to CommonAction type and handle it in all routers
 function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
     const router = {
-        ...BaseRouter_1.BaseRouter,
+        ...BaseRouter,
         type: 'tab',
         getInitialState({ routeNames, routeParamList }) {
             const index = initialRouteName !== undefined && routeNames.includes(initialRouteName)
@@ -103,14 +99,14 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
                 : 0;
             const routes = routeNames.map((name) => ({
                 name,
-                key: `${name}-${(0, non_secure_1.nanoid)()}`,
+                key: `${name}-${nanoid()}`,
                 params: routeParamList[name],
             }));
             const history = getRouteHistory(routes, index, backBehavior, initialRouteName);
             return {
                 stale: false,
                 type: 'tab',
-                key: `tab-${(0, non_secure_1.nanoid)()}`,
+                key: `tab-${nanoid()}`,
                 index,
                 routeNames,
                 history,
@@ -128,7 +124,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
                 return {
                     ...route,
                     name,
-                    key: route && route.name === name && route.key ? route.key : `${name}-${(0, non_secure_1.nanoid)()}`,
+                    key: route && route.name === name && route.key ? route.key : `${name}-${nanoid()}`,
                     params: routeParamList[name] !== undefined
                         ? {
                             ...routeParamList[name],
@@ -145,7 +141,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
             return changeIndex({
                 stale: false,
                 type: 'tab',
-                key: `tab-${(0, non_secure_1.nanoid)()}`,
+                key: `tab-${nanoid()}`,
                 index,
                 routeNames,
                 history,
@@ -156,7 +152,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
         getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
             const routes = routeNames.map((name) => state.routes.find((r) => r.name === name && !routeKeyChanges.includes(r.name)) || {
                 name,
-                key: `${name}-${(0, non_secure_1.nanoid)()}`,
+                key: `${name}-${nanoid()}`,
                 params: routeParamList[name],
             });
             const index = Math.max(0, routeNames.indexOf(state.routes[state.index].name));
@@ -199,7 +195,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
                             const getId = routeGetIdList[route.name];
                             const currentId = getId?.({ params: route.params });
                             const nextId = getId?.({ params: action.payload.params });
-                            const key = currentId === nextId ? route.key : `${route.name}-${(0, non_secure_1.nanoid)()}`;
+                            const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
                             let params;
                             if ((action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED') &&
                                 action.payload.merge &&
@@ -214,7 +210,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
                                         : route.params;
                             }
                             else {
-                                params = (0, createParamsFromAction_1.createParamsFromAction)({ action, routeParamList });
+                                params = createParamsFromAction({ action, routeParamList });
                             }
                             const path = action.type === 'NAVIGATE' && action.payload.path != null
                                 ? action.payload.path
@@ -231,7 +227,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
                 }
                 case 'SET_PARAMS':
                 case 'REPLACE_PARAMS': {
-                    const nextState = BaseRouter_1.BaseRouter.getStateForAction(state, action);
+                    const nextState = BaseRouter.getStateForAction(state, action);
                     if (nextState !== null) {
                         const index = nextState.index;
                         if (index != null) {
@@ -289,8 +285,8 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
                     const getId = routeGetIdList[route.name];
                     const currentId = getId?.({ params: route.params });
                     const nextId = getId?.({ params: action.payload.params });
-                    const key = currentId === nextId ? route.key : `${route.name}-${(0, non_secure_1.nanoid)()}`;
-                    const params = (0, createParamsFromAction_1.createParamsFromAction)({ action, routeParamList });
+                    const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+                    const params = createParamsFromAction({ action, routeParamList });
                     const newRoute = params !== route.params ? { ...route, key, params } : route;
                     return {
                         ...state,
@@ -304,17 +300,17 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
                     };
                 }
                 default:
-                    return BaseRouter_1.BaseRouter.getStateForAction(state, action);
+                    return BaseRouter.getStateForAction(state, action);
             }
         },
-        actionCreators: exports.TabActions,
+        actionCreators: TabActions,
     };
     return router;
 }
 /**
  * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
-function TabRouter(args) {
+export function TabRouter(args) {
     const base = BaseTabRouter(args);
     return {
         ...base,

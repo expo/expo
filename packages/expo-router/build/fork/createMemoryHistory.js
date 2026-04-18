@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMemoryHistory = createMemoryHistory;
 // Forked from React Navigation in order to use a custom `useLinking` function.
 // https://github.com/react-navigation/react-navigation/blob/main/packages/native/src/createMemoryHistory.tsx
 // Look for 'START OF FORK' comments
 // Currently no forked behaviour.
-const non_secure_1 = require("nanoid/non-secure");
-function createMemoryHistory() {
+import { nanoid } from 'nanoid/non-secure';
+export function createMemoryHistory() {
     let index = 0;
     let items = [];
     // Pending callbacks for `history.go(n)`
@@ -47,7 +44,7 @@ function createMemoryHistory() {
         },
         push({ path, state }) {
             interrupt();
-            const id = (0, non_secure_1.nanoid)();
+            const id = nanoid();
             // When a new entry is pushed, all the existing entries after index will be inaccessible
             // So we remove any existing entries after the current index to clean them up
             items = items.slice(0, index + 1);
@@ -61,7 +58,7 @@ function createMemoryHistory() {
         },
         replace({ path, state }) {
             interrupt();
-            const id = window.history.state?.id ?? (0, non_secure_1.nanoid)();
+            const id = window.history.state?.id ?? nanoid();
             // Need to keep the hash part of the path if there was no previous history entry
             // or the previous history entry had the same path
             let pathWithHash = path;

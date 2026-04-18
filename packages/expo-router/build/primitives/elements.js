@@ -1,13 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Badge = Badge;
-exports.Icon = Icon;
-exports.VectorIcon = VectorIcon;
-exports.Label = Label;
-function Badge(props) {
+export function Badge(props) {
     return null;
 }
-function Icon(props) {
+export function Icon(props) {
     return null;
 }
 /**
@@ -24,10 +18,10 @@ function Icon(props) {
  * <Icon src={<VectorIcon family={MaterialCommunityIcons} name="home" />} />
  * ```
  */
-function VectorIcon(props) {
+export function VectorIcon(props) {
     return null;
 }
-function Label(props) {
+export function Label(props) {
     return null;
 }
 //# sourceMappingURL=elements.js.map

@@ -1,65 +1,18 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useRouteInfo = void 0;
-exports.useRootNavigationState = useRootNavigationState;
-exports.useRootNavigation = useRootNavigation;
-exports.useNavigationContainerRef = useNavigationContainerRef;
-exports.useRouter = useRouter;
-exports.useUnstableGlobalHref = useUnstableGlobalHref;
-exports.useSegments = useSegments;
-exports.usePathname = usePathname;
-exports.useGlobalSearchParams = useGlobalSearchParams;
-exports.useLocalSearchParams = useLocalSearchParams;
-exports.useSearchParams = useSearchParams;
-exports.useLoaderData = useLoaderData;
-const react_1 = __importStar(require("react"));
-const Route_1 = require("./Route");
-const constants_1 = require("./constants");
-const getRouteInfoFromState_1 = require("./global-state/getRouteInfoFromState");
-const router_store_1 = require("./global-state/router-store");
-Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
-const imperative_api_1 = require("./imperative-api");
-const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
-const LoaderCache_1 = require("./loaders/LoaderCache");
-const ServerDataLoaderContext_1 = require("./loaders/ServerDataLoaderContext");
-const getLoaderData_1 = require("./loaders/getLoaderData");
-const utils_1 = require("./loaders/utils");
-const native_1 = require("./react-navigation/native");
-const useScreens_1 = require("./useScreens");
+import React, { use, useMemo } from 'react';
+import { LocalRouteParamsContext, useContextKey } from './Route';
+import { INTERNAL_SLOT_NAME } from './constants';
+import { getRouteInfoFromState } from './global-state/getRouteInfoFromState';
+import { store, useRouteInfo } from './global-state/router-store';
+import { router } from './imperative-api';
+import { usePreviewInfo } from './link/preview/PreviewRouteContext';
+import { LoaderCacheContext } from './loaders/LoaderCache';
+import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
+import { getLoaderData } from './loaders/getLoaderData';
+import { fetchLoader } from './loaders/utils';
+import { useNavigation, useStateForPath, } from './react-navigation/native';
+import { getSingularId } from './useScreens';
+export { useRouteInfo };
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
@@ -75,11 +28,11 @@ const useScreens_1 = require("./useScreens");
  * }
  * ```
  */
-function useRootNavigationState() {
+export function useRootNavigationState() {
     const parent = 
     // We assume that this is called from routes in __root
     // Users cannot customize the generated Sitemap or NotFound routes, so we should be safe
-    (0, native_1.useNavigation)().getParent(constants_1.INTERNAL_SLOT_NAME);
+    useNavigation().getParent(INTERNAL_SLOT_NAME);
     if (!parent) {
         throw new Error('useRootNavigationState was called from a generated route. This is likely a bug in Expo Router.');
     }
@@ -89,15 +42,15 @@ function useRootNavigationState() {
  * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,
  * which returns a React `ref`.
  */
-function useRootNavigation() {
-    return router_store_1.store.navigationRef.current;
+export function useRootNavigation() {
+    return store.navigationRef.current;
 }
 /**
  * @return The root `<NavigationContainer />` ref for the app. The `ref.current` may be `null`
  * if the `<NavigationContainer />` hasn't mounted yet.
  */
-function useNavigationContainerRef() {
-    return router_store_1.store.navigationRef;
+export function useNavigationContainerRef() {
+    return store.navigationRef;
 }
 const displayWarningForProp = (prop) => {
     if (process.env.NODE_ENV !== 'production') {
@@ -143,23 +96,23 @@ const routerWithWarnings = {
  *}
  * ```
  */
-function useRouter() {
-    const { isPreview } = (0, PreviewRouteContext_1.usePreviewInfo)();
+export function useRouter() {
+    const { isPreview } = usePreviewInfo();
     if (isPreview) {
         return routerWithWarnings;
     }
-    return imperative_api_1.router;
+    return router;
 }
 /**
  * @private
  * @returns The current global pathname with query params attached. This may change in the future to include the hostname
  * from a predefined universal link. For example, `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`.
  */
-function useUnstableGlobalHref() {
-    return (0, router_store_1.useRouteInfo)().unstable_globalHref;
+export function useUnstableGlobalHref() {
+    return useRouteInfo().unstable_globalHref;
 }
-function useSegments() {
-    return (0, router_store_1.useRouteInfo)().segments;
+export function useSegments() {
+    return useRouteInfo().segments;
 }
 /**
  * Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` returns `/acme`.
@@ -178,15 +131,15 @@ function useSegments() {
  * }
  * ```
  */
-function usePathname() {
-    return (0, router_store_1.useRouteInfo)().pathname;
+export function usePathname() {
+    return useRouteInfo().pathname;
 }
-function useGlobalSearchParams() {
-    return (0, router_store_1.useRouteInfo)().params;
+export function useGlobalSearchParams() {
+    return useRouteInfo().params;
 }
-function useLocalSearchParams() {
-    const params = react_1.default.use(Route_1.LocalRouteParamsContext) ?? {};
-    const { params: previewParams } = (0, PreviewRouteContext_1.usePreviewInfo)();
+export function useLocalSearchParams() {
+    const params = React.use(LocalRouteParamsContext) ?? {};
+    const { params: previewParams } = usePreviewInfo();
     return Object.fromEntries(Object.entries(previewParams ?? params).map(([key, value]) => {
         // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via
         // navigation.setParams as it shallow merges. Hence, we hide them here
@@ -216,8 +169,8 @@ function useLocalSearchParams() {
         }
     }));
 }
-function useSearchParams({ global = false } = {}) {
-    const globalRef = react_1.default.useRef(global);
+export function useSearchParams({ global = false } = {}) {
+    const globalRef = React.useRef(global);
     if (process.env.NODE_ENV !== 'production') {
         if (global !== globalRef.current) {
             console.warn(`Detected change in 'global' option of useSearchParams. This value cannot change between renders`);
@@ -265,15 +218,15 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
  *  return <Text>Data: {JSON.stringify(data)}</Text>;
  * }
  */
-function useLoaderData() {
-    const serverDataLoaderContext = (0, react_1.use)(ServerDataLoaderContext_1.ServerDataLoaderContext);
-    const loaderCache = (0, react_1.use)(LoaderCache_1.LoaderCacheContext);
-    const stateForPath = (0, native_1.useStateForPath)();
-    const contextKey = (0, Route_1.useContextKey)();
-    const resolvedPath = (0, react_1.useMemo)(() => {
-        const routeInfo = (0, getRouteInfoFromState_1.getRouteInfoFromState)(stateForPath);
+export function useLoaderData() {
+    const serverDataLoaderContext = use(ServerDataLoaderContext);
+    const loaderCache = use(LoaderCacheContext);
+    const stateForPath = useStateForPath();
+    const contextKey = useContextKey();
+    const resolvedPath = useMemo(() => {
+        const routeInfo = getRouteInfoFromState(stateForPath);
         const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
-        const resolvedPathname = `/${(0, useScreens_1.getSingularId)(contextPath, { params: routeInfo.params })}`;
+        const resolvedPathname = `/${getSingularId(contextPath, { params: routeInfo.params })}`;
         const searchString = routeInfo.searchParams?.toString() || '';
         return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
     }, [contextKey, stateForPath]);
@@ -288,13 +241,13 @@ function useLoaderData() {
             return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
         }
     }
-    const result = (0, getLoaderData_1.getLoaderData)({
+    const result = getLoaderData({
         resolvedPath,
         cache: loaderCache,
-        fetcher: utils_1.fetchLoader,
+        fetcher: fetchLoader,
     });
     if (result instanceof Promise) {
-        return (0, react_1.use)(result);
+        return use(result);
     }
     return result;
 }

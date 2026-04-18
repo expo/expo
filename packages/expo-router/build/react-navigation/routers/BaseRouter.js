@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseRouter = void 0;
-const non_secure_1 = require("nanoid/non-secure");
+import { nanoid } from 'nanoid/non-secure';
 /**
  * Base router object that can be used when writing custom routers.
  * This provides few helper methods to handle common actions such as `RESET`.
  */
-exports.BaseRouter = {
+export const BaseRouter = {
     getStateForAction(state, action) {
         switch (action.type) {
             case 'SET_PARAMS':
@@ -42,7 +39,7 @@ exports.BaseRouter = {
                     }
                     return {
                         ...nextState,
-                        routes: nextState.routes.map((route) => route.key ? route : { ...route, key: `${route.name}-${(0, non_secure_1.nanoid)()}` }),
+                        routes: nextState.routes.map((route) => route.key ? route : { ...route, key: `${route.name}-${nanoid()}` }),
                     };
                 }
                 return nextState;

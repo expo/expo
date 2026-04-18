@@ -1,28 +1,23 @@
-"use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TransparentModalStackRouteDrawer = TransparentModalStackRouteDrawer;
-const react_1 = __importDefault(require("react"));
-const vaul_1 = require("vaul");
-const modalStyles_1 = __importDefault(require("./modalStyles"));
+import React from 'react';
+import { Drawer } from 'vaul';
+import modalStyles from './modalStyles';
 function TransparentModalStackRouteDrawer({ routeKey, options, dismissible, renderScreen, onDismiss, }) {
     const handleOpenChange = (open) => {
         if (!open)
             onDismiss();
     };
-    return (<vaul_1.Drawer.Root defaultOpen autoFocus key={`${routeKey}-transparent`} dismissible={dismissible ?? options.gestureEnabled ?? false} onAnimationEnd={handleOpenChange}>
-      <vaul_1.Drawer.Portal>
-        <vaul_1.Drawer.Content className={modalStyles_1.default.transparentDrawerContent}>
+    return (<Drawer.Root defaultOpen autoFocus key={`${routeKey}-transparent`} dismissible={dismissible ?? options.gestureEnabled ?? false} onAnimationEnd={handleOpenChange}>
+      <Drawer.Portal>
+        <Drawer.Content className={modalStyles.transparentDrawerContent}>
           {/* TODO:(@Hirbod) Figure out how to add title and description to the modal for screen readers in a meaningful way */}
-          <vaul_1.Drawer.Title about="" aria-describedby="" className={modalStyles_1.default.srOnly}/>
-          <vaul_1.Drawer.Description about="" className={modalStyles_1.default.srOnly}/>
+          <Drawer.Title about="" aria-describedby="" className={modalStyles.srOnly}/>
+          <Drawer.Description about="" className={modalStyles.srOnly}/>
           {/* Render the screen content */}
-          <div className={modalStyles_1.default.modalBody}>{renderScreen()}</div>
-        </vaul_1.Drawer.Content>
-      </vaul_1.Drawer.Portal>
-    </vaul_1.Drawer.Root>);
+          <div className={modalStyles.modalBody}>{renderScreen()}</div>
+        </Drawer.Content>
+      </Drawer.Portal>
+    </Drawer.Root>);
 }
+export { TransparentModalStackRouteDrawer };
 //# sourceMappingURL=TransparentModalStackRouteDrawer.js.map

@@ -1,17 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RootModalContext = void 0;
-exports.RootModalProvider = RootModalProvider;
-const react_1 = require("react");
-exports.RootModalContext = (0, react_1.createContext)({
+import { createContext, use, useState } from 'react';
+export const RootModalContext = createContext({
     root: true,
     routes: [],
     addModal: () => { },
     removeModal: () => { },
 });
-function RootModalProvider({ children }) {
-    const parent = (0, react_1.use)(exports.RootModalContext);
-    const [state, setState] = (0, react_1.useState)(() => ({
+export function RootModalProvider({ children }) {
+    const parent = use(RootModalContext);
+    const [state, setState] = useState(() => ({
         root: false,
         routes: [],
         addModal: (name) => {
@@ -21,6 +17,6 @@ function RootModalProvider({ children }) {
             return parent.root ? setState((state) => ({ ...state })) : parent.addModal(name);
         },
     }));
-    return <exports.RootModalContext.Provider value={state}>{children}</exports.RootModalContext.Provider>;
+    return <RootModalContext.Provider value={state}>{children}</RootModalContext.Provider>;
 }
 //# sourceMappingURL=RootModal.js.map

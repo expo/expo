@@ -1,15 +1,10 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackToolbarMenuAction = exports.StackToolbarMenu = void 0;
-exports.convertStackToolbarMenuPropsToRNHeaderItem = convertStackToolbarMenuPropsToRNHeaderItem;
-exports.convertStackToolbarMenuActionPropsToRNHeaderItem = convertStackToolbarMenuActionPropsToRNHeaderItem;
-const react_1 = require("react");
-const native_1 = require("./native");
-const children_1 = require("../../../../utils/children");
-const context_1 = require("../context");
-const shared_1 = require("../shared");
-const toolbar_primitives_1 = require("../toolbar-primitives");
+import { Children, useMemo } from 'react';
+import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
+import { filterAllowedChildrenElements, getFirstChildOfType, isChildOfType, } from '../../../../utils/children';
+import { useToolbarPlacement } from '../context';
+import { convertStackHeaderSharedPropsToRNSharedHeaderItem, extractIconRenderingMode, extractXcassetName, } from '../shared';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../toolbar-primitives';
 /**
  * Computes the label and menu title from children and title prop.
  *
@@ -18,7 +13,7 @@ const toolbar_primitives_1 = require("../toolbar-primitives");
  * - If both `.Label` child and `title` prop are provided. `.Label` is used for the label, and `title` is used for the menu title
  */
 function computeMenuLabelAndTitle(children, title) {
-    const labelChild = (0, children_1.getFirstChildOfType)(children, toolbar_primitives_1.StackToolbarLabel);
+    const labelChild = getFirstChildOfType(children, StackToolbarLabel);
     const labelFromChild = labelChild?.props.children;
     return {
         label: labelFromChild ?? title ?? '',
@@ -57,47 +52,46 @@ function computeMenuLabelAndTitle(children, title) {
  * @platform android
  * @platform ios
  */
-const StackToolbarMenu = (props) => {
-    const placement = (0, context_1.useToolbarPlacement)();
+export const StackToolbarMenu = (props) => {
+    const placement = useToolbarPlacement();
     if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
         // On ios, for placement other than bottom, this component will not render, and should be
         // converted to RN header item using convertStackToolbarMenuPropsToRNHeaderItem.
         // So if we reach here, it means we're not inside a toolbar or something else is wrong.
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
     }
-    const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
+    const validChildren = useMemo(() => filterAllowedChildrenElements(props.children, ALLOWED_CHILDREN), [props.children]);
     // Use shared conversion that doesn't bail on hidden, so source is always computed
     // and NativeToolbarMenu always renders — letting AnimatedItemContainer handle visibility.
-    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props, true);
+    const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props, true);
     const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(props.children, props.title);
     const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
     const source = sharedProps?.icon?.type === 'image' ? sharedProps.icon.source : undefined;
-    const xcassetName = (0, shared_1.extractXcassetName)(props);
-    const imageRenderingMode = (0, shared_1.extractIconRenderingMode)(props) ?? props.iconRenderingMode;
+    const xcassetName = extractXcassetName(props);
+    const imageRenderingMode = extractIconRenderingMode(props) ?? props.iconRenderingMode;
     if (process.env.NODE_ENV !== 'production') {
-        const allChildren = react_1.Children.toArray(props.children);
+        const allChildren = Children.toArray(props.children);
         if (allChildren.length !== validChildren.length) {
             throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`);
         }
     }
     if (process.env.NODE_ENV !== 'production') {
-        const hasBadge = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarBadge);
+        const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
         if (hasBadge) {
             console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return (<native_1.NativeToolbarMenu {...props} icon={icon} source={source} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
+    return (<NativeToolbarMenu {...props} icon={icon} source={source} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
-exports.StackToolbarMenu = StackToolbarMenu;
-function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
+export function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
     if (props.hidden) {
         return undefined;
     }
     const { title, ...rest } = props;
-    const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackToolbarMenuAction) || (0, children_1.isChildOfType)(child, exports.StackToolbarMenu));
+    const actions = Children.toArray(props.children).filter((child) => isChildOfType(child, StackToolbarMenuAction) || isChildOfType(child, StackToolbarMenu));
     const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(props.children, title);
-    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest, isBottomPlacement);
+    const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(rest, isBottomPlacement);
     const item = {
         ...sharedProps,
         label: computedLabel,
@@ -106,7 +100,7 @@ function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = f
             multiselectable: true,
             items: actions
                 .map((action) => {
-                if ((0, children_1.isChildOfType)(action, exports.StackToolbarMenu)) {
+                if (isChildOfType(action, StackToolbarMenu)) {
                     return convertStackToolbarSubmenuMenuPropsToRNHeaderItem(action.props);
                 }
                 return convertStackToolbarMenuActionPropsToRNHeaderItem(action.props);
@@ -132,13 +126,13 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
     if (props.hidden) {
         return undefined;
     }
-    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
-    const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackToolbarMenuAction) || (0, children_1.isChildOfType)(child, exports.StackToolbarMenu));
+    const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
+    const actions = Children.toArray(props.children).filter((child) => isChildOfType(child, StackToolbarMenuAction) || isChildOfType(child, StackToolbarMenu));
     const item = {
         type: 'submenu',
         items: actions
             .map((action) => {
-            if ((0, children_1.isChildOfType)(action, exports.StackToolbarMenu)) {
+            if (isChildOfType(action, StackToolbarMenu)) {
                 return convertStackToolbarSubmenuMenuPropsToRNHeaderItem(action.props);
             }
             return convertStackToolbarMenuActionPropsToRNHeaderItem(action.props);
@@ -193,20 +187,19 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
  * @platform android
  * @platform ios
  */
-const StackToolbarMenuAction = (props) => {
-    const placement = (0, context_1.useToolbarPlacement)();
+export const StackToolbarMenuAction = (props) => {
+    const placement = useToolbarPlacement();
     if (process.env.EXPO_OS === 'ios' && placement !== 'bottom') {
         throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = typeof props.icon === 'string' ? props.icon : undefined;
     const source = typeof props.icon !== 'string' ? props.icon : undefined;
-    return (<native_1.NativeToolbarMenuAction {...props} icon={icon} source={source} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+    return (<NativeToolbarMenuAction {...props} icon={icon} source={source} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
 };
-exports.StackToolbarMenuAction = StackToolbarMenuAction;
-function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
+export function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
     const { children, isOn, unstable_keepPresented, icon, ...rest } = props;
-    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
+    const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
     const item = {
         ...rest,
         description: props.subtitle,
@@ -229,12 +222,12 @@ function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
     return item;
 }
 const ALLOWED_CHILDREN = [
-    exports.StackToolbarMenu,
-    exports.StackToolbarMenuAction,
-    native_1.NativeToolbarMenu,
-    native_1.NativeToolbarMenuAction,
-    toolbar_primitives_1.StackToolbarLabel,
-    toolbar_primitives_1.StackToolbarIcon,
-    toolbar_primitives_1.StackToolbarBadge,
+    StackToolbarMenu,
+    StackToolbarMenuAction,
+    NativeToolbarMenu,
+    NativeToolbarMenuAction,
+    StackToolbarLabel,
+    StackToolbarIcon,
+    StackToolbarBadge,
 ];
 //# sourceMappingURL=index.js.map

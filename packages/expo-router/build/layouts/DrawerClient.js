@@ -1,10 +1,7 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Drawer = void 0;
-const withLayoutContext_1 = require("./withLayoutContext");
-const drawer_1 = require("../react-navigation/drawer");
-const DrawerNavigator = (0, drawer_1.createDrawerNavigator)().Navigator;
-exports.Drawer = (0, withLayoutContext_1.withLayoutContext)(DrawerNavigator);
-exports.default = exports.Drawer;
+import { withLayoutContext } from './withLayoutContext';
+import { createDrawerNavigator, } from '../react-navigation/drawer';
+const DrawerNavigator = createDrawerNavigator().Navigator;
+export const Drawer = withLayoutContext(DrawerNavigator);
+export default Drawer;
 //# sourceMappingURL=DrawerClient.js.map

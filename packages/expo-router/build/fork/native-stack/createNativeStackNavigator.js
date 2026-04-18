@@ -1,50 +1,14 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createNativeStackNavigator = createNativeStackNavigator;
-const expo_glass_effect_1 = require("expo-glass-effect");
-const React = __importStar(require("react"));
-const composition_options_1 = require("./composition-options");
-const descriptors_context_1 = require("./descriptors-context");
-const usePreviewTransition_1 = require("./usePreviewTransition");
-const navigationParams_1 = require("../../navigationParams");
-const native_1 = require("../../react-navigation/native");
-const native_stack_1 = require("../../react-navigation/native-stack");
-const GLASS = (0, expo_glass_effect_1.isLiquidGlassAvailable)();
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
+import * as React from 'react';
+import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
+import { DescriptorsContext } from './descriptors-context';
+import { usePreviewTransition } from './usePreviewTransition';
+import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME, } from '../../navigationParams';
+import { createNavigatorFactory, StackActions, StackRouter, useNavigationBuilder, } from '../../react-navigation/native';
+import { NativeStackView, } from '../../react-navigation/native-stack';
+const GLASS = isLiquidGlassAvailable();
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
-    const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
+    const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder(StackRouter, {
         id,
         initialRouteName,
         children,
@@ -72,7 +36,7 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
                 // The popToTop will be automatically triggered on native side for native tabs
                 if (e.data?.__internalTabsType !== 'native') {
                     navigation.dispatch({
-                        ...native_1.StackActions.popToTop(),
+                        ...StackActions.popToTop(),
                         target: state.key,
                     });
                 }
@@ -81,7 +45,7 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         });
     }), [navigation, state.index, state.key]);
     // START FORK
-    const { computedState, computedDescriptors, navigationWrapper } = (0, usePreviewTransition_1.usePreviewTransition)(state, navigation, descriptors, describe);
+    const { computedState, computedDescriptors, navigationWrapper } = usePreviewTransition(state, navigation, descriptors, describe);
     // Map internal gesture option to React Navigation's gestureEnabled option
     // This allows Expo Router to override gesture behavior without affecting user settings
     const finalDescriptors = React.useMemo(() => {
@@ -90,7 +54,7 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         for (const key of Object.keys(computedDescriptors)) {
             const descriptor = computedDescriptors[key];
             const options = descriptor.options;
-            const internalGestureEnabled = options?.[navigationParams_1.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
+            const internalGestureEnabled = options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
             const needsGestureFix = internalGestureEnabled !== undefined;
             const needsGlassFix = GLASS && options?.presentation === 'formSheet';
             if (needsGestureFix || needsGlassFix) {
@@ -113,16 +77,16 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         }
         return needsNewMap ? result : computedDescriptors;
     }, [computedDescriptors]);
-    const { registry, contextValue } = (0, composition_options_1.useCompositionRegistry)();
-    const mergedDescriptors = React.useMemo(() => (0, composition_options_1.mergeOptions)(finalDescriptors, registry, computedState), [finalDescriptors, computedState, registry]);
+    const { registry, contextValue } = useCompositionRegistry();
+    const mergedDescriptors = React.useMemo(() => mergeOptions(finalDescriptors, registry, computedState), [finalDescriptors, computedState, registry]);
     // END FORK
     return (
     // START FORK
-    <descriptors_context_1.DescriptorsContext value={descriptors}>
+    <DescriptorsContext value={descriptors}>
       {/* END FORK */}
       <NavigationContent>
-        <composition_options_1.CompositionContext value={contextValue}>
-          <native_stack_1.NativeStackView {...rest} 
+        <CompositionContext value={contextValue}>
+          <NativeStackView {...rest} 
     // START FORK
     state={computedState} navigation={navigationWrapper} descriptors={mergedDescriptors} 
     // state={state}
@@ -130,14 +94,14 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
     // descriptors={descriptors}
     // END FORK
     describe={describe}/>
-        </composition_options_1.CompositionContext>
+        </CompositionContext>
       </NavigationContent>
       {/* START FORK */}
-    </descriptors_context_1.DescriptorsContext>
+    </DescriptorsContext>
     // END FORK
     );
 }
-function createNativeStackNavigator(config) {
-    return (0, native_1.createNavigatorFactory)(NativeStackNavigator)(config);
+export function createNativeStackNavigator(config) {
+    return createNavigatorFactory(NativeStackNavigator)(config);
 }
 //# sourceMappingURL=createNativeStackNavigator.js.map

@@ -1,59 +1,20 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Header = Header;
-const React = __importStar(require("react"));
-const react_1 = require("react");
-const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const search_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/search-icon.png"));
-const native_1 = require("../../native");
-const useFrameSize_1 = require("../useFrameSize");
-const HeaderBackButton_1 = require("./HeaderBackButton");
-const HeaderBackground_1 = require("./HeaderBackground");
-const HeaderButton_1 = require("./HeaderButton");
-const HeaderIcon_1 = require("./HeaderIcon");
-const HeaderSearchBar_1 = require("./HeaderSearchBar");
-const HeaderShownContext_1 = require("./HeaderShownContext");
-const HeaderTitle_1 = require("./HeaderTitle");
-const getDefaultHeaderHeight_1 = require("./getDefaultHeaderHeight");
-const color_1 = require("../../../utils/color");
+import * as React from 'react';
+import { use } from 'react';
+import { Animated, Platform, StyleSheet, View, } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
+import { useNavigation, useTheme } from '../../native';
+import { useFrameSize } from '../useFrameSize';
+import { HeaderBackButton } from './HeaderBackButton';
+import { HeaderBackground } from './HeaderBackground';
+import { HeaderButton } from './HeaderButton';
+import { HeaderIcon } from './HeaderIcon';
+import { HeaderSearchBar } from './HeaderSearchBar';
+import { HeaderShownContext } from './HeaderShownContext';
+import { HeaderTitle } from './HeaderTitle';
+import { getDefaultHeaderHeight } from './getDefaultHeaderHeight';
+import { Color } from '../../../utils/color';
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;
 const warnIfHeaderStylesDefined = (styles) => {
@@ -67,12 +28,12 @@ const warnIfHeaderStylesDefined = (styles) => {
         }
     });
 };
-function Header(props) {
-    const insets = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
-    const frame = (0, useFrameSize_1.useFrameSize)((size) => size, true);
-    const { colors } = (0, native_1.useTheme)();
-    const navigation = (0, native_1.useNavigation)();
-    const isParentHeaderShown = (0, react_1.use)(HeaderShownContext_1.HeaderShownContext);
+export function Header(props) {
+    const insets = useSafeAreaInsets();
+    const frame = useFrameSize((size) => size, true);
+    const { colors } = useTheme();
+    const navigation = useNavigation();
+    const isParentHeaderShown = use(HeaderShownContext);
     const [searchBarVisible, setSearchBarVisible] = React.useState(false);
     const [titleLayout, setTitleLayout] = React.useState(undefined);
     const onTitleLayout = (e) => {
@@ -84,9 +45,9 @@ function Header(props) {
             return { height, width };
         });
     };
-    const { layout = frame, modal = false, back, title, headerTitle: customTitle, headerTitleAlign = react_native_1.Platform.OS === 'ios' ? 'center' : 'left', headerLeft = back ? (props) => <HeaderBackButton_1.HeaderBackButton {...props}/> : undefined, headerSearchBarOptions, headerTransparent, headerTintColor, headerBackground, headerRight, headerTitleAllowFontScaling: titleAllowFontScaling, headerTitleStyle: titleStyle, headerLeftContainerStyle: leftContainerStyle, headerRightContainerStyle: rightContainerStyle, headerTitleContainerStyle: titleContainerStyle, headerBackButtonDisplayMode = react_native_1.Platform.OS === 'ios' ? 'default' : 'minimal', headerBackTitleStyle, headerBackgroundContainerStyle: backgroundContainerStyle, headerStyle: customHeaderStyle, headerShadowVisible, headerPressColor, headerPressOpacity, headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top, } = props;
-    const defaultHeight = (0, getDefaultHeaderHeight_1.getDefaultHeaderHeight)(layout, modal, headerStatusBarHeight);
-    const { height = defaultHeight, maxHeight, minHeight, backfaceVisibility, backgroundColor, borderBlockColor, borderBlockEndColor, borderBlockStartColor, borderBottomColor, borderBottomEndRadius, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStartRadius, borderBottomWidth, borderColor, borderCurve, borderEndColor, borderEndEndRadius, borderEndStartRadius, borderEndWidth, borderLeftColor, borderLeftWidth, borderRadius, borderRightColor, borderRightWidth, borderStartColor, borderStartEndRadius, borderStartStartRadius, borderStartWidth, borderStyle, borderTopColor, borderTopEndRadius, borderTopLeftRadius, borderTopRightRadius, borderTopStartRadius, borderTopWidth, borderWidth, boxShadow, elevation, filter, mixBlendMode, opacity, shadowColor, shadowOffset, shadowOpacity, shadowRadius, transform, transformOrigin, ...unsafeStyles } = react_native_1.StyleSheet.flatten(customHeaderStyle || {});
+    const { layout = frame, modal = false, back, title, headerTitle: customTitle, headerTitleAlign = Platform.OS === 'ios' ? 'center' : 'left', headerLeft = back ? (props) => <HeaderBackButton {...props}/> : undefined, headerSearchBarOptions, headerTransparent, headerTintColor, headerBackground, headerRight, headerTitleAllowFontScaling: titleAllowFontScaling, headerTitleStyle: titleStyle, headerLeftContainerStyle: leftContainerStyle, headerRightContainerStyle: rightContainerStyle, headerTitleContainerStyle: titleContainerStyle, headerBackButtonDisplayMode = Platform.OS === 'ios' ? 'default' : 'minimal', headerBackTitleStyle, headerBackgroundContainerStyle: backgroundContainerStyle, headerStyle: customHeaderStyle, headerShadowVisible, headerPressColor, headerPressOpacity, headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top, } = props;
+    const defaultHeight = getDefaultHeaderHeight(layout, modal, headerStatusBarHeight);
+    const { height = defaultHeight, maxHeight, minHeight, backfaceVisibility, backgroundColor, borderBlockColor, borderBlockEndColor, borderBlockStartColor, borderBottomColor, borderBottomEndRadius, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStartRadius, borderBottomWidth, borderColor, borderCurve, borderEndColor, borderEndEndRadius, borderEndStartRadius, borderEndWidth, borderLeftColor, borderLeftWidth, borderRadius, borderRightColor, borderRightWidth, borderStartColor, borderStartEndRadius, borderStartStartRadius, borderStartWidth, borderStyle, borderTopColor, borderTopEndRadius, borderTopLeftRadius, borderTopRightRadius, borderTopStartRadius, borderTopWidth, borderWidth, boxShadow, elevation, filter, mixBlendMode, opacity, shadowColor, shadowOffset, shadowOpacity, shadowRadius, transform, transformOrigin, ...unsafeStyles } = StyleSheet.flatten(customHeaderStyle || {});
     if (process.env.NODE_ENV !== 'production') {
         warnIfHeaderStylesDefined(unsafeStyles);
     }
@@ -152,7 +113,7 @@ function Header(props) {
         ...(headerTransparent && { backgroundColor: 'transparent' }),
         ...((headerTransparent || headerShadowVisible === false) && {
             borderBottomWidth: 0,
-            ...react_native_1.Platform.select({
+            ...Platform.select({
                 android: {
                     elevation: 0,
                 },
@@ -167,7 +128,7 @@ function Header(props) {
         ...safeStyles,
     };
     const iconTintColor = headerTintColor ??
-        react_native_1.Platform.select({
+        Platform.select({
             ios: colors.primary,
             default: colors.text,
         });
@@ -195,34 +156,34 @@ function Header(props) {
         })
         : null;
     const headerTitle = typeof customTitle !== 'function'
-        ? (props) => <HeaderTitle_1.HeaderTitle {...props}/>
+        ? (props) => <HeaderTitle {...props}/>
         : customTitle;
-    return (<react_native_1.Animated.View pointerEvents="box-none" style={[{ height, minHeight, maxHeight, opacity, transform }]}>
-      <react_native_1.Animated.View pointerEvents="box-none" style={[react_native_1.StyleSheet.absoluteFill, backgroundContainerStyle]}>
-        {headerBackground ? (headerBackground({ style: backgroundStyle })) : (<HeaderBackground_1.HeaderBackground pointerEvents={
+    return (<Animated.View pointerEvents="box-none" style={[{ height, minHeight, maxHeight, opacity, transform }]}>
+      <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFill, backgroundContainerStyle]}>
+        {headerBackground ? (headerBackground({ style: backgroundStyle })) : (<HeaderBackground pointerEvents={
             // Allow touch through the header when background color is transparent
             headerTransparent &&
                 (backgroundStyle.backgroundColor === 'transparent' ||
                     (backgroundStyle.backgroundColor &&
-                        (0, color_1.Color)(backgroundStyle.backgroundColor)?.alpha() === 0))
+                        Color(backgroundStyle.backgroundColor)?.alpha() === 0))
                 ? 'none'
                 : 'auto'} style={backgroundStyle}/>)}
-      </react_native_1.Animated.View>
-      <react_native_1.View pointerEvents="none" style={{ height: headerStatusBarHeight }}/>
-      <react_native_1.View pointerEvents="box-none" style={[
+      </Animated.View>
+      <View pointerEvents="none" style={{ height: headerStatusBarHeight }}/>
+      <View pointerEvents="box-none" style={[
             styles.content,
-            react_native_1.Platform.OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH ? styles.large : null,
+            Platform.OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH ? styles.large : null,
         ]}>
-        <react_native_1.Animated.View pointerEvents="box-none" style={[
+        <Animated.View pointerEvents="box-none" style={[
             styles.start,
             !searchBarVisible && headerTitleAlign === 'center' && styles.expand,
             { marginStart: insets.left },
             leftContainerStyle,
         ]}>
           {leftButton}
-        </react_native_1.Animated.View>
-        {react_native_1.Platform.OS === 'ios' || !searchBarVisible ? (<>
-            <react_native_1.Animated.View pointerEvents="box-none" style={[
+        </Animated.View>
+        {Platform.OS === 'ios' || !searchBarVisible ? (<>
+            <Animated.View pointerEvents="box-none" style={[
                 styles.title,
                 {
                     // Avoid the title from going offscreen or overlapping buttons
@@ -250,33 +211,33 @@ function Header(props) {
                 onLayout: onTitleLayout,
                 style: titleStyle,
             })}
-            </react_native_1.Animated.View>
-            <react_native_1.Animated.View pointerEvents="box-none" style={[styles.end, styles.expand, { marginEnd: insets.right }, rightContainerStyle]}>
+            </Animated.View>
+            <Animated.View pointerEvents="box-none" style={[styles.end, styles.expand, { marginEnd: insets.right }, rightContainerStyle]}>
               {rightButton}
-              {headerSearchBarOptions ? (<HeaderButton_1.HeaderButton tintColor={iconTintColor} pressColor={headerPressColor} pressOpacity={headerPressOpacity} onPress={() => {
+              {headerSearchBarOptions ? (<HeaderButton tintColor={iconTintColor} pressColor={headerPressColor} pressOpacity={headerPressOpacity} onPress={() => {
                     setSearchBarVisible(true);
                     headerSearchBarOptions?.onOpen?.();
                 }}>
-                  <HeaderIcon_1.HeaderIcon source={search_icon_png_1.default} tintColor={iconTintColor}/>
-                </HeaderButton_1.HeaderButton>) : null}
-            </react_native_1.Animated.View>
+                  <HeaderIcon source={searchIcon} tintColor={iconTintColor}/>
+                </HeaderButton>) : null}
+            </Animated.View>
           </>) : null}
-        {react_native_1.Platform.OS === 'ios' || searchBarVisible ? (<HeaderSearchBar_1.HeaderSearchBar {...headerSearchBarOptions} visible={searchBarVisible} onClose={() => {
+        {Platform.OS === 'ios' || searchBarVisible ? (<HeaderSearchBar {...headerSearchBarOptions} visible={searchBarVisible} onClose={() => {
                 setSearchBarVisible(false);
                 headerSearchBarOptions?.onClose?.();
             }} tintColor={headerTintColor} style={[
-                react_native_1.Platform.OS === 'ios'
+                Platform.OS === 'ios'
                     ? [
-                        react_native_1.StyleSheet.absoluteFill,
+                        StyleSheet.absoluteFill,
                         { paddingTop: headerStatusBarHeight ? 0 : 4 },
                         { backgroundColor: backgroundColor ?? colors.card },
                     ]
                     : !leftButton && { marginStart: 8 },
             ]}/>) : null}
-      </react_native_1.View>
-    </react_native_1.Animated.View>);
+      </View>
+    </Animated.View>);
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     content: {
         flex: 1,
         flexDirection: 'row',

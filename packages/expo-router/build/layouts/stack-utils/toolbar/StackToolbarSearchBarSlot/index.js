@@ -1,9 +1,6 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackToolbarSearchBarSlot = void 0;
-const native_1 = require("./native");
-const context_1 = require("../context");
+import { NativeToolbarSearchBarSlot } from './native';
+import { useToolbarPlacement } from '../context';
 /**
  * A search bar slot for the bottom toolbar. This reserves space for the search bar
  * in the toolbar and allows positioning it among other toolbar items.
@@ -30,12 +27,11 @@ const context_1 = require("../context");
  *
  * @platform iOS 26+
  */
-const StackToolbarSearchBarSlot = (props) => {
-    const placement = (0, context_1.useToolbarPlacement)();
+export const StackToolbarSearchBarSlot = (props) => {
+    const placement = useToolbarPlacement();
     if (placement !== 'bottom') {
         throw new Error('Stack.Toolbar.SearchBarSlot must be used inside a Stack.Toolbar');
     }
-    return <native_1.NativeToolbarSearchBarSlot {...props}/>;
+    return <NativeToolbarSearchBarSlot {...props}/>;
 };
-exports.StackToolbarSearchBarSlot = StackToolbarSearchBarSlot;
 //# sourceMappingURL=index.js.map

@@ -1,7 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.unstable_navigationEvents = void 0;
-exports.emit = emit;
 const availableEvents = [
     'pageWillRender',
     'pageFocused',
@@ -24,7 +20,7 @@ function addListener(eventType, callback) {
         }
     };
 }
-function emit(type, event) {
+export function emit(type, event) {
     const subscribersForEvent = subscribers[type];
     if (subscribersForEvent) {
         for (const callback of subscribersForEvent) {
@@ -36,7 +32,7 @@ let enabled = false;
 let currentPathname = undefined;
 let currentParams = undefined;
 let currentPathnameListener = undefined;
-exports.unstable_navigationEvents = {
+export const unstable_navigationEvents = {
     addListener,
     emit,
     enable: () => {
@@ -66,7 +62,7 @@ if (globalThis.expo) {
         Object.defineProperties(globalThis.expo.router, {
             navigationEvents: {
                 get() {
-                    return exports.unstable_navigationEvents;
+                    return unstable_navigationEvents;
                 },
                 enumerable: true,
             },

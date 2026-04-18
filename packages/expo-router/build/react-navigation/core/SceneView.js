@@ -1,56 +1,20 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SceneView = SceneView;
-const React = __importStar(require("react"));
-const react_1 = require("react");
-const EnsureSingleNavigator_1 = require("./EnsureSingleNavigator");
-const NavigationFocusedRouteStateContext_1 = require("./NavigationFocusedRouteStateContext");
-const NavigationStateContext_1 = require("./NavigationStateContext");
-const StaticContainer_1 = require("./StaticContainer");
-const isArrayEqual_1 = require("./isArrayEqual");
-const useOptionsGetters_1 = require("./useOptionsGetters");
+import * as React from 'react';
+import { use } from 'react';
+import { EnsureSingleNavigator } from './EnsureSingleNavigator';
+import { NavigationFocusedRouteStateContext, } from './NavigationFocusedRouteStateContext';
+import { NavigationStateContext } from './NavigationStateContext';
+import { StaticContainer } from './StaticContainer';
+import { isArrayEqual } from './isArrayEqual';
+import { useOptionsGetters } from './useOptionsGetters';
 /**
  * Component which takes care of rendering the screen for a route.
  * It provides all required contexts and applies optimizations when applicable.
  */
-function SceneView({ screen, route, navigation, routeState, getState, setState, options, clearOptions, }) {
+export function SceneView({ screen, route, navigation, routeState, getState, setState, options, clearOptions, }) {
     const navigatorKeyRef = React.useRef(undefined);
     const getKey = React.useCallback(() => navigatorKeyRef.current, []);
-    const { addOptionsGetter } = (0, useOptionsGetters_1.useOptionsGetters)({
+    const { addOptionsGetter } = useOptionsGetters({
         key: route.key,
         options,
         navigation,
@@ -74,7 +38,7 @@ function SceneView({ screen, route, navigation, routeState, getState, setState, 
             }
             return r;
         });
-        if (!(0, isArrayEqual_1.isArrayEqual)(state.routes, routes)) {
+        if (!isArrayEqual(state.routes, routes)) {
             setState({
                 ...state,
                 routes,
@@ -91,7 +55,7 @@ function SceneView({ screen, route, navigation, routeState, getState, setState, 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const getIsInitial = React.useCallback(() => isInitialRef.current, []);
-    const parentFocusedRouteState = (0, react_1.use)(NavigationFocusedRouteStateContext_1.NavigationFocusedRouteStateContext);
+    const parentFocusedRouteState = use(NavigationFocusedRouteStateContext);
     const focusedRouteState = React.useMemo(() => {
         const state = {
             routes: [
@@ -130,14 +94,14 @@ function SceneView({ screen, route, navigation, routeState, getState, setState, 
         addOptionsGetter,
     }), [routeState, getCurrentState, setCurrentState, getKey, setKey, getIsInitial, addOptionsGetter]);
     const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;
-    return (<NavigationStateContext_1.NavigationStateContext.Provider value={context}>
-      <NavigationFocusedRouteStateContext_1.NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
-        <EnsureSingleNavigator_1.EnsureSingleNavigator>
-          <StaticContainer_1.StaticContainer name={screen.name} render={ScreenComponent || screen.children} navigation={navigation} route={route}>
+    return (<NavigationStateContext.Provider value={context}>
+      <NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
+        <EnsureSingleNavigator>
+          <StaticContainer name={screen.name} render={ScreenComponent || screen.children} navigation={navigation} route={route}>
             {ScreenComponent !== undefined ? (<ScreenComponent navigation={navigation} route={route}/>) : screen.children !== undefined ? (screen.children({ navigation, route })) : null}
-          </StaticContainer_1.StaticContainer>
-        </EnsureSingleNavigator_1.EnsureSingleNavigator>
-      </NavigationFocusedRouteStateContext_1.NavigationFocusedRouteStateContext.Provider>
-    </NavigationStateContext_1.NavigationStateContext.Provider>);
+          </StaticContainer>
+        </EnsureSingleNavigator>
+      </NavigationFocusedRouteStateContext.Provider>
+    </NavigationStateContext.Provider>);
 }
 //# sourceMappingURL=SceneView.js.map

@@ -1,10 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RouterToolbarHost = RouterToolbarHost;
-exports.RouterToolbarItem = RouterToolbarItem;
-const expo_1 = require("expo");
-const RouterToolbarHostView = (0, expo_1.requireNativeView)('ExpoRouterToolbarModule', 'RouterToolbarHostView');
-function RouterToolbarHost(props) {
+import { requireNativeView } from 'expo';
+const RouterToolbarHostView = requireNativeView('ExpoRouterToolbarModule', 'RouterToolbarHostView');
+export function RouterToolbarHost(props) {
     return (<RouterToolbarHostView {...props} style={{
             position: 'absolute',
             top: 0,
@@ -14,8 +10,8 @@ function RouterToolbarHost(props) {
             backgroundColor: 'transparent',
         }}/>);
 }
-const RouterToolbarItemView = (0, expo_1.requireNativeView)('ExpoRouterToolbarModule', 'RouterToolbarItemView');
-function RouterToolbarItem(props) {
+const RouterToolbarItemView = requireNativeView('ExpoRouterToolbarModule', 'RouterToolbarItemView');
+export function RouterToolbarItem(props) {
     // Needed to pass shared object ID to native side
     const imageObjectId = props.image?.__expo_shared_object_id__;
     return <RouterToolbarItemView {...props} image={imageObjectId}/>;

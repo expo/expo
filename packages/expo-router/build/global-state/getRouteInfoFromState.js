@@ -1,10 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.defaultRouteInfo = void 0;
-exports.getRouteInfoFromState = getRouteInfoFromState;
-const constants_1 = require("../constants");
-const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
-exports.defaultRouteInfo = {
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
+import { appendBaseUrl } from '../fork/getPathFromState-forks';
+export const defaultRouteInfo = {
     unstable_globalHref: '',
     searchParams: new URLSearchParams(),
     pathname: '/',
@@ -14,23 +10,23 @@ exports.defaultRouteInfo = {
     // TODO: Remove this, it is not used anywhere
     isIndex: false,
 };
-function getRouteInfoFromState(state) {
+export function getRouteInfoFromState(state) {
     if (!state)
-        return exports.defaultRouteInfo;
+        return defaultRouteInfo;
     const index = 'index' in state ? (state.index ?? 0) : 0;
     let route = state.routes[index];
-    if (route.name === constants_1.NOT_FOUND_ROUTE_NAME || route.name === constants_1.SITEMAP_ROUTE_NAME) {
-        const path = route.path || (route.name === constants_1.NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
+    if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
+        const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
         return {
-            ...exports.defaultRouteInfo,
-            unstable_globalHref: (0, getPathFromState_forks_1.appendBaseUrl)(path),
+            ...defaultRouteInfo,
+            unstable_globalHref: appendBaseUrl(path),
             pathname: path,
             pathnameWithParams: path,
             segments: [route.name],
         };
     }
-    if (route.name !== constants_1.INTERNAL_SLOT_NAME) {
-        throw new Error(`Expected the first route to be ${constants_1.INTERNAL_SLOT_NAME}, but got ${route.name}`);
+    if (route.name !== INTERNAL_SLOT_NAME) {
+        throw new Error(`Expected the first route to be ${INTERNAL_SLOT_NAME}, but got ${route.name}`);
     }
     state = route.state;
     const segments = [];
@@ -153,7 +149,7 @@ function getRouteInfoFromState(state) {
         segments,
         pathname,
         params,
-        unstable_globalHref: (0, getPathFromState_forks_1.appendBaseUrl)(pathnameWithParams),
+        unstable_globalHref: appendBaseUrl(pathnameWithParams),
         searchParams,
         pathnameWithParams,
         // TODO: Remove this, it is not used anywhere

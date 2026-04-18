@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useSitemap = useSitemap;
-const react_1 = require("react");
-const Route_1 = require("../Route");
-const router_store_1 = require("../global-state/router-store");
-const matchers_1 = require("../matchers");
+import { useMemo } from 'react';
+import { sortRoutes } from '../Route';
+import { store } from '../global-state/router-store';
+import { matchDynamicName } from '../matchers';
 const routeSegments = (route, parents) => [
     ...parents,
     ...route.route.split('/'),
@@ -13,7 +10,7 @@ const routeHref = (route, parents) => '/' +
     routeSegments(route, parents)
         .map((segment) => {
         // add an extra layer of entropy to the url for deep dynamic routes
-        if ((0, matchers_1.matchDynamicName)(segment)?.deep) {
+        if (matchDynamicName(segment)?.deep) {
             return segment + '/' + Date.now();
         }
         // index must be erased but groups can be preserved.
@@ -40,11 +37,11 @@ const mapForRoute = (route, parents) => ({
     isInternal: route.internal ?? false,
     isGenerated: route.generated ?? false,
     children: [...route.children]
-        .sort(Route_1.sortRoutes)
+        .sort(sortRoutes)
         .map((child) => mapForRoute(child, routeSegments(route, parents))),
 });
-function useSitemap() {
-    const sitemap = (0, react_1.useMemo)(() => (router_store_1.store.routeNode ? mapForRoute(router_store_1.store.routeNode, []) : null), [router_store_1.store.routeNode]);
+export function useSitemap() {
+    const sitemap = useMemo(() => (store.routeNode ? mapForRoute(store.routeNode, []) : null), [store.routeNode]);
     return sitemap;
 }
 //# sourceMappingURL=useSitemap.js.map

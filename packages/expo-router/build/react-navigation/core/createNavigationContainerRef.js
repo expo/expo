@@ -1,12 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NOT_INITIALIZED_ERROR = void 0;
-exports.createNavigationContainerRef = createNavigationContainerRef;
-const routers_1 = require("../routers");
-exports.NOT_INITIALIZED_ERROR = "The 'navigation' object hasn't been initialized yet. This might happen if you don't have a navigator mounted, or if the navigator hasn't finished mounting. See https://reactnavigation.org/docs/navigating-without-navigation-prop#handling-initialization for more details.";
-function createNavigationContainerRef() {
+import { CommonActions } from '../routers';
+export const NOT_INITIALIZED_ERROR = "The 'navigation' object hasn't been initialized yet. This might happen if you don't have a navigator mounted, or if the navigator hasn't finished mounting. See https://reactnavigation.org/docs/navigating-without-navigation-prop#handling-initialization for more details.";
+export function createNavigationContainerRef() {
     const methods = [
-        ...Object.keys(routers_1.CommonActions),
+        ...Object.keys(CommonActions),
         'addListener',
         'removeListener',
         'resetRoot',
@@ -62,7 +58,7 @@ function createNavigationContainerRef() {
                             break;
                         }
                         default:
-                            console.error(exports.NOT_INITIALIZED_ERROR);
+                            console.error(NOT_INITIALIZED_ERROR);
                     }
                 }
                 else {

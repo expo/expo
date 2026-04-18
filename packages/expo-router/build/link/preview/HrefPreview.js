@@ -1,26 +1,23 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.HrefPreview = HrefPreview;
-const react_1 = require("react");
-const react_native_1 = require("react-native");
-const PreviewRouteContext_1 = require("./PreviewRouteContext");
-const constants_1 = require("../../constants");
-const composition_options_1 = require("../../fork/native-stack/composition-options");
-const router_store_1 = require("../../global-state/router-store");
-const utils_1 = require("../../global-state/utils");
-const hooks_1 = require("../../hooks");
-const native_1 = require("../../react-navigation/native");
-const useNavigation_1 = require("../../useNavigation");
-const useScreens_1 = require("../../useScreens");
-const linking_1 = require("../linking");
-function HrefPreview({ href }) {
-    const hrefState = (0, react_1.useMemo)(() => getHrefState(href), [href]);
+import { useMemo } from 'react';
+import { Text, View } from 'react-native';
+import { PreviewRouteContext } from './PreviewRouteContext';
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
+import { CompositionContext } from '../../fork/native-stack/composition-options';
+import { store } from '../../global-state/router-store';
+import { getRootStackRouteNames } from '../../global-state/utils';
+import { usePathname } from '../../hooks';
+import { NavigationContext, } from '../../react-navigation/native';
+import { useNavigation } from '../../useNavigation';
+import { getQualifiedRouteComponent } from '../../useScreens';
+import { getPathFromState } from '../linking';
+export function HrefPreview({ href }) {
+    const hrefState = useMemo(() => getHrefState(href), [href]);
     const index = hrefState?.index ?? 0;
     let isProtected = false;
-    if (hrefState?.routes[index]?.name === constants_1.INTERNAL_SLOT_NAME) {
+    if (hrefState?.routes[index]?.name === INTERNAL_SLOT_NAME) {
         let routerState = hrefState;
-        let rnState = router_store_1.store.state;
+        let rnState = store.state;
         while (routerState && rnState) {
             const routerRoute = routerState.routes[0];
             // When the route we want to show is not present in react-navigation state
@@ -42,19 +39,19 @@ function HrefPreview({ href }) {
     }
     const pathname = href.toString();
     const segments = pathname.split('/').filter(Boolean);
-    return (<PreviewRouteContext_1.PreviewRouteContext.Provider value={{
+    return (<PreviewRouteContext.Provider value={{
             params: {},
             pathname,
             segments,
         }}>
       <PreviewForInternalRoutes />
-    </PreviewRouteContext_1.PreviewRouteContext.Provider>);
+    </PreviewRouteContext.Provider>);
 }
 function PreviewForRootHrefState({ hrefState, href }) {
-    const navigation = (0, useNavigation_1.useNavigation)();
+    const navigation = useNavigation();
     const { routeNode, params, state } = getParamsAndNodeFromHref(hrefState);
-    const path = state ? (0, linking_1.getPathFromState)(state) : undefined;
-    const value = (0, react_1.useMemo)(() => ({
+    const path = state ? getPathFromState(state) : undefined;
+    const value = useMemo(() => ({
         params,
         pathname: href.toString(),
         segments: path?.split('/').filter(Boolean) || [],
@@ -64,42 +61,42 @@ function PreviewForRootHrefState({ hrefState, href }) {
     if (!routeNode) {
         return null;
     }
-    const Component = (0, useScreens_1.getQualifiedRouteComponent)(routeNode);
-    return (<PreviewRouteContext_1.PreviewRouteContext value={value}>
-      <composition_options_1.CompositionContext value={{ set: () => { }, unset: () => { } }}>
+    const Component = getQualifiedRouteComponent(routeNode);
+    return (<PreviewRouteContext value={value}>
+      <CompositionContext value={{ set: () => { }, unset: () => { } }}>
         {/* Using NavigationContext to override useNavigation */}
-        <native_1.NavigationContext value={navigationPropWithWarnings}>
+        <NavigationContext value={navigationPropWithWarnings}>
           <Component navigation={navigation}/>
-        </native_1.NavigationContext>
-      </composition_options_1.CompositionContext>
-    </PreviewRouteContext_1.PreviewRouteContext>);
+        </NavigationContext>
+      </CompositionContext>
+    </PreviewRouteContext>);
 }
 function PreviewForInternalRoutes() {
-    const pathname = (0, hooks_1.usePathname)();
-    return (<react_native_1.View style={{
+    const pathname = usePathname();
+    return (<View style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
             gap: 8,
             backgroundColor: 'white',
         }}>
-      <react_native_1.Text style={{ fontWeight: '600', fontSize: 24 }}>Invalid preview</react_native_1.Text>
-      <react_native_1.Text style={{ fontWeight: '200', fontSize: 14 }}>{pathname}</react_native_1.Text>
-    </react_native_1.View>);
+      <Text style={{ fontWeight: '600', fontSize: 24 }}>Invalid preview</Text>
+      <Text style={{ fontWeight: '200', fontSize: 14 }}>{pathname}</Text>
+    </View>);
 }
 function getHrefState(href) {
-    const hrefState = router_store_1.store.getStateForHref(href);
+    const hrefState = store.getStateForHref(href);
     return hrefState;
 }
 function getParamsAndNodeFromHref(hrefState) {
     const index = hrefState?.index ?? 0;
-    if (hrefState?.routes[index] && hrefState.routes[index].name !== constants_1.INTERNAL_SLOT_NAME) {
+    if (hrefState?.routes[index] && hrefState.routes[index].name !== INTERNAL_SLOT_NAME) {
         const name = hrefState.routes[index].name;
-        if (name === constants_1.SITEMAP_ROUTE_NAME || name === constants_1.NOT_FOUND_ROUTE_NAME) {
-            console.log(router_store_1.store.routeNode);
+        if (name === SITEMAP_ROUTE_NAME || name === NOT_FOUND_ROUTE_NAME) {
+            console.log(store.routeNode);
             console.log(hrefState);
         }
-        const error = `Expo Router Error: Expected navigation state to begin with one of [${(0, utils_1.getRootStackRouteNames)().join(', ')}] routes`;
+        const error = `Expo Router Error: Expected navigation state to begin with one of [${getRootStackRouteNames().join(', ')}] routes`;
         if (process.env.NODE_ENV !== 'production') {
             throw new Error(error);
         }
@@ -109,7 +106,7 @@ function getParamsAndNodeFromHref(hrefState) {
     }
     const initialState = hrefState?.routes[index]?.state;
     let state = initialState;
-    let routeNode = router_store_1.store.routeNode;
+    let routeNode = store.routeNode;
     const params = {};
     while (state && routeNode) {
         const route = state.routes[state.index || state.routes.length - 1];

@@ -1,9 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackSearchBar = StackSearchBar;
-exports.appendStackSearchBarPropsToOptions = appendStackSearchBarPropsToOptions;
-const react_1 = require("react");
-const composition_options_1 = require("../../fork/native-stack/composition-options");
+import { useMemo } from 'react';
+import { useCompositionOption } from '../../fork/native-stack/composition-options';
 /**
  * A search bar component that integrates with the native stack header.
  *
@@ -30,8 +26,8 @@ const composition_options_1 = require("../../fork/native-stack/composition-optio
  * }
  * ```
  */
-function StackSearchBar({ ref, autoCapitalize, autoFocus, barTintColor, tintColor, cancelButtonText, disableBackButtonOverride, hideNavigationBar, hideWhenScrolling, inputType, obscureBackground, onBlur, onCancelButtonPress, onChangeText, onClose, onFocus, onOpen, onSearchButtonPress, placeholder, placement, allowToolbarIntegration, textColor, hintTextColor, headerIconColor, shouldShowHintSearchIcon, }) {
-    const options = (0, react_1.useMemo)(() => appendStackSearchBarPropsToOptions({}, 
+export function StackSearchBar({ ref, autoCapitalize, autoFocus, barTintColor, tintColor, cancelButtonText, disableBackButtonOverride, hideNavigationBar, hideWhenScrolling, inputType, obscureBackground, onBlur, onCancelButtonPress, onChangeText, onClose, onFocus, onOpen, onSearchButtonPress, placeholder, placement, allowToolbarIntegration, textColor, hintTextColor, headerIconColor, shouldShowHintSearchIcon, }) {
+    const options = useMemo(() => appendStackSearchBarPropsToOptions({}, 
     // satisfies ensures every prop is listed here
     {
         ref,
@@ -86,10 +82,10 @@ function StackSearchBar({ ref, autoCapitalize, autoFocus, barTintColor, tintColo
         headerIconColor,
         shouldShowHintSearchIcon,
     ]);
-    (0, composition_options_1.useCompositionOption)(options);
+    useCompositionOption(options);
     return null;
 }
-function appendStackSearchBarPropsToOptions(options, props) {
+export function appendStackSearchBarPropsToOptions(options, props) {
     return {
         ...options,
         headerShown: true,

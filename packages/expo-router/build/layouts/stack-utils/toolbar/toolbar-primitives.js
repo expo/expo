@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackToolbarBadge = exports.StackToolbarIcon = exports.StackToolbarLabel = void 0;
-const primitives_1 = require("../../../primitives");
-exports.StackToolbarLabel = primitives_1.Label;
-exports.StackToolbarIcon = primitives_1.Icon;
-exports.StackToolbarBadge = primitives_1.Badge;
+import { Badge, Icon, Label } from '../../../primitives';
+export const StackToolbarLabel = Label;
+export const StackToolbarIcon = Icon;
+export const StackToolbarBadge = Badge;
 //# sourceMappingURL=toolbar-primitives.js.map

@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.MaterialTopTabBar = MaterialTopTabBar;
-const react_native_1 = require("react-native");
-const color_1 = require("../../../utils/color");
-const elements_1 = require("../../elements");
-const native_1 = require("../../native");
+import { StyleSheet } from 'react-native';
+import { Color } from '../../../utils/color';
+import { Text } from '../../elements';
+import { useLinkBuilder, useLocale, useTheme, } from '../../native';
 // Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabBar, TabBarIndicator } from 'react-native-tab-view';
 let TabBar;
@@ -18,18 +15,18 @@ catch (e) {
     throw new Error("Install the 'react-native-tab-view' package and its peer dependencies to use the Expo Router's TopTabs.");
 }
 const renderLabelDefault = ({ color, labelText, style, allowFontScaling }) => {
-    return (<elements_1.Text style={[{ color }, styles.label, style]} allowFontScaling={allowFontScaling}>
+    return (<Text style={[{ color }, styles.label, style]} allowFontScaling={allowFontScaling}>
       {labelText}
-    </elements_1.Text>);
+    </Text>);
 };
-function MaterialTopTabBar({ state, navigation, descriptors, ...rest }) {
-    const { colors } = (0, native_1.useTheme)();
-    const { direction } = (0, native_1.useLocale)();
-    const { buildHref } = (0, native_1.useLinkBuilder)();
+export function MaterialTopTabBar({ state, navigation, descriptors, ...rest }) {
+    const { colors } = useTheme();
+    const { direction } = useLocale();
+    const { buildHref } = useLinkBuilder();
     const focusedOptions = descriptors[state.routes[state.index].key].options;
     const activeColor = focusedOptions.tabBarActiveTintColor ?? colors.primary;
     const inactiveColor = focusedOptions.tabBarInactiveTintColor ??
-        (0, color_1.Color)(activeColor)?.alpha(0.5).string() ??
+        Color(activeColor)?.alpha(0.5).string() ??
         colors.text;
     const tabBarOptions = Object.fromEntries(state.routes.map((route) => {
         const { options } = descriptors[route.key];
@@ -82,7 +79,7 @@ function MaterialTopTabBar({ state, navigation, descriptors, ...rest }) {
             })) : (<TabBarIndicator navigationState={state} {...rest}/>);
         }}/>);
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     label: {
         textAlign: 'center',
         fontSize: 14,

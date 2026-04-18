@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMaterialTopTabNavigator = createMaterialTopTabNavigator;
-const native_1 = require("../../native");
-const MaterialTopTabView_1 = require("../views/MaterialTopTabView");
+import { createNavigatorFactory, TabRouter, useNavigationBuilder, } from '../../native';
+import { MaterialTopTabView } from '../views/MaterialTopTabView';
 function MaterialTopTabNavigator({ id, initialRouteName, backBehavior, UNSTABLE_routeNamesChangeBehavior, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
-    const { state, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.TabRouter, {
+    const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder(TabRouter, {
         id,
         initialRouteName,
         backBehavior,
@@ -17,10 +14,10 @@ function MaterialTopTabNavigator({ id, initialRouteName, backBehavior, UNSTABLE_
         UNSTABLE_router,
     });
     return (<NavigationContent>
-      <MaterialTopTabView_1.MaterialTopTabView {...rest} state={state} navigation={navigation} descriptors={descriptors}/>
+      <MaterialTopTabView {...rest} state={state} navigation={navigation} descriptors={descriptors}/>
     </NavigationContent>);
 }
-function createMaterialTopTabNavigator(config) {
-    return (0, native_1.createNavigatorFactory)(MaterialTopTabNavigator)(config);
+export function createMaterialTopTabNavigator(config) {
+    return createNavigatorFactory(MaterialTopTabNavigator)(config);
 }
 //# sourceMappingURL=createMaterialTopTabNavigator.js.map

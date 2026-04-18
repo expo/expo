@@ -1,10 +1,6 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackToolbarView = void 0;
-exports.convertStackToolbarViewPropsToRNHeaderItem = convertStackToolbarViewPropsToRNHeaderItem;
-const native_1 = require("./native");
-const context_1 = require("../context");
+import { NativeToolbarView } from './native';
+import { useToolbarPlacement } from '../context';
 /**
  * A wrapper to render custom content in the toolbar.
  *
@@ -36,15 +32,14 @@ const context_1 = require("../context");
  * @platform android
  * @platform ios
  */
-const StackToolbarView = (props) => {
-    const placement = (0, context_1.useToolbarPlacement)();
+export const StackToolbarView = (props) => {
+    const placement = useToolbarPlacement();
     if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
         throw new Error('Stack.Toolbar.View must be used inside a Stack.Toolbar');
     }
-    return <native_1.NativeToolbarView {...props}>{props.children}</native_1.NativeToolbarView>;
+    return <NativeToolbarView {...props}>{props.children}</NativeToolbarView>;
 };
-exports.StackToolbarView = StackToolbarView;
-function convertStackToolbarViewPropsToRNHeaderItem(props) {
+export function convertStackToolbarViewPropsToRNHeaderItem(props) {
     if (props.hidden) {
         return undefined;
     }

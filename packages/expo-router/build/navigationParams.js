@@ -1,15 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = void 0;
-exports.appendInternalExpoRouterParams = appendInternalExpoRouterParams;
-exports.getInternalExpoRouterParams = getInternalExpoRouterParams;
-exports.hasParam = hasParam;
-exports.removeParams = removeParams;
-exports.removeInternalExpoRouterParams = removeInternalExpoRouterParams;
-exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
-exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = '__internal__expo_router_is_preview_navigation';
-exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME = '__internal_expo_router_zoom_transition_source_id';
-exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = '__internal_expo_router_zoom_transition_screen_id';
+export const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
+export const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = '__internal__expo_router_is_preview_navigation';
+export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME = '__internal_expo_router_zoom_transition_source_id';
+export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = '__internal_expo_router_zoom_transition_screen_id';
 /**
  * Internal navigation option name used to control gesture-based dismissal independently
  * from the user-facing `gestureEnabled` option.
@@ -18,14 +10,14 @@ exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = '__internal_
  * features (like zoom transitions) without affecting the user's `gestureEnabled` setting.
  * The internal value takes precedence and is mapped to `gestureEnabled` in the navigator.
  */
-exports.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = 'internal_gestureEnabled';
+export const INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = 'internal_gestureEnabled';
 const internalExpoRouterParamNames = [
-    exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
-    exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
-    exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
-    exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+    INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+    INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+    INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
+    INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
 ];
-function appendInternalExpoRouterParams(params, expoParams) {
+export function appendInternalExpoRouterParams(params, expoParams) {
     let newParams = {};
     // Using nested params is a workaround for the issue with the preview key not being passed to the params
     // https://github.com/Ubax/react-navigation/blob/main/packages/core/src/useNavigationBuilder.tsx#L573
@@ -50,7 +42,7 @@ function appendInternalExpoRouterParams(params, expoParams) {
     }
     return newParams;
 }
-function getInternalExpoRouterParams(_params) {
+export function getInternalExpoRouterParams(_params) {
     const expoParams = {};
     const params = _params ? _params : {};
     const nestedParams = 'params' in params && typeof params.params === 'object' && params.params
@@ -66,7 +58,7 @@ function getInternalExpoRouterParams(_params) {
     }
     return expoParams;
 }
-function hasParam(params, paramName) {
+export function hasParam(params, paramName) {
     if (!!params && typeof params === 'object') {
         const recordParams = params;
         if (recordParams[paramName] !== undefined) {
@@ -78,7 +70,7 @@ function hasParam(params, paramName) {
     }
     return false;
 }
-function removeParams(params, paramName) {
+export function removeParams(params, paramName) {
     if (!params) {
         return undefined;
     }
@@ -92,7 +84,7 @@ function removeParams(params, paramName) {
     }
     return newParams;
 }
-function removeInternalExpoRouterParams(params) {
+export function removeInternalExpoRouterParams(params) {
     if (!params) {
         return undefined;
     }

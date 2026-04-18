@@ -1,10 +1,7 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Redirect = Redirect;
-const hooks_1 = require("../hooks");
-const useFocusEffect_1 = require("../useFocusEffect");
-const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
+import { useRouter } from '../hooks';
+import { useFocusEffect } from '../useFocusEffect';
+import { useIsPreview } from './preview/PreviewRouteContext';
 /**
  * Redirects to the `href` as soon as the component is mounted.
  *
@@ -28,10 +25,10 @@ const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
  * }
  * ```
  */
-function Redirect({ href, relativeToDirectory, withAnchor }) {
-    const router = (0, hooks_1.useRouter)();
-    const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
-    (0, useFocusEffect_1.useFocusEffect)(() => {
+export function Redirect({ href, relativeToDirectory, withAnchor }) {
+    const router = useRouter();
+    const isPreview = useIsPreview();
+    useFocusEffect(() => {
         if (!isPreview) {
             try {
                 router.replace(href, { relativeToDirectory, withAnchor });

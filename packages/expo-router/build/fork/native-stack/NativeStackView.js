@@ -1,18 +1,15 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeStackView = NativeStackView;
-const react_1 = require("react");
-const RootModal_1 = require("../../layouts/RootModal");
-const native_stack_1 = require("../../react-navigation/native-stack");
-function NativeStackView(props) {
-    return (<RootModal_1.RootModalProvider>
+import { use, useMemo } from 'react';
+import { RootModalContext, RootModalProvider } from '../../layouts/RootModal';
+import { NativeStackView as RNNativeStackView } from '../../react-navigation/native-stack';
+export function NativeStackView(props) {
+    return (<RootModalProvider>
       <NativeStackViewInner {...props}/>
-    </RootModal_1.RootModalProvider>);
+    </RootModalProvider>);
 }
 function NativeStackViewInner(props) {
-    const rootModals = (0, react_1.use)(RootModal_1.RootModalContext);
+    const rootModals = use(RootModalContext);
     // Append the root modals to the state
-    const state = (0, react_1.useMemo)(() => {
+    const state = useMemo(() => {
         if (rootModals.routes.length === 0) {
             return props.state;
         }
@@ -21,6 +18,6 @@ function NativeStackViewInner(props) {
             routes: props.state.routes.concat(rootModals.routes),
         };
     }, [props.state, rootModals.routes]);
-    return <native_stack_1.NativeStackView {...props} state={state}/>;
+    return <RNNativeStackView {...props} state={state}/>;
 }
 //# sourceMappingURL=NativeStackView.js.map

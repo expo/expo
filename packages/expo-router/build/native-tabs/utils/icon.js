@@ -1,15 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertIconColorPropToObject = convertIconColorPropToObject;
-exports.useAwaitedScreensIcon = useAwaitedScreensIcon;
-exports.convertOptionsIconToRNScreensPropsIcon = convertOptionsIconToRNScreensPropsIcon;
-exports.convertOptionsIconToIOSPropsIcon = convertOptionsIconToIOSPropsIcon;
-exports.convertOptionsIconToAndroidPropsIcon = convertOptionsIconToAndroidPropsIcon;
-exports.convertComponentSrcToImageSource = convertComponentSrcToImageSource;
-const react_1 = require("react");
-const children_1 = require("../../utils/children");
-const elements_1 = require("../common/elements");
-function convertIconColorPropToObject(iconColor) {
+import { useEffect, useMemo, useState } from 'react';
+import { isChildOfType } from '../../utils/children';
+import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../common/elements';
+export function convertIconColorPropToObject(iconColor) {
     if (iconColor) {
         if (typeof iconColor === 'object' && ('default' in iconColor || 'selected' in iconColor)) {
             return iconColor;
@@ -20,11 +12,11 @@ function convertIconColorPropToObject(iconColor) {
     }
     return {};
 }
-function useAwaitedScreensIcon(icon) {
+export function useAwaitedScreensIcon(icon) {
     const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
     const renderingMode = icon && typeof icon === 'object' && 'renderingMode' in icon ? icon.renderingMode : undefined;
-    const [awaitedIcon, setAwaitedIcon] = (0, react_1.useState)(undefined);
-    (0, react_1.useEffect)(() => {
+    const [awaitedIcon, setAwaitedIcon] = useState(undefined);
+    useEffect(() => {
         const loadIcon = async () => {
             if (src && src instanceof Promise) {
                 const awaitedSrc = await src;
@@ -39,7 +31,7 @@ function useAwaitedScreensIcon(icon) {
         // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
         // So we should be safe with promise resolving
     }, [src]);
-    return (0, react_1.useMemo)(() => {
+    return useMemo(() => {
         const resolved = isAwaitedIcon(icon) ? icon : awaitedIcon;
         if (resolved && renderingMode && 'src' in resolved) {
             return { ...resolved, renderingMode };
@@ -50,7 +42,7 @@ function useAwaitedScreensIcon(icon) {
 function isAwaitedIcon(icon) {
     return !icon || !('src' in icon && icon.src instanceof Promise);
 }
-function convertOptionsIconToRNScreensPropsIcon(icon, iconColor) {
+export function convertOptionsIconToRNScreensPropsIcon(icon, iconColor) {
     if (!icon) {
         return undefined;
     }
@@ -59,7 +51,7 @@ function convertOptionsIconToRNScreensPropsIcon(icon, iconColor) {
         android: convertOptionsIconToAndroidPropsIcon(icon),
     };
 }
-function convertOptionsIconToIOSPropsIcon(icon, iconColor) {
+export function convertOptionsIconToIOSPropsIcon(icon, iconColor) {
     if (icon && 'sf' in icon && icon.sf) {
         return {
             type: 'sfSymbol',
@@ -79,7 +71,7 @@ function convertOptionsIconToIOSPropsIcon(icon, iconColor) {
     }
     return undefined;
 }
-function convertOptionsIconToAndroidPropsIcon(icon) {
+export function convertOptionsIconToAndroidPropsIcon(icon) {
     if (icon && 'drawable' in icon && icon.drawable) {
         return {
             type: 'drawableResource',
@@ -91,13 +83,13 @@ function convertOptionsIconToAndroidPropsIcon(icon) {
     }
     return undefined;
 }
-function convertComponentSrcToImageSource(src, renderingMode) {
+export function convertComponentSrcToImageSource(src, renderingMode) {
     let result;
-    if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerVectorIcon)) {
+    if (isChildOfType(src, NativeTabsTriggerVectorIcon)) {
         const props = src.props;
         result = { src: props.family.getImageSource(props.name, 24, 'white') };
     }
-    else if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerPromiseIcon)) {
+    else if (isChildOfType(src, NativeTabsTriggerPromiseIcon)) {
         result = { src: src.props.loader() };
     }
     else {

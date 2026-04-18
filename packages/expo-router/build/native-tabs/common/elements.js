@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabsBottomAccessory = exports.NativeTabsTriggerBadge = exports.NativeTabsTriggerPromiseIcon = exports.NativeTabsTriggerVectorIcon = exports.NativeTabsTriggerIcon = exports.NativeTabsTriggerLabel = void 0;
-const primitives_1 = require("../../primitives");
-exports.NativeTabsTriggerLabel = primitives_1.Label;
+import { Label, Icon, Badge, VectorIcon } from '../../primitives';
+export const NativeTabsTriggerLabel = Label;
 /**
  * Renders an icon for the tab.
  *
@@ -22,7 +19,7 @@ exports.NativeTabsTriggerLabel = primitives_1.Label;
  * @platform ios
  * @platform android
  */
-exports.NativeTabsTriggerIcon = primitives_1.Icon;
+export const NativeTabsTriggerIcon = Icon;
 /**
  * Helper component which can be used to load vector icons for `NativeTabs`.
  *
@@ -42,12 +39,11 @@ exports.NativeTabsTriggerIcon = primitives_1.Icon;
  * }
  * ```
  */
-exports.NativeTabsTriggerVectorIcon = primitives_1.VectorIcon;
-const NativeTabsTriggerPromiseIcon = function NativeTabsTriggerPromiseIcon(props) {
+export const NativeTabsTriggerVectorIcon = VectorIcon;
+export const NativeTabsTriggerPromiseIcon = function NativeTabsTriggerPromiseIcon(props) {
     return null;
 };
-exports.NativeTabsTriggerPromiseIcon = NativeTabsTriggerPromiseIcon;
-exports.NativeTabsTriggerBadge = primitives_1.Badge;
+export const NativeTabsTriggerBadge = Badge;
 /**
  * A [bottom accessory](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for `NativeTabs` on iOS 26 and above.
  *
@@ -69,8 +65,7 @@ exports.NativeTabsTriggerBadge = primitives_1.Badge;
  *
  * @platform iOS 26+
  */
-const NativeTabsBottomAccessory = () => {
+export const NativeTabsBottomAccessory = () => {
     return null;
 };
-exports.NativeTabsBottomAccessory = NativeTabsBottomAccessory;
 //# sourceMappingURL=elements.js.map

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isRoutePreloadedInStack = isRoutePreloadedInStack;
-function isRoutePreloadedInStack(navigationState, route) {
+export function isRoutePreloadedInStack(navigationState, route) {
     if (!navigationState || navigationState.type !== 'stack') {
         return false;
     }

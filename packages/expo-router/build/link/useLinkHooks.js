@@ -1,19 +1,15 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useHrefAttrs = void 0;
-exports.useInteropClassName = useInteropClassName;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-const react_1 = require("react");
-const react_native_1 = require("react-native");
+import { useMemo } from 'react';
+import { Platform } from 'react-native';
 // Mutate the style prop to add the className on web.
-function useInteropClassName(props) {
-    if (react_native_1.Platform.OS !== 'web') {
+export function useInteropClassName(props) {
+    if (Platform.OS !== 'web') {
         return props.style;
     }
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    return (0, react_1.useMemo)(() => {
+    return useMemo(() => {
         if (props.className == null) {
             return props.style;
         }
@@ -27,9 +23,9 @@ function useInteropClassName(props) {
         return [props.style, cssStyle];
     }, [props.style, props.className]);
 }
-exports.useHrefAttrs = react_native_1.Platform.select({
+export const useHrefAttrs = Platform.select({
     web: function useHrefAttrs({ asChild, rel, target, download }) {
-        return (0, react_1.useMemo)(() => {
+        return useMemo(() => {
             const hrefAttrs = {
                 rel,
                 target,

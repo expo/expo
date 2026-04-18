@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Screen = Screen;
 /**
  * Empty component used for specifying route configuration.
  */
-function Screen(_) {
+export function Screen(_) {
     /* istanbul ignore next */
     return null;
 }

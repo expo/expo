@@ -1,20 +1,14 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.extractPathFromURL = extractPathFromURL;
-const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-function extractPathFromURL(prefixes, url) {
+import escapeStringRegexp from 'escape-string-regexp';
+export function extractPathFromURL(prefixes, url) {
     for (const prefix of prefixes) {
         const protocol = prefix.match(/^[^:]+:/)?.[0] ?? '';
         const host = prefix
-            .replace(new RegExp(`^${(0, escape_string_regexp_1.default)(protocol)}`), '')
+            .replace(new RegExp(`^${escapeStringRegexp(protocol)}`), '')
             .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
             .replace(/^\//, ''); // Remove extra leading slash
-        const prefixRegex = new RegExp(`^${(0, escape_string_regexp_1.default)(protocol)}(/)*${host
+        const prefixRegex = new RegExp(`^${escapeStringRegexp(protocol)}(/)*${host
             .split('.')
-            .map((it) => (it === '*' ? '[^/]+' : (0, escape_string_regexp_1.default)(it)))
+            .map((it) => (it === '*' ? '[^/]+' : escapeStringRegexp(it)))
             .join('\\.')}`);
         const [originAndPath, ...searchParams] = url.split('?');
         const normalizedURL = originAndPath

@@ -1,6 +1,2 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeToolbarSpacer = void 0;
-const NativeToolbarSpacer = () => null;
-exports.NativeToolbarSpacer = NativeToolbarSpacer;
+export const NativeToolbarSpacer = () => null;
 //# sourceMappingURL=native.js.map

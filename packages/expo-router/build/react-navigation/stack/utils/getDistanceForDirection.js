@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDistanceForDirection = getDistanceForDirection;
-const getInvertedMultiplier_1 = require("./getInvertedMultiplier");
-function getDistanceForDirection(layout, gestureDirection, isRTL) {
-    const multiplier = (0, getInvertedMultiplier_1.getInvertedMultiplier)(gestureDirection, isRTL);
+import { getInvertedMultiplier } from './getInvertedMultiplier';
+export function getDistanceForDirection(layout, gestureDirection, isRTL) {
+    const multiplier = getInvertedMultiplier(gestureDirection, isRTL);
     switch (gestureDirection) {
         case 'vertical':
         case 'vertical-inverted':

@@ -1,54 +1,17 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTabBarHeight = void 0;
-exports.BottomTabBar = BottomTabBar;
-const react_1 = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const elements_1 = require("../../elements");
-const native_1 = require("../../native");
-const BottomTabItem_1 = require("./BottomTabItem");
-const BottomTabBarHeightCallbackContext_1 = require("../utils/BottomTabBarHeightCallbackContext");
-const useIsKeyboardShown_1 = require("../utils/useIsKeyboardShown");
+import React, { use } from 'react';
+import { Animated, Platform, StyleSheet, View, } from 'react-native';
+import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
+import { CommonActions, NavigationProvider, useLinkBuilder, useLocale, useTheme, } from '../../native';
+import { BottomTabItem } from './BottomTabItem';
+import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
+import { useIsKeyboardShown } from '../utils/useIsKeyboardShown';
 const TABBAR_HEIGHT_UIKIT = 49;
 const TABBAR_HEIGHT_UIKIT_COMPACT = 32;
 const SPACING_UIKIT = 15;
 const SPACING_MATERIAL = 12;
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
-const useNativeDriver = react_native_1.Platform.OS !== 'web';
+const useNativeDriver = Platform.OS !== 'web';
 const shouldUseHorizontalLabels = ({ state, descriptors, dimensions }) => {
     const { tabBarLabelPosition } = descriptors[state.routes[state.index].key].options;
     if (tabBarLabelPosition) {
@@ -63,7 +26,7 @@ const shouldUseHorizontalLabels = ({ state, descriptors, dimensions }) => {
         // Screen size matches a tablet
         const maxTabWidth = state.routes.reduce((acc, route) => {
             const { tabBarItemStyle } = descriptors[route.key].options;
-            const flattenedStyle = react_native_1.StyleSheet.flatten(tabBarItemStyle);
+            const flattenedStyle = StyleSheet.flatten(tabBarItemStyle);
             if (flattenedStyle) {
                 if (typeof flattenedStyle.width === 'number') {
                     return acc + flattenedStyle.width;
@@ -91,14 +54,14 @@ const isCompact = ({ state, descriptors, dimensions }) => {
         descriptors,
         dimensions,
     });
-    if (react_native_1.Platform.OS === 'ios' && !react_native_1.Platform.isPad && isLandscape && horizontalLabels) {
+    if (Platform.OS === 'ios' && !Platform.isPad && isLandscape && horizontalLabels) {
         return true;
     }
     return false;
 };
-const getTabBarHeight = ({ state, descriptors, dimensions, insets, style, }) => {
+export const getTabBarHeight = ({ state, descriptors, dimensions, insets, style, }) => {
     const { tabBarPosition } = descriptors[state.routes[state.index].key].options;
-    const flattenedStyle = react_native_1.StyleSheet.flatten(style);
+    const flattenedStyle = StyleSheet.flatten(style);
     const customHeight = flattenedStyle && 'height' in flattenedStyle ? flattenedStyle.height : undefined;
     if (typeof customHeight === 'number') {
         return customHeight;
@@ -109,11 +72,10 @@ const getTabBarHeight = ({ state, descriptors, dimensions, insets, style, }) => 
     }
     return TABBAR_HEIGHT_UIKIT + inset;
 };
-exports.getTabBarHeight = getTabBarHeight;
-function BottomTabBar({ state, navigation, descriptors, insets, style }) {
-    const { colors } = (0, native_1.useTheme)();
-    const { direction } = (0, native_1.useLocale)();
-    const { buildHref } = (0, native_1.useLinkBuilder)();
+export function BottomTabBar({ state, navigation, descriptors, insets, style }) {
+    const { colors } = useTheme();
+    const { direction } = useLocale();
+    const { buildHref } = useLinkBuilder();
     const focusedRoute = state.routes[state.index];
     const focusedDescriptor = descriptors[focusedRoute.key];
     const focusedOptions = focusedDescriptor.options;
@@ -126,19 +88,19 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
         (tabBarPosition === 'left' || tabBarPosition === 'right')) {
         throw new Error("The 'below-icon' label position for tab bar is only supported when 'tabBarPosition' is set to 'top' or 'bottom' when using the 'uikit' variant.");
     }
-    const isKeyboardShown = (0, useIsKeyboardShown_1.useIsKeyboardShown)();
-    const onHeightChange = (0, react_1.use)(BottomTabBarHeightCallbackContext_1.BottomTabBarHeightCallbackContext);
+    const isKeyboardShown = useIsKeyboardShown();
+    const onHeightChange = use(BottomTabBarHeightCallbackContext);
     const shouldShowTabBar = !(tabBarHideOnKeyboard && isKeyboardShown);
-    const visibilityAnimationConfigRef = react_1.default.useRef(tabBarVisibilityAnimationConfig);
-    react_1.default.useEffect(() => {
+    const visibilityAnimationConfigRef = React.useRef(tabBarVisibilityAnimationConfig);
+    React.useEffect(() => {
         visibilityAnimationConfigRef.current = tabBarVisibilityAnimationConfig;
     });
-    const [isTabBarHidden, setIsTabBarHidden] = react_1.default.useState(!shouldShowTabBar);
-    const [visible] = react_1.default.useState(() => new react_native_1.Animated.Value(shouldShowTabBar ? 1 : 0));
-    react_1.default.useEffect(() => {
+    const [isTabBarHidden, setIsTabBarHidden] = React.useState(!shouldShowTabBar);
+    const [visible] = React.useState(() => new Animated.Value(shouldShowTabBar ? 1 : 0));
+    React.useEffect(() => {
         const visibilityAnimationConfig = visibilityAnimationConfigRef.current;
         if (shouldShowTabBar) {
-            const animation = visibilityAnimationConfig?.show?.animation === 'spring' ? react_native_1.Animated.spring : react_native_1.Animated.timing;
+            const animation = visibilityAnimationConfig?.show?.animation === 'spring' ? Animated.spring : Animated.timing;
             animation(visible, {
                 toValue: 1,
                 useNativeDriver,
@@ -152,7 +114,7 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
         }
         else {
             setIsTabBarHidden(true);
-            const animation = visibilityAnimationConfig?.hide?.animation === 'spring' ? react_native_1.Animated.spring : react_native_1.Animated.timing;
+            const animation = visibilityAnimationConfig?.hide?.animation === 'spring' ? Animated.spring : Animated.timing;
             animation(visible, {
                 toValue: 0,
                 useNativeDriver,
@@ -162,7 +124,7 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
         }
         return () => visible.stopAnimation();
     }, [visible, shouldShowTabBar]);
-    const [layout, setLayout] = react_1.default.useState({
+    const [layout, setLayout] = React.useState({
         height: 0,
     });
     const handleLayout = (e) => {
@@ -178,42 +140,42 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
         });
     };
     const { routes } = state;
-    const tabBarHeight = (0, elements_1.useFrameSize)((dimensions) => (0, exports.getTabBarHeight)({
+    const tabBarHeight = useFrameSize((dimensions) => getTabBarHeight({
         state,
         descriptors,
         insets,
         dimensions,
         style: [tabBarStyle, style],
     }));
-    const hasHorizontalLabels = (0, elements_1.useFrameSize)((dimensions) => shouldUseHorizontalLabels({
+    const hasHorizontalLabels = useFrameSize((dimensions) => shouldUseHorizontalLabels({
         state,
         descriptors,
         dimensions,
     }));
-    const compact = (0, elements_1.useFrameSize)((dimensions) => isCompact({ state, descriptors, dimensions }));
+    const compact = useFrameSize((dimensions) => isCompact({ state, descriptors, dimensions }));
     const sidebar = tabBarPosition === 'left' || tabBarPosition === 'right';
     const spacing = tabBarVariant === 'material' ? SPACING_MATERIAL : SPACING_UIKIT;
-    const minSidebarWidth = (0, elements_1.useFrameSize)((size) => sidebar && hasHorizontalLabels ? (0, elements_1.getDefaultSidebarWidth)(size) : 0);
+    const minSidebarWidth = useFrameSize((size) => sidebar && hasHorizontalLabels ? getDefaultSidebarWidth(size) : 0);
     const tabBarBackgroundElement = tabBarBackground?.();
-    return (<react_native_1.Animated.View style={[
+    return (<Animated.View style={[
             tabBarPosition === 'left'
                 ? styles.start
                 : tabBarPosition === 'right'
                     ? styles.end
                     : styles.bottom,
-            (react_native_1.Platform.OS === 'web'
+            (Platform.OS === 'web'
                 ? tabBarPosition === 'right'
                 : (direction === 'rtl' && tabBarPosition === 'left') ||
                     (direction !== 'rtl' && tabBarPosition === 'right'))
-                ? { borderLeftWidth: react_native_1.StyleSheet.hairlineWidth }
-                : (react_native_1.Platform.OS === 'web'
+                ? { borderLeftWidth: StyleSheet.hairlineWidth }
+                : (Platform.OS === 'web'
                     ? tabBarPosition === 'left'
                     : (direction === 'rtl' && tabBarPosition === 'right') ||
                         (direction !== 'rtl' && tabBarPosition === 'left'))
-                    ? { borderRightWidth: react_native_1.StyleSheet.hairlineWidth }
+                    ? { borderRightWidth: StyleSheet.hairlineWidth }
                     : tabBarPosition === 'top'
-                        ? { borderBottomWidth: react_native_1.StyleSheet.hairlineWidth }
-                        : { borderTopWidth: react_native_1.StyleSheet.hairlineWidth },
+                        ? { borderBottomWidth: StyleSheet.hairlineWidth }
+                        : { borderTopWidth: StyleSheet.hairlineWidth },
             {
                 backgroundColor: tabBarBackgroundElement != null ? 'transparent' : colors.card,
                 borderColor: colors.border,
@@ -235,7 +197,7 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
                                     outputRange: [
                                         layout.height +
                                             insets[tabBarPosition === 'top' ? 'top' : 'bottom'] +
-                                            react_native_1.StyleSheet.hairlineWidth,
+                                            StyleSheet.hairlineWidth,
                                         0,
                                     ],
                                 }),
@@ -254,10 +216,10 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
                 ],
             tabBarStyle,
         ]} pointerEvents={isTabBarHidden ? 'none' : 'auto'} onLayout={sidebar ? undefined : handleLayout}>
-      <react_native_1.View pointerEvents="none" style={react_native_1.StyleSheet.absoluteFill}>
+      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {tabBarBackgroundElement}
-      </react_native_1.View>
-      <react_native_1.View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
+      </View>
+      <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
         {routes.map((route, index) => {
             const focused = index === state.index;
             const { options } = descriptors[route.key];
@@ -269,7 +231,7 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
                 });
                 if (!focused && !event.defaultPrevented) {
                     navigation.dispatch({
-                        ...native_1.CommonActions.navigate(route),
+                        ...CommonActions.navigate(route),
                         target: state.key,
                     });
                 }
@@ -282,15 +244,15 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
             };
             const label = typeof options.tabBarLabel === 'function'
                 ? options.tabBarLabel
-                : (0, elements_1.getLabel)({ label: options.tabBarLabel, title: options.title }, route.name);
+                : getLabel({ label: options.tabBarLabel, title: options.title }, route.name);
             const accessibilityLabel = options.tabBarAccessibilityLabel !== undefined
                 ? options.tabBarAccessibilityLabel
-                : typeof label === 'string' && react_native_1.Platform.OS === 'ios'
+                : typeof label === 'string' && Platform.OS === 'ios'
                     ? `${label}, tab, ${index + 1} of ${routes.length}`
                     : undefined;
-            return (<native_1.NavigationProvider key={route.key} route={route} navigation={descriptors[route.key].navigation}>
-              <BottomTabItem_1.BottomTabItem href={buildHref(route.name, route.params)} route={route} descriptor={descriptors[route.key]} focused={focused} horizontal={hasHorizontalLabels} compact={compact} sidebar={sidebar} variant={tabBarVariant} onPress={onPress} onLongPress={onLongPress} accessibilityLabel={accessibilityLabel} testID={options.tabBarButtonTestID} allowFontScaling={options.tabBarAllowFontScaling} activeTintColor={tabBarActiveTintColor} inactiveTintColor={tabBarInactiveTintColor} activeBackgroundColor={tabBarActiveBackgroundColor} inactiveBackgroundColor={tabBarInactiveBackgroundColor} button={options.tabBarButton} icon={options.tabBarIcon ??
-                    (({ color, size }) => <elements_1.MissingIcon color={color} size={size}/>)} badge={options.tabBarBadge} badgeStyle={options.tabBarBadgeStyle} label={label} showLabel={tabBarShowLabel} labelStyle={options.tabBarLabelStyle} iconStyle={options.tabBarIconStyle} style={[
+            return (<NavigationProvider key={route.key} route={route} navigation={descriptors[route.key].navigation}>
+              <BottomTabItem href={buildHref(route.name, route.params)} route={route} descriptor={descriptors[route.key]} focused={focused} horizontal={hasHorizontalLabels} compact={compact} sidebar={sidebar} variant={tabBarVariant} onPress={onPress} onLongPress={onLongPress} accessibilityLabel={accessibilityLabel} testID={options.tabBarButtonTestID} allowFontScaling={options.tabBarAllowFontScaling} activeTintColor={tabBarActiveTintColor} inactiveTintColor={tabBarInactiveTintColor} activeBackgroundColor={tabBarActiveBackgroundColor} inactiveBackgroundColor={tabBarInactiveBackgroundColor} button={options.tabBarButton} icon={options.tabBarIcon ??
+                    (({ color, size }) => <MissingIcon color={color} size={size}/>)} badge={options.tabBarBadge} badgeStyle={options.tabBarBadgeStyle} label={label} showLabel={tabBarShowLabel} labelStyle={options.tabBarLabelStyle} iconStyle={options.tabBarIconStyle} style={[
                     sidebar
                         ? {
                             marginVertical: hasHorizontalLabels
@@ -302,12 +264,12 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
                         : styles.bottomItem,
                     options.tabBarItemStyle,
                 ]}/>
-            </native_1.NavigationProvider>);
+            </NavigationProvider>);
         })}
-      </react_native_1.View>
-    </react_native_1.Animated.View>);
+      </View>
+    </Animated.View>);
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     start: {
         top: 0,
         bottom: 0,

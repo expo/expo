@@ -1,10 +1,7 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useNavigation = useNavigation;
-const utils_1 = require("./global-state/utils");
-const href_1 = require("./link/href");
-const native_1 = require("./react-navigation/native");
+import { getRootStackRouteNames } from './global-state/utils';
+import { resolveHref } from './link/href';
+import { useNavigation as useUpstreamNavigation, useStateForPath, } from './react-navigation/native';
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
  * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a
@@ -57,10 +54,10 @@ const native_1 = require("./react-navigation/native");
  * @see React Navigation documentation on [navigation dependent functions](https://reactnavigation.org/docs/navigation-object/#navigator-dependent-functions)
  * for more information.
  */
-function useNavigation(parent) {
-    const rnNavigation = (0, native_1.useNavigation)();
+export function useNavigation(parent) {
+    const rnNavigation = useUpstreamNavigation();
     let navigation = rnNavigation;
-    let state = (0, native_1.useStateForPath)();
+    let state = useStateForPath();
     if (parent === undefined) {
         // If no parent is provided, return the current navigation object
         return navigation;
@@ -71,7 +68,7 @@ function useNavigation(parent) {
         return navigation;
     }
     if (typeof parent === 'object') {
-        parent = (0, href_1.resolveHref)(parent);
+        parent = resolveHref(parent);
     }
     if (parent === '/') {
         // This is the root navigator
@@ -104,7 +101,7 @@ function useNavigation(parent) {
         parent = names[index];
         // Expo Router navigators use the context key as the name which has a leading `/`
         // The exception to this are the root stack routes, and the root navigator which uses ''
-        if (parent && !(0, utils_1.getRootStackRouteNames)().includes(parent)) {
+        if (parent && !getRootStackRouteNames().includes(parent)) {
             parent = `/${parent}`;
         }
     }

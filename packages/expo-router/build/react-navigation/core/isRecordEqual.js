@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isRecordEqual = isRecordEqual;
 /**
  * Compare two records with primitive values as the content.
  */
-function isRecordEqual(a, b) {
+export function isRecordEqual(a, b) {
     if (a === b) {
         return true;
     }

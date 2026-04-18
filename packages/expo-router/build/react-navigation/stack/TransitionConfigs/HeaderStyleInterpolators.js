@@ -1,23 +1,15 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.forUIKit = forUIKit;
-exports.forFade = forFade;
-exports.forSlideLeft = forSlideLeft;
-exports.forSlideRight = forSlideRight;
-exports.forSlideUp = forSlideUp;
-exports.forNoAnimation = forNoAnimation;
-const react_native_1 = require("react-native");
-const { add, multiply } = react_native_1.Animated;
+import { Animated, Platform } from 'react-native';
+const { add, multiply } = Animated;
 // Width of the screen in split layout on portrait mode on iPad Mini
 // Keep in sync with HeaderBackButton.tsx
 const IPAD_MINI_MEDIUM_WIDTH = 414;
 /**
  * Standard UIKit style animation for the header where the title fades into the back button label.
  */
-function forUIKit({ current, next, direction, layouts, }) {
+export function forUIKit({ current, next, direction, layouts, }) {
     const defaultOffset = 100;
     const leftSpacing = 27 +
-        (react_native_1.Platform.OS === 'ios' && layouts.screen.width >= IPAD_MINI_MEDIUM_WIDTH
+        (Platform.OS === 'ios' && layouts.screen.width >= IPAD_MINI_MEDIUM_WIDTH
             ? 5 // Additional padding on iPad specified in Header.tsx
             : 0);
     // The title and back button title should cross-fade to each other
@@ -98,7 +90,7 @@ function forUIKit({ current, next, direction, layouts, }) {
 /**
  * Simple fade animation for the header elements.
  */
-function forFade({ current, next, }) {
+export function forFade({ current, next, }) {
     const progress = add(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
@@ -129,7 +121,7 @@ function forFade({ current, next, }) {
 /**
  * Simple translate animation to translate the header to left.
  */
-function forSlideLeft({ current, next, direction, layouts: { screen }, }) {
+export function forSlideLeft({ current, next, direction, layouts: { screen }, }) {
     const isRTL = direction === 'rtl';
     const progress = add(current.progress.interpolate({
         inputRange: [0, 1],
@@ -157,7 +149,7 @@ function forSlideLeft({ current, next, direction, layouts: { screen }, }) {
 /**
  * Simple translate animation to translate the header to right.
  */
-function forSlideRight({ current, next, direction, layouts: { screen }, }) {
+export function forSlideRight({ current, next, direction, layouts: { screen }, }) {
     const isRTL = direction === 'rtl';
     const progress = add(current.progress.interpolate({
         inputRange: [0, 1],
@@ -185,7 +177,7 @@ function forSlideRight({ current, next, direction, layouts: { screen }, }) {
 /**
  * Simple translate animation to translate the header to slide up.
  */
-function forSlideUp({ current, next, layouts: { header }, }) {
+export function forSlideUp({ current, next, layouts: { header }, }) {
     const progress = add(current.progress.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
@@ -209,7 +201,7 @@ function forSlideUp({ current, next, layouts: { header }, }) {
         backgroundStyle: { transform },
     };
 }
-function forNoAnimation() {
+export function forNoAnimation() {
     return {};
 }
 //# sourceMappingURL=HeaderStyleInterpolators.js.map

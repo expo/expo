@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkSerializable = checkSerializable;
 const checkSerializableWithoutCircularReference = (o, seen, location) => {
     if (o === undefined ||
         o === null ||
@@ -48,7 +45,7 @@ const checkSerializableWithoutCircularReference = (o, seen, location) => {
     }
     return { serializable: true };
 };
-function checkSerializable(o) {
+export function checkSerializable(o) {
     return checkSerializableWithoutCircularReference(o, new Set(), []);
 }
 //# sourceMappingURL=checkSerializable.js.map

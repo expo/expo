@@ -1,8 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortRoutes = sortRoutes;
-exports.sortRoutesWithInitial = sortRoutesWithInitial;
-const matchers_1 = require("./matchers");
+import { matchGroupName } from './matchers';
 function sortDynamicConvention(a, b) {
     if (a.deep && !b.deep) {
         return 1;
@@ -12,7 +8,7 @@ function sortDynamicConvention(a, b) {
     }
     return 0;
 }
-function sortRoutes(a, b) {
+export function sortRoutes(a, b) {
     if (a.dynamic && !b.dynamic) {
         return 1;
     }
@@ -45,8 +41,8 @@ function sortRoutes(a, b) {
         }
         return 0;
     }
-    const aIndex = a.route === 'index' || (0, matchers_1.matchGroupName)(a.route) != null;
-    const bIndex = b.route === 'index' || (0, matchers_1.matchGroupName)(b.route) != null;
+    const aIndex = a.route === 'index' || matchGroupName(a.route) != null;
+    const bIndex = b.route === 'index' || matchGroupName(b.route) != null;
     if (aIndex && !bIndex) {
         return -1;
     }
@@ -55,7 +51,7 @@ function sortRoutes(a, b) {
     }
     return a.route.length - b.route.length;
 }
-function sortRoutesWithInitial(initialRouteName) {
+export function sortRoutesWithInitial(initialRouteName) {
     return (a, b) => {
         if (initialRouteName) {
             if (a.route === initialRouteName) {

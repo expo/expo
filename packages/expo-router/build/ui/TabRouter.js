@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoTabRouter = ExpoTabRouter;
-const native_1 = require("../react-navigation/native");
-function ExpoTabRouter(options) {
-    const rnTabRouter = (0, native_1.TabRouter)(options);
+import { TabRouter as RNTabRouter, } from '../react-navigation/native';
+export function ExpoTabRouter(options) {
+    const rnTabRouter = RNTabRouter(options);
     const router = {
         ...rnTabRouter,
         getStateForAction(state, action, options) {

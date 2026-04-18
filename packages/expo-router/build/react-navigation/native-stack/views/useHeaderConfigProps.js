@@ -1,13 +1,10 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useHeaderConfigProps = useHeaderConfigProps;
-const react_native_1 = require("react-native");
-const react_native_screens_1 = require("react-native-screens");
-const elements_1 = require("../../elements");
-const FontProcessor_1 = require("./FontProcessor");
-const color_1 = require("../../../utils/color");
-const native_1 = require("../../native");
+import { Platform, StyleSheet, View } from 'react-native';
+import { isSearchBarAvailableForCurrentPlatform, ScreenStackHeaderBackButtonImage, ScreenStackHeaderCenterView, ScreenStackHeaderLeftView, ScreenStackHeaderRightView, ScreenStackHeaderSearchBarView, SearchBar, } from 'react-native-screens';
+import { getHeaderTitle, HeaderTitle } from '../../elements';
+import { processFonts } from './FontProcessor';
+import { Color } from '../../../utils/color';
+import { useLocale, useTheme } from '../../native';
 const processBarButtonItems = (items, colors, fonts) => {
     return items
         ?.map((item, index) => {
@@ -57,7 +54,7 @@ const processBarButtonItems = (items, colors, fonts) => {
             }
             if (badge) {
                 const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
-                const badgeTextColor = (0, color_1.Color)(badgeBackgroundColor)?.isLight() ? 'black' : 'white';
+                const badgeTextColor = Color(badgeBackgroundColor)?.isLight() ? 'black' : 'white';
                 processedItem = {
                     ...processedItem,
                     badge: {
@@ -107,22 +104,22 @@ const getMenuItem = (item) => {
         subtitle: description,
     };
 };
-function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBackButtonDisplayMode, headerBackButtonMenuEnabled, headerBackTitle, headerBackTitleStyle, headerBackVisible, headerShadowVisible, headerLargeStyle, headerLargeTitle: headerLargeTitleDeprecated, headerLargeTitleEnabled = headerLargeTitleDeprecated, headerLargeTitleShadowVisible, headerLargeTitleStyle, headerBackground, headerLeft, headerRight, headerShown, headerStyle, headerBlurEffect, headerTintColor, headerTitle, headerTitleAlign, headerTitleStyle, headerTransparent, headerSearchBarOptions, headerTopInsetEnabled, headerBack, route, title, unstable_headerLeftItems: headerLeftItems, unstable_headerRightItems: headerRightItems, }) {
-    const { direction } = (0, native_1.useLocale)();
-    const { colors, fonts, dark } = (0, native_1.useTheme)();
-    const tintColor = headerTintColor ?? (react_native_1.Platform.OS === 'ios' ? colors.primary : colors.text);
-    const headerBackTitleStyleFlattened = react_native_1.StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
-    const headerLargeTitleStyleFlattened = react_native_1.StyleSheet.flatten([
-        react_native_1.Platform.select({ ios: fonts.heavy, default: fonts.medium }),
+export function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBackButtonDisplayMode, headerBackButtonMenuEnabled, headerBackTitle, headerBackTitleStyle, headerBackVisible, headerShadowVisible, headerLargeStyle, headerLargeTitle: headerLargeTitleDeprecated, headerLargeTitleEnabled = headerLargeTitleDeprecated, headerLargeTitleShadowVisible, headerLargeTitleStyle, headerBackground, headerLeft, headerRight, headerShown, headerStyle, headerBlurEffect, headerTintColor, headerTitle, headerTitleAlign, headerTitleStyle, headerTransparent, headerSearchBarOptions, headerTopInsetEnabled, headerBack, route, title, unstable_headerLeftItems: headerLeftItems, unstable_headerRightItems: headerRightItems, }) {
+    const { direction } = useLocale();
+    const { colors, fonts, dark } = useTheme();
+    const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
+    const headerBackTitleStyleFlattened = StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
+    const headerLargeTitleStyleFlattened = StyleSheet.flatten([
+        Platform.select({ ios: fonts.heavy, default: fonts.medium }),
         headerLargeTitleStyle,
     ]) || {};
-    const headerTitleStyleFlattened = react_native_1.StyleSheet.flatten([
-        react_native_1.Platform.select({ ios: fonts.bold, default: fonts.medium }),
+    const headerTitleStyleFlattened = StyleSheet.flatten([
+        Platform.select({ ios: fonts.bold, default: fonts.medium }),
         headerTitleStyle,
     ]) || {};
-    const headerStyleFlattened = react_native_1.StyleSheet.flatten(headerStyle) || {};
-    const headerLargeStyleFlattened = react_native_1.StyleSheet.flatten(headerLargeStyle) || {};
-    const [backTitleFontFamily, largeTitleFontFamily, titleFontFamily] = (0, FontProcessor_1.processFonts)([
+    const headerStyleFlattened = StyleSheet.flatten(headerStyle) || {};
+    const headerLargeStyleFlattened = StyleSheet.flatten(headerLargeStyle) || {};
+    const [backTitleFontFamily, largeTitleFontFamily, titleFontFamily] = processFonts([
         headerBackTitleStyleFlattened.fontFamily,
         headerLargeTitleStyleFlattened.fontFamily,
         headerTitleStyleFlattened.fontFamily,
@@ -130,7 +127,7 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
     const backTitleFontSize = 'fontSize' in headerBackTitleStyleFlattened
         ? headerBackTitleStyleFlattened.fontSize
         : undefined;
-    const titleText = (0, elements_1.getHeaderTitle)({ title, headerTitle }, route.name);
+    const titleText = getHeaderTitle({ title, headerTitle }, route.name);
     const titleColor = 'color' in headerTitleStyleFlattened
         ? headerTitleStyleFlattened.color
         : (headerTintColor ?? colors.text);
@@ -156,7 +153,7 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
         (headerBackground != null ||
             headerTransparent ||
             // The title becomes invisible if background color is set with large title on iOS 26
-            (react_native_1.Platform.OS === 'ios' && headerLargeTitleEnabled)
+            (Platform.OS === 'ios' && headerLargeTitleEnabled)
             ? 'transparent'
             : colors.card);
     const canGoBack = headerBack != null;
@@ -179,10 +176,10 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
             children: titleText,
         })
         : null;
-    const supportsHeaderSearchBar = typeof react_native_screens_1.isSearchBarAvailableForCurrentPlatform === 'boolean'
-        ? react_native_screens_1.isSearchBarAvailableForCurrentPlatform
+    const supportsHeaderSearchBar = typeof isSearchBarAvailableForCurrentPlatform === 'boolean'
+        ? isSearchBarAvailableForCurrentPlatform
         : // Fallback for older versions of react-native-screens
-            react_native_1.Platform.OS === 'ios' && react_native_screens_1.SearchBar != null;
+            Platform.OS === 'ios' && SearchBar != null;
     const hasHeaderSearchBar = supportsHeaderSearchBar && headerSearchBarOptions != null;
     /**
      * We need to set this in if:
@@ -190,17 +187,17 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
      * - If `headerTitle` for Android is specified, so we only need to remove the title and keep the back button
      */
     const backButtonInCustomView = headerBackVisible ||
-        (react_native_1.Platform.OS === 'android' && headerTitleElement != null && headerLeftElement == null);
+        (Platform.OS === 'android' && headerTitleElement != null && headerLeftElement == null);
     const translucent = headerBackground != null ||
         headerTransparent ||
         // When using a SearchBar or large title, the header needs to be translucent for it to work on iOS
         ((hasHeaderSearchBar || headerLargeTitleEnabled) &&
-            react_native_1.Platform.OS === 'ios' &&
+            Platform.OS === 'ios' &&
             headerTransparent !== false);
     const isBackButtonDisplayModeAvailable = 
     // On iOS 14+
-    react_native_1.Platform.OS === 'ios' &&
-        parseInt(react_native_1.Platform.Version, 10) >= 14 &&
+    Platform.OS === 'ios' &&
+        parseInt(Platform.Version, 10) >= 14 &&
         // Doesn't have custom styling, by default System, see: https://github.com/software-mansion/react-native-screens/pull/2105#discussion_r1565222738
         (backTitleFontFamily == null || backTitleFontFamily === 'System') &&
         backTitleFontSize == null &&
@@ -221,47 +218,47 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
         rightItems = [...rightItems].reverse();
     }
     const children = (<>
-      {react_native_1.Platform.OS === 'ios' ? (<>
+      {Platform.OS === 'ios' ? (<>
           {leftItems ? (leftItems.map((item, index) => {
                 if (item.type === 'custom') {
-                    return (<react_native_screens_1.ScreenStackHeaderLeftView key={index} hidesSharedBackground={item.hidesSharedBackground}>
+                    return (<ScreenStackHeaderLeftView key={index} hidesSharedBackground={item.hidesSharedBackground}>
                     {item.element}
-                  </react_native_screens_1.ScreenStackHeaderLeftView>);
+                  </ScreenStackHeaderLeftView>);
                 }
                 return null;
-            })) : headerLeftElement != null ? (<react_native_screens_1.ScreenStackHeaderLeftView>{headerLeftElement}</react_native_screens_1.ScreenStackHeaderLeftView>) : null}
-          {headerTitleElement != null ? (<react_native_screens_1.ScreenStackHeaderCenterView>{headerTitleElement}</react_native_screens_1.ScreenStackHeaderCenterView>) : null}
+            })) : headerLeftElement != null ? (<ScreenStackHeaderLeftView>{headerLeftElement}</ScreenStackHeaderLeftView>) : null}
+          {headerTitleElement != null ? (<ScreenStackHeaderCenterView>{headerTitleElement}</ScreenStackHeaderCenterView>) : null}
         </>) : (<>
           {headerLeftElement != null || typeof headerTitle === 'function' ? (
             // The style passed to header left, together with title element being wrapped
             // in flex view is reqruied for proper header layout, in particular,
             // for the text truncation to work.
-            <react_native_screens_1.ScreenStackHeaderLeftView style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}>
+            <ScreenStackHeaderLeftView style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}>
               {headerLeftElement}
-              {headerTitleAlign !== 'center' ? (typeof headerTitle === 'function' ? (<react_native_1.View style={{ flex: 1 }}>{headerTitleElement}</react_native_1.View>) : (<react_native_1.View style={{ flex: 1 }}>
-                    <elements_1.HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
+              {headerTitleAlign !== 'center' ? (typeof headerTitle === 'function' ? (<View style={{ flex: 1 }}>{headerTitleElement}</View>) : (<View style={{ flex: 1 }}>
+                    <HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
                       {titleText}
-                    </elements_1.HeaderTitle>
-                  </react_native_1.View>)) : null}
-            </react_native_screens_1.ScreenStackHeaderLeftView>) : null}
-          {isCenterViewRenderedAndroid ? (<react_native_screens_1.ScreenStackHeaderCenterView>
-              {typeof headerTitle === 'function' ? (headerTitleElement) : (<elements_1.HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
+                    </HeaderTitle>
+                  </View>)) : null}
+            </ScreenStackHeaderLeftView>) : null}
+          {isCenterViewRenderedAndroid ? (<ScreenStackHeaderCenterView>
+              {typeof headerTitle === 'function' ? (headerTitleElement) : (<HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
                   {titleText}
-                </elements_1.HeaderTitle>)}
-            </react_native_screens_1.ScreenStackHeaderCenterView>) : null}
+                </HeaderTitle>)}
+            </ScreenStackHeaderCenterView>) : null}
         </>)}
-      {headerBackIcon !== undefined || headerBackImageSource !== undefined ? (<react_native_screens_1.ScreenStackHeaderBackButtonImage source={headerBackIcon?.source ?? headerBackImageSource}/>) : null}
-      {react_native_1.Platform.OS === 'ios' && rightItems ? (rightItems.map((item, index) => {
+      {headerBackIcon !== undefined || headerBackImageSource !== undefined ? (<ScreenStackHeaderBackButtonImage source={headerBackIcon?.source ?? headerBackImageSource}/>) : null}
+      {Platform.OS === 'ios' && rightItems ? (rightItems.map((item, index) => {
             if (item.type === 'custom') {
-                return (<react_native_screens_1.ScreenStackHeaderRightView key={index} hidesSharedBackground={item.hidesSharedBackground}>
+                return (<ScreenStackHeaderRightView key={index} hidesSharedBackground={item.hidesSharedBackground}>
                 {item.element}
-              </react_native_screens_1.ScreenStackHeaderRightView>);
+              </ScreenStackHeaderRightView>);
             }
             return null;
-        })) : headerRightElement != null ? (<react_native_screens_1.ScreenStackHeaderRightView>{headerRightElement}</react_native_screens_1.ScreenStackHeaderRightView>) : null}
-      {hasHeaderSearchBar ? (<react_native_screens_1.ScreenStackHeaderSearchBarView>
-          <react_native_screens_1.SearchBar {...headerSearchBarOptions}/>
-        </react_native_screens_1.ScreenStackHeaderSearchBarView>) : null}
+        })) : headerRightElement != null ? (<ScreenStackHeaderRightView>{headerRightElement}</ScreenStackHeaderRightView>) : null}
+      {hasHeaderSearchBar ? (<ScreenStackHeaderSearchBarView>
+          <SearchBar {...headerSearchBarOptions}/>
+        </ScreenStackHeaderSearchBarView>) : null}
     </>);
     return {
         backButtonInCustomView,

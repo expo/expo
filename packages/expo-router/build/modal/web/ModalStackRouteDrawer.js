@@ -1,20 +1,14 @@
-"use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModalStackRouteDrawer = ModalStackRouteDrawer;
-const react_1 = __importDefault(require("react"));
-const vaul_1 = require("vaul");
-const modalStyles_1 = __importDefault(require("./modalStyles"));
-const utils_1 = require("./utils");
+import React from 'react';
+import { Drawer } from 'vaul';
+import modalStyles from './modalStyles';
+import { useIsDesktop } from './utils';
 function ModalStackRouteDrawer({ routeKey, options, dismissible, renderScreen, onDismiss, themeColors, }) {
-    const [open, setOpen] = react_1.default.useState(true);
+    const [open, setOpen] = React.useState(true);
     // Determine sheet vs. modal with an SSR-safe hook. The first render (during
     // hydration) always assumes mobile/sheet to match the server markup; an
     // effect then updates the state after mount if the viewport is desktop.
-    const isDesktop = (0, utils_1.useIsDesktop)();
+    const isDesktop = useIsDesktop();
     const isSheet = !isDesktop;
     // Resolve snap points logic.
     const allowed = options.sheetAllowedDetents;
@@ -26,9 +20,9 @@ function ModalStackRouteDrawer({ routeKey, options, dismissible, renderScreen, o
     if (!isSheet) {
         snapPoints = [1];
     }
-    const [snap, setSnap] = react_1.default.useState(useCustomSnapPoints && isArrayDetents ? allowed[0] : 1);
+    const [snap, setSnap] = React.useState(useCustomSnapPoints && isArrayDetents ? allowed[0] : 1);
     // Update the snap value when custom snap points change.
-    react_1.default.useEffect(() => {
+    React.useEffect(() => {
         if (isSheet) {
             const next = useCustomSnapPoints && isArrayDetents ? allowed[0] : 1;
             setSnap(next);
@@ -136,27 +130,28 @@ function ModalStackRouteDrawer({ routeKey, options, dismissible, renderScreen, o
             fadeFromIndex,
         }
         : {};
-    return (<vaul_1.Drawer.Root key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`} open={open} dismissible={dismissible ?? options.gestureEnabled ?? true} onAnimationEnd={handleOpenChange} shouldScaleBackground autoFocus onOpenChange={setOpen} {...sheetProps}>
-      <vaul_1.Drawer.Portal>
-        <vaul_1.Drawer.Overlay className={modalStyles_1.default.overlay} style={options.webModalStyle?.overlayBackground
+    return (<Drawer.Root key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`} open={open} dismissible={dismissible ?? options.gestureEnabled ?? true} onAnimationEnd={handleOpenChange} shouldScaleBackground autoFocus onOpenChange={setOpen} {...sheetProps}>
+      <Drawer.Portal>
+        <Drawer.Overlay className={modalStyles.overlay} style={options.webModalStyle?.overlayBackground
             ? {
                 '--expo-router-modal-overlay-background': options.webModalStyle.overlayBackground,
             }
             : undefined}/>
-        <vaul_1.Drawer.Content aria-describedby="modal-description" className={modalStyles_1.default.drawerContent} style={{
+        <Drawer.Content aria-describedby="modal-description" className={modalStyles.drawerContent} style={{
             pointerEvents: 'none',
             // This needs to be limited to sheets, otherwise it will position the modal at the bottom of the screen
             ...(isSheet && fitToContents ? { height: 'auto' } : null),
         }}>
-          <div className={modalStyles_1.default.modal} data-presentation={isSheet ? 'formSheet' : 'modal'} style={modalStyleVars}>
+          <div className={modalStyles.modal} data-presentation={isSheet ? 'formSheet' : 'modal'} style={modalStyleVars}>
             {/* TODO:(@Hirbod) Figure out how to add title and description to the modal for screen readers in a meaningful way */}
-            <vaul_1.Drawer.Title about="" aria-describedby="" className={modalStyles_1.default.srOnly}/>
-            <vaul_1.Drawer.Description about="" className={modalStyles_1.default.srOnly}/>
+            <Drawer.Title about="" aria-describedby="" className={modalStyles.srOnly}/>
+            <Drawer.Description about="" className={modalStyles.srOnly}/>
             {/* Render the screen content */}
-            <div className={modalStyles_1.default.modalBody}>{renderScreen()}</div>
+            <div className={modalStyles.modalBody}>{renderScreen()}</div>
           </div>
-        </vaul_1.Drawer.Content>
-      </vaul_1.Drawer.Portal>
-    </vaul_1.Drawer.Root>);
+        </Drawer.Content>
+      </Drawer.Portal>
+    </Drawer.Root>);
 }
+export { ModalStackRouteDrawer };
 //# sourceMappingURL=ModalStackRouteDrawer.js.map

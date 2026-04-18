@@ -1,10 +1,6 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackToolbarSpacer = void 0;
-exports.convertStackToolbarSpacerPropsToRNHeaderItem = convertStackToolbarSpacerPropsToRNHeaderItem;
-const native_1 = require("./native");
-const context_1 = require("../context");
+import { NativeToolbarSpacer } from './native';
+import { useToolbarPlacement } from '../context';
 /**
  * A spacing helper used inside `Stack.Toolbar` to create empty space between toolbar items.
  *
@@ -50,15 +46,14 @@ const context_1 = require("../context");
  * @platform android
  * @platform ios
  */
-const StackToolbarSpacer = (props) => {
-    const placement = (0, context_1.useToolbarPlacement)();
+export const StackToolbarSpacer = (props) => {
+    const placement = useToolbarPlacement();
     if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
         throw new Error('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
     }
-    return <native_1.NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;
+    return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;
 };
-exports.StackToolbarSpacer = StackToolbarSpacer;
-function convertStackToolbarSpacerPropsToRNHeaderItem(props) {
+export function convertStackToolbarSpacerPropsToRNHeaderItem(props) {
     const { hidden, width } = props;
     if (hidden) {
         return undefined;
