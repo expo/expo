@@ -9,8 +9,7 @@
 
 @interface EXJavaScriptSerializable ()
 
-- (nonnull instancetype)initWithSerializable:(std::shared_ptr<worklets::Serializable>)serializable
-                                     runtime:(nonnull EXJavaScriptRuntime *)runtime;
+- (nonnull instancetype)initWithSerializable:(std::shared_ptr<worklets::Serializable>)serializable;
 
 - (std::shared_ptr<worklets::Serializable>)getSerializable;
 
