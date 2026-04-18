@@ -13,6 +13,7 @@ PODS:
     - ExpoModulesTestCore
   - Expo (55.0.2):
     - ExpoModulesCore
+    - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -267,6 +268,7 @@ PODS:
     - Yoga
   - Expo/Tests (55.0.2):
     - ExpoModulesCore
+    - ExpoModulesJSI
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -374,13 +376,11 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesJSI (55.0.12):
-    - hermes-engine
+  - ExpoModulesJSI (55.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.12):
-    - hermes-engine
+  - ExpoModulesJSI/Tests (55.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
@@ -2602,8 +2602,8 @@ DEPENDENCIES:
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
+  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
@@ -2750,7 +2750,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
     inhibit_warnings: false
-    :path: "../../../packages/expo-modules-core"
+    :path: "../../../packages/expo-modules-jsi/apple"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoNotifications:
@@ -2938,7 +2938,7 @@ SPEC CHECKSUMS:
   EASClient: cb7854d65c09c520cc7d165f266c1d3bb901ceb7
   EXJSONUtils: 475f1af3d20fbd99268694df81d096817092aa89
   EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: 5b891535ab874124ee26c5216419748c2fcc55e3
+  Expo: 944473cd66ee19b8ee899df0b98e490bce19b991
   expo-dev-launcher: 52dad5ea74c968013ebb2707370e28a0cf9d8b7f
   expo-dev-menu: 3ab7b064b3d3db84334481bdb24325e0b67889c3
   expo-dev-menu-interface: 58beb5e831034c20466d8c26ba679b0aa385abd2
@@ -2946,8 +2946,8 @@ SPEC CHECKSUMS:
   ExpoClipboard: 0acdce934cb6a71b507da1117399645265e51ed5
   ExpoImage: d9446e7c2d365c063df7c8acd9c88b76a7b48ee4
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
-  ExpoModulesCore: a3dfc5e19028675ac402beedd870eae5a6d4a4d2
-  ExpoModulesJSI: 793687b04cbaa73ee8548bfdbcfba85954d1b2b5
+  ExpoModulesCore: fc41658f257c0171e040fd5fc961273ce18676fb
+  ExpoModulesJSI: 71ee2c91700fbad70c35aff1dcea87d3a6e071bb
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
   ExpoRouter: 617b413f30eb9fa39b210e4261814b13afd0418b

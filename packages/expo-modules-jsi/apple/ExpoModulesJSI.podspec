@@ -73,5 +73,14 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/**/*.swift'
+    test_spec.pod_target_xcconfig = {
+      # `UIUtilities.framework` is a private Apple sub-framework auto-linked by Swift Testing
+      # / SwiftUI helpers. Its path is not in the default framework search paths for test
+      # targets, so we add it explicitly here.
+      'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "$(SDKROOT)/System/Library/SubFrameworks"',
+      # Swift/C++ interop requires explicit linkage to libc++ for C++ exception handling
+      # (resolves the `___gxx_personality_v0` linker error).
+      'OTHER_LDFLAGS' => '$(inherited) -lc++',
+    }
   end
 end
