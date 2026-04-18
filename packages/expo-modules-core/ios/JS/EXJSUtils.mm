@@ -1,26 +1,25 @@
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
-#import <ExpoModulesJSI/EXJavaScriptObject.h>
-#import <ExpoModulesJSI/EXJSIConversions.h>
-
 #import <ExpoModulesCore/EXJSUtils.h>
-#import <ExpoModulesCore/NativeModule.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EventEmitter.h>
 
 @implementation EXJSUtils
 
-+ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime
-{
-  std::shared_ptr<jsi::Object> nativeModule = std::make_shared<jsi::Object>(expo::NativeModule::createInstance(*[runtime get]));
-  return [[EXJavaScriptObject alloc] initWith:nativeModule runtime:runtime];
-}
-
 + (void)emitEvent:(nonnull NSString *)eventName
-         toObject:(nonnull EXJavaScriptObject *)object
+   runtimePointer:(nonnull void *)runtimePointer
+    objectPointer:(nonnull const void *)objectPointer
     withArguments:(nonnull NSArray<id> *)arguments
-        inRuntime:(nonnull EXJavaScriptRuntime *)runtime
 {
-  const std::vector<jsi::Value> argumentsVector(expo::convertNSArrayToStdVector(*[runtime get], arguments));
-  expo::EventEmitter::emitEvent(*[runtime get], *[object get], [eventName UTF8String], std::move(argumentsVector));
+  auto &runtime = *static_cast<jsi::Runtime *>(runtimePointer);
+  auto object = static_cast<const jsi::Value *>(objectPointer)->asObject(runtime);
+
+  std::vector<jsi::Value> jsiArguments;
+  jsiArguments.reserve(arguments.count);
+
+  for (id argument in arguments) {
+    jsiArguments.emplace_back(expo::convertObjCObjectToJSIValue(runtime, argument));
+  }
+
+  expo::EventEmitter::emitEvent(runtime, object, [eventName UTF8String], jsiArguments);
 }
 
 @end

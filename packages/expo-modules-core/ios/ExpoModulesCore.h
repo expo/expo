@@ -1,15 +1,11 @@
 @class RCTBundleURLProvider;
 
-
-
 #import <ExpoModulesCore/CoreModuleHelper.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
 #import <ExpoModulesCore/SwiftUIVirtualViewObjCDev.h>
 #import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXDefines.h>
-#import <ExpoModulesCore/ExpoModulesCore.h>
-#import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXReactDelegateProtocol.h>
@@ -35,7 +31,6 @@
 #import <ExpoModulesCore/EXTaskManagerInterface.h>
 #import <ExpoModulesCore/EXTaskServiceInterface.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
-#import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/EXSharedObjectUtils.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXSingletonModule.h>
@@ -57,13 +52,3 @@
 #import <ExpoModulesCore/EXReactNativeUserNotificationCenterProxy.h>
 #import <ExpoModulesCore/Platform.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
-#import <ExpoModulesCore/EventEmitter.h>
-#import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
-#import <ExpoModulesCore/ExpoViewEventEmitter.h>
-#import <ExpoModulesCore/ExpoViewProps.h>
-#import <ExpoModulesCore/ExpoViewShadowNode.h>
-#import <ExpoModulesCore/ExpoViewState.h>
-#import <ExpoModulesCore/LazyObject.h>
-#import <ExpoModulesCore/NativeModule.h>
-#import <ExpoModulesCore/SharedObject.h>
-#import <ExpoModulesCore/SharedRef.h>
