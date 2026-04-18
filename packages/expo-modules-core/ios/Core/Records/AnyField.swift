@@ -11,6 +11,7 @@ public protocol AnyField {
 internal protocol AnyFieldInternal: AnyField {
   var key: String? { get }
   var options: Set<FieldOption> { get set }
+  var fieldType: AnyDynamicType { get }
 
   /**
    Whether the value for this field must be explicitly provided.

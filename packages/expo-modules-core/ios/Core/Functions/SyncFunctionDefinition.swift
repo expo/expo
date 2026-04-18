@@ -1,31 +1,32 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  Type-erased protocol for synchronous functions.
  */
-internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition {
-  /**
-   Calls the function synchronously with given arguments.
-   - Parameters:
-     - owner: An object that calls this function. If the `takesOwner` property is true
-       and type of the first argument matches the owner type, it's being passed as the argument.
-     - args: An array of arguments to pass to the function. The arguments must be of the same type as in the underlying closure.
-     - appContext: An app context where the function is executed.
-   - Returns: A value returned by the called function when succeeded or an error when it failed.
-   */
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any
-
+internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition, ~Copyable {
   /**
    Calls the function synchronously with given `this` and arguments as JavaScript values.
    It **must** be run on the thread used by the JavaScript runtime.
    */
   @discardableResult
-  func call(_ appContext: AppContext, withThis this: JavaScriptValue?, arguments: [JavaScriptValue]) throws -> JavaScriptValue
+  @JavaScriptActor
+  func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> JavaScriptValue
+
+  /**
+   Runs the underlying body with the given arguments and returns the raw native result,
+   without converting it to a JavaScript value. Used by class constructors, which need the
+   native result (e.g. a `SharedObject`) to pair with the JS `this` instance directly.
+   */
+  @JavaScriptActor
+  func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any
 
   /**
    Builds the sync function in a specific runtime.
    Used to install functions in alternate runtimes (e.g. the worklet runtime).
    */
+  @JavaScriptActor
   func build(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject
 }
 
@@ -67,42 +68,18 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
-    do {
-      let result = try call(by: owner, withArguments: args, appContext: appContext)
-      callback(.success(Conversions.convertFunctionResult(result, appContext: appContext, dynamicType: ~ReturnType.self)))
-    } catch let error as Exception {
-      callback(.failure(error))
-    } catch {
-      callback(.failure(UnexpectedException(error)))
-    }
-  }
-
   // MARK: - AnySyncFunctionDefinition
 
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any {
+  @JavaScriptActor
+  func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
     do {
-      try validateArgumentsNumber(function: self, received: args.count)
+      try validateArgumentsNumber(function: self, received: arguments.count)
+      let nativeArguments = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
 
-      var arguments = concat(
-        arguments: args,
-        withOwner: owner,
-        withPromise: nil,
-        forFunction: self,
-        appContext: appContext
-      )
-
-      // Convert JS values to non-JS native types.
-      arguments = try cast(jsValues: arguments, forFunction: self, appContext: appContext)
-
-      // Convert arguments to the types desired by the function.
-      arguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
-
-      guard let argumentsTuple = try Conversions.toTuple(arguments) as? Args else {
+      guard let argumentsTuple = try Conversions.toTuple(nativeArguments) as? Args else {
         throw ArgumentConversionException()
       }
-
-      return try body(argumentsTuple)
+      return try body(argumentsTuple) as Any
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {
@@ -110,34 +87,10 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
     }
   }
 
-  func call(_ appContext: AppContext, withThis this: JavaScriptValue?, arguments: [JavaScriptValue]) throws -> JavaScriptValue {
+  @JavaScriptActor
+  func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> JavaScriptValue {
+    let result = try runBody(appContext, in: runtime, this: this, arguments: arguments)
     do {
-      try validateArgumentsNumber(function: self, received: arguments.count)
-
-      // This array will include the owner (if needed) and function arguments.
-      var allNativeArguments: [Any] = []
-
-      // If the function takes the owner, convert it and add to the final arguments.
-      if takesOwner, let this, let ownerType = dynamicArgumentTypes.first {
-        let nativeOwner = try appContext.converter.toNative(this, ownerType)
-        allNativeArguments.append(nativeOwner)
-      }
-
-      // Convert JS values to non-JS native types desired by the function.
-      let nativeArguments = try appContext.converter.toNative(arguments, Array(dynamicArgumentTypes.dropFirst(allNativeArguments.count)))
-
-      allNativeArguments.append(contentsOf: nativeArguments)
-
-      // Fill in with nils in place of missing optional arguments.
-      if arguments.count < argumentsCount {
-        allNativeArguments.append(contentsOf: Array(repeating: Any?.none as Any, count: argumentsCount - arguments.count))
-      }
-
-      guard let argumentsTuple = try Conversions.toTuple(allNativeArguments) as? Args else {
-        throw ArgumentConversionException()
-      }
-      let result = try body(argumentsTuple)
-
       return try appContext.converter.toJS(result, returnType)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
@@ -157,16 +110,48 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
    Builds the sync function in a specific runtime.
    Used to install functions in alternate runtimes (e.g. the worklet runtime).
    */
+  @JavaScriptActor
   func build(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
     // We intentionally capture a strong reference to `self`, otherwise the "detached" objects would
     // immediately lose the reference to the definition and thus the underlying native function.
     // It may potentially cause memory leaks, but at the time of writing this comment,
     // the native definition instance deallocates correctly when the JS VM triggers the garbage collector.
-    return try runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak appContext, self] this, arguments in
+    return runtime.createFunction(name) { [weak appContext, self] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      return try self.call(appContext, withThis: this, arguments: arguments)
-    }
+      return try self.call(appContext, in: runtime, this: this, arguments: arguments)
+    }.asObject()
   }
+}
+
+@JavaScriptActor
+internal func toNativeClosureArguments(
+  converter: MainValueConverter,
+  fn: AnyFunctionDefinition,
+  this: JavaScriptValue,
+  arguments: borrowing JavaScriptValuesBuffer
+) throws -> [Any] {
+  // This array will include the owner (if needed) and function arguments.
+  var nativeArguments: [Any] = []
+  let receivedArgumentsCount = arguments.count
+
+  // If the function takes the owner, convert it and add to the final arguments.
+  if fn.takesOwner, !this.isUndefined(), let ownerType = fn.dynamicArgumentTypes.first {
+    let nativeOwner = try converter.toNative(this, ownerType)
+    nativeArguments.append(nativeOwner)
+  }
+
+  // Convert JS values to non-JS native types desired by the function.
+  let dynamicTypesWithoutOwner = Array(fn.dynamicArgumentTypes.dropFirst(nativeArguments.count))
+  nativeArguments.append(
+    contentsOf: try converter.toNative(arguments, dynamicTypesWithoutOwner)
+  )
+
+  // Fill in with nils in place of missing optional arguments.
+  if receivedArgumentsCount < fn.argumentsCount {
+    let missingOptionals = Array(repeating: Any?.none as Any, count: fn.argumentsCount - receivedArgumentsCount)
+    nativeArguments.append(contentsOf: missingOptionals)
+  }
+  return nativeArguments
 }

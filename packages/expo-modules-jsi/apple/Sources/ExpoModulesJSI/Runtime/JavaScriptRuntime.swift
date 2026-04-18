@@ -387,7 +387,24 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   /**
-   Asynchronously executes a closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   Asynchronously executes a sync closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   */
+  public func execute<R: Sendable>(
+    @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R
+  ) async throws -> sending R {
+    return try await withUnsafeThrowingContinuation { continuation in
+      scheduler.scheduleTask(.ImmediatePriority) {
+        do {
+          continuation.resume(returning: try JavaScriptActor.assumeIsolated(closure))
+        } catch {
+          continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+  /**
+   Asynchronously executes an async closure on the JavaScript runtime thread, awaiting its completion without blocking.
    */
   public func execute<R: Sendable>(
     taskName: String? = "[JS] runtime.execute (async \(#function))",

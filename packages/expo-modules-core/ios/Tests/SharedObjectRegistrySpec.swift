@@ -60,7 +60,7 @@ final class SharedObjectRegistrySpec: ExpoSpec {
         let id = sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
         let pair = sharedObjectRegistry.get(id)
         expect(pair?.native) === nativeObject
-        expect(pair?.javaScript.lock()) == jsObject
+        expect(pair?.javaScript) == jsObject.asValue()
       }
     }
 

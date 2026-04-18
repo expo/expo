@@ -13,7 +13,7 @@
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 
-#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 
 #import <React/RCTLog.h>
 
