@@ -64,11 +64,11 @@ export async function resolveGradlePropsAsync(
     buildType,
     flavors: parts.map((v) => v.toLowerCase()),
     apkVariantDirectory,
-    architectures: await getConnectedDeviceABIS(buildType, device, options.allArch),
+    architectures: await getConnectedDeviceABI(buildType, device, options.allArch),
   };
 }
 
-async function getConnectedDeviceABIS(
+async function getConnectedDeviceABI(
   buildType: string,
   device: Device,
   allArch?: boolean
@@ -82,6 +82,5 @@ async function getConnectedDeviceABIS(
 
   const abis = await getDeviceABIsAsync(device);
 
-  const validAbis = abis.filter((abi) => VALID_ARCHITECTURES.includes(abi));
-  return validAbis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',');
+  return abis.find((abi) => VALID_ARCHITECTURES.includes(abi)) ?? '';
 }
