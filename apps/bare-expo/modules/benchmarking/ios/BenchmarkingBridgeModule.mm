@@ -31,4 +31,9 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(foldArray:(NSArray *)array)
   return @(sum);
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(echoObject:(NSDictionary *)point)
+{
+  return point;
+}
+
 @end

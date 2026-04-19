@@ -1,7 +1,10 @@
 package expo.modules.benchmark
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.iterator
 
 class BenchmarkingTurboModule(reactContext: ReactApplicationContext) : NativeBenchmarkingTurboModuleSpec(reactContext) {
@@ -33,5 +36,12 @@ class BenchmarkingTurboModule(reactContext: ReactApplicationContext) : NativeBen
     }
 
     return sum
+  }
+
+  override fun echoObject(point: ReadableMap): WritableMap {
+    val result = Arguments.createMap()
+    result.putDouble("x", point.getDouble("x"))
+    result.putDouble("y", point.getDouble("y"))
+    return result
   }
 }
