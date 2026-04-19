@@ -68,7 +68,7 @@ export async function hasDeviceTokenChangedAsync(token: DevicePushToken): Promis
     }
 
     const age = Date.now() - (lastTokenData.registeredAt ?? 0);
-    if (age >= REGISTRATION_TTL_MS) {
+    if (age < 0 || age >= REGISTRATION_TTL_MS) {
       return true;
     }
 
