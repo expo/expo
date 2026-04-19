@@ -85,7 +85,7 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
     expect(updateDevicePushTokenAsync).not.toHaveBeenCalled();
   });
 
-  it(`does not crash if hasDeviceTokenChangedAsync throws`, async () => {
+  it(`handles errors during registration gracefully`, async () => {
     const mockPendingDevicePushToken: DevicePushToken = {
       data: 'some-token',
       type: 'ios',
@@ -93,13 +93,12 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
     (
       getDevicePushTokenAsync as jest.MockedFunction<typeof getDevicePushTokenAsync>
     ).mockResolvedValue(mockPendingDevicePushToken);
+    // Simulate an unexpected error after getDevicePushTokenAsync succeeds
     mockedHasDeviceTokenChangedAsync.mockRejectedValue(new Error('storage error'));
     const spy = jest.spyOn(console, 'warn').mockImplementation();
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
       JSON.stringify(ENABLED_REGISTRATION_FIXTURE)
     );
-    // The error propagates to the outer catch which logs a warning.
-    // Registration is not attempted — the next app open will retry.
     expect(updateDevicePushTokenAsync).not.toHaveBeenCalled();
     spy.mockRestore();
   });
