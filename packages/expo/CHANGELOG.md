@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent fatal `The stream is not in a state that permits close` in `expo/fetch` when native delivers `didComplete`/`didFailWithError` after the consumer has already canceled the body stream. (by [@safaiyeh](https://github.com/safaiyeh))
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-21
