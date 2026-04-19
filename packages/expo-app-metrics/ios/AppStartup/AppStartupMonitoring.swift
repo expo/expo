@@ -85,11 +85,12 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     }
   }
 
-  nonisolated func markInteractive(routeName: String? = nil) {
+  nonisolated func markInteractive(routeName: String? = nil, params: [String: Any] = [:]) {
     if launchType == .prewarmed {
       return
     }
     let currentTime = CACurrentMediaTime()
+    nonisolated(unsafe) var params = params
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {
@@ -101,21 +102,18 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       markers.timeToInteractive = currentTime
 
       if let tti = markers.getTTI() {
-        var params: [String: Any]?
         let frameMetrics = frameMetricsRecorder.stop()
         if frameMetrics.expectedFrames > 0 {
-          params = [
-            "frameRate.slowFrames": frameMetrics.slowFrames,
-            "frameRate.frozenFrames": frameMetrics.frozenFrames,
-            "frameRate.totalDelay": frameMetrics.freezeTime,
-          ]
+          params["frameRate.slowFrames"] = frameMetrics.slowFrames
+          params["frameRate.frozenFrames"] = frameMetrics.frozenFrames
+          params["frameRate.totalDelay"] = frameMetrics.freezeTime
         }
         let metric = Metric(
           category: .appStartup,
           name: "timeToInteractive",
           value: tti,
           routeName: routeName,
-          params: params
+          params: params.isEmpty ? nil : params
         )
         reportMetric(metric)
       }
