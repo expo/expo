@@ -42,13 +42,23 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
           });
 
           response.addListener('didComplete', () => {
-            controller.close();
+            // Native can emit `didComplete` after `cancelStreaming()` has
+            // already closed the controller (e.g. the consumer cancels the
+            // stream while the native request is mid-flight). Calling
+            // `controller.close()` on an already-closed stream throws
+            // `TypeError: The stream is not in a state that permits close`,
+            // which escapes this listener and surfaces as a fatal JS crash.
+            if (isControllerClosed) return;
             isControllerClosed = true;
+            controller.close();
           });
 
           response.addListener('didFailWithError', (error: string) => {
-            controller.error(new Error(error));
+            // Same race as `didComplete` — skip if the stream is already
+            // closed/errored to avoid `controller.error()` on an invalid state.
+            if (isControllerClosed) return;
             isControllerClosed = true;
+            controller.error(new Error(error));
           });
         },
         async pull(controller) {
