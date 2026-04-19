@@ -497,6 +497,166 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
   });
 
+  describe('Shared statement concurrency', () => {
+    it('overlapping getAllAsync on shared statement should not mix cursor state', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+CREATE TABLE t(g INTEGER, v TEXT);
+INSERT INTO t(g, v) VALUES (1, 'a1'), (1, 'a2'), (1, 'a3'), (2, 'b1'), (2, 'b2'), (2, 'b3');
+`);
+      const stmt = await db.prepareAsync('SELECT v FROM t WHERE g = $g ORDER BY v');
+      try {
+        for (let i = 0; i < 50; i++) {
+          const a = (async () => {
+            const r = await stmt.executeAsync<{ v: string }>({ $g: 1 });
+            await delayAsync(Math.random() * 5);
+            return (await r.getAllAsync()).map((x) => x.v);
+          })();
+          const b = (async () => {
+            await delayAsync(Math.random() * 2);
+            const r = await stmt.executeAsync<{ v: string }>({ $g: 2 });
+            return (await r.getAllAsync()).map((x) => x.v);
+          })();
+          const [ra, rb] = await Promise.all([a, b]);
+          expect(ra).toEqual(['a1', 'a2', 'a3']);
+          expect(rb).toEqual(['b1', 'b2', 'b3']);
+        }
+      } finally {
+        await stmt.finalizeAsync();
+      }
+      await db.closeAsync();
+    });
+
+    it('maximum contention: no delays between concurrent executeAsync calls', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+CREATE TABLE t_nodelay(g INTEGER, v TEXT);
+INSERT INTO t_nodelay(g, v) VALUES (1, 'a1'), (1, 'a2'), (1, 'a3'), (2, 'b1'), (2, 'b2'), (2, 'b3');
+`);
+      const stmt = await db.prepareAsync('SELECT v FROM t_nodelay WHERE g = $g ORDER BY v');
+      try {
+        for (let i = 0; i < 100; i++) {
+          const [ra, rb] = await Promise.all([
+            stmt.executeAsync<{ v: string }>({ $g: 1 }).then((r) => r.getAllAsync()),
+            stmt.executeAsync<{ v: string }>({ $g: 2 }).then((r) => r.getAllAsync()),
+          ]);
+          expect(ra.map((x) => x.v)).toEqual(['a1', 'a2', 'a3']);
+          expect(rb.map((x) => x.v)).toEqual(['b1', 'b2', 'b3']);
+        }
+      } finally {
+        await stmt.finalizeAsync();
+      }
+      await db.closeAsync();
+    });
+
+    it('overlapping executeForRawResultAsync should not mix cursor state', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+CREATE TABLE t2(g INTEGER, v TEXT);
+INSERT INTO t2(g, v) VALUES (1, 'x1'), (1, 'x2'), (2, 'y1'), (2, 'y2');
+`);
+      const stmt = await db.prepareAsync('SELECT v FROM t2 WHERE g = $g ORDER BY v');
+      try {
+        for (let i = 0; i < 50; i++) {
+          const a = (async () => {
+            const r = await stmt.executeForRawResultAsync<{ v: string }>({ $g: 1 });
+            await delayAsync(Math.random() * 5);
+            return (await r.getAllAsync()).map((row) => row[0]);
+          })();
+          const b = (async () => {
+            await delayAsync(Math.random() * 2);
+            const r = await stmt.executeForRawResultAsync<{ v: string }>({ $g: 2 });
+            return (await r.getAllAsync()).map((row) => row[0]);
+          })();
+          const [ra, rb] = await Promise.all([a, b]);
+          expect(ra).toEqual(['x1', 'x2']);
+          expect(rb).toEqual(['y1', 'y2']);
+        }
+      } finally {
+        await stmt.finalizeAsync();
+      }
+      await db.closeAsync();
+    });
+
+    it('getFirstAsync after resetAsync should return the same first row', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+CREATE TABLE t3(id INTEGER PRIMARY KEY, v TEXT);
+INSERT INTO t3(v) VALUES ('row1'), ('row2'), ('row3');
+`);
+      const stmt = await db.prepareAsync('SELECT v FROM t3 ORDER BY id');
+      const result = await stmt.executeAsync<{ v: string }>();
+      const first1 = await result.getFirstAsync();
+      expect(first1?.v).toBe('row1');
+      await result.resetAsync();
+      const first2 = await result.getFirstAsync();
+      expect(first2?.v).toBe('row1');
+      await stmt.finalizeAsync();
+      await db.closeAsync();
+    });
+
+    it('getAllAsync after resetAsync should return all rows', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+CREATE TABLE t4(id INTEGER PRIMARY KEY, v TEXT);
+INSERT INTO t4(v) VALUES ('a'), ('b'), ('c');
+`);
+      const stmt = await db.prepareAsync('SELECT v FROM t4 ORDER BY id');
+      const result = await stmt.executeAsync<{ v: string }>();
+      const all1 = await result.getAllAsync();
+      expect(all1.map((r) => r.v)).toEqual(['a', 'b', 'c']);
+      await result.resetAsync();
+      const all2 = await result.getAllAsync();
+      expect(all2.map((r) => r.v)).toEqual(['a', 'b', 'c']);
+      await stmt.finalizeAsync();
+      await db.closeAsync();
+    });
+
+    it('partial async iteration + resetAsync should allow re-iteration', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+CREATE TABLE t5(id INTEGER PRIMARY KEY, v TEXT);
+INSERT INTO t5(v) VALUES ('r1'), ('r2'), ('r3');
+`);
+      const stmt = await db.prepareAsync('SELECT v FROM t5 ORDER BY id');
+      const result = await stmt.executeAsync<{ v: string }>();
+      // Read first two rows via iterator
+      const row1 = (await result.next()).value;
+      expect(row1?.v).toBe('r1');
+      const row2 = (await result.next()).value;
+      expect(row2?.v).toBe('r2');
+      // Reset and re-read from beginning
+      await result.resetAsync();
+      const reread1 = (await result.next()).value;
+      expect(reread1?.v).toBe('r1');
+      await stmt.finalizeAsync();
+      await db.closeAsync();
+    });
+
+    it('INSERT RETURNING should work correctly with materialized results', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+CREATE TABLE t6(id INTEGER PRIMARY KEY, name TEXT);
+`);
+      const stmt = await db.prepareAsync('INSERT INTO t6(name) VALUES (?) RETURNING id, name');
+      try {
+        const r1 = await stmt.executeAsync<{ id: number; name: string }>('alice');
+        const rows1 = await r1.getAllAsync();
+        expect(rows1.length).toBe(1);
+        expect(rows1[0].name).toBe('alice');
+        expect(r1.changes).toBe(1);
+
+        const r2 = await stmt.executeAsync<{ id: number; name: string }>('bob');
+        const first2 = await r2.getFirstAsync();
+        expect(first2?.name).toBe('bob');
+        expect(r2.changes).toBe(1);
+      } finally {
+        await stmt.finalizeAsync();
+      }
+      await db.closeAsync();
+    });
+  });
+
   describe('Statement parameters bindings', () => {
     let db: SQLite.SQLiteDatabase;
 
