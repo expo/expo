@@ -1,7 +1,9 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { EntityTypes, Source } from '../Calendar';
+import { DialogEventResult, EntityTypes, Source } from '../Calendar';
+import { AddEventWithFormOptions } from './ExpoCalendar.types';
 declare class ExpoCalendar {
     constructor(id: string);
+    addEventWithForm(options?: AddEventWithFormOptions | null): Promise<DialogEventResult>;
 }
 declare class ExpoCalendarEvent {
     constructor();

@@ -62,6 +62,24 @@ const CalendarRow = (props: {
         title="Delete Calendar"
         disabled={!calendar.allowsModifications}
       />
+      {Platform.OS === 'ios' && (
+        <ListButton
+          onPress={async () => {
+            const result = await calendar.addEventWithForm({
+              title: 'Expo',
+              url: 'https://expo.dev',
+              notes: 'This is a cool note',
+              location: 'Expo HQ',
+              alarms: [{ relativeOffset: -15 }, { relativeOffset: -5 }],
+              recurrenceRule: {
+                frequency: Calendar.Frequency.DAILY,
+              },
+            });
+            Alert.alert('addEventWithForm result', JSON.stringify(result));
+          }}
+          title="Add Event With Form"
+        />
+      )}
     </View>
   );
 };

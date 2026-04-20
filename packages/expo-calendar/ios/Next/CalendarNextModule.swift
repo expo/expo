@@ -349,6 +349,43 @@ public final class CalendarNextModule: Module {
         return expoReminder
       }
 
+      AsyncFunction("addEventWithForm") { (expoCalendar: ExpoCalendar, options: AddEventWithFormOptions?, promise: Promise) in
+        let event = EKEvent(eventStore: eventStore)
+        event.calendar = expoCalendar.calendar
+        if let options {
+          event.title = options.title
+          event.notes = options.notes
+          event.location = options.location
+          if let startDate = options.startDate {
+            guard let parsedStartDate = parse(date: startDate) else {
+              throw InvalidDateFormatException()
+            }
+            event.startDate = parsedStartDate
+          }
+          if let endDate = options.endDate {
+            guard let parsedEndDate = parse(date: endDate) else {
+              throw InvalidDateFormatException()
+            }
+            event.endDate = parsedEndDate
+          }
+          if let allDay = options.allDay {
+            event.isAllDay = allDay
+          }
+          if let alarms = options.alarms {
+            event.alarms = createCalendarEventAlarms(alarms: alarms)
+          }
+          if let rule = options.recurrenceRule {
+            let newRule = createRecurrenceRule(rule: rule)
+            if let newRule {
+              event.recurrenceRules = [newRule]
+            }
+          }
+          if let urlString = options.url { event.url = URL(string: urlString) }
+        }
+
+        try presentEventEditViewController(event: event, promise: promise)
+      }.runOnQueue(.main)
+
       AsyncFunction("update") { (expoCalendar: ExpoCalendar, calendarRecord: CalendarRecordNext) throws in
         try calendarPermissions?.checkCalendarPermissions()
         try expoCalendar.update(calendarRecord: calendarRecord)
