@@ -12,14 +12,13 @@ const withTargetXcodeProject = (config, { targetName, bundleIdentifier, deployme
     const xcodeProject = config.modResults;
     const targetUuid = xcodeProject.generateUuid();
     const groupName = 'Embed Foundation Extensions';
-    const marketingVersion = config.version;
     const xCConfigurationList = (0, addXCConfigurationList_1.addXCConfigurationList)(xcodeProject, {
         targetName,
-        currentProjectVersion: config.ios.buildNumber || '1',
         bundleIdentifier,
         deploymentTarget,
-        marketingVersion,
         appleTeamId,
+        marketingVersion: '1.0',
+        currentProjectVersion: '1',
     });
     const productFile = (0, addProductFile_1.addProductFile)(xcodeProject, {
         targetName,
