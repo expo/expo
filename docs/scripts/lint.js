@@ -153,7 +153,7 @@ if (oxfmtResult.status !== 0) {
         const filePath = match[1];
         const relPath = filePath.startsWith(cwd) ? filePath.slice(cwd.length + 1) : filePath;
         console.error(
-          `::error file=${workingDir}/${relPath}::File has formatting issues. Run \`yarn format\` to fix.`
+          `::error file=${workingDir}/${relPath},line=1,col=1::File has formatting issues. Run \`yarn format\` to fix.`
         );
       }
     }
