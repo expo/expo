@@ -120,7 +120,7 @@ nodeLinker: node-modules
 
 #### EAS installation
 
-Yarn Modern on EAS requires enabling [Corepack](https://nodejs.org/api/corepack.html) for the build. Set [`corepack`](/eas/json/#corepack) to `true` in your build profile in **eas.json**:
+Yarn Modern on EAS requires enabling [Corepack](https://github.com/nodejs/corepack) for the build. Set [`corepack`](/eas/json/#corepack) to `true` in your build profile in **eas.json**:
 
 ```json eas.json
 {
@@ -132,7 +132,7 @@ Yarn Modern on EAS requires enabling [Corepack](https://nodejs.org/api/corepack.
 }
 ```
 
-Then pin the Yarn version in your project's **package.json** using the [`packageManager`](https://nodejs.org/api/packages.html#packagemanager) field. Running `yarn set version <version>` locally will update this field for you:
+Then, pin the Yarn version in your project's **package.json** using the [`packageManager`](https://nodejs.org/api/packages.html#packagemanager) field. Running `yarn set version <version>` locally will update this field for you:
 
 ```json package.json
 {
@@ -140,7 +140,7 @@ Then pin the Yarn version in your project's **package.json** using the [`package
 }
 ```
 
-With these in place, Corepack automatically downloads and uses the pinned Yarn version when EAS installs dependencies.
+After adding both of the above configurations, Corepack automatically downloads and uses the pinned Yarn version when EAS installs dependencies.
 
 ### pnpm
 
