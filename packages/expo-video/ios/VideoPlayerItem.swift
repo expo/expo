@@ -20,10 +20,10 @@ class VideoPlayerItem: AVPlayerItem {
       return nil
     }
     self.videoSource = videoSource
-    self.isHls = videoSource.uri?.isHLS == true || videoSource.contentType == .hls
 
     let asset = VideoAsset(url: url, videoSource: videoSource)
     self.urlAsset = asset
+    self.isHls = asset.effectivePlaybackURL.isHLS || asset.effectiveContentType == .hls
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
     self.createTracksLoadingTask()
   }
@@ -33,13 +33,14 @@ class VideoPlayerItem: AVPlayerItem {
       return nil
     }
     self.videoSource = videoSource
-    self.isHls = videoSource.uri?.isHLS == true || videoSource.contentType == .hls
 
     let asset = VideoAsset(url: url, videoSource: videoSource)
     self.urlAsset = asset
+    self.isHls = asset.effectivePlaybackURL.isHLS || asset.effectiveContentType == .hls
     // We can ignore any exceptions thrown during the load. The asset will be assigned to the `VideoPlayer` anyways
-    // and cause it to go into .error state trigerring the `onStatusChange` event.
+    // and cause it to go into .error state triggering the `onStatusChange` event.
     do {
+      try await asset.prepareForLoadingIfNeeded()
       _ = try await asset.load(.duration, .preferredTransform, .isPlayable)
     } catch {
         // Catch block is intentionally left empty
@@ -55,9 +56,10 @@ class VideoPlayerItem: AVPlayerItem {
 
   func createTracksLoadingTask() {
     tracksLoadingTask = Task { [weak self] in
-      guard let self, let mainUrl = videoSource.uri else {
+      guard let self else {
         return []
       }
+      let mainUrl = urlAsset.effectivePlaybackURL
 
       var tracks: [VideoTrack] = []
       if let assetTracks = try? await urlAsset.loadTracks(withMediaType: .video) {
@@ -109,10 +111,7 @@ class VideoPlayerItem: AVPlayerItem {
   // AVKit API doesn't provide us with a list of available tracks for a HLS source. We can download the playlist file and parse it ourselves
   // it's usually very small (1-2 kB), so we won't add too much overhead
   private func fetchHlsVideoTracks() async throws -> [VideoTrack] {
-    guard let uri = videoSource.uri else {
-      throw URLError(.badURL)
-    }
-
+    let uri = urlAsset.effectivePlaybackURL
     var request = URLRequest(url: uri)
     if let headers = videoSource.headers {
       for (key, value) in headers {
