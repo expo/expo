@@ -9,19 +9,19 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this chapter, we'll create a workflow that runs E2E tests using Maestro on Android Emulator and iOS Simulator against development builds. Maestro is the most popular E2E testing tool among non-enterprise Expo users, and the [`maestro`](/eas/workflows/pre-packaged-jobs/#maestro) pre-packaged job makes it straightforward to integrate into EAS Workflows.
+Broken navigation flows and crashing screens often slip past code review because reviewers cannot run the app on every pull request. By the end of this chapter, we have a workflow that runs Maestro E2E tests on Android and iOS development builds, with the option to trigger it automatically on pull requests.
 
 > **important** The Maestro job type in EAS Workflows is currently in [alpha](/more/release-statuses/#alpha).
 
 ## Why are E2E tests useful?
 
-The pipeline from previous chapters builds our project, delivers updates, and notifies teams over Slack. However, a broken navigation flow or a crashing screen can still make it to production silently. E2E tests can help catch these issues before they reach production by simulating real user interactions and verifying that the app behaves as expected.
+The pipeline from previous chapters builds our project and delivers updates, with Slack notifications. However, a broken navigation flow or a crashing screen can still make it to production silently. E2E tests can help catch these issues before they reach production by simulating real user interactions and verifying that the app behaves as expected.
 
-[Maestro](https://maestro.mobile.dev/) runs automated flows against a built app on an Android Emulator or iOS Simulator. It can tap buttons, type text, assert screen content, and navigate between screens. EAS Workflows runs these flows in the cloud after building an APK for Android or an iOS Simulator build.
+[Maestro](https://maestro.mobile.dev/) runs automated flows against a built app on an Android Emulator or an iOS Simulator. It can tap buttons, type text, assert screen content, and navigate between screens. EAS Workflows runs these flows in the cloud after building an APK for Android or an iOS Simulator build.
 
 ## Set up E2E tests
 
-For Android and iOS, we need to add a special build profile for E2E tests. This profile skips creating credential setup for Android and allows running our iOS build inside a simulator.
+For Android and iOS, we need to add a special build profile for E2E tests. This profile skips credential setup for Android and allows running our iOS build inside a simulator.
 
 <Step label="1">
 
@@ -52,7 +52,7 @@ Add an `e2e-test` profile to **eas.json**. This profile creates an unsigned APK 
 
 <Step label="2">
 
-### Add Maestro tests flow files
+### Add Maestro flow files
 
 Create a **.maestro/** directory at the root of the project and then add the following test files.
 
@@ -119,9 +119,9 @@ jobs:
       flow_path: ['.maestro/home.yml', '.maestro/navigate.yml']
 ```
 
-In the above workflow, there are two build jobs for Android and iOS: `build_android` and `build_ios`. After each build job, there is a corresponding Maestro job: `test_android` and `test_ios`, which run the Maestro tests for each platform.
+In the above workflow, there are two build jobs for Android and iOS: `build_android` and `build_ios`. After each build, a corresponding Maestro job (`test_android` or `test_ios`) runs the tests for that platform.
 
-Each Maestro job takes the `build_id` output from its respective build job to know which build to run the tests on, and it also uses `flow_path` to specify the path to the Maestro flow files we created earlier.
+Each Maestro job references the build via `build_id` and points at the Maestro flow files via `flow_path`.
 
 </Step>
 
@@ -129,7 +129,7 @@ Each Maestro job takes the `build_id` output from its respective build job to kn
 
 ### Run the workflow manually
 
-Use `eas workflow:run` command to run the workflow manually:
+Use the `eas workflow:run` command to run the workflow manually:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/e2e-tests.yml']} />
 
@@ -151,7 +151,7 @@ On the EAS dashboard, notice that the Android and iOS builds start in parallel. 
 
 ## Trigger E2E tests automatically
 
-So far we've run the workflow manually. For a team pipeline, we can trigger it from GitHub events using one of the following methods:
+So far we've run the workflow manually. We can trigger it from GitHub events so it runs on every pull request or on demand with a pull request label.
 
 ### Run on every pull request
 
@@ -173,8 +173,6 @@ on:
     labels: ['test']
 ```
 
-With the `pull_request_labeled` trigger, the workflow will only run when a "test" label is added to a PR in GitHub.
-
 <ContentSpotlight
   alt="EAS Workflows run with Maestro jobs using a pull request label."
   src="/static/images/tutorial/cicd/e2e-03.png"
@@ -186,7 +184,7 @@ With the `pull_request_labeled` trigger, the workflow will only run when a "test
 <ProgressTracker
   currentChapterIndex={3}
   name="CICD_TUTORIAL"
-  summary="We created a Maestro E2E test workflow on dev builds for Android and iOS, kept the trigger manual by default, and learned how to use a pull request label trigger for on-demand runs."
+  summary="We created a Maestro E2E test workflow on development builds for Android and iOS, kept the trigger manual by default, and learned how to use a pull request label trigger for on-demand runs."
   nextChapterDescription="In the next chapter, learn how to create a production workflow with fingerprinting and OTA updates."
   nextChapterTitle="Production deployments"
   nextChapterLink="/tutorial/cicd/production-deployments/"

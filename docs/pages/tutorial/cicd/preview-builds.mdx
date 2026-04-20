@@ -10,11 +10,11 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this chapter, we'll create our initial workflow to use `preview` build profiles with fingerprints, add Slack notifications, and set up a separate workflow for pull request (PR) previews using OTA.
+Sharing in-progress mobile changes with teammates and PR reviewers often requires them to check out a branch and run a development server locally. By the end of this chapter, we have a preview build workflow with Slack notifications, and a second workflow that posts a testable OTA update on a pull request.
 
-## Using `build` job type for preview builds
+## The `build` job type for preview builds
 
-Teams use preview builds for stakeholder testing. They distribute them via internal distribution so members can test changes on real devices or emulators/simulators before a production release. They don't have to run a development server on their local machine or check a Git branch to test the changes.
+Teams use preview builds for stakeholder testing. Members install the build on their devices or emulators/simulators through internal distribution, so they do not need to run a development server or check out a branch and download the code to test changes.
 
 <PreviewPipeline />
 
@@ -24,7 +24,7 @@ Like development builds, we will add fingerprints to avoid unnecessary rebuilds 
 
 ### Add a preview.yml
 
-Inside **.eas/workflows/**, let's add a new file called **preview.yml**. This workflow file will use `preview` build profile.
+Inside **.eas/workflows/**, let's add a new file called **preview.yml**. This workflow file will use the `preview` profile.
 
 ```yaml preview.yml
 name: Preview builds
@@ -86,13 +86,12 @@ Run the workflow manually using the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-In EAS dashboard, notice that the workflow follows the same fingerprint pattern we implemented for development builds. Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to `main` branch without changing native code, the workflow will skip the build jobs since compatible builds already exist.
+In the EAS dashboard, notice that the workflow follows the same fingerprint pattern we implemented for development builds. Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to the `main` branch without changing native code, the workflow will skip the build jobs since compatible builds already exist.
 
 <ContentSpotlight
   alt="Workflow running with fingerprint and get-build jobs skipping the build jobs since compatible builds already exist."
   src="/static/images/tutorial/cicd/preview-builds-01.png"
   className="max-w-160"
-  caption="In the above image, we can see that preview builds are created for both Android and iOS since this is the first time we are running the workflow."
 />
 
 </Step>
@@ -101,7 +100,7 @@ In EAS dashboard, notice that the workflow follows the same fingerprint pattern 
 
 > **info** This section is optional. Not using Slack? Skip to the next section about PR previews.
 
-Slack notifications are popular with distributed teams. When a build completes (or skips), the [`slack`](/eas/workflows/pre-packaged-jobs/#slack) pre-packaged job notifies the team in Slack.
+Many teams use Slack for build notifications so their team sees build status without checking the EAS dashboard. When a build completes (or skips), the [`slack`](/eas/workflows/pre-packaged-jobs/#slack) pre-packaged job posts the status to a channel.
 
 <Step label="1">
 
@@ -120,7 +119,7 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 
 ### Add a Slack notification job
 
-Let's update **preview.yml** to add a `notify` job after the build jobs. The `notify` job uses a `webhook_url` and a `message` (or a `payload` for rich formatting using [Slack Block Kit](https://docs.slack.dev/block-kit)) parameters. We have to add the webhook URL directly in the workflow file.
+Let's update **preview.yml** to add a `notify` job after the build jobs. The `notify` job uses `webhook_url` and `message` parameters, or a `payload` parameter for rich formatting with [Slack Block Kit](https://docs.slack.dev/block-kit). We have to add the webhook URL directly in the workflow file.
 
 ```yaml preview.yml
 name: Preview builds
@@ -147,9 +146,7 @@ jobs:
   # @end #
 ```
 
-In the above workflow, using `after` keyword, allows us to only trigger a notification when builds have completed either successfully, failed, or skipped.
-
-The `message` uses `${{ after.build_android.status }}` and `${{ after.build_ios.status }}` to include the actual outcome (success, failure, or skipped) for each platform so the team knows exactly what happened within Slack.
+The `after` field ensures the notification fires once the builds finish, regardless of the outcome. The `message` uses `${{ after.build_android.status }}` and `${{ after.build_ios.status }}` to include the outcome (success, failure, or skipped) for each platform, so the team sees what happened without leaving Slack.
 
 </Step>
 
@@ -161,13 +158,13 @@ Run the workflow manually using the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-On EAS dashboard, we can verify that "Notify on Slack" job runs successfully.
+On the EAS dashboard, we can verify that the `Notify on Slack` job runs successfully.
 
 <ContentSpotlight
-  alt="In EAS dashboard, the Notify on Slack job runs successfully after build jobs."
+  alt="In the EAS dashboard, the Notify on Slack job runs successfully after the build jobs."
   src="/static/images/tutorial/cicd/preview-builds-02.png"
   className="max-w-160"
-  caption="In the above image, we can see that the Notify on Slack job runs successfully after the build jobs."
+  caption="The Notify on Slack job runs successfully after the build jobs complete."
 />
 
 We can also verify this in the Slack channel integrated with the app.
@@ -176,26 +173,26 @@ We can also verify this in the Slack channel integrated with the app.
   alt="Slack notification with the status of preview builds for Android and iOS."
   src="/static/images/tutorial/cicd/preview-builds-03.png"
   className="max-w-90"
-  caption="In the above image, we can see the Slack notification with the status of preview builds for Android and iOS."
+  caption="A Slack notification showing the status of preview builds for Android and iOS."
 />
 
 </Step>
 
 ## PR previews using EAS Update
 
-When a PR reviewer looks at a pull request, they can read the diff but cannot see the changes visually or test them on a device without checking out the branch and starting a development server locally.
+A PR reviewer can read the diff, but cannot see the changes visually or test them on a device. To do that, they need to check out the branch and start a development server locally.
 
-Traditionally, deploy previews solve this problem. When someone opens a pull request, a CI/CD workflow runs and generates a preview link for the reviewers. They can click and test the changes live. Some teams call this pattern preview links or a staging environment.
+Web teams solve this with deploy previews. When someone opens a pull request, a CI/CD workflow generates a preview link. Reviewers click and test the changes without checking out the branch.
 
-On mobile for Android and iOS apps, the equivalent for web deployment previews can be set up using [EAS Update](/eas-update/introduction/). It is a service that delivers JavaScript bundle to devices that already have a compatible build installed. Publishing an update is fast because it skips the native compilation step. For PR reviews, we want an update and not a build because reviewers should be able to test and provide feedback to the PR.
+For mobile, we can set up the equivalent using [EAS Update](/eas-update/introduction/). EAS Update delivers a JavaScript bundle to devices that already have a compatible build installed, skipping the native compilation step. For PR previews, an update is the right fit because reviewers can install and test quickly, then leave feedback on the PR.
 
-To achieve this in EAS Workflows, we will use [`github-comment`](/eas/workflows/pre-packaged-jobs/#github-comment). It's a pre-packaged job that posts a comment on a pull request after the update publishes. This gives reviewers a link (or a QR code to scan) to open the update on their device.
+EAS Workflows provides a [`github-comment`](/eas/workflows/pre-packaged-jobs/#github-comment) pre-packaged job for this. It posts a comment on the pull request after the update publishes, giving reviewers a link or QR code to open the update on their device.
 
 <Step label="1">
 
 ### Create a pr-preview.yml
 
-Inside **.eas/workflows/**, let's add a new file called **pr-preview.yml**. This workflow runs on creating a pull request using `on.pull_request` trigger. It only publishes an update using the `update` job type and then posts a comment on the PR with the link to the update.
+Inside **.eas/workflows/**, let's add a new file called **pr-preview.yml**. This workflow runs when a pull request is created using the `on.pull_request` trigger. It only publishes an update using the `update` job type and then posts a comment on the PR with the link to the update.
 
 ```yaml pr-preview.yml
 name: PR Preview
@@ -224,11 +221,11 @@ jobs:
 
 ### Test with a pull request
 
-Let's test the workflow by creating a pull request in our GitHub repository. A pull request requires a separate branch from the `main`. Run the following command to create and switch to a new branch:
+Let's test the workflow by creating a pull request in our GitHub repository. A pull request requires a separate branch from `main`. Run the following command to create and switch to a new branch:
 
 <Terminal cmd={['$ git checkout -b test-preview']} />
 
-Now, let's make a visible change in the Expo project (for example, change a text string or background color). Then, commit, and push the branch:
+Now, let's make a visible change in the Expo project (for example, change a text string or background color). Then, commit and push the branch:
 
 <Terminal
   cmd={['$ git add .', '$ git commit -m "Test PR preview"', '$ git push origin test-preview']}
@@ -238,19 +235,18 @@ Now, let's make a visible change in the Expo project (for example, change a text
 Open a pull request from `test-preview` to `main` on GitHub. The workflow will run automatically after we have created a pull request. On the EAS dashboard, we can verify that the `publish_preview` job runs first and the `comment` job runs after it succeeds.
 
 <ContentSpotlight
-  alt="In EAS dashboard, the PR preview workflow runs after creating a pull request with the publish_preview job followed by the comment job."
+  alt="In the EAS dashboard, the PR preview workflow runs after creating a pull request, with the publish_preview job followed by the comment job."
   src="/static/images/tutorial/cicd/preview-builds-04.png"
   className="max-w-160"
-  caption="In the above image, we can see the PR preview workflow running after creating a pull request."
 />
 
 On the GitHub pull request, a comment should appear with a link or QR code to test the update on a device.
 
 <ContentSpotlight
-  alt="A comment on GitHub pull request with a link to the update preview."
+  alt="A comment on the GitHub pull request with a link to the update preview."
   src="/static/images/tutorial/cicd/preview-builds-05.png"
   className="max-w-160"
-  caption="In the above image, we can see a comment on the GitHub pull request with a link to the update preview."
+  caption="A comment on the GitHub pull request with a link to the update preview."
 />
 
 Using the link or QR code in the comment, we can now open the update on our device or emulator/simulator and test the changes.
