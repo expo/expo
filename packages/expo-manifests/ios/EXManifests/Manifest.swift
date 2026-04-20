@@ -261,11 +261,29 @@ public class Manifest: NSObject {
   }
 
   public func iosSplashBackgroundColor() -> String? {
-    return expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: [
-        ["extra", "expo-splash-screen", "ios", "backgroundColor"],
-      ])
+    let base = ["extra", "expo-splash-screen", "ios"]
+    var paths = [base + ["backgroundColor"]]
+#if os(iOS) || os(tvOS)
+    if UITraitCollection.current.userInterfaceStyle == .dark {
+      paths.insert(base + ["dark", "backgroundColor"], at: 0)
     }
+#endif
+    let color = expoClientConfigRootObject().let { it in
+      Manifest.string(fromManifest: it, atPaths: paths)
+    }
+
+    guard let color = color else {
+      return nil
+    }
+
+    if color.range(of: "^#([0-9a-fA-F]{3})$", options: .regularExpression) != nil {
+      let r = color[color.index(color.startIndex, offsetBy: 1)]
+      let g = color[color.index(color.startIndex, offsetBy: 2)]
+      let b = color[color.index(color.startIndex, offsetBy: 3)]
+      return "#\(r)\(r)\(g)\(g)\(b)\(b)"
+    }
+
+    return color
   }
 
   public func iosAppIconUrl() -> String? {
@@ -275,12 +293,19 @@ public class Manifest: NSObject {
   }
 
   public func iosSplashImageUrl() -> String? {
-    var paths = [["extra", "expo-splash-screen", "ios", "image"]]
+    let base = ["extra", "expo-splash-screen", "ios"]
+    var paths = [base + ["image"]]
 #if os(iOS) || os(tvOS)
-    if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
-      paths.insert(contentsOf: [
-        ["extra", "expo-splash-screen", "ios", "tabletImage"],
-      ], at: 0)
+    let isTablet = UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad
+
+    if isTablet {
+      paths.insert(base + ["tabletImage"], at: 0)
+    }
+    if UITraitCollection.current.userInterfaceStyle == .dark {
+      paths.insert(base + ["dark", "image"], at: 0)
+      if isTablet {
+        paths.insert(base + ["dark", "tabletImage"], at: 0)
+      }
     }
 #endif
     return expoClientConfigRootObject().let { it in

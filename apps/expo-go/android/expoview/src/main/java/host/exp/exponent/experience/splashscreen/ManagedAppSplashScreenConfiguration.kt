@@ -1,17 +1,19 @@
 package host.exp.exponent.experience.splashscreen
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.util.DisplayMetrics
 import androidx.annotation.ColorInt
 import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.utils.ColorParser
+import org.json.JSONObject
 
 class ManagedAppSplashScreenConfiguration private constructor() {
 
   @ColorInt
-  var backgroundColor = Color.parseColor("#ffffff")
+  var backgroundColor = Color.WHITE
     private set
   var imageUrl: String? = null
     private set
@@ -21,9 +23,25 @@ class ManagedAppSplashScreenConfiguration private constructor() {
   companion object {
     @JvmStatic
     fun parseManifest(context: Context, manifest: Manifest): ManagedAppSplashScreenConfiguration {
-      val backgroundColor = parseBackgroundColor(manifest)
-      val imageUrl = parseImageUrl(context, manifest)
-      val imageWidth = parseImageWidth(manifest)
+      val splashInfo = manifest.getSplashInfo()
+
+      if (
+        context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+          Configuration.UI_MODE_NIGHT_YES
+      ) {
+        splashInfo?.getNullable<JSONObject>("dark")?.let { dark ->
+          dark.keys().forEach { key ->
+            val value = dark.get(key)
+            if (value is String) {
+              splashInfo.put(key, value)
+            }
+          }
+        }
+      }
+
+      val backgroundColor = parseBackgroundColor(splashInfo)
+      val imageUrl = parseImageUrl(context, splashInfo) ?: manifest.getIconUrl()
+      val imageWidth = parseImageWidth(splashInfo)
 
       val config = ManagedAppSplashScreenConfiguration()
 
@@ -34,47 +52,42 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       return config
     }
 
-    private fun parseBackgroundColor(manifest: Manifest): Int? {
-      val backgroundColor =
-        manifest.getSplashInfo()?.getNullable<String>("backgroundColor") ?: return null
+    private fun parseBackgroundColor(splashInfo: JSONObject?): Int? {
+      val color = splashInfo?.optString("backgroundColor")?.takeIf { it != "" } ?: return null
 
-      val normalizedBackgroundColor = when {
-        Regex("^#([0-9a-fA-F]{3})$").matches(backgroundColor) -> {
-          val r = backgroundColor[1]
-          val g = backgroundColor[2]
-          val b = backgroundColor[3]
+      val normalizedColor = when {
+        Regex("^#([0-9a-fA-F]{3})$").matches(color) -> {
+          val r = color[1]
+          val g = color[2]
+          val b = color[3]
           "#$r$r$g$g$b$b"
         }
-        else -> backgroundColor
+        else -> color
       }
 
-      return if (ColorParser.isValid(normalizedBackgroundColor)) {
-        Color.parseColor(normalizedBackgroundColor)
+      return if (ColorParser.isValid(normalizedColor)) {
+        Color.parseColor(normalizedColor)
       } else {
         null
       }
     }
 
-    private fun parseImageUrl(context: Context, manifest: Manifest): String? {
+    private fun parseImageUrl(context: Context, splashInfo: JSONObject?): String? {
       val densityDpi = context.resources.displayMetrics.densityDpi
-      val splashInfo = manifest.getSplashInfo()
 
-      val imageUrl = splashInfo?.getNullable<String>(
-        when {
-          densityDpi >= DisplayMetrics.DENSITY_XXXHIGH -> "xxxhdpi"
-          densityDpi >= DisplayMetrics.DENSITY_XXHIGH -> "xxhdpi"
-          densityDpi >= DisplayMetrics.DENSITY_XHIGH -> "xhdpi"
-          densityDpi >= DisplayMetrics.DENSITY_HIGH -> "hdpi"
-          densityDpi >= DisplayMetrics.DENSITY_MEDIUM -> "mdpi"
-          else -> "image"
-        }
-      )
+      val key = when {
+        densityDpi >= DisplayMetrics.DENSITY_XXXHIGH -> "xxxhdpi"
+        densityDpi >= DisplayMetrics.DENSITY_XXHIGH -> "xxhdpi"
+        densityDpi >= DisplayMetrics.DENSITY_XHIGH -> "xhdpi"
+        densityDpi >= DisplayMetrics.DENSITY_HIGH -> "hdpi"
+        densityDpi >= DisplayMetrics.DENSITY_MEDIUM -> "mdpi"
+        else -> "image"
+      }
 
-      // if the splash configuration is not set, we default to the app icon
-      return imageUrl ?: manifest.getIconUrl()
+      return splashInfo?.optString(key)?.takeIf { it != "" }
     }
 
-    private fun parseImageWidth(manifest: Manifest): Int? =
-      manifest.getSplashInfo()?.getNullable("imageWidth")
+    private fun parseImageWidth(splashInfo: JSONObject?): Int? =
+      splashInfo?.optInt("imageWidth")?.takeIf { it != 0 }
   }
 }
