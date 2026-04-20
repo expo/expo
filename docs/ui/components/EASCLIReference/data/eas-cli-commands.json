@@ -1,8 +1,8 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-04-14T07:27:57.281Z",
-    "cliVersion": "18.6.0"
+    "fetchedAt": "2026-04-17T20:40:01.287Z",
+    "cliVersion": "18.7.0"
   },
   "totalCommands": 102,
   "commands": [
@@ -84,7 +84,7 @@
     {
       "command": "eas build:dev",
       "description": "run dev client simulator/emulator build with matching fingerprint or create a new one",
-      "usage": "USAGE\n  $ eas build:dev [-p ios|android] [-e PROFILE_NAME] [--skip-build-if-not-found]\n\nFLAGS\n  -e, --profile=PROFILE_NAME     Name of the build profile from eas.json. It must be a profile allowing to create\n                                 emulator/simulator internal distribution dev client builds. The \"development-simulator\"\n                                 build profile will be selected by default.\n  -p, --platform=<option>        <options: ios|android>\n      --skip-build-if-not-found  Skip build if no successful build with matching fingerprint is found.\n\nDESCRIPTION\n  run dev client simulator/emulator build with matching fingerprint or create a new one"
+      "usage": "USAGE\n  $ eas build:dev [-p ios|android] [-e PROFILE_NAME] [--skip-build-if-not-found] [--skip-bundler]\n\nFLAGS\n  -e, --profile=PROFILE_NAME     Name of the build profile from eas.json. It must be a profile allowing to create\n                                 emulator/simulator internal distribution dev client builds. The \"development-simulator\"\n                                 build profile will be selected by default.\n  -p, --platform=<option>        <options: ios|android>\n      --skip-build-if-not-found  Skip build if no successful build with matching fingerprint is found.\n      --skip-bundler             Install and run the development build without starting the bundler server.\n\nDESCRIPTION\n  run dev client simulator/emulator build with matching fingerprint or create a new one"
     },
     {
       "command": "eas build:download",
