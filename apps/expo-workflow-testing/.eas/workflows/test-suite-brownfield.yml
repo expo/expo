@@ -48,20 +48,20 @@ jobs:
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
       - name: Install CocoaPods
-        working_directory: ../brownfield-tester
+        working_directory: ../brownfield-tester/integrated
         run: bunx pod-install
       - name: Build iOS (Debug)
         working_directory: ../brownfield-tester
         env:
           NODE_ENV: production
         run: |
-          xcodebuild -workspace ios/BrownfieldTester.xcworkspace -scheme BrownfieldTester -configuration Debug -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
+          xcodebuild -workspace integrated/ios/BrownfieldTester.xcworkspace -scheme BrownfieldTester -configuration Debug -sdk iphonesimulator -derivedDataPath "integrated/ios/build" | xcpretty
       - name: Build iOS (Release)
         working_directory: ../brownfield-tester
         env:
           NODE_ENV: production
         run: |
-          xcodebuild -workspace ios/BrownfieldTester.xcworkspace -scheme BrownfieldTester -configuration Release -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
+          xcodebuild -workspace integrated/ios/BrownfieldTester.xcworkspace -scheme BrownfieldTester -configuration Release -sdk iphonesimulator -derivedDataPath "integrated/ios/build" | xcpretty
 
   android:
     name: Android Build
@@ -77,12 +77,12 @@ jobs:
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
       - name: Build Android (Debug)
-        working_directory: ../brownfield-tester/android
+        working_directory: ../brownfield-tester/integrated/android
         env:
           NODE_ENV: production
         run: ./gradlew :app:assembleDebug
       - name: Build Android (Release)
-        working_directory: ../brownfield-tester/android
+        working_directory: ../brownfield-tester/integrated/android
         env:
           NODE_ENV: production
         run: ./gradlew :app:assembleRelease

@@ -36,11 +36,11 @@
   },
   "packageManager": "yarn@4.9.1",
   "dependencies": {
-    "@expo/styleguide": "^13.0.5",
+    "@expo/styleguide": "^13.1.1",
     "@expo/styleguide-base": "^3.0.4",
     "@expo/styleguide-cookie-consent": "^2.0.3",
     "@expo/styleguide-icons": "^4.0.6",
-    "@expo/styleguide-search-ui": "^8.0.8",
+    "@expo/styleguide-search-ui": "^8.1.1",
     "@kapaai/react-sdk": "^0.9.6",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/mdx": "^3.1.1",

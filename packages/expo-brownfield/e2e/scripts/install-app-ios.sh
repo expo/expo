@@ -11,7 +11,7 @@ PROJECT="BrownfieldIntegratedTester.xcodeproj"
 SCHEME="BrownfieldIntegratedTester"
 SDK="iphonesimulator"
 
-cd $GITHUB_WORKSPACE/apps/brownfield-tester/ios-integrated
+cd $GITHUB_WORKSPACE/apps/brownfield-tester/isolated/ios
 xcodebuild build \
   -project $PROJECT \
   -scheme $SCHEME \

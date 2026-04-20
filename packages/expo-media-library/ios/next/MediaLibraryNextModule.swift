@@ -26,6 +26,22 @@ public final class MediaLibraryNextModule: Module {
         try await this.getExif()
       }
 
+      AsyncFunction("getMediaSubtypes") { (this: Asset) in
+        try await this.getMediaSubtypes()
+      }
+
+      AsyncFunction("getLivePhotoVideoUri") { (this: Asset) in
+        try await this.getLivePhotoVideoUri()
+      }
+
+      AsyncFunction("getIsInCloud") { (this: Asset) in
+        try await this.getIsInCloud()
+      }
+
+      AsyncFunction("getOrientation") { (this: Asset) in
+        try await this.getOrientation()
+      }
+
       AsyncFunction("getFilename") { (this: Asset) in
         try await this.getFilename()
       }

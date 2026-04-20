@@ -43,14 +43,14 @@ plugins {
 }
 
 expoAutolinking {
-    projectRoot = File(rootDir, "../expo-app")
+    projectRoot = File(rootDir, "../../expo-app")
 }
 
 extensions.configure<com.facebook.react.ReactSettingsExtension> {
     autolinkLibrariesFromCommand(
         expoAutolinking.rnConfigCommand,
         rootDir,
-        files("../../../pnpm-lock.yaml")
+        files("../../../../pnpm-lock.yaml")
     )
 }
 

@@ -1,6 +1,7 @@
 import { Album } from './Album';
 import { AssetInfo } from './AssetInfo';
 import { Location } from './Location';
+import { MediaSubtype } from './MediaSubtype';
 import { MediaType } from './MediaType';
 import { Shape } from './Shape';
 
@@ -63,6 +64,41 @@ export declare class Asset {
    * @throws An exception if the asset could not be found.
    */
   getMediaType(): Promise<MediaType>;
+
+  /**
+   * Gets the media subtypes of the asset, describing specific variations such as Live Photo, panorama, HDR, etc.
+   * @returns A promise resolving to an array of {@link MediaSubtype} strings. Returns an empty array if no subtypes apply.
+   * @throws An exception if the asset could not be found.
+   * @platform ios
+   */
+  getMediaSubtypes(): Promise<MediaSubtype[]>;
+
+  /**
+   * Gets the URI of the paired video for a Live Photo asset.
+   * The video is extracted to a temporary file.
+   * @returns A promise resolving to a `file://` URI string, or `null` if the asset is not a Live Photo.
+   * @throws An exception if the asset could not be found.
+   * @platform ios
+   */
+  getLivePhotoVideoUri(): Promise<string | null>;
+
+  /**
+   * Gets whether the asset is stored in iCloud and not available locally.
+   * This does not trigger a download of the asset.
+   * @returns A promise resolving to `true` if the asset is stored in iCloud and not available locally.
+   * @throws An exception if the asset could not be found.
+   * @platform ios
+   */
+  getIsInCloud(): Promise<boolean>;
+
+  /**
+   * Gets the EXIF display orientation of the asset.
+   * Only applicable for assets with media type {@link MediaType.image}.
+   * @returns A promise resolving to a value between 1 and 8 as defined by the [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html), or `null` if unavailable.
+   * @throws An exception if the asset could not be found.
+   * @platform ios
+   */
+  getOrientation(): Promise<number | null>;
 
   /**
    * Gets the last modification time of the asset.
