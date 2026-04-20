@@ -11,6 +11,15 @@ on:
         description: 'Max parallel packages (default: auto)'
         required: false
         default: ''
+      publish:
+        description: 'Publish XCFramework archive to GCS even on non-sdk branches'
+        required: false
+        type: boolean
+        default: false
+      publish-prefix:
+        description: 'GCS prefix under the bucket (release default: precompiled-modules)'
+        required: false
+        default: 'precompiled-modules'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -58,12 +67,21 @@ jobs:
       - name: Decide whether to publish XCFramework archive
         env:
           INPUT_PACKAGES: ${{ github.event.inputs.packages }}
+          INPUT_PUBLISH: ${{ github.event.inputs.publish }}
+          INPUT_PUBLISH_PREFIX: ${{ github.event.inputs.publish-prefix }}
         run: |
           INPUT_PACKAGES_TRIMMED="${INPUT_PACKAGES//[[:space:]]/}"
+          INPUT_PUBLISH_PREFIX_TRIMMED="${INPUT_PUBLISH_PREFIX//[[:space:]]/}"
 
-          if [[ "$GITHUB_REF" == refs/heads/sdk-* ]] && [[ -z "$INPUT_PACKAGES_TRIMMED" ]]; then
+          if [[ -z "$INPUT_PUBLISH_PREFIX_TRIMMED" ]]; then
+            echo "publish-prefix input cannot be empty"
+            exit 1
+          fi
+
+          if ([[ "$GITHUB_REF" == refs/heads/sdk-* ]] && [[ -z "$INPUT_PACKAGES_TRIMMED" ]]) || [[ "$INPUT_PUBLISH" == "true" ]]; then
             echo "PUBLISH_XCFRAMEWORK_ARCHIVE=1" >> $GITHUB_ENV
-            echo "Publishing XCFramework archive to GCS from release branch $GITHUB_REF"
+            echo "XCFRAMEWORK_ARCHIVE_PUBLISH_PREFIX=$INPUT_PUBLISH_PREFIX_TRIMMED" >> $GITHUB_ENV
+            echo "Publishing XCFramework archive to GCS from ref $GITHUB_REF with prefix $INPUT_PUBLISH_PREFIX_TRIMMED"
           else
             echo "PUBLISH_XCFRAMEWORK_ARCHIVE=0" >> $GITHUB_ENV
             echo "Skipping XCFramework archive publish for ref $GITHUB_REF (packages input: '${INPUT_PACKAGES}')"
@@ -132,7 +150,7 @@ jobs:
         run: |
           gcloud storage cp \
             "$THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH" \
-            "gs://turtle-v2/precompiled-modules/$SDK_VERSION/xcframeworks-${{ matrix.flavor }}.zip"
+            "gs://eas-build-precompiled-modules/$XCFRAMEWORK_ARCHIVE_PUBLISH_PREFIX/$SDK_VERSION/xcframeworks-${{ matrix.flavor }}.zip"
 
       - name: Upload XCFrameworks
         uses: actions/upload-artifact@v4
