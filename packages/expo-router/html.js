@@ -1,1 +1,1 @@
-export { ScrollViewStyleReset } from './build/static/html';
+export { ScrollViewStyleReset, useServerDocumentContext } from './build/static/html';
