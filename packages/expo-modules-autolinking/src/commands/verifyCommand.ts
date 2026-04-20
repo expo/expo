@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import commander from 'commander';
+import { Command } from 'commander';
 import fs from 'fs';
 import path from 'path';
 
@@ -27,7 +27,7 @@ interface VerifyArguments extends AutolinkingCommonArguments {
   json?: boolean | null;
 }
 
-export function verifyCommand(cli: commander.CommanderStatic) {
+export function verifyCommand(cli: Command) {
   return registerAutolinkingArguments(cli.command('verify'))
     .option('-v, --verbose', 'Output all results instead of just warnings.', () => true, false)
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)

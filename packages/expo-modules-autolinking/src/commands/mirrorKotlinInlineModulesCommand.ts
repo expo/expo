@@ -1,4 +1,4 @@
-import commander from 'commander';
+import { Command } from 'commander';
 import fs from 'fs';
 import path from 'path';
 
@@ -25,7 +25,7 @@ interface MirrorKotlinInlineModulesCommandArguments extends AutolinkingCommonArg
  * - mirrors directory structure of watched directories
  * - symlinks the original kotlin files in the new mirror directories.
  */
-export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic) {
+export function mirrorKotlinInlineModulesCommand(cli: Command) {
   return registerAutolinkingArguments(cli.command('mirror-kotlin-inline-modules'))
     .requiredOption(
       '--kotlin-files-mirror-directory <path>',
