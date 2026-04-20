@@ -4,7 +4,7 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 platform :ios, '16.4'
 
 prepare_react_native_project!
-project_root = File.join(__dir__, '../expo-app')
+project_root = File.join(__dir__, '../../expo-app')
 ENV['PROJECT_ROOT'] = project_root
 
 target 'BrownfieldTester' do

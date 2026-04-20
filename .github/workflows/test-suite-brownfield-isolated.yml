@@ -100,22 +100,22 @@ jobs:
       - name: 🏗️ Build Debug APK
         run: |
           ./gradlew clean assembleDebug --refresh-dependencies
-        working-directory: apps/brownfield-tester/android-integrated
+        working-directory: apps/brownfield-tester/isolated/android
       - name: 💾 Store Debug APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: expo-brownfield-android-debug
-          path: apps/brownfield-tester/android-integrated/app/build/outputs/apk/debug/app-debug.apk
+          path: apps/brownfield-tester/isolated/android/app/build/outputs/apk/debug/app-debug.apk
       - name: 🏗️ Build Release APK
         run: |
           ./gradlew clean
           ./gradlew assembleRelease --refresh-dependencies
-        working-directory: apps/brownfield-tester/android-integrated
+        working-directory: apps/brownfield-tester/isolated/android
       - name: 💾 Store Release APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: expo-brownfield-android-release
-          path: apps/brownfield-tester/android-integrated/app/build/outputs/apk/release/app-release.apk
+          path: apps/brownfield-tester/isolated/android/app/build/outputs/apk/release/app-release.apk
 
   android-e2e:
     runs-on: ubuntu-24.04
@@ -136,12 +136,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: expo-brownfield-android-release
-          path: apps/brownfield-tester/android-integrated/apk
+          path: apps/brownfield-tester/isolated/android/apk
       - name: 🌠 Download build (Debug)
         uses: actions/download-artifact@v4
         with:
           name: expo-brownfield-android-debug
-          path: apps/brownfield-tester/android-integrated/apk
+          path: apps/brownfield-tester/isolated/android/apk
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
