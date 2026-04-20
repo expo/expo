@@ -78,7 +78,10 @@ static NSString *normalizeEventName(NSString *eventName)
 } // namespace
 
 /**
- Shared flavor cache — same static as the production class so both resolve identically.
+ Component flavor cache. Mirrors the cache in `SwiftUIVirtualViewObjC.mm`; each class owns
+ its own translation-unit-local copy and they function identically. They are NOT a single
+ shared static — only one of the two classes is instantiated in a given build (dev vs.
+ release), so no de-duplication is needed.
  */
 static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flavor> _componentFlavorsCache;
 

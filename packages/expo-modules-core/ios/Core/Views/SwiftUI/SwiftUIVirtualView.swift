@@ -80,7 +80,7 @@ extension ExpoSwiftUI {
      Updates the environment object with props, based on the given dictionary with raw props.
      */
     override func updateProps(_ rawProps: [String: Any]) {
-      virtualViewUpdateProps(rawProps, props: props, appContext: appContext)
+      virtualViewUpdateProps(rawProps, props: props, appContext: appContext, componentName: componentName)
     }
 
     /**
@@ -240,7 +240,7 @@ extension ExpoSwiftUI {
      Updates the environment object with props, based on the given dictionary with raw props.
      */
     override func updateProps(_ rawProps: [String: Any]) {
-      virtualViewUpdateProps(rawProps, props: props, appContext: appContext)
+      virtualViewUpdateProps(rawProps, props: props, appContext: appContext, componentName: componentName)
     }
 
     /**
@@ -319,15 +319,16 @@ extension ExpoSwiftUI.SwiftUIVirtualViewDev: @MainActor ExpoSwiftUI.ViewWrapper 
 
 // MARK: - Shared helpers
 
-private func virtualViewUpdateProps<Props: ExpoSwiftUI.ViewProps>(_ rawProps: [String: Any], props: Props, appContext: AppContext?) {
+private func virtualViewUpdateProps<Props: ExpoSwiftUI.ViewProps>(_ rawProps: [String: Any], props: Props, appContext: AppContext?, componentName: String?) {
+  let viewLabel = componentName ?? "<unknown>"
   guard let appContext else {
-    log.error("AppContext is not available, view props cannot be updated")
+    log.error("AppContext is not available, view props for \(viewLabel) cannot be updated")
     return
   }
   do {
     try props.updateRawProps(rawProps, appContext: appContext)
   } catch let error {
-    log.error("Updating props has failed: \(error.localizedDescription)")
+    log.error("Updating props for \(viewLabel) has failed: \(error.localizedDescription)")
   }
 }
 

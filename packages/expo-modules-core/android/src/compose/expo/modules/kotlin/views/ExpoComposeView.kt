@@ -103,8 +103,13 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   /**
    * Validates that this non-hosting Compose view has a valid Compose parent.
-   * In a valid hierarchy the immediate parent is always an ExpoComposeView or ComposeView.
-   * If the parent is a regular ViewGroup (e.g. ReactViewGroup), the `<Host>` wrapper is missing.
+   *
+   * This check is intentionally strict: the immediate parent must be an
+   * [ExpoComposeView] or a [ComposeView]. Compose's composition context does not
+   * propagate through arbitrary Android [ViewGroup]s, so inserting a plain RN
+   * `View` (or any other non-Compose [ViewGroup]) between `<Host>` and this
+   * component breaks the composition boundary — even though the ancestor chain
+   * eventually reaches a `<Host>`. The fix is to make `<Host>` the direct parent.
    */
   private fun validateHostingAncestor() {
     val parentView = parent
@@ -507,6 +512,8 @@ class ComposeFunctionHolder<Props : ComposeProps>(
 
 internal class MissingHostException(componentName: String) :
   CodedException(
-    "A Jetpack Compose view \"$componentName\" must be rendered inside a <Host> component. " +
-      "Wrap your component with `<Host>` from '@expo/ui/jetpack-compose'."
+    "A Jetpack Compose view \"$componentName\" must be rendered as a direct child of a <Host> component. " +
+      "Wrap your component with `<Host>` from '@expo/ui/jetpack-compose'. " +
+      "Note that inserting another `<View>` (or any non-Compose ViewGroup) between `<Host>` and this " +
+      "component breaks the Compose composition boundary and will still trigger this error."
   )

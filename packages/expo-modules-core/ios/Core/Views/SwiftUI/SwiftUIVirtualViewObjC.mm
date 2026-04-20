@@ -3,7 +3,10 @@
 /**
  Production variant of SwiftUIVirtualView's ObjC layer.
  Inherits from NSObject (not UIView) for minimal overhead.
- UIView hierarchy stubs prevent crashes if incorrectly placed.
+ The UIView hierarchy stubs swallow layout calls so Fabric/RCTMountingManager can send
+ them without crashing. Mounting this view inside a standard UIView is still a fatal
+ error: `forwardingTargetForSelector:` detects UIKit's first-responder probe and throws
+ with an actionable message pointing at the missing `<Host>` wrapper.
  */
 
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
@@ -99,14 +102,19 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
 }
 
 // Detect when this NSObject is incorrectly inserted into a UIKit view hierarchy.
-// UIKit calls a private selector early in `_isAncestorOfFirstResponder.
+// UIKit calls a private selector early in `_isAncestorOfFirstResponder`.
 // We intercept it here and throw before the insertion proceeds.
 // The selector name is constructed from fragments to
 // avoid a literal private API string in the binary.
 - (id)forwardingTargetForSelector:(SEL)aSelector
 {
-  NSString *selName = [@[@"_", @"isAncestor", @"OfFirst", @"Responder"] componentsJoinedByString:@""];
-  if (aSelector == NSSelectorFromString(selName)) {
+  static SEL hierarchyInsertionSelector;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSString *selName = [@[@"_", @"isAncestor", @"OfFirst", @"Responder"] componentsJoinedByString:@""];
+    hierarchyInsertionSelector = NSSelectorFromString(selName);
+  });
+  if (aSelector == hierarchyInsertionSelector) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:
                                      @"A SwiftUI view \"%@\" (tag: %ld) is being mounted inside a standard UIView. "
