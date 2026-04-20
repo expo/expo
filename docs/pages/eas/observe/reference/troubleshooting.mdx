@@ -1,9 +1,10 @@
 ---
 title: Troubleshooting EAS Observe
 sidebar_title: Troubleshooting
-description: Solutions for common EAS Observe issues and a migration guide from expo-eas-observe.
+description: Solutions for common EAS Observe issues.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -36,13 +37,13 @@ This metric requires manual instrumentation. Verify that:
 1. You are calling `AppMetrics.markInteractive()` after your splash screen is hidden.
 2. The call is actually being executed (add a `console.log` to verify).
 
-## Migrating from expo-eas-observe
+<Collapsible summary="Migrating from expo-eas-observe">
 
-If you were previously using `expo-eas-observe`, follow these steps to migrate to `expo-observe`.
+If you were part of the private preview and previously used `expo-eas-observe`, follow these steps to migrate to `expo-observe`.
 
 <Step label="1">
 
-### Replace the package
+**Replace the package**
 
 <Terminal cmd={['$ npx expo install expo-observe', '$ npm uninstall expo-eas-observe']} />
 
@@ -54,7 +55,7 @@ If you previously installed `expo-eas-client` as a separate dependency, you can 
 
 <Step label="2">
 
-### Update imports
+**Update imports**
 
 ```diff
 - import AppMetrics from 'expo-eas-observe';
@@ -65,7 +66,7 @@ If you previously installed `expo-eas-client` as a separate dependency, you can 
 
 <Step label="3">
 
-### Replace manual `markFirstRender()` with `AppMetricsRoot`
+**Replace manual `markFirstRender()` with `AppMetricsRoot`**
 
 Instead of calling `markFirstRender()` manually, wrap your root layout with the `AppMetricsRoot` HOC. This handles the measurement automatically.
 
@@ -100,10 +101,12 @@ export default AppMetricsRoot.wrap(RootLayout);
 
 <Step label="4">
 
-### Create a new build
+**Create a new build**
 
 After completing the migration, create a new build of your app:
 
 <Terminal cmd={['$ eas build']} />
 
 </Step>
+
+</Collapsible>
