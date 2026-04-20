@@ -4,6 +4,8 @@ import {
   Host,
   Section,
   Spacer,
+  Tab,
+  TabProps,
   TabView,
   Text,
   TextField,
@@ -18,11 +20,10 @@ import {
   font,
   foregroundStyle,
   frame,
+  badge,
   indexViewStyle,
   padding,
-  tabItem,
   tabViewStyle,
-  type ViewModifier,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
@@ -44,24 +45,13 @@ const PAGE_COLORS = [
 const tabViewFrame = frame({ minHeight: PAGE_HEIGHT, maxHeight: PAGE_HEIGHT });
 const fillFrame = frame({ maxWidth: Infinity, maxHeight: Infinity });
 
-// VStack stacks top-down by default; bookending the content with Spacers
-// vertically centers it within the fill frame. `modifiers` extends the base
-// chain so callers can append things like `tabItem(...)` for bottom-tab demos.
-function ColorPage({
-  index,
-  label,
-  modifiers = [],
-}: {
-  index: number;
-  label?: string;
-  modifiers?: ViewModifier[];
-}) {
+function ColorPage({ index, label }: { index: number; label?: string }) {
   const color = PAGE_COLORS[index % PAGE_COLORS.length];
   return (
     <VStack
       alignment="center"
       spacing={0}
-      modifiers={[fillFrame, background(color), clipShape('roundedRectangle', 12), ...modifiers]}>
+      modifiers={[fillFrame, background(color), clipShape('roundedRectangle', 12)]}>
       <Spacer />
       <Text modifiers={[font({ size: 22, weight: 'bold' }), foregroundStyle('#FFFFFF')]}>
         {label ?? `Page ${index + 1}`}
@@ -139,48 +129,102 @@ export default function TabViewScreen() {
   const nextPrependedIndex = React.useRef(0);
   const [selNotes, setSelNotes] = React.useState(0);
 
+  // 5. value-based selection via <Tab> (iOS 18+)
+  const [selectedTab, setSelectedTab] = React.useState<string | number>('home');
+
+  // 6. value-based selection — distinctive per-tab pages so it's visually
+  // obvious that the selected tab stays selected when the bar is reordered.
+  type MailTab = {
+    value: string;
+    label: string;
+    systemImage: TabProps['systemImage'];
+    emoji: string;
+    color: string;
+  };
+  const [mailTabs, setMailTabs] = React.useState<MailTab[]>([
+    { value: 'inbox', label: 'Inbox', systemImage: 'tray.fill', emoji: '📥', color: '#4F8DF6' },
+    { value: 'sent', label: 'Sent', systemImage: 'paperplane.fill', emoji: '✈️', color: '#34C759' },
+    {
+      value: 'drafts',
+      label: 'Drafts',
+      systemImage: 'square.and.pencil',
+      emoji: '📝',
+      color: '#FF9F0A',
+    },
+    {
+      value: 'archive',
+      label: 'Archive',
+      systemImage: 'archivebox.fill',
+      emoji: '🗄️',
+      color: '#AF52DE',
+    },
+  ]);
+  const [selectedMail, setSelectedMail] = React.useState<string | number>('drafts');
+  const shuffleMail = () => {
+    setMailTabs((prev) => {
+      const copy = [...prev];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    });
+  };
+
   return (
     <Host style={{ flex: 1 }}>
       <Form>
+        <Section title="Selection survives reordering (iOS 18+)">
+          <Text>
+            Tap Shuffle: the bar reorders, but the page on screen stays the same — value-based
+            selection follows the tab, not its position. Only `{'<Tab>'}` children can do this.
+          </Text>
+          <TabView
+            selection={selectedMail}
+            onSelectionChange={setSelectedMail}
+            modifiers={[tabViewFrame, tabViewStyle({ type: 'sidebarAdaptable' })]}>
+            {mailTabs.map((t) => (
+              <Tab
+                key={t.value}
+                value={t.value}
+                label={t.label}
+                systemImage={t.systemImage}
+                modifiers={t.value === 'inbox' ? [badge('3')] : undefined}>
+                <VStack
+                  alignment="center"
+                  spacing={16}
+                  modifiers={[fillFrame, background(t.color), clipShape('roundedRectangle', 16)]}>
+                  <Spacer />
+                  <Text modifiers={[font({ size: 96 })]}>{t.emoji}</Text>
+                  <Text
+                    modifiers={[font({ size: 28, weight: 'bold' }), foregroundStyle('#FFFFFF')]}>
+                    {t.label}
+                  </Text>
+                  <Text modifiers={[font({ size: 14 }), foregroundStyle('#FFFFFFCC')]}>
+                    value = "{t.value}"
+                  </Text>
+                  <Spacer />
+                </VStack>
+              </Tab>
+            ))}
+          </TabView>
+          <Button onPress={shuffleMail} label="Shuffle tabs" />
+        </Section>
+
         <Section title="Uncontrolled">
           <Text>
             No selection prop — native owns the state. Starts at the second page via
-            initialSelection. The `tabViewStyle({"{ type: 'page' }"})` modifier opts in to the
+            defaultSelection. The `tabViewStyle({"{ type: 'page' }"})` modifier opts in to the
             swipeable page style.
           </Text>
           <Text>Last reported page: {uncontrolledPage + 1}</Text>
           <TabView
-            initialSelection={1}
+            defaultSelection={1}
             onSelectionChange={setUncontrolledPage}
             modifiers={[tabViewFrame, tabViewStyle({ type: 'page' })]}>
             <ColorPage index={0} />
             <ColorPage index={1} />
             <ColorPage index={2} />
-          </TabView>
-        </Section>
-
-        <Section title="Bottom tab bar (automatic style)">
-          <Text>
-            Pass `tabViewStyle({"{ type: 'automatic' }"})` to opt in to the SwiftUI bottom tab bar
-            style and apply `tabItem({'{...}'})` to each child to give the tabs labels and icons.
-            For routed full-screen tabs, prefer `expo-router/unstable-native-tabs`.
-          </Text>
-          <TabView modifiers={[tabViewFrame, tabViewStyle({ type: 'automatic' })]}>
-            <ColorPage
-              index={0}
-              label="Home"
-              modifiers={[tabItem({ label: 'Home', systemImage: 'house.fill' })]}
-            />
-            <ColorPage
-              index={1}
-              label="Search"
-              modifiers={[tabItem({ label: 'Search', systemImage: 'magnifyingglass' })]}
-            />
-            <ColorPage
-              index={2}
-              label="Profile"
-              modifiers={[tabItem({ label: 'Profile', systemImage: 'person.crop.circle' })]}
-            />
           </TabView>
         </Section>
 
@@ -229,7 +273,7 @@ export default function TabViewScreen() {
         <Section title="Reorderable notes (state stays with content)">
           <Text>
             Each page hosts an uncontrolled native TextField. Type something into note 2, then tap
-            “Insert at beginning”. The text should travel with note 2 (now at array position 1), not
+            "Insert at beginning". The text should travel with note 2 (now at array position 1), not
             stay at array position 1 with a brand-new page.
           </Text>
           <Text>
@@ -261,6 +305,34 @@ export default function TabViewScreen() {
             }}
             label="Remove first"
           />
+        </Section>
+
+        <Section title="Value-based selection with <Tab/> (iOS 18+)">
+          <Text>
+            On iOS 18 the parent `TabView` detects `{'<Tab>'}` children and uses SwiftUI's
+            value-based `Tab(value:)` API. Selection is by `value` (string or number) instead of by
+            index, which is the only path compatible with sidebar styles like `sidebarAdaptable`. On
+            iOS 17 the parent falls back to the legacy index-tagged path; the synthesized `tabItem`
+            keeps labels visible.
+          </Text>
+          <Text>Selected: {String(selectedTab)}</Text>
+          <TabView
+            selection={selectedTab}
+            onSelectionChange={setSelectedTab}
+            modifiers={[tabViewFrame, tabViewStyle({ type: 'automatic' })]}>
+            <Tab value="home" label="Home" systemImage="house.fill">
+              <ColorPage index={0} label="Home" />
+            </Tab>
+            <Tab value="search" label="Search" systemImage="magnifyingglass">
+              <ColorPage index={1} label="Search" />
+            </Tab>
+            <Tab value="profile" label="Profile" systemImage="person.crop.circle">
+              <ColorPage index={2} label="Profile" />
+            </Tab>
+          </TabView>
+          <Button onPress={() => setSelectedTab('home')} label="Go Home" />
+          <Button onPress={() => setSelectedTab('search')} label="Go Search" />
+          <Button onPress={() => setSelectedTab('profile')} label="Go Profile" />
         </Section>
       </Form>
     </Host>

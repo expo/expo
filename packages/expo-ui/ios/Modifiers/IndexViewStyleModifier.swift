@@ -24,7 +24,6 @@ internal enum PageIndexBackgroundDisplayMode: String, Enumerable {
 }
 
 internal struct IndexViewStyleModifier: ViewModifier, Record {
-  // Only `.page` is exposed today; other styles can be added later.
   @Field var type: IndexViewStyleType?
   @Field var backgroundDisplayMode: PageIndexBackgroundDisplayMode?
 

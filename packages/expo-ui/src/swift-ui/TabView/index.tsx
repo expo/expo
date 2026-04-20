@@ -4,33 +4,38 @@ import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type TabViewProps = {
+/**
+ * Identifies a tab.
+ *
+ * - Pager style (plain children): a numeric **index** (0, 1, 2, ...).
+ * - Tab bar / sidebar styles (`<Tab>` children): the `value` prop of the selected tab.
+ */
+export type TabSelection = number | string;
+
+export type TabViewProps<S extends TabSelection = TabSelection> = {
   /**
-   * The index of the currently selected page (controlled mode). When
-   * supplied, JavaScript owns the selection state — pair with `onSelectionChange`.
-   * Pass `initialSelection` to instead let the native view manage its own state.
+   * The selected tab (controlled mode). Pair with `onSelectionChange`.
+   * Pass `defaultSelection` instead to let the native view manage state.
    */
-  selection?: number;
+  selection?: S;
   /**
-   * The page to start on when the component is uncontrolled (no `selection`
-   * prop). Ignored if `selection` is provided.
-   * @default 0
+   * The initially selected tab when the component is uncontrolled
+   * (no `selection` prop). Ignored if `selection` is provided.
    */
-  initialSelection?: number;
+  defaultSelection?: S;
   /**
-   * Called when the selected page changes — both from user swipes and (in
-   * controlled mode) when the controlled prop is updated externally.
+   * Called when the selected tab changes.
    */
-  onSelectionChange?: (selection: number) => void;
+  onSelectionChange?: (selection: S) => void;
   /**
-   * The pages to display. Each child becomes a separate page. Fragments are
-   * not supported — wrap content in an `@expo/ui/swift-ui` view.
+   * The pages to display. Use `<Tab>` children for labeled tabs, or plain
+   * children with `tabViewStyle({ type: 'page' })` for a swipeable pager.
    */
   children: React.ReactElement | React.ReactElement[];
 } & CommonViewModifierProps;
 
 type NativeTabViewProps = Omit<TabViewProps, 'onSelectionChange'> &
-  ViewEvent<'onSelectionChange', { selection: number }>;
+  ViewEvent<'onSelectionChange', { selection: TabSelection }>;
 
 const TabViewNativeView: React.ComponentType<NativeTabViewProps> = requireNativeView(
   'ExpoUI',
@@ -38,37 +43,21 @@ const TabViewNativeView: React.ComponentType<NativeTabViewProps> = requireNative
 );
 
 /**
- * A SwiftUI `TabView`. Each child becomes a separate page/tab.
+ * A SwiftUI `TabView`. Pair with modifiers to choose the appearance:
  *
- * No style is applied by default — pair with a `tabViewStyle({...})` modifier
- * from `@expo/ui/swift-ui/modifiers` to choose the appearance:
+ * - `tabViewStyle({ type: 'page' })` — swipeable pager.
+ * - `tabViewStyle({ type: 'automatic' })` — bottom tab bar.
+ * - `tabViewStyle({ type: 'sidebarAdaptable' })` — sidebar on iPad, tab bar on iPhone.
  *
- *  - **Page (swipeable pager)** — pass `tabViewStyle({ type: 'page' })` and,
- *    optionally, `indexViewStyle({ type: 'page' })` to configure the page
- *    indicator dots:
- *    ```tsx
- *    <TabView modifiers={[tabViewStyle({ type: 'page' })]}>
- *      <Page1 />
- *      <Page2 />
- *    </TabView>
- *    ```
- *  - **Bottom tab bar** — pass `tabViewStyle({ type: 'automatic' })` and
- *    apply a `tabItem({...})` modifier on each child so the tab bar has
- *    labels and icons:
- *    ```tsx
- *    <TabView modifiers={[tabViewStyle({ type: 'automatic' })]}>
- *      <View modifiers={[tabItem({ label: 'Home', systemImage: 'house' })]}>
- *        <Home />
- *      </View>
- *    </TabView>
- *    ```
+ * Use `<Tab>` children for labeled tabs with value-based selection, or plain
+ * children for a simple pager with index-based selection.
  *
  * For routed bottom-tab navigation across full-screen routes, prefer
  * `expo-router/unstable-native-tabs`.
  *
  * @platform ios
  */
-export function TabView(props: TabViewProps) {
+export function TabView<S extends TabSelection>(props: TabViewProps<S>) {
   const { modifiers, onSelectionChange, ...restProps } = props;
   return (
     <TabViewNativeView
@@ -77,9 +66,11 @@ export function TabView(props: TabViewProps) {
       {...restProps}
       onSelectionChange={
         onSelectionChange
-          ? ({ nativeEvent: { selection } }) => onSelectionChange(selection)
+          ? ({ nativeEvent: { selection } }) => onSelectionChange(selection as S)
           : undefined
       }
     />
   );
 }
+
+export { Tab, type TabProps } from './Tab';

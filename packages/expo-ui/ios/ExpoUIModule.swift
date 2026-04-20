@@ -146,6 +146,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
     ExpoUIView(TabView.self)
+    ExpoUIView(Tab.self)
 
     // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
     ExpoUIView(SyncToggleView.self)

@@ -6,6 +6,7 @@ import SwiftUI
 internal enum TabViewStyleType: String, Enumerable {
   case page
   case automatic
+  case sidebarAdaptable
 }
 
 internal enum PageIndexDisplayMode: String, Enumerable {
@@ -23,8 +24,6 @@ internal enum PageIndexDisplayMode: String, Enumerable {
 }
 
 internal struct TabViewStyleModifier: ViewModifier, Record {
-  // Currently exposes `.page` (swipeable pager) and `.automatic` (default
-  // bottom-tab bar; pair with the `tabItem` modifier on each child).
   @Field var type: TabViewStyleType?
   @Field var indexDisplayMode: PageIndexDisplayMode?
 
@@ -35,6 +34,12 @@ internal struct TabViewStyleModifier: ViewModifier, Record {
       content.tabViewStyle(.page(indexDisplayMode: (indexDisplayMode ?? .automatic).asSwiftUI))
     case .automatic:
       content.tabViewStyle(.automatic)
+    case .sidebarAdaptable:
+      if #available(iOS 18.0, *) {
+        content.tabViewStyle(.sidebarAdaptable)
+      } else {
+        content.tabViewStyle(.automatic)
+      }
     }
   }
 }
