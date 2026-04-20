@@ -31,6 +31,10 @@ if (rel.startsWith('..') || path.isAbsolute(rel)) {
 const buildConfig = {
   ...config,
   projectRoot: __dirname, // Override root to be expo-widgets
+  config: {
+    ...config.config,
+    projectRoot: __dirname, // Override root to be expo-widgets
+  },
   watchFolders,
   resolver: {
     ...config.resolver,
