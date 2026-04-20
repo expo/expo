@@ -1,5 +1,7 @@
-@import "tailwindcss";
-@config "../tailwind.config.cjs";
+@import 'tailwindcss';
+@config '../tailwind.config.cjs';
+
+@import './tailwind-compat.css';
 
 @layer base {
   html {
@@ -81,7 +83,7 @@ div:not(#root) > ::-webkit-scrollbar-track {
 }
 
 div:not(#root) > ::-webkit-scrollbar-thumb {
-  @apply rounded-sm bg-palette-gray5;
+  @apply bg-palette-gray5 rounded-sm;
 }
 
 div:not(#root) > ::-webkit-scrollbar-thumb:hover {
@@ -134,7 +136,7 @@ div.tippy-box {
 }
 
 .tippy-box[data-theme~='expo'] .tippy-content {
-  @apply rounded-md bg-palette-black px-4 py-3 text-sm text-palette-white;
+  @apply bg-palette-black text-palette-white rounded-md px-4 py-3 text-sm;
   line-height: 1.525;
 }
 
@@ -149,7 +151,7 @@ div.tippy-box {
 /* Diff */
 
 .diff-unified {
-  @apply text-2xs;
+  @apply text-xs;
   border-collapse: collapse;
   white-space: pre-wrap;
   width: 100%;
@@ -173,11 +175,11 @@ div.tippy-box {
 }
 
 .diff-gutter-col {
-  @apply w-6 bg-element;
+  @apply bg-element w-6;
 }
 
 .diff-gutter {
-  @apply px-1 text-3xs;
+  @apply px-1 text-xs;
   text-align: right;
   user-select: none;
 }

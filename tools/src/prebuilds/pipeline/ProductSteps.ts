@@ -156,7 +156,8 @@ export const composeStep: Step<PrebuildContext> = {
       product,
       flavor,
       ctx.request.platformFilter,
-      ctx.request.signing
+      ctx.request.signing,
+      { bundleSharedDeps: ctx.request.bundleSharedDeps }
     );
 
     setStage(ctx, 'compose', 'success');

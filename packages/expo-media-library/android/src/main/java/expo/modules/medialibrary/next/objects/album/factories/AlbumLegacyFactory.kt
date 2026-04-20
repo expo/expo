@@ -36,14 +36,14 @@ class AlbumLegacyFactory(
     return Album(id, assetDeleter, assetFactory, contextRef.getOrThrow())
   }
 
-  override suspend fun createFromAssets(albumName: String, assets: List<Asset>, deleteOriginalAssets: Boolean): Album {
+  override suspend fun createFromAssets(albumName: String, assets: List<Asset>, deleteOriginalAssets: Boolean?): Album {
     try {
       val firstAsset = assets.firstOrNull()
         ?: throw AlbumCouldNotBeCreated("No assets provided")
       val mimeTypeOfFirstAsset = firstAsset.getMimeType()
       val relativePath = RelativePath.create(mimeTypeOfFirstAsset, albumName)
       createAlbumDirectoryIfNotExists(relativePath)
-      processAssetsLocation(assets, relativePath, true)
+      processAssetsLocation(assets, relativePath, deleteOriginalAssets)
       val albumId = contentResolver.queryAssetBucketId(assets[0].contentUri)
         ?: throw AlbumNotFoundException("Could not find album with filePath: ${relativePath.toFilePath()}")
       return Album(albumId.toString(), assetDeleter, assetFactory, contextRef.getOrThrow())
@@ -67,11 +67,11 @@ class AlbumLegacyFactory(
     return Album(albumId.toString(), assetDeleter, assetFactory, contextRef.getOrThrow())
   }
 
-  private suspend fun processAssetsLocation(assets: List<Asset>, relativePath: RelativePath, deleteOriginalAssets: Boolean) {
-    if (deleteOriginalAssets) {
-      assets.map { it.move(relativePath) }
+  private suspend fun processAssetsLocation(assets: List<Asset>, relativePath: RelativePath, deleteOriginalAssets: Boolean?) {
+    if (deleteOriginalAssets == true) {
+      assets.forEach { it.move(relativePath) }
     } else {
-      assets.map { it.copy(relativePath) }
+      assets.forEach { it.copy(relativePath) }
     }
   }
 

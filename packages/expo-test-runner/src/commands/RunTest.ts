@@ -14,7 +14,7 @@ function findTest(config: Config, test: string): [string, Application] {
   for (const appName in config.applications) {
     const app = config.applications[appName];
 
-    for (const testName in app.tests) {
+    for (const testName in app?.tests) {
       if (test === testName) {
         return [appName, app];
       }
@@ -27,6 +27,10 @@ function findTest(config: Config, test: string): [string, Application] {
 async function runTestAsync(config: Config, options: RunTestOptions) {
   const [appName, app] = findTest(config, options.test);
   const test = app.tests[options.test];
+
+  if (test == null) {
+    return;
+  }
 
   if (app.preset === 'detox') {
     console.log(`Using ${chalk.green('detox')} preset.`);

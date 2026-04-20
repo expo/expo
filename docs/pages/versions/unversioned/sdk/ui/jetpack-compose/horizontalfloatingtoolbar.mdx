@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 Expo UI HorizontalFloatingToolbar wraps the official Jetpack Compose [`HorizontalFloatingToolbar`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-horizontal-floating-toolbar.html) and displays a horizontal toolbar that floats above content, containing action buttons.
 
-> **Note:** If you only need a single floating button, use [`FloatingActionButton`](/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/) instead.
+> **Note:** If you only need a single floating button, use [`FloatingActionButton`](/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/) instead.
 
 ## Installation
 
@@ -44,11 +44,11 @@ export default function FloatingToolbarExample() {
         <HorizontalFloatingToolbar
           variant="vibrant"
           modifiers={[align('bottomCenter'), offset(0, -16)]}>
-          <IconButton onPress={() => console.log('Edit pressed')}>
+          <IconButton onClick={() => console.log('Edit pressed')}>
             <Icon source={require('./assets/edit.xml')} />
           </IconButton>
           <HorizontalFloatingToolbar.FloatingActionButton
-            onPress={() => console.log('Add pressed')}>
+            onClick={() => console.log('Add pressed')}>
             <Icon source={require('./assets/add.xml')} />
           </HorizontalFloatingToolbar.FloatingActionButton>
         </HorizontalFloatingToolbar>
@@ -69,10 +69,10 @@ export default function ToolbarWithFABExample() {
   return (
     <Host matchContents>
       <HorizontalFloatingToolbar>
-        <IconButton onPress={() => console.log('Edit pressed')}>
+        <IconButton onClick={() => console.log('Edit pressed')}>
           <Icon source={require('./assets/edit.xml')} contentDescription="Edit" />
         </IconButton>
-        <IconButton onPress={() => console.log('Share pressed')}>
+        <IconButton onClick={() => console.log('Share pressed')}>
           <Icon source={require('./assets/share.xml')} contentDescription="Share" />
         </IconButton>
         <HorizontalFloatingToolbar.FloatingActionButton onPress={() => console.log('Add pressed')}>

@@ -10,14 +10,14 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.ui.convertibles.ContentAlignment
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class PullToRefreshIndicatorProps(
   @Field val color: Color? = null,
   @Field val containerColor: Color? = null,
@@ -52,6 +52,6 @@ fun FunctionalComposableScope.PullToRefreshBoxContent(props: PullToRefreshBoxPro
     },
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }

@@ -36,8 +36,14 @@ export function StatusBar({ style, hideTransitionAnimation, animated, hidden }: 
 // @needsAudit
 /**
  * Set the bar style of the status bar.
+ *
  * @param style The color of the status bar text.
  * @param animated If the transition should be animated.
+ *
+ * @example
+ * ```ts
+ * StatusBar.setStyle('dark', true);
+ * ```
  */
 StatusBar.setStyle = (style: StatusBarStyle, animated?: boolean): void =>
   NativeStatusBar.setBarStyle(styleToBarStyle(style), animated);
@@ -50,8 +56,14 @@ export const setStatusBarStyle = StatusBar.setStyle;
 // @needsAudit
 /**
  * Toggle visibility of the status bar.
+ *
  * @param hidden If the status bar should be hidden.
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
+ *
+ * @example
+ * ```ts
+ * StatusBar.setHidden(true, 'slide');
+ * ```
  */
 StatusBar.setHidden = (hidden: boolean, animation?: StatusBarAnimation): void =>
   NativeStatusBar.setHidden(hidden, animation);

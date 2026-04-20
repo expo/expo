@@ -37,6 +37,11 @@ export type PluginConfigOptions = {
    */
   launchMode?: 'most-recent' | 'launcher';
   /**
+   * Instead of navigating to launcher screen launch directly into this URL.
+   * If `launchMode` is set to `most-recent` then launcher will use the defaultLaunchURL if launching previously opened project fails.
+   */
+  defaultLaunchURL?: string;
+  /**
    * @deprecated use the `launchMode` property instead
    */
   launchModeExperimental?: 'most-recent' | 'launcher';
@@ -46,6 +51,14 @@ export type PluginConfigOptions = {
    * @default true
    */
   toolsButton?: boolean;
+  /**
+   * Whether to enable loading an embedded JS bundle from the dev launcher.
+   * When enabled and a bundle file is present in the app, a "Load embedded bundle"
+   * option appears in the dev launcher UI.
+   *
+   * @default false
+   */
+  embeddedBundle?: boolean;
 };
 
 const schema: JSONSchema<PluginConfigType> = {
@@ -57,12 +70,20 @@ const schema: JSONSchema<PluginConfigType> = {
       enum: ['most-recent', 'launcher'],
       nullable: true,
     },
+    defaultLaunchURL: {
+      type: ['string'],
+      nullable: true,
+    },
     launchModeExperimental: {
       type: 'string',
       enum: ['most-recent', 'launcher'],
       nullable: true,
     },
     toolsButton: {
+      type: 'boolean',
+      nullable: true,
+    },
+    embeddedBundle: {
       type: 'boolean',
       nullable: true,
     },
@@ -83,6 +104,14 @@ const schema: JSONSchema<PluginConfigType> = {
           type: 'boolean',
           nullable: true,
         },
+        embeddedBundle: {
+          type: 'boolean',
+          nullable: true,
+        },
+        defaultLaunchURL: {
+          type: 'string',
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -101,6 +130,14 @@ const schema: JSONSchema<PluginConfigType> = {
         },
         toolsButton: {
           type: 'boolean',
+          nullable: true,
+        },
+        embeddedBundle: {
+          type: 'boolean',
+          nullable: true,
+        },
+        defaultLaunchURL: {
+          type: 'string',
           nullable: true,
         },
       },

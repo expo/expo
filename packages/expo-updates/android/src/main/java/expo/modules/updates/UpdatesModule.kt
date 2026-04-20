@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Date
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class UpdatesJSEvent(val eventName: String) : Enumerable {
   StateChange("Expo.nativeUpdatesStateChangeEvent")
@@ -226,6 +227,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     sendEvent(UpdatesJSEvent.StateChange, Bundle().apply { putBundle("context", context.bundle) })
   }
 
+  @OptimizedRecord
   internal data class UpdatesConfigurationOverrideParam(
     @Field val updateUrl: Uri,
     @Field val requestHeaders: Map<String, String>

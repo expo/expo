@@ -11,11 +11,19 @@
 
 #else
 
-// Interface visible in Swift - we expose UIView inheritance so Swift sees this as a UIView subclass.
-// The actual C++ implementation inherits from RCTViewComponentView (which is a UIView subclass).
+// Interface visible in Swift - we expose the view base class so Swift sees it as a UIView subclass.
+// The actual C++ implementation inherits from RCTViewComponentView.
 // Methods that Swift needs to override must be declared here (not in a category) so Swift
 // can properly override them.
+//
+// On macOS, react-native-macos provides RCTUIView (an NSView subclass with iOS-compatible methods
+// like layoutSubviews and didMoveToWindow). We must inherit from it so Swift overrides resolve correctly.
+#if TARGET_OS_OSX
+#import <React/RCTUIKit.h>
+@interface ExpoFabricViewObjC : RCTUIView
+#else
 @interface ExpoFabricViewObjC : UIView
+#endif
 
 /*
  * Called for mounting (attaching) a child component view inside `self` component view.

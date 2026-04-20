@@ -103,7 +103,7 @@ When you are done writing or editing docs, run the following script to lint your
 yarn run lint-prose
 ```
 
-We use [Vale](https://vale.sh/) to lint our docs.
+We use [Vale](https://vale.sh/) to lint our docs. The Vale binary is auto-installed during `yarn install` via the `postinstall` script. To install or update it manually, run `yarn install-vale`.
 
 #### Switch off Prose linter
 
@@ -153,7 +153,7 @@ We use Algolia as the main search results provider for our docs. This is set up 
 
 Besides the query, the results are also filtered based on the `version` tag. This tag represents the user's current location. The tag is set in the `components/DocumentationPage.tsx` head.
 
-Inside `@expo/styleguide` library, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]` in [`packages/search-ui/src/components/CommandMenu.tsx`](https://github.com/expo/styleguide/blob/main/packages/search-ui/src/components/CommandMenu.tsx). Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version.
+Inside `@expo/styleguide` library, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]` in `packages/search-ui/src/components/CommandMenu.tsx`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version.
 
 - All unversioned pages use the version tag `none`
 - All versioned pages use the SDK version (for example, `v51.0.0` or `v50.0.0`)
@@ -201,7 +201,7 @@ The API reference docs are generated from the TypeScript source code.
 
 This section walks through the process of updating documentation for an Expo package. Throughout this document, we will assume we want to update TypeDoc definitions of property inside `expo-constants` as an example.
 
-> For more information on how TypeDoc/JSDoc parses comments, see [**Doc comments in TypeDoc documentation**](https://typedoc.org/guides/doccomments/).
+> For more information on how TypeDoc/JSDoc parses comments, see [**Doc comments in TypeDoc documentation**](https://typedoc.org/documents/Doc_Comments.html).
 
 #### Prerequisites
 
@@ -390,6 +390,46 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 | ---------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `collapseHeight` | number | The custom height that the code block uses to collapse automatically. The default value is `408` and is applied unless the `collapseHeight` param has been specified. |
 
+### Code block variables
+
+Fenced code blocks support dynamic variable substitution using `{{variableName}}` syntax. Variables are replaced with values from `sdk-versions.json` at render time, before syntax highlighting runs. This keeps version numbers in code examples accurate without manual updates each SDK release.
+
+**Available variables:**
+
+| Variable                  | Example value | Description                   |
+| ------------------------- | ------------- | ----------------------------- |
+| `{{iosDeploymentTarget}}` | `15.1`        | Minimum iOS deployment target |
+| `{{androidVersion}}`      | `7`           | Minimum Android version       |
+| `{{compileSdkVersion}}`   | `36`          | Android compileSdkVersion     |
+| `{{targetSdkVersion}}`    | `36`          | Android targetSdkVersion      |
+| `{{reactNativeVersion}}`  | `0.83`        | React Native version          |
+| `{{reactVersion}}`        | `19.2.0`      | React version                 |
+| `{{xcodeVersion}}`        | `26.2`        | Minimum Xcode version         |
+| `{{nodeVersion}}`         | `20.19.x`     | Minimum Node.js version       |
+| `{{expoSdkVersion}}`      | `55.0.0`      | Expo SDK version              |
+| `{{expoSdkMajorVersion}}` | `55`          | Expo SDK major version number |
+
+**Usage in a fenced code block:**
+
+<!-- prettier-ignore -->
+```mdx
+    ```json package.json
+    {
+      "dependencies": {
+        "expo": "~{{expoSdkVersion}}",
+        "react-native": "{{reactNativeVersion}}"
+      }
+    }
+    ```
+```
+
+The rendered output will show the resolved values (for example, `"expo": "~55.0.0"`). The copy button also copies the resolved values.
+
+All variables are defined in `common/code-utilities.ts` and sourced from the first (latest) entry in `ui/components/SDKTables/sdk-versions.json`. To add a new variable, add an entry to the `CODE_BLOCK_VARIABLES` map in that file.
+
+> [!NOTE]
+> These variables only work inside fenced code blocks. For dynamic values in prose text, import `latestSdkVersionValues` from `~/ui/components/SDKTables` and use JSX expressions directly.
+
 ### Add inline Snack examples
 
 Snacks are a great way to add instantly-runnable examples to our docs. The [`SnackInline`](/docs/ui/components/Snippet/blocks/SnackInline.tsx) component can be imported to any markdown file, and used like this:
@@ -546,11 +586,18 @@ This pattern is used for some of the pages where we manually update the modifica
 
 > Docs areas that are excluded or do not include an updated date are SDK API references and Tutorials sections under Learn.
 
-### Prettier
+### Lint pipeline
 
-Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
+The lint pipeline runs four tools via **scripts/lint.js** (`yarn run lint`) script:
 
-If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
+- `oxfmt` for code formatting
+- `oxlint` for code linting
+- `tsc` for type checking
+- `eslint` for Tailwind CSS classes, MDX linting, and ES Lint only rules
+
+#### Formatting via oxfmt
+
+If you have a code block using an inline annotation such as `/* @info Some text goes here */` or `/* @hide ... */`, make sure to add `/* prettier-ignore */` and `/* oxfmt-ignore */` comments right before the code block to prevent `oxfmt` from reformatting the code block and breaking the annotations.
 
 ### Use Step for procedural guides
 

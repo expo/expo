@@ -117,6 +117,7 @@ const transform = ({ filename, src, options,
 plugins, }) => {
     const OLD_BABEL_ENV = process.env.BABEL_ENV;
     process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
+    const { enableBabelRCLookup = true } = options;
     try {
         const babelConfig = {
             // ES modules require sourceType='module' but OSS may not always want that
@@ -135,7 +136,8 @@ plugins, }) => {
             highlightCode: true,
             // Load the project babel config file.
             ...(0, loadBabelConfig_1.loadBabelConfig)(options),
-            babelrc: typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+            babelrc: enableBabelRCLookup,
+            ...(enableBabelRCLookup === false && { configFile: false }),
             plugins,
             // NOTE(EvanBacon): We heavily leverage the caller functionality to mutate the babel config.
             // This compensates for the lack of a format plugin system in Metro. Users can modify the
@@ -158,7 +160,15 @@ plugins, }) => {
         return { ast: result.ast, metadata: result.metadata };
     }
     finally {
-        if (OLD_BABEL_ENV) {
+        // Restore the old process.env.BABEL_ENV
+        if (OLD_BABEL_ENV != null) {
+            // We have to treat this as a special case because writing undefined to
+            // an environment variable coerces it to the string 'undefined'. To
+            // unset it, we must delete it.
+            // See https://github.com/facebook/metro/pull/446
+            delete process.env.BABEL_ENV;
+        }
+        else {
             process.env.BABEL_ENV = OLD_BABEL_ENV;
         }
     }

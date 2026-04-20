@@ -61,6 +61,12 @@ internal final class UnableToReadHandleException: GenericException<String> {
   }
 }
 
+internal final class UnableToWriteHandleException: GenericException<String> {
+  override var reason: String {
+    "Unable to write to a file handle: \(param)"
+  }
+}
+
 internal final class UnableToGetInfoException: GenericException<String> {
   override var reason: String {
     "Unable to get info from a file: \(param)"
@@ -106,5 +112,11 @@ internal final class NotImplementedException: Exception {
 internal final class FeatureNotAvailableOnPlatformException: Exception {
   override var reason: String {
     "This feature is not available on this platform"
+  }
+}
+
+internal final class DownloadCancelledException: Exception {
+  override var reason: String {
+    "Download was cancelled"
   }
 }

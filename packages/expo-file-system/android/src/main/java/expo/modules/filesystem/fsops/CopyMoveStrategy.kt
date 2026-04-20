@@ -2,6 +2,7 @@ package expo.modules.filesystem.fsops
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.provider.DocumentsContract
 import androidx.core.net.toUri
 import expo.modules.filesystem.CopyOrMoveDirectoryToFileException
@@ -29,11 +30,11 @@ sealed class CopyMoveStrategy(
   protected open val file: UnifiedFileInterface
 ) {
 
-  open fun copyTo(spec: DestinationSpec) {
+  open suspend fun copyTo(spec: DestinationSpec) {
     spec.resolve(file).receiveFrom(file)
   }
 
-  open fun moveTo(spec: DestinationSpec): Uri {
+  open suspend fun moveTo(spec: DestinationSpec): Uri {
     val resolved = spec.resolve(file)
     return tryNativeMove(resolved) ?: run {
       resolved.receiveFrom(file).also {
@@ -93,9 +94,22 @@ sealed class CopyMoveStrategy(
     }
 
     override fun tryNativeMove(resolved: DestinationSink): Uri? {
-      if (resolved is DestinationSink.LocalFile) {
-        if (file.renameTo(resolved.target)) return resolved.target.uri
+      if (resolved !is DestinationSink.LocalFile) {
+        return null
       }
+
+      // Fast path: atomic rename (same filesystem)
+      if (file.renameTo(resolved.target)) {
+        return resolved.target.uri
+      }
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        return runCatching {
+          moveFileNio(file.toPath(), resolved.target.toPath())
+          resolved.target.uri
+        }.getOrNull()
+      }
+
       return null
     }
   }
@@ -170,7 +184,7 @@ sealed class CopyMoveStrategy(
       return DestinationSink.ContentResource(spec)
     }
 
-    override fun moveTo(spec: DestinationSpec): Uri {
+    override suspend fun moveTo(spec: DestinationSpec): Uri {
       throw UnableToMoveException("Content provider file cannot be moved (provider-dependent)")
     }
   }
@@ -181,7 +195,7 @@ sealed class CopyMoveStrategy(
       return DestinationSink.Asset(spec)
     }
 
-    override fun moveTo(spec: DestinationSpec): Uri {
+    override suspend fun moveTo(spec: DestinationSpec): Uri {
       throw UnableToMoveException("Assets cannot be moved (provider-dependent)")
     }
   }

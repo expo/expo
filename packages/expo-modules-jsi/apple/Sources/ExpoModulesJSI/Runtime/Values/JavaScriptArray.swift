@@ -294,7 +294,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
    ```swift
    let array = try runtime.eval("[1, 2, 3]").getArray()
    let value = array[1]           // JavaScriptValue(2)
-   let outOfRange = array[10]     // JavaScriptValue.undefined()
+   let outOfRange = array[10]     // JavaScriptValue.undefined
    ```
 
    ## Setting Values
@@ -314,7 +314,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
    */
   public subscript(index: Int) -> JavaScriptValue {
     get {
-      return (try? self.getValue(at: index)) ?? .undefined()
+      return (try? self.getValue(at: index)) ?? .undefined
     }
     nonmutating set {
       guard let runtime else {
@@ -512,5 +512,59 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
         return "Index \(index) is out of range for array with length \(length). Valid range is 0..<\(length)."
       }
     }
+  }
+}
+
+// MARK: - Iteration
+//
+// JavaScriptArray is ~Copyable and cannot conform to Sequence, because
+// Swift's Sequence protocol requires Copyable conformance (the iterator
+// would need to store a copy of the array). These methods provide
+// equivalent functionality without requiring protocol conformance.
+
+extension JavaScriptArray {
+  /**
+   Returns an array of `(offset, element)` pairs, similar to `Sequence.enumerated()`.
+
+   - Note: Eagerly evaluates all elements. For large arrays, prefer `forEach(_:)`.
+   */
+  public func enumerated() -> [(offset: Int, element: JavaScriptValue)] {
+    return (0..<length).map { index in
+      (offset: index, element: self[index])
+    }
+  }
+
+  /**
+   Calls the given closure on each element in the array.
+   */
+  public func forEach(_ body: (JavaScriptValue) throws -> Void) rethrows {
+    for index in 0..<length {
+      try body(self[index])
+    }
+  }
+
+  /**
+   Returns an array of elements satisfying the given predicate.
+   */
+  public func filter(_ isIncluded: (JavaScriptValue) throws -> Bool) rethrows -> [JavaScriptValue] {
+    var result: [JavaScriptValue] = []
+    for index in 0..<length {
+      let value = self[index]
+      if try isIncluded(value) {
+        result.append(value)
+      }
+    }
+    return result
+  }
+
+  /**
+   Returns the result of combining the elements using the given closure.
+   */
+  public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, JavaScriptValue) throws -> Result) rethrows -> Result {
+    var result = initialResult
+    for index in 0..<length {
+      result = try nextPartialResult(result, self[index])
+    }
+    return result
   }
 }

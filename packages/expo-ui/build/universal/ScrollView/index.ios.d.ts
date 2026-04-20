@@ -1,0 +1,3 @@
+import type { ScrollViewProps } from './types';
+export declare function ScrollView({ children, direction, showsIndicators, style, onPress, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, }: ScrollViewProps): import("react").JSX.Element;
+//# sourceMappingURL=index.ios.d.ts.map

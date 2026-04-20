@@ -9,6 +9,7 @@ export {
   type PathInfo,
   type DirectoryInfo,
   type DownloadOptions,
+  type DownloadProgress,
   FileMode,
   type PickFileOptions,
   type PickSingleFileOptions,

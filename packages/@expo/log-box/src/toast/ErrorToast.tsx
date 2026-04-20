@@ -46,14 +46,16 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
     [logs]
   );
 
+  const lastError = errors[errors.length - 1];
+
   return (
     <div className={styles.container}>
-      {errors.length > 0 && (
+      {lastError != null && (
         <ErrorToast
-          log={errors[errors.length - 1]}
+          log={lastError}
           level="error"
           totalLogCount={errors.length}
-          onPressOpen={() => openLog(errors[errors.length - 1])}
+          onPressOpen={() => openLog(lastError)}
           onPressDismiss={onDismissErrors}
         />
       )}

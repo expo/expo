@@ -77,7 +77,9 @@ class InvalidRequireCallError extends Error {
     }
 }
 exports.InvalidRequireCallError = InvalidRequireCallError;
-// asserts non-null
+function asWritable(input) {
+    return input;
+}
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
     return x;
@@ -176,9 +178,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // plugins.push([metroTransformPlugins.inlinePlugin, babelPluginOpts]);
     // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
     if (plugins.length) {
-        return nullthrows(
-        // @ts-expect-error
-        (0, core_1.transformFromAstSync)(ast, '', {
+        const result = nullthrows((0, core_1.transformFromAstSync)(ast, '', {
             ast: true,
             babelrc: false,
             code: false,
@@ -197,6 +197,10 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
             // > Make sure to test the above mentioned case before flipping the flag back to false.
             cloneInputAst: false,
         }));
+        return {
+            ast: result.ast,
+            metadata: result.metadata,
+        };
     }
     return { ast };
 }
@@ -217,9 +221,7 @@ function performConstantFolding(ast, { filename }) {
     // Run the constant folding plugin in its own pass, avoiding race conditions
     // with other plugins that have exit() visitors on Program (e.g. the ESM
     // transform).
-    ast = nullthrows(
-    // @ts-expect-error
-    (0, core_1.transformFromAstSync)(ast, '', {
+    const result = (0, core_1.transformFromAstSync)(ast, '', {
         ast: true,
         babelrc: false,
         code: false,
@@ -232,8 +234,8 @@ function performConstantFolding(ast, { filename }) {
         // running with `cloneInputAst: true`.
         // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
         cloneInputAst: false,
-    }).ast);
-    return ast;
+    })?.ast;
+    return nullthrows(result);
 }
 async function transformJS(file, { config, options }) {
     const targetEnv = options.customTransformOptions?.environment;
@@ -365,8 +367,8 @@ async function transformJS(file, { config, options }) {
         sourceFileName: file.filename,
         sourceMaps: true,
     }, file.code);
-    // @ts-expect-error: incorrectly typed upstream
-    let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
+    // NOTE: incorrectly typed upstream
+    let map = result?.rawMappings.map(metro_source_map_1.toSegmentTuple) ?? [];
     let code = result.code;
     // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
     if (minify) {
@@ -422,6 +424,7 @@ async function transformJS(file, { config, options }) {
         },
     ];
     if (possibleReconcile) {
+        // TODO(@kitten): Check why `reactCompilerFlag === true` is checked below
         const reactCompilerFlag = options.customTransformOptions?.reactCompiler;
         if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
             try {
@@ -468,10 +471,10 @@ async function transformJSWithBabel(file, context) {
     // a malformed state. For now, we'll enable the experimental import support which compiles import statements
     // outside of the standard Babel process.
     if (!context.options.experimentalImportSupport) {
+        // TODO(@kitten): Check why `reactCompilerFlag === true` is checked below
         const reactCompilerFlag = context.options.customTransformOptions?.reactCompiler;
         if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
-            // @ts-expect-error: readonly.
-            context.options.experimentalImportSupport = true;
+            asWritable(context.options).experimentalImportSupport = true;
         }
     }
     // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
@@ -632,14 +635,12 @@ const disabledDependencyTransformer = {
         while (topParent.parentPath) {
             topParent = topParent.parentPath;
         }
-        // @ts-expect-error
         if (topParent._handled) {
             return;
         }
         path.insertAfter(makeShimAsyncRequireTemplate({
             ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
         }));
-        // @ts-expect-error: Prevent recursive loop
         topParent._handled = true;
     },
     transformPrefetch: () => { },

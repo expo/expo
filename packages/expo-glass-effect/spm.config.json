@@ -5,7 +5,7 @@
       "name": "ExpoGlassEffect",
       "podName": "ExpoGlassEffect",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

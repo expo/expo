@@ -16,13 +16,15 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 open class ChipPressedEvent : Record, Serializable
 
+@OptimizedRecord
 class AssistChipColors : Record {
   @Field val containerColor: Color? = null
   @Field val labelColor: Color? = null
@@ -30,6 +32,7 @@ class AssistChipColors : Record {
   @Field val trailingIconContentColor: Color? = null
 }
 
+@OptimizedRecord
 class FilterChipColors : Record {
   @Field val containerColor: Color? = null
   @Field val labelColor: Color? = null
@@ -40,6 +43,7 @@ class FilterChipColors : Record {
   @Field val selectedTrailingIconColor: Color? = null
 }
 
+@OptimizedRecord
 class InputChipColors : Record {
   @Field val containerColor: Color? = null
   @Field val labelColor: Color? = null
@@ -51,12 +55,14 @@ class InputChipColors : Record {
   @Field val selectedTrailingIconColor: Color? = null
 }
 
+@OptimizedRecord
 class SuggestionChipColors : Record {
   @Field val containerColor: Color? = null
   @Field val labelColor: Color? = null
   @Field val iconContentColor: Color? = null
 }
 
+@OptimizedRecord
 class ChipBorder : Record {
   @Field val width: Float = 1f
   @Field val color: Color? = null
@@ -65,7 +71,7 @@ class ChipBorder : Record {
 private fun FunctionalComposableScope.slotContent(slotName: String): (@Composable () -> Unit)? {
   return findChildSlotView(view, slotName)?.let { slotView ->
     {
-      with(ComposableScope()) {
+      with(UIComposableScope()) {
         with(slotView) {
           Content()
         }

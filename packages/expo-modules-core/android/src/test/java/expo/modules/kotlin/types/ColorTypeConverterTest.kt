@@ -4,6 +4,7 @@ import android.graphics.Color
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
 import com.google.common.truth.Truth
+import expo.modules.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -247,5 +248,23 @@ internal class ColorTypeConverterTest {
     Truth.assertThat(color.green()).isEqualTo(0f)
     Truth.assertThat(color.blue()).isEqualTo(0f)
     Truth.assertThat(color.alpha()).isEqualTo(0.5f)
+  }
+
+  @Test
+  fun `should throw when color components array has fewer than 3 values`() {
+    val shortArrays = listOf(
+      JavaOnlyArray(),
+      JavaOnlyArray().apply { pushDouble(1.0) },
+      JavaOnlyArray().apply {
+        pushDouble(1.0)
+        pushDouble(0.5)
+      }
+    )
+
+    for (array in shortArrays) {
+      assertThrows<InvalidColorComponentsException> {
+        convert<Color>(DynamicFromObject(array))
+      }
+    }
   }
 }

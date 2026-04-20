@@ -14,14 +14,19 @@ concurrency:
 
 jobs:
   publish-canaries:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
+    timeout-minutes: 120
     env:
       NODE_AUTH_TOKEN: ${{ secrets.EXPO_BOT_NPM_TOKEN }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'schedule' && 'sdk-56' || github.ref }}
+          submodules: true
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - name: 🔨 Add bin to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -38,7 +43,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: 📦 Install dependencies
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: 📦 Publish canaries
         run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
         env:

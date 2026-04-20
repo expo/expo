@@ -64,7 +64,7 @@ function ensureUriString(uri: any): string {
 async function normalizeUriProtocolAsync(uri: any): Promise<string> {
   const trimmedUri = ensureUriString(uri);
   const [protocol] = trimmedUri.split(':');
-  const normalizedUri = protocol.toLowerCase();
+  const normalizedUri = protocol?.toLowerCase();
   if (normalizedUri !== uri) {
     // Create a warning.
     if (normalizedUri) {

@@ -911,7 +911,7 @@ jobs:
 
 <Collapsible summary="Using Maestro prefixed environment variables">
 
-Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/advanced/parameters-and-constants#accessing-variables-from-the-shell).
+Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/maestro-flows/flow-control-and-logic/parameters-and-constants#accessing-shell-variables).
 
 ```yaml .eas/workflows/maestro-basic.yml
 name: Basic Maestro Test
@@ -951,7 +951,7 @@ jobs:
 
 <Collapsible summary="Saving screenshots and recordings">
 
-To save assets created by Maestro commands (such as [`takeScreenshot`](https://docs.maestro.dev/api-reference/commands/takescreenshot) or [`startRecording`](https://docs.maestro.dev/api-reference/commands/startrecording)) to use for debugging later, use the `MAESTRO_TESTS_DIR` environment variable.
+To save assets created by Maestro commands (such as [`takeScreenshot`](https://docs.maestro.dev/reference/commands-available/takescreenshot) or [`startRecording`](https://docs.maestro.dev/reference/commands-available/startrecording)) to use for debugging later, use the `MAESTRO_TESTS_DIR` environment variable.
 
 In your Maestro flow file, specify the asset locations:
 
@@ -974,7 +974,7 @@ The assets will be available within the "Maestro Test Results" artifact in the A
 
 Run Maestro tests on Maestro Cloud.
 
-> **important** This requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud) to learn more.
+> **important** This requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/maestro-cloud/run-tests-on-maestro-cloud) to learn more.
 
 ### Syntax
 
@@ -1067,7 +1067,7 @@ jobs:
 
 <Collapsible summary="Using Maestro prefixed environment variables">
 
-Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/advanced/parameters-and-constants#accessing-variables-from-the-shell).
+Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/maestro-flows/flow-control-and-logic/parameters-and-constants#accessing-shell-variables).
 
 ```yaml .eas/workflows/maestro-basic.yml
 name: Basic Maestro Test
@@ -1117,7 +1117,7 @@ jobs:
 
 ## Slack
 
-Send a message to a Slack channel using a [Slack webhook URL](https://api.slack.com/messaging/webhooks).
+Send a message to a Slack channel using a [Slack webhook URL](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks).
 
 ### Syntax
 
@@ -1139,7 +1139,7 @@ You can pass the following parameters into the `params` list:
 | ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | webhook_url | string | Required. The Slack webhook URL to send the message to. Currently only hardcoded strings are supported. Using webhooks stored in `env` are upcoming but not yet supported. |
 | message     | string | Required if payload is not provided. The message to send.                                                                                                                  |
-| payload     | object | Required if message is not provided. The [Slack Block Kit](https://api.slack.com/block-kit) payload to send.                                                               |
+| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                              |
 
 ### Examples
 
@@ -1665,6 +1665,8 @@ jobs:
       repack_version: string # optional
 ```
 
+> **Note:** If the build might still be in progress, use [`get-build`](#get-build) with `wait_for_in_progress: true`, then pass its `build_id` to `repack`.
+
 ### Common questions
 
 <FAQ>
@@ -1674,7 +1676,7 @@ jobs:
 Repack job is suitable for the following use cases:
 
 - Reducing CI build times by reusing existing builds
-- Trigging full native builds when required
+- Triggering full native builds when required
 - Delivering faster feedback loops to your team
 
 Repack job is not suitable for the following use cases:

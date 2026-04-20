@@ -4,7 +4,7 @@
  The app context is an interface to a single Expo app.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject, @unchecked Sendable {
+public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -45,12 +45,9 @@ public final class AppContext: NSObject, @unchecked Sendable {
   @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
 
-  @objc
-  public weak var legacyModulesProxy: LegacyNativeModulesProxy?
-
   /**
    React bridge of the context's app. Can be `nil` when the bridge
-   hasn't been propagated to the bridge modules yet (see ``ExpoBridgeModule``),
+   hasn't been propagated to the bridge modules yet,
    or when the app context is "bridgeless" (for example in native unit tests).
    */
   @objc
@@ -163,9 +160,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
     listenToClientAppNotifications()
   }
 
-  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig? = nil) {
+  public convenience init(legacyModuleRegistry: Any, config: AppContextConfig? = nil) {
     self.init(config: config)
-    self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
   }
 
@@ -188,8 +184,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
-    return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
+    return hostWrapper?.findView(withTag: viewTag) as? ViewType
   }
 
   // MARK: - Running on specific queues
@@ -346,22 +342,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
-  // MARK: - Interop with NativeModulesProxy
-
-  /**
-   Returns view modules wrapped by the base `ViewModuleWrapper` class.
-   */
-  @objc
-  public func getViewManagers() -> [Any] {
-    var result: [Any] = []
-    for holder in moduleRegistry {
-      for (key, viewDefinition) in holder.definition.views {
-        result.append(ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW))        
-      }
-    }
-    return result
-  }
-
   /**
    Returns a bool whether the module with given name is registered in this context.
    */
@@ -422,56 +402,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
           resolve(value)
         }
       }
-  }
-
-  private var _expoModulesConfig: ModulesProxyConfig?
-
-  @objc
-  public var expoModulesConfig: ModulesProxyConfig {
-    if let cachedConfig = _expoModulesConfig {
-      return cachedConfig
-    }
-    let newConfig: ModulesProxyConfig = ModulesProxyConfig(
-      constants: self.exportedModulesConstants(),
-      methodNames: self.exportedFunctionNames(),
-      viewManagers: self.viewManagersMetadata())
-    _expoModulesConfig = newConfig
-    return newConfig
-  }
-
-  private func exportedFunctionNames() -> [String: [[String: Any]]] {
-    var constants = [String: [[String: Any]]]()
-
-    for holder in moduleRegistry {
-      constants[holder.name] = holder.definition.functions.map({ functionName, function in
-        return [
-          "name": functionName,
-          "argumentsCount": function.argumentsCount,
-          "key": functionName
-        ]
-      })
-    }
-    return constants
-  }
-
-  private func exportedModulesConstants() -> [String: Any] {
-    return moduleRegistry
-      // prevent infinite recursion - exclude NativeProxyModule constants
-      .filter { $0.name != NativeModulesProxyModule.moduleName }
-      .reduce(into: [String: Any]()) { acc, holder in
-        acc[holder.name] = holder.getLegacyConstants()
-      }
-  }
-
-  private func viewManagersMetadata() -> [String: Any] {
-    return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      holder.definition.views.forEach { key, definition in
-        let name = key == DEFAULT_MODULE_VIEW ? holder.name : "\(holder.name)_\(definition.name)"
-        acc[name] = [
-          "propsNames": definition.props.map { $0.name }
-        ]
-      }
-    }
   }
 
   // MARK: - Modules registration
@@ -561,8 +491,82 @@ public final class AppContext: NSObject, @unchecked Sendable {
     // Install `global.expo.EventEmitter`.
     EXJavaScriptRuntimeManager.installEventEmitterClass(uiRuntime)
 
+    // Install `global.expo.SharedObject`.
+    EXJavaScriptRuntimeManager.installSharedObjectClass(uiRuntime) { [weak sharedObjectRegistry] objectId in
+      sharedObjectRegistry?.delete(objectId)
+    }
+
+    // Install `global.expo.SharedRef`.
+    EXJavaScriptRuntimeManager.installSharedRefClass(uiRuntime)
+
     // Install `global.expo.NativeModule`.
     EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
+
+    // Install module class prototypes so SharedObject properties are accessible in worklets.
+    try installModuleClasses(in: uiRuntime)
+  }
+
+  /**
+   Installs SharedObject class prototypes with property getter/setters in the given runtime.
+   Also installs `SharedObject.__resolveInWorklet(className, objectId)` for resolving the original native object instance in worklets.
+   */
+  @MainActor
+  private func installModuleClasses(in runtime: JavaScriptRuntime) throws {
+    let coreObject = runtime.global().getProperty(EXGlobalCoreObjectPropertyName).getObject()
+    let sharedObjectClass = coreObject.getProperty("SharedObject").getObject()
+    let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype").getObject()
+
+    var protoCache: [ObjectIdentifier: JavaScriptObject] = [:]
+
+    // Called by the worklet serializer's `unpack` to recreate a SharedObject proxy.
+    // Takes just the objectId — looks up the native type, lazily builds the prototype on first use.
+    sharedObjectClass.setProperty("__resolveInWorklet", value: runtime.createSyncFunction(
+      "__resolveInWorklet",
+      argsCount: 1
+    ) { [weak self] _, arguments in
+      assert(Thread.isMainThread, "__resolveInWorklet must be called on the UI (main) thread")
+      guard let self else { throw Exceptions.AppContextLost() }
+
+      let objectId = try arguments[0].asInt()
+
+      guard let nativeObject = self.sharedObjectRegistry.get(objectId)?.native else {
+        throw SharedObjectNotFoundException(String(objectId))
+      }
+
+      let typeId = ObjectIdentifier(type(of: nativeObject))
+
+      if protoCache[typeId] == nil {
+        let classDefinition = self.findClassDefinition(for: typeId)
+        protoCache[typeId] = try classDefinition?.buildPrototype(
+          in: runtime, appContext: self, basePrototype: sharedObjectBaseProto
+        )
+      }
+
+      guard let classProto = protoCache[typeId] else {
+        throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
+      }
+      guard let instance = runtime.createObject(withPrototype: classProto) else {
+        throw SharedObjectPrototypeCreationException(String(describing: type(of: nativeObject)))
+      }
+
+      instance.defineProperty(sharedObjectIdPropertyName, value: objectId, options: [])
+      return runtime.value(from: instance)
+    })
+  }
+
+  /**
+   Finds the ClassDefinition for a given native type identifier by searching all modules.
+   */
+  private func findClassDefinition(for typeId: ObjectIdentifier) -> ClassDefinition? {
+    for module in moduleRegistry {
+      for (_, classDefinition) in module.definition.classes {
+        if let sharedObjectType = classDefinition.associatedType as? DynamicSharedObjectType,
+           sharedObjectType.typeIdentifier == typeId {
+          return classDefinition
+        }
+      }
+    }
+    return nil
   }
 
   /**
@@ -647,6 +651,24 @@ public final class AppContext: NSObject, @unchecked Sendable {
 public class JavaScriptClassNotFoundException: Exception, @unchecked Sendable {
   public override var reason: String {
     "Unable to find a JavaScript class in the class registry"
+  }
+}
+
+internal final class SharedObjectNotFoundException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "SharedObject with id '\(param)' not found in the registry"
+  }
+}
+
+internal final class SharedObjectClassNotRegisteredException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "No class definition registered for SharedObject type '\(param)'"
+  }
+}
+
+internal final class SharedObjectPrototypeCreationException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Failed to create JS prototype for SharedObject type '\(param)'"
   }
 }
 

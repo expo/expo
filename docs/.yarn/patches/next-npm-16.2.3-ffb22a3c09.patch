@@ -1,0 +1,44 @@
+diff --git a/dist/build/index.js b/dist/build/index.js
+index fdf399547b12224d3654c9219e7bfcb270868bf2..844c307575af595fe7c84a5f754491e70da6fbfc 100644
+--- a/dist/build/index.js
++++ b/dist/build/index.js
+@@ -894,7 +894,7 @@ async function build(dir, experimentalAnalyze = false, reactProductionProfiling
+                             (0, _trace1.traceMemoryUsage)('Finished server compilation', nextBuildSpan);
+                             buildTraceContext = res.buildTraceContext;
+                             durationInSeconds += res.duration;
+-                            if (collectServerBuildTracesInParallel) {
++                            if (collectServerBuildTracesInParallel && config.output !== 'export') {
+                                 const buildTraceWorker = new _worker.Worker(require.resolve('./collect-build-traces'), {
+                                     debuggerPortOffset: -1,
+                                     isolatedMemory: false,
+@@ -1534,7 +1534,7 @@ async function build(dir, experimentalAnalyze = false, reactProductionProfiling
+             await writeFunctionsConfigManifest(distDir, functionsConfigManifest);
+             // #endregion
+             // #region NFT
+-            if (bundler !== _bundler.Bundler.Turbopack && !isGenerateMode && !buildTracesPromise) {
++            if (bundler !== _bundler.Bundler.Turbopack && !isGenerateMode && !buildTracesPromise && config.output !== 'export') {
+                 buildTracesPromise = nextBuildSpan.traceChild('collect-build-traces').traceAsyncFn(()=>{
+                     const { collectBuildTraces } = require('./collect-build-traces');
+                     return collectBuildTraces({
+diff --git a/dist/esm/build/index.js b/dist/esm/build/index.js
+index 6d035c4088b4621e9e9a9de702838537b8cf500a..68e820d5e92e505fa5c1fc4fbeb0595060cfc8c9 100644
+--- a/dist/esm/build/index.js
++++ b/dist/esm/build/index.js
+@@ -826,7 +826,7 @@ export default async function build(dir, experimentalAnalyze = false, reactProdu
+                             traceMemoryUsage('Finished server compilation', nextBuildSpan);
+                             buildTraceContext = res.buildTraceContext;
+                             durationInSeconds += res.duration;
+-                            if (collectServerBuildTracesInParallel) {
++                            if (collectServerBuildTracesInParallel && config.output !== 'export') {
+                                 const buildTraceWorker = new Worker(require.resolve('./collect-build-traces'), {
+                                     debuggerPortOffset: -1,
+                                     isolatedMemory: false,
+@@ -1466,7 +1466,7 @@ export default async function build(dir, experimentalAnalyze = false, reactProdu
+             await writeFunctionsConfigManifest(distDir, functionsConfigManifest);
+             // #endregion
+             // #region NFT
+-            if (bundler !== Bundler.Turbopack && !isGenerateMode && !buildTracesPromise) {
++            if (bundler !== Bundler.Turbopack && !isGenerateMode && !buildTracesPromise && config.output !== 'export') {
+                 buildTracesPromise = nextBuildSpan.traceChild('collect-build-traces').traceAsyncFn(()=>{
+                     const { collectBuildTraces } = require('./collect-build-traces');
+                     return collectBuildTraces({

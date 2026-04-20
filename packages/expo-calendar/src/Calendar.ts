@@ -4,7 +4,7 @@ import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate } from './utils';
 
-export {
+export type {
   PermissionResponse,
   PermissionStatus,
   PermissionHookOptions,

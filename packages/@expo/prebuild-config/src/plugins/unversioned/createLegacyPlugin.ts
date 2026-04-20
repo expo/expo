@@ -7,7 +7,7 @@ import {
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-const toCamelCase = (s: string) => s.replace(/-./g, (x) => x.toUpperCase()[1]);
+const toCamelCase = (s: string) => s.replace(/-./g, (x) => x.toUpperCase()?.[1] ?? '');
 
 function isModuleExcluded(config: Pick<ExpoConfig, '_internal'>, packageName: string): boolean {
   // Skip using the versioned plugin when autolinking is enabled

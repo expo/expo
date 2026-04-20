@@ -277,7 +277,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
       .store(in: &cancellables)
 
     ref.publisher(for: \.currentItem)
-      .sink { [weak self] item in
+      .sink { [weak self] _ in
         guard let self else {
           return
         }

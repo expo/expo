@@ -5,7 +5,7 @@
       "name": "ExpoUI",
       "podName": "ExpoUI",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

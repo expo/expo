@@ -2,7 +2,6 @@
 
 
 
-#import <ExpoModulesCore/ExpoBridgeModule.h>
 #import <ExpoModulesCore/CoreModuleHelper.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
@@ -12,7 +11,6 @@
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/EXAppContextProtocol.h>
-#import <ExpoModulesCore/EXAppContextFactoryRegistry.h>
 #import <ExpoModulesCore/EXReactDelegateProtocol.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
 #import <ExpoModulesCore/EXConstantsInterface.h>
@@ -46,7 +44,6 @@
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
 #import <ExpoModulesCore/EXInternalModule.h>

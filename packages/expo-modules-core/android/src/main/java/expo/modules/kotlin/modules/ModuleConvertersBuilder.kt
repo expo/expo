@@ -7,16 +7,16 @@ import expo.modules.kotlin.types.NullableTypeConverter
 import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.TypeConverterComponent
 import expo.modules.kotlin.types.TypeConverterProvider
-import expo.modules.kotlin.types.lazyTypeOf
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 class ModuleConvertersBuilder {
   @PublishedApi
   internal var convertersComponent = mutableListOf<TypeConverterComponent<*>>()
 
   inline fun <reified T : Any> TypeConverter(classifier: KClass<T> = T::class): TypeConverterComponent<T> {
-    val converterComponent = TypeConverterComponent<T>(lazyTypeOf<T>())
+    val converterComponent = TypeConverterComponent<T>(typeDescriptorOf<T>())
     convertersComponent.add(converterComponent)
     return converterComponent
   }
@@ -37,19 +37,19 @@ class ModuleConvertersBuilder {
       .mapNotNull { it.build() }
 
     return object : TypeConverterProvider {
-      override fun obtainTypeConverter(type: KType): TypeConverter<*> {
-        val nonNullableTypeConverter = findNonNullableTypeConverter(type)
-          ?: throw MissingTypeConverter(type)
+      override fun obtainTypeConverter(typeDescriptor: TypeDescriptor): TypeConverter<*> {
+        val nonNullableTypeConverter = findNonNullableTypeConverter(typeDescriptor)
+          ?: throw MissingTypeConverter(typeDescriptor)
 
-        if (type.isMarkedNullable) {
+        if (typeDescriptor.isNullable) {
           return NullableTypeConverter(nonNullableTypeConverter)
         }
         return nonNullableTypeConverter
       }
 
-      private fun findNonNullableTypeConverter(type: KType): TypeConverter<*>? {
+      private fun findNonNullableTypeConverter(typeDescriptor: TypeDescriptor): TypeConverter<*>? {
         return converters.find { (converterType, _) ->
-          converterType.classifier == type.classifier && converterType.arguments == type.arguments
+          converterType.jClass == typeDescriptor.jClass && converterType.params == typeDescriptor.params
         }?.second
       }
     }

@@ -32,6 +32,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.UUID
+import expo.modules.kotlin.types.OptimizedRecord
 
 const val onContactsChangeEventName = "onContactsChange"
 
@@ -100,6 +101,7 @@ private val DEFAULT_PROJECTION = listOf(
   ContactsContract.Data.STARRED
 )
 
+@OptimizedRecord
 class ContactQuery : Record {
   @Field
   val pageSize = 0

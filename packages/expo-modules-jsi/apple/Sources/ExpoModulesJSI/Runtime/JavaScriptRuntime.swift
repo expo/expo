@@ -59,11 +59,20 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   /**
-   Raw pointer to the underlying JSI runtime. DO NOT USE IT!
+   Creates a runtime from a raw pointer to the underlying `facebook.jsi.Runtime`.
    */
-  @_spi(Unsafe)
-  public var unsafe_pointee: UnsafeMutableRawPointer {
-    return Unmanaged<facebook.jsi.Runtime>.passUnretained(pointee).toOpaque()
+  public init(unsafePointer: UnsafeMutableRawPointer) {
+    let runtime = unsafeBitCast(unsafePointer, to: facebook.jsi.Runtime.self)
+    self.pointee = runtime
+    self.scheduler = expo.RuntimeScheduler(runtime)
+  }
+
+  /**
+   Provides scoped access to a raw pointer to the underlying `facebook.jsi.Runtime`.
+   The pointer is valid only for the duration of the closure and must not be stored or escaped.
+   */
+  public func withUnsafePointee<R>(_ body: (UnsafeMutableRawPointer) throws -> R) rethrows -> R {
+    return try body(Unmanaged<facebook.jsi.Runtime>.passUnretained(pointee).toOpaque())
   }
 
   /**
@@ -98,20 +107,27 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    Creates a JavaScript host object with given implementations for property getter, property setter, property names getter and dealloc.
    */
   public func createHostObject(
-    get: @escaping (_ propertyName: String) -> JavaScriptValue,
-    set: @escaping (_ propertyName: String, _ value: JavaScriptValue) -> Void,
-    getPropertyNames: @escaping () -> [String],
-    dealloc: @escaping () -> Void
+    get: @escaping @JavaScriptActor (_ propertyName: String) -> JavaScriptValue,
+    set: @escaping @JavaScriptActor (_ propertyName: String, _ value: JavaScriptValue) -> Void,
+    getPropertyNames: @escaping @JavaScriptActor () -> [String],
+    dealloc: @escaping @JavaScriptActor () -> Void
   ) -> JavaScriptObject {
     func getter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>) -> facebook.jsi.Value {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
-      return context.get(String(cString: propertyName)).asJSIValue()
+      let propertyName = String(cString: propertyName)
+
+      return JavaScriptActor.assumeIsolated {
+        return context.get(propertyName).asJSIValue()
+      }
     }
 
     func setter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>, valuePointer: UnsafeMutableRawPointer) {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
       let value = JavaScriptValue(context.runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
-      context.set(String(cString: propertyName), value)
+      let propertyName = String(cString: propertyName)
+      return JavaScriptActor.assumeIsolated {
+        context.set(propertyName, value)
+      }
     }
 
     func propertyNamesGetter(context: UnsafeMutableRawPointer) -> expo.HostObjectCallbacks.PropNameIds {
@@ -120,7 +136,12 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
       guard let runtime = context.runtime else {
         FatalError.runtimeLost()
       }
-      let propertyNames = context.getPropertyNames()
+      // Get property names within the actor isolation, but build the vector outside
+      // to avoid returning a non-copyable C++ type through `assumeIsolated`
+      // (its `withoutActuallyEscaping` forces a copy of the return value).
+      let propertyNames: [String] = JavaScriptActor.assumeIsolated {
+        return context.getPropertyNames()
+      }
       var vector = expo.HostObjectCallbacks.PropNameIds()
 
       vector.reserve(propertyNames.count)
@@ -141,6 +162,28 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     let hostObject = expo.HostObject.makeObject(pointee, consume callbacks)
 
     return JavaScriptObject(self, hostObject)
+  }
+
+  // MARK: - Creating array buffers
+
+  /**
+   Creates a new array buffer of the given size with zero-initialized memory.
+   */
+  public func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size)
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+  }
+
+  /**
+   Creates a new array buffer that wraps the given native data pointer.
+   The cleanup closure is called when the array buffer is garbage collected.
+   */
+  public func createArrayBuffer(data: UnsafeMutablePointer<UInt8>, size: Int, cleanup: @escaping @Sendable () -> Void) -> JavaScriptArrayBuffer {
+    let context = Unmanaged.passRetained(CleanupContext(cleanup)).toOpaque()
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, data, size, context) { context in
+      Unmanaged<CleanupContext>.fromOpaque(context).release()
+    }
+    return JavaScriptArrayBuffer(self, jsiArrayBuffer)
   }
 
   // MARK: - Creating arrays
@@ -467,9 +510,14 @@ private func createFunctionClosure(runtime: JavaScriptRuntime, name: String? = n
         let thisValue = JavaScriptValue(runtime, this)
         let result = try context.call(thisValue, argumentsRef.take())
         return result.asJSIValue()
+      } catch let throwable as JavaScriptThrowable {
+        // Store the error in thread-local storage so the C++ caller can
+        // retrieve it and throw a jsi::JSError after this closure returns.
+        let jsError = JavaScriptError(runtime, from: throwable)
+        expo.CppError.setCurrent(jsError.toJSError())
+        return .undefined()
       } catch let error {
-        // TODO: Implement throwing `facebook.jsi.JSError`, returns `undefined` until then
-        print("Calling '\(context.name ?? "anonymous")' function has failed: \(error)")
+        expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
         return .undefined()
       }
     }

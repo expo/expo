@@ -3,7 +3,9 @@ package expo.modules.print
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 internal class FilePrintResult(
   @Field var uri: String = "",
   @Field var numberOfPages: Int = 0,

@@ -427,6 +427,7 @@ export const getBuildPlatformsFromProductPlatform = (
 ): BuildPlatform[] => {
   switch (platform) {
     case 'iOS(.v15)':
+    case 'iOS(.v16)':
       return ['iOS', 'iOS Simulator'];
     case 'macOS(.v11)':
       return ['macOS'];
@@ -581,7 +582,7 @@ async function patchCheckoutWithSharedDeps(
  * are in the build intermediates. We need them for the xcframework to be usable as
  * a build dependency with `import Module`.
  */
-async function enrichFrameworkWithHeaders(
+export async function enrichFrameworkWithHeaders(
   frameworkPath: string,
   productName: string,
   checkoutDir: string,
@@ -649,6 +650,10 @@ async function enrichFrameworkWithHeaders(
       `${productName}.build`,
       `${productName}.modulemap`
     ),
+    // Fallback: SPM-generated module map in the checkout's public headers directory.
+    // For ObjC packages built via SPM, the module map may only exist here when
+    // Xcode doesn't copy it to Build/Intermediates.noindex/.
+    ...(headersDir ? [path.join(headersDir, 'module.modulemap')] : []),
   ];
   const modulemapPath = await findFirstExisting(modulemapPaths);
   if (modulemapPath) {
@@ -666,11 +671,18 @@ async function enrichFrameworkWithHeaders(
     modulemapContent = modulemapContent.replace(/^module /m, 'framework module ');
 
     if (modulemapContent.includes('umbrella header')) {
-      // Single umbrella header — rewrite to just the filename
-      modulemapContent = modulemapContent.replace(
-        /umbrella header "[^"]*\/([^"\/]+)"/,
-        'umbrella header "$1"'
-      );
+      // Extract the umbrella header path to decide how to rewrite it.
+      const umbrellaPathMatch = modulemapContent.match(/umbrella header "([^"]+)"/);
+      if (umbrellaPathMatch && path.isAbsolute(umbrellaPathMatch[1])) {
+        // Absolute path (from xcodebuild-generated modulemaps) — strip to just the filename.
+        // Relative paths are preserved — they resolve correctly relative to the framework's Headers/ dir.
+        const filename = path.basename(umbrellaPathMatch[1]);
+        modulemapContent = modulemapContent.replace(
+          /umbrella header "[^"]+"/,
+          `umbrella header "${filename}"`
+        );
+      }
+
       // Copy the umbrella header if not already in Headers/
       const umbrellaMatch = modulemapContent.match(/umbrella header "([^"]+)"/);
       if (umbrellaMatch) {
@@ -785,7 +797,7 @@ let package = Package(
     name: "${dep.productName}-standalone",
 
     platforms: [
-        .iOS(.v15)
+        .iOS(.v16)
     ],
 
     products: [

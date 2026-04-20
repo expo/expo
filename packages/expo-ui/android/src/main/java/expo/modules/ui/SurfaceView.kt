@@ -10,11 +10,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
 
+@OptimizedRecord
 data class SurfaceBorder(
   @Field val width: Float = 1f,
   @Field val color: Color? = null
@@ -54,7 +55,7 @@ fun FunctionalComposableScope.SurfaceContent(
     }
   }
 
-  val content: @Composable () -> Unit = { Children(ComposableScope()) }
+  val content: @Composable () -> Unit = { Children(UIComposableScope()) }
 
   when {
     // Toggleable variant

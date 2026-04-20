@@ -42,6 +42,12 @@ class Album: SharedObject {
     try await AssetCollectionRepository.shared.delete(by: [collection], deleteAssets: deleteAssets)
   }
 
+  func removeAssets(_ assets: [Asset]) async throws {
+    let collection = try await requirePHAssetCollection()
+    let phAssets = AssetRepository.shared.get(by: assets.map { $0.localIdentifier })
+    try await AssetCollectionRepository.shared.remove(assets: phAssets, from: collection)
+  }
+
   private func requirePHAssetCollection() async throws -> PHAssetCollection {
     try await loadPHAssetCollection()
     guard let collection else {
@@ -68,5 +74,10 @@ class Album: SharedObject {
     }
 
     collection = fetchedAlbum
+  }
+
+  static func getAll() async throws -> [Album] {
+    AssetCollectionRepository.shared.getAll()
+      .map { Album(id: $0.localIdentifier) }
   }
 }

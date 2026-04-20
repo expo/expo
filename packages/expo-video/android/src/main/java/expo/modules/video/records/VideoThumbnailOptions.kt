@@ -2,7 +2,9 @@ package expo.modules.video.records
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class VideoThumbnailOptions(
   @Field val maxWidth: Int? = null,
   @Field val maxHeight: Int? = null

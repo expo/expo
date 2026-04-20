@@ -2,9 +2,7 @@
 
 /// - Warning: The ObjC name `ExpoFabricView` and the selector
 ///   `makeViewClassForAppContext:moduleName:viewName:className:` are resolved at runtime via
-///   `NSClassFromString` / `NSSelectorFromString` from the following ObjC files:
-///   - `ExpoFabricViewObjC.mm`
-///   - `ExpoBridgeModule.mm`
+///   `NSClassFromString` / `NSSelectorFromString` from `ExpoFabricViewObjC.mm`.
 ///   Renaming the class or that method will break those call sites silently at runtime.
 @objc(ExpoFabricView)
 open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {

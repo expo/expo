@@ -9,8 +9,7 @@ import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 /**
  * Base class of all exported functions
@@ -23,21 +22,21 @@ abstract class AnyFunction(
   internal var canTakeOwner: Boolean = false
 
   @PublishedApi
-  internal var ownerType: KType? = null
+  internal var ownerType: TypeDescriptor? = null
 
   internal var isEnumerable: Boolean = true
 
   internal val takesOwner: Boolean
     get() {
       if (canTakeOwner) {
-        val firstArgumentType = desiredArgsTypes.firstOrNull()?.kType?.classifier as? KClass<*>
+        val firstArgumentType = desiredArgsTypes.firstOrNull()?.typeDescriptor?.jClass
           ?: return false
 
-        if (firstArgumentType == JavaScriptObject::class) {
+        if (firstArgumentType == JavaScriptObject::class.java) {
           return true
         }
 
-        val ownerClass = ownerType?.classifier as? KClass<*> ?: return false
+        val ownerClass = ownerType?.typeInfo?.jClass ?: return false
 
         return firstArgumentType == ownerClass
       }
@@ -50,7 +49,7 @@ abstract class AnyFunction(
   private val requiredArgumentsCount = run {
     val nonNullableArgIndex = desiredArgsTypes
       .reversed()
-      .indexOfFirst { !it.kType.isMarkedNullable }
+      .indexOfFirst { !it.typeDescriptor.isNullable }
     if (nonNullableArgIndex < 0) {
       return@run 0
     }
@@ -79,7 +78,7 @@ abstract class AnyFunction(
       val element = args[index]
       val desiredType = desiredArgsTypes[index]
       exceptionDecorator({ cause ->
-        ArgumentCastException(desiredType.kType, index, element?.javaClass.toString(), cause)
+        ArgumentCastException(desiredType.typeDescriptor, index, element?.javaClass.toString(), cause)
       }) {
         finalArgs[index] = desiredType.convert(element, appContext, forceConversion)
       }

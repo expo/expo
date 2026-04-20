@@ -142,7 +142,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       Prop("barcodeScannerEnabled") { (view, scanBarcodes: Bool?) in
-#if canImport(ZXingObjC)
         if let scanBarcodes, view.isScanningBarcodes != scanBarcodes {
           view.isScanningBarcodes = scanBarcodes
           return
@@ -150,17 +149,15 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         if scanBarcodes == nil && view.isScanningBarcodes != false {
           view.isScanningBarcodes = false
         }
-#endif
       }
 
       Prop("barcodeScannerSettings") { (view, settings: BarcodeSettings?) in
-#if canImport(ZXingObjC)
         if let settings {
+          if view.barcodeScanner?.isAvailable == false {
+            self.appContext?.jsLogger.warn("Barcode scanning has been disabled")
+          }
           view.setBarcodeScannerSettings(settings: settings)
         }
-#else
-        self.appContext?.jsLogger.warn("Barcode scanning has been disabled")
-#endif
       }
 
       Prop("mute") { (view, muted: Bool?) in
@@ -355,7 +352,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -364,7 +361,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -373,7 +370,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -382,7 +379,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }

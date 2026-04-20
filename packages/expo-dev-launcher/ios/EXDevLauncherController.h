@@ -41,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
 
-@property (nonatomic, weak) RCTBridge * _Nullable appBridge;
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
@@ -53,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSURL *)sourceUrl;
 
+- (void)launchDefaultUrlFallbackOrNavigateToLauncher;
+
 - (void)navigateToLauncher;
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options;
@@ -60,6 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL  * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
+
+- (void)loadLocalBundleOnSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (void)clearRecentlyOpenedApps;
 

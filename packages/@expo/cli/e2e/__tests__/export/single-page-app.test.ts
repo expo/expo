@@ -83,7 +83,7 @@ describe('exports with single-page', () => {
       .querySelectorAll('script')
       .filter((script) => script.attributes.src)
       .forEach((script) => {
-        const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
+        const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src ?? ''), 'utf8');
 
         // Ensure the bundle is valid
         expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
@@ -136,7 +136,7 @@ describe('exports with single-page', () => {
     expect(globalPreload).toBeDefined();
     if (globalPreload) {
       expect(
-        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href), 'utf-8')
+        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href ?? ''), 'utf-8')
       ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
     }
 
@@ -144,7 +144,7 @@ describe('exports with single-page', () => {
     expect(testPreload).toBeDefined();
     if (testPreload) {
       expect(
-        fs.readFileSync(path.join(outputDir, testPreload.attributes.href), 'utf-8')
+        fs.readFileSync(path.join(outputDir, testPreload.attributes.href ?? ''), 'utf-8')
       ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
     }
   });

@@ -5,6 +5,7 @@ import EXUpdatesInterface
 
 internal class DisabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscription {
   func remove() {}
+  func getContext() -> Any? { return nil }
 }
 
 /**
@@ -28,7 +29,7 @@ public class DisabledAppController: InternalAppControllerInterface, UpdatesInter
   public var reloadScreenManager: Reloadable?
 
   public let isActiveController = false
-  private var isStarted: Bool = false
+  public private(set) var isStarted: Bool = false
   private var startupStartTime: DispatchTime?
   private var startupEndTime: DispatchTime?
 

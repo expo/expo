@@ -16,9 +16,7 @@ protocol DynamicModuleWrapperProtocol {
 
  - Warning: The ObjC name `EXViewModuleWrapper`, and the selectors `moduleName`, `viewName`,
    and `createViewModuleWrapperClassWithModule:appId:` are resolved at runtime via
-   `NSClassFromString` / `NSSelectorFromString` from the following ObjC files:
-   - `ExpoFabricViewObjC.mm`
-   - `ExpoBridgeModule.mm`
+   `NSClassFromString` / `NSSelectorFromString` from `ExpoFabricViewObjC.mm`.
    Renaming the class or these methods will break those call sites silently at runtime.
  */
 @objc(EXViewModuleWrapper)

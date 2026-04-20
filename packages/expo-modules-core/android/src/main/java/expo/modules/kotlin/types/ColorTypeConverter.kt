@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
@@ -384,6 +385,9 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
   }
 
   private fun colorFromDoubleArray(value: DoubleArray): Color {
+    if (value.size < 3) {
+      throw InvalidColorComponentsException(value.size)
+    }
     val alpha = value.getOrNull(3) ?: 1.0
     return Color.valueOf(value[0].toFloat(), value[1].toFloat(), value[2].toFloat(), alpha.toFloat())
   }
@@ -427,3 +431,7 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
 
   override fun isTrivial() = false
 }
+
+internal class InvalidColorComponentsException(count: Int) : CodedException(
+  message = "Color components array must contain at least 3 values (red, green, blue), but got $count"
+)

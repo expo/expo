@@ -1,3 +1,4 @@
+import Foundation
 internal import jsi
 internal import ExpoModulesJSI_Cxx
 
@@ -77,15 +78,29 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     // Some simple value kinds do not require the runtime.
     switch kind {
     case .undefined:
-      return .undefined()
+      return .undefined
     case .null:
-      return .null()
+      return .null
     case .bool:
       return .init(nil, facebook.jsi.Value(getBool()))
     case .number:
       return .init(nil, facebook.jsi.Value(getDouble()))
     default:
       FatalError.runtimeLost()
+    }
+  }
+
+  /**
+   Provides scoped access to a raw pointer to the underlying `facebook.jsi.Value`.
+   The pointer is valid only for the duration of the closure and must not be stored or escaped.
+   */
+  public func withUnsafePointee<R>(_ body: (UnsafeRawPointer) throws -> R) rethrows -> R {
+    // Using `withUnsafePointer(to:)` crashes the SIL optimizer in release builds
+    // due to a Swift compiler bug with C++ interop value types.
+    return try withUnsafeBytes(of: pointee) { bytes in
+      // Force-unwrap is safe — baseAddress is only nil for zero-length buffers,
+      // which can't happen since facebook.jsi.Value has a non-zero size.
+      return try body(bytes.baseAddress!)
     }
   }
 
@@ -145,6 +160,16 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
   }
 
   /**
+   Checks whether the value is an `ArrayBuffer`.
+   */
+  public func isArrayBuffer() -> Bool {
+    guard let jsiRuntime = runtime?.pointee else {
+      FatalError.runtimeLost()
+    }
+    return pointee.isObject() && pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
+  }
+
+  /**
    Checks whether the value is an instance of a global class of the given name.
    For example `value.is("Promise")` checks whether the value is a promise.
    */
@@ -161,9 +186,10 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
 
   // MARK: - Asserting conversions ("get functions")
 
+  @available(*, deprecated, message: "Use typed accessors (getBool, getInt, getString, getObject, getArray) instead")
   public func getAny() -> Any {
     if isUndefined() || isNull() {
-      return Any?.none as Any
+      return NSNull()
     }
     if isBool() {
       return getBool()
@@ -291,6 +317,17 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
   }
 
   /**
+   Returns the value as an array buffer, or asserts if it is not an array buffer.
+   */
+  public func getArrayBuffer() -> JavaScriptArrayBuffer {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    assert(isArrayBuffer(), "Value is not an array buffer")
+    return JavaScriptArrayBuffer(runtime, pointee.getObject(runtime.pointee).getArrayBuffer(runtime.pointee))
+  }
+
+  /**
    Returns the value as a promise, or asserts if it is not a promise.
    */
   @JavaScriptActor
@@ -384,6 +421,19 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     return getPromise()
   }
 
+  /**
+   Returns the value as a `JavaScriptArrayBuffer`.
+   Throws `TypeError` if the value is not an object or not an `ArrayBuffer`.
+   */
+  @JavaScriptActor
+  public func asArrayBuffer() throws(TypeError) -> JavaScriptArrayBuffer {
+    let object = try asObject()
+    guard object.isArrayBuffer() else {
+      throw TypeError(type: JavaScriptArrayBuffer.self)
+    }
+    return object.getArrayBuffer()
+  }
+
   // MARK: - Serializing
 
   /**
@@ -441,7 +491,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
    try obj.jsonStringify(replacer: replacer) // {"name":"Alice"}
 
    // Undefined returns nil
-   let undefined = JavaScriptValue.undefined()
+   let undefined = JavaScriptValue.undefined
    try undefined.jsonStringify() // nil
    ```
 
@@ -587,8 +637,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
    where a runtime is not available or needed. The resulting value can be passed to
    JavaScript functions or used in comparisons.
    */
-  public static func undefined() -> JavaScriptValue {
-    return JavaScriptValue(nil, facebook.jsi.Value.undefined())
+  public static var undefined: JavaScriptValue {
+    JavaScriptValue(nil, facebook.jsi.Value.undefined())
   }
 
   /**
@@ -596,8 +646,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
    where a runtime is not available or needed. The resulting value represents
    JavaScript's `null`, which is distinct from `undefined`.
    */
-  public static func null() -> JavaScriptValue {
-    return JavaScriptValue(nil, facebook.jsi.Value.null())
+  public static var null: JavaScriptValue {
+    JavaScriptValue(nil, facebook.jsi.Value.null())
   }
 
   /**
@@ -634,7 +684,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     if let value = value as? JavaScriptRepresentable {
       return value.toJavaScriptValue(in: runtime)
     }
-    return .undefined()
+    return .undefined
   }
 }
 

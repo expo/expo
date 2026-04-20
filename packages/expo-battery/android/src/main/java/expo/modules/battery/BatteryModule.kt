@@ -22,7 +22,8 @@ class BatteryModule : Module() {
     UNKNOWN(0),
     UNPLUGGED(1),
     CHARGING(2),
-    FULL(3)
+    FULL(3),
+    NOT_CHARGING(4)
   }
 
   override fun definition() = ModuleDefinition {
@@ -76,7 +77,8 @@ class BatteryModule : Module() {
       ) ?: return@AsyncFunction BatteryState.UNKNOWN.value
 
       val status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-      return@AsyncFunction batteryStatusNativeToJS(status).value
+      val plugged = batteryIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
+      return@AsyncFunction batteryStatusNativeToJS(status, plugged).value
     }
 
     AsyncFunction<Boolean>("isLowPowerModeEnabledAsync") {

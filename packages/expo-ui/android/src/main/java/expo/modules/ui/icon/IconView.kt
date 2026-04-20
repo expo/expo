@@ -35,7 +35,9 @@ import expo.modules.ui.ExpoUIModule
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class Source(
   @Field val uri: String,
   @Field val width: Int = 0,
@@ -45,7 +47,7 @@ data class Source(
 
 data class IconProps(
   val source: MutableState<Source?> = mutableStateOf(null),
-  val tintColor: MutableState<Color?> = mutableStateOf(null),
+  val tint: MutableState<Color?> = mutableStateOf(null),
   val size: MutableState<Int?> = mutableStateOf(null),
   val contentDescription: MutableState<String?> = mutableStateOf(null),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
@@ -68,7 +70,7 @@ class IconView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     val (source) = props.source
-    val (tint) = props.tintColor
+    val (tint) = props.tint
     val (iconSize) = props.size
     val (contentDescription) = props.contentDescription
     val (modifiers) = props.modifiers

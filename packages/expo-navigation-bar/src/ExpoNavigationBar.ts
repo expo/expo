@@ -8,8 +8,7 @@ export default {} as {
     listener: (event: NavigationBarVisibilityEvent) => void
   ) => EventSubscription;
 
-  setButtonStyleAsync: (style: 'light' | 'dark') => Promise<void>;
-
-  setVisibilityAsync: (visibility: NavigationBarVisibility) => Promise<void>;
+  setStyle: (style: 'light' | 'dark') => Promise<void>;
+  setHidden: (hidden: boolean) => Promise<void>;
   getVisibilityAsync: () => Promise<NavigationBarVisibility>;
 };

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { convertEntryPointToRelative } from '@expo/config/paths';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
@@ -34,7 +35,6 @@ import { copyPublicFolderAsync } from '../publicFolder';
 import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
-import { resolveRealEntryFilePath } from '../../utils/filePath';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -197,7 +197,7 @@ export async function exportEmbedBundleAndAssetsAsync(
       {
         // TODO: Re-enable when we get bytecode chunk splitting working again.
         splitChunks: false, //devServer.isReactServerComponentsEnabled,
-        mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
+        mainModuleName: convertEntryPointToRelative(projectRoot, options.entryFile),
         platform: options.platform,
         minify: options.minify,
         mode: options.dev ? 'development' : 'production',
@@ -278,9 +278,9 @@ export async function exportEmbedBundleAndAssetsAsync(
     return {
       files,
       bundle: {
-        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0].source,
+        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0]?.source!,
         // Can be optional when source maps aren't enabled.
-        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString(),
+        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString()!,
       },
       assets: bundles.assets,
     };
@@ -347,7 +347,8 @@ export async function createMetroServerAndBundleRequestAsync(
 
   const directBundleOptions = getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
     splitChunks: false,
-    mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
+    // TODO(@kitten): This currently has to match a filename exactly
+    mainModuleName: convertEntryPointToRelative(projectRoot, options.entryFile, null),
     platform: options.platform,
     minify: options.minify,
     mode: options.dev ? 'development' : 'production',
@@ -394,6 +395,8 @@ export async function exportEmbedAssetsAsync(
     });
 
     const dependencies = await server._bundler.getDependencies(
+      // NOTE(@kitten): This isn't an `entryFile`, but instead a `mainModuleName`, that's been renamed
+      // in `getMetroDirectBundleOptions`, where we've passed the already converted name
       [entryFile],
       transformOptions,
       resolverOptions,

@@ -11,7 +11,7 @@ class Exceptions {
    * An exception to throw when the view with the given tag and class cannot be found.
    */
   class ViewNotFound(
-    viewType: KClass<*>,
+    viewType: Class<*>,
     viewTag: Int
   ) : CodedException(message = "Unable to find the $viewType view with tag $viewTag")
 
