@@ -19,7 +19,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ReactNativeHostManager.shared.initialize(this.application)
+        ReactNativeHostManager.shared.initialize(this.application, listOf(BrownfieldTestPackage()))
 
         val rootLayout =
             LinearLayout(this).apply {
