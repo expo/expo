@@ -12,6 +12,7 @@
 - [iOS] Added `isLiveStream` option to `AudioLockScreenOptions` to hide duration and scrub bar for live streams. ([#43088](https://github.com/expo/expo/pull/43088) by [@robrechtme](https://github.com/robrechtme))
 - [android] Add support for playsInSilentMode ([#43117](https://github.com/expo/expo/pull/43117) by [@blazejkustra](https://github.com/blazejkustra))
 - Added `isLive`, `currentOffsetFromLive`, and `error` fields to `AudioStatus` for live stream detection and error handling. ([#44441](https://github.com/expo/expo/pull/44441) by [@alanjhughes](https://github.com/alanjhughes))
+- [android] Add `'ogg'` to `AndroidOutputFormat` and `'opus'` to `AndroidAudioEncoder`, mapped to `MediaRecorder.OutputFormat.OGG` / `MediaRecorder.AudioEncoder.OPUS` on API 29+. Enables crash-safe recordings on Android 10 and above. ([#44926](https://github.com/expo/expo/pull/44926) by [@pvinis](https://github.com/pvinis))
 
 ### 🐛 Bug fixes
 

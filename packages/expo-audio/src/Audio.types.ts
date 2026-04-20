@@ -321,7 +321,8 @@ export type AndroidOutputFormat =
   | 'amrwb'
   | 'aac_adts'
   | 'mpeg2ts'
-  | 'webm';
+  | 'webm'
+  | 'ogg';
 
 /**
  * Audio encoder options for Android recording.
@@ -331,7 +332,14 @@ export type AndroidOutputFormat =
  *
  * @platform android
  */
-export type AndroidAudioEncoder = 'default' | 'amr_nb' | 'amr_wb' | 'aac' | 'he_aac' | 'aac_eld';
+export type AndroidAudioEncoder =
+  | 'default'
+  | 'amr_nb'
+  | 'amr_wb'
+  | 'aac'
+  | 'he_aac'
+  | 'aac_eld'
+  | 'opus';
 
 /**
  * Bit rate strategies for audio encoding.

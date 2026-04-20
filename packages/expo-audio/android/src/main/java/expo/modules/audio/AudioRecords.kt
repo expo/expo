@@ -60,12 +60,19 @@ enum class AndroidOutputFormat(val value: String) : Enumerable {
   AMR_WB("amrwb"),
   AAC_ADTS("aac_adts"),
   MPEG2TS("mpeg2ts"),
-  WEBM("webm");
+  WEBM("webm"),
+  OGG("ogg");
 
   fun toMediaOutputFormat(): Int {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       if (this == MPEG2TS) {
         return MediaRecorder.OutputFormat.MPEG_2_TS
+      }
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      if (this == OGG) {
+        return MediaRecorder.OutputFormat.OGG
       }
     }
 
@@ -88,15 +95,25 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
   AMR_WB("amr_wb"),
   AAC("aac"),
   HE_AAC("he_aac"),
-  AAC_ELD("aac_eld");
+  AAC_ELD("aac_eld"),
+  OPUS("opus");
 
-  fun toMediaEncoding() = when (this) {
-    DEFAULT -> MediaRecorder.AudioEncoder.DEFAULT
-    AMR_NB -> MediaRecorder.AudioEncoder.AMR_NB
-    AMR_WB -> MediaRecorder.AudioEncoder.AMR_WB
-    AAC -> MediaRecorder.AudioEncoder.AAC
-    HE_AAC -> MediaRecorder.AudioEncoder.HE_AAC
-    AAC_ELD -> MediaRecorder.AudioEncoder.AAC_ELD
+  fun toMediaEncoding(): Int {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      if (this == OPUS) {
+        return MediaRecorder.AudioEncoder.OPUS
+      }
+    }
+
+    return when (this) {
+      DEFAULT -> MediaRecorder.AudioEncoder.DEFAULT
+      AMR_NB -> MediaRecorder.AudioEncoder.AMR_NB
+      AMR_WB -> MediaRecorder.AudioEncoder.AMR_WB
+      AAC -> MediaRecorder.AudioEncoder.AAC
+      HE_AAC -> MediaRecorder.AudioEncoder.HE_AAC
+      AAC_ELD -> MediaRecorder.AudioEncoder.AAC_ELD
+      else -> MediaRecorder.AudioEncoder.DEFAULT
+    }
   }
 }
 
