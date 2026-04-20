@@ -51,14 +51,7 @@ If you do not already have signing credentials locally, see [App credentials](/a
 Re-sign the repacked APK with a keystore:
 
 <Terminal
-  cmd={[
-    '$ npx @expo/repack-app \\',
-    '  --platform android \\',
-    '  --source-app MyApp.apk \\',
-    '  --ks keystore.jks \\',
-    '  --ks-key-alias my-alias',
-  ]}
-  cmdCopy="npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias"
+  cmd={[ '$ npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias' ]}
 />
 
 See the [Android-specific options](#android-specific-options) for keystore password flags and other settings.
