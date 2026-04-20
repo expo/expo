@@ -15,16 +15,64 @@ if [[ -d "$XCFRAMEWORK_PATH" ]]; then
   exit 0
 fi
 
-SLICE_DIR="${XCFRAMEWORK_PATH}/ios-arm64_x86_64-simulator/${PACKAGE_NAME}.framework"
-mkdir -p "$SLICE_DIR"
+# Platform slices the podspec supports. CocoaPods reads Info.plist at
+# `pod install` time to generate per-slice cases in its xcframework copy
+# script, so every SDK we want to build for must appear here.
+#
+# Format: slice_id|platform|variant|archs
+SLICES=(
+  "ios-arm64|ios||arm64"
+  "ios-arm64_x86_64-simulator|ios|simulator|arm64 x86_64"
+  "tvos-arm64|tvos||arm64"
+  "tvos-arm64_x86_64-simulator|tvos|simulator|arm64 x86_64"
+)
 
-# Create a minimal dynamic library so CocoaPods detects it as dynamic.
-# This stub is replaced by the real xcframework at build time.
+# The stub binary is only inspected by CocoaPods at install time to detect
+# that this is a dynamic framework — it is never linked against (the real
+# xcframework replaces it before the sources compile). Compile it once and
+# reuse the same binary for every slice.
+STUB_SOURCE="${XCFRAMEWORK_PATH}/.stub-binary"
+mkdir -p "$XCFRAMEWORK_PATH"
 echo "" | clang -x c - -dynamiclib \
-  -o "${SLICE_DIR}/${PACKAGE_NAME}" \
-  -target arm64-apple-ios-simulator \
-  -isysroot "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
+  -o "$STUB_SOURCE" \
   -install_name "@rpath/${PACKAGE_NAME}.framework/${PACKAGE_NAME}"
+
+available_libraries=""
+for slice in "${SLICES[@]}"; do
+  IFS='|' read -r slice_id platform variant archs <<<"$slice"
+  slice_dir="${XCFRAMEWORK_PATH}/${slice_id}/${PACKAGE_NAME}.framework"
+  mkdir -p "$slice_dir"
+  cp "$STUB_SOURCE" "${slice_dir}/${PACKAGE_NAME}"
+
+  arch_entries=""
+  for arch in $archs; do
+    arch_entries+="        <string>${arch}</string>
+"
+  done
+
+  variant_entry=""
+  if [[ -n "$variant" ]]; then
+    variant_entry="      <key>SupportedPlatformVariant</key>
+      <string>${variant}</string>
+"
+  fi
+
+  available_libraries+="    <dict>
+      <key>BinaryPath</key>
+      <string>${PACKAGE_NAME}.framework/${PACKAGE_NAME}</string>
+      <key>LibraryIdentifier</key>
+      <string>${slice_id}</string>
+      <key>LibraryPath</key>
+      <string>${PACKAGE_NAME}.framework</string>
+      <key>SupportedArchitectures</key>
+      <array>
+${arch_entries}      </array>
+      <key>SupportedPlatform</key>
+      <string>${platform}</string>
+${variant_entry}    </dict>
+"
+done
+rm -f "$STUB_SOURCE"
 
 cat > "${XCFRAMEWORK_PATH}/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -33,24 +81,7 @@ cat > "${XCFRAMEWORK_PATH}/Info.plist" <<PLIST
 <dict>
   <key>AvailableLibraries</key>
   <array>
-    <dict>
-      <key>BinaryPath</key>
-      <string>${PACKAGE_NAME}.framework/${PACKAGE_NAME}</string>
-      <key>LibraryIdentifier</key>
-      <string>ios-arm64_x86_64-simulator</string>
-      <key>LibraryPath</key>
-      <string>${PACKAGE_NAME}.framework</string>
-      <key>SupportedArchitectures</key>
-      <array>
-        <string>arm64</string>
-        <string>x86_64</string>
-      </array>
-      <key>SupportedPlatform</key>
-      <string>ios</string>
-      <key>SupportedPlatformVariant</key>
-      <string>simulator</string>
-    </dict>
-  </array>
+${available_libraries}  </array>
   <key>CFBundlePackageType</key>
   <string>XFWK</string>
   <key>XCFrameworkFormatVersion</key>
