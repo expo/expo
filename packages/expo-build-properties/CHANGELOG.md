@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix `fmt` consteval compilation errors when building React Native from source with Xcode 26+. ([#44229](https://github.com/expo/expo/issues/44229) by [@Nedunchezhiyan-M](https://github.com/Nedunchezhiyan-M))
+
 ### 💡 Others
 
 - Mark `ios.deploymentTarget` as deprecated in favor of the built-in `ios.deploymentTarget` property (SDK 56 and greater). ([#43700](https://github.com/expo/expo/pull/43700) by [@EvanBacon](https://github.com/EvanBacon))

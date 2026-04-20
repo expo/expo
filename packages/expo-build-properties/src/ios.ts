@@ -2,9 +2,12 @@ import {
   ConfigPlugin,
   IOSConfig,
   XcodeProject,
+  withDangerousMod,
   withInfoPlist,
   withXcodeProject,
 } from 'expo/config-plugins';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import { PluginConfigType, resolveConfigValue } from './pluginConfig';
 
@@ -80,6 +83,57 @@ export const withIosInfoPlist: ConfigPlugin<PluginConfigType> = (config, props) 
   }
 
   return config;
+};
+
+const FMT_CONSTEVAL_FIX_MARKER = 'FMT_USE_CONSTEVAL=0';
+const FMT_CONSTEVAL_FIX_SNIPPET = `
+    # Fix fmt consteval compilation errors with Apple Clang in Xcode 26+
+    installer.pods_project.targets.select { |t| t.name == 'fmt' }.each do |t|
+      t.build_configurations.each do |c|
+        flags = c.build_settings['OTHER_CPLUSPLUSFLAGS'] || '$(inherited)'
+        unless flags.include?('FMT_USE_CONSTEVAL')
+          c.build_settings['OTHER_CPLUSPLUSFLAGS'] = "\#{flags} -DFMT_USE_CONSTEVAL=0"
+        end
+      end
+    end`;
+
+export function addFmtConstevalFix(podfile: string): string {
+  if (podfile.includes(FMT_CONSTEVAL_FIX_MARKER)) {
+    return podfile;
+  }
+  const lines = podfile.split('\n');
+  const postInstallIndex = lines.findIndex((line) =>
+    line.includes('post_install do |installer|')
+  );
+  if (postInstallIndex === -1) {
+    return podfile;
+  }
+  const insertBefore = lines.findIndex(
+    (line, index) => line.trim() === 'end' && index > postInstallIndex
+  );
+  if (insertBefore === -1) {
+    return podfile;
+  }
+  lines.splice(insertBefore, 0, FMT_CONSTEVAL_FIX_SNIPPET);
+  return lines.join('\n');
+}
+
+export const withIosFmtConsteval: ConfigPlugin<PluginConfigType> = (config, props) => {
+  if (!resolveConfigValue(props, 'ios', 'buildReactNativeFromSource')) {
+    return config;
+  }
+  return withDangerousMod(config, [
+    'ios',
+    async (config) => {
+      const podfilePath = path.join(config.modRequest.platformProjectRoot, 'Podfile');
+      if (!fs.existsSync(podfilePath)) {
+        return config;
+      }
+      const podfile = fs.readFileSync(podfilePath, 'utf8');
+      fs.writeFileSync(podfilePath, addFmtConstevalFix(podfile), 'utf8');
+      return config;
+    },
+  ]);
 };
 
 const withIosReactNativeReleaseLevel: ConfigPlugin<{

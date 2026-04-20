@@ -9,7 +9,12 @@ import {
   withAndroidQueries,
   withAndroidSettingsGradle,
 } from './android';
-import { withIosBuildProperties, withIosDeploymentTarget, withIosInfoPlist } from './ios';
+import {
+  withIosBuildProperties,
+  withIosDeploymentTarget,
+  withIosFmtConsteval,
+  withIosInfoPlist,
+} from './ios';
 import { PluginConfigType, validateConfig } from './pluginConfig';
 
 /**
@@ -39,6 +44,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   config = withIosBuildProperties(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);
   config = withIosInfoPlist(config, pluginConfig);
+  config = withIosFmtConsteval(config, pluginConfig);
 
   return config;
 };
