@@ -1,5 +1,13 @@
 import ExpoModulesCore
 
+struct Point: Record {
+  @Field
+  var x: Double = 0
+
+  @Field
+  var y: Double = 0
+}
+
 public final class BenchmarkingExpoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("BenchmarkingExpoModule")
@@ -16,6 +24,10 @@ public final class BenchmarkingExpoModule: Module {
 
     Function("foldArray") { (array: [Double]) in
       return array.reduce(0.0, +)
+    }
+
+    Function("echoObject") { (point: Point) in
+      return point
     }
   }
 }
