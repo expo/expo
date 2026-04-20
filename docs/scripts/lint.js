@@ -144,8 +144,6 @@ let failed = false;
 if (oxfmtResult.status !== 0) {
   console.error('\n\x1b[1;31moxfmt failed:\x1b[0m');
   if (oxfmtResult.output) {
-    // oxfmt lists each unformatted file on its own line like `path/to/file.ts (3ms)`.
-    // In CI, surface them as GitHub Actions annotations so they show up inline on PRs.
     if (isCI) {
       const fileRe = /^(.+?) \(\d+(?:\.\d+)?[mnµ]?s\)\s*$/gm;
       const cwd = process.cwd();
@@ -157,8 +155,6 @@ if (oxfmtResult.status !== 0) {
         );
       }
     }
-    // oxfmt's default hint ("Run without `--check` to fix.") is cryptic outside of oxfmt itself —
-    // point at the repo's actual script instead.
     const output = oxfmtResult.output.replace(
       /Run without `--check` to fix\./g,
       'Run `yarn format` to fix.'
