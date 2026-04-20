@@ -42,6 +42,9 @@ export default {
     async getCalendarById(calendarId) {
         throw new Error('Calendar API is not available on web');
     },
+    async presentPicker() {
+        throw new Error('Calendar API is not available on web');
+    },
     async getEventById(eventId) {
         throw new Error('Calendar API is not available on web');
     },

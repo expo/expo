@@ -234,6 +234,22 @@ export async function createCalendar(details: Partial<Calendar> = {}): Promise<E
 }
 
 /**
+ * Presents the OS calendar picker and returns the selected calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object or `null` when the picker is cancelled.
+ * @platform ios
+ */
+export async function presentPicker(): Promise<ExpoCalendar | null> {
+  if (!InternalExpoCalendar.presentPicker) {
+    throw new UnavailabilityError('Calendar', 'presentPicker');
+  }
+  const calendar = await InternalExpoCalendar.presentPicker();
+  if (calendar) {
+    Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+  }
+  return calendar;
+}
+
+/**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
  * @param calendars An array of calendar IDs (`string[]`) or [`ExpoCalendar`](#expocalendar) objects to search for events.
