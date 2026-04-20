@@ -62,7 +62,15 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Resolve SDK version
-        run: echo "SDK_VERSION=$(node -p \"require('./packages/expo/package.json').version\")" >> $GITHUB_ENV
+        run: |
+          SDK_VERSION="$(node -p "require('./packages/expo/package.json').version")"
+
+          if [[ -z "$SDK_VERSION" ]]; then
+            echo "Failed to resolve SDK version"
+            exit 1
+          fi
+
+          echo "SDK_VERSION=$SDK_VERSION" >> "$GITHUB_ENV"
 
       - name: Decide whether to publish XCFramework archive
         env:
@@ -113,15 +121,7 @@ jobs:
           FILE_LIST="$RUNNER_TEMP/xcframeworks-${{ matrix.flavor }}.txt"
 
           cd packages/precompile/.build
-          shopt -s globstar nullglob
-          files=(**/"${FLAVOR_LOWER}"/xcframeworks/*.tar.gz)
-
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No XCFramework tarballs found for flavor ${{ matrix.flavor }}"
-            exit 1
-          fi
-
-          printf '%s\n' "${files[@]}" | sort > "$FILE_LIST"
+          find . -type f -path "./*/output/${FLAVOR_LOWER}/xcframeworks/*.tar.gz" | sort > "$FILE_LIST"
 
           if [ ! -s "$FILE_LIST" ]; then
             echo "No XCFramework tarballs found for flavor ${{ matrix.flavor }}"
@@ -133,20 +133,20 @@ jobs:
           echo "THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH=$ARCHIVE_PATH" >> $GITHUB_ENV
 
       - name: Authenticate to Google Cloud
-        if: ${{ !cancelled() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        if: ${{ success() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
         uses: google-github-actions/auth@v3
         with:
           project_id: exponentjs
           workload_identity_provider: projects/321830142373/locations/global/workloadIdentityPools/github/providers/expo
 
       - name: Setup gcloud
-        if: ${{ !cancelled() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        if: ${{ success() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: exponentjs
 
       - name: Upload XCFramework zip to GCS
-        if: ${{ !cancelled() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        if: ${{ success() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
         run: |
           gcloud storage cp \
             "$THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH" \
