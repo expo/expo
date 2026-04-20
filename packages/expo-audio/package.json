@@ -32,14 +32,14 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@types/react": "~19.2.0",
     "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "workspace:*",
+    "expo-asset": "workspace:*",
     "react": "*",
-    "react-native": "*",
-    "expo-asset": "workspace:*"
+    "react-native": "*"
   }
 }

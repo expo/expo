@@ -47,8 +47,8 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "expo-manifests": "workspace:*",
-    "expo-updates": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "expo-updates": "workspace:*"
   },
   "peerDependencies": {
     "expo": "workspace:*",

@@ -47,8 +47,8 @@
   },
   "devDependencies": {
     "eslint": "^9.18.0",
-    "eslint8": "npm:eslint@^8.57.1",
     "eslint-plugin-prettier": "^5.2.1",
+    "eslint8": "npm:eslint@^8.57.1",
     "prettier": "^3.4.2",
     "react": "19.2.3",
     "react-native": "0.85.0"

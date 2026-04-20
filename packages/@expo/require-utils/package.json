@@ -41,8 +41,8 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
-    "@types/babel__core": "^7.20.5",
     "@types/babel__code-frame": "^7.27.0",
+    "@types/babel__core": "^7.20.5",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0",

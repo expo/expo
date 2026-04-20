@@ -38,16 +38,31 @@ patchedDependencies:
 importers:
 
   .:
-    dependencies:
+    devDependencies:
+      '@types/jest':
+        specifier: ^29.5.12
+        version: 29.5.14
+      '@vercel/ncc':
+        specifier: ^0.38.4
+        version: 0.38.4
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
       expo-asset:
         specifier: workspace:*
         version: link:packages/expo-asset
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:packages/expo-module-scripts
       expo-modules-core:
         specifier: workspace:*
         version: link:packages/expo-modules-core
+      expotools:
+        specifier: workspace:*
+        version: link:tools
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3))
       jest-expo:
         specifier: workspace:*
         version: link:packages/jest-expo
@@ -57,22 +72,6 @@ importers:
       prettier:
         specifier: ~3.5.3
         version: 3.5.3
-    devDependencies:
-      '@types/jest':
-        specifier: ^29.5.12
-        version: 29.5.14
-      '@vercel/ncc':
-        specifier: ^0.38.4
-        version: 0.38.4
-      expo-module-scripts:
-        specifier: workspace:*
-        version: link:packages/expo-module-scripts
-      expotools:
-        specifier: workspace:*
-        version: link:tools
-      jest:
-        specifier: ^29.7.0
-        version: 29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3))
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)
@@ -18304,7 +18303,9 @@ snapshots:
       metro-runtime: 0.84.2
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 

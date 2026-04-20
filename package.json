@@ -30,24 +30,22 @@
     "@types/babel__traverse": "^7.20.7",
     "util": "~0.12.4"
   },
-  "dependencies": {
-    "eslint": "^8.57.1",
-    "expo-asset": "workspace:*",
-    "expo-modules-core": "workspace:*",
-    "jest-expo": "workspace:*",
-    "jsc-android": "^250231.0.0",
-    "prettier": "~3.5.3"
-  },
-  "volta": {
-    "node": "22.14.0"
-  },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@vercel/ncc": "^0.38.4",
+    "eslint": "^8.57.1",
+    "expo-asset": "workspace:*",
     "expo-module-scripts": "workspace:*",
+    "expo-modules-core": "workspace:*",
     "expotools": "workspace:*",
     "jest": "^29.7.0",
+    "jest-expo": "workspace:*",
+    "jsc-android": "^250231.0.0",
+    "prettier": "~3.5.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
+  },
+  "volta": {
+    "node": "22.14.0"
   }
 }

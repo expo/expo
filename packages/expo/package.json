@@ -115,8 +115,8 @@
     "@expo/dom-webview": "workspace:*",
     "@expo/metro-runtime": "workspace:*",
     "react": "*",
-    "react-native": "*",
     "react-dom": "*",
+    "react-native": "*",
     "react-native-web": "*",
     "react-native-webview": "*"
   },
