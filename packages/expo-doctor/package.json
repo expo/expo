@@ -41,8 +41,8 @@
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",
     "@types/getenv": "^1.0.0",
-    "@types/semver": "^7.5.8",
-    "@vercel/ncc": "0.38.3",
+    "@types/semver": "^7.7.1",
+    "@vercel/ncc": "0.38.4",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
     "expo-modules-autolinking": "workspace:*",
@@ -54,7 +54,7 @@
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
     "resolve-workspace-root": "^2.0.0",
-    "semver": "7.5.4",
+    "semver": "7.7.4",
     "terminal-link": "^2.1.1"
   }
 }

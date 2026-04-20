@@ -1613,8 +1613,8 @@ importers:
         specifier: ^2.4.1
         version: 2.99.1
       lodash:
-        specifier: ^4.17.19
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       path:
         specifier: ^0.12.7
         version: 0.12.7
@@ -1800,7 +1800,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.7.4
       send:
         specifier: ^0.19.0
@@ -1906,7 +1906,7 @@ importers:
         specifier: ^1.20.2
         version: 1.20.6
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       '@types/send':
         specifier: ^0.17.1
@@ -2002,7 +2002,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.1
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.7.4
       slugify:
         specifier: ^1.3.4
@@ -2018,7 +2018,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2054,7 +2054,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: ^7.5.4
+        specifier: ^7.7.4
         version: 7.7.4
       slugify:
         specifier: ^1.6.6
@@ -2079,7 +2079,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.7.0
+        specifier: ^7.7.1
         version: 7.7.1
       '@types/xml2js':
         specifier: ~0.4.11
@@ -2221,7 +2221,7 @@ importers:
         specifier: ^22.14.0
         version: 22.19.15
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       expo:
         specifier: workspace:*
@@ -2260,14 +2260,14 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.7.4
     devDependencies:
       '@types/getenv':
         specifier: ^1.0.0
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.0.0
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2637,7 +2637,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.7.4
     devDependencies:
       '@babel/cli':
@@ -2650,7 +2650,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2933,7 +2933,7 @@ importers:
         specifier: 2.0.14
         version: 2.0.14
       '@vercel/ncc':
-        specifier: ^0.38.3
+        specifier: ^0.38.4
         version: 0.38.4
       arg:
         specifier: ^5.0.2
@@ -3189,8 +3189,8 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3))
       ts-jest:
-        specifier: ^29.1.2
-        version: 29.4.6(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)))(typescript@5.9.3)
+        specifier: ^29.4.9
+        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)))(typescript@5.9.3)
 
   packages/expo:
     dependencies:
@@ -3652,14 +3652,14 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.7.4
     devDependencies:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
       '@types/semver':
-        specifier: ^7.0.0
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -3962,11 +3962,11 @@ importers:
         specifier: ^1.0.0
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       '@vercel/ncc':
-        specifier: 0.38.3
-        version: 0.38.3
+        specifier: 0.38.4
+        version: 0.38.4
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
@@ -4001,8 +4001,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.1
       semver:
-        specifier: 7.5.4
-        version: 7.5.4
+        specifier: 7.7.4
+        version: 7.7.4
       terminal-link:
         specifier: ^2.1.1
         version: 2.1.1
@@ -4573,8 +4573,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.1
       ts-jest:
-        specifier: ~29.0.4
-        version: 29.0.5(@babel/core@7.29.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)))(typescript@5.9.3)
+        specifier: ~29.4.9
+        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)))(typescript@5.9.3)
       typescript:
         specifier: ^5.9.2
         version: 5.9.3
@@ -5506,7 +5506,7 @@ importers:
         specifier: ~19.2.0
         version: 19.2.14
       '@vercel/ncc':
-        specifier: ^0.38.3
+        specifier: ^0.38.4
         version: 0.38.4
       expo-module-scripts:
         specifier: workspace:*
@@ -5667,7 +5667,7 @@ importers:
         specifier: ^2.0.6
         version: 2.4.9
       '@types/semver':
-        specifier: ^7.0.0
+        specifier: ^7.7.1
         version: 7.7.1
       chalk:
         specifier: ^4.1.2
@@ -5688,8 +5688,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: 7.5.4
-        version: 7.5.4
+        specifier: 7.7.4
+        version: 7.7.4
       terminal-link:
         specifier: ^2.1.1
         version: 2.1.1
@@ -5736,8 +5736,8 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       lodash:
-        specifier: ^4.17.19
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       react-native:
         specifier: 0.85.0
         version: 0.85.0(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
@@ -5939,8 +5939,8 @@ importers:
         specifier: ^0.1.7
         version: 0.1.7
       lodash:
-        specifier: ^4.17.23
-        version: 4.17.23
+        specifier: ^4.18.1
+        version: 4.18.1
       marked:
         specifier: ^1.1.0
         version: 1.2.9
@@ -5975,7 +5975,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       semver:
-        specifier: ^7.6.3
+        specifier: ^7.7.4
         version: 7.7.4
       strip-ansi:
         specifier: ^6.0.0
@@ -6030,7 +6030,7 @@ importers:
         specifier: ^8.0.7
         version: 8.0.9
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       '@types/uuid':
         specifier: ^9.0.2
@@ -9203,10 +9203,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@vercel/ncc@0.38.3':
-    resolution: {integrity: sha512-rnK6hJBS6mwc+Bkab+PGPs9OiS0i/3kdTO+CkI8V0/VrW3vmz7O2Pxjw/owOlmo6PKEIxRSeZKv/kuL9itnpYA==}
-    hasBin: true
-
   '@vercel/ncc@0.38.4':
     resolution: {integrity: sha512-8LwjnlP39s08C08J5NstzriPvW1SP8Zfpp1BvC2sI35kPeZnHfxVkCwu4/+Wodgnd60UtT1n8K8zw+Mp7J9JmQ==}
     hasBin: true
@@ -11372,8 +11368,8 @@ packages:
     resolution: {integrity: sha512-BL/Xd/T9baO6NFzoMpiMD7YUZ62R6viR5tp/MULVEnbYJXZA//kRNW7J0j1w/wXArgL0sCxhDfK5dczSKn3+cg==}
     engines: {node: '>= 10.x'}
 
-  handlebars@4.7.8:
-    resolution: {integrity: sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==}
+  handlebars@4.7.9:
+    resolution: {integrity: sha512-4E71E0rpOaQuJR2A3xDZ+GM1HyWYv1clR58tC8emQNeQe3RH7MAzSbat+V0wG78LQBo6m6bzSG/L4pBuCsgnUQ==}
     engines: {node: '>=0.4.7'}
     hasBin: true
 
@@ -12457,6 +12453,9 @@ packages:
 
   lodash@4.17.23:
     resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
+
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   log-symbols@2.2.0:
     resolution: {integrity: sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==}
@@ -14163,11 +14162,6 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.5.4:
-    resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.7.4:
     resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
     engines: {node: '>=10'}
@@ -14753,29 +14747,8 @@ packages:
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
-  ts-jest@29.0.5:
-    resolution: {integrity: sha512-PL3UciSgIpQ7f6XjVOmbi96vmDHUqAyqDr8YxzopDqX3kfgYtX1cuNeBjP+L9sFXi6nzsGGA6R3fP3DDDJyrxA==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    hasBin: true
-    peerDependencies:
-      '@babel/core': '>=7.0.0-beta.0 <8'
-      '@jest/types': ^29.0.0
-      babel-jest: ^29.0.0
-      esbuild: '*'
-      jest: ^29.0.0
-      typescript: '>=4.3'
-    peerDependenciesMeta:
-      '@babel/core':
-        optional: true
-      '@jest/types':
-        optional: true
-      babel-jest:
-        optional: true
-      esbuild:
-        optional: true
-
-  ts-jest@29.4.6:
-    resolution: {integrity: sha512-fSpWtOO/1AjSNQguk43hb/JCo16oJDnMJf3CdEGNkqsEX3t0KX96xvyX1D7PfLCpVoKu4MfVrqUkFyblYoY4lA==}
+  ts-jest@29.4.9:
+    resolution: {integrity: sha512-LTb9496gYPMCqjeDLdPrKuXtncudeV1yRZnF4Wo5l3SFi0RYEnYRNgMrFIdg+FHvfzjCyQk1cLncWVqiSX+EvQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -14786,7 +14759,7 @@ packages:
       esbuild: '*'
       jest: ^29.0.0 || ^30.0.0
       jest-util: ^29.0.0 || ^30.0.0
-      typescript: '>=4.3 <6'
+      typescript: '>=4.3 <7'
     peerDependenciesMeta:
       '@babel/core':
         optional: true
@@ -18304,7 +18277,9 @@ snapshots:
       metro-runtime: 0.84.2
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -18497,7 +18472,7 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 1.8.6
       array-from: 2.1.1
-      lodash: 4.17.23
+      lodash: 4.18.1
 
   '@sinonjs/text-encoding@0.7.3': {}
 
@@ -19340,8 +19315,6 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
-
-  '@vercel/ncc@0.38.3': {}
 
   '@vercel/ncc@0.38.4': {}
 
@@ -21103,7 +21076,7 @@ snapshots:
   eslint-plugin-lodash@7.4.0(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
-      lodash: 4.17.23
+      lodash: 4.18.1
 
   eslint-plugin-n@17.24.0(eslint@8.57.1)(typescript@5.9.3):
     dependencies:
@@ -22095,7 +22068,7 @@ snapshots:
 
   graphql@15.10.1: {}
 
-  handlebars@4.7.8:
+  handlebars@4.7.9:
     dependencies:
       minimist: 1.2.8
       neo-async: 2.6.2
@@ -22341,7 +22314,7 @@ snapshots:
       cli-cursor: 3.1.0
       cli-width: 3.0.0
       figures: 3.2.0
-      lodash: 4.17.23
+      lodash: 4.18.1
       mute-stream: 0.0.8
       ora: 5.4.1
       run-async: 2.4.1
@@ -23268,7 +23241,7 @@ snapshots:
       '@types/lodash': 4.17.24
       is-glob: 4.0.3
       js-yaml: 4.1.1
-      lodash: 4.17.23
+      lodash: 4.18.1
       minimist: 1.2.8
       prettier: 3.5.3
       tinyglobby: 0.2.15
@@ -23312,7 +23285,7 @@ snapshots:
   junit-report-builder@1.3.3:
     dependencies:
       date-format: 0.0.2
-      lodash: 4.17.23
+      lodash: 4.18.1
       mkdirp: 0.5.6
       xmlbuilder: 10.1.1
 
@@ -23491,6 +23464,8 @@ snapshots:
   lodash.throttle@4.1.1: {}
 
   lodash@4.17.23: {}
+
+  lodash@4.18.1: {}
 
   log-symbols@2.2.0:
     dependencies:
@@ -25414,10 +25389,6 @@ snapshots:
 
   semver@6.3.1: {}
 
-  semver@7.5.4:
-    dependencies:
-      lru-cache: 6.0.0
-
   semver@7.7.4: {}
 
   send@0.19.2:
@@ -26133,28 +26104,11 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-jest@29.0.5(@babel/core@7.29.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)))(typescript@5.9.3):
+  ts-jest@29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)))(typescript@5.9.3):
     dependencies:
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3))
-      jest-util: 29.7.0
-      json5: 2.2.3
-      lodash.memoize: 4.1.2
-      make-error: 1.3.6
-      semver: 7.7.4
-      typescript: 5.9.3
-      yargs-parser: 21.1.1
-    optionalDependencies:
-      '@babel/core': 7.29.0
-      '@jest/types': 29.6.3
-      babel-jest: 29.7.0(@babel/core@7.29.0)
-
-  ts-jest@29.4.6(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)))(typescript@5.9.3):
-    dependencies:
-      bs-logger: 0.2.6
-      fast-json-stable-stringify: 2.1.0
-      handlebars: 4.7.8
+      handlebars: 4.7.9
       jest: 29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3))
       json5: 2.2.3
       lodash.memoize: 4.1.2
@@ -26555,61 +26509,61 @@ snapshots:
 
   victory-area@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
 
   victory-axis@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-bar@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
 
   victory-box-plot@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
 
   victory-brush-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
 
   victory-brush-line@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
 
   victory-candlestick@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-canvas@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-bar: 37.3.6(react@19.2.3)
       victory-core: 37.3.6(react@19.2.3)
 
   victory-chart@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-axis: 37.3.6(react@19.2.3)
@@ -26619,14 +26573,14 @@ snapshots:
 
   victory-core@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-vendor: 37.3.6
 
   victory-create-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-brush-container: 37.3.6(react@19.2.3)
       victory-core: 37.3.6(react@19.2.3)
@@ -26637,19 +26591,19 @@ snapshots:
 
   victory-cursor-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-errorbar@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-group@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
@@ -26657,7 +26611,7 @@ snapshots:
 
   victory-histogram@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-bar: 37.3.6(react@19.2.3)
@@ -26666,13 +26620,13 @@ snapshots:
 
   victory-legend@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-line@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
@@ -26713,40 +26667,40 @@ snapshots:
 
   victory-pie@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
 
   victory-polar-axis@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-scatter@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-selection-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-shared-events@37.3.6(react@19.2.3):
     dependencies:
       json-stringify-safe: 5.0.1
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
 
   victory-stack@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
@@ -26754,7 +26708,7 @@ snapshots:
 
   victory-tooltip@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
@@ -26778,7 +26732,7 @@ snapshots:
   victory-voronoi-container@37.3.6(react@19.2.3):
     dependencies:
       delaunay-find: 0.0.6
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
@@ -26787,13 +26741,13 @@ snapshots:
   victory-voronoi@37.3.6(react@19.2.3):
     dependencies:
       d3-voronoi: 1.1.4
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-zoom-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 

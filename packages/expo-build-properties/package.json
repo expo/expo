@@ -38,10 +38,10 @@
   "dependencies": {
     "@expo/schema-utils": "workspace:^55.0.2",
     "resolve-from": "^5.0.0",
-    "semver": "^7.6.0"
+    "semver": "^7.7.4"
   },
   "devDependencies": {
-    "@types/semver": "^7.0.0",
+    "@types/semver": "^7.7.1",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   },
