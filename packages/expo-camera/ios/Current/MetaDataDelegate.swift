@@ -1,34 +1,37 @@
-#if canImport(ZXingObjC)
 import AVFoundation
-import ZXingObjC
+import CoreImage
 
 class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   private var settings: [String: [AVMetadataObject.ObjectType]]
   private var previewLayer: AVCaptureVideoPreviewLayer?
-  private var zxingBarcodeReaders: [AVMetadataObject.ObjectType: ZXReader]
-  private var zxingEnabled = true
-  private var zxingFPSProcessed = 6.0
+  private let barcodeProvider: ExpoBarcodeScannerProvider
+  private var barcodeProviderEnabled = true
+  private var barcodeProviderFPSProcessed = 6.0
   private var lastFrameTimeStamp = 0.0
   private let responseHandler: BarcodeScanningResponseHandler
+
+  private let ciContext = CIContext()
 
   init(
     settings: [String: [AVMetadataObject.ObjectType]],
     previewLayer: AVCaptureVideoPreviewLayer?,
-    zxingBarcodeReaders: [AVMetadataObject.ObjectType: ZXReader],
-    zxingEnabled: Bool,
+    barcodeProvider: ExpoBarcodeScannerProvider,
+    barcodeProviderEnabled: Bool,
     metadataResultHandler: BarcodeScanningResponseHandler
   ) {
     self.settings = settings
     self.previewLayer = previewLayer
-    self.zxingEnabled = zxingEnabled
+    self.barcodeProviderEnabled = barcodeProviderEnabled
     self.responseHandler = metadataResultHandler
-    self.zxingBarcodeReaders = zxingBarcodeReaders
+    self.barcodeProvider = barcodeProvider
   }
 
   func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
     guard let settings = settings[BARCODE_TYPES_KEY] else {
       return
     }
+
+    let barcodeProviderTypes = Set(barcodeProvider.supportedTypes)
 
     for metadata in metadataObjects {
       var codeMetadata = metadata as? AVMetadataMachineReadableCodeObject
@@ -37,7 +40,8 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
       }
 
       for barcodeType in settings {
-        if zxingBarcodeReaders[barcodeType] != nil {
+        // Skip types handled by the barcode provider — those come through captureOutput instead
+        if barcodeProviderTypes.contains(barcodeType.rawValue) {
           continue
         }
 
@@ -51,11 +55,11 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
   }
 
   func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-    guard zxingEnabled else {
+    guard barcodeProviderEnabled else {
       return
     }
 
-    let kMinMargin = 1.0 / zxingFPSProcessed
+    let kMinMargin = 1.0 / barcodeProviderFPSProcessed
     let presentTimeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
     let curFrameTimeStamp = Double(presentTimeStamp.value) / Double(presentTimeStamp.timescale)
 
@@ -63,42 +67,16 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
       lastFrameTimeStamp = curFrameTimeStamp
 
       if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),
-      let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
-        self.scanBarcodes(from: videoFrameImage) { barcodeScannerResult in
-          self.responseHandler.onScanningResult(BarcodeScannerUtils.zxResultToDictionary(barcodeScannerResult))
+         let image = createImage(from: videoFrame) {
+        for result in barcodeProvider.scanBarcodes(from: image) {
+          self.responseHandler.onScanningResult(result)
         }
       }
     }
   }
 
-  func scanBarcodes(from image: CGImage, completion: @escaping (ZXResult) -> Void) {
-    let source = ZXCGImageLuminanceSource(cgImage: image)
-    let binarizer = ZXHybridBinarizer(source: source)
-    let bitmap = ZXBinaryBitmap(binarizer: binarizer)
-
-    var result: ZXResult?
-
-    for reader in zxingBarcodeReaders.values {
-      result = try? reader.decode(bitmap, hints: nil)
-      if result != nil {
-        break
-      }
-    }
-
-    if result == nil && bitmap?.rotateSupported == true {
-      if let rotatedBitmap = bitmap?.rotateCounterClockwise() {
-        for reader in zxingBarcodeReaders.values {
-          result = try? reader.decode(rotatedBitmap, hints: nil)
-          if result != nil {
-            break
-          }
-        }
-      }
-    }
-
-    if let result {
-      completion(result)
-    }
+  private func createImage(from buffer: CVImageBuffer) -> CGImage? {
+    let ciImage = CIImage(cvImageBuffer: buffer)
+    return ciContext.createCGImage(ciImage, from: ciImage.extent)
   }
 }
-#endif

@@ -2,8 +2,8 @@ package expo.modules.devlauncher.launcher
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import expo.modules.devlauncher.compose.BindingView
+import expo.modules.devlauncher.helpers.enableEdgeToEdge
 
 class DevLauncherActivity : AppCompatActivity() {
   override fun onStart() {
@@ -12,9 +12,8 @@ class DevLauncherActivity : AppCompatActivity() {
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    // Enables edge-to-edge
-    WindowCompat.setDecorFitsSystemWindows(window, false)
     super.onCreate(savedInstanceState)
+    window.enableEdgeToEdge()
 
     setContentView(
       BindingView(this)

@@ -498,6 +498,7 @@ export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>
           shouldRouteThroughEarpiece: mode.shouldRouteThroughEarpiece,
           interruptionMode: mode.interruptionMode ?? mode.interruptionModeAndroid,
           allowsBackgroundRecording: mode.allowsBackgroundRecording,
+          playsInSilentMode: mode.playsInSilentMode,
         };
   return await AudioModule.setAudioModeAsync(audioMode);
 }

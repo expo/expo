@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/utilities/index.ts"],"names":[],"mappings":";AAAA,uGAAuG;;;AAEvG,mDAAuD;AAA9C,qHAAA,mBAAmB,OAAA","sourcesContent":["// NOTE: `./utilities` is meant as stable API utilities exposed from `expo-modules-autolinking/exports`\n\nexport { isNativeModuleAsync } from './isNativeModule';\n"]}

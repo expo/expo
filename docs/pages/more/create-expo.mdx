@@ -39,6 +39,10 @@ Uses the default options to create a new project.
 
 Skips installing npm dependencies or CocoaPods.
 
+### `--no-agents-md`
+
+Skips generating **AGENTS.md**, **CLAUDE.md**, and **.claude/settings.json**. By default, `create-expo-app` generates these files so AI coding agents (such as Claude Code) have Expo-specific context and the [`expo` skills plugin](https://expo.dev/expo-skills) configured automatically. The generated **AGENTS.md** points to the versioned Expo docs matching your project's SDK version.
+
 ### `--template`
 
 Running `create-expo-app` with a [Node Package Manager](#node-package-managers-support) initializes and sets up a new Expo project using the default template.

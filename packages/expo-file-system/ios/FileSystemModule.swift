@@ -23,7 +23,7 @@ public final class FileSystemModule: Module {
       let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
       return nil
     }
-    return attributes[.systemFreeSize] as? Int64
+    return attributes[.systemSize] as? Int64
   }
 
   var availableDiskSpace: Int64? {
@@ -166,8 +166,8 @@ public final class FileSystemModule: Module {
         return try file.bytes()
       }
 
-      Function("open") { (file, _mode: String?) in
-        return try FileSystemFileHandle(file: file)
+      Function("open") { (file: FileSystemFile, mode: FileMode?) in
+        return try FileSystemFileHandle(file: file, mode: mode)
       }
 
       Function("info") { (file: FileSystemFile, options: InfoOptions?) in

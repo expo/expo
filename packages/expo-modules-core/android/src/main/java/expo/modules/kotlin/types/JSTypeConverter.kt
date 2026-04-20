@@ -116,6 +116,7 @@ interface JSTypeConverter<T> {
       get() = ReturnType.UNKNOWN // TODO(@lukmccall): Define proper ReturnType for Enums
   }
 
+  @OptimizedRecord
   class RecordConverter : JSTypeConverter<Record> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Record?>(value)

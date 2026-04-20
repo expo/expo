@@ -8,14 +8,21 @@
 
 ### 🎉 New features
 
+- [android] Add `installModuleClasses` and `__resolveInWorklet` for resolving shared object class prototypes in the worklet runtime. ([#44669](https://github.com/expo/expo/pull/44669) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Add `installModuleClasses` for building shared object class prototypes in alternate JS runtimes. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Install sync functions on shared object worklet prototypes and add `SharedObject.__resolveInWorklet` for resolving shared objects in worklet runtimes. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `Equatable` conformance to `Either` type. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - `NativeArrayBuffer` and `JavaScriptArrayBuffer` arguments now also accept typed arrays. ([#43082](https://github.com/expo/expo/pull/43082) by [@barthap](https://github.com/barthap))
 - [Android] Use the `RuntimeScheduler` to schedule tasks on the JS thread. ([#43481](https://github.com/expo/expo/pull/43481) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Add `nativeModule` look up function and `bundleURL` to AppContext. ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Added a polyfill for Swift [`Mutex`](https://developer.apple.com/documentation/synchronization/mutex) for older platform versions. ([#44122](https://github.com/expo/expo/pull/44122) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Exposed a shared OkHttpClient instance through AppContext with new coroutine-friendly extensions. ([#44854](https://github.com/expo/expo/pull/44854) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
+- [iOS] Add async/await overload for StaticAsyncFunction ([#44471](https://github.com/expo/expo/pull/44471) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Fixed looking up the `EXConstants.bundle` from the main bundle to allow running with precompiled XCFrameworks. ([#44551](https://github.com/expo/expo/pull/44551) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fixed Constants.expoConfig returning null due to optional value wrapping in ConstantsProvider. ([#44550](https://github.com/expo/expo/pull/44550) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fixed view lookup in bridgeless mode by using `ExpoHostWrapper` instead of `reactBridge.uiManager`. ([#44375](https://github.com/expo/expo/pull/44375) by [@vonovak](https://github.com/vonovak))
 - [Android] Added support for CSS `rgb(...)` and `rgba(...)` color strings when converting JS color values to `android.graphics.Color`. ([#44023](https://github.com/expo/expo/pull/44023) by [@dileepapeiris](https://github.com/dileepapeiris))
 - [Android] Fixed Compose view clipping that caused Material ripple effects to be cut off (e.g., Switch thumb ripple). ([#43656](https://github.com/expo/expo/pull/43656) by [@vonovak](https://github.com/vonovak))
@@ -27,6 +34,8 @@
 - [iOS] Fixed runtime setup crashing in the old bridge module. ([#44121](https://github.com/expo/expo/pull/44121) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Resolve `react-native-worklets` from existing podspec, falling back to peer resolution ([#44232](https://github.com/expo/expo/pull/44232) by [@kitten](https://github.com/kitten))
 - [iOS] Fixed adding SwiftUI views to tabs BottomAccessory. ([#44247](https://github.com/expo/expo/pull/44247) by [@t0maboro](https://github.com/t0maboro))
+- [iOS] Fix finding EXConstants.bundle inside framework bundle for brownfield ([#44810](https://github.com/expo/expo/pull/44810) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix missing jsi headers when building static frameworks ([#44865](https://github.com/expo/expo/pull/44865) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -40,6 +49,11 @@
 - [iOS] Remove legacy `EXNativeModulesProxy` ([#42672](https://github.com/expo/expo/pull/42672) by [@tsapeta](https://github.com/tsapeta))
 - Exclude ExpoModulesMacros.swift from SPM prebuild ([#44354](https://github.com/expo/expo/pull/44354) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove legacy `ExpoBridgeModule` ([#44351](https://github.com/expo/expo/pull/44351) by [@tsapeta](https://github.com/tsapeta))
+- Refactored `ComposableScope` and allow extensibility. ([#44698](https://github.com/expo/expo/pull/44698) by [@kudo](https://github.com/kudo))
+- [iOS] Added broader colors support to convertibles. ([#44630](https://github.com/expo/expo/pull/44630) by [@kudo](https://github.com/kudo))
+- Throwing error when converting invalid color array. ([#44734](https://github.com/expo/expo/pull/44734) by [@kudo](https://github.com/kudo))
+- [Android] Added AsyncFunction support to the functional `ExpoUIView` DSL. ([#44081](https://github.com/expo/expo/pull/44081) by [@kudo](https://github.com/kudo))
+- Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
 
 ## 55.0.12 — 2026-02-25
 

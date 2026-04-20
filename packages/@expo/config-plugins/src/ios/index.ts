@@ -2,6 +2,7 @@ import * as Bitcode from './Bitcode';
 import * as BuildProperties from './BuildProperties';
 import * as BuildScheme from './BuildScheme';
 import * as BundleIdentifier from './BundleIdentifier';
+import * as DeploymentTarget from './DeploymentTarget';
 import * as DevelopmentTeam from './DevelopmentTeam';
 import * as DeviceFamily from './DeviceFamily';
 import * as Entitlements from './Entitlements';
@@ -34,6 +35,7 @@ export {
   BundleIdentifier,
   BuildProperties,
   BuildScheme,
+  DeploymentTarget,
   DevelopmentTeam,
   DeviceFamily,
   Google,

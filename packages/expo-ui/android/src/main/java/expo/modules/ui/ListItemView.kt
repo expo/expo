@@ -3,15 +3,15 @@ package expo.modules.ui
 import android.graphics.Color
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class ListItemColors(
   @Field val containerColor: Color? = null,
   @Field val contentColor: Color? = null,
@@ -57,7 +57,7 @@ fun FunctionalComposableScope.ListItemContent(props: ListItemProps) {
   ListItem(
     headlineContent = {
       headlineSlotView?.let {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }
@@ -65,28 +65,28 @@ fun FunctionalComposableScope.ListItemContent(props: ListItemProps) {
     modifier = modifier,
     overlineContent = overlineSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }
     },
     supportingContent = supportingSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }
     },
     leadingContent = leadingSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }
     },
     trailingContent = trailingSlotView?.let {
       {
-        with(ComposableScope()) {
+        with(UIComposableScope()) {
           with(it) { Content() }
         }
       }

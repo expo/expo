@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import ExpoModulesWorklets
 
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
@@ -11,6 +12,30 @@ public final class ExpoUIModule: Module {
     OnDestroy {
       Task { @MainActor in
         NamespaceRegistry.shared.removeAll()
+      }
+    }
+
+    // MARK: - Observable State
+
+    Class(WorkletCallback.self) {
+      Constructor { (worklet: Worklet) -> WorkletCallback in
+        let callback = WorkletCallback()
+        callback.worklet = worklet
+        return callback
+      }
+    }
+
+    Class(ObservableState.self) {
+      Constructor { (initial: [String: Any]) -> ObservableState in
+        return ObservableState(value: initial["value"])
+      }
+
+      Function("getValue") { (state: ObservableState) -> Any in
+        return state.value ?? NSNull()
+      }
+
+      Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
+        state.value = wrapper["value"]
       }
     }
 
@@ -85,6 +110,8 @@ public final class ExpoUIModule: Module {
     ExpoUIView(GaugeView.self)
     ExpoUIView(GroupView.self)
     ExpoUIView(HStackView.self)
+    ExpoUIView(LazyHStackView.self)
+    ExpoUIView(LazyVStackView.self)
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
@@ -114,8 +141,12 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ConcentricRectangleView.self)
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
+    ExpoUIView(OverlayView.self)
     ExpoUIView(GridView.self)
     ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
+
+    // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
+    ExpoUIView(SyncToggleView.self)
   }
 }

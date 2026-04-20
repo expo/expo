@@ -16,15 +16,17 @@ function directoryExistsSync(file: string): boolean {
 }
 
 function isEnableHermesManaged(
-  expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>>,
+  expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android'>>,
   platform: string
 ): boolean {
   switch (platform) {
     case 'android': {
-      return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+      // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
+      return ((expoConfig.android as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
     }
     case 'ios': {
-      return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+      // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
+      return ((expoConfig.ios as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
     }
     default:
       return false;

@@ -26,6 +26,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class TextFontWeight(val value: String) : Enumerable {
   NORMAL("normal"),
@@ -146,6 +147,7 @@ fun resolveFontFamily(name: String?, context: Context): FontFamily? {
   }
 }
 
+@OptimizedRecord
 data class TextShadowRecord(
   @Field val color: Color? = null,
   @Field val offsetX: Float? = null,
@@ -219,6 +221,7 @@ interface TextSpanStyle {
   val shadow: TextShadowRecord?
 }
 
+@OptimizedRecord
 data class TextSpanRecord(
   @Field override val text: String = "",
   @Field val children: List<TextSpanRecord>? = null,

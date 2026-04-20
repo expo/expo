@@ -11,7 +11,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.Required
 import java.util.TimeZone
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class NewCalendarInput(
   @Field @Required val name: String,
   @Field @Required val title: String,

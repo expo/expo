@@ -23,9 +23,13 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetMediaStoreIt
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePath
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePathAndName
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
+import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
+import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
+import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetBucketId
 import expo.modules.medialibrary.next.objects.asset.factories.buildUniqueDisplayName
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
@@ -46,6 +50,7 @@ class AssetModernDelegate(
   override val contentUri: Uri,
   val assetDeleter: AssetDeleter,
   val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate,
+  val assetFactory: AssetFactory,
   context: Context
 ) : AssetDelegate {
   private val contextRef = WeakReference(context)
@@ -138,6 +143,14 @@ class AssetModernDelegate(
       ?: MimeType.from(getUri())
   }
 
+  override suspend fun getAlbums(): List<Album> {
+    val albumId = contentResolver.queryAssetBucketId(contentUri)?.toString() ?: return emptyList()
+    if (contentResolver.queryAlbumTitle(albumId) == null) {
+      return emptyList()
+    }
+    return listOf(Album(albumId, assetDeleter, assetFactory, contextRef.getOrThrow()))
+  }
+
   override suspend fun getLocation(): Location? =
     contentResolver.openInputStream(contentUri)?.use { stream ->
       ExifInterface(stream)
@@ -204,13 +217,7 @@ class AssetModernDelegate(
       contentResolver.copyUriContent(contentUri, newAssetUri)
       ensureActive()
       contentResolver.publishPendingAsset(newAssetUri)
-      val newAssetDelegate = AssetModernDelegate(
-        newAssetUri,
-        assetDeleter,
-        mediaStorePermissionsDelegate,
-        contextRef.getOrThrow()
-      )
-      Asset(newAssetDelegate)
+      assetFactory.create(newAssetUri)
     } catch (e: IllegalStateException) {
       contentResolver.delete(newAssetUri, null, null)
       // It occurs when trying to create too many assets with the same filename in the same album.

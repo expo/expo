@@ -42,7 +42,6 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config": "workspace:~55.0.8",
     "@expo/env": "workspace:~2.1.1"
   },
   "devDependencies": {

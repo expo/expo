@@ -4,7 +4,9 @@ import androidx.media3.common.PlaybackException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class PlaybackError(
   @Field var message: String? = null
 ) : Record, Serializable {

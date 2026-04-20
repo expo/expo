@@ -17,8 +17,15 @@ android {
   }
 }
 
+// CameraX 1.6.0 requires listenablefuture:1.0 at compile time, but the React Native
+// Gradle plugin pulls in full Guava which forces listenablefuture to 9999.0-empty
+// (an intentionally empty jar). Override this to restore the real ListenableFuture class.
+configurations.configureEach {
+  resolutionStrategy.force "com.google.guava:listenablefuture:1.0"
+}
+
 dependencies {
-  def camerax_version = "1.5.3"
+  def camerax_version = "1.6.0"
 
   api "androidx.exifinterface:exifinterface:1.4.2"
   api "androidx.appcompat:appcompat:1.7.1"
@@ -30,7 +37,7 @@ dependencies {
 
   implementation "androidx.camera:camera-view:${camerax_version}"
   implementation "androidx.camera:camera-extensions:${camerax_version}"
-  implementation "androidx.core:core-ktx:1.17.0"
+  implementation "androidx.core:core-ktx:1.18.0"
 
   def barcodeDependencyConfiguration = isBarcodeScannerEnabled ? "implementation" : "compileOnly"
   add(barcodeDependencyConfiguration, "com.google.android.gms:play-services-code-scanner:16.1.0")

@@ -41,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
 
-@property (nonatomic, weak) RCTBridge * _Nullable appBridge;
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
@@ -52,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
 
 - (nullable NSURL *)sourceUrl;
+
+- (void)launchDefaultUrlFallbackOrNavigateToLauncher;
 
 - (void)navigateToLauncher;
 

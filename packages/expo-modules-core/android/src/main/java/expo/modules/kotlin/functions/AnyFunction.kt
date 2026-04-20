@@ -29,14 +29,14 @@ abstract class AnyFunction(
   internal val takesOwner: Boolean
     get() {
       if (canTakeOwner) {
-        val firstArgumentType = desiredArgsTypes.firstOrNull()?.typeDescriptor?.kClass
+        val firstArgumentType = desiredArgsTypes.firstOrNull()?.typeDescriptor?.jClass
           ?: return false
 
-        if (firstArgumentType == JavaScriptObject::class) {
+        if (firstArgumentType == JavaScriptObject::class.java) {
           return true
         }
 
-        val ownerClass = ownerType?.typeInfo?.kClass ?: return false
+        val ownerClass = ownerType?.typeInfo?.jClass ?: return false
 
         return firstArgumentType == ownerClass
       }

@@ -45,20 +45,30 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
+    'FRAMEWORK_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/XCFrameworkIntermediates/ExpoModulesJSI"',
   }
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon'
   s.dependency 'React-runtimescheduler'
 
-  unless File.exist?("#{s.name}.xcframework")
-    raise "`#{s.name}.xcframework` not found"
-  end
+  # Create a stub xcframework if needed, so CocoaPods generates the
+  # "[CP] Copy XCFrameworks" and "[CP] Embed Pods Frameworks" build phases.
+  s.prepare_command = './scripts/create-stub-xcframework.sh'
 
   s.source_files = [
     "Sources/ExpoModulesJSI-RuntimeProvider/**/*.{h,mm}"
   ]
-  s.vendored_frameworks = ["#{s.name}.xcframework"]
+  s.vendored_frameworks = ["Products/#{s.name}.xcframework"]
+
+  s.script_phase = {
+    :name => "Build #{s.name} xcframework",
+    :script => '"${PODS_TARGET_SRCROOT}/scripts/build-xcframework.sh"',
+    :execution_position => :before_headers,
+    # Ensure the script runs on every build so its internal
+    # hash-based caching can decide whether to rebuild.
+    :always_out_of_date => "1",
+  }
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/**/*.swift'

@@ -185,7 +185,7 @@ If you're having issues, the best thing you can do is enable the most aggressive
 }
 ```
 
-In the application, ensure you are not rendering the `<Head />` element conditionally (for example, in an `if/else` block), it must be rendered on every page that you want to support handoff. We recommend adding it to the [Root Layout](/router/basics/layout/#root-layout) component to ensure every route is linkable while debugging.
+In the application, ensure you are not rendering the `<Head />` element conditionally (for example, in an `if/else` block), it must be rendered on every page that you want to support handoff. We recommend adding it to the [Root Layout](/router/basics/navigation-layouts/#root-layout) component to ensure every route is linkable while debugging.
 
 Ensure you can access the Ngrok URL (for example, via the browser), before installing the app on your device. If you can't access the URL, the OS will not be able to find the file and handoff will not work.
 

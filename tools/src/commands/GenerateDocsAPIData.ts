@@ -23,6 +23,7 @@ const MINIFY_JSON = true;
 
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
+  'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
   'expo-ui/datetime-picker': ['datetime-picker/index.tsx', 'expo-ui'],
 
   // Swift UI
@@ -41,6 +42,8 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/group': ['swift-ui/Group/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/host': ['swift-ui/Host/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/hstack': ['swift-ui/HStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/lazyhstack': ['swift-ui/LazyHStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/lazyvstack': ['swift-ui/LazyVStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/image': ['swift-ui/Image/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/label': ['swift-ui/Label/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/linearprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
@@ -49,12 +52,14 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
   'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/overlay': ['swift-ui/Overlay/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/popover': ['swift-ui/Popover/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/progressview': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/rnhostview': ['swift-ui/RNHostView.tsx', 'expo-ui'],
   'expo-ui/swift-ui/scrollview': ['swift-ui/ScrollView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/section': ['swift-ui/Section/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
@@ -77,6 +82,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/carousel': ['jetpack-compose/Carousel/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/dropdownmenu': ['jetpack-compose/DropdownMenu/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/exposeddropdownmenubox': [
+    'jetpack-compose/ExposedDropdownMenuBox/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/divider': ['jetpack-compose/Divider/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/dockedsearchbar': [
@@ -100,6 +109,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/flowrow': ['jetpack-compose/FlowRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/lazycolumn': ['jetpack-compose/LazyColumn/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/lazyrow': ['jetpack-compose/LazyRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
@@ -125,7 +135,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/checkbox': ['jetpack-compose/Checkbox/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/text': ['jetpack-compose/Text/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
 };

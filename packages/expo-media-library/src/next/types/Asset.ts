@@ -102,6 +102,21 @@ export declare class Asset {
   getInfo(): Promise<AssetInfo>;
 
   /**
+   * Gets the albums containing this asset.
+   * On Android, an asset is typically associated with a single album.
+   * On iOS, an asset may belong to multiple albums.
+   * @returns A promise resolving to an array of {@link Album} objects.
+   * @throws An exception if the asset could not be found.
+   *
+   * @example
+   * ```ts
+   * const albums = await asset.getAlbums();
+   * console.log(albums.length);
+   * ```
+   */
+  getAlbums(): Promise<Album[]>;
+
+  /**
    * Gets the location of the asset.
    * On Android, this method requires the `ACCESS_MEDIA_LOCATION` permission to access location metadata.
    * @returns A promise resolving to the {@link Location} object or `null` if the location data is unavailable.
@@ -171,4 +186,11 @@ export declare class Asset {
    * ```
    */
   static create(filePath: string, album?: Album): Promise<Asset>;
+
+  /**
+   * A static function. Deletes multiple assets from the device's media store.
+   * @param assets - An array of {@link Asset} instances to delete.
+   * @returns A promise that resolves once the deletion has completed.
+   */
+  static delete(assets: Asset[]): Promise<void>;
 }

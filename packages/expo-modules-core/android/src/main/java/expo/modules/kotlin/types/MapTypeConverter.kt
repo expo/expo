@@ -16,7 +16,7 @@ class MapTypeConverter(
   private val mapType: TypeDescriptor
 ) : DynamicAwareTypeConverters<Map<*, *>>() {
   init {
-    require(mapType.params.first().kClass == String::class) {
+    require(mapType.params.first().jClass == String::class.java) {
       "The map key type should be String, but received ${mapType.params.first()}."
     }
   }

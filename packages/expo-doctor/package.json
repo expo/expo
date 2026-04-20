@@ -33,7 +33,6 @@
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
-    "@expo/cli": "workspace:*",
     "@expo/config": "workspace:*",
     "@expo/env": "workspace:*",
     "@expo/json-file": "workspace:*",

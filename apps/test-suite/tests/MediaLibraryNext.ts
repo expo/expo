@@ -234,6 +234,35 @@ export async function test(t) {
     });
   });
 
+  t.describe('Album getAll', () => {
+    t.it('includes a newly created album', async () => {
+      // given
+      const albumName = createAlbumName('getAll includes new album');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+
+      // when
+      const albums = await Album.getAll();
+
+      // then
+      t.expect(albums.find((a) => a.id === album.id)).toBeDefined();
+    });
+
+    t.it('does not include a deleted album', async () => {
+      // given
+      const albumName = createAlbumName('getAll excludes deleted album');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      assetsContainer.push(await album.getAssets());
+      await album.delete();
+
+      // when
+      const albums = await Album.getAll();
+
+      // then
+      t.expect(albums.find((a) => a.id === album.id)).toBeUndefined();
+    });
+  });
+
   t.describe('Album deletion', () => {
     t.it('deletes an album', async () => {
       const albumName = createAlbumName('album deletion');
@@ -273,6 +302,81 @@ export async function test(t) {
       t.expect(assets.find((asset) => asset.id === newAsset.id)).not.toBe(null);
     });
   });
+
+  if (Platform.OS === 'ios') {
+    t.describe('Remove assets from album', () => {
+      t.it('removes an asset from an album without deleting it from the library', async () => {
+        const albumName = createAlbumName('remove asset');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const assetToRemove = (await album.getAssets())[0];
+        await album.removeAssets([assetToRemove]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(0);
+
+        const query = new Query();
+        const allAssets = await query.exe();
+        t.expect(allAssets.find((a) => a.id === assetToRemove.id)).not.toBeUndefined();
+        assetsContainer.push(assetToRemove);
+      });
+
+      t.it('removes only specified assets, leaving others in the album', async () => {
+        const albumName = createAlbumName('remove partial');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const newAsset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(newAsset);
+        await album.add(newAsset);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(2);
+
+        await album.removeAssets([newAsset]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+        t.expect(assetsAfter.find((a) => a.id === newAsset.id)).toBeUndefined();
+      });
+
+      t.it('does nothing when called with an empty array', async () => {
+        const albumName = createAlbumName('does nothing when called with an empty array');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(1);
+
+        await album.removeAssets([]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+      });
+
+      t.it('does nothing when asset does not belong to the album', async () => {
+        const albumName = createAlbumName('does nothing when asset does not belong to the album');
+        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        albumsContainer.push(album);
+
+        const outsideAsset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(outsideAsset);
+
+        const assetsBefore = await album.getAssets();
+        t.expect(assetsBefore.length).toBe(1);
+
+        await album.removeAssets([outsideAsset]);
+
+        const assetsAfter = await album.getAssets();
+        t.expect(assetsAfter.length).toBe(1);
+
+        // Verify the asset still exists in the library
+        const height = await outsideAsset.getHeight();
+        t.expect(height).toBeDefined();
+      });
+    });
+  }
 
   t.describe('Image asset properties', () => {
     let asset: Asset;
@@ -670,6 +774,53 @@ export async function test(t) {
       t.expect(secondAsset.id).toBe(shorterAsset.id);
       t.expect(thirdAsset.id).toBe(tallerAsset.id);
     });
+  });
+
+  t.describe('asset.getAlbums()', () => {
+    if (Platform.OS === 'ios') {
+      t.it('returns all albums the asset belongs to', async () => {
+        // given
+        const asset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(asset);
+        const album1 = await Album.create(createAlbumName('getAlbums_ios_1'), [asset], false);
+        const album2 = await Album.create(createAlbumName('getAlbums_ios_2'), [asset], false);
+        albumsContainer.push(album1);
+        albumsContainer.push(album2);
+        // when
+        const albums = await asset.getAlbums();
+        // then
+        t.expect(albums.find((a) => a.id === album1.id)).toBeDefined();
+        t.expect(albums.find((a) => a.id === album2.id)).toBeDefined();
+      });
+    }
+
+    if (Platform.OS === 'android') {
+      t.it('returns only the album the asset currently resides in', async () => {
+        // given
+        const asset = await Asset.create(jpgFile.localUri);
+        assetsContainer.push(asset);
+        const album1 = await Album.create(
+          createAlbumName('returns only the album the asset currently resides in 1'),
+          [asset],
+          true
+        );
+        albumsContainer.push(album1);
+        const otherAsset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(otherAsset);
+        const album2 = await Album.create(
+          createAlbumName('returns only the album the asset currently resides in 2'),
+          [otherAsset],
+          true
+        );
+        albumsContainer.push(album2);
+        await album2.add(asset);
+        // when
+        const albums = await asset.getAlbums();
+        // then
+        t.expect(albums.length).toBe(1);
+        t.expect(albums[0].id).toBe(album2.id);
+      });
+    }
   });
 
   t.describe('Exif interface', () => {

@@ -5,7 +5,7 @@
       "name": "ExpoModulesCore",
       "podName": "ExpoModulesCore",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -122,8 +122,7 @@
             "Tests/**",
             "BridgeModule/**",
             "Views/**",
-            "Worklets/**",
-            "Core/ExpoModulesMacros.swift"
+            "Worklets/**"
           ],
           "dependencies": [
             "Hermes",

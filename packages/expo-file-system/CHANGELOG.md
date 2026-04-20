@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for `mode` option when opening file handle. ([#44559](https://github.com/expo/expo/pull/44559) by [@gfemec](https://github.com/gfemec))
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - Add support picking for multiple files and choosing multiple MIME types. File.pickFileAsync() has now feature parity with `expo-document-picker`. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
 - Add `overwrite` option to copy and move methods. ([#42979](https://github.com/expo/expo/pull/42979) by [@barthap](https://github.com/barthap))
@@ -19,6 +20,7 @@
 
 - [Android] Fix copy/move support for SAF and content provider URIs. ([#42887](https://github.com/expo/expo/pull/42887) by [@barthap](https://github.com/barthap))
 - Fix out-of-memory errors when calculating file `md5` hash. ([#44064](https://github.com/expo/expo/pull/44064) by [@barthap](https://github.com/barthap))
+- [iOS] Fix `totalDiskSpace` returning free disk space instead of total disk capacity. ([#44849](https://github.com/expo/expo/pull/44849) by [@shanebdavis](https://github.com/shanebdavis))
 
 ### 💡 Others
 

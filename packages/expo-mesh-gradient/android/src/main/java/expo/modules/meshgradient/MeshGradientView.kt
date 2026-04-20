@@ -27,7 +27,9 @@ import androidx.compose.ui.graphics.drawscope.scale
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class Resolution(
   @Field
   val x: Int = 8,

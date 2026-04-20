@@ -5,7 +5,9 @@ import expo.modules.calendar.domain.event.records.input.RecurrenceRuleInput
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class CreatedEventOptions : Record, Serializable {
   @Field
   val title: String? = null

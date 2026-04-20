@@ -185,22 +185,23 @@ class ExpectedType(
     )
 
     fun fromTypeDescriptor(typeDescriptor: TypeDescriptor): ExpectedType {
-      val kClass = typeDescriptor.kClass
-      when (kClass) {
-        Int::class -> return ExpectedType(SingleType(CppType.INT))
-        Long::class -> return ExpectedType(SingleType(CppType.LONG))
-        Double::class -> return ExpectedType(SingleType(CppType.DOUBLE))
-        Float::class -> return ExpectedType(SingleType(CppType.FLOAT))
-        Boolean::class -> return ExpectedType(SingleType(CppType.BOOLEAN))
-        String::class -> return ExpectedType(SingleType(CppType.STRING))
+      val jClass = typeDescriptor.jClass
+      @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+      when (jClass) {
+        Int::class.java, java.lang.Integer::class.java -> return ExpectedType(SingleType(CppType.INT))
+        Long::class.java, java.lang.Long::class.java -> return ExpectedType(SingleType(CppType.LONG))
+        Double::class.java, java.lang.Double::class.java -> return ExpectedType(SingleType(CppType.DOUBLE))
+        Float::class.java, java.lang.Float::class.java -> return ExpectedType(SingleType(CppType.FLOAT))
+        Boolean::class.java, java.lang.Boolean::class.java -> return ExpectedType(SingleType(CppType.BOOLEAN))
+        String::class.java -> return ExpectedType(SingleType(CppType.STRING))
       }
-      if (kClass.java.isAssignableFrom(List::class.java)) {
+      if (jClass.isAssignableFrom(List::class.java)) {
         val argType = typeDescriptor.params.firstOrNull()
         if (argType != null) {
           return forList(fromTypeDescriptor(argType))
         }
       }
-      if (kClass.java.isAssignableFrom(Map::class.java)) {
+      if (jClass.isAssignableFrom(Map::class.java)) {
         val argType = typeDescriptor.params.getOrNull(1)
         if (argType != null) {
           return forMap(fromTypeDescriptor(argType))

@@ -12,7 +12,9 @@ import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import kotlin.math.min
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 enum class FileMode(val descriptor: String) : Record {
   /** Read-only */
   READ("r"),

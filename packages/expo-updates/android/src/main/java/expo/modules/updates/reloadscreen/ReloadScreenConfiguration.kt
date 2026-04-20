@@ -5,7 +5,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import androidx.core.graphics.toColorInt
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class ReloadScreenOptions(
   @Field val backgroundColor: String?,
   @Field val image: ReloadScreenImageSource?,
@@ -15,6 +17,7 @@ data class ReloadScreenOptions(
   @Field val spinner: SpinnerOptions?
 ) : Record
 
+@OptimizedRecord
 data class ReloadScreenImageSource(
   @Field val url: Uri? = null,
   @Field val width: Double? = null,
@@ -22,6 +25,7 @@ data class ReloadScreenImageSource(
   @Field val scale: Double? = null
 ) : Record
 
+@OptimizedRecord
 data class SpinnerOptions(
   @Field val enabled: Boolean? = null,
   @Field val color: String? = null,

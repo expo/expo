@@ -10,7 +10,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class AlertDialogColors(
   @Field val containerColor: Color? = null,
   @Field val iconContentColor: Color? = null,
@@ -18,6 +20,7 @@ data class AlertDialogColors(
   @Field val textContentColor: Color? = null
 ) : Record
 
+@OptimizedRecord
 data class ExpoDialogProperties(
   @Field val dismissOnBackPress: Boolean = true,
   @Field val dismissOnClickOutside: Boolean = true,

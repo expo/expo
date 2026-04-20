@@ -39,6 +39,7 @@ class AssetModernFactory(
       contentUri,
       assetDeleter,
       mediaStorePermissionsDelegate,
+      this,
       contextRef.getOrThrow()
     )
   }

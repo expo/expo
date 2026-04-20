@@ -22,19 +22,18 @@ import java.io.FileNotFoundException
 import java.io.IOException
 
 /**
- * This is a modified version of [FileProvider]
- * that facilitates exposing files associated with an app by creating
- * a `content://` uri without using Androids URI permission mechanism.
- * In contrast to [FileProvider], this provider _must_ be exported.
+ * A read-only [ContentProvider] that exposes clipboard image files via `content://` URIs
+ * using Android's standard URI permission delegation model.
  *
- * The difference is that [FileProvider] forbids provider to be _exported_
- * which means it cannot easily grant access to any app installed
- * on the device. This becomes even more problematic with API 31, when
- * [PackageManager.getInstalledApplications] doesn't return all
- * installed apps, so we cannot iterate and use [Context.grantUriPermission]
- * easily
+ * The provider is not exported. Access is granted automatically by the Android
+ * [android.content.ClipboardManager] system service: when an app calls
+ * [android.content.ClipboardManager.getPrimaryClip], the system grants it temporary
+ * read URI permission for any `content://` URI placed in the clipboard by
+ * [android.content.ClipboardManager.setPrimaryClip].
  *
- * For usage details, see [FileProvider] documentation
+ * This requires the provider to declare `android:grantUriPermissions="true"` in the manifest.
+ *
+ * For usage details, see [FileProvider] documentation.
  */
 class ClipboardFileProvider : ContentProvider() {
   private val defaultProjectionColumns = arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE)
@@ -52,11 +51,6 @@ class ClipboardFileProvider : ContentProvider() {
    */
   override fun attachInfo(context: Context, info: ProviderInfo) {
     super.attachInfo(context, info)
-
-    if (!info.exported) {
-      throw AssertionError("ClipboardFileProvider must be exported")
-    }
-
     strategy = getPathStrategy(context, info.authority)
   }
 

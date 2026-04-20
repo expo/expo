@@ -57,7 +57,7 @@ export function resolveLoaderContextKey(
   return `/${resolved}`;
 }
 
-export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL {
+export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): string {
   const originalQueryParams = url.searchParams.entries();
   const params = parseParams(request, route);
   const target = route.page
@@ -81,7 +81,7 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
       }
     })
     .join('/');
-  const targetUrl = new URL(target, url.origin);
+  const targetUrl = new URL(target, 'http://localhost');
 
   // NOTE: React Navigation doesn't differentiate between a path parameter
   // and a search parameter. We have to preserve leftover search parameters
@@ -101,7 +101,10 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
     }
   }
 
-  return targetUrl;
+  // When the hostname is the resolved `localhost` (see above on new URL) we just output the path
+  return targetUrl.hostname === 'localhost'
+    ? targetUrl.pathname + targetUrl.search
+    : targetUrl.toString();
 }
 
 /** Match `[page]` -> `page`
