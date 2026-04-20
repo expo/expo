@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import com.facebook.react.PackageList
 import com.facebook.react.ReactHost
+import com.facebook.react.ReactPackage
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.common.ReleaseLevel
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
@@ -23,7 +24,7 @@ class ReactNativeHostManager {
     return reactHost
   }
 
-  fun initialize(application: Application) {
+  fun initialize(application: Application, additionalPackages: List<ReactPackage> = emptyList()) {
     if (reactHost != null) {
       return
     }
@@ -59,13 +60,13 @@ class ReactNativeHostManager {
 
     reactHost = ExpoReactHostFactory.getDefaultReactHost(
       context = application.applicationContext,
-      packageList = PackageList(application).packages
+      packageList = PackageList(application).packages + additionalPackages
     )
   }
 }
 
-fun Activity.showReactNativeFragment(rootComponent: String = "main") {
-  ReactNativeHostManager.shared.initialize(this.application)
+fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList()) {
+  ReactNativeHostManager.shared.initialize(this.application, additionalPackages)
   val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent)
   setContentView(fragment)
   setUpNativeBackHandling()

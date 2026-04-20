@@ -21,7 +21,7 @@ index a9fbbe7d70..f7561327e7 100644
    companion object {
 @@ -61,13 +71,44 @@ class ReactNativeHostManager {
        context = application.applicationContext,
-       packageList = PackageList(application).packages
+       packageList = PackageList(application).packages + additionalPackages
      )
 +
 +    if (BuildConfig.DEBUG) {
@@ -36,8 +36,8 @@ index a9fbbe7d70..f7561327e7 100644
    }
  }
  
- fun Activity.showReactNativeFragment(rootComponent: String = "main") {
-   ReactNativeHostManager.shared.initialize(this.application)
+ fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList()) {
+   ReactNativeHostManager.shared.initialize(this.application, additionalPackages)
 -  val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent)
 -  setContentView(fragment)
 +
