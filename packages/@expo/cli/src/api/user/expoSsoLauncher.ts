@@ -46,10 +46,7 @@ async function exchangeCodeForSessionSecretAsync({
     await response.json()
   );
   if (!sessionSecret) {
-    throw new CommandError(
-      'BROWSER_AUTH',
-      'Failed to obtain session secret from token exchange.'
-    );
+    throw new CommandError('BROWSER_AUTH', 'Failed to obtain session secret from token exchange.');
   }
   return sessionSecret;
 }
