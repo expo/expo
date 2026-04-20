@@ -28,6 +28,7 @@ const withBuildProperties = (config, props) => {
     config = (0, ios_1.withIosBuildProperties)(config, pluginConfig);
     config = (0, ios_1.withIosDeploymentTarget)(config, pluginConfig);
     config = (0, ios_1.withIosInfoPlist)(config, pluginConfig);
+    config = (0, ios_1.withIosFmtConsteval)(config, pluginConfig);
     return config;
 };
 exports.withBuildProperties = withBuildProperties;
