@@ -313,7 +313,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
       FatalError.runtimeLost()
     }
     assert(isTypedArray(), "Value is not a typed array")
-    return JavaScriptTypedArray(runtime, expo.TypedArray(runtime.pointee, pointee.getObject(runtime.pointee)))
+    return JavaScriptTypedArray(runtime, pointee.getObject(runtime.pointee))
   }
 
   /**
