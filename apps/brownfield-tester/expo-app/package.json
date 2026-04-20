@@ -16,8 +16,8 @@
     "expo": "workspace:*",
     "expo-brownfield": "workspace:*",
     "expo-constants": "workspace:*",
-    "expo-device": "workspace:*",
     "expo-dev-menu": "workspace:*",
+    "expo-device": "workspace:*",
     "expo-font": "workspace:*",
     "expo-glass-effect": "workspace:*",
     "expo-image": "workspace:*",
@@ -32,11 +32,11 @@
     "react-dom": "19.2.3",
     "react-native": "0.85.0",
     "react-native-gesture-handler": "~2.30.0",
-    "react-native-worklets": "0.8.1",
     "react-native-reanimated": "~4.3.0",
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.24.0",
-    "react-native-web": "~0.21.0"
+    "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.8.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",

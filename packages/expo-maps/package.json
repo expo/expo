@@ -25,7 +25,6 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",

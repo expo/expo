@@ -14,9 +14,7 @@
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch"
   },
-  "bin": {
-    "patch-project": "bin/cli.js"
-  },
+  "bin": "bin/cli.js",
   "files": [
     "app.plugin.js",
     "bin",

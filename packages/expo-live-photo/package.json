@@ -36,7 +36,6 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"

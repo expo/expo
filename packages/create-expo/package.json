@@ -54,11 +54,11 @@
     "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
+    "multitars": "^1.0.0",
     "nock": "^14.0.10",
     "ora": "3.4.0",
     "picomatch": "^2.3.1",
     "prompts": "^2.4.2",
-    "multitars": "^1.0.0",
     "update-check": "^1.5.4"
   }
 }

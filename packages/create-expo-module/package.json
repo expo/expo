@@ -50,8 +50,8 @@
     "@types/ejs": "^3.1.5",
     "@types/getenv": "^1.0.0",
     "@types/jest": "^29.2.1",
-    "@types/prompts": "^2.4.9",
     "@types/node": "^22.14.0",
+    "@types/prompts": "^2.4.9",
     "@types/validate-npm-package-name": "^4.0.2",
     "@vercel/ncc": "^0.38.4",
     "chalk": "^4.1.2",
@@ -61,9 +61,9 @@
     "ejs": "^3.1.10",
     "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
+    "multitars": "^1.0.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
-    "multitars": "^1.0.0",
     "validate-npm-package-name": "^6.0.2"
   }
 }
