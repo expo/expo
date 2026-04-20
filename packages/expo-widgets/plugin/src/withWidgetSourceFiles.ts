@@ -33,7 +33,12 @@ const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
       };
       fs.writeFileSync(entitlementsPath, plist.build(entitlementsContent));
 
-      const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory);
+      const infoPlistPath = createInfoPlist(
+        groupIdentifier,
+        targetDirectory,
+        config.ios?.version ?? config.version ?? '1.0',
+        config.ios?.buildNumber ?? '1'
+      );
       const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
       const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(widget, targetDirectory));
 
@@ -74,9 +79,14 @@ const createWidgetSwift = (widget: WidgetConfig, targetPath: string): string => 
   return widgetFilePath;
 };
 
-const createInfoPlist = (groupIdentifier: string, targetPath: string): string => {
+const createInfoPlist = (
+  groupIdentifier: string,
+  targetPath: string,
+  marketingVersion: string,
+  bundleVersion: string
+): string => {
   const infoPlistPath = `${targetPath}/Info.plist`;
-  fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier));
+  fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier, marketingVersion, bundleVersion));
   return infoPlistPath;
 };
 
@@ -110,7 +120,11 @@ struct ${widget.name}: Widget {
   }
 }`;
 
-const infoPlist = (groupIdentifier: string) => `<?xml version="1.0" encoding="UTF-8"?>
+const infoPlist = (
+  groupIdentifier: string,
+  marketingVersion: string,
+  bundleVersion: string
+) => `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -121,6 +135,10 @@ const infoPlist = (groupIdentifier: string) => `<?xml version="1.0" encoding="UT
 	</dict>
   <key>ExpoWidgetsAppGroupIdentifier</key>
   <string>${groupIdentifier}</string>
+	<key>CFBundleShortVersionString</key>
+	<string>${marketingVersion}</string>
+	<key>CFBundleVersion</key>
+	<string>${bundleVersion}</string>
 </dict>
 </plist>
 `;
