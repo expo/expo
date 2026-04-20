@@ -71,7 +71,11 @@ If you do not already have signing credentials locally, see [App credentials](/a
 
 <Tab label="Android">
 
-<Terminal cmd={['$ npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias']} />
+<Terminal
+  cmd={[
+    '$ npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias',
+  ]}
+/>
 
 See the [Android-specific options](#android-specific-options) for keystore password flags and other settings.
 
@@ -83,7 +87,11 @@ Pass a signing identity and provisioning profile:
 
 > **Note**: iOS repacking supports ad-hoc and development signing only.
 
-<Terminal cmd={['$ npx @expo/repack-app --platform ios --source-app MyApp.ipa --signing-identity "Apple Distribution: ..." --provisioning-profile /path/to/profile.mobileprovision']} />
+<Terminal
+  cmd={[
+    '$ npx @expo/repack-app --platform ios --source-app MyApp.ipa --signing-identity "Apple Distribution: ..." --provisioning-profile /path/to/profile.mobileprovision',
+  ]}
+/>
 
 See the [iOS-specific options](#ios-specific-options) for the full list of signing flags.
 
