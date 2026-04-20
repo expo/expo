@@ -9,6 +9,7 @@ public final class CalendarNextModule: Module {
     return CalendarModule.sharedEventStore
   }
   private var calendarDialogDelegate: CalendarDialogDelegate?
+  private var calendarPickerDelegate: CalendarPickerDelegate?
   private var calendarPermissions: ExpoCalendarPermissions?
 
   // swiftlint:disable:next function_body_length cyclomatic_complexity
@@ -56,6 +57,29 @@ public final class CalendarNextModule: Module {
       }
       return ExpoCalendar(calendar: calendar)
     }
+
+    AsyncFunction("presentPicker") { (promise: Promise) in
+      guard let currentVc = appContext?.utilities?.currentViewController() else {
+        throw Exception()
+      }
+
+      let calendarChooser = EKCalendarChooser(
+        selectionStyle: .single,
+        displayStyle: .writableCalendarsOnly,
+        eventStore: eventStore
+      )
+      let pickerDelegate = CalendarPickerDelegate(
+        promise: promise,
+        onComplete: { [weak self] in
+          self?.calendarPickerDelegate = nil
+        })
+      calendarChooser.delegate = pickerDelegate
+      calendarChooser.showsDoneButton = true
+      calendarChooser.showsCancelButton = true
+
+      calendarPickerDelegate = pickerDelegate
+      currentVc.present(UINavigationController(rootViewController: calendarChooser), animated: true)
+    }.runOnQueue(.main)
 
     AsyncFunction("createCalendar") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
       let calendar: EKCalendar

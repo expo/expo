@@ -21,6 +21,7 @@ declare const _default: {
     getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]>;
     listEvents(calendars: string[], startDate: string | Date, endDate: string | Date): Promise<ExpoCalendarEvent[]>;
     getCalendarById(calendarId: string): Promise<ExpoCalendar>;
+    presentPicker(): Promise<ExpoCalendar | null>;
     getEventById(eventId: string): Promise<ExpoCalendarEvent>;
     getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
     requestCalendarPermissions(): Promise<PermissionResponse>;

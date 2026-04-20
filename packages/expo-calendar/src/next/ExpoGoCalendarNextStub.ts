@@ -44,6 +44,10 @@ class ExpoGoCalendarNextStub {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
+  async presentPicker(): Promise<void> {
+    throw new Error('Calendar@next functionality is not available in Expo Go');
+  }
+
   async requestCalendarPermissions(): Promise<PermissionResponse> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
