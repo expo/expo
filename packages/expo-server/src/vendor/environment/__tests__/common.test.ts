@@ -446,7 +446,7 @@ describe('getHtml', () => {
     const mockSSRModule = createMockSSRModule({
       resolveMetadata: jest.fn().mockResolvedValue({
         metadata: { title: 'Route title' },
-        headTags: '<title>Route title</title>',
+        headNodes: ['Route title'],
       }),
     });
     const input = createMockInput({
@@ -481,7 +481,7 @@ describe('getHtml', () => {
       expect.objectContaining({
         metadata: {
           metadata: { title: 'Route title' },
-          headTags: '<title>Route title</title>',
+          headNodes: ['Route title'],
         },
       })
     );

@@ -7,7 +7,7 @@ export interface MatchedRouteMetadata {
 }
 export interface ResolvedMetadata {
     metadata: Metadata;
-    headTags: string;
+    metadataNodes: unknown[];
 }
 export interface ResolveMetadataOptions {
     route: MatchedRouteMetadata;

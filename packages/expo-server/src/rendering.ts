@@ -1,5 +1,5 @@
 import { type ImmutableRequest } from './ImmutableRequest';
-import type { AssetInfo, GetStaticContentOptions } from './manifest';
+import type { AssetInfo, GetStreamingContentOptions } from './manifest';
 import type { Metadata } from './metadata';
 
 export interface MatchedRouteMetadata {
@@ -9,7 +9,10 @@ export interface MatchedRouteMetadata {
 
 export interface ResolvedMetadata {
   metadata: Metadata;
-  headTags: string;
+  // This is a ReactNode[] internally, but remains opaque here until we decide whether
+  // expo-server should expose React types in its public API surface.
+  // This should become a named server document type once that API is finalized.
+  headNodes: unknown[];
 }
 
 export interface ResolveMetadataOptions {
@@ -28,7 +31,7 @@ export interface ServerRenderModule {
   /** {@link import('@expo/router-server/src/static/renderStaticContent').getStreamingContent} */
   getStreamingContent(
     location: URL,
-    options?: GetStaticContentOptions
+    options?: GetStreamingContentOptions
   ): Promise<ReadableStream<Uint8Array>>;
 }
 
