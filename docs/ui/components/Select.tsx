@@ -43,6 +43,9 @@ export function Select({
   disabled = false,
   size = 'md',
 }: SelectProps) {
+  const selectedOption = options?.find(option => option.id === value);
+  const IconComponent = selectedOption?.Icon;
+
   const selectComponent = (
     <SelectPrimitive.Root
       name={id}
@@ -68,14 +71,29 @@ export function Select({
             className
           )}
           {...{ 'data-testid': testID }}>
-          <SelectPrimitive.Value
-            placeholder={
-              <div className="text-quaternary text-left text-sm leading-tight whitespace-pre-wrap">
-                {placeholder}
-              </div>
-            }
-            aria-label={value}
-          />
+          <SelectPrimitive.Value placeholder={placeholder} aria-label={value}>
+            <span
+              className={mergeClasses(
+                'flex items-center gap-2 text-left text-sm leading-tight font-normal whitespace-nowrap',
+                size === 'lg' && 'text-lg'
+              )}>
+              {selectedOption?.leftSlot}
+              {IconComponent && (
+                <SelectPrimitive.Icon>
+                  <IconComponent className={mergeClasses('icon-sm', size === 'lg' && 'icon-md')} />
+                </SelectPrimitive.Icon>
+              )}
+              {selectedOption?.imageUrl && (
+                <img
+                  alt={String(selectedOption.id)}
+                  src={selectedOption.imageUrl}
+                  className="size-5 rounded-full"
+                />
+              )}
+              {selectedOption?.label}
+              {selectedOption?.rightSlot}
+            </span>
+          </SelectPrimitive.Value>
         </Button>
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
