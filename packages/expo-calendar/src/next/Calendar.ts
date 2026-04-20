@@ -21,6 +21,7 @@ import type {
   CalendarDialogOpenParamsNext,
   CalendarDialogParamsNext,
   ModifiableAttendeeProperties,
+  AddEventWithFormOptions,
 } from './ExpoCalendar.types';
 
 /**
@@ -181,6 +182,13 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     return await super.update(newDetails as Partial<ModifiableCalendarProperties>);
   }
 
+  override async addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult> {
+    if (!super.addEventWithForm) {
+      throw new UnavailabilityError('ExpoCalendar', 'addEventWithForm');
+    }
+    return super.addEventWithForm(options && stringifyDateValues(options));
+  }
+
   static override async get(calendarId: string): Promise<ExpoCalendar> {
     const calendar = await InternalExpoCalendar.getCalendarById(calendarId);
     Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
@@ -315,6 +323,7 @@ export type {
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
+  AddEventWithFormOptions,
 } from './ExpoCalendar.types';
 
 export type {

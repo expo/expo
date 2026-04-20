@@ -1,7 +1,9 @@
 import type { PermissionResponse } from 'expo-modules-core';
 declare class ExpoGoCalendarNextStub {
     static readonly ExpoCalendar: {
-        new (): {};
+        new (): {
+            addEventWithForm(): void;
+        };
     };
     static readonly ExpoCalendarEvent: {
         new (): {};

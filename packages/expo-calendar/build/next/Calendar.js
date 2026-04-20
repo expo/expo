@@ -121,6 +121,12 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         const newDetails = { ...details, color: color || undefined };
         return await super.update(newDetails);
     }
+    async addEventWithForm(options) {
+        if (!super.addEventWithForm) {
+            throw new UnavailabilityError('ExpoCalendar', 'addEventWithForm');
+        }
+        return super.addEventWithForm(options && stringifyDateValues(options));
+    }
     static async get(calendarId) {
         const calendar = await InternalExpoCalendar.getCalendarById(calendarId);
         Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
