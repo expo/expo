@@ -108,6 +108,11 @@ export async function resolveSplashScreenAssets(
     );
   };
 
+  type AndroidSplashConfigCommonKeys = keyof AndroidSplashConfig &
+    keyof NonNullable<AndroidSplashConfig['dark']>;
+  type IOSSplashConfigCommonKeys = keyof IOSSplashConfig &
+    keyof NonNullable<IOSSplashConfig['dark']>;
+
   const androidImageKeys = [
     'image',
     'mdpi',
@@ -115,11 +120,9 @@ export async function resolveSplashScreenAssets(
     'xhdpi',
     'xxhdpi',
     'xxxhdpi',
-  ] satisfies (keyof NonNullable<AndroidSplashConfig['dark']>)[];
+  ] satisfies AndroidSplashConfigCommonKeys[];
 
-  const iosImageKeys = ['image', 'tabletImage'] satisfies (keyof NonNullable<
-    IOSSplashConfig['dark']
-  >)[];
+  const iosImageKeys = ['image', 'tabletImage'] satisfies IOSSplashConfigCommonKeys[];
 
   await Promise.all([
     resolveKeys(splash.android, androidImageKeys),
