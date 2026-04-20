@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Add missing `CFBundleTypeRole` to `URLScheme` type ([#44650](https://github.com/expo/expo/pull/44650) by [@hassankhan](https://github.com/hassankhan))
+- [android] Add `pathAdvancedPattern` to `AndroidIntentFiltersData` and the app config JSON schema so `expo doctor` no longer rejects it. ([#26116](https://github.com/expo/expo/issues/26116) by [@Nedunchezhiyan-M](https://github.com/Nedunchezhiyan-M))
 
 ### 💡 Others
 

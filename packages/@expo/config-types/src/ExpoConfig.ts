@@ -615,6 +615,12 @@ export interface AndroidIntentFiltersData {
    */
   pathPrefix?: string;
   /**
+   * Advanced pattern for paths that should be matched by the filter using a specially formatted string.
+   * Supported from Android API level 31 (Android 12). Must begin with `/`.
+   * [Learn more](https://developer.android.com/guide/topics/manifest/data-element#path)
+   */
+  pathAdvancedPattern?: string;
+  /**
    * MIME type for URLs that should be matched by the filter
    */
   mimeType?: string;
