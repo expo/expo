@@ -4,6 +4,7 @@ description: Repackage an existing APK, IPA, or .app with an updated JavaScript 
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 [`@expo/repack-app`](https://www.npmjs.com/package/@expo/repack-app) is a CLI tool that repackages an existing Android APK, iOS IPA, or iOS **.app** bundle without performing a full native build. It updates the existing artifact with a new JavaScript (JS) bundle, assets, and app metadata (such as, app name, version, and package name or bundle identifier). Since there is no native compilation involved, a repack is typically much faster than a full native build.
 
@@ -20,17 +21,29 @@ Repack assumes the source binary's native side is unchanged since it was built. 
 
 Repack is not a replacement for [EAS Update](/eas-update/introduction/). EAS Update ships a new JS bundle to apps that are already installed, and users see it on the next launch. Repack produces a new installable artifact. A good rule of thumb is to use repack for internal testing (QA devices, testers, CI smoke tests) and use EAS Update to deliver JS changes to production users.
 
-## Standalone CLI usage
+## Use cases
+
+- **QA cycles**: Distribute one base build to testers, then repack with JS fixes for each iteration without waiting for a native rebuild.
+- **CI optimization**: Build native once per fingerprint, then repack the JS bundle on every subsequent PR to cut wait times from minutes to seconds.
+- **Branch testing**: Test multiple JS branches against the same native binary to isolate JavaScript-only changes.
+
+## Usage
+
+### Standalone CLI
 
 You need to run the commands specified for Android and iOS platforms below from your project's root directory. At minimum, `--platform` and `--source-app` are required. The tool runs `npx expo export:embed` under the hood to produce a fresh JS bundle, swaps it into the source binary, and writes the output artifact.
 
 The output format always matches the `--source-app` input. An APK input produces an APK, an IPA produces an IPA, and a **.app** bundle produces a **.app** bundle.
 
-### Android
+<Tabs>
+
+<Tab label="Android">
 
 <Terminal cmd={['$ npx @expo/repack-app --platform android --source-app MyApp.apk']} />
 
-### iOS
+</Tab>
+
+<Tab label="iOS">
 
 Using an IPA:
 
@@ -40,47 +53,43 @@ Using a **.app** bundle (for simulator builds, the iOS device artifacts are alwa
 
 <Terminal cmd={['$ npx @expo/repack-app --platform ios --source-app MyApp.app']} />
 
+</Tab>
+
+</Tabs>
+
+### EAS Workflows
+
+EAS Workflows provides a pre-packaged `repack` job type that handles signing and build management automatically. See [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#repack) for full syntax, parameters, and examples.
+
 ## Signing
 
 To produce an artifact installable on a physical device, pass signing credentials alongside `--platform` and `--source-app`. Without them, the Android APK is output unsigned and the iOS IPA cannot be installed on a device. iOS **.app** bundles intended for the simulator do not need signing and can skip this step.
 
 If you do not already have signing credentials locally, see [App credentials](/app-signing/app-credentials/) for how to obtain a keystore (Android) or a signing identity and provisioning profile (iOS).
 
-### Android
+<Tabs>
 
-Re-sign the repacked APK with a keystore:
+<Tab label="Android">
 
-<Terminal
-  cmd={[
-    '$ npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias',
-  ]}
-/>
+<Terminal cmd={['$ npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias']} />
 
 See the [Android-specific options](#android-specific-options) for keystore password flags and other settings.
 
-### iOS
+</Tab>
+
+<Tab label="iOS">
 
 Pass a signing identity and provisioning profile:
 
 > **Note**: iOS repacking supports ad-hoc and development signing only.
 
-<Terminal
-  cmd={[
-    '$ npx @expo/repack-app --platform ios --source-app MyApp.ipa --signing-identity "Apple Distribution: ..." --provisioning-profile /path/to/profile.mobileprovision',
-  ]}
-/>
+<Terminal cmd={['$ npx @expo/repack-app --platform ios --source-app MyApp.ipa --signing-identity "Apple Distribution: ..." --provisioning-profile /path/to/profile.mobileprovision']} />
 
 See the [iOS-specific options](#ios-specific-options) for the full list of signing flags.
 
-## Use cases
+</Tab>
 
-- **QA cycles**: Distribute one base build to testers, then repack with JS fixes for each iteration without waiting for a native rebuild.
-- **CI optimization**: Build native once per fingerprint, then repack the JS bundle on every subsequent PR to cut wait times from minutes to seconds.
-- **Branch testing**: Test multiple JS branches against the same native binary to isolate JavaScript-only changes.
-
-## Usage in EAS Workflows
-
-EAS Workflows provides a pre-packaged `repack` job type that handles signing and build management automatically. See [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#repack) for full syntax, parameters, and examples.
+</Tabs>
 
 ## `--js-bundle-only` mode
 
