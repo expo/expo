@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ImmutableRequest = void 0;
+exports.ImmutableRequest = exports.ImmutableHeaders = void 0;
 exports.assertRuntimeFetchAPISupport = assertRuntimeFetchAPISupport;
 const getHeadersConstructor = () => {
     if (typeof Headers !== 'undefined') {
@@ -40,6 +40,7 @@ class ImmutableHeaders extends getHeadersConstructor() {
         this.#throwImmutableError();
     }
 }
+exports.ImmutableHeaders = ImmutableHeaders;
 /**
  * An immutable version of the Fetch API's [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) object which prevents mutations to the request body and headers.
  */

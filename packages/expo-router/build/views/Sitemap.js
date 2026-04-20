@@ -15,7 +15,6 @@ const NoSSR_1 = require("./NoSSR");
 const Pressable_1 = require("./Pressable");
 const useSitemap_1 = require("./useSitemap");
 const Link_1 = require("../link/Link");
-const statusbar_1 = require("../utils/statusbar");
 const INDENT = 20;
 function getNavOptions() {
     return {
@@ -62,7 +61,6 @@ function SitemapInner() {
     const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
     const Wrapper = react_native_1.Platform.OS === 'android' ? react_native_safe_area_context_1.SafeAreaView : react_native_1.View;
     return (<Wrapper style={styles.container} testID="expo-router-sitemap">
-      {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
       <react_native_1.ScrollView contentContainerStyle={styles.scroll} automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
         {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
             <SitemapItem node={child}/>

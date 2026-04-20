@@ -15,6 +15,7 @@
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTExceptionsManager.h>
+#import <React/RCTBundleURLProvider.h>
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTPackagerConnection.h>
@@ -31,7 +32,6 @@
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTReloadCommand.h>
 
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
@@ -45,8 +45,13 @@
 #endif
 
 // Import 3rd party modules that need to be scoped.
+#if __has_include(<RNCAsyncStorage/RNCAsyncStorage.h>)
 #import <RNCAsyncStorage/RNCAsyncStorage.h>
+#endif
+
+#if __has_include(<RNCWebViewManager.h>)
 #import <RNCWebViewManager.h>
+#endif
 
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
@@ -65,7 +70,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 // Legacy
 @property (nonatomic, strong) EXModuleRegistry *legacyModuleRegistry;
-@property (nonatomic, strong) EXNativeModulesProxy *legacyModulesProxy;
 
 @end
 
@@ -102,7 +106,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   // Register scoped 3rd party modules. Some of them are separate pods that
   // don't have access to EXScopedModuleRegistry and so they can't register themselves.
+#if __has_include(<RNCWebViewManager.h>)
   EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
+#endif
 }
 
 - (void)hostDidStart:(NSURL *)bundleURL
@@ -110,7 +116,16 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if ([self _isDevModeEnabledForHost:bundleURL]) {
     // Set the bundle url for the packager connection manually
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
-    [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
+    RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
+    settings.packagerScheme = ([bundleURL.scheme isEqualToString:@"https"] || [bundleURL.scheme isEqualToString:@"exps"]) ? @"https" : @"http";
+    
+    RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
+    if (devSettings == nil) {
+      RCTLogWarn(@"Couldn't find the devSettings module when setting packager port; packager connection will not be updated.");
+    } else {
+      [[devSettings packagerConnection] reconnect:packagerServerHostPort];
+    }
+    
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
 
     NSDictionary<NSString *, id> *buildProps = [self.manifest getPluginPropertiesWithPackageName:@"expo-build-properties"];
@@ -160,7 +175,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 
   items[@"dev-remote-debug"] = @{
-    @"label": @"Open JS Debugger",
+    @"label": @"Open DevTools",
     @"isEnabled": @YES
   };
 
@@ -257,14 +272,19 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
                                     queue:(dispatch_queue_t)queue
                                 forMethod:(NSString *)method
 {
-  return [[RCTPackagerConnection sharedPackagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
+  RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
+  if (devSettings == nil) {
+    RCTLogWarn(@"Couldn't find the devSettings module when setting packager port");
+  }
+  
+  return [[devSettings packagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
 }
 
 #pragma mark - internal
 
 - (BOOL)_isDevModeEnabledForHost:(NSURL *)bundleURL
 {
-  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue]);
+  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue] || _manifest.isDevelopmentMode);
 }
 
 - (void)_openJsInspector:(NSURL *)bundleURL
@@ -406,7 +426,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     } else {
       RCTLogWarn(@"No exceptions manager provided when building extra modules.");
     }
-  } else if (moduleClass == RNCAsyncStorage.class) {
+  }
+#if __has_include(<RNCAsyncStorage/RNCAsyncStorage.h>)
+  else if (moduleClass == RNCAsyncStorage.class) {
     NSString *documentDirectory;
     if (_params[@"fileSystemDirectories"]) {
       documentDirectory = _params[@"fileSystemDirectories"][@"documentDirectory"];
@@ -417,6 +439,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     NSString *localStorageDirectory = [documentDirectory stringByAppendingPathComponent:@"RCTAsyncLocalStorage"];
     return [[moduleClass alloc] initWithStorageDirectory:localStorageDirectory];
   }
+#endif
 
   return [moduleClass new];
 }

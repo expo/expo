@@ -4,7 +4,7 @@ import { UnavailabilityError } from 'expo-modules-core';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import { DevicePushToken } from './Tokens.types';
-import getDevicePushTokenAsync from './getDevicePushTokenAsync';
+import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal } from './utils/updateDevicePushTokenAsync';
 
 let lastAbortController: AbortController | null = null;
@@ -112,7 +112,12 @@ if (ServerRegistrationModule.getRegistrationInfoAsync) {
   // Verify if persisted registration
   // has successfully uploaded last known
   // device push token. If not, retry.
-  ServerRegistrationModule.getRegistrationInfoAsync().then(__handlePersistedRegistrationInfoAsync);
+  ServerRegistrationModule.getRegistrationInfoAsync().then(
+    __handlePersistedRegistrationInfoAsync,
+    (e) => {
+      console.error('[expo-notifications] Error reading persisted server registration info: ', e);
+    }
+  );
 } else {
   console.warn(
     `[expo-notifications] Error encountered while fetching auto-registration state, new tokens will not be automatically registered on server.`,

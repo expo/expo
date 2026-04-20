@@ -1,6 +1,7 @@
+import type { LoaderFunction } from 'expo-server';
 import { type ComponentType, type PropsWithChildren } from 'react';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { LoaderFunction } from './types';
+import { type SuspenseFallbackProps } from './views/SuspenseFallback';
 import { type ErrorBoundaryProps } from './views/Try';
 export type DynamicConvention = {
     name: string;
@@ -10,6 +11,7 @@ export type DynamicConvention = {
 type Params = Record<string, string | string[]>;
 export type LoadedRoute = {
     ErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+    SuspenseFallback?: ComponentType<SuspenseFallbackProps>;
     default?: ComponentType<any>;
     unstable_settings?: Record<string, any>;
     getNavOptions?: (args: any) => any;
@@ -36,7 +38,7 @@ export type RouteNode = {
     children: RouteNode[];
     /** Is the route a dynamic path */
     dynamic: null | DynamicConvention[];
-    /** `index`, `error-boundary`, etc. */
+    /** `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx` */
     route: string;
     /** Context Module ID, used for matching children. */
     contextKey: string;
@@ -57,17 +59,17 @@ export type RouteNode = {
     /** Middleware function for server-side request processing. Only present on the root route node. */
     middleware?: MiddlewareNode;
 };
-export declare const LocalRouteParamsContext: import("react").Context<Record<string, string | undefined> | undefined>;
+/** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */
+export declare const SuspenseFallbackContext: import("react").Context<ComponentType<SuspenseFallbackProps> | undefined>;
+export declare const LocalRouteParamsContext: import("react").Context<object | undefined>;
 /** Return the RouteNode at the current contextual boundary. */
 export declare function useRouteNode(): RouteNode | null;
 export declare function useContextKey(): string;
 export type RouteProps = PropsWithChildren<{
     node: RouteNode;
-    route?: {
-        params: Record<string, string | undefined>;
-    };
+    params: object | undefined;
 }>;
 /** Provides the matching routes and filename to the children. */
-export declare function Route({ children, node, route }: RouteProps): import("react").JSX.Element;
+export declare function Route({ children, node, params }: RouteProps): import("react").JSX.Element;
 export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.d.ts.map

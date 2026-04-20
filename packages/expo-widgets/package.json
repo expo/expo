@@ -1,0 +1,50 @@
+{
+  "name": "expo-widgets",
+  "version": "55.0.1",
+  "description": "Widgets.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "build:plugin": "expo-module build plugin",
+    "build:bundle": "node ./scripts/build-bundle.mjs",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-widgets"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-widgets"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
+  "dependencies": {
+    "@expo/plist": "workspace:^0.5.2",
+    "@expo/ui": "workspace:~55.0.1"
+  },
+  "devDependencies": {
+    "@expo/spawn-async": "^1.7.2",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "expo-module-scripts": "workspace:*",
+    "react-native": "0.85.0",
+    "resolve-workspace-root": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "workspace:*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

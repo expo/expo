@@ -1,6 +1,6 @@
-import { InitialState } from '@react-navigation/native';
 import * as queryString from 'query-string';
 import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
+import { InitialState } from '../react-navigation/native';
 export type ExpoOptions = {
     previousSegments?: string[];
 };

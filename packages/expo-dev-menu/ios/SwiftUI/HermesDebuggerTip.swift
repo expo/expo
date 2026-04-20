@@ -26,7 +26,3 @@ struct HermesDebuggerTip: View {
     .cornerRadius(18)
   }
 }
-
-#Preview {
-  HermesDebuggerTip()
-}

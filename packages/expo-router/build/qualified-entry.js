@@ -10,6 +10,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = App;
 // This has to be the string "expo-router/_ctx" as we resolve the exact string to
 // a different file in a custom resolver for bundle splitting in Node.js.
+//
+// @ts-ignore: Will not self-resolve without package.json:exports
 const _ctx_1 = require("expo-router/_ctx");
 const react_1 = __importDefault(require("react"));
 const ExpoRoot_1 = require("./ExpoRoot");

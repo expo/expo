@@ -51,6 +51,7 @@ public:
     jboolean takesOwner,
     jboolean enumerable,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jint cppReturnType,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
@@ -85,6 +86,13 @@ public:
    * @return vector of unique pointers to decorators
    */
   std::vector<std::unique_ptr<JSDecorator>> bridge();
+
+  /**
+   * Returns the class decorator, or nullptr if none was registered.
+   */
+  JSClassesDecorator* getClassDecorator() const {
+    return classDecorator.get();
+  }
 
 private:
   friend HybridBase;

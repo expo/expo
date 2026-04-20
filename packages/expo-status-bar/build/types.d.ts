@@ -10,7 +10,7 @@ export type StatusBarProps = {
     style?: StatusBarStyle;
     /**
      * If the transition between status bar property changes should be
-     * animated. Supported for `backgroundColor`, `barStyle` and `hidden`.
+     * animated. Supported for `style` and `hidden`.
      */
     animated?: boolean;
     /**
@@ -24,22 +24,5 @@ export type StatusBarProps = {
      * @platform ios
      */
     hideTransitionAnimation?: StatusBarAnimation;
-    /**
-     * If the network activity indicator should be visible.
-     * @platform ios
-     */
-    networkActivityIndicatorVisible?: boolean;
-    /**
-     * The background color of the status bar.
-     * @platform android
-     */
-    backgroundColor?: string;
-    /**
-     * If the status bar is translucent. When translucent is set to `true`,
-     * the app will draw under the status bar. This is the default behaviour in
-     * projects created with Expo tools because it is consistent with iOS.
-     * @platform android
-     */
-    translucent?: boolean;
 };
 //# sourceMappingURL=types.d.ts.map

@@ -21,7 +21,8 @@
 #include "worklets/WorkletNativeRuntime.h"
 
 #if RN_FABRIC_ENABLED
-#include "FabricComponentsRegistry.h"
+#include "fabric/FabricComponentsRegistry.h"
+#include "fabric/NativeStatePropsGetter.h"
 #endif
 
 #include <jni.h>
@@ -62,6 +63,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
 
 #if RN_FABRIC_ENABLED
     expo::FabricComponentsRegistry::registerNatives();
+    expo::NativeStatePropsGetter::registerNatives();
 #endif
   });
 }

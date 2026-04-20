@@ -7,7 +7,7 @@ import NotificationScheduler from './NotificationScheduler';
  * @return A Promise that resolves once all the scheduled notifications are successfully canceled, or if there are no scheduled notifications.
  * @header schedule
  */
-export default async function cancelAllScheduledNotificationsAsync(): Promise<void> {
+export async function cancelAllScheduledNotificationsAsync(): Promise<void> {
   if (!NotificationScheduler.cancelAllScheduledNotificationsAsync) {
     throw new UnavailabilityError('Notifications', 'cancelAllScheduledNotificationsAsync');
   }

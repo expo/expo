@@ -3,20 +3,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mockDependencyAtPath = mockDependencyAtPath;
 exports.scanDependenciesInSearchPath = scanDependenciesInSearchPath;
 const fs_1 = __importDefault(require("fs"));
+const concurrency_1 = require("../concurrency");
 const utils_1 = require("./utils");
+const utils_2 = require("../utils");
 async function resolveDependency(basePath, dependencyName, shouldIncludeDependency) {
     if (dependencyName && !shouldIncludeDependency(dependencyName)) {
         return null;
     }
-    const originPath = dependencyName ? (0, utils_1.fastJoin)(basePath, dependencyName) : basePath;
-    const realPath = await (0, utils_1.maybeRealpath)(originPath);
-    const packageJson = await (0, utils_1.loadPackageJson)((0, utils_1.fastJoin)(realPath || originPath, 'package.json'));
+    const originPath = dependencyName ? (0, utils_2.fastJoin)(basePath, dependencyName) : basePath;
+    const realPath = await (0, utils_2.maybeRealpath)(originPath);
+    const packageJson = await (0, utils_2.loadPackageJson)((0, utils_2.fastJoin)(realPath || originPath, 'package.json'));
     if (packageJson) {
         return {
             source: 1 /* DependencyResolutionSource.SEARCH_PATH */,
-            name: packageJson.name,
+            name: packageJson.name || '',
             version: packageJson.version || '',
             path: realPath || originPath,
             originPath,
@@ -39,14 +42,28 @@ async function resolveDependency(basePath, dependencyName, shouldIncludeDependen
         return null;
     }
 }
+/** Create a mock resolution for a local search path dependency at the given path */
+async function mockDependencyAtPath(originPath) {
+    const realPath = await (0, utils_2.maybeRealpath)(originPath);
+    const packageJson = await (0, utils_2.loadPackageJson)((0, utils_2.fastJoin)(realPath || originPath, 'package.json'));
+    return {
+        source: 1 /* DependencyResolutionSource.SEARCH_PATH */,
+        name: packageJson?.name || 'local-module', // NOTE: Mock name
+        version: packageJson?.version ?? '',
+        path: realPath ?? originPath,
+        originPath,
+        duplicates: null,
+        depth: 0,
+    };
+}
 async function scanDependenciesInSearchPath(rawPath, { shouldIncludeDependency = utils_1.defaultShouldIncludeDependency } = {}) {
-    const rootPath = await (0, utils_1.maybeRealpath)(rawPath);
+    const rootPath = await (0, utils_2.maybeRealpath)(rawPath);
     const searchResults = Object.create(null);
     if (!rootPath) {
         return searchResults;
     }
     const resolvedDependencies = [];
-    const localModuleTarget = await (0, utils_1.maybeRealpath)((0, utils_1.fastJoin)(rootPath, 'package.json'));
+    const localModuleTarget = await (0, utils_2.maybeRealpath)((0, utils_2.fastJoin)(rootPath, 'package.json'));
     if (localModuleTarget) {
         // If we have a `package.json` file in the search path, we're already dealing with a node module
         // and can skip the rest. This is a special case created by create-expo-module's `nativeModulesDir: ../`
@@ -56,7 +73,7 @@ async function scanDependenciesInSearchPath(rawPath, { shouldIncludeDependency =
     }
     else {
         const dirents = await fs_1.default.promises.readdir(rootPath, { withFileTypes: true });
-        await Promise.all(dirents.map(async (entry) => {
+        await (0, concurrency_1.taskAll)(dirents, async (entry) => {
             if (entry.isSymbolicLink()) {
                 const resolution = await resolveDependency(rootPath, entry.name, shouldIncludeDependency);
                 if (resolution)
@@ -71,7 +88,7 @@ async function scanDependenciesInSearchPath(rawPath, { shouldIncludeDependency =
                 }
                 else if (entry.name[0] === '@') {
                     // NOTE: We don't expect @-scope folders to be symlinks
-                    const entryPath = (0, utils_1.fastJoin)(rootPath, entry.name);
+                    const entryPath = (0, utils_2.fastJoin)(rootPath, entry.name);
                     const childEntries = await fs_1.default.promises.readdir(entryPath, { withFileTypes: true });
                     await Promise.all(childEntries.map(async (child) => {
                         const dependencyName = `${entry.name}/${child.name}`;
@@ -88,10 +105,9 @@ async function scanDependenciesInSearchPath(rawPath, { shouldIncludeDependency =
                         resolvedDependencies.push(resolution);
                 }
             }
-        }));
+        });
     }
-    for (let idx = 0; idx < resolvedDependencies.length; idx++) {
-        const resolution = resolvedDependencies[idx];
+    for (const resolution of resolvedDependencies) {
         const prevEntry = searchResults[resolution.name];
         if (prevEntry != null && resolution.path !== prevEntry.path) {
             (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push({

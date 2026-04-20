@@ -165,6 +165,27 @@ export function createFallbackModuleResolver({
   const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
 
   return function requestFallbackModule(immutableContext, moduleName, platform) {
+    if (moduleName === '../../App') {
+      // Fix up the `../../App` relative path, escaping `node_modules/expo` for monorepos and isolated dependencies
+      // NOTE(@kitten): If `expo/AppEntry.js` changes, this will likely have to change too!
+      if (/[/\\]node_modules[/\\]expo[/\\]AppEntry\.js$/.test(immutableContext.originModulePath)) {
+        // We instead resolve from the project root
+        const context: ResolutionContext = {
+          ...immutableContext,
+          nodeModulesPaths: [],
+          // NOTE(@kitten): We need to add a fake filename here. Metro performs a `path.dirname` on this path
+          // and then searches `${path.dirname(originModulePath)}/node_modules`. If we don't add it, we miss
+          // fallback resolution for packages that failed to hoist
+          originModulePath: path.join(projectRoot, 'index.js'),
+        };
+        const res = getStrictResolver(context, platform)('./App');
+        debug(`"../../App" resolution for ${platform}: "./App" -> from origin: ${projectRoot}`);
+        return res;
+      } else {
+        return null;
+      }
+    }
+
     // Early return if `moduleName` cannot be a module specifier
     // This doesn't have to be accurate as this resolver is a fallback for failed resolutions and
     // we're only doing this to avoid unnecessary resolution work
@@ -190,6 +211,24 @@ export function createFallbackModuleResolver({
         );
         return res;
       }
+    }
+
+    // Self-resolution
+    const pkg = immutableContext.getPackageForModule(immutableContext.originModulePath);
+    const pkgName = pkg?.packageJson.name;
+    if (pkgName && dependenciesToRegex([pkgName]).test(moduleName)) {
+      const context: ResolutionContext = {
+        ...immutableContext,
+        nodeModulesPaths: [],
+        // NOTE(@kitten): Metro currently fails self-resolution, so if the package failed to resolve itself
+        // from within itself, we add a hint to where to find itself to the `extraNodeModules` lookups
+        extraNodeModules: {
+          [pkgName]: pkg.rootPath,
+        },
+      };
+      const res = getStrictResolver(context, platform)(moduleName);
+      debug(`Self resolution for ${platform}: ${moduleName} -> from origin: ${pkg.rootPath}`);
+      return res;
     }
 
     return null;

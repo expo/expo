@@ -1,6 +1,5 @@
 package expo.modules.webbrowser
 
-import expo.modules.core.errors.CurrentActivityNotFoundException
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -64,7 +63,6 @@ class WebBrowserModule : Module() {
       )
     }
 
-    // throws CurrentActivityNotFoundException
     AsyncFunction<Bundle>("getCustomTabsSupportingBrowsersAsync") {
       val activities = customTabsResolver.customTabsResolvingActivities
       val services = customTabsResolver.customTabsResolvingServices
@@ -82,7 +80,6 @@ class WebBrowserModule : Module() {
       }
     }
 
-    // throws CurrentActivityNotFoundException
     AsyncFunction("openBrowserAsync") { url: String, options: OpenBrowserOptions ->
       val tabsIntent = createCustomTabsIntent(options).apply {
         intent.data = url.toUri()
@@ -147,8 +144,6 @@ class WebBrowserModule : Module() {
       packageName?.takeIf { it.isNotEmpty() }.ifNull {
         customTabsResolver.getPreferredCustomTabsResolvingActivity(null)
       }
-    } catch (_: CurrentActivityNotFoundException) {
-      throw NoPreferredPackageFound()
     } catch (_: PackageManagerNotFoundException) {
       throw NoPreferredPackageFound()
     }

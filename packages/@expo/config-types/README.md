@@ -32,7 +32,7 @@ export default (): ExpoConfig => {
 
 This package is 100% generated using the versioned JSON schemas from the Expo server.
 
-- `yarn generate` - uses the major version from the `package.json`.
-- `yarn generate --path ../../../../universe/server/www/xdl-schemas/UNVERSIONED-schema.json` - uses the latest version from your local directory.
-- `yarn generate 39` - uses the given version.
-- `yarn generate unversioned` - uses the latest version.
+- `pnpm generate` - uses the major version from the `package.json`.
+- `pnpm generate --path ../../../../universe/server/www/xdl-schemas/UNVERSIONED-schema.json` - uses the latest version from your local directory.
+- `pnpm generate 39` - uses the given version.
+- `pnpm generate unversioned` - uses the latest version.

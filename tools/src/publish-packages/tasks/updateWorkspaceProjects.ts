@@ -18,7 +18,7 @@ const { green, yellow, cyan } = chalk;
 export const updateWorkspaceProjects = new Task<TaskArgs>(
   {
     name: 'updateWorkspaceProjects',
-    filesToStage: ['**/package.json', 'yarn.lock'],
+    filesToStage: ['**/package.json', 'pnpm-lock.yaml'],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n📤 Updating workspace projects...');
@@ -30,7 +30,7 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
 
     const workspaceInfo = await Workspace.getInfoAsync();
 
-    // Append project templates as they're not yarn workspaces.
+    // Append project templates as they're not pnpm workspaces.
     const templates = await getAvailableProjectTemplatesAsync();
     templates.forEach((template) => {
       workspaceInfo[template.packageName] = {

@@ -1,33 +1,47 @@
-import { gql } from '@urql/core';
+import { graphql, query } from '../client';
 
-import { AppByIdQuery } from '../../../graphql/generated';
-import { graphqlClient, withErrorHandlingAsync } from '../client';
-import { AppFragmentNode } from '../types/App';
+export type App = {
+  id: string;
+  scopeKey: string;
+  ownerAccount: {
+    id: string;
+    name: string;
+  };
+};
+
+type AppQueryData = {
+  app: {
+    byId: App;
+  };
+};
+
+type AppQueryVariables = {
+  appId: string;
+};
+
+const AppQueryDocument = graphql<AppQueryData, AppQueryVariables>(`
+  query AppByIdQuery($appId: String!) {
+    app {
+      byId(appId: $appId) {
+        id
+        ...AppFragment
+      }
+    }
+  }
+
+  fragment AppFragment on App {
+    id
+    scopeKey
+    ownerAccount {
+      id
+      name
+    }
+  }
+`);
 
 export const AppQuery = {
-  async byIdAsync(projectId: string): Promise<AppByIdQuery['app']['byId']> {
-    const data = await withErrorHandlingAsync(
-      graphqlClient
-        .query<AppByIdQuery>(
-          gql`
-            query AppByIdQuery($appId: String!) {
-              app {
-                byId(appId: $appId) {
-                  id
-                  ...AppFragment
-                }
-              }
-            }
-
-            ${AppFragmentNode}
-          `,
-          { appId: projectId },
-          {
-            additionalTypenames: ['App'],
-          }
-        )
-        .toPromise()
-    );
+  async byIdAsync(projectId: string): Promise<AppQueryData['app']['byId']> {
+    const data = await query(AppQueryDocument, { appId: projectId });
     return data.app.byId;
   },
 };

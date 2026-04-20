@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { PathInfo } from './ExpoFileSystem.types';
+import { type DownloadOptions, type PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -40,6 +40,7 @@ export declare class Paths extends PathUtilities {
  * ```
  */
 export declare class File extends ExpoFileSystem.FileSystemFile implements Blob {
+    static downloadFileAsync: (url: string, destination: Directory | File, options?: DownloadOptions) => Promise<File>;
     /**
      * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
      *
@@ -79,6 +80,7 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
  * ```
  */
 export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
+    static pickDirectoryAsync: (initialUri?: string) => Promise<Directory>;
     /**
      * Creates an instance of a directory. It can be created for any path, and does not need to exist on the filesystem during creation.
      *

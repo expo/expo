@@ -5,7 +5,7 @@ buildscript {
   dependencies {
     classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
     classpath("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:${kotlinVersion}")
-    classpath("com.apollographql.apollo:apollo-gradle-plugin:4.3.1")
+    classpath("com.apollographql.apollo:apollo-gradle-plugin:4.4.2")
   }
 }
 
@@ -26,13 +26,13 @@ expoModule {
 }
 
 group = "host.exp.exponent"
-version = "6.0.11"
+version = "55.0.10"
 
 android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "6.0.11"
+    versionName "55.0.10"
   }
 
   buildTypes {
@@ -121,6 +121,7 @@ dependencies {
   }
 
   implementation 'com.facebook.react:react-android'
+  implementation 'androidx.core:core-ktx:1.17.0'
 
   debugOnly project(":expo-dev-menu-interface")
   debugOnly project(":expo-manifests")
@@ -144,12 +145,17 @@ dependencies {
   debugOnly "androidx.compose.ui:ui:$composeVersion"
   debugOnly "androidx.compose.ui:ui-tooling:$composeVersion"
   debugOnly "androidx.navigation:navigation-compose:2.9.4"
+
+  def lifecycleVersion = "2.10.0"
+  debugOnly "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+  debugOnly "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion"
+
   debugOnly "com.google.android.gms:play-services-code-scanner:16.1.0"
   debugOnly "com.google.mlkit:barcode-scanning:17.3.0"
 
   debugOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 
-  debugOnly("com.apollographql.apollo:apollo-runtime:4.3.1")
+  debugOnly("com.apollographql.apollo:apollo-runtime:4.4.2")
 
   debugOnly("com.composables:core:1.43.1")
 

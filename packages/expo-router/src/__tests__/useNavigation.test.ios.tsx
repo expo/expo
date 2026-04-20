@@ -1,7 +1,7 @@
-import { NavigationProp } from '@react-navigation/native';
 import React from 'react';
 
 import Stack from '../layouts/Stack';
+import { NavigationProp } from '../react-navigation/native';
 import { renderRouter } from '../testing-library';
 import { useNavigation } from '../useNavigation';
 
@@ -39,6 +39,8 @@ it('can resolve the parent of a nested navigator', () => {
   });
 
   expect(navigation).toBeDefined();
+  // Narrows type for TypeScript
+  if (!navigation) throw new Error('Expected navigation to be defined');
   expect(navigation.getId()).toBe('/(app)');
 });
 

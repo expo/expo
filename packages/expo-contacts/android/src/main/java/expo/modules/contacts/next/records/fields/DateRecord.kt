@@ -1,0 +1,42 @@
+package expo.modules.contacts.next.records.fields
+
+import expo.modules.contacts.next.records.ExistingRecord
+import expo.modules.contacts.next.records.NewRecord
+import expo.modules.contacts.next.records.PatchRecord
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.Required
+import expo.modules.kotlin.types.ValueOrUndefined
+import expo.modules.kotlin.types.OptimizedRecord
+
+sealed interface DateRecord {
+  @OptimizedRecord
+  data class Existing(
+    @Required @Field override val id: String,
+    @Field val label: String? = null,
+    @Field val date: ContactDateRecord? = null
+  ) : ExistingRecord
+
+  @OptimizedRecord
+  data class New(
+    @Field val label: String? = null,
+    @Field val date: ContactDateRecord? = null
+  ) : NewRecord
+
+  @OptimizedRecord
+  class Patch : PatchRecord {
+    @Required @Field
+    override lateinit var id: String
+
+    @Field val label: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
+
+    @Field val date: ValueOrUndefined<ContactDateRecord?> = ValueOrUndefined.Undefined()
+  }
+
+  @OptimizedRecord
+  data class ContactDateRecord(
+    @Field val year: Int? = null,
+    @Required @Field val month: Int,
+    @Required @Field val day: Int
+  ) : Record
+}

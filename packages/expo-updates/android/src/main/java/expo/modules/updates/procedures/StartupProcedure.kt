@@ -2,7 +2,6 @@ package expo.modules.updates.procedures
 
 import android.content.Context
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.AssetEntity
@@ -22,6 +21,7 @@ import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,7 +66,7 @@ class StartupProcedure(
 
   var emergencyLaunchException: Exception? = null
     private set
-  private val errorRecovery = ErrorRecovery(logger, ReactNativeFeatureFlags.enableBridgelessArchitecture)
+  private val errorRecovery = ErrorRecovery(logger)
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
   private val loaderTask = LoaderTask(
@@ -138,6 +138,10 @@ class StartupProcedure(
           )
         )
         logger.info("AppController appLoaderTask didLoadAsset: $body", UpdatesErrorCode.None, null, asset.expectedHash)
+      }
+
+      override fun onRemoteUpdateProgressChanged(progress: Double) {
+        procedureContext.processStateEvent(UpdatesStateEvent.DownloadProgress(progress))
       }
 
       override fun onRemoteUpdateFinished(
@@ -239,7 +243,7 @@ class StartupProcedure(
           return
         }
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
-        val remoteLoader = RemoteLoader(context, updatesConfiguration, logger, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate)
+        val remoteLoader = RemoteLoader(context, updatesConfiguration, logger, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate, procedureScope)
         procedureScope.launch {
           try {
             val loaderResult = remoteLoader.load { updateResponse ->
@@ -264,6 +268,8 @@ class StartupProcedure(
                 ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               }
             )
+          } catch (e: CancellationException) {
+            throw e
           } catch (e: Exception) {
             logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)

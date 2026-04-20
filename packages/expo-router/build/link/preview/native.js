@@ -10,6 +10,7 @@ exports.LinkZoomTransitionAlignmentRectDetector = LinkZoomTransitionAlignmentRec
 const expo_1 = require("expo");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+// TODO(@kitten): Replace with `globalThis`, add typings in `expo`
 const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && !react_native_1.Platform.isTV && global.RN$Bridgeless === true;
 const LinkPreviewNativeActionView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
@@ -18,7 +19,9 @@ function NativeLinkPreviewAction(props) {
     if (!LinkPreviewNativeActionView) {
         return null;
     }
-    return <LinkPreviewNativeActionView {...props}/>;
+    // Needed to pass shared object ID to native side
+    const imageObjectId = props.image?.__expo_shared_object_id__;
+    return <LinkPreviewNativeActionView {...props} image={imageObjectId}/>;
 }
 const NativeLinkPreviewView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')
@@ -46,8 +49,6 @@ function NativeLinkPreviewContent(props) {
     ]);
     return <NativeLinkPreviewContentView {...props} style={style}/>;
 }
-// #endregion
-// #region Zoom transition enabler
 const LinkZoomTransitionEnablerNativeView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
     : null;

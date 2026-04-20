@@ -4,17 +4,18 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.0.7'
+version = '55.0.9'
 
 android {
   namespace "expo.modules.taskmanager"
   defaultConfig {
     versionCode 23
-    versionName "14.0.7"
+    versionName "55.0.9"
   }
 }
 
 dependencies {
   implementation project(':unimodules-app-loader')
   api "androidx.core:core:1.17.0"
+  compileOnly "com.facebook.react:react-android"
 }

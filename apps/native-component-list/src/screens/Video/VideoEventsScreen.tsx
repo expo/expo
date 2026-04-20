@@ -110,7 +110,7 @@ export default function VideoEventsScreen() {
             source: sourceObject?.metadata?.title ?? 'No title',
             isPlaying,
             isAtStart: currentTime === 0,
-            duration: Math.round(loadedMetadata?.duration ?? 0),
+            duration: Math.floor(loadedMetadata?.duration ?? 0),
             currentTime: Math.round((timeUpdate?.currentTime ?? 0) * 100) / 100,
 
             mimeType: videoTrack?.mimeType,

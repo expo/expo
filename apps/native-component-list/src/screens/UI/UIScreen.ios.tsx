@@ -27,6 +27,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community DateTimePicker replacement',
+    route: 'ui/community-datetimepicker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityDateTimePickerScreen'));
+    },
+  },
+  {
+    name: 'Community SegmentedControl replacement',
+    route: 'ui/community-segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
     name: 'Toggle component',
     route: 'ui/toggle',
     options: {},
@@ -75,6 +91,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ConfirmationDialog component',
+    route: 'ui/confirmation-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ConfirmationDialogScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
@@ -91,19 +115,19 @@ export const UIScreens = [
     },
   },
   {
-    name: 'TextInput component',
-    route: 'ui/textInput',
+    name: 'TextField component',
+    route: 'ui/textField',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./TextInputScreen'));
+      return optionalRequire(() => require('./TextFieldScreen'));
     },
   },
   {
-    name: 'Progress component',
-    route: 'ui/progress',
+    name: 'ProgressView component',
+    route: 'ui/progress-view',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./ProgressScreen'));
+      return optionalRequire(() => require('./ProgressViewScreen'));
     },
   },
   {
@@ -171,6 +195,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Content Transition',
+    route: 'ui/content-transition',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContentTransitionScreen'));
+    },
+  },
+  {
     name: 'Glass Effect',
     route: 'ui/glass-effect',
     options: {},
@@ -184,6 +216,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
+    },
+  },
+  {
+    name: 'LazyVStack / LazyHStack',
+    route: 'ui/lazy-stack',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyStackScreen'));
+    },
+  },
+  {
+    name: 'ScrollView component',
+    route: 'ui/scrollview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewScreen'));
     },
   },
   {
@@ -208,6 +256,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./TextScreen'));
+    },
+  },
+  {
+    name: 'Link component',
+    route: 'ui/link',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LinkScreen'));
+    },
+  },
+  {
+    name: 'Overlay component',
+    route: 'ui/overlay',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./OverlayScreen'));
     },
   },
   {
@@ -240,6 +304,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostIgnoreSafeAreaKeyboardScreen'));
+    },
+  },
+  {
+    name: 'Extending Expo UI',
+    route: 'ui/extending',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
+  {
+    name: 'rotation3DEffect modifier',
+    route: 'ui/rotation-3d-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./Rotation3DEffectScreen'));
     },
   },
 ];

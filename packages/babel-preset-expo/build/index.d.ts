@@ -33,11 +33,11 @@ type BabelPresetExpoPlatformOptions = {
     /**
      * Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`.
      *
-     * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+     * > **Note:** If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
      *
-     * @default `false` on client and `true` on server.
+     * @default `true`
      */
-    unstable_transformImportMeta?: boolean;
+    transformImportMeta?: boolean;
 };
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
     /** Web-specific settings. */

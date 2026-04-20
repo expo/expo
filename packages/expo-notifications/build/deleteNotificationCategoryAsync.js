@@ -9,7 +9,7 @@ import NotificationCategoriesModule from './NotificationCategoriesModule';
  * @platform ios
  * @header categories
  */
-export default async function deleteNotificationCategoryAsync(identifier) {
+export async function deleteNotificationCategoryAsync(identifier) {
     if (!NotificationCategoriesModule.deleteNotificationCategoryAsync) {
         throw new UnavailabilityError('Notifications', 'deleteNotificationCategoryAsync');
     }

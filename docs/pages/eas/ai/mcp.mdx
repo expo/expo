@@ -8,6 +8,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ExpoMCPToolsTable, ExpoMCPPromptsTable } from '~/ui/components/ExpoMCPToolsTable';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -26,13 +27,13 @@ Expo MCP Server is a remote MCP server hosted by Expo that integrates with popul
 
 ## What does Expo MCP Server do?
 
-Expo MCP Server teaches your AI-assisted tools about the Expo SDK and lets them interact with mobile simulators and the React Native DevTools. These are three examples of the tasks Expo MCP Server enhances:
+Expo MCP Server teaches your AI-assisted tools about the Expo SDK and lets them interact with mobile simulators and the React Native DevTools. These are some examples of the tasks Expo MCP Server enhances:
 
 **Learn about developing with Expo.** Your AI-assisted tools can fetch the latest official Expo documentation on demand and use it to reply to prompts like:
 
-- "Add [AGENTS.md](https://agents.md/)/CLAUDE.md to my project"
 - "How do I use Expo Router?"
 - "Search the Expo docs for implementing deep linking"
+- "Read the Expo Router docs page"
 - "What is Expo CNG?"
 
 **Manage dependencies.** Expo MCP Server guides you toward installing our recommended packages and uses `npx expo install` to install known, compatible versions.
@@ -40,6 +41,14 @@ Expo MCP Server teaches your AI-assisted tools about the Expo SDK and lets them 
 - "Add SQLite with basic CRUD operations"
 - "Install `expo-camera` and show me how to take photos"
 - "Add `expo-notifications` for push notifications"
+
+**Manage builds and workflows.** Expo MCP Server can trigger and monitor EAS builds, run workflows, and pull crash data from TestFlight:
+
+- "Investigate why my most recent iOS build on EAS failed"
+- "Identify any patterns in recent failing workflows"
+- "Create a workflow that runs Maestro tests"
+- "Show me recent TestFlight crashes"
+- "Show TestFlight feedback for my app"
 
 **Automate visual verification and testing.** Multimodal AI-assisted tools can screenshot and interact with your running app in a simulator. Expo MCP Server includes local capabilities enabled by adding the `expo-mcp` package to your project's dependencies.
 
@@ -56,7 +65,7 @@ The complete table of [MCP capabilities](#available-mcp-capabilities) documents 
 Before using Expo MCP Server, ensure you have:
 
 - An Expo account with an EAS paid plan
-- An Expo project with Expo SDK 54 and the latest `expo` package version
+- An Expo project created either with `npx create-expo-app@latest --template default@sdk-55` or has the latest `expo` package version installed
 - AI-assisted tools with remote MCP server support (Claude Code, Cursor, VS Code, and so on)
 
 ## Installation and setup
@@ -109,6 +118,14 @@ Click the following link to install the MCP server for Cursor:
 
 </Collapsible>
 
+<Collapsible summary="Codex setup">
+
+<Terminal cmd={['$ codex mcp add expo-mcp --url https://mcp.expo.dev/mcp']} />
+
+The above command adds the MCP server to your Codex configuration file and prompts you to authenticate with your Expo account.
+
+</Collapsible>
+
 </Step>
 
 <Step label="2">
@@ -121,7 +138,8 @@ After installing the MCP server, you'll need to authenticate using one of two me
 
 Generate a **Personal access token** from your Expo account and use it during the OAuth flow.
 
-To generate an access token, open your EAS dashboard, navigate to **Credentials** > **Access tokens** > **Personal access tokens**, and then click **Create token**.
+- To generate an access token, open [Access tokens](https://expo.dev/accounts/[account]/settings/access-tokens) settings page in EAS dashboard.
+- Under **Personal access tokens**, click **Create token**. Copy the token and use it during the OAuth flow.
 
 #### Credentials
 
@@ -163,7 +181,7 @@ Expo MCP Server provides two types of capabilities depending on your setup:
 
 ### Server capabilities
 
-Server capabilities are available with just the remote MCP server connection, without needing to set up a local development server. The **generate_agents_md** tool is an example of a server capability.
+Server capabilities are available with just the remote MCP server connection, without needing to set up a local development server. The **search_documentation** tool is an example of a server capability.
 
 ### Local capabilities
 
@@ -181,29 +199,13 @@ These capabilities enable more sophisticated workflows like automated testing, v
 
 ### Tools
 
-| Tool                                   | Description                                                          | Example Prompt                                      | Availability                           |
-| -------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------- |
-| `learn`                                | Learn Expo how-to for a specific topic                               | "learn how to use expo-router"                      | Server                                 |
-| `search_documentation`                 | Search from Expo documentation using natural language                | "search documentation for CNG"                      | Server                                 |
-| `add_library`                          | Install Expo packages with `npx expo install` and show documentation | "add sqlite and basic CRUD to the app"              | Server                                 |
-| `generate_claude_md`                   | Generate **CLAUDE.md** configuration files                           | "generate a CLAUDE.md for the project"              | Server (Claude Code only)              |
-| `generate_agents_md`                   | Generate **AGENTS.md** files                                         | "generate an AGENTS.md file for the project"        | Server                                 |
-| `expo_router_sitemap`                  | Execute and display expo-router-sitemap output                       | "check the expo-router-sitemap output"              | Local (requires `expo-router` library) |
-| `open_devtools`                        | Open React Native DevTools                                           | "open devtools"                                     | Local                                  |
-| `automation_tap`                       | Tap at specific screen coordinates                                   | "tap the screen at x=12, y=22"                      | Local                                  |
-| `automation_take_screenshot`           | Take full device screenshots                                         | "take a screenshot and verify the blue circle view" | Local                                  |
-| `automation_find_view_by_testid`       | Find and analyze views by testID                                     | "dump properties for testID 'button-123'"           | Local                                  |
-| `automation_tap_by_testid`             | Tap views by testID                                                  | "click the view with testID 'button-123'"           | Local                                  |
-| `automation_take_screenshot_by_testid` | Screenshot specific views by testID                                  | "screenshot the view with testID 'button-123'"      | Local                                  |
+<ExpoMCPToolsTable />
 
 ### Prompts
 
-If your AI-assisted tool supports [MCP prompts](https://modelcontextprotocol.io/specification/2025-06-18/server/prompts), you may see additional menu options, such as [slash commands in Claude Code](https://docs.claude.com/en/docs/claude-code/mcp#use-mcp-prompts-as-slash-commands):
+If your AI-assisted tool supports [MCP prompts](https://modelcontextprotocol.io/specification/2025-06-18/server/prompts), you may see additional menu options, such as [slash commands in Claude Code](https://code.claude.com/docs/en/mcp):
 
-| Tool                  | Description                                    | Availability                           |
-| --------------------- | ---------------------------------------------- | -------------------------------------- |
-| `expo_router_sitemap` | Execute and display expo-router-sitemap output | Local (requires `expo-router` library) |
-| `onboarding`          | Display **AGENTS.md** content to the AI        | Server                                 |
+<ExpoMCPPromptsTable />
 
 ## Limitations
 

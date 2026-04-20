@@ -1,15 +1,7 @@
-import type { Reporter } from '@expo/metro/metro';
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import { INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { FileStore } from './file-store';
-export interface LoadOptions {
-    config?: string;
-    maxWorkers?: number;
-    port?: number;
-    reporter?: Reporter;
-    resetCache?: boolean;
-}
 export interface DefaultConfigOptions {
     /** @deprecated */
     mode?: 'exotic';
@@ -56,7 +48,6 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
     };
     cacheStores: FileStore<any>[];
     watcher: {
-        unstable_workerThreads: false;
         additionalExts: string[];
     };
     serializer: {

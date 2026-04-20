@@ -16,7 +16,7 @@ export function PageCliVersion({ cliVersion, className }: Props) {
   return (
     <div className={mergeClasses('flex items-center gap-2', className)}>
       <div
-        className="flex items-center justify-center gap-1.5 text-xs text-secondary"
+        className="text-secondary flex items-center justify-center gap-1.5 text-sm"
         aria-hidden="true">
         <TerminalSquareDuotoneIcon className="icon-sm text-icon-secondary" />
         CLI version:

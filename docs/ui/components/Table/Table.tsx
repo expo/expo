@@ -20,18 +20,18 @@ export const Table = ({
 }: TableProps) => (
   <div
     className={mergeClasses(
-      'table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs',
+      'table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs',
       containerClassName
     )}>
     <table
       className={mergeClasses(
-        'w-full rounded-none border-0 text-xs text-default',
-        '[&_p]:text-xs',
-        '[&_li]:text-xs',
-        '[&_span]:text-xs',
+        'text-default w-full rounded-none border-0 text-sm',
+        '[&_p]:text-sm',
+        '[&_li]:text-sm',
+        '[&_span]:text-sm',
         '[&_code_span]:text-inherit',
-        '[&_strong]:text-xs',
-        '[&_blockquote_div]:text-xs',
+        '[&_strong]:text-sm',
+        '[&_blockquote_div]:text-sm',
         '[&_blockquote_code]:px-1 [&_blockquote_code]:py-0',
         className
       )}>

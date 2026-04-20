@@ -1,7 +1,7 @@
-import { TabNavigationState } from '@react-navigation/native';
 import { ReactNode, ReactElement, ComponentProps } from 'react';
 import { View, PressableProps } from 'react-native';
 import type { TriggerMap } from './common';
+import { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
     children?: ReactNode | undefined;

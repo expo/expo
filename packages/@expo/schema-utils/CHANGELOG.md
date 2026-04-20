@@ -8,7 +8,23 @@
 
 ### 🐛 Bug fixes
 
+- Update types to accept `$id` and change `exclusiveMinimum`/`exclusiveMaximum` to accept `number` for Draft 06 spec ([#44510](https://github.com/expo/expo/pull/44510) by [@Nedunchezhiyan-M](https://github.com/Nedunchezhiyan-M))
+
 ### 💡 Others
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
+- Add `JSONSchema` generic to carry shadow type for validated schema ([#42215](https://github.com/expo/expo/pull/42215) by [@kitten](https://github.com/kitten))
 
 ## 0.1.8 - 2025-12-04
 

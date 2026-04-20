@@ -5,10 +5,12 @@ import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import expo.modules.kotlin.AppContext
 import expo.modules.video.VideoView
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.utils.MutableWeakReference
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 
@@ -23,9 +25,10 @@ import kotlin.math.abs
 @OptIn(UnstableApi::class)
 @MainThread
 internal class FirstFrameEventGenerator(
+  appContext: AppContext,
   videoPlayer: VideoPlayer,
   private val currentViewReference: MutableWeakReference<VideoView?>,
-  private val onFirstFrameRendered: () -> Unit
+  private var onFirstFrameRendered: (() -> Unit)?
 ) : Player.Listener, VideoPlayerListener {
   private val videoPlayerReference = WeakReference(videoPlayer)
   private var hasPendingOnFirstFrame = false
@@ -35,13 +38,17 @@ internal class FirstFrameEventGenerator(
     private set
 
   init {
-    videoPlayer.player.addListener(this)
     videoPlayer.addListener(this)
+    appContext.mainQueue.launch {
+      videoPlayer.player.addListener(this@FirstFrameEventGenerator)
+    }
   }
 
+  @MainThread
   fun release() {
     videoPlayerReference.get()?.removeListener(this)
     videoPlayerReference.get()?.player?.removeListener(this)
+    onFirstFrameRendered = null
   }
 
   override fun onRenderedFirstFrame() {
@@ -71,7 +78,7 @@ internal class FirstFrameEventGenerator(
   // We want to match the behavior across platforms, so we limit the number of event emissions.
   private fun maybeCallOnFirstFrameRendered() {
     if (!hasSentFirstFrameForCurrentMediaItem || !hasSentFirstFrameForCurrentVideoView) {
-      onFirstFrameRendered()
+      onFirstFrameRendered?.invoke()
     }
     hasPendingOnFirstFrame = false
     hasSentFirstFrameForCurrentMediaItem = true

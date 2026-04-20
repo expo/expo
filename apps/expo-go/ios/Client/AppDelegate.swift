@@ -41,7 +41,7 @@ class AppDelegate: ExpoAppDelegate {
       return
     }
     ExpoKit.sharedInstance().registerRootViewControllerClass(EXRootViewController.self)
-    ExpoKit.sharedInstance().prepare(launchOptions: launchOptions)
+    ExpoKit.sharedInstance().prepare()
 
     let window = UIWindow(frame: UIScreen.main.bounds)
     self.window = window

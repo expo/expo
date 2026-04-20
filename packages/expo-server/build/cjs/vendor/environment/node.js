@@ -44,11 +44,22 @@ function createNodeEnv(params) {
         readText,
         readJson,
         loadModule,
+        isDevelopment: params.isDevelopment ?? false,
     });
 }
+const getRequestURLOrigin = (request) => {
+    try {
+        // NOTE: We don't trust any headers on incoming requests in "raw" environments
+        return new URL(request.url).origin || null;
+    }
+    catch {
+        return null;
+    }
+};
 function createNodeRequestScope(scopeDefinition, params) {
     return (0, runtime_1.createRequestScope)(scopeDefinition, (request) => ({
-        origin: request.headers.get('Origin') || 'null',
+        requestHeaders: request.headers,
+        origin: getRequestURLOrigin(request),
         environment: params.environment ?? process.env.NODE_ENV,
     }));
 }

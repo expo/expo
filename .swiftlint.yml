@@ -20,7 +20,6 @@ excluded:
   - packages/*/ios/Tests
   - packages/*/ios/UITests
   - packages/expo-module-template
-  - packages/expo-module-template-local
   - packages/expo-dev-menu/ios/OverlayContainer
   - packages/install-expo-modules
   - react-native-lab

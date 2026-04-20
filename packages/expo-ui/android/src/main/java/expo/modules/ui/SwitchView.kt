@@ -1,134 +1,102 @@
 package expo.modules.ui
 
-import android.content.Context
 import android.graphics.Color
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
-open class ValueChangeEvent(
+@OptimizedRecord
+open class CheckedChangeEvent(
   @Field open val value: Boolean = false
 ) : Record, Serializable
 
-class SwitchColors : Record {
-  @Field
-  val checkedThumbColor: Color? = null
-
-  @Field
-  val checkedTrackColor: Color? = null
-
-  @Field
-  val uncheckedThumbColor: Color? = null
-
-  @Field
-  val uncheckedTrackColor: Color? = null
-
-  @Field
-  val checkedColor: Color? = null
-
-  @Field
-  val disabledCheckedColor: Color? = null
-
-  @Field
-  val uncheckedColor: Color? = null
-
-  @Field
-  val disabledUncheckedColor: Color? = null
-
-  @Field
-  val checkmarkColor: Color? = null
-
-  @Field
-  val disabledIndeterminateColor: Color? = null
-}
+@OptimizedRecord
+data class SwitchColors(
+  @Field val checkedThumbColor: Color? = null,
+  @Field val checkedTrackColor: Color? = null,
+  @Field val checkedBorderColor: Color? = null,
+  @Field val checkedIconColor: Color? = null,
+  @Field val uncheckedThumbColor: Color? = null,
+  @Field val uncheckedTrackColor: Color? = null,
+  @Field val uncheckedBorderColor: Color? = null,
+  @Field val uncheckedIconColor: Color? = null,
+  @Field val disabledCheckedThumbColor: Color? = null,
+  @Field val disabledCheckedTrackColor: Color? = null,
+  @Field val disabledCheckedBorderColor: Color? = null,
+  @Field val disabledCheckedIconColor: Color? = null,
+  @Field val disabledUncheckedThumbColor: Color? = null,
+  @Field val disabledUncheckedTrackColor: Color? = null,
+  @Field val disabledUncheckedBorderColor: Color? = null,
+  @Field val disabledUncheckedIconColor: Color? = null
+) : Record
 
 data class SwitchProps(
-  val value: MutableState<Boolean> = mutableStateOf(false),
-  val variant: MutableState<String> = mutableStateOf("switch"),
-  val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors()),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val value: Boolean = false,
+  val enabled: Boolean = true,
+  val colors: SwitchColors = SwitchColors(),
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun SwitchComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier = Modifier) {
-  Switch(
-    checked = checked,
-    onCheckedChange = onCheckedChange,
-    modifier = modifier,
-    colors = SwitchDefaults.colors(
-      // For some reason the default way of passing colors using `compose` results in a transparent view
-      checkedThumbColor = colors.checkedThumbColor.composeOrNull
-        ?: SwitchDefaults.colors().checkedThumbColor,
-      checkedTrackColor = colors.checkedTrackColor.composeOrNull
-        ?: SwitchDefaults.colors().checkedTrackColor,
-      uncheckedThumbColor = colors.uncheckedThumbColor.composeOrNull
-        ?: SwitchDefaults.colors().uncheckedThumbColor,
-      uncheckedTrackColor = colors.uncheckedTrackColor.composeOrNull
-        ?: SwitchDefaults.colors().uncheckedTrackColor
-    )
-  )
-}
-
-@Composable
-fun CheckboxComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier) {
-  Checkbox(
-    checked = checked,
-    onCheckedChange = onCheckedChange,
-    modifier = modifier,
-    colors = CheckboxDefaults.colors(
-      checkedColor = colors.checkedColor.compose,
-      disabledCheckedColor = colors.disabledCheckedColor.compose,
-      uncheckedColor = colors.uncheckedColor.compose,
-      disabledUncheckedColor = colors.disabledUncheckedColor.compose,
-      checkmarkColor = colors.checkmarkColor.compose,
-      disabledIndeterminateColor = colors.disabledIndeterminateColor.compose
-    )
-  )
-}
-
-@Composable
-fun ThemedHybridSwitch(
-  variant: String,
-  checked: Boolean,
-  onCheckedChange: ((Boolean) -> Unit)?,
-  colors: SwitchColors,
-  modifier: Modifier = Modifier
+fun FunctionalComposableScope.SwitchContent(
+  props: SwitchProps,
+  onCheckedChange: (Boolean) -> Unit
 ) {
-  when (variant) {
-    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier)
-    else -> CheckboxComposable(checked, onCheckedChange, colors, modifier)
-  }
-}
+  val thumbContentSlotView = findChildSlotView(view, "thumbContent")
 
-class SwitchView(context: Context, appContext: AppContext) :
-  ExpoComposeView<SwitchProps>(context, appContext) {
-  override val props = SwitchProps()
-  private val onValueChange by EventDispatcher<ValueChangeEvent>()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    val (checked) = props.value
-    val (variant) = props.variant
-    val (colors) = props.elementColors
-    val onCheckedChange = { checked: Boolean ->
-      onValueChange(ValueChangeEvent(checked))
-    }
-
-    ThemedHybridSwitch(variant, checked, onCheckedChange, colors,
-      Modifier.fromExpoModifiers(props.modifiers.value,
-        this@Content))
-  }
+  Switch(
+    checked = props.value,
+    onCheckedChange = onCheckedChange,
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    enabled = props.enabled,
+    thumbContent = thumbContentSlotView?.let {
+      {
+        with(UIComposableScope()) {
+          with(it) {
+            Content()
+          }
+        }
+      }
+    },
+    colors = SwitchDefaults.colors(
+      checkedThumbColor = props.colors.checkedThumbColor.composeOrNull
+        ?: SwitchDefaults.colors().checkedThumbColor,
+      checkedTrackColor = props.colors.checkedTrackColor.composeOrNull
+        ?: SwitchDefaults.colors().checkedTrackColor,
+      checkedBorderColor = props.colors.checkedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().checkedBorderColor,
+      checkedIconColor = props.colors.checkedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().checkedIconColor,
+      uncheckedThumbColor = props.colors.uncheckedThumbColor.composeOrNull
+        ?: SwitchDefaults.colors().uncheckedThumbColor,
+      uncheckedTrackColor = props.colors.uncheckedTrackColor.composeOrNull
+        ?: SwitchDefaults.colors().uncheckedTrackColor,
+      uncheckedBorderColor = props.colors.uncheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().uncheckedBorderColor,
+      uncheckedIconColor = props.colors.uncheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().uncheckedIconColor,
+      disabledCheckedBorderColor = props.colors.disabledCheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedBorderColor,
+      disabledCheckedThumbColor = props.colors.disabledCheckedThumbColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedThumbColor,
+      disabledCheckedTrackColor = props.colors.disabledCheckedTrackColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedTrackColor,
+      disabledCheckedIconColor = props.colors.disabledCheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedIconColor,
+      disabledUncheckedBorderColor = props.colors.disabledUncheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedBorderColor,
+      disabledUncheckedThumbColor = props.colors.disabledUncheckedThumbColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedThumbColor,
+      disabledUncheckedTrackColor = props.colors.disabledUncheckedTrackColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedTrackColor,
+      disabledUncheckedIconColor = props.colors.disabledUncheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedIconColor
+    )
+  )
 }

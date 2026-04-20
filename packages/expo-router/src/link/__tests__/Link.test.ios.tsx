@@ -27,7 +27,7 @@ jest.mock('../preview/native', () => {
   return {
     NativeLinkPreview: jest.fn(
       ({ children, onWillPreviewOpen, onPreviewTapped }: NativeLinkPreviewProps) => {
-        handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen();
+        handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen?.();
         handlerMap['link-onPreviewTapped'] = onPreviewTapped;
         return <View testID="link-preview-native-view">{children}</View>;
       }
@@ -90,6 +90,20 @@ it('renders a Link with React Native array style prop when using asChild', () =>
     color: 'red',
     backgroundColor: 'blue',
   });
+});
+
+it('renders a Link with a slot and array style', () => {
+  expect(() =>
+    render(
+      <Link asChild href="/foo">
+        <Pressable style={[{ padding: 10 }, { margin: 5 }]}>
+          <Text>Button</Text>
+        </Pressable>
+      </Link>
+    )
+  ).toThrow(
+    '[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.'
+  );
 });
 
 xit('renders a Link with a slot', () => {
@@ -268,6 +282,42 @@ it('can preserve the initialRoute with shared groups', () => {
   expect(screen.getByTestId('orange')).toBeDefined();
   act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
+});
+
+it('can preserve the anchor for every level in nested stack', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    '(inner)/_layout': () => <Stack />,
+    '(inner)/index': () => (
+      <Link testID="link-to-target" href="/second/third/target" withAnchor>
+        Link to Target
+      </Link>
+    ),
+    'second/_layout': () => <Stack />,
+    'second/index': () => <Text testID="second-index">Second Index</Text>,
+    'second/third/_layout': {
+      unstable_settings: {
+        anchor: 'anchor',
+      },
+      default: () => <Stack />,
+    },
+    'second/third/anchor': () => <Text testID="anchor">Anchor</Text>,
+    'second/third/target': () => <Text testID="target">Target</Text>,
+  });
+
+  expect(screen.getByTestId('link-to-target')).toBeVisible();
+
+  act(() => {
+    fireEvent.press(screen.getByTestId('link-to-target'));
+  });
+
+  expect(screen.getByTestId('target')).toBeVisible();
+
+  act(() => {
+    router.back();
+  });
+
+  expect(screen.getByTestId('anchor')).toBeVisible();
 });
 
 describe('singular', () => {
@@ -1044,7 +1094,7 @@ describe('Preview', () => {
       return <Text testID="counter-text">Counter: {counter}</Text>;
     };
 
-    const ComponentWithButtonAndPreview = ({ href }: { href: (counter) => string }) => {
+    const ComponentWithButtonAndPreview = ({ href }: { href: (counter: number) => string }) => {
       const [counter, setCounter] = React.useState(0);
       return (
         <View testID="component-with-button-and-preview">
@@ -1070,7 +1120,7 @@ describe('Preview', () => {
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
         const router = useRouter();
-        const navigation = useNavigation();
+        useNavigation();
         const preloadAandC = () => {
           router.prefetch('/slotA/test');
           router.prefetch('/slotC/test');
@@ -1109,7 +1159,7 @@ describe('Preview', () => {
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
         const router = useRouter();
-        const navigation = useNavigation();
+        useNavigation();
         const preloadOtherRoutes = () => {
           router.prefetch('/slotA/test0/test');
           router.prefetch('/slotC/test0/test');

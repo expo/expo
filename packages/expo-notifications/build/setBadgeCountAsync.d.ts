@@ -15,5 +15,5 @@ export interface SetBadgeCountOptions {
  * @return It returns a Promise resolving to a boolean representing whether the setting of the badge succeeded.
  * @header badge
  */
-export default function setBadgeCountAsync(badgeCount: number, options?: SetBadgeCountOptions): Promise<boolean>;
+export declare function setBadgeCountAsync(badgeCount: number, options?: SetBadgeCountOptions): Promise<boolean>;
 //# sourceMappingURL=setBadgeCountAsync.d.ts.map

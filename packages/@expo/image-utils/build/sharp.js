@@ -7,12 +7,11 @@ exports.resizeBufferAsync = resizeBufferAsync;
 exports.isAvailableAsync = isAvailableAsync;
 exports.sharpAsync = sharpAsync;
 exports.findSharpInstanceAsync = findSharpInstanceAsync;
+const require_utils_1 = require("@expo/require-utils");
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
-const resolve_from_1 = __importDefault(require("resolve-from"));
-const resolve_global_1 = __importDefault(require("resolve-global"));
 const semver_1 = __importDefault(require("semver"));
 const env_1 = require("./env");
 const SHARP_HELP_PATTERN = /\n\nSpecify --help for available options/g;
@@ -112,14 +111,22 @@ async function findSharpBinAsync() {
     if (_sharpBin)
         return _sharpBin;
     try {
-        const sharpCliPackagePath = resolve_global_1.default.silent('sharp-cli/package.json') ??
-            require.resolve('sharp-cli/package.json', {
-                paths: require.resolve.paths('sharp-cli') ?? undefined,
-            });
+        let sharpCliPackagePath;
+        try {
+            sharpCliPackagePath = (0, require_utils_1.resolveGlobal)('sharp-cli/package.json');
+        }
+        catch {
+            sharpCliPackagePath = require.resolve('sharp-cli/package.json');
+        }
+        let sharpPath = null;
+        if (sharpCliPackagePath) {
+            sharpPath = (0, require_utils_1.resolveFrom)(sharpCliPackagePath, 'sharp');
+            if (!sharpPath) {
+                throw Object.assign(new Error(`"sharp" not found, while resolving from "${sharpCliPackagePath}"`), { code: 'MODULE_NOT_FOUND' });
+            }
+        }
         const sharpCliPackage = require(sharpCliPackagePath);
-        const sharpInstance = sharpCliPackagePath
-            ? require((0, resolve_from_1.default)(sharpCliPackagePath, 'sharp'))
-            : null;
+        const sharpInstance = sharpPath ? require(sharpPath) : null;
         if (sharpCliPackagePath &&
             semver_1.default.satisfies(sharpCliPackage.version, SHARP_REQUIRED_VERSION) &&
             typeof sharpCliPackage.bin.sharp === 'string' &&

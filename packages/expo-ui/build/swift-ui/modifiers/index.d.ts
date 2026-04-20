@@ -5,9 +5,14 @@
 import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
-import { createModifier, ModifierConfig } from './createModifier';
+import { contentShape } from './contentShape';
+import { ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
+import { environment } from './environment';
+import { gaugeStyle } from './gaugeStyle';
+import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
+import { widgetAccentedRenderingMode, widgetURL } from './widgets';
 /**
  * Sets the spacing between adjacent sections.
  * @param spacing - The spacing to apply.
@@ -52,6 +57,20 @@ export declare const frame: (params: {
     maxHeight?: number;
     idealWidth?: number;
     idealHeight?: number;
+    alignment?: "center" | "leading" | "trailing" | "top" | "bottom" | "topLeading" | "topTrailing" | "bottomLeading" | "bottomTrailing";
+}) => ModifierConfig;
+/**
+ * Positions this view within an invisible frame with a size relative to the nearest container.
+ * @param params - The content relative frame parameters: `axes`, `count`, `span`, `spacing` and `alignment`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/containerRelativeFrame(_:alignment:)).
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ */
+export declare const containerRelativeFrame: (params: {
+    axes: "horizontal" | "vertical" | "both";
+    count?: number;
+    span?: number;
+    spacing?: number;
     alignment?: "center" | "leading" | "trailing" | "top" | "bottom" | "topLeading" | "topTrailing" | "bottomLeading" | "bottomTrailing";
 }) => ModifierConfig;
 /**
@@ -102,7 +121,7 @@ export declare const onLongPressGesture: (handler: () => void, minimumDuration?:
 /**
  * Adds an onAppear modifier that calls a function when the view appears.
  * @param handler - Function to call when the view appears.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onlongpressgesture(minimumduration:perform:onpressingchanged:)).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onappear(perform:)).
  */
 export declare const onAppear: (handler: () => void) => ModifierConfig;
 /**
@@ -129,7 +148,7 @@ export declare const opacity: (value: number) => ModifierConfig;
  * @param cornerRadius - Corner radius for rounded rectangle (default: 8)
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
-export declare const clipShape: (shape: "rectangle" | "circle" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
+export declare const clipShape: (shape: "rectangle" | "circle" | "capsule" | "ellipse" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
 /**
  * Adds a border to a view.
  * @param params - The border parameters. Color and width.
@@ -141,16 +160,33 @@ export declare const border: (params: {
 }) => ModifierConfig;
 /**
  * Applies scaling transformation.
- * @param scale - Scale factor (1.0 = normal size).
+ * @param scale - Uniform scale factor (1.0 = normal size), or an object with separate `x` and `y` scale factors.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)).
  */
-export declare const scaleEffect: (scale: number) => ModifierConfig;
+export declare const scaleEffect: (scale: number | {
+    x: number;
+    y: number;
+}) => ModifierConfig;
 /**
  * Applies rotation transformation.
  * @param angle - Rotation angle in degrees.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotationeffect(_:anchor:)).
  */
 export declare const rotationEffect: (angle: number) => ModifierConfig;
+/**
+ * Applies a 3D rotation transformation.
+ * @param params - The rotation parameters: `angle` (in degrees), `axis` (x, y, z), and `perspective`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotation3deffect(_:axis:anchor:anchorz:perspective:)).
+ */
+export declare const rotation3DEffect: (params: {
+    angle: number;
+    axis?: {
+        x?: number;
+        y?: number;
+        z?: number;
+    };
+    perspective?: number;
+}) => ModifierConfig;
 /**
  * Applies an offset (translation) to a view.
  * @param params - The offset parameters: `x` and `y`.
@@ -175,13 +211,14 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  *
  * @param style - The foreground style configuration. Can be:
  *
- * **Simple Color (string):**
+ * **Simple Color (`Color`):**
  * - Hex colors: `'#FF0000'`, `'#RGB'`, `'#RRGGBB'`, `'#AARRGGBB'`
  * - Named colors: `'red'`, `'blue'`, `'green'`, and so on.
+ * - React Native color values like `PlatformColor('label')`
  *
  * **Explicit Color Object:**
  * ```ts
- * { type: 'color', color: '#FF0000' }
+ * { type: 'color', color: PlatformColor('label') }
  * ```
  *
  * **Hierarchical Styles (Semantic):**
@@ -198,7 +235,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```ts
  * {
  *   type: 'linearGradient',
- *   colors: ['#FF0000', '#0000FF', '#00FF00'],
+ *   colors: [PlatformColor('systemPink'), '#0000FF', '#00FF00'],
  *   startPoint: { x: 0, y: 0 },    // Top-left
  *   endPoint: { x: 1, y: 1 }       // Bottom-right
  * }
@@ -208,7 +245,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```ts
  * {
  *   type: 'radialGradient',
- *   colors: ['#FF0000', '#0000FF'],
+ *   colors: [PlatformColor('systemPink'), '#0000FF'],
  *   center: { x: 0.5, y: 0.5 },    // Center of view
  *   startRadius: 0,                // Inner radius
  *   endRadius: 100                 // Outer radius
@@ -219,7 +256,7 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * ```ts
  * {
  *   type: 'angularGradient',
- *   colors: ['#FF0000', '#00FF00', '#0000FF'],
+ *   colors: [PlatformColor('systemPink'), '#00FF00', '#0000FF'],
  *   center: { x: 0.5, y: 0.5 }     // Rotation center
  * }
  * ```
@@ -249,15 +286,15 @@ export declare const foregroundColor: (color: Color) => ModifierConfig;
  * @since iOS 15.0+ (hierarchical quinary requires iOS 16.0+)
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)).
  */
-export declare const foregroundStyle: (style: string | {
+export declare const foregroundStyle: (style: Color | {
     type: "color";
-    color: string;
+    color: Color;
 } | {
     type: "hierarchical";
     style: "primary" | "secondary" | "tertiary" | "quaternary" | "quinary";
 } | {
     type: "linearGradient";
-    colors: string[];
+    colors: Color[];
     startPoint: {
         x: number;
         y: number;
@@ -268,7 +305,7 @@ export declare const foregroundStyle: (style: string | {
     };
 } | {
     type: "radialGradient";
-    colors: string[];
+    colors: Color[];
     center: {
         x: number;
         y: number;
@@ -277,12 +314,30 @@ export declare const foregroundStyle: (style: string | {
     endRadius: number;
 } | {
     type: "angularGradient";
-    colors: string[];
+    colors: Color[];
     center: {
         x: number;
         y: number;
     };
 }) => ModifierConfig;
+/**
+ * Makes text bold.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/bold()).
+ */
+export declare const bold: () => ModifierConfig;
+/**
+ * Makes text italic.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/italic()).
+ */
+export declare const italic: () => ModifierConfig;
+/**
+ * Modifies the fonts of all child views to use fixed-width digits, if possible, while leaving other characters proportionally spaced.
+ * When applied to `Text`, modifies the text view's font to use fixed-width digits, while leaving other characters proportionally spaced.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/monospaceddigit()).
+ */
+export declare const monospacedDigit: () => ModifierConfig;
 /**
  * Sets the tint color of a view.
  * @param color - The tint color (hex string). For example, `#FF0000`.
@@ -351,7 +406,7 @@ export declare const colorInvert: (inverted?: boolean) => ModifierConfig;
 export declare const grayscale: (amount: number) => ModifierConfig;
 /**
  * Sets the button style for button views.
- * @param style - The button style.
+ * @param style - The button style. `'glass'` and `'glassProminent'` are available on iOS 26+ and tvOS 26+ only.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/buttonstyle(_:)).
  */
 export declare const buttonStyle: (style: "automatic" | "bordered" | "borderedProminent" | "borderless" | "glass" | "glassProminent" | "plain") => ModifierConfig;
@@ -393,6 +448,66 @@ export declare const textFieldStyle: (style: "automatic" | "plain" | "roundedBor
  */
 export declare const scrollDismissesKeyboard: (mode: "automatic" | "never" | "interactively" | "immediately") => ModifierConfig;
 /**
+ * Disables or enables scrolling in scrollable views.
+ * @param disabled - Whether scrolling should be disabled (default: true).
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldisabled(_:)).
+ */
+export declare const scrollDisabled: (disabled?: boolean) => ModifierConfig;
+type UnitPointValue = 'zero' | 'topLeading' | 'top' | 'topTrailing' | 'leading' | 'center' | 'trailing' | 'bottomLeading' | 'bottom' | 'bottomTrailing';
+/**
+ * Sets the default anchor point for a scroll view's content.
+ * @param anchor - The anchor point for initial scroll position and content size changes, or `null` to reset.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:)).
+ */
+export declare const defaultScrollAnchor: (anchor: UnitPointValue | null) => ModifierConfig;
+/**
+ * Sets the default anchor point for a scroll view for a specific role.
+ * Pass `null` to opt out of a specific role while keeping anchors for other roles.
+ * @param anchor - The anchor point, or `null` to opt out of this role.
+ * @param role - The scroll anchor role: `'initialOffset'`, `'sizeChanges'`, or `'alignment'`.
+ * @platform ios 18.0+
+ * @platform tvos 18.0+
+ * @platform macos 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:for:)).
+ */
+export declare const defaultScrollAnchorForRole: (anchor: UnitPointValue | null, role: "initialOffset" | "sizeChanges" | "alignment") => ModifierConfig;
+/**
+ * Sets the scroll snapping behavior for scrollable views.
+ * Use with `scrollTargetLayout` on the content container.
+ * @param behavior - `'paging'` for container-aligned snapping, `'viewAligned'` for view-aligned snapping.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetbehavior(_:)).
+ */
+export declare const scrollTargetBehavior: (behavior: "paging" | "viewAligned") => ModifierConfig;
+/**
+ * Configures a layout container as a scroll target layout for view-aligned snapping.
+ * Apply to `VStack` or `HStack` inside a `ScrollView`.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetlayout(isenabled:)).
+ */
+export declare const scrollTargetLayout: () => ModifierConfig;
+/**
+ * Disables the move action for a view in a list.
+ * Apply to items within a `ForEach` to prevent them from being moved.
+ * @param disabled - Whether moving should be disabled
+ * @default true
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/movedisabled(_:)).
+ */
+export declare const moveDisabled: (disabled?: boolean) => ModifierConfig;
+/**
+ * Disables the delete action for a view in a list.
+ * Apply to items within a `ForEach` to prevent them from being deleted.
+ * @param disabled - Whether deletion should be disabled
+ * @default true
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/deletedisabled(_:)).
+ */
+export declare const deleteDisabled: (disabled?: boolean) => ModifierConfig;
+/**
  * Controls the dismissal behavior of menu actions.
  * @param behavior - The menu action dismiss behavior.
  * @platform ios 16.4+
@@ -430,7 +545,7 @@ export declare const layoutPriority: (priority: number) => ModifierConfig;
  * @param cornerRadius - Corner radius for rounded rectangle (default: `8`).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
-export declare const mask: (shape: "rectangle" | "circle" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
+export declare const mask: (shape: "rectangle" | "circle" | "capsule" | "ellipse" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
 /**
  * Overlays another view on top.
  * @param params - Overlay color and alignment.
@@ -571,6 +686,25 @@ export declare const textSelection: (value: boolean) => ModifierConfig;
  */
 export declare const lineSpacing: (value: number) => ModifierConfig;
 /**
+ * Sets the line limit for text in the view.
+ *
+ * Four variants matching SwiftUI:
+ * - `lineLimit()` — no line limit (unlimited lines)
+ * - `lineLimit(5)` — max 5 lines
+ * - `lineLimit(5, { reservesSpace: true })` — max 5 lines, reserves height even when empty (iOS 16+, tvOS 16+)
+ * - `lineLimit({ min: 3, max: 8 })` — range of 3 to 8 lines (iOS 16+, tvOS 16+)
+ *
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linelimit(_:)).
+ */
+export declare function lineLimit(): ModifierConfig;
+export declare function lineLimit(limit: number, options?: {
+    reservesSpace?: boolean;
+}): ModifierConfig;
+export declare function lineLimit(range: {
+    min: number;
+    max: number;
+}): ModifierConfig;
+/**
  * Sets the header prominence for this view.
  * @param prominence - The prominence to apply.
  */
@@ -707,29 +841,99 @@ export declare const gridCellAnchor: (anchor: {
  */
 export declare const submitLabel: (submitLabel: "continue" | "done" | "go" | "join" | "next" | "return" | "route" | "search" | "send") => ModifierConfig;
 /**
+ * Sets the keyboard type for text input views.
+ * @param keyboardType - The type of keyboard to display.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/keyboardtype(_:)).
+ */
+export declare const keyboardType: (keyboardType: "default" | "email-address" | "numeric" | "phone-pad" | "ascii-capable" | "numbers-and-punctuation" | "url" | "name-phone-pad" | "decimal-pad" | "twitter" | "web-search" | "ascii-capable-number-pad") => ModifierConfig;
+/**
+ * Disables autocorrection for text input views.
+ * @param disabled - Whether autocorrection is disabled. Defaults to `true`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/autocorrectiondisabled(_:)).
+ */
+export declare const autocorrectionDisabled: (disabled?: boolean) => ModifierConfig;
+/**
+ * Adds an action to perform when the user submits a value to this view (e.g. pressing return in a text field).
+ * @param handler - Function to call on submit.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onsubmit(of:_:)).
+ */
+export declare const onSubmit: (handler: () => void) => ModifierConfig;
+/**
+ * Sets how often the shift key in the keyboard is automatically enabled.
+ * @param autocapitalization - The autocapitalization behavior.
+ * @platform ios 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textinputautocapitalization(_:)).
+ */
+export declare const textInputAutocapitalization: (autocapitalization: "never" | "words" | "sentences" | "characters") => ModifierConfig;
+/**
+ * Sets the text content type for input text, which the system uses to offer
+ * suggestions (like autofill) while the user enters text.
+ * @param textContentType - The semantic meaning of the text input area.
+ * @platform ios 13.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textcontenttype(_:)-ufdv).
+ */
+export declare const textContentType: (textContentType: "URL" | "namePrefix" | "name" | "nameSuffix" | "givenName" | "middleName" | "familyName" | "nickname" | "organizationName" | "jobTitle" | "location" | "fullStreetAddress" | "streetAddressLine1" | "streetAddressLine2" | "addressCity" | "addressCityAndState" | "addressState" | "postalCode" | "sublocality" | "countryName" | "username" | "password" | "newPassword" | "oneTimeCode" | "emailAddress" | "telephoneNumber" | "cellularEID" | "cellularIMEI" | "creditCardNumber" | "creditCardExpiration" | "creditCardExpirationMonth" | "creditCardExpirationYear" | "creditCardSecurityCode" | "creditCardType" | "creditCardName" | "creditCardGivenName" | "creditCardMiddleName" | "creditCardFamilyName" | "birthdate" | "birthdateDay" | "birthdateMonth" | "birthdateYear" | "dateTime" | "flightNumber" | "shipmentTrackingNumber") => ModifierConfig;
+/**
+ * Sets the content transition type for a view.
+ * Useful for animating changes in text content, especially numeric text.
+ * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
+ *
+ * @param transitionType - The type of content transition.
+ * @param params - Optional parameters.
+ * @param params.countsDown - Whether the numeric text counts down.
+ *
+ * @example
+ * ```tsx
+ * <Text modifiers={[contentTransition('numericText'), animation(Animation.default, count)]}>
+ *   {count.toString()}
+ * </Text>
+ * ```
+ *
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
+ */
+export declare const contentTransition: (transitionType: "numericText" | "identity" | "opacity" | "interpolate", params?: {
+    countsDown?: boolean;
+}) => ModifierConfig;
+export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
+/**
+ * Sets the style for a List view.
+ * @param style - The list style to apply.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/liststyle(_:)).
+ */
+export declare const listStyle: (style: ListStyle) => ModifierConfig;
+/**
+ * Adds a luminance to alpha effect to this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/luminanceToAlpha()).
+ */
+export declare const luminanceToAlpha: () => ModifierConfig;
+/**
+ * Sets the mode by which SwiftUI resizes an image to fit its space.
+ * @param capInsets - Inset values that indicate a portion of the image that SwiftUI doesn’t resize.
+ * @param resizingMode - The mode by which SwiftUI resizes the image.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/resizable(capinsets:resizingmode:)).
+ */
+export declare const resizable: (capInsets?: {
+    top?: number;
+    bottom?: number;
+    leading?: number;
+    trailing?: number;
+}, resizingMode?: "stretch" | "tile") => ModifierConfig;
+/**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
  * @hidden
  */
-export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof datePickerStyle>;
+export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof luminanceToAlpha> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof rotation3DEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof monospacedDigit> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof defaultScrollAnchor> | ReturnType<typeof defaultScrollAnchorForRole> | ReturnType<typeof scrollTargetBehavior> | ReturnType<typeof scrollTargetLayout> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof keyboardType> | ReturnType<typeof autocorrectionDisabled> | ReturnType<typeof onSubmit> | ReturnType<typeof textInputAutocapitalization> | ReturnType<typeof textContentType> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle> | ReturnType<typeof contentTransition> | ReturnType<typeof resizable> | ReturnType<typeof widgetAccentedRenderingMode> | ReturnType<typeof widgetURL>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.
  * @hidden
  */
 export type ViewModifier = BuiltInModifier | ModifierConfig;
-/**
- * Creates a custom modifier for 3rd party libraries.
- * This function is exported so 3rd party packages can create their own modifiers.
- *
- * @example
- * ```ts
- * // In a 3rd party package
- * export const blurEffect = (params: { radius: number; style?: string }) =>
- *   createModifier('blurEffect', params);
- * ```
- */
-export { createModifier };
+export * from './createModifier';
+export * from './utils';
 /**
  * Type guard to check if a value is a valid modifier.
  * @hidden
@@ -742,10 +946,17 @@ export declare const isModifier: (value: any) => value is ModifierConfig;
 export declare const filterModifiers: (modifiers: unknown[]) => ModifierConfig[];
 export * from './animation/index';
 export * from './containerShape';
+export * from './contentShape';
 export * from './shapes/index';
 export * from './background';
 export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
 export * from './datePickerStyle';
+export * from './progressViewStyle';
+export * from './gaugeStyle';
+export * from './presentationModifiers';
+export * from './environment';
+export * from './widgets';
+export type { TimingAnimationParams, SpringAnimationParams, InterpolatingSpringAnimationParams, ChainableAnimationType, } from './animation/types';
 //# sourceMappingURL=index.d.ts.map

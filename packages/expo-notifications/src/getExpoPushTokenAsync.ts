@@ -5,7 +5,7 @@ import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { DevicePushToken, ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
-import getDevicePushTokenAsync from './getDevicePushTokenAsync';
+import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
 
@@ -46,7 +46,7 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
  * }
  * ```
  */
-export default async function getExpoPushTokenAsync(
+export async function getExpoPushTokenAsync(
   options: ExpoPushTokenOptions = {}
 ): Promise<ExpoPushToken> {
   const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());

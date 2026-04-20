@@ -194,7 +194,10 @@ export class AuthRequest {
         // copy over extra params
         for (const extra in request.extraParams) {
             if (extra in request.extraParams) {
-                params[extra] = request.extraParams[extra];
+                const param = request.extraParams[extra];
+                if (param != null) {
+                    params[extra] = param;
+                }
             }
         }
         if (request.usePKCE && request.codeChallengeMethod) {

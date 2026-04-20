@@ -1,14 +1,13 @@
 {
   "name": "@expo/env",
-  "version": "2.0.7",
+  "version": "2.1.1",
   "description": "hydrate environment variables from .env files into process.env",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },
@@ -29,14 +28,16 @@
   "dependencies": {
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "dotenv": "~16.4.5",
-    "dotenv-expand": "~11.0.6",
     "getenv": "^2.0.0"
   },
+  "engines": {
+    "node": ">=20.12.0"
+  },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
+    "@babel/cli": "^7.23.4",
+    "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

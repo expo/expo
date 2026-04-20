@@ -48,7 +48,7 @@ You don't have to use GitHub to use git, but it certainly helps for many cases. 
 
 Nope! Your Expo project is just a React Native app, which is just a native app. You can use Fastlane or any native build, update, and more, tools you like.
 
-Most EAS services also allow you to run them on your own infrastructure, and we provide instructions for how you can accomplish this. For example, [self-hosting updates](/versions/latest/sdk/updates/) (rather than using EAS Update), or [running builds locally](/guides/local-app-development/) or on [your own CI](build/building-on-ci/) (rather than using our EAS Build worker fleet).
+Most EAS services also allow you to run them on your own infrastructure, and we provide instructions for how you can accomplish this. For example, [self-hosting updates](/versions/latest/sdk/updates/) (rather than using EAS Update), or [running builds locally](/guides/local-app-development/) or on [your own CI](/build/building-on-ci/) (rather than using our EAS Build worker fleet).
 
 For most teams, it makes sense to use EAS rather than spending the engineering time and resources on acquiring, setting up, and maintaining the services on other infrastructure. Additionally, EAS provides deep integration between services, such as the deployments page for monitoring app version adoption, assigning updates to specific builds, and rolling those updates out incrementally &mdash; which ties back into monitoring with [EAS Insights](/eas-insights/introduction/).
 
@@ -62,11 +62,11 @@ Yes! We think EAS is a great fit for any React Native project.
 
 </Collapsible>
 
-<Collapsible summary="Expo Go: an optional tool for learning, experimenting, and prototyping">
+<Collapsible summary="Expo Go: a playground for students and learners">
 
-There's no faster way to spin up a React Native project and run it on your device or emulator than [Expo Go](https://expo.dev/go), especially when combined with [Snack](https://snack.expo.dev/).
+[Expo Go](https://expo.dev/go) is the fastest way to get started with React Native, especially when combined with [Snack](https://snack.expo.dev/). It's great for students and learners to understand the basics.
 
-However, **Expo Go and Snack are not intended for building production apps**. They are great when you're getting started on a project or for prototypes. **If you plan on deploying your app to the store, then [development builds](#development-builds) will provide a more flexible, reliable, and complete development environment.** This guide does not go into any detail about Expo Go, and this is the only section that mentions it.
+However, **Expo Go is a limited playground and not useful for building production-grade projects**. **If you plan on deploying your app to the store, then [development builds](#development-builds) will provide a more flexible, reliable, and complete development environment.** This guide does not go into any detail about Expo Go, and this is the only section that mentions it.
 
 </Collapsible>
 
@@ -94,7 +94,7 @@ Android and Xcode projects that bundle the JavaScript app, serve as the launchpa
 
 Like any mobile app, the application that is distributed to users is created by compiling ("building") the Android Studio or Xcode project.
 
-When you initialize a new app with `npx create-expo-app`, you will not see any **android** or **ios** directories. You can [generate the native projects by running `npx expo prebuild`](/workflow/prebuild/), which will initialize the native projects and then apply the project Expo app config (**app.json/app.config.js**) to them.
+When you initialize a new app with `npx create-expo-app`, you will not see any **android** or **ios** directories. You can [generate the native projects by running `npx expo prebuild`](/workflow/continuous-native-generation/), which will initialize the native projects and then apply the project Expo app config (**app.json/app.config.js**) to them.
 
 If you use a cloud-based development workflow, you may never need to run prebuild or install Android Studio or Xcode on your own machine (although you may find this useful). This is explained below in the [Local and cloud-based development workflows](#cloud-based-and-local-development-workflows).
 
@@ -105,7 +105,7 @@ The following three commands result in more or less the same project:
 
 <Terminal
   cmd={[
-    '$ npx create-expo-app MyApp && cd MyApp && npx expo prebuild',
+    '$ npx create-expo-app@latest --template default@sdk-55 MyApp && cd MyApp && npx expo prebuild',
     '',
     '$ npx create-expo-app --template bare-minimum',
     '',
@@ -249,4 +249,4 @@ Analytics allows you to track how users interact with your app. See [analytics o
 
 The `expo-updates` library allows you to programmatically make instant updates to your app's JavaScript available to your production app.
 
-You can use [EAS Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/develop-faster/) who use EAS Build. You can also use it for builds you have created [locally](/eas-update/standalone-service/).
+You can use [EAS Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/preview/) who use EAS Build. You can also use it for builds you have created [locally](/eas-update/standalone-service/).

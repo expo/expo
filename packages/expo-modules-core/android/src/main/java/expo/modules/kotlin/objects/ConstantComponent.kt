@@ -2,7 +2,7 @@ package expo.modules.kotlin.objects
 
 import expo.modules.kotlin.jni.JNINoArgsFunctionBody
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 
 class ConstantComponent(
   /**
@@ -21,7 +21,7 @@ class ConstantComponent(
   fun attachToJSObject(jsObject: JSDecoratorsBridgingObject) {
     val jniGetter = JNINoArgsFunctionBody {
       val result = getter.invoke()
-      return@JNINoArgsFunctionBody JSTypeConverter.convertToJSValue(result)
+      return@JNINoArgsFunctionBody JSTypeConverterProvider.convertToJSValue(result)
     }
 
     jsObject.registerConstant(name, jniGetter)

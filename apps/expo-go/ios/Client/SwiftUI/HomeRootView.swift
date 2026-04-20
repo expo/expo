@@ -9,13 +9,17 @@ enum HomeTab: Hashable {
   case settings
 }
 
-public struct HomeRootView: View {
+struct HomeRootView: View {
   @ObservedObject var viewModel: HomeViewModel
   @State private var showingUserProfile = false
   @State private var selectedTab: HomeTab = .home
+  @State private var hasCompletedPermissionFlow: Bool
 
   init(viewModel: HomeViewModel) {
     self.viewModel = viewModel
+    let shouldSkip = DevelopmentServerService.isSimulator
+      || UserDefaults.standard.bool(forKey: DevelopmentServerService.networkPermissionGrantedKey)
+    _hasCompletedPermissionFlow = State(initialValue: shouldSkip)
   }
 
   public var body: some View {
@@ -28,7 +32,6 @@ public struct HomeRootView: View {
         Text("Home")
       }
       .tag(HomeTab.home)
-      .navigationBarHidden(true)
 
       NavigationView {
         DiagnosticsTabView()
@@ -52,17 +55,22 @@ public struct HomeRootView: View {
       AccountSheet()
         .environmentObject(viewModel)
     }
-    .alert("Error", isPresented: Binding(
-      get: { viewModel.errorToShow != nil },
-      set: { if !$0 { viewModel.clearError() } }
-    )) {
-      Button("OK") {
-        viewModel.clearError()
+    .alert(item: $viewModel.errorToShow) { error in
+      Alert(
+        title: Text("Error"),
+        message: Text(error.message),
+        dismissButton: .default(Text("OK"))
+      )
+    }
+
+    if !hasCompletedPermissionFlow {
+      LocalNetworkPermissionView(serverService: viewModel.serverService) {
+        viewModel.serverService.startDiscovery()
+        withAnimation(.easeInOut(duration: 0.3)) {
+          hasCompletedPermissionFlow = true
+        }
       }
-    } message: {
-      if let error = viewModel.errorToShow {
-        Text(error.message)
-      }
+      .transition(.opacity)
     }
   }
 }

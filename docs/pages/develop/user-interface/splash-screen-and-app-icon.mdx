@@ -135,13 +135,13 @@ To test your new splash screen, build your app for [internal distribution](/tuto
 
 <Collapsible summary="Not using prebuild?">
 
-If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native **android** and **ios** directories, then changes in the app config will have no effect. For more information, see [how you can customize the configuration manually](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
+If your app does not use [Expo Prebuild](/more/glossary-of-terms/#prebuild) (formerly the _managed workflow_) to generate the native **android** and **ios** directories, then changes in the app config will have no effect. For more information, see [how you can customize the configuration manually](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
 </Collapsible>
 
 <Collapsible summary="Troubleshooting: New splash screen not appearing on iOS">
 
-For SDK versions below 52, in iOS development builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ directory before rebuilding, this can be done with Expo CLI by running:
+For SDK 52 and earlier, in iOS development builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ directory before rebuilding, this can be done with Expo CLI by running:
 
 <Terminal cmd={['$ npx expo run:ios --no-build-cache']} />
 

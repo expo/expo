@@ -1,10 +1,16 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if !__building_module(ExpoModulesCore)
 #import <React/RCTBridge.h>
+#else
+@class RCTBridge;
+#endif
 
-// Swift classes need forward-declaration in the headers.
+// Forward declarations for types - use protocol for AppContext to avoid Swift.h import
 @class EXAppContext;
 @class EXRuntime;
+@class EXJavaScriptRuntime;
+@protocol EXAppContextProtocol;
 
 #if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
 @class RCTRuntimeExecutor;
@@ -31,26 +37,26 @@ extern NSString *_Nonnull const EXGlobalCoreObjectPropertyName;
  Installs ExpoModules host object in the runtime of the given app context.
  Returns a bool value whether the installation succeeded.
  */
-+ (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext;
++ (BOOL)installExpoModulesHostObject:(nonnull id<EXAppContextProtocol>)appContext;
 
 /**
  Installs the base class for shared objects, i.e. `global.expo.SharedObject`.
  */
-+ (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void (^)(long))releaser;
++ (void)installSharedObjectClass:(nonnull EXJavaScriptRuntime *)runtime releaser:(void (^)(long))releaser;
 
 /**
  Installs the base class for shared refs, i.e. `global.expo.SharedRef`.
  */
-+ (void)installSharedRefClass:(nonnull EXRuntime *)runtime;
++ (void)installSharedRefClass:(nonnull EXJavaScriptRuntime *)runtime;
 
 /**
  Installs the EventEmitter class in the given runtime as `global.expo.EventEmitter`.
  */
-+ (void)installEventEmitterClass:(nonnull EXRuntime *)runtime;
++ (void)installEventEmitterClass:(nonnull EXJavaScriptRuntime *)runtime;
 
 /**
  Installs the NativeModule class in the given runtime as `global.expo.NativeModule`.
  */
-+ (void)installNativeModuleClass:(nonnull EXRuntime *)runtime;
++ (void)installNativeModuleClass:(nonnull EXJavaScriptRuntime *)runtime;
 
 @end

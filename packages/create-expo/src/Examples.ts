@@ -3,21 +3,17 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import prompts from 'prompts';
-import { Readable, Stream } from 'stream';
-import { extract as tarExtract } from 'tar';
-import { promisify } from 'util';
 
 import {
   getTemplateFilesToRenameAsync,
   renameTemplateAppNameAsync,
   sanitizeTemplateAsync,
 } from './Template';
-import { createEntryResolver } from './createFileTransform';
 import { env } from './utils/env';
 import { fetch } from './utils/fetch';
+import { extractNpmTarballAsync } from './utils/npm';
 
 const debug = require('debug')('expo:init:template') as typeof console.log;
-const pipeline = promisify(Stream.pipeline);
 
 /**
  * The partial GitHub content type, used to filter out examples.
@@ -131,18 +127,12 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     throw new Error('Failed to fetch the examples code from https://github.com/expo/examples');
   }
 
-  await pipeline(
-    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
-    Readable.fromWeb(response.body),
-    tarExtract(
-      {
-        cwd: root,
-        onentry: createEntryResolver(projectName),
-        strip: 2,
-      },
-      [`examples-master/${name}`]
-    )
-  );
+  const prefix = `examples-master/${name}/`;
+  await extractNpmTarballAsync(response.body, root, {
+    expName: projectName,
+    strip: 2,
+    filter: (entryName) => entryName.startsWith(prefix),
+  });
 
   const files = await getTemplateFilesToRenameAsync({ cwd: root });
   await renameTemplateAppNameAsync({

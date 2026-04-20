@@ -3,7 +3,6 @@ package expo.modules.medialibrary.next
 import android.net.Uri
 import android.os.Build
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
@@ -28,7 +27,6 @@ import expo.modules.medialibrary.next.permissions.enums.GranularPermission
 import expo.modules.medialibrary.next.records.AssetField
 import expo.modules.medialibrary.next.records.SortDescriptor
 
-@OptIn(EitherType::class)
 class MediaLibraryNextModule : Module() {
   private val context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -97,6 +95,10 @@ class MediaLibraryNextModule : Module() {
         self.getInfo()
       }
 
+      AsyncFunction("getAlbums") Coroutine { self: Asset ->
+        self.getAlbums()
+      }
+
       AsyncFunction("getLocation") Coroutine { self: Asset ->
         self.getLocation()
       }
@@ -132,6 +134,14 @@ class MediaLibraryNextModule : Module() {
       AsyncFunction("delete") Coroutine { self: Asset ->
         self.delete()
       }
+
+      StaticAsyncFunction("create") Coroutine { filePath: Uri, album: Album? ->
+        return@Coroutine assetFactory.create(filePath, album?.getRelativePath())
+      }
+
+      StaticAsyncFunction("delete") Coroutine { assets: List<Asset> ->
+        assetDeleter.delete(assets.map { it.contentUri })
+      }
     }
 
     Class(Album::class) {
@@ -157,6 +167,32 @@ class MediaLibraryNextModule : Module() {
 
       AsyncFunction("delete") Coroutine { self: Album ->
         self.delete()
+      }
+
+      StaticAsyncFunction("get") Coroutine { title: String ->
+        albumQuery.getAlbum(title)
+      }
+
+      StaticAsyncFunction("getAll") Coroutine { ->
+        albumQuery.getAllAlbums()
+      }
+
+      StaticAsyncFunction("delete") Coroutine { albums: List<Album>, deleteAssets: Boolean? ->
+        val contentUris = albums
+          .map { it.getAssets() }
+          .flatten()
+          .map { it.contentUri }
+        assetDeleter.delete(contentUris)
+      }
+
+      StaticAsyncFunction("create") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, moveAssets: Boolean? ->
+        val assetListKClass = toKClass<List<Asset>>()
+        if (assetRefs.`is`(assetListKClass)) {
+          val assetList = assetRefs.get(assetListKClass)
+          return@Coroutine albumFactory.createFromAssets(name, assetList, moveAssets ?: true)
+        }
+        val assetPaths = assetRefs.get(toKClass<List<Uri>>())
+        return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
       }
     }
 
@@ -217,43 +253,12 @@ class MediaLibraryNextModule : Module() {
       }
     }
 
-    AsyncFunction("createAsset") Coroutine { filePath: Uri, album: Album? ->
-      return@Coroutine assetFactory.create(filePath, album?.getRelativePath())
+    AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean?, permissions: List<GranularPermission>?, promise: Promise ->
+      systemPermissionsDelegate.requestPermissions(writeOnly ?: false, permissions, promise)
     }
 
-    @OptIn(EitherType::class)
-    AsyncFunction("createAlbum") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, move: Boolean ->
-      val assetListKClass = toKClass<List<Asset>>()
-      if (assetRefs.`is`(assetListKClass)) {
-        val assetList = assetRefs.get(assetListKClass)
-        return@Coroutine albumFactory.createFromAssets(name, assetList, move)
-      }
-      val assetPaths = assetRefs.get(toKClass<List<Uri>>())
-      return@Coroutine albumFactory.createFromFilePaths(name, assetPaths)
-    }
-
-    AsyncFunction("getAlbum") Coroutine { title: String ->
-      albumQuery.getAlbum(title)
-    }
-
-    AsyncFunction("deleteAlbums") Coroutine { albums: List<Album> ->
-      val contentUris = albums
-        .map { it.getAssets() }
-        .flatten()
-        .map { it.contentUri }
-      assetDeleter.delete(contentUris)
-    }
-
-    AsyncFunction("deleteAssets") Coroutine { assets: List<Asset> ->
-      assetDeleter.delete(assets.map { it.contentUri })
-    }
-
-    AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-      systemPermissionsDelegate.requestPermissions(writeOnly, permissions, promise)
-    }
-
-    AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
-      systemPermissionsDelegate.getPermissions(writeOnly, permissions, promise)
+    AsyncFunction("getPermissionsAsync") { writeOnly: Boolean?, permissions: List<GranularPermission>?, promise: Promise ->
+      systemPermissionsDelegate.getPermissions(writeOnly ?: false, permissions, promise)
     }
 
     RegisterActivityContracts {

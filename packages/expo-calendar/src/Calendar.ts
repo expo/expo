@@ -4,7 +4,7 @@ import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate } from './utils';
 
-export {
+export type {
   PermissionResponse,
   PermissionStatus,
   PermissionHookOptions,
@@ -1428,7 +1428,7 @@ export const useRemindersPermissions = createPermissionHook({
 
 // @docsMissing
 /**
- * platform ios
+ * @platform ios
  */
 export enum EntityTypes {
   EVENT = 'event',

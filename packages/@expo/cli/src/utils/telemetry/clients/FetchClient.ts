@@ -1,6 +1,5 @@
+import type { RequestInit } from 'fetch-nodeshim';
 import { Buffer } from 'node:buffer';
-import { URL } from 'node:url';
-import { Agent, RetryAgent, type RequestInfo, type RequestInit } from 'undici';
 
 import { fetch } from '../../fetch';
 import { TelemetryClient, TelemetryClientStrategy, TelemetryRecordInternal } from '../types';
@@ -108,23 +107,17 @@ export class FetchClient implements TelemetryClient {
 }
 
 function createTelemetryFetch(): typeof fetch {
-  const agent = new RetryAgent(new Agent(), {
-    maxRetries: 3,
-    retryAfter: true,
-    minTimeout: 500,
-    maxTimeout: 2000,
-    timeoutFactor: 2,
-  });
-
-  return (info: RequestInfo | URL, init: RequestInit = {}) =>
-    fetch(extractUrl(info), { ...init, dispatcher: agent });
-}
-
-/** Extract the URL string from either `RequestInfo` or `URL` */
-function extractUrl(info: RequestInfo | URL) {
-  if (typeof info === 'string') return info;
-  if ('url' in info) return info.url;
-  return info.toString();
+  return async function telemetryFetch(info, init) {
+    let error: any;
+    for (let attemptCount = 0; attemptCount < 3; attemptCount++) {
+      try {
+        return await fetch(info, init);
+      } catch (_error: any) {
+        error = _error;
+      }
+    }
+    throw error;
+  };
 }
 
 /** Mute a promise by removing the original return type and hide errors */

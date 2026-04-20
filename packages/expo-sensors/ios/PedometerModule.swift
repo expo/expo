@@ -18,7 +18,11 @@ public final class PedometerModule: Module {
     Events(EVENT_PEDOMETER_UPDATE)
 
     AsyncFunction("isAvailableAsync") {
+      #if EXPO_DISABLE_MOTION_PERMISSION
+      return false
+      #else
       return CMPedometer.isStepCountingAvailable()
+      #endif
     }
 
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
@@ -42,7 +46,7 @@ public final class PedometerModule: Module {
       }
       permissionsManager.getPermissionUsingRequesterClass(
         EXMotionPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -53,7 +57,7 @@ public final class PedometerModule: Module {
       }
       permissionsManager.askForPermission(
         usingRequesterClass: EXMotionPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }

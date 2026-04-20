@@ -1,21 +1,4 @@
 'use client';
-import {
-  CommonNavigationAction,
-  NavigationAction,
-  ParamListBase,
-  PartialRoute,
-  PartialState,
-  Route,
-  RouterConfigOptions,
-  StackRouter as RNStackRouter,
-  StackActionType,
-  StackNavigationState,
-  type RouteProp,
-} from '@react-navigation/native';
-import {
-  NativeStackNavigationEventMap,
-  NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
 import React, { Children, ComponentProps, useMemo } from 'react';
 
@@ -35,11 +18,31 @@ import {
   type StackScreenProps,
   StackHeader,
   StackScreen,
+  StackSearchBar,
+  StackToolbar,
   appendScreenStackPropsToOptions,
+  mapProtectedScreen,
+  validateStackPresentation,
 } from './stack-utils';
+import {
+  CommonNavigationAction,
+  NavigationAction,
+  ParamListBase,
+  PartialRoute,
+  PartialState,
+  Route,
+  RouterConfigOptions,
+  StackRouter as RNStackRouter,
+  StackActionType,
+  StackNavigationState,
+  type RouteProp,
+} from '../react-navigation/native';
+import {
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+} from '../react-navigation/native-stack';
 import { isChildOfType } from '../utils/children';
-import { Protected, type ProtectedProps } from '../views/Protected';
-import { Screen } from '../views/Screen';
+import { Protected } from '../views/Protected';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -406,6 +409,8 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             );
           }
 
+          const preloadZoomTransitionId = getZoomTransitionIdFromAction(action);
+
           if (route) {
             return {
               ...state,
@@ -413,30 +418,43 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                 if (r.key !== route?.key) {
                   return r;
                 }
+                const mergedParams =
+                  routeParamList[action.payload.name] !== undefined
+                    ? {
+                        ...routeParamList[action.payload.name],
+                        ...action.payload.params,
+                      }
+                    : action.payload.params;
                 return {
                   ...r,
-                  params:
-                    routeParamList[action.payload.name] !== undefined
-                      ? {
-                          ...routeParamList[action.payload.name],
-                          ...action.payload.params,
-                        }
-                      : action.payload.params,
+                  params: preloadZoomTransitionId
+                    ? {
+                        ...mergedParams,
+                        [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
+                      }
+                    : mergedParams,
                 };
               }),
             };
           } else {
             // START FORK
+            const preloadedRouteKey = `${action.payload.name}-${nanoid()}`;
+            const preloadedRouteParams =
+              routeParamList[action.payload.name] !== undefined
+                ? {
+                    ...routeParamList[action.payload.name],
+                    ...action.payload.params,
+                  }
+                : action.payload.params;
             const currentPreloadedRoute: (typeof state)['preloadedRoutes'][number] = {
-              key: `${action.payload.name}-${nanoid()}`,
+              key: preloadedRouteKey,
               name: action.payload.name,
-              params:
-                routeParamList[action.payload.name] !== undefined
-                  ? {
-                      ...routeParamList[action.payload.name],
-                      ...action.payload.params,
-                    }
-                  : action.payload.params,
+              params: preloadZoomTransitionId
+                ? {
+                    ...preloadedRouteParams,
+                    [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: preloadedRouteKey,
+                  }
+                : preloadedRouteParams,
             };
             // END FORK
             return {
@@ -541,34 +559,11 @@ function filterSingular<
   };
 }
 
-function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
-  return {
-    ...props,
-    children: Children.toArray(props.children)
-      .map((child, index) => {
-        if (isChildOfType(child, StackScreen)) {
-          const options = appendScreenStackPropsToOptions({}, child.props);
-          const { children, ...rest } = child.props;
-          return <Screen key={child.props.name} {...rest} options={options} />;
-        } else if (isChildOfType(child, Protected)) {
-          return <Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)} />;
-        } else if (isChildOfType(child, StackHeader)) {
-          // Ignore Stack.Header, because it can be used to set header options for Stack
-          // and we use this function to process children of Stack, as well.
-          return null;
-        } else {
-          if (React.isValidElement(child)) {
-            console.warn(`Warning: Unknown child element passed to Stack: ${child.type}`);
-          } else {
-            console.warn(`Warning: Unknown child element passed to Stack: ${child}`);
-          }
-        }
-        return null;
-      })
-      .filter(Boolean),
-  };
-}
-
+/**
+ * Renders a native stack navigator.
+ *
+ * @hideType
+ */
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
@@ -591,9 +586,14 @@ const Stack = Object.assign(
         } else {
           return appendScreenStackPropsToOptions({}, screenStackProps);
         }
-      } else {
-        return props.screenOptions;
+      } else if (props.screenOptions) {
+        const screenOptions = props.screenOptions;
+        if (typeof screenOptions === 'function') {
+          return validateStackPresentation(screenOptions);
+        }
+        return validateStackPresentation(screenOptions);
       }
+      return props.screenOptions;
     }, [props.screenOptions, props.children]);
 
     const screenOptions = useMemo(() => {
@@ -620,6 +620,8 @@ const Stack = Object.assign(
     Screen: StackScreen,
     Protected,
     Header: StackHeader,
+    SearchBar: StackSearchBar,
+    Toolbar: StackToolbar,
   }
 );
 

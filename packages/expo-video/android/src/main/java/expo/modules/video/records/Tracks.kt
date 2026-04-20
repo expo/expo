@@ -1,5 +1,6 @@
 package expo.modules.video.records
 
+import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.media3.common.Format
 import androidx.media3.common.util.UnstableApi
@@ -7,11 +8,16 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
 import java.util.Locale
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class SubtitleTrack(
   @Field val id: String,
   @Field val language: String?,
-  @Field val label: String?
+  @Field val label: String?,
+  @Field val name: String?,
+  @Field val isDefault: Boolean,
+  @Field val autoSelect: Boolean
 ) : Record, Serializable {
   companion object {
     fun fromFormat(format: Format?): SubtitleTrack? {
@@ -19,20 +25,30 @@ class SubtitleTrack(
       val id = format.id ?: return null
       val language = format.language ?: return null
       val label = Locale(language).displayLanguage
+      val name = format.label
+      val isDefault = (format.selectionFlags and androidx.media3.common.C.SELECTION_FLAG_DEFAULT) != 0
+      val autoSelect = (format.selectionFlags and androidx.media3.common.C.SELECTION_FLAG_AUTOSELECT) != 0
 
       return SubtitleTrack(
         id = id,
         language = language,
-        label = label
+        label = label,
+        name = name,
+        isDefault = isDefault,
+        autoSelect = autoSelect
       )
     }
   }
 }
 
+@OptimizedRecord
 class AudioTrack(
   @Field val id: String,
   @Field val language: String?,
-  @Field val label: String?
+  @Field val label: String?,
+  @Field val name: String?,
+  @Field val isDefault: Boolean,
+  @Field val autoSelect: Boolean
 ) : Record, Serializable {
   companion object {
     fun fromFormat(format: Format?): AudioTrack? {
@@ -40,19 +56,27 @@ class AudioTrack(
       val id = format.id ?: return null
       val language = format.language
       val label = language?.let { Locale(it).displayLanguage } ?: "Unknown"
+      val name = format.label
+      val isDefault = (format.selectionFlags and androidx.media3.common.C.SELECTION_FLAG_DEFAULT) != 0
+      val autoSelect = (format.selectionFlags and androidx.media3.common.C.SELECTION_FLAG_AUTOSELECT) != 0
 
       return AudioTrack(
         id = id,
         language = language,
-        label = label
+        label = label,
+        name = name,
+        isDefault = isDefault,
+        autoSelect = autoSelect
       )
     }
   }
 }
 
 @OptIn(UnstableApi::class)
+@OptimizedRecord
 class VideoTrack(
   @Field val id: String,
+  @Field val url: Uri?,
   @Field val size: VideoSize,
   @Field val mimeType: String?,
   @Field val isSupported: Boolean = true,
@@ -63,7 +87,7 @@ class VideoTrack(
   var format: Format? = null
 ) : Record, Serializable {
   companion object {
-    fun fromFormat(format: Format?, isSupported: Boolean): VideoTrack? {
+    fun fromFormat(format: Format?, isSupported: Boolean, variantUrl: Uri?): VideoTrack? {
       val id = format?.id ?: return null
       val size = VideoSize(format)
       val mimeType = format.sampleMimeType
@@ -73,6 +97,7 @@ class VideoTrack(
 
       return VideoTrack(
         id = id,
+        url = variantUrl,
         size = size,
         mimeType = mimeType,
         isSupported = isSupported,

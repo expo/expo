@@ -123,6 +123,7 @@ internal inline fun withJSIInterop(
     // That’s why the JSIContext outlives the JS runtime.
     runtimeHolder.close()
     jsiContext.close()
+    callInvokerHolder.resetNative()
   }
   Truth.assertWithMessage("Memory leak detected").that(jniDeallocator.inspectMemory()).isEmpty()
 }

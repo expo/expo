@@ -6,9 +6,10 @@ import ListButton from '../../components/ListButton';
 
 type Props = {
   recorder?: AudioRecorder;
+  canRecord?: boolean;
 };
 
-function AudioInputSelector({ recorder }: Props) {
+function AudioInputSelector({ recorder, canRecord }: Props) {
   const [availableInputs, setAvailableInputs] = useState<RecordingInput[]>([]);
   const [currentInput, setCurrentInput] = useState<RecordingInput | null>(null);
 
@@ -23,7 +24,7 @@ function AudioInputSelector({ recorder }: Props) {
 
   useEffect(() => {
     checkInputs();
-  }, [checkInputs]);
+  }, [checkInputs, canRecord]);
 
   return (
     <View>

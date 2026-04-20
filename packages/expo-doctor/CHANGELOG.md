@@ -6,6 +6,56 @@
 
 ### 🎉 New features
 
+- Add version to the `--verbose` output ([#44592](https://github.com/expo/expo/pull/44592) by [@kitten](https://github.com/kitten))
+- Add check that warns about invalid `overrides`/`resolutions` for critical package versions ([#44770](https://github.com/expo/expo/pull/44770) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Resolve project config by spawning `expo config` CLI instead of importing `@expo/config` directly ([#44044](https://github.com/expo/expo/pull/44044) by [@entiendonull](https://github.com/entiendonull))
+- Include `@react-navigation/native` and `@react-navigation/core` in duplicates check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
+- Include `web` platform in duplicate packages check ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
+- Use independent native modules API call, instead of reusing `@expo/cli`'s implementation ([#44593](https://github.com/expo/expo/pull/44593) by [@kitten](https://github.com/kitten))
+
+## 1.18.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.5 — 2026-02-08
+
+### 💡 Others
+
+- Add Xcode 26.0.0 requirement for SDK 55 ([#42852](https://github.com/expo/expo/pull/42852) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.18.4 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- Improve `.gitignore` and `.easignore` handling to correctly identify ignore status of files ([#42756](https://github.com/expo/expo/pull/42756) by [@kitten](https://github.com/kitten))
+
+## 1.18.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.0 — 2026-01-21
+
 ### 🐛 Bug fixes
 
 - Fix dependecy check failure when using EXPO_DEBUG=1 ([#39929](https://github.com/expo/expo/pull/39929) by [@betomoedano](https://github.com/betomoedano))

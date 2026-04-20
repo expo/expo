@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "54.0.1",
+  "version": "55.0.6",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -29,8 +29,7 @@
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\",\"src/**/__integration_tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },
@@ -55,9 +54,9 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "^54.0.8",
-    "@expo/json-file": "~10.0.7",
-    "@expo/plist": "^0.4.7",
+    "@expo/config-types": "workspace:^55.0.5",
+    "@expo/json-file": "workspace:~10.0.12",
+    "@expo/plist": "workspace:^0.5.2",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
@@ -65,15 +64,18 @@
     "glob": "^13.0.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.5.4",
-    "slash": "^3.0.0",
     "slugify": "^1.6.6",
     "xcode": "^3.0.1",
     "xml2js": "0.6.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@expo/cli": "workspace:*",
     "@types/debug": "^4.1.5",
+    "@types/getenv": "^1.0.0",
+    "@types/semver": "^7.7.0",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

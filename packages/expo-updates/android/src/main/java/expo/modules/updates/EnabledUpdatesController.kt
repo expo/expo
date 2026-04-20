@@ -31,7 +31,10 @@ import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
-import expo.modules.updatesinterface.UpdatesMetricsInterface
+import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesStateChangeListener
+import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +60,7 @@ class EnabledUpdatesController(
   private val context: Context,
   private var updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
-) : IUpdatesController, UpdatesMetricsInterface {
+) : IUpdatesController, UpdatesInterface {
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
   private val logger = UpdatesLogger(context.filesDir)
@@ -79,6 +82,8 @@ class EnabledUpdatesController(
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()
   override val reloadScreenManager = ReloadScreenManager()
+
+  internal val stateChangeListenerMap: MutableMap<String, UpdatesStateChangeListener> = mutableMapOf()
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context.filesDir).purgeLogEntries {
@@ -250,7 +255,7 @@ class EnabledUpdatesController(
   }
 
   override suspend fun fetchUpdate() = suspendCancellableCoroutine { continuation ->
-    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate) {
+    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate, controllerScope) {
       continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
@@ -274,6 +279,8 @@ class EnabledUpdatesController(
           }
         }
         continuation.resume(resultMap)
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         continuation.resumeWithException(e.toCodedException())
       }
@@ -282,7 +289,7 @@ class EnabledUpdatesController(
 
   override suspend fun setExtraParam(key: String, value: String?) = suspendCancellableCoroutine { continuation ->
     controllerScope.launch {
-      runCatching {
+      try {
         ManifestMetadata.setExtraParam(
           databaseHolder.database,
           updatesConfiguration,
@@ -290,7 +297,9 @@ class EnabledUpdatesController(
           value
         )
         continuation.resume(Unit)
-      }.onFailure { e ->
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
         continuation.resumeWithException(e.toCodedException())
       }
     }
@@ -320,7 +329,7 @@ class EnabledUpdatesController(
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
 
-  // UpdatesMetricsInterface implementations
+  // UpdatesInterface implementations
 
   override val runtimeVersion: String?
     get() = updatesConfiguration.runtimeVersionRaw
@@ -333,6 +342,27 @@ class EnabledUpdatesController(
 
   override val embeddedUpdateId: UUID?
     get() = getEmbeddedUpdate()?.id
+
+  override val launchAssetPath: String?
+    get() = startupProcedure.launchAssetFile
+
+  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
+    val subscriptionId = UUID.randomUUID().toString()
+    stateChangeListenerMap[subscriptionId] = listener
+    return EnabledUpdatesStateChangeSubscription(subscriptionId = subscriptionId)
+  }
+
+  fun unsubscribeFromUpdatesStateChanges(subscriptionId: String) {
+    if (stateChangeListenerMap.containsKey(subscriptionId)) {
+      stateChangeListenerMap.remove(subscriptionId)
+    }
+  }
+
+  internal fun getNativeInterfaceContext(): expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext {
+    return stateMachine.context.nativeInterfaceContext
+  }
+
+  override val isEnabled: Boolean = true
 
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName

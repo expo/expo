@@ -84,6 +84,14 @@ describe('exports middleware', () => {
       expect(title).toBe('Custom response from middleware');
     });
 
+    it('can use `setResponseHeaders()` with `Redirect.response()`', async () => {
+      const response = await server.fetchAsync('/?e2e=runtime-api', { redirect: 'manual' });
+      expect(response.status).toBe(302);
+      expect(response.headers.get('X-Foo')).toBe('bar');
+      const url = new URL(response.headers.get('location')!);
+      expect(url.pathname).toEqual('/second');
+    });
+
     it('runs the middleware before redirects', async () => {
       const html = await server
         .fetchAsync('/redirect?e2e=custom-response')

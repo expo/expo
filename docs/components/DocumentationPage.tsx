@@ -3,24 +3,26 @@ import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
-import { InlineHelp } from 'ui/components/InlineHelp';
-import { PageHeader } from 'ui/components/PageHeader';
 import * as RoutesUtils from '~/common/routes';
-import { appendSectionToRoute, isRouteActive } from '~/common/routes';
+import { appendSectionToRoute, getBreadcrumbTrail, isRouteActive } from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
 import DocumentationNestedScrollLayout, {
   DocumentationNestedScrollLayoutHandles,
 } from '~/components/DocumentationNestedScrollLayout';
+import { buildBreadcrumbListSchema, buildTechArticleSchema } from '~/constants/structured-data';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
 import { AskPageAIOverlay } from '~/ui/components/AskPageAI';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { InlineHelp } from '~/ui/components/InlineHelp';
+import { PageHeader } from '~/ui/components/PageHeader';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
+import { StructuredData } from '~/ui/components/StructuredData';
 import {
   TableOfContentsHandles,
   TableOfContentsWithManager,
@@ -61,6 +63,16 @@ export default function DocumentationPage({
   const pathname = router?.pathname ?? '/';
   const routes = RoutesUtils.getRoutes(pathname, version);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
+  const breadcrumbTrail = getBreadcrumbTrail(routes, pathname);
+  const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbTrail);
+  const canonicalUrl =
+    version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
+      ? RoutesUtils.getCanonicalUrl(pathname)
+      : undefined;
+  const techArticleSchema =
+    title && canonicalUrl
+      ? buildTechArticleSchema({ title, description, modificationDate, url: canonicalUrl })
+      : null;
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';
   const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
@@ -310,12 +322,9 @@ export default function DocumentationPage({
         onSidebarToggle={handleSidebarToggle}
         isSidebarCollapsed={isNavigationCollapsed}
         isChatExpanded={isAskAIExpanded}>
-        <DocumentationHead
-          title={title}
-          description={description}
-          canonicalUrl={
-            version !== 'unversioned' ? RoutesUtils.getCanonicalUrl(pathname) : undefined
-          }>
+        {breadcrumbSchema && <StructuredData id="breadcrumb-list" data={breadcrumbSchema} />}
+        {techArticleSchema && <StructuredData id="tech-article" data={techArticleSchema} />}
+        <DocumentationHead title={title} description={description} canonicalUrl={canonicalUrl}>
           {hideFromSearch !== true && (
             <meta
               name="docsearch:version"
@@ -324,14 +333,15 @@ export default function DocumentationPage({
           )}
           {(version === 'unversioned' ||
             RoutesUtils.isPreviewPath(pathname) ||
-            RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
+            RoutesUtils.isArchivePath(pathname) ||
+            RoutesUtils.isInternalPath(pathname)) && <meta name="robots" content="noindex" />}
           {searchRank && <meta name="searchRank" content={String(searchRank)} />}
           {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
         </DocumentationHead>
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'bg-gradient-to-b from-default to-transparent opacity-90'
+            'from-default bg-linear-to-b to-transparent opacity-90'
           )}
         />
         <main
@@ -340,7 +350,7 @@ export default function DocumentationPage({
             'max-lg-gutters:px-4 max-lg-gutters:pt-5'
           )}>
           {version && version === 'unversioned' && (
-            <InlineHelp type="default" size="sm" className="!mb-5 !inline-flex w-full">
+            <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
               <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
               {versionToText(LATEST_VERSION)}).
@@ -362,6 +372,12 @@ export default function DocumentationPage({
             />
           )}
           {title && <Separator />}
+          <blockquote className="sr-only">
+            <p>
+              For the complete documentation index, see <A href="/llms.txt">llms.txt</A>. Use this
+              Use this file to discover all available pages.
+            </p>
+          </blockquote>
           {children}
         </main>
         <Footer

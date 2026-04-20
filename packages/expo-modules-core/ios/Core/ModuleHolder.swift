@@ -62,7 +62,7 @@ public final class ModuleHolder {
   // MARK: Calling functions
 
   @preconcurrency
-  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> () = { _ in }) {
+  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> Void = { _ in }) {
     guard let appContext else {
       callback(.failure(Exceptions.AppContextLost()))
       return
@@ -133,23 +133,6 @@ public final class ModuleHolder {
     listeners(forEvent: event).forEach {
       try? $0.call(module, payload)
     }
-  }
-
-  // MARK: JavaScript events
-
-  /**
-   Modifies module's listeners count and calls `onStartObserving` or `onStopObserving` accordingly.
-   */
-  func modifyListenersCount(_ count: Int) {
-    guard let appContext else {
-      return
-    }
-    if count > 0 && listenersCount == 0 {
-      definition.functions["startObserving"]?.call(withArguments: [], appContext: appContext)
-    } else if count < 0 && listenersCount + count <= 0 {
-      definition.functions["stopObserving"]?.call(withArguments: [], appContext: appContext)
-    }
-    listenersCount = max(0, listenersCount + count)
   }
 
   // MARK: Deallocation

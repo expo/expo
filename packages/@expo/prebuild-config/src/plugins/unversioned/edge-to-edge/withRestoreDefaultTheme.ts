@@ -18,7 +18,7 @@ export function restoreDefaultTheme(config: ResourceXMLConfig): ResourceXMLConfi
     return config;
   }
 
-  if (style[mainThemeIndex].$?.parent.includes('EdgeToEdge')) {
+  if (style[mainThemeIndex]?.$?.parent.includes('EdgeToEdge')) {
     config.modResults.resources.style = [
       {
         $: {

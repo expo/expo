@@ -9,7 +9,7 @@ type ViewConfig = {
 };
 
 export interface ExpoProcessEnv {
-  NODE_ENV: string;
+  NODE_ENV: 'development' | 'production' | 'test';
   /** Used in `@expo/metro-runtime`. */
   EXPO_DEV_SERVER_ORIGIN?: string;
 

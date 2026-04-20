@@ -14,6 +14,7 @@ struct ReadingOptions: Record {
 
 struct WritingOptions: Record {
   @Field var encoding: Encoding = .utf8
+  @Field var append: Bool = false
 }
 
 struct DeletingOptions: Record {

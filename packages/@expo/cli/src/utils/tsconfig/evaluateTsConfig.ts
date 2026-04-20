@@ -37,7 +37,7 @@ export function evaluateTsConfig(ts: typeof import('typescript'), tsConfigPath: 
     }
 
     if (jsonFileContents.errors?.length) {
-      throw new Error(ts.formatDiagnostic(jsonFileContents.errors[0], formatDiagnosticsHost));
+      throw new Error(ts.formatDiagnostic(jsonFileContents.errors[0]!, formatDiagnosticsHost));
     }
 
     return { compilerOptions: jsonFileContents.options, raw: config.raw };

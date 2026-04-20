@@ -1,10 +1,5 @@
 'use client';
 
-import {
-  NavigationContext,
-  type NavigationProp,
-  type ParamListBase,
-} from '@react-navigation/native';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
@@ -12,9 +7,15 @@ import { PreviewRouteContext } from './PreviewRouteContext';
 import { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
 import { type ResultState } from '../../exports';
+import { CompositionContext } from '../../fork/native-stack/composition-options';
 import { store } from '../../global-state/router-store';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
+import {
+  NavigationContext,
+  type NavigationProp,
+  type ParamListBase,
+} from '../../react-navigation/native';
 import { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
@@ -88,10 +89,12 @@ function PreviewForRootHrefState({ hrefState, href }: { hrefState: ResultState; 
 
   return (
     <PreviewRouteContext value={value}>
-      {/* Using NavigationContext to override useNavigation */}
-      <NavigationContext value={navigationPropWithWarnings}>
-        <Component navigation={navigation} />
-      </NavigationContext>
+      <CompositionContext value={{ set: () => {}, unset: () => {} }}>
+        {/* Using NavigationContext to override useNavigation */}
+        <NavigationContext value={navigationPropWithWarnings}>
+          <Component navigation={navigation} />
+        </NavigationContext>
+      </CompositionContext>
     </PreviewRouteContext>
   );
 }

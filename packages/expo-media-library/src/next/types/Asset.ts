@@ -1,6 +1,7 @@
 import { Album } from './Album';
 import { AssetInfo } from './AssetInfo';
 import { Location } from './Location';
+import { MediaSubtype } from './MediaSubtype';
 import { MediaType } from './MediaType';
 import { Shape } from './Shape';
 
@@ -65,6 +66,41 @@ export declare class Asset {
   getMediaType(): Promise<MediaType>;
 
   /**
+   * Gets the media subtypes of the asset, describing specific variations such as Live Photo, panorama, HDR, etc.
+   * @returns A promise resolving to an array of {@link MediaSubtype} strings. Returns an empty array if no subtypes apply.
+   * @throws An exception if the asset could not be found.
+   * @platform ios
+   */
+  getMediaSubtypes(): Promise<MediaSubtype[]>;
+
+  /**
+   * Gets the URI of the paired video for a Live Photo asset.
+   * The video is extracted to a temporary file.
+   * @returns A promise resolving to a `file://` URI string, or `null` if the asset is not a Live Photo.
+   * @throws An exception if the asset could not be found.
+   * @platform ios
+   */
+  getLivePhotoVideoUri(): Promise<string | null>;
+
+  /**
+   * Gets whether the asset is stored in iCloud and not available locally.
+   * This does not trigger a download of the asset.
+   * @returns A promise resolving to `true` if the asset is stored in iCloud and not available locally.
+   * @throws An exception if the asset could not be found.
+   * @platform ios
+   */
+  getIsInCloud(): Promise<boolean>;
+
+  /**
+   * Gets the EXIF display orientation of the asset.
+   * Only applicable for assets with media type {@link MediaType.image}.
+   * @returns A promise resolving to a value between 1 and 8 as defined by the [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html), or `null` if unavailable.
+   * @throws An exception if the asset could not be found.
+   * @platform ios
+   */
+  getOrientation(): Promise<number | null>;
+
+  /**
    * Gets the last modification time of the asset.
    * @returns A promise resolving to the UNIX timestamp in milliseconds, or `null` if unavailable.
    * @throws An exception if the asset could not be found.
@@ -102,6 +138,21 @@ export declare class Asset {
   getInfo(): Promise<AssetInfo>;
 
   /**
+   * Gets the albums containing this asset.
+   * On Android, an asset is typically associated with a single album.
+   * On iOS, an asset may belong to multiple albums.
+   * @returns A promise resolving to an array of {@link Album} objects.
+   * @throws An exception if the asset could not be found.
+   *
+   * @example
+   * ```ts
+   * const albums = await asset.getAlbums();
+   * console.log(albums.length);
+   * ```
+   */
+  getAlbums(): Promise<Album[]>;
+
+  /**
    * Gets the location of the asset.
    * On Android, this method requires the `ACCESS_MEDIA_LOCATION` permission to access location metadata.
    * @returns A promise resolving to the {@link Location} object or `null` if the location data is unavailable.
@@ -128,6 +179,33 @@ export declare class Asset {
    */
   delete(): Promise<void>;
 
+  /**
+   * Gets whether the asset is marked as a favorite.
+   * On iOS, this checks if the asset is part of the system "Favorites" smart album.
+   * @returns A promise resolving to `true` if the asset is a favorite, or `false` otherwise.
+   * @platform ios
+   *
+   * @example
+   * ```ts
+   * const isFavorite = await asset.getFavorite();
+   * console.log(isFavorite); // true or false
+   * ```
+   */
+  getFavorite(): Promise<boolean>;
+
+  /**
+   * Marks or unmarks the asset as a favorite. On iOS, this adds or removes the asset from the system "Favorites" smart album.
+   * @param isFavorite Whether the asset should be marked as favorite.
+   * @returns A promise that resolves once the operation has completed.
+   * @platform ios
+   *
+   * @example
+   * ```ts
+   * await asset.setFavorite(true);
+   * ```
+   */
+  setFavorite(isFavorite: boolean): Promise<void>;
+
   /*
    * A static function. Creates a new asset from a given file path.
    * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
@@ -144,4 +222,11 @@ export declare class Asset {
    * ```
    */
   static create(filePath: string, album?: Album): Promise<Asset>;
+
+  /**
+   * A static function. Deletes multiple assets from the device's media store.
+   * @param assets - An array of {@link Asset} instances to delete.
+   * @returns A promise that resolves once the deletion has completed.
+   */
+  static delete(assets: Asset[]): Promise<void>;
 }

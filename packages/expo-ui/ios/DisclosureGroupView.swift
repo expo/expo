@@ -20,15 +20,15 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
     DisclosureGroup(props.label, isExpanded: $isExpanded) {
       Children()
     }
-    .onAppear {
-      isExpanded = props.isExpanded
-    }
     .onChange(of: isExpanded) { newValue in
-      let payload = ["isExpanded": newValue]
-      props.onIsExpandedChange(payload)
+      if newValue == props.isExpanded { return }
+      props.onIsExpandedChange(["isExpanded": newValue])
     }
     .onChange(of: props.isExpanded) { newValue in
       isExpanded = newValue
+    }
+    .onAppear {
+      isExpanded = props.isExpanded
     }
 #endif
   }

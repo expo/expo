@@ -16,10 +16,6 @@ export {
 
 export { router, Router } from './imperative-api';
 
-export * from './link/Link';
-export * from './link/elements';
-export { useIsPreview } from './link/preview/PreviewRouteContext';
-
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 
@@ -30,6 +26,7 @@ export { Sitemap } from './views/Sitemap';
 export { useSitemap, SitemapType } from './views/useSitemap';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
+export { SuspenseFallback, type SuspenseFallbackProps } from './views/SuspenseFallback';
 export type { ScreenProps } from './useScreens';
 
 // Platform
@@ -41,14 +38,13 @@ export * as SplashScreen from './views/Splash';
 // React Navigation
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
+export { useIsFocused } from './useIsFocused';
 export type { ResultState } from './fork/getStateFromPath';
 
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 
 export type * from './types';
-
-export * from './color';
 
 export {
   Badge,
@@ -61,6 +57,11 @@ export {
   VectorIconProps,
 } from './primitives';
 
-export * from './layouts/stack-utils';
-
 export { unstable_navigationEvents } from './navigationEvents';
+
+/**
+ * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
+ */
+export { Tabs } from './layouts/Tabs';
+
+export * from './react-navigation';

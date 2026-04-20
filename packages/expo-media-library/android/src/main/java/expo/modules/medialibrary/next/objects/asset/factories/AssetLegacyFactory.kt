@@ -39,7 +39,7 @@ class AssetLegacyFactory(
       .contentResolver ?: throw ContentResolverNotObtainedException()
 
   private fun createAssetDelegate(contentUri: Uri): AssetDelegate {
-    return AssetLegacyDelegate(contentUri, assetDeleter, systemPermissionsDelegate, contextRef.getOrThrow())
+    return AssetLegacyDelegate(contentUri, assetDeleter, systemPermissionsDelegate, this, contextRef.getOrThrow())
   }
 
   override fun create(contentUri: Uri): Asset {

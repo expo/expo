@@ -1,68 +1,5 @@
 /* eslint-env browser */
-/**
- * A web-only module for ponyfilling the UserMedia API.
- */
 import { Platform } from 'expo-modules-core';
-
-export const userMediaRequested: boolean = false;
-
-export const mountedInstances: any[] = [];
-
-async function requestLegacyUserMediaAsync(
-  // TODO(@kitten): Type this properly
-  props: { audioConstraints?: any; videoConstraints?: any }
-): Promise<any[]> {
-  // TODO(@kitten): This is never type checked against DOM types
-  const optionalSource = (id: string | string[] | null) => ({ optional: [{ sourceId: id }] });
-
-  const constraintToSourceId = (constraint: MediaTrackConstraintSet) => {
-    const { deviceId } = constraint;
-
-    if (typeof deviceId === 'string') {
-      return deviceId;
-    }
-
-    if (Array.isArray(deviceId)) {
-      return deviceId[0] ?? null;
-    } else if (typeof deviceId === 'object' && deviceId.ideal) {
-      return deviceId.ideal;
-    }
-
-    return null;
-  };
-
-  const sources: any[] = await new Promise((resolve) =>
-    // @ts-ignore: https://caniuse.com/#search=getSources Chrome for Android (78) & Samsung Internet (10.1) use this
-    MediaStreamTrack.getSources((sources) => resolve(sources))
-  );
-
-  let audioSource = null;
-  let videoSource = null;
-
-  sources.forEach((source) => {
-    if (source.kind === 'audio') {
-      audioSource = source.id;
-    } else if (source.kind === 'video') {
-      videoSource = source.id;
-    }
-  });
-
-  // NOTE(@kitten): This doesn't seem right. The types that should be used here don't contain `audioConstraints`
-  // If this is legacy, the type shouldn't have been dropped but marked as `@deprecated`. Alternatively, remove this code path
-  const audioSourceId = constraintToSourceId(props.audioConstraints);
-  if (audioSourceId) {
-    audioSource = audioSourceId;
-  }
-
-  // NOTE(@kitten): This doesn't seem right. The types that should be used here don't contain `videoConstraints`
-  // If this is legacy, the type shouldn't have been dropped but marked as `@deprecated`. Alternatively, remove this code path
-  const videoSourceId = constraintToSourceId(props.videoConstraints);
-  if (videoSourceId) {
-    videoSource = videoSourceId;
-  }
-
-  return [optionalSource(audioSource), optionalSource(videoSource)];
-}
 
 async function sourceSelectedAsync(
   isMuted: boolean,
@@ -81,17 +18,10 @@ async function sourceSelectedAsync(
 }
 
 export async function requestUserMediaAsync(
-  // TODO(@kitten): Type this properly
   props: { audio?: any; video?: any },
   isMuted: boolean = true
 ): Promise<MediaStream> {
-  if (canGetUserMedia()) {
-    return await sourceSelectedAsync(isMuted, props.audio, props.video);
-  }
-  // NOTE(@kitten): This doesn't seem right. The types that should be used here don't contain `videoConstraints`
-  // If this is legacy, the type shouldn't have been dropped but marked as `@deprecated`. Alternatively, remove this code path
-  const [audio, video] = await requestLegacyUserMediaAsync(props as any);
-  return await sourceSelectedAsync(isMuted, audio, video);
+  return await sourceSelectedAsync(isMuted, props.audio, props.video);
 }
 
 export async function getAnyUserMediaAsync(
@@ -99,7 +29,7 @@ export async function getAnyUserMediaAsync(
   ignoreConstraints: boolean = false
 ): Promise<MediaStream> {
   try {
-    return await getUserMediaAsync({
+    return await navigator.mediaDevices.getUserMedia({
       ...constraints,
       video: ignoreConstraints || constraints.video,
     });
@@ -115,35 +45,8 @@ export async function getAnyUserMediaAsync(
   }
 }
 
-export async function getUserMediaAsync(constraints: MediaStreamConstraints): Promise<MediaStream> {
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    return navigator.mediaDevices.getUserMedia(constraints);
-  }
-
-  const _getUserMedia =
-    navigator['mozGetUserMedia'] ||
-    navigator['webkitGetUserMedia'] ||
-    // @ts-expect-error: TODO(@kitten): Remove / Drop IE support
-    navigator['msGetUserMedia'];
-  return new Promise((resolve, reject) =>
-    _getUserMedia.call(navigator, constraints, resolve, reject)
-  );
-}
-
 export function canGetUserMedia(): boolean {
-  // TODO(@kitten): This is misaligned with the implementations in `expo-audio/src/AudioModule.web.ts` and `expo-av`
-  return (
-    // SSR
-    Platform.isDOMAvailable &&
-    // Has any form of media API
-    !!(
-      (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
-      navigator['mozGetUserMedia'] ||
-      navigator['webkitGetUserMedia'] ||
-      // @ts-expect-error: TODO(@kitten): Remove / Drop IE support
-      navigator['msGetUserMedia']
-    )
-  );
+  return Platform.isDOMAvailable && !!navigator.mediaDevices?.getUserMedia;
 }
 
 export async function isFrontCameraAvailableAsync(

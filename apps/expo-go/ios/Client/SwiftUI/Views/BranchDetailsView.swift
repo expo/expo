@@ -65,6 +65,9 @@ struct BranchDetailsView: View {
     .background(Color.expoSystemBackground)
     .navigationTitle("Branch")
     .navigationBarTitleDisplayMode(.inline)
+    .refreshable {
+      await viewModel.refresh()
+    }
     .task {
       await viewModel.loadBranch()
     }
@@ -162,5 +165,10 @@ class BranchDetailsViewModel: ObservableObject {
     } catch {
       self.error = error
     }
+  }
+
+  func refresh() async {
+    hasLoadedRemote = false
+    await loadBranch()
   }
 }

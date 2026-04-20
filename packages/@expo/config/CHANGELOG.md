@@ -8,6 +8,55 @@
 
 ### 🐛 Bug fixes
 
+- Switch to `@expo/require-utils`'s `resolveFrom` to resolve unresolved entrypoint ([#44114](https://github.com/expo/expo/pull/44114) by [@kitten](https://github.com/kitten))
+- Align `convertEntryPointToRelative` implementation with `@expo/cli`'s `mainModuleName` expectations, but mark as deprecated, since it shouldn't be reused in the future ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
+- Fix `convertEntryPointToRelative` implementation not resolving from real server root to entrypoint ([#44699](https://github.com/expo/expo/pull/44699) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Removed unused `ExpoConfigSplash` re-export. ([#44598](https://github.com/expo/expo/pull/44598) by [@zoontek](https://github.com/zoontek))
+- Memoize server root detection ([#44101](https://github.com/expo/expo/pull/44101) by [@kitten](https://github.com/kitten))
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 💡 Others
+
+- Support loading configs from `app.config.{mts,cts,mjs,cjs}` ([#43243](https://github.com/expo/expo/pull/43242))
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-16
+
+### 💡 Others
+
+- Replace `require-from-string` and `sucrase` with `@expo/require-utils` ([#42884](https://github.com/expo/expo/pull/42884) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 — 2026-02-03
+
+### 💡 Others
+
+- Loosen `@babel/code-frame` dependency range ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
 ### 💡 Others
 
 - Export sub-types from `@expo/config-types` ([#41453](https://github.com/expo/expo/pull/41453) by [@kitten](https://github.com/kitten))

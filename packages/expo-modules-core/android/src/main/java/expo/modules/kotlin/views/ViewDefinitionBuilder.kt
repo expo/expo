@@ -13,23 +13,23 @@ import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
-import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
+import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.functions.createAsyncFunctionComponent
 import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.types.TypeConverterProvider
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.types.toArgsArray
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 @DefinitionMarker
 class ViewDefinitionBuilder<T : View>(
   @PublishedApi internal val viewClass: KClass<T>,
-  @PublishedApi internal val viewType: KType,
+  @PublishedApi internal val viewType: TypeDescriptor,
   @PublishedApi internal val converters: TypeConverterProvider? = null
 ) {
   @PublishedApi
@@ -123,12 +123,14 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified PropType> Prop(
     name: String,
     noinline body: (view: T, prop: PropType) -> Unit
-  ) {
-    props[name] = ConcreteViewProp(
+  ): ConcreteViewProp<T, PropType> {
+    return ConcreteViewProp(
       name,
       toAnyType<PropType>(),
       body
-    )
+    ).apply {
+      props[name] = this
+    }
   }
 
   /**
@@ -138,12 +140,14 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified ViewType : View, reified PropType> Prop(
     name: String,
     noinline body: (view: ViewType, prop: PropType) -> Unit
-  ) {
-    props[name] = ConcreteViewProp(
+  ): ConcreteViewProp<ViewType, PropType> {
+    return ConcreteViewProp(
       name,
       toAnyType<PropType>(),
       body
-    )
+    ).apply {
+      props[name] = this
+    }
   }
 
   /**
@@ -154,13 +158,15 @@ class ViewDefinitionBuilder<T : View>(
     name: String,
     defaultValue: PropType,
     noinline body: (view: ViewType, prop: PropType) -> Unit
-  ) {
-    props[name] = ConcreteViewPropWithDefault(
+  ): ConcreteViewPropWithDefault<ViewType, PropType> {
+    return ConcreteViewPropWithDefault(
       name,
       toAnyType<PropType>(),
       body,
       defaultValue
-    )
+    ).apply {
+      props[name] = this
+    }
   }
 
   inline fun <reified ViewType : View, reified PropType, reified CustomValueType> PropGroup(

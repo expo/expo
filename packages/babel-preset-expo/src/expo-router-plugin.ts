@@ -3,29 +3,22 @@
  */
 import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
 import nodePath from 'node:path';
-import resolveFrom from 'resolve-from';
 
 import { getExpoRouterAbsoluteAppRoot, getPossibleProjectRoot, getAsyncRoutes } from './common';
 
 const debug = require('debug')('expo:babel:router');
 
-// Cache for getExpoRouterAppRoot results (projectRoot -> appRoot)
-const appRootCache = new Map<string, string>();
-
-function getExpoRouterAppRoot(projectRoot: string, appFolder: string) {
-  const cacheKey = `${projectRoot}:${appFolder}`;
-  const cached = appRootCache.get(cacheKey);
-  if (cached !== undefined) {
-    return cached;
-  }
-
-  // TODO: We should have cache invalidation if the expo-router/entry file location changes.
-  const routerEntry = resolveFrom(projectRoot, 'expo-router/entry');
-
-  const appRoot = nodePath.relative(nodePath.dirname(routerEntry), appFolder);
-
-  debug('routerEntry', routerEntry, appFolder, appRoot);
-  appRootCache.set(cacheKey, appRoot);
+/**
+ * Compute the relative path from the current file to the app folder.
+ *
+ * Previously this was computed relative to `expo-router/entry`, but that breaks
+ * when packages are hoisted to unexpected locations (e.g., with Bun in monorepos).
+ * By using the actual file being transformed, the relative path is always correct
+ * regardless of where the package is installed.
+ */
+function getExpoRouterAppRoot(currentFile: string, appFolder: string) {
+  const appRoot = nodePath.relative(nodePath.dirname(currentFile), appFolder);
+  debug('getExpoRouterAppRoot', currentFile, appFolder, appRoot);
   return appRoot;
 }
 
@@ -100,10 +93,17 @@ export function expoRouterBabelPlugin(api: ConfigAPI & typeof import('@babel/cor
           case 'EXPO_ROUTER_ABS_APP_ROOT':
             path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
             return;
-          case 'EXPO_ROUTER_APP_ROOT':
-            path.replaceWith(
-              t.stringLiteral(getExpoRouterAppRoot(state.projectRoot!, routerAbsoluteRoot))
-            );
+          case 'EXPO_ROUTER_APP_ROOT': {
+            // Use the actual file being transformed to compute the relative path.
+            // This ensures the path is correct regardless of package hoisting.
+            const filename = state.filename || state.file.opts.filename;
+            if (!filename) {
+              throw new Error(
+                'babel-preset-expo: Unable to determine filename for EXPO_ROUTER_APP_ROOT transformation'
+              );
+            }
+            path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(filename, routerAbsoluteRoot)));
+          }
         }
       },
     },

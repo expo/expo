@@ -10,11 +10,15 @@ internal struct DatePickerView: ExpoSwiftUI.View {
     Text("DatePicker is not supported on tvOS")
 #else
     createDatePicker()
+      .onChange(of: date) { newDate in
+        if props.selection == newDate { return }
+        props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
+      }
+      .onChange(of: props.selection) { newValue in
+        date = newValue ?? Date()
+      }
       .onAppear {
         date = props.selection ?? Date()
-      }
-      .onChange(of: date) { newDate in
-        props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
       }
       .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
 #endif

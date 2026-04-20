@@ -1,53 +1,36 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.ui
 
-import android.content.Context
 import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.carousel.CarouselDefaults
+import androidx.compose.material3.carousel.HorizontalCenteredHeroCarousel
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
-import androidx.compose.material3.carousel.CarouselDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.size
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.apifeatures.EitherType
-import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
-import expo.modules.kotlin.views.ComposableScope
-
-enum class CarouselVariant(val value: String) : Enumerable {
-  MULTI_BROWSE("multiBrowse"),
-  UNCONSTRAINED("unconstrained")
-}
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class FlingBehaviorType(val value: String) : Enumerable {
   SINGLE_ADVANCE("singleAdvance"),
   NO_SNAP("noSnap")
 }
 
+@OptimizedRecord
 class PaddingValuesRecord : Record {
-  @Field
-  val start: Float? = null
-
-  @Field
-  val top: Float? = null
-
-  @Field
-  val end: Float? = null
-
-  @Field
-  val bottom: Float? = null
+  @Field val start: Float? = null
+  @Field val top: Float? = null
+  @Field val end: Float? = null
+  @Field val bottom: Float? = null
 
   fun toPaddingValues(): PaddingValues {
     return PaddingValues(
@@ -71,81 +54,113 @@ fun paddingValuesFromEither(either: Either<Float, PaddingValuesRecord>?): Paddin
   }
 }
 
-data class CarouselProps(
-  val variant: MutableState<CarouselVariant?> = mutableStateOf(null),
-  val modifiers: MutableState<List<ExpoModifier>?> = mutableStateOf(null),
-  val itemSpacing: MutableState<Float?> = mutableStateOf(null),
-  val contentPadding: MutableState<Either<Float, PaddingValuesRecord>?> = mutableStateOf(null),
-  val minSmallItemWidth: MutableState<Float?> = mutableStateOf(null),
-  val maxSmallItemWidth: MutableState<Float?> = mutableStateOf(null),
-  val flingBehavior: MutableState<FlingBehaviorType?> = mutableStateOf(null),
-  val preferredItemWidth: MutableState<Float?> = mutableStateOf(null),
-  val itemWidth: MutableState<Float?> = mutableStateOf(null)
+data class HorizontalCenteredHeroCarouselProps(
+  val maxItemWidth: Float? = null,
+  val itemSpacing: Float? = null,
+  val contentPadding: Either<Float, PaddingValuesRecord>? = null,
+  val minSmallItemWidth: Float? = null,
+  val maxSmallItemWidth: Float? = null,
+  val flingBehavior: FlingBehaviorType? = null,
+  val userScrollEnabled: Boolean? = null,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
-const val DEFAULT_MIN_SMALL_ITEM_WIDTH = 40f
-const val DEFAULT_MAX_SMALL_ITEM_WIDTH = 56f
-const val DEFAULT_PREFERRED_ITEM_WIDTH = 200f
-const val DEFAULT_ITEM_WIDTH = 200f
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: HorizontalCenteredHeroCarouselProps) {
+  val contentPadding = paddingValuesFromEither(props.contentPadding)
+  val carouselState = rememberCarouselState(0) { view.size }
+  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.SINGLE_ADVANCE) {
+    FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
+    FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
+  }
 
-class CarouselView(context: Context, appContext: AppContext) : ExpoComposeView<CarouselProps>(context, appContext) {
-  override val props = CarouselProps()
+  val minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize
+  val maxSmallItemWidth = (props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize).coerceAtLeast(minSmallItemWidth)
 
-  @OptIn(ExperimentalMaterial3Api::class)
-  @Composable
-  override fun ComposableScope.Content() {
-    val variant = props.variant.value ?: CarouselVariant.MULTI_BROWSE
-    val modifiers = props.modifiers.value ?: emptyList()
-    val itemSpacing = (props.itemSpacing.value ?: 0f).dp
-    val minSmallItemWidth = (props.minSmallItemWidth.value ?: DEFAULT_MIN_SMALL_ITEM_WIDTH).dp
+  HorizontalCenteredHeroCarousel(
+    state = carouselState,
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    maxItemWidth = props.maxItemWidth?.dp ?: Dp.Unspecified,
+    itemSpacing = (props.itemSpacing ?: 0f).dp,
+    flingBehavior = flingBehavior,
+    userScrollEnabled = props.userScrollEnabled ?: true,
+    minSmallItemWidth = minSmallItemWidth,
+    maxSmallItemWidth = maxSmallItemWidth,
+    contentPadding = contentPadding
+  ) { itemIndex ->
+    Child(UIComposableScope(), itemIndex)
+  }
+}
 
-    // we need to constrain maxSmallItemWidth to be at least minSmallItemWidth or the app will crash
-    val maxSmallItemWidth = minSmallItemWidth.coerceAtLeast((props.maxSmallItemWidth.value ?: DEFAULT_MAX_SMALL_ITEM_WIDTH).dp)
-    val preferredItemWidth = (props.preferredItemWidth.value ?: DEFAULT_PREFERRED_ITEM_WIDTH).dp
-    val itemWidth = (props.itemWidth.value ?: DEFAULT_ITEM_WIDTH).dp
-    val flingBehaviorType = props.flingBehavior.value ?: FlingBehaviorType.SINGLE_ADVANCE
-    val contentPadding = paddingValuesFromEither(props.contentPadding.value)
+data class HorizontalMultiBrowseCarouselProps(
+  val preferredItemWidth: Float = 200f,
+  val itemSpacing: Float? = null,
+  val contentPadding: Either<Float, PaddingValuesRecord>? = null,
+  val minSmallItemWidth: Float? = null,
+  val maxSmallItemWidth: Float? = null,
+  val flingBehavior: FlingBehaviorType? = null,
+  val userScrollEnabled: Boolean? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
 
-    val carouselState = rememberCarouselState(0) { size }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: HorizontalMultiBrowseCarouselProps) {
+  val contentPadding = paddingValuesFromEither(props.contentPadding)
+  val carouselState = rememberCarouselState(0) { view.size }
+  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.SINGLE_ADVANCE) {
+    FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
+    FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
+  }
 
-    val flingBehavior: TargetedFlingBehavior = when (flingBehaviorType) {
-      FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
-      FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
-    }
+  val minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize
+  val maxSmallItemWidth = (props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize).coerceAtLeast(minSmallItemWidth)
 
-    @Composable
-    fun MultiBrowseCarouselComposable() {
-      HorizontalMultiBrowseCarousel(
-        state = carouselState,
-        preferredItemWidth = preferredItemWidth,
-        modifier = Modifier.fromExpoModifiers(modifiers, this@Content),
-        itemSpacing = itemSpacing,
-        flingBehavior = flingBehavior,
-        minSmallItemWidth = minSmallItemWidth,
-        maxSmallItemWidth = maxSmallItemWidth,
-        contentPadding = contentPadding
-      ) { itemIndex ->
-        Child(ComposableScope(), itemIndex)
-      }
-    }
+  HorizontalMultiBrowseCarousel(
+    state = carouselState,
+    preferredItemWidth = props.preferredItemWidth.dp,
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    itemSpacing = (props.itemSpacing ?: 0f).dp,
+    flingBehavior = flingBehavior,
+    userScrollEnabled = props.userScrollEnabled ?: true,
+    minSmallItemWidth = minSmallItemWidth,
+    maxSmallItemWidth = maxSmallItemWidth,
+    contentPadding = contentPadding
+  ) { itemIndex ->
+    Child(UIComposableScope(), itemIndex)
+  }
+}
 
-    @Composable
-    fun UnconstrainedCarouselComposable() {
-      HorizontalUncontainedCarousel(
-        state = carouselState,
-        itemWidth = itemWidth,
-        modifier = Modifier.fromExpoModifiers(modifiers, this@Content),
-        itemSpacing = itemSpacing,
-        flingBehavior = flingBehavior,
-        contentPadding = contentPadding
-      ) { itemIndex ->
-        Child(ComposableScope(), itemIndex)
-      }
-    }
+data class HorizontalUncontainedCarouselProps(
+  val itemWidth: Float = 200f,
+  val itemSpacing: Float? = null,
+  val contentPadding: Either<Float, PaddingValuesRecord>? = null,
+  val flingBehavior: FlingBehaviorType? = null,
+  val userScrollEnabled: Boolean? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
 
-    when (variant) {
-      CarouselVariant.MULTI_BROWSE -> MultiBrowseCarouselComposable()
-      CarouselVariant.UNCONSTRAINED -> UnconstrainedCarouselComposable()
-    }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FunctionalComposableScope.HorizontalUncontainedCarouselContent(props: HorizontalUncontainedCarouselProps) {
+  val contentPadding = paddingValuesFromEither(props.contentPadding)
+  val carouselState = rememberCarouselState(0) { view.size }
+  // Uncontained defaults to noSnap, unlike the other two which default to singleAdvance
+  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.NO_SNAP) {
+    FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
+    FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
+  }
+
+  HorizontalUncontainedCarousel(
+    state = carouselState,
+    itemWidth = props.itemWidth.dp,
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    itemSpacing = (props.itemSpacing ?: 0f).dp,
+    flingBehavior = flingBehavior,
+    userScrollEnabled = props.userScrollEnabled ?: true,
+    contentPadding = contentPadding
+  ) { itemIndex ->
+    Child(UIComposableScope(), itemIndex)
   }
 }

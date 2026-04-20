@@ -29,6 +29,8 @@ class VideoPlayerAudioTracks {
       availableAudioTracks = []
     }
 
+    await Self.selectDefaultAudioTrackIfNeeded(for: playerItem)
+
     return AudioTracksChangedEventPayload(
       availableAudioTracks: availableAudioTracks,
       oldAvailableAudioTracks: oldAvailableAudioTracks
@@ -64,7 +66,7 @@ class VideoPlayerAudioTracks {
 
       if let group = try await asset.loadMediaSelectionGroup(for: characteristic) {
         for option in group.options {
-          guard let audioTrack = AudioTrack.from(mediaSelectionOption: option) else {
+          guard let audioTrack = AudioTrack.from(mediaSelectionOption: option, in: group) else {
             continue
           }
 
@@ -73,6 +75,24 @@ class VideoPlayerAudioTracks {
       }
     }
     return availableAudioTracks
+  }
+
+  private static func selectDefaultAudioTrackIfNeeded(for playerItem: AVPlayerItem?) async {
+    guard let playerItem,
+      let audioGroup = try? await playerItem.asset.loadMediaSelectionGroup(for: .audible) else {
+      return
+    }
+
+    let currentSelection = await playerItem.currentMediaSelection
+    guard currentSelection.selectedMediaOption(in: audioGroup) == nil else {
+      return
+    }
+
+    if let audioOption = audioGroup.defaultOption ?? audioGroup.options.first {
+      await MainActor.run {
+        playerItem.select(audioOption, in: audioGroup)
+      }
+    }
   }
 
   static func findCurrentAudioTrack(for playerItem: AVPlayerItem?) async -> AudioTrack? {
@@ -84,6 +104,6 @@ class VideoPlayerAudioTracks {
       return nil
     }
 
-    return AudioTrack.from(mediaSelectionOption: selectedMediaOption)
+    return AudioTrack.from(mediaSelectionOption: selectedMediaOption, in: mediaSelectionGroup)
   }
 }

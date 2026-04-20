@@ -1,6 +1,6 @@
 {
   "name": "create-expo-nightly",
-  "version": "0.2.7",
+  "version": "0.3.2",
   "license": "MIT",
   "description": "A tool to create an Expo app for react-native nightlies testing",
   "keywords": [
@@ -22,10 +22,9 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "tsc",
-    "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
-    "typecheck": "expo-module typecheck"
+    "typecheck": "expo-module typecheck",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/create-expo-nightly#readme",
   "bugs": {
@@ -41,6 +40,6 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.3",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   }
 }

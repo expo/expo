@@ -16,38 +16,41 @@ const AppleFiles = () => {
 };
 
 const Header = () => (
-  <Stack.Header style={{ backgroundColor: 'transparent' }}>
-    <Stack.Header.BackButton hidden />
-    <Stack.Header.Title>Apple Files</Stack.Header.Title>
-    <Stack.Header.Left>
-      <Stack.Header.Button icon="arrow.left" />
-      <Stack.Header.Button icon="arrow.right" />
-    </Stack.Header.Left>
-    <Stack.Header.Right>
-      <Stack.Header.Menu icon="ellipsis" separateBackground>
-        <Stack.Header.MenuAction icon="doc.text.viewfinder">Scan Documents</Stack.Header.MenuAction>
-        <Stack.Header.MenuAction icon="network">Connect to Server</Stack.Header.MenuAction>
-        <Stack.Header.Menu inline>
-          <Stack.Header.MenuAction isOn icon="square.grid.2x2">
+  <>
+    <Stack.Header style={{ backgroundColor: 'transparent' }} />
+    <Stack.Screen.BackButton hidden />
+    <Stack.Screen.Title>Apple Files</Stack.Screen.Title>
+    <Stack.Toolbar placement="left">
+      <Stack.Toolbar.Button icon="arrow.left" />
+      <Stack.Toolbar.Button icon="arrow.right" />
+    </Stack.Toolbar>
+    <Stack.Toolbar placement="right">
+      <Stack.Toolbar.Menu icon="ellipsis" separateBackground>
+        <Stack.Toolbar.MenuAction icon="doc.text.viewfinder">
+          Scan Documents
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="network">Connect to Server</Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.Menu inline>
+          <Stack.Toolbar.MenuAction isOn icon="square.grid.2x2">
             Icons
-          </Stack.Header.MenuAction>
-          <Stack.Header.MenuAction icon="list.bullet">List</Stack.Header.MenuAction>
-        </Stack.Header.Menu>
-        <Stack.Header.Menu inline>
-          <Stack.Header.MenuAction isOn subtitle="Ascending">
+          </Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction icon="list.bullet">List</Stack.Toolbar.MenuAction>
+        </Stack.Toolbar.Menu>
+        <Stack.Toolbar.Menu inline>
+          <Stack.Toolbar.MenuAction isOn subtitle="Ascending">
             Name
-          </Stack.Header.MenuAction>
-          <Stack.Header.MenuAction>Kind</Stack.Header.MenuAction>
-          <Stack.Header.MenuAction>Date</Stack.Header.MenuAction>
-          <Stack.Header.MenuAction>Size</Stack.Header.MenuAction>
-          <Stack.Header.MenuAction>Tags</Stack.Header.MenuAction>
-        </Stack.Header.Menu>
-        <Stack.Header.Menu inline>
-          <Stack.Header.MenuAction>View options</Stack.Header.MenuAction>
-        </Stack.Header.Menu>
-      </Stack.Header.Menu>
-      <Stack.Header.Button icon="magnifyingglass" />
-    </Stack.Header.Right>
-  </Stack.Header>
+          </Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction>Kind</Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction>Date</Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction>Size</Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction>Tags</Stack.Toolbar.MenuAction>
+        </Stack.Toolbar.Menu>
+        <Stack.Toolbar.Menu inline>
+          <Stack.Toolbar.MenuAction>View options</Stack.Toolbar.MenuAction>
+        </Stack.Toolbar.Menu>
+      </Stack.Toolbar.Menu>
+      <Stack.Toolbar.Button icon="magnifyingglass" />
+    </Stack.Toolbar>
+  </>
 );
 export default AppleFiles;

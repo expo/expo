@@ -1,8 +1,5 @@
 import type { ExpoUpdatesManifest } from '@expo/config';
-import {
-  isMultipartPartWithName,
-  parseMultipartMixedResponseAsync,
-} from '@expo/multipart-body-parser';
+import { MultipartPart, parseMultipart } from 'multitars';
 import assert from 'node:assert';
 import { stripVTControlCharacters } from 'node:util';
 
@@ -23,9 +20,9 @@ export const executeExpoAsync: typeof executeAsync = (cwd, flags, options) =>
   });
 
 /** Install any (dev) dependencies with Bun and verbose logging on unexpected errors */
-export const executeBunAsync: typeof executeAsync = (cwd, flags, options) =>
+export const executePnpmAsync: typeof executeAsync = (cwd, flags, options) =>
   executeAsync(cwd, flags, {
-    command: ['bun'],
+    command: ['pnpm'],
     ...options,
   });
 
@@ -98,7 +95,7 @@ async function fetchBundleAsync(server: BackgroundServer, url: string, init?: Re
       throw new Error(`Bundle fetch failed, received ${stripVTControlCharacters(error.message)}`);
     }
 
-    throw new Error(`Bundle fetch failed, received ${response.statusText} (${response.status})`);
+    throw new Error(`Bundle fetch failed, received ${response.statusText} (${response.status})\n\n${text}`);
   }
 
   return response;
@@ -120,12 +117,18 @@ function fetchAsExpoGoAsync(server: BackgroundServer, url: string, init: Request
 /** Fetch the Expo Go manifest, while fetching as Expo Go itself */
 async function fetchExpoGoManifestAsync(server: BackgroundServer, init?: RequestInit) {
   const response = await fetchAsExpoGoAsync(server, '/', init);
-  const multiparts = await parseMultipartMixedResponseAsync(
-    response.headers.get('content-type') as string,
-    Buffer.from(await response.arrayBuffer())
-  );
 
-  const manifest = multiparts.find((part) => isMultipartPartWithName(part, 'manifest'));
+  let manifest: MultipartPart | undefined;
+  const parts = parseMultipart(response.body!, {
+    contentType: response.headers.get('content-type')!,
+  });
+  for await (const part of parts) {
+    if (part.name === 'manifest') {
+      manifest = part;
+      break;
+    }
+  }
+
   assert(manifest, 'Manifest not found in the multipart response');
-  return JSON.parse(manifest.body) as ExpoUpdatesManifest;
+  return (await manifest.json()) as ExpoUpdatesManifest;
 }

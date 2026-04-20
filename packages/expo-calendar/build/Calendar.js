@@ -2,7 +2,6 @@ import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate } from './utils';
-export { PermissionStatus, } from 'expo-modules-core';
 // @docsMissing
 /**
  * @platform ios
@@ -671,7 +670,7 @@ export const useRemindersPermissions = createPermissionHook({
 });
 // @docsMissing
 /**
- * platform ios
+ * @platform ios
  */
 export var EntityTypes;
 (function (EntityTypes) {

@@ -1,12 +1,16 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "6.0.11",
+  "version": "55.0.10",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-dev-launcher"
+  },
+  "scripts": {
+    "build:plugin": "expo-module build plugin",
+    "expo-module": "expo-module"
   },
   "keywords": [
     "react-native"
@@ -15,11 +19,15 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "ajv": "^8.11.0",
-    "expo-dev-menu": "7.0.11",
-    "expo-manifests": "~1.0.8"
+    "@expo/schema-utils": "workspace:^55.0.2",
+    "expo-dev-menu": "workspace:55.0.9",
+    "expo-manifests": "workspace:~55.0.9"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0"
   }
 }

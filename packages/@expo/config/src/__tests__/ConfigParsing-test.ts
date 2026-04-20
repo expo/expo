@@ -6,7 +6,20 @@ import { getConfig } from '../Config';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
-jest.mock('fs');
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
+
+// NOTE: For testing, we need to bypass the jest-require here and only eval
+jest.mock('@expo/require-utils', () => {
+  const requireUtils = jest.requireActual('@expo/require-utils');
+  return {
+    ...requireUtils,
+    loadModuleSync(filename: string) {
+      const contents = require('fs').readFileSync(filename, 'utf8');
+      return requireUtils.evalModule(contents, filename);
+    },
+  };
+});
 
 describe(getConfig, () => {
   afterAll(() => {
@@ -35,20 +48,20 @@ describe(getConfig, () => {
             version: '1.0.0',
           }),
         },
-        '/'
+        '/ts-test/'
       );
 
-      const { exp } = getConfig('/', {
+      const { exp } = getConfig('/ts-test/', {
         skipSDKVersionRequirement: true,
       });
       // @ts-ignore: foo property is not defined
       expect(exp.foo).toBe('bar+value');
       expect(exp.name).toBe('rewrote+ts-config-test');
       expect(exp._internal).toStrictEqual({
-        dynamicConfigPath: '/app.config.ts',
+        dynamicConfigPath: '/ts-test/app.config.ts',
         isDebug: false,
-        packageJsonPath: '/package.json',
-        projectRoot: '/',
+        packageJsonPath: '/ts-test/package.json',
+        projectRoot: '/ts-test/',
         staticConfigPath: null,
       });
     });
@@ -97,6 +110,7 @@ describe(getConfig, () => {
         staticConfigPath: '/app.json',
       });
     });
+
     it('parses a js config with export default', () => {
       vol.fromJSON(
         {
@@ -111,9 +125,9 @@ describe(getConfig, () => {
             return config;
           }`,
         },
-        '/'
+        '/js-test/'
       );
-      const { exp, staticConfigPath } = getConfig('/', {
+      const { exp, staticConfigPath } = getConfig('/js-test/', {
         skipSDKVersionRequirement: true,
       });
       // @ts-ignore: foo property is not defined
@@ -122,6 +136,7 @@ describe(getConfig, () => {
       // Static is undefined when a custom path is a dynamic config.
       expect(staticConfigPath).toBe(null);
     });
+
     it('parses a js config that exports json', () => {
       vol.fromJSON(
         {
@@ -135,10 +150,10 @@ describe(getConfig, () => {
             name: 'cool+export-json_app.config',
           };`,
         },
-        '/'
+        '/js-json-test/'
       );
 
-      const { exp } = getConfig('/', {
+      const { exp } = getConfig('/js-json-test/', {
         skipSDKVersionRequirement: true,
       });
       // @ts-ignore: foo property is not defined
@@ -166,9 +181,9 @@ describe(getConfig, () => {
             version: '1.0.0',
           }),
         },
-        '/'
+        '/skip-plugin-parsing/'
       );
-      const { exp } = getConfig('/', {
+      const { exp } = getConfig('/skip-plugin-parsing/', {
         skipSDKVersionRequirement: true,
         skipPlugins: true,
       });
@@ -186,9 +201,9 @@ describe(getConfig, () => {
             version: '1.0.0',
           }),
         },
-        '/'
+        '/skip-js-plugin-parsing/'
       );
-      const { exp } = getConfig('/', {
+      const { exp } = getConfig('/skip-js-plugin-parsing/', {
         skipSDKVersionRequirement: true,
         skipPlugins: true,
       });
@@ -207,9 +222,9 @@ describe(getConfig, () => {
             version: '1.0.0',
           }),
         },
-        '/'
+        '/applies-plugins/'
       );
-      const { exp } = getConfig('/', {
+      const { exp } = getConfig('/applies-plugins/', {
         skipSDKVersionRequirement: true,
         skipPlugins: false,
       });
@@ -229,14 +244,14 @@ describe(getConfig, () => {
             version: '1.0.0',
           }),
         },
-        '/'
+        '/throws/'
       );
       expect(() =>
-        getConfig('/', {
+        getConfig('/throws/', {
           skipSDKVersionRequirement: true,
           skipPlugins: false,
         })
-      ).toThrow(/Failed to resolve plugin for module "__missing-plugin" relative to "\/"/);
+      ).toThrow(/Failed to resolve plugin for module "__missing-plugin" relative to "\/throws\/"/);
     });
   });
 });

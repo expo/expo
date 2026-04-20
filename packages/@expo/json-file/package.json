@@ -1,14 +1,13 @@
 {
   "name": "@expo/json-file",
-  "version": "10.0.7",
+  "version": "10.0.12",
   "description": "A module for reading, writing, and manipulating JSON files",
   "main": "build/JsonFile.js",
   "scripts": {
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && expo-module tsc",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
@@ -30,13 +29,14 @@
     "build"
   ],
   "dependencies": {
-    "@babel/code-frame": "~7.10.4",
+    "@babel/code-frame": "^7.20.0",
     "json5": "^2.2.3"
   },
   "devDependencies": {
-    "@types/babel__code-frame": "^7.0.1",
+    "@types/babel__code-frame": "^7.27.0",
     "@types/json5": "^2.2.0",
-    "expo-module-scripts": "^5.0.7",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
   "publishConfig": {

@@ -35,11 +35,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLinking = useLinking;
 exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
-const native_1 = require("@react-navigation/native");
 const ExpoLinking = __importStar(require("expo-linking"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("./extractPathFromURL");
+const native_1 = require("../react-navigation/native");
 const linkingHandlers = [];
 function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialURL = () => getInitialURLWithTimeout(), subscribe = (listener) => {
     const callback = ({ url }) => listener(url);
@@ -65,17 +65,17 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
         if (independent) {
             return undefined;
         }
-        if (enabled !== false && linkingHandlers.length) {
-            console.error([
-                'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-                "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
-                '- Only a single instance of the root component is rendered',
-                react_native_1.Platform.OS === 'android'
-                    ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
-                    : '',
-            ]
-                .join('\n')
-                .trim());
+        if (enabled !== false && linkingHandlers.length && process.env.EXPO_OS !== 'android') {
+            // TODO(@ubax): This check should be removed
+            if (linkingHandlers.length > 1) {
+                console.error([
+                    'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
+                    "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
+                    '- Only a single instance of the root component is rendered',
+                ]
+                    .join('\n')
+                    .trim());
+            }
         }
         const handler = Symbol();
         if (enabled !== false) {

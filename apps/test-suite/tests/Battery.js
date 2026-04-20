@@ -38,6 +38,7 @@ export async function test({ describe, it, expect, jasmine }) {
               Battery.BatteryState.CHARGING,
               Battery.BatteryState.FULL,
               Battery.BatteryState.UNPLUGGED,
+              Battery.BatteryState.NOT_CHARGING,
             ].includes(batteryState)
           ).toBe(true);
         });

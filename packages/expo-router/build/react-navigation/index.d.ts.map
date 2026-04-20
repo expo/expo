@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/react-navigation/index.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,aAAa,EACb,SAAS,EACT,YAAY,EACZ,QAAQ,EACR,gBAAgB,EAChB,QAAQ,EACR,cAAc,EACd,kBAAkB,EAClB,sBAAsB,EACtB,oBAAoB,GACrB,MAAM,UAAU,CAAC;AAElB,OAAO,EAAE,SAAS,EAAE,MAAM,WAAW,CAAC;AAEtC,cAAc,gBAAgB,CAAC;AAC/B,cAAc,cAAc,CAAC;AAC7B,cAAc,sBAAsB,CAAC"}

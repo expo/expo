@@ -1,19 +1,10 @@
-import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 /**
  * A minimal subset of `ExtendedStackNavigationOptions` needed for the helper
  * @internal
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
-/**
- * Helper to determine if a given screen should be treated as a modal-type presentation
- *
- * @param options - The navigation options.
- * @returns Whether the screen should be treated as a modal-type presentation.
- *
- * @internal
- */
-export declare function isModalPresentation(options?: PresentationOptions | null): boolean;
 /**
  * Helper to determine if a given screen should be treated as a transparent modal-type presentation
  *
@@ -52,7 +43,7 @@ export declare function useIsDesktop(breakpoint?: number): boolean;
 export declare function convertStackStateToNonModalState(state: StackNavigationState<ParamListBase>, descriptors: Record<string, {
     options: ExtendedStackNavigationOptions;
 }>, isWeb: boolean): {
-    routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+    routes: import("../../react-navigation/native").NavigationRoute<ParamListBase, string>[];
     index: number;
 };
 /**

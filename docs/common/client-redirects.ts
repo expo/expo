@@ -25,14 +25,14 @@ export function getRedirectPath(redirectPath: string): string {
 
   // A list of pages we know are renamed and can redirect
   if (RENAMED_PAGES[redirectPath]) {
-    redirectPath = RENAMED_PAGES[redirectPath];
+    return RENAMED_PAGES[redirectPath];
   }
 
   // Catch any unversioned paths which are also renamed
   if (isVersionedPath(redirectPath)) {
     const unversionedPath = removeVersionFromPath(redirectPath);
     if (RENAMED_PAGES[unversionedPath]) {
-      redirectPath = RENAMED_PAGES[unversionedPath];
+      return RENAMED_PAGES[unversionedPath];
     }
   }
 
@@ -135,7 +135,7 @@ function endsInNull(path: string) {
   return path.endsWith('/null');
 }
 
-// Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
+// Simple remapping of renamed pages, similar to public/_redirects but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating Home pages and route
@@ -160,6 +160,22 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/testing-with-jest/': '/develop/unit-testing/',
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
+
+  // Picker replaced by SegmentedButton
+  '/versions/latest/sdk/ui/jetpack-compose/picker/':
+    '/versions/latest/sdk/ui/jetpack-compose/segmentedbutton/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/picker/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/segmentedbutton/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/picker/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/segmentedbutton/',
+
+  // TextInput renamed to TextField
+  '/versions/latest/sdk/ui/jetpack-compose/textinput/':
+    '/versions/latest/sdk/ui/jetpack-compose/textfield/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/textinput/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/textfield/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textinput/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/textfield/',
 
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
@@ -211,7 +227,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/routing/installation/': '/router/installation/',
   '/routing/create-pages/': '/router/create-pages/',
   '/routing/navigating-pages/': '/router/navigating-pages/',
-  '/routing/layouts/': '/router/basics/layout/',
+  '/routing/layouts/': '/router/basics/navigation-layouts/',
   '/routing/appearance/': '/router/introduction/',
   '/routing/error-handling/': '/router/error-handling/',
 
@@ -363,7 +379,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/continuous-deployment/': '/eas/workflows/examples/',
 
   // Expo Router Advanced guides
-  '/router/advance/root-layout': '/router/basics/layout/#root-layout',
+  '/router/advance/root-layout': '/router/basics/navigation-layouts/#root-layout',
   '/router/advance/stack': '/router/advanced/stack/',
   '/router/advance/tabs': '/router/advanced/tabs/',
   '/router/advance/native-tabs': '/router/advanced/native-tabs/',
@@ -379,15 +395,13 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects as per Algolia 404 report
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
-  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
-  '/versions/v50.0.0/sdk/dev-client': '/versions/latest/sdk/dev-client/',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
 
   // May 2024 home / get started section
-  '/overview/': '/get-started/introduction/',
+  '/overview/': '/get-started/create-a-project/',
   '/get-started/installation/': '/get-started/create-a-project/',
   '/get-started/expo-go/': '/get-started/set-up-your-environment/',
 
@@ -498,11 +512,12 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After Expo Router Getting Started Guide
   '/router/reference/authentication/': '/router/advanced/authentication/',
-  '/router/advanced/root-layout/': '/router/basics/layout/#root-layout/',
+  '/router/advanced/root-layout/': '/router/basics/navigation-layouts/#root-layout/',
   '/router/reference/not-found/': '/router/error-handling/',
   '/router/navigating-pages/': '/router/basics/navigation/',
   '/router/create-pages/': '/router/basics/core-concepts/',
-  '/router/layouts/': '/router/basics/layout/',
+  '/router/layouts/': '/router/basics/navigation-layouts/',
+  '/router/basics/layout/': '/router/basics/navigation-layouts/',
 
   // After updating config plugin section
   '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
@@ -525,7 +540,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
 
   // After changing brownfield docs
-  '/brownfield/installing-expo-modules/': '/brownfield/get-started/',
+  '/brownfield/installing-expo-modules/': '/brownfield/overview/',
+  '/brownfield/get-started/': '/brownfield/isolated-approach/',
 
   // After removing Navigation section from Home and adding a Navigation page
   '/develop/file-based-routing/': '/develop/app-navigation/',
@@ -537,4 +553,72 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/reference/middleware/': '/router/web/middleware/',
   '/router/reference/static-rendering/': '/router/web/static-rendering/',
   '/router/reference/async-routes/': '/router/web/async-routes/',
+
+  // After moving FAQ to EAS Update page
+  '/eas-update/faq/': '/eas-update/introduction/',
+
+  // After moving MetadataFAQ to EAS Metadata page
+  '/eas/metadata/faq/': '/eas/metadata/',
+
+  // After creating EAS environment variables section
+  '/eas/hosting/environment-variables/':
+    '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
+
+  // After separating expo-router reference into multiple subsections
+  '/versions/unversioned/sdk/router-ui/': '/versions/unversioned/sdk/router/ui/',
+  '/versions/unversioned/sdk/router-native-tabs/': '/versions/unversioned/sdk/router/native-tabs/',
+  '/versions/unversioned/sdk/router-split-view/': '/versions/unversioned/sdk/router/split-view/',
+  '/versions/v55.0.0/sdk/router-ui/': '/versions/v55.0.0/sdk/router/ui/',
+  '/versions/v55.0.0/sdk/router-native-tabs/': '/versions/v55.0.0/sdk/router/native-tabs/',
+  '/versions/v55.0.0/sdk/router-split-view/': '/versions/v55.0.0/sdk/router/split-view/',
+  '/versions/latest/sdk/router-ui/': '/versions/latest/sdk/router/ui/',
+  '/versions/latest/sdk/router-native-tabs/': '/versions/latest/sdk/router/native-tabs/',
+  '/versions/latest/sdk/router-split-view/': '/versions/latest/sdk/router/split-view/',
+
+  // After merging get-started/introduction into get-started/create-a-project
+  '/get-started/introduction/': '/get-started/create-a-project/',
+
+  // After renaming ContextMenu to DropdownMenu in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu/',
+  '/versions/latest/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/latest/sdk/ui/jetpack-compose/dropdownmenu/',
+
+  // After merging FilterChip into Chip in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/chip/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/chip/',
+  '/versions/latest/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/latest/sdk/ui/jetpack-compose/chip/',
+
+  // After removing TextButton and merging into Button in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/button/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/button/',
+  '/versions/latest/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/latest/sdk/ui/jetpack-compose/button/',
+
+  // After merging LinearProgress and CircularProgress into Progress in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/progress/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/progress/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/progress/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/progress/',
+  '/versions/latest/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/latest/sdk/ui/jetpack-compose/progress/',
+  '/versions/latest/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/latest/sdk/ui/jetpack-compose/progress/',
+
+  // Based on Algolia 404 report 2026-04-01
+  '/versions/latest/sdk/secure-store/': '/versions/latest/sdk/securestore/',
+  '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
+  '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
 };

@@ -39,6 +39,10 @@ struct SettingsTabView: View {
           .font(.system(size: 13))
           .foregroundStyle(.secondary)
 
+        #if !targetEnvironment(simulator)
+        localNetworkDebugSettings
+        #endif
+
         VStack(alignment: .leading, spacing: 8) {
           Text("system".uppercased())
             .font(.caption)
@@ -62,6 +66,14 @@ struct SettingsTabView: View {
     #endif
     #if !os(macOS)
     .navigationBarHidden(true)
+    #endif
+    #if os(iOS) && !targetEnvironment(simulator)
+    .task {
+      viewModel.refreshPermissionStatus()
+    }
+    .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+      viewModel.refreshPermissionStatus()
+    }
     #endif
   }
 
@@ -107,7 +119,7 @@ struct SettingsTabView: View {
             .resizable()
             .frame(width: 24, height: 24)
             .opacity(0.6)
-          Toggle("Shake Device", isOn: $viewModel.shakeDevice)
+          Toggle("Shake device", isOn: $viewModel.shakeDevice)
         }
         .padding()
 
@@ -224,9 +236,38 @@ struct SettingsTabView: View {
     }
     """
   }
-}
 
-#Preview {
-  SettingsTabView()
-    .environmentObject(DevLauncherViewModel())
+  #if !targetEnvironment(simulator)
+  private var localNetworkDebugSettings: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      VStack(spacing: 0) {
+        Toggle("Local Network", isOn: .constant(viewModel.permissionStatus == .granted))
+          .disabled(true)
+          .padding()
+
+        if viewModel.permissionStatus == .denied {
+          Divider()
+
+          #if os(iOS)
+          Button {
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+              UIApplication.shared.open(url)
+            }
+          } label: {
+            HStack {
+              Text("Open App Settings")
+              Spacer()
+              Image(systemName: "gear")
+                .foregroundColor(.blue)
+            }
+          }
+          .padding()
+          #endif
+        }
+      }
+      .background(Color.expoSecondarySystemBackground)
+      .cornerRadius(12)
+    }
+  }
+  #endif
 }

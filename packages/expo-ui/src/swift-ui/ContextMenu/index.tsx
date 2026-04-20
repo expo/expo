@@ -1,48 +1,34 @@
 import { requireNativeView } from 'expo';
 import { ComponentType } from 'react';
 
-import { type SubmenuProps, type ContextMenuProps } from './types';
+import { type ContextMenuProps } from './types';
+import { Slot } from '../SlotView';
 
-export { type ActivationMethod, type ContextMenuProps } from './types';
-
-const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
-
-const MenuNativeTriggerView: ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'ContextMenuActivationElement'
-);
-
-const MenuNativePreviewView: ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'ContextMenuPreview'
-);
-
-const MenuNativeItemsView: ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'ContextMenuContent'
-);
+export { type ContextMenuProps } from './types';
 
 type NativeMenuProps = ContextMenuProps;
 
+const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
+
 /**
- * Items visible inside the context menu. It could be `Section`, `Divider`, `Button`, `Switch`, `Picker` or even `ContextMenu` itself for nested menus. Remember to use components from the `@expo/ui/swift-ui` library.
+ * Items visible inside the context menu. It could be `Section`, `Divider`, `Button`, `Toggle`, `Picker` or even `ContextMenu` itself for nested menus. Remember to use components from the `@expo/ui/swift-ui` library.
  */
 export function Items(props: { children: React.ReactNode }) {
-  return <MenuNativeItemsView {...props} />;
+  return <Slot name="items">{props.children}</Slot>;
 }
 
 /**
- * The component visible all the time that triggers the menu when tapped or long-pressed.
+ * The component visible all the time that triggers the context menu when long-pressed.
  */
 export function Trigger(props: { children: React.ReactNode }) {
-  return <MenuNativeTriggerView {...props} />;
+  return <Slot name="trigger">{props.children}</Slot>;
 }
 
 /**
  * The component visible above the menu when it is opened.
  */
 export function Preview(props: { children: React.ReactNode }) {
-  return <MenuNativePreviewView {...props} />;
+  return <Slot name="preview">{props.children}</Slot>;
 }
 
 /**
@@ -56,17 +42,4 @@ ContextMenu.Trigger = Trigger;
 ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
 
-/**
- * @deprecated Use `ContextMenu` component as submenu instead.
- */
-const Submenu = (props: SubmenuProps) => {
-  const { button, children, ...rest } = props;
-  return (
-    <ContextMenu {...rest}>
-      <ContextMenu.Items>{children}</ContextMenu.Items>
-      <ContextMenu.Trigger>{button}</ContextMenu.Trigger>
-    </ContextMenu>
-  );
-};
-
-export { ContextMenu, Submenu };
+export { ContextMenu };

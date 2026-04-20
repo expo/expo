@@ -43,14 +43,14 @@ plugins {
 }
 
 expoAutolinking {
-    projectRoot = File(rootDir, "../../minimal-tester")
+    projectRoot = File(rootDir, "../expo-app")
 }
 
 extensions.configure<com.facebook.react.ReactSettingsExtension> {
     autolinkLibrariesFromCommand(
         expoAutolinking.rnConfigCommand,
         rootDir,
-        files("../../../yarn.lock")
+        files("../../../pnpm-lock.yaml")
     )
 }
 

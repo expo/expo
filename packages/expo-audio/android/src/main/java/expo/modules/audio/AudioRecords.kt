@@ -6,20 +6,32 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import java.net.URL
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class AudioSource(
   @Field val uri: String?,
-  @Field val headers: Map<String, String>?
+  @Field val headers: Map<String, String>?,
+  @Field val name: String? = null
 ) : Record
 
+enum class LoopMode(val value: String) : Enumerable {
+  NONE("none"),
+  SINGLE("single"),
+  ALL("all")
+}
+
+@OptimizedRecord
 class AudioMode(
   @Field val shouldPlayInBackground: Boolean = false,
   @Field val shouldRouteThroughEarpiece: Boolean?,
   @Field val interruptionMode: InterruptionMode?,
-  @Field val allowsBackgroundRecording: Boolean = false
+  @Field val allowsBackgroundRecording: Boolean = false,
+  @Field val playsInSilentMode: Boolean = true
 ) : Record
 
 // Data class because we want `equals`
+@OptimizedRecord
 data class RecordingOptions(
   @Field val extension: String,
   @Field val sampleRate: Double?,
@@ -32,6 +44,7 @@ data class RecordingOptions(
   @Field val audioSource: RecordingSource?
 ) : Record
 
+@OptimizedRecord
 class Metadata(
   @Field val title: String?,
   @Field val artist: String?,
@@ -87,14 +100,11 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
   }
 }
 
-enum class LockScreenButtons(val value: Int) : Enumerable {
-  SEEK_FORWARD(0),
-  SEEK_BACKWARD(1)
-}
-
+@OptimizedRecord
 class AudioLockScreenOptions(
   @Field val showSeekForward: Boolean,
-  @Field val showSeekBackward: Boolean
+  @Field val showSeekBackward: Boolean,
+  @Field val isLiveStream: Boolean? = null
 ) : Record
 
 enum class InterruptionMode(val value: String) : Enumerable {
@@ -103,6 +113,7 @@ enum class InterruptionMode(val value: String) : Enumerable {
   MIX_WITH_OTHERS("mixWithOthers")
 }
 
+@OptimizedRecord
 class RecordOptions(
   @Field val atTime: Double?,
   @Field val forDuration: Double?

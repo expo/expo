@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  LinkingOptions,
-  NavigationAction,
-  StackRouter,
-  useNavigationBuilder,
-} from '@react-navigation/native';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
-import { StatusBar, useColorScheme, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
@@ -20,8 +14,14 @@ import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { Screen } from './primitives';
+import {
+  LinkingOptions,
+  NavigationAction,
+  StackRouter,
+  useNavigationBuilder,
+} from './react-navigation/native';
+import { initScreensFeatureFlags } from './screensFeatureFlags';
 import { RequireContext } from './types';
-import { canOverrideStatusBarBehavior } from './utils/statusbar';
 import { parseUrlUsingCustomBase } from './utils/url';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
@@ -59,6 +59,7 @@ const documentTitle = {
  * @hidden
  */
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
+  initScreensFeatureFlags();
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper
    * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
@@ -73,8 +74,6 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
               <SafeAreaProvider
                 // SSR support
                 initialMetrics={INITIAL_METRICS}>
-                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-                {canOverrideStatusBarBehavior && <AutoStatusBar />}
                 {children}
               </SafeAreaProvider>
             </LinkPreviewContextProvider>
@@ -85,10 +84,6 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
   );
 
   return <ContextNavigator {...props} wrapper={wrapper} />;
-}
-
-function AutoStatusBar() {
-  return <StatusBar barStyle={useColorScheme() === 'light' ? 'dark-content' : 'light-content'} />;
 }
 
 const initialUrl =
@@ -108,20 +103,17 @@ function ContextNavigator({
   const serverContext = useMemo(() => {
     let contextType: ServerContextType = {};
 
-    if (initialLocation instanceof URL) {
-      contextType = {
-        location: {
-          pathname: initialLocation.pathname + initialLocation.hash,
-          search: initialLocation.search,
-        },
-      };
-    } else if (typeof initialLocation === 'string') {
-      // The initial location is a string, so we need to parse it into a URL.
-      const url = parseUrlUsingCustomBase(initialLocation);
+    const url =
+      typeof initialLocation === 'string'
+        ? parseUrlUsingCustomBase(initialLocation)
+        : initialLocation;
+
+    if (url && url instanceof URL) {
       contextType = {
         location: {
           pathname: url.pathname,
           search: url.search,
+          hash: url.hash,
         },
       };
     }
@@ -134,7 +126,7 @@ function ContextNavigator({
    * e.g Static renders, units tests, etc
    */
   const serverUrl = serverContext.location
-    ? `${serverContext.location.pathname}${serverContext.location.search}`
+    ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
     : undefined;
 
   const store = useStore(context, linking, serverUrl);

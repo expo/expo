@@ -22,6 +22,8 @@ private func sanitizeUrlString(_ urlString: String) -> String? {
   return sanitizedUrl
 }
 
+private let urlInputAnimation = Animation.easeInOut(duration: 0.3)
+
 struct DevServersView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   @Binding var showingInfoDialog: Bool
@@ -33,7 +35,7 @@ struct DevServersView: View {
       let sanitizedURL = sanitizeUrlString(urlText)
       if let validURL = sanitizedURL {
         viewModel.openApp(url: validURL)
-        withAnimation(.easeInOut(duration: 0.3)) {
+        withAnimation(urlInputAnimation) {
           showingURLInput = false
         }
         urlText = ""
@@ -53,11 +55,14 @@ struct DevServersView: View {
             .padding()
           Divider()
         } else {
-          ForEach(viewModel.devServers, id: \.url) { server in
+          ForEach(viewModel.devServers, id: \.self) { server in
             DevServerRow(server: server) {
               viewModel.openApp(url: server.url)
             }
           }
+        }
+        if viewModel.hasEmbeddedBundle {
+          embeddedBundleRow
         }
         enterUrl
       }
@@ -73,13 +78,14 @@ struct DevServersView: View {
   private var enterUrl: some View {
     VStack(spacing: 20) {
       Button {
-        withAnimation(.easeInOut(duration: 0.3)) {
+        withAnimation(urlInputAnimation) {
           showingURLInput.toggle()
         }
       } label: {
         HStack {
-          Image(systemName: showingURLInput ? "chevron.down" : "chevron.right")
+          Image(systemName: "chevron.right")
             .font(.headline)
+            .rotationEffect(.degrees(showingURLInput ? 90 : 0))
           Text("Enter URL manually")
             #if os(tvOS)
             .font(.system(size: 28))
@@ -87,11 +93,18 @@ struct DevServersView: View {
             .font(.system(size: 14))
             #endif
           Spacer()
+          if viewModel.isLoadingServer && viewModel.devServers.isEmpty {
+            ProgressView()
+          }
         }
       }
 
       if showingURLInput {
-        TextField("http://10.0.0.25:8081", text: $urlText)
+        TextField("exp://", text: $urlText)
+          .onSubmit {
+            connectToURL()
+          }
+          .submitLabel(.go)
         #if !os(macOS)
           .autocapitalization(.none)
         #endif
@@ -99,7 +112,6 @@ struct DevServersView: View {
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
           .foregroundColor(.primary)
-          .onSubmit(connectToURL)
         #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
@@ -111,12 +123,38 @@ struct DevServersView: View {
         connectButton
       }
     }
-    .animation(.easeInOut, value: showingURLInput)
+    .animation(urlInputAnimation, value: showingURLInput)
     .padding()
     .background(showingURLInput ?
       Color.expoSecondarySystemBackground :
       Color.expoSystemBackground)
     .clipShape(RoundedRectangle(cornerRadius: 12))
+  }
+
+  private var embeddedBundleRow: some View {
+    Button {
+      viewModel.loadLocalBundle()
+    } label: {
+      HStack {
+        Image(systemName: "doc.fill")
+          .foregroundColor(.blue)
+          .frame(width: 12)
+        Text("Load embedded bundle")
+          .foregroundColor(.primary)
+        Spacer()
+        if viewModel.isLoadingLocalBundle {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+    .buttonStyle(PlainButtonStyle())
   }
 
   private var header: some View {
@@ -143,7 +181,9 @@ struct DevServersView: View {
   }
 
   private var connectButton: some View {
-    Button(action: connectToURL) {
+    Button {
+      connectToURL()
+    } label: {
       Text("Connect")
         .font(.headline)
         .foregroundColor(.white)
@@ -153,7 +193,7 @@ struct DevServersView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .disabled(urlText.isEmpty)
-    .buttonStyle(PlainButtonStyle())
+    .buttonStyle(.plain)
   }
 }
 
@@ -172,8 +212,22 @@ struct DevServerRow: View {
           .fill(Color.green)
           .frame(width: 12, height: 12)
 
-        Text(server.description)
-          .foregroundColor(.primary)
+        if server.description == server.url {
+          Text(server.description)
+            .foregroundColor(.primary)
+            .lineLimit(1)
+        } else {
+          VStack(alignment: .leading) {
+            Text(server.description)
+              .font(.headline)
+              .foregroundColor(.primary)
+              .lineLimit(1)
+            Text(server.url)
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .lineLimit(1)
+          }
+        }
 
         Spacer()
 

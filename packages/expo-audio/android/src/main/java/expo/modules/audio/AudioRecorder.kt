@@ -13,15 +13,19 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import expo.modules.audio.service.AudioRecordingService
+import expo.modules.audio.service.AudioRecordingServiceConnection
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
+import java.lang.ref.WeakReference
 import java.util.UUID
+import kotlin.coroutines.Continuation
 import kotlin.math.log10
 
 private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
@@ -45,7 +49,14 @@ class AudioRecorder(
   var isPaused = false
   private var recordingTimerJob: Job? = null
   var useForegroundService = false
-  private var isRegisteredWithService = false
+  private var bindingContinuation: Continuation<Boolean>? = null
+
+  val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
+
+  private val _appContext: AppContext
+    get() {
+      return appContext ?: throw Exceptions.AppContextLost()
+    }
 
   private fun currentFileUrl(): String? =
     filePath?.let(::File)?.toUri()?.toString()
@@ -71,25 +82,41 @@ class AudioRecorder(
     }
   }
 
-  fun prepareRecording(options: RecordingOptions?) {
+  suspend fun prepareRecording(options: RecordingOptions?) {
     if (recorder != null || isPrepared || isRecording || isPaused) {
       throw AudioRecorderAlreadyPreparedException()
     }
+
+    if (useForegroundService && !hasNotificationPermissions()) {
+      throw NotificationPermissionsException()
+    }
+
     val recordingOptions = options ?: this.options
     val mediaRecorder = createRecorder(recordingOptions)
     recorder = mediaRecorder
+
     try {
+      if (useForegroundService) {
+        serviceConnection.bindWithService()
+      }
       mediaRecorder.prepare()
       isPrepared = true
-    } catch (cause: Exception) {
+    } catch (e: Exception) {
       mediaRecorder.release()
       recorder = null
       isPrepared = false
-      throw AudioRecorderPrepareException(cause)
+
+      throw e as? CodedException ?: AudioRecorderPrepareException(e)
     }
   }
 
   fun record() {
+    if (useForegroundService) {
+      serviceConnection.recordingServiceBinder?.service?.registerRecorder(this) ?: run {
+        throw AudioRecordingServiceException("The service connection is not bound, but `allowsBackgroundRecording` is set to `true`")
+      }
+    }
+
     if (isPaused) {
       recorder?.resume()
     } else {
@@ -98,11 +125,6 @@ class AudioRecorder(
     startTime = System.currentTimeMillis()
     isRecording = true
     isPaused = false
-
-    if (useForegroundService && !isRegisteredWithService) {
-      AudioRecordingService.startService(context, this)
-      isRegisteredWithService = true
-    }
   }
 
   fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
@@ -147,9 +169,8 @@ class AudioRecorder(
     var stopFailed = false
     var stopError: String? = null
 
-    if (useForegroundService && isRegisteredWithService) {
-      AudioRecordingService.getInstance()?.unregisterRecorder(this)
-      isRegisteredWithService = false
+    if (useForegroundService) {
+      serviceConnection.recordingServiceBinder?.service?.unregisterRecorder(this)
     }
 
     try {
@@ -259,9 +280,16 @@ class AudioRecorder(
 
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
-    if (useForegroundService && isRegisteredWithService) {
-      AudioRecordingService.getInstance()?.unregisterRecorder(this)
-      isRegisteredWithService = false
+
+    // Mark recorder as released
+    serviceConnection.release()
+
+    if (useForegroundService) {
+      serviceConnection.recordingServiceBinder?.service?.unregisterRecorder(this)
+      // Unbind service connection
+      serviceConnection.unbind()
+      // Clean up service connection resources
+      serviceConnection.cleanup()
     }
     reset()
   }
@@ -319,9 +347,10 @@ class AudioRecorder(
       MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED -> {
         val url = currentFileUrl()
 
-        if (useForegroundService && isRegisteredWithService) {
-          AudioRecordingService.getInstance()?.unregisterRecorder(this)
-          isRegisteredWithService = false
+        if (useForegroundService) {
+          serviceConnection.recordingServiceBinder?.service?.unregisterRecorder(this)
+          // Unbind the service connection
+          serviceConnection.unbind()
         }
 
         try {
@@ -389,6 +418,14 @@ class AudioRecorder(
 
   private fun hasRecordingPermissions() =
     ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+
+  private fun hasNotificationPermissions(): Boolean {
+    // POST_NOTIFICATIONS permission is only required on Android 13+ (API 33+)
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      return true
+    }
+    return ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+  }
 
   fun getAvailableInputs(audioManager: AudioManager) =
     audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->

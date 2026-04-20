@@ -227,6 +227,18 @@ function getMockedFunctions(functions, { async = false, classMethod = false } = 
         return func;
     });
 }
+/*
+We iterate over a list of constants and create TS AST for each of them.
+Constants are exported as `export const NAME = value;`
+*/
+function getMockedConstants(constants) {
+    return constants.map((constant) => {
+        const name = typescript_1.default.factory.createIdentifier(constant.name);
+        const returnType = mapSwiftTypeToTsType(constant.types?.returnType ?? 'unknown');
+        const initializer = getMockLiterals(returnType) ?? typescript_1.default.factory.createNumericLiteral('0');
+        return typescript_1.default.factory.createVariableStatement([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], typescript_1.default.factory.createVariableDeclarationList([typescript_1.default.factory.createVariableDeclaration(name, undefined, undefined, initializer)], typescript_1.default.NodeFlags.Const));
+    });
+}
 /**
  * Collect all type references used in any of the AST types to generate type aliases
  * e.g. type `[URL: string]?` will generate `type URL = any;`
@@ -274,7 +286,7 @@ function getPrefix() {
 function generatePropTypesForDefinition(definition) {
     return typescript_1.default.factory.createTypeAliasDeclaration([typescript_1.default.factory.createToken(typescript_1.default.SyntaxKind.ExportKeyword)], 'ViewProps', undefined, typescript_1.default.factory.createTypeLiteralNode([
         ...definition.props.map((p) => {
-            const propType = mapSwiftTypeToTsType(p.types.parameters[0].typename);
+            const propType = mapSwiftTypeToTsType(p.types.parameters[0]?.typename ?? '');
             return typescript_1.default.factory.createPropertySignature(undefined, p.name, undefined, propType);
         }),
         ...definition.events.map((e) => {
@@ -338,7 +350,7 @@ function getMockForModule(module, includeTypes) {
             ...module.views.map((c) => c.name),
             ...module.classes.map((c) => c.name),
         ]))
-        : [], newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, { async: true }), newlineIdentifier, getMockedViews(module.views), getMockedClasses(module.classes))
+        : [], newlineIdentifier, getMockedConstants(module.constants), newlineIdentifier, getMockedFunctions(module.functions), getMockedFunctions(module.asyncFunctions, { async: true }), newlineIdentifier, getMockedViews(module.views), getMockedClasses(module.classes))
         .flatMap(separateWithNewlines);
 }
 async function prettifyCode(text, parser = 'babel') {

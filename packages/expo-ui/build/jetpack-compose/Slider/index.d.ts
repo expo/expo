@@ -1,14 +1,15 @@
-import { ExpoModifier, ViewEvent } from '../../types';
+import { type ColorValue } from 'react-native';
+import { type ModifierConfig } from '../../types';
 /**
- * Colors for slider's core elements.
+ * Colors for slider elements. Maps directly to Material3's `SliderDefaults.colors()`.
  * @platform android
  */
-export type SliderElementColors = {
-    thumbColor?: string;
-    activeTrackColor?: string;
-    inactiveTrackColor?: string;
-    activeTickColor?: string;
-    inactiveTickColor?: string;
+export type SliderColors = {
+    thumbColor?: ColorValue;
+    activeTrackColor?: ColorValue;
+    inactiveTrackColor?: ColorValue;
+    activeTickColor?: ColorValue;
+    inactiveTickColor?: ColorValue;
 };
 export type SliderProps = {
     /**
@@ -32,30 +33,46 @@ export type SliderProps = {
      */
     max?: number;
     /**
-     * Colors for slider's core elements.
+     * Whether the slider is enabled for user interaction.
+     * @default true
+     */
+    enabled?: boolean;
+    /**
+     * Colors for slider elements. Maps to Material3's `SliderDefaults.colors()`.
      * @platform android
      */
-    elementColors?: SliderElementColors;
-    /**
-     * Slider color.
-     */
-    color?: string;
+    colors?: SliderColors;
     /**
      * Callback triggered on dragging along the slider.
      */
     onValueChange?: (value: number) => void;
     /**
+     * Callback triggered when the user finishes changing the value (for example, lifts a finger).
+     * Maps to Material3's `onValueChangeFinished`.
+     */
+    onValueChangeFinished?: () => void;
+    /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
+    /**
+     * Slot children for custom thumb and track.
+     */
+    children?: React.ReactNode;
 };
-type NativeSliderProps = Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', {
-    value: number;
-}>;
 /**
- * @hidden
+ * A slider component that wraps Material3's `Slider`.
+ *
+ * @platform android
  */
-export declare function transformSliderProps(props: SliderProps): NativeSliderProps;
-export declare function Slider(props: SliderProps): import("react").JSX.Element;
-export {};
+declare function SliderComponent(props: SliderProps): import("react").JSX.Element;
+declare namespace SliderComponent {
+    var Thumb: (props: {
+        children: React.ReactNode;
+    }) => import("react").JSX.Element;
+    var Track: (props: {
+        children: React.ReactNode;
+    }) => import("react").JSX.Element;
+}
+export { SliderComponent as Slider };
 //# sourceMappingURL=index.d.ts.map

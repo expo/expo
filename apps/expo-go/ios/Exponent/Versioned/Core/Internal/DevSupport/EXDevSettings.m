@@ -27,9 +27,4 @@ NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
   return [super initWithDataSource:dataSource];
 }
 
-- (NSArray<NSString *> *)supportedEvents
-{
-  return [super supportedEvents];
-}
-
 @end

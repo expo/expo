@@ -17,6 +17,7 @@ import {
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import {
+  LITERAL_UNION_COLLAPSE_THRESHOLD,
   defineLiteralType,
   extractDefaultPropValue,
   getAllTagData,
@@ -41,6 +42,25 @@ export type RenderPropOptions = {
 };
 
 const UNKNOWN_VALUE = '...';
+const LITERAL_KINDS = new Set(['literal', 'templateLiteral']);
+
+const isSFSymbolLiteral = (t: TypeDefinitionData) =>
+  (t.type === 'literal' && typeof t.value === 'string' && t.value.startsWith('sf:')) ||
+  (t.type === 'templateLiteral' &&
+    typeof (t as any).head === 'string' &&
+    (t as any).head.startsWith('sf:'));
+
+const getSFCollapseInfo = (type?: TypeDefinitionData) => {
+  if (type?.type !== 'union') {
+    return { collapse: false, nonLiteral: [] as TypeDefinitionData[] };
+  }
+  const allTypes = type.types ?? [];
+  const literalTypes = allTypes.filter(t => LITERAL_KINDS.has(t.type));
+  const collapse =
+    literalTypes.length > LITERAL_UNION_COLLAPSE_THRESHOLD && literalTypes.some(isSFSymbolLiteral);
+  const nonLiteral = collapse ? allTypes.filter(t => !LITERAL_KINDS.has(t.type)) : [];
+  return { collapse, nonLiteral };
+};
 const renderInheritedProp = (ip: TypeDefinitionData, sdkVersion: string) => {
   return (
     <LI key={`inherited-prop-${ip.name}-${ip.type}`}>
@@ -59,7 +79,7 @@ const renderInheritedProps = (
     inheritedData.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length > 0) {
     return (
-      <div className={mergeClasses('border-t border-palette-gray4 px-4 py-3')}>
+      <div className={mergeClasses('border-palette-gray4 border-t px-4 py-3')}>
         {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
         <UL>{inheritedProps.map(prop => renderInheritedProp(prop, sdkVersion))}</UL>
       </div>
@@ -95,7 +115,7 @@ const renderProps = (
     .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);
 
   return (
-    <div key={`props-definition-${def.name}`} className="[&>*]:last:!mb-0">
+    <div key={`props-definition-${def.name}`} className="[&>*]:last:mb-0!">
       {propsDeclarations?.map(prop =>
         prop
           ? renderProp(
@@ -127,16 +147,19 @@ export const renderProp = (
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
   const platforms = getAllTagData('platform', extractedComment);
 
-  const isLiteralType =
+  const { collapse: shouldCollapseLiteralUnion, nonLiteral: nonLiteralTypes } =
+    getSFCollapseInfo(type);
+
+  const isLiteralLike =
     type?.type && ['literal', 'templateLiteral', 'union', 'tuple'].includes(type.type);
   const definedLiteralGeneric =
-    isLiteralType && type?.types ? defineLiteralType(type.types) : undefined;
+    isLiteralLike && type?.types ? defineLiteralType(type.types) : undefined;
 
   return (
     <div
       key={`prop-entry-${name}`}
-      className={mergeClasses('border-t border-palette-gray4 first:border-t-0')}>
-      <APISectionDeprecationNote comment={extractedComment} className="mx-4 mb-0 mt-3" />
+      className={mergeClasses('border-palette-gray4 border-t first:border-t-0')}>
+      <APISectionDeprecationNote comment={extractedComment} className="mx-4 mt-3 mb-0" />
       <APIBoxHeader
         name={name}
         comment={extractedComment}
@@ -148,7 +171,7 @@ export const renderProp = (
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
         {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
         {definedLiteralGeneric && <>Literal type: {definedLiteralGeneric}</>}
-        {!isLiteralType && (
+        {!isLiteralLike && (
           <>
             Type:{' '}
             <APITypeOrSignatureType
@@ -174,7 +197,7 @@ export const renderProp = (
             className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}
           />
         ))}
-      {type?.types && isLiteralType && (
+      {type?.types && isLiteralLike && !shouldCollapseLiteralUnion && (
         <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
           Acceptable values are:{' '}
           {type.types.map((lt, index, arr) => (
@@ -183,6 +206,19 @@ export const renderProp = (
               {index + 1 !== arr.length && <span className="text-quaternary"> | </span>}
             </Fragment>
           ))}
+        </CALLOUT>
+      )}
+      {type?.types && shouldCollapseLiteralUnion && (
+        <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
+          Acceptable values are:{' '}
+          {nonLiteralTypes.map((lt, index) => (
+            <Fragment key={`${name}-non-literal-type-${index}`}>
+              <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
+              {index + 1 !== nonLiteralTypes.length && <span className="text-quaternary"> | </span>}
+            </Fragment>
+          ))}
+          {nonLiteralTypes.length > 0 && <span className="text-quaternary"> | </span>}
+          <CODE className="mb-px">sf:&lt;symbol&gt;</CODE>
         </CALLOUT>
       )}
     </div>

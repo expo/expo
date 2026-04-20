@@ -2,10 +2,46 @@ import { vol } from 'memfs';
 
 import { getConfig, getProjectConfigDescriptionWithPaths, modifyConfigAsync } from '../Config';
 
-jest.mock('fs');
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
 jest.mock('@expo/config-plugins', () => ({
   withPlugins: jest.fn((config, plugins) => config),
 }));
+
+// NOTE: For testing, we need to bypass the jest-require here and only eval
+jest.mock('@expo/require-utils', () => {
+  const requireUtils = jest.requireActual('@expo/require-utils');
+  return {
+    ...requireUtils,
+    loadModuleSync(filename: string) {
+      const contents = require('fs').readFileSync(filename, 'utf8');
+      return requireUtils.evalModule(contents, filename);
+    },
+    resolveFrom(
+      fromDirectory: string,
+      moduleId: string,
+      params?: { extensions?: readonly string[] }
+    ) {
+      const fs = require('memfs').fs;
+      const path = require('path');
+      const candidates: string[] = [];
+      if (moduleId.startsWith('.') || moduleId.startsWith('/')) {
+        candidates.push(path.resolve(fromDirectory, moduleId));
+      } else {
+        candidates.push(path.join(fromDirectory, 'node_modules', moduleId));
+        candidates.push(path.resolve(fromDirectory, moduleId));
+      }
+      for (const candidate of candidates) {
+        if (fs.existsSync(candidate)) return candidate;
+        for (const ext of params?.extensions ?? []) {
+          const e = ext[0] !== '.' ? `.${ext}` : ext;
+          if (fs.existsSync(candidate + e)) return candidate + e;
+        }
+      }
+      return null;
+    },
+  };
+});
 
 describe(getProjectConfigDescriptionWithPaths, () => {
   it(`describes a project using both a static and dynamic config`, () => {

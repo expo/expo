@@ -46,6 +46,10 @@ export interface RouteInfo<TRegex = RegExp | string> {
     permanent?: boolean;
     /** If a redirect, which methods are allowed. Undefined represents all methods */
     methods?: string[];
+    /** Path to the loader module for this route, typically `_expo/loaders/[ROUTE].js`. When present, the loader should be executed before rendering. */
+    loader?: string;
+    /** Per-route async chunk assets. Merged with top-level `assets` at serve time. */
+    assets?: AssetInfo;
 }
 export interface RoutesManifest<TRegex = RegExp | string> {
     /**
@@ -97,6 +101,7 @@ export type Route = RouteInfo<RegExp>;
 export interface GetStaticContentOptions {
     loader?: {
         data?: unknown;
+        key: string;
     };
     request?: Request;
     assets?: AssetInfo;

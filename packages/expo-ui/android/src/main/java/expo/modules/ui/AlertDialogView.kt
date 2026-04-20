@@ -1,69 +1,83 @@
 package expo.modules.ui
 
-import android.content.Context
+import android.graphics.Color
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.views.ComposeProps
-import androidx.compose.ui.Modifier
-import expo.modules.kotlin.views.ExpoComposeView
-import expo.modules.kotlin.viewevent.EventDispatcher
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
-import java.io.Serializable
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 
-open class AlertDialogButtonPressedEvent() : Record, Serializable
+@OptimizedRecord
+data class AlertDialogColors(
+  @Field val containerColor: Color? = null,
+  @Field val iconContentColor: Color? = null,
+  @Field val titleContentColor: Color? = null,
+  @Field val textContentColor: Color? = null
+) : Record
+
+@OptimizedRecord
+data class ExpoDialogProperties(
+  @Field val dismissOnBackPress: Boolean = true,
+  @Field val dismissOnClickOutside: Boolean = true,
+  @Field val usePlatformDefaultWidth: Boolean = true,
+  @Field val decorFitsSystemWindows: Boolean = true
+) : Record
 
 data class AlertDialogProps(
-  val title: MutableState<String?> = mutableStateOf(null),
-  val text: MutableState<String?> = mutableStateOf(null),
-  val confirmButtonText: MutableState<String?> = mutableStateOf(null),
-  val dismissButtonText: MutableState<String?> = mutableStateOf(null),
-  val visible: MutableState<Boolean> = mutableStateOf(false),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val colors: AlertDialogColors = AlertDialogColors(),
+  val tonalElevation: Double? = null,
+  val properties: ExpoDialogProperties = ExpoDialogProperties(),
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
-class AlertDialogView(context: Context, appContext: AppContext) :
-  ExpoComposeView<AlertDialogProps>(context, appContext) {
-  override val props = AlertDialogProps()
-  private val onDismissPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
-  private val onConfirmPressed by EventDispatcher<AlertDialogButtonPressedEvent>()
+@Composable
+fun FunctionalComposableScope.AlertDialogContent(
+  props: AlertDialogProps,
+  onDismissRequest: () -> Unit
+) {
+  val titleSlotView = findChildSlotView(view, "title")
+  val textSlotView = findChildSlotView(view, "text")
+  val confirmButtonSlotView = findChildSlotView(view, "confirmButton")
+  val dismissButtonSlotView = findChildSlotView(view, "dismissButton")
+  val iconSlotView = findChildSlotView(view, "icon")
 
-  @Composable
-  override fun ComposableScope.Content() {
-    val (title) = props.title
-    val (text) = props.text
-    val (confirmButtonText) = props.confirmButtonText
-    val (dismissButtonText) = props.dismissButtonText
-    val (visible) = props.visible
-
-    if (!visible) {
-      return
-    }
-
-    AlertDialog(
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
-      confirmButton = {
-        confirmButtonText?.let {
-          TextButton(onClick = { onConfirmPressed.invoke(AlertDialogButtonPressedEvent()) }) {
-            Text(it)
-          }
-        }
-      },
-      dismissButton = {
-        dismissButtonText?.let {
-          TextButton(onClick = { onDismissPressed.invoke(AlertDialogButtonPressedEvent()) }) {
-            Text(it)
-          }
-        }
-      },
-      onDismissRequest = { onDismissPressed.invoke(AlertDialogButtonPressedEvent()) },
-      title = { title?.let { Text(it) } },
-      text = { text?.let { Text(it) } }
+  AlertDialog(
+    onDismissRequest = { onDismissRequest() },
+    confirmButton = {
+      confirmButtonSlotView?.renderSlot()
+    },
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    dismissButton = dismissButtonSlotView?.let {
+      { it.renderSlot() }
+    },
+    title = titleSlotView?.let {
+      { it.renderSlot() }
+    },
+    text = textSlotView?.let {
+      { it.renderSlot() }
+    },
+    icon = iconSlotView?.let {
+      { it.renderSlot() }
+    },
+    containerColor = props.colors.containerColor.composeOrNull
+      ?: AlertDialogDefaults.containerColor,
+    iconContentColor = props.colors.iconContentColor.composeOrNull
+      ?: AlertDialogDefaults.iconContentColor,
+    titleContentColor = props.colors.titleContentColor.composeOrNull
+      ?: AlertDialogDefaults.titleContentColor,
+    textContentColor = props.colors.textContentColor.composeOrNull
+      ?: AlertDialogDefaults.textContentColor,
+    tonalElevation = props.tonalElevation?.dp ?: AlertDialogDefaults.TonalElevation,
+    properties = DialogProperties(
+      dismissOnBackPress = props.properties.dismissOnBackPress,
+      dismissOnClickOutside = props.properties.dismissOnClickOutside,
+      usePlatformDefaultWidth = props.properties.usePlatformDefaultWidth,
+      decorFitsSystemWindows = props.properties.decorFitsSystemWindows
     )
-  }
+  )
 }

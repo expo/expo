@@ -4,12 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const withLayoutContext_1 = require("./withLayoutContext");
 const Link_1 = require("../link/Link");
-const TabRouter_1 = require("./TabRouter");
+const bottom_tabs_1 = require("../react-navigation/bottom-tabs");
 const Protected_1 = require("../views/Protected");
 // This is the only way to access the navigator.
 const BottomTabNavigator = (0, bottom_tabs_1.createBottomTabNavigator)().Navigator;
@@ -42,8 +41,13 @@ const ExpoTabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, 
         return screen;
     });
 });
+/**
+ * Renders a tabs navigator.
+ *
+ * @hideType
+ */
 const Tabs = Object.assign((props) => {
-    return <ExpoTabs {...props} UNSTABLE_router={TabRouter_1.tabRouterOverride}/>;
+    return <ExpoTabs {...props}/>;
 }, {
     Screen: ExpoTabs.Screen,
     Protected: Protected_1.Protected,

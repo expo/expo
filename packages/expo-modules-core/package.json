@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "3.0.16",
+  "version": "55.0.12",
   "description": "The core of Expo Modules architecture",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -30,7 +30,6 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -56,14 +55,23 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
+    "@expo/expo-modules-macros-plugin": "~0.0.8",
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-worklets": "^0.7.4 || ^0.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native-worklets": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.2.0",
-    "expo-module-scripts": "^5.0.7"
+    "@testing-library/react-native": "^13.3.0",
+    "@types/react": "~19.2.0",
+    "@types/invariant": "^2.2.33",
+    "expo-module-scripts": "workspace:*"
   }
 }

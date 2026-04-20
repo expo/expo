@@ -4,14 +4,12 @@ import {
   StatusBar as NativeStatusBar,
   useColorScheme,
   type ColorSchemeName,
-  type ColorValue,
 } from 'react-native';
 
 import { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
 
 /**
- * A component that allows you to configure your status bar without directly calling imperative
- * methods like `setBarStyle`.
+ * A component that allows you to configure your status bar declaratively.
  *
  * You will likely have multiple `StatusBar` components mounted in the same app at the same time.
  * For example, if you have multiple screens in your app, you may end up using one per screen.
@@ -19,31 +17,17 @@ import { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
  * This component is built on top of the [StatusBar](https://reactnative.dev/docs/statusbar)
  * component exported from React Native, and it provides defaults that work better for Expo users.
  */
-export function StatusBar({
-  style,
-  hideTransitionAnimation,
-  translucent = true,
-  backgroundColor: backgroundColorProp,
-  ...props
-}: StatusBarProps) {
+export function StatusBar({ style, hideTransitionAnimation, animated, hidden }: StatusBarProps) {
   // Pick appropriate default value depending on current theme, so if we are
   // locked to light mode we don't end up with a light status bar
   const colorScheme = useColorScheme();
   const barStyle = React.useMemo(() => styleToBarStyle(style, colorScheme), [style, colorScheme]);
 
-  // If translucent and no backgroundColor is provided, then use transparent
-  // background
-  let backgroundColor = backgroundColorProp;
-  if (translucent && !backgroundColor) {
-    backgroundColor = 'transparent';
-  }
-
   return (
     <NativeStatusBar
-      {...props}
-      translucent={translucent}
+      animated={animated}
+      hidden={hidden}
       barStyle={barStyle}
-      backgroundColor={backgroundColor}
       showHideTransition={hideTransitionAnimation === 'none' ? undefined : hideTransitionAnimation}
     />
   );
@@ -52,54 +36,42 @@ export function StatusBar({
 // @needsAudit
 /**
  * Set the bar style of the status bar.
+ *
  * @param style The color of the status bar text.
  * @param animated If the transition should be animated.
+ *
+ * @example
+ * ```ts
+ * StatusBar.setStyle('dark', true);
+ * ```
  */
-export function setStatusBarStyle(style: StatusBarStyle, animated?: boolean) {
+StatusBar.setStyle = (style: StatusBarStyle, animated?: boolean): void =>
   NativeStatusBar.setBarStyle(styleToBarStyle(style), animated);
-}
+
+/**
+ * @deprecated Use `StatusBar.setStyle` instead. This will be removed in a future release.
+ */
+export const setStatusBarStyle = StatusBar.setStyle;
 
 // @needsAudit
 /**
  * Toggle visibility of the status bar.
+ *
  * @param hidden If the status bar should be hidden.
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
+ *
+ * @example
+ * ```ts
+ * StatusBar.setHidden(true, 'slide');
+ * ```
  */
-export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimation) {
+StatusBar.setHidden = (hidden: boolean, animation?: StatusBarAnimation): void =>
   NativeStatusBar.setHidden(hidden, animation);
-}
 
-// @needsAudit
 /**
- * Set the background color of the status bar.
- * @param backgroundColor The background color of the status bar.
- * @param animated `true` to animate the background color change, `false` to change immediately.
- * @platform android
+ * @deprecated Use `StatusBar.setHidden` instead. This will be removed in a future release.
  */
-export function setStatusBarBackgroundColor(backgroundColor: ColorValue, animated?: boolean) {
-  NativeStatusBar.setBackgroundColor(backgroundColor, animated);
-}
-
-// @needsAudit
-/**
- * Toggle visibility of the network activity indicator.
- * @param visible If the network activity indicator should be visible.
- * @platform ios
- */
-export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
-  NativeStatusBar.setNetworkActivityIndicatorVisible(visible);
-}
-
-// @needsAudit
-/**
- * Set the translucency of the status bar.
- * @param translucent Whether the app can draw under the status bar. When `true`, content will be
- * rendered under the status bar. This is always `true` on iOS and cannot be changed.
- * @platform android
- */
-export function setStatusBarTranslucent(translucent: boolean) {
-  NativeStatusBar.setTranslucent(translucent);
-}
+export const setStatusBarHidden = StatusBar.setHidden;
 
 function styleToBarStyle(
   style: StatusBarStyle = 'auto',

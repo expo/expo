@@ -208,7 +208,7 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
  * Get the pbxproj for the given path
  */
 export function getXcodeProjectPath(projectRoot: string): string {
-  const [using, ...extra] = getAllXcodeProjectPaths(projectRoot);
+  const [using = '', ...extra] = getAllXcodeProjectPaths(projectRoot);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -238,7 +238,7 @@ export function getAllPBXProjectPaths(projectRoot: string): string[] {
 }
 
 export function getPBXProjectPath(projectRoot: string): string {
-  const [using, ...extra] = getAllPBXProjectPaths(projectRoot);
+  const [using = '', ...extra] = getAllPBXProjectPaths(projectRoot);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -274,7 +274,7 @@ export function getAllInfoPlistPaths(projectRoot: string): string[] {
 }
 
 export function getInfoPlistPath(projectRoot: string): string {
-  const [using, ...extra] = getAllInfoPlistPaths(projectRoot);
+  const [using = '', ...extra] = getAllInfoPlistPaths(projectRoot);
 
   if (extra.length) {
     warnMultipleFiles({

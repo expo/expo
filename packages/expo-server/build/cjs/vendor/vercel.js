@@ -38,7 +38,7 @@ function createRequestHandler(params) {
         const host = request.headers.get('host');
         const proto = request.headers.get('x-forwarded-proto') || 'https';
         return {
-            origin: host ? `${proto}://${host}` : 'null',
+            origin: host ? `${proto}://${host}` : null,
             // See: https://github.com/vercel/vercel/blob/b189b39/packages/functions/src/get-env.ts#L25C3-L25C13
             environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV,
             waitUntil: getContext().waitUntil,
@@ -69,7 +69,11 @@ function convertHeaders(requestHeaders) {
 function convertRawHeaders(requestHeaders) {
     const headers = new Headers();
     for (let index = 0; index < requestHeaders.length; index += 2) {
-        headers.append(requestHeaders[index], requestHeaders[index + 1]);
+        const name = requestHeaders[index];
+        const value = requestHeaders[index + 1];
+        if (name != null && value != null) {
+            headers.append(name, value);
+        }
     }
     return headers;
 }

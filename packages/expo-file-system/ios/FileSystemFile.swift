@@ -53,8 +53,17 @@ internal final class FileSystemFile: FileSystemPath {
   var md5: String {
     get throws {
       return try withCorrectTypeAndScopedAccess(permission: .read) {
-        let fileData = try Data(contentsOf: url)
-        let hash = Insecure.MD5.hash(data: fileData)
+        let bufferSize = 65536
+
+        let handle = try FileHandle(forReadingFrom: url)
+        defer { try? handle.close() }
+
+        var hasher = Insecure.MD5()
+        while let chunk = try handle.read(upToCount: bufferSize), !chunk.isEmpty {
+          hasher.update(data: chunk)
+        }
+
+        let hash = hasher.finalize()
         return hash.map { String(format: "%02hhx", $0) }.joined()
       }
     }
@@ -75,23 +84,49 @@ internal final class FileSystemFile: FileSystemPath {
     return nil
   }
 
-  func write(_ content: String) throws {
+  func write(_ content: String, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
+      if append, let data = content.data(using: .utf8) {
+        try writeAppending(data)
+      } else {
+        try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
+      }
     }
   }
 
-  func write(_ data: Data) throws {
+  func write(_ data: Data, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try data.write(to: url)
+      if append {
+        try writeAppending(data)
+      } else {
+        try data.write(to: url)
+      }
     }
   }
 
   // TODO: blob support
-  func write(_ content: TypedArray) throws {
+  func write(_ content: TypedArray, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try Data(bytes: content.rawPointer, count: content.byteLength).write(to: url)
+      let data = Data(bytes: content.rawPointer, count: content.byteLength)
+      if append {
+        try writeAppending(data)
+      } else {
+        try data.write(to: url)
+      }
     }
+  }
+
+  private func writeAppending(_ data: Data) throws {
+    if !FileManager.default.fileExists(atPath: url.path) {
+      try data.write(to: url)
+      return
+    }
+    let fileHandle = try FileHandle(forWritingTo: url)
+    defer {
+      fileHandle.closeFile()
+    }
+    fileHandle.seekToEndOfFile()
+    fileHandle.write(data)
   }
 
   func text() throws -> String {

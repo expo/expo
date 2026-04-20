@@ -1,6 +1,7 @@
 package expo.modules.agerange
 
 import com.google.android.play.agesignals.AgeSignalsResult
+import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.DECLARED
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.SUPERVISED
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING
@@ -8,7 +9,9 @@ import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.VER
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.UNKNOWN
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class AgeRangeResult(
   @Field
   val lowerBound: Int?,
@@ -37,6 +40,7 @@ data class AgeRangeResult(
         SUPERVISED_APPROVAL_PENDING -> "SUPERVISED_APPROVAL_PENDING"
         UNKNOWN -> "UNKNOWN"
         SUPERVISED_APPROVAL_DENIED -> "SUPERVISED_APPROVAL_DENIED"
+        DECLARED -> "DECLARED"
         else -> status.toString()
       }
     }

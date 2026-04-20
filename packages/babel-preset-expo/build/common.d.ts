@@ -1,5 +1,4 @@
 import type { NodePath, types as t } from '@babel/core';
-export declare function hasModule(name: string): boolean;
 /** Determine which bundler is being used. */
 export declare function getBundler(caller?: any): "metro" | "webpack" | null;
 export declare function getPlatform(caller?: any): string | null | undefined;
@@ -13,6 +12,8 @@ export declare function getIsNodeModule(caller?: any): boolean;
 export declare function getBaseUrl(caller?: any): string;
 export declare function getReactCompiler(caller?: any): boolean;
 export declare function getIsServer(caller?: any): boolean;
+export declare function getIsLoaderBundle(caller?: any): boolean;
+export declare function getIsHermesV1(caller?: any): boolean;
 export declare function getMetroSourceType(caller?: any): "script" | "module" | "asset" | undefined;
 export declare function getBabelRuntimeVersion(caller?: any): string;
 export declare function getExpoRouterAbsoluteAppRoot(caller?: any): string;

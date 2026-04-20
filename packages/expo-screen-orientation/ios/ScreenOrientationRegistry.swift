@@ -1,4 +1,5 @@
 import Foundation
+internal import React
 import ExpoModulesCore
 
 public protocol ScreenOrientationController: AnyObject {
@@ -57,10 +58,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Called by ScreenOrientationAppDelegate in order to set initial interface orientation.
    */
   public func updateCurrentScreenOrientation() {
-    let windows = UIApplication.shared.windows
-    if !windows.isEmpty {
-      self.currentScreenOrientation = windows[0].windowScene?.interfaceOrientation ?? .unknown
-    }
+      self.currentScreenOrientation = rootViewController?.view.window?.windowScene?.interfaceOrientation ?? .unknown
   }
 
   deinit {

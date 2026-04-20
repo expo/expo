@@ -9,7 +9,7 @@ export const getRoutes = (
   version: PageApiVersionContextType['version']
 ): NavigationRoute[] => {
   if (isReferencePath(path)) {
-    return navigation.reference[version] as NavigationRoute[];
+    return (navigation.reference as Record<string, unknown>)[version] as NavigationRoute[];
   } else {
     return navigation[getPageSection(path)] as NavigationRoute[];
   }
@@ -17,6 +17,10 @@ export const getRoutes = (
 
 export const isArchivePath = (path: string) => {
   return Utilities.pathStartsWith('archive', path);
+};
+
+export const isInternalPath = (path: string) => {
+  return Utilities.pathStartsWith('internal', path);
 };
 
 export const isVersionedPath = (path: string) => {
@@ -98,6 +102,77 @@ export const isRouteActive = (
   const linkUrl = stripVersionFromPath(info?.as ?? info?.href);
   return linkUrl === stripVersionFromPath(pathname) || linkUrl === stripVersionFromPath(asPath);
 };
+
+const DOCS_ROOT = 'https://docs.expo.dev';
+
+function getAncestorUrl(node: NavigationRoute): string {
+  if (!node.children) {
+    return DOCS_ROOT;
+  }
+
+  for (const child of node.children as NavigationRoute[]) {
+    if (!child || child.hidden) {
+      continue;
+    }
+    if (child.type === 'page' && child.href) {
+      if (child.isIndex) {
+        return `${DOCS_ROOT}${child.href}`;
+      }
+    }
+    if (child.children) {
+      const url = getAncestorUrl(child);
+      if (url !== DOCS_ROOT) {
+        return url;
+      }
+    }
+  }
+  return DOCS_ROOT;
+}
+
+export function getBreadcrumbTrail(
+  routes: NavigationRoute[],
+  pathname: string
+): { name: string; url?: string }[] {
+  const trail: { name: string; node: NavigationRoute }[] = [];
+
+  function search(nodes: NavigationRoute[] | NavigationRouteWithSection[]): boolean {
+    for (const node of nodes) {
+      if (!node || node.hidden) {
+        continue;
+      }
+
+      if (node.type === 'page') {
+        if (node.href === pathname) {
+          trail.push({ name: node.sidebarTitle ?? node.name, node });
+          return true;
+        }
+      } else if (node.children) {
+        trail.push({ name: node.name, node });
+        if (search(node.children)) {
+          return true;
+        }
+        trail.pop();
+      }
+    }
+    return false;
+  }
+
+  search(routes);
+
+  return trail
+    .filter(item => item.name !== '')
+    .map((item, index, filtered) => {
+      const isLast = index === filtered.length - 1;
+      if (isLast) {
+        return { name: item.name };
+      }
+
+      const url =
+        item.node.type === 'page' ? `${DOCS_ROOT}${item.node.href}` : getAncestorUrl(item.node);
+
+      return { name: item.name, url };
+    });
+}
 
 export function appendSectionToRoute(route?: NavigationRouteWithSection) {
   if (route?.children) {

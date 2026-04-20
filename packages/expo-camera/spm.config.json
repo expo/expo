@@ -1,0 +1,78 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoCamera",
+      "podName": "ExpoCamera",
+      "platforms": [
+        "iOS(.v16)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "ExpoCamera",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "exclude": ["barcode-scanning/**"],
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit",
+            "AVFoundation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ExpoCameraBarcodeScanning",
+      "podName": "ExpoCameraBarcodeScanning",
+      "platforms": [
+        "iOS(.v16)"
+      ],
+      "autolinkWhen": {
+        "podfileProperty": "expo.camera.barcode-scanner-enabled",
+        "disabledValue": "false"
+      },
+      "externalDependencies": [],
+      "spmPackages": [
+        {
+          "url": "https://github.com/zxingify/zxingify-objc.git",
+          "productName": "ZXingObjC",
+          "version": {
+            "exact": "3.6.9"
+          }
+        }
+      ],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "ExpoCameraBarcodeScanning",
+          "path": "ios/barcode-scanning",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ExpoCamera",
+            "ZXingObjC"
+          ],
+          "compilerFlags": {
+            "swift": [
+              "-DZXINGOBJC_USE_SUBSPECS",
+              "-DZXINGOBJC_PDF417",
+              "-DZXINGOBJC_ONED"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

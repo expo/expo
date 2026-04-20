@@ -2,6 +2,7 @@
 
 import Foundation
 import React
+import ExpoModulesCore
 
 class DevMenuPackagerConnectionHandler {
   weak var manager: DevMenuManager?
@@ -17,21 +18,28 @@ class DevMenuPackagerConnectionHandler {
 #if DEBUG
     self.swizzleRCTDevMenuShow()
 
-    RCTPackagerConnection
-      .shared()
-      .addNotificationHandler(
+    DispatchQueue.main.async { [weak self] in
+      guard let self, let manager = self.manager else { return }
+
+      let devSettings: RCTDevSettings? = manager.currentAppContext?.nativeModule(named: "DevSettings")
+// TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
+#if !os(macOS)
+      let packagerConnection = devSettings?.packagerConnection
+#else
+      let packagerConnection: RCTPackagerConnection? = RCTPackagerConnection.shared()
+#endif
+      packagerConnection?.addNotificationHandler(
         self.sendDevCommandNotificationHandler,
         queue: DispatchQueue.main,
         forMethod: "sendDevCommand"
       )
 
-    RCTPackagerConnection
-      .shared()
-      .addNotificationHandler(
+      packagerConnection?.addNotificationHandler(
         self.devMenuNotificationHanlder,
         queue: DispatchQueue.main,
         forMethod: "devMenu"
       )
+    }
 #endif
   }
 
@@ -67,12 +75,12 @@ class DevMenuPackagerConnectionHandler {
   func sendDevCommandNotificationHandler(_ params: [String: Any]) {
     guard let manager = manager,
       let command = params["name"] as? String,
-      let bridge = manager.currentBridge
+      let appContext = manager.currentAppContext
     else {
       return
     }
 
-    let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
+    let devDelegate = DevMenuDevOptionsDelegate(forAppContext: appContext)
 
     switch command {
     case "reload":

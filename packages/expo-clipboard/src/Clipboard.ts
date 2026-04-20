@@ -48,23 +48,6 @@ export async function setStringAsync(
 }
 
 /**
- * Sets the content of the user's clipboard.
- * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
- *
- * @returns On web, this returns a boolean value indicating whether or not the string was saved to
- * the user's clipboard. On iOS and Android, nothing is returned.
- */
-export function setString(text: string): void {
-  if (Platform.OS === 'web') {
-    // on web, we need to return legacy method,
-    // because of different return type
-    return ExpoClipboard.setString(text);
-  } else {
-    setStringAsync(text);
-  }
-}
-
-/**
  * Returns whether the clipboard has text content. Returns true for both plain text and rich text (e.g. HTML).
  *
  * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
@@ -212,16 +195,7 @@ export function addClipboardListener(listener: (event: ClipboardEvent) => void):
 
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.
- *
- * @param subscription The subscription to remove (created by addClipboardListener).
- *
- * @example
- * ```typescript
- * const subscription = addClipboardListener(() => {
- *   alert('Copy pasta!');
- * });
- * removeClipboardListener(subscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export function removeClipboardListener(subscription: EventSubscription) {
   subscription.remove();

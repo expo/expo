@@ -1,0 +1,1 @@
+{"version":3,"file":"getHeaderTitle.d.ts","sourceRoot":"","sources":["../../../../src/react-navigation/elements/Header/getHeaderTitle.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;AAE9C,wBAAgB,cAAc,CAC5B,OAAO,EAAE;IAAE,KAAK,CAAC,EAAE,MAAM,CAAC;IAAC,WAAW,CAAC,EAAE,aAAa,CAAC,aAAa,CAAC,CAAA;CAAE,EACvE,QAAQ,EAAE,MAAM,GACf,MAAM,CAMR"}

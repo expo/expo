@@ -46,21 +46,21 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
             href={'#' + slug}
             onClick={onClick}
             className={mergeClasses(
-              'mb-1.5 flex items-center justify-between truncate !text-pretty',
+              'mb-1.5 flex items-center justify-between truncate text-pretty!',
               convertToIndentClass(level - BASE_HEADING_LEVEL),
               'focus-visible:relative focus-visible:z-10'
             )}>
             <TitleElement
               className={mergeClasses(
-                'w-full !text-secondary hocus:!text-link',
-                isCodeOrFilePath && 'truncate !text-2xs',
-                isActive && '!text-link',
+                'text-secondary! hocus:text-link! w-full',
+                isCodeOrFilePath && 'truncate text-xs!',
+                isActive && 'text-link!',
                 isDeprecated && 'line-through opacity-80'
               )}>
               {displayTitle}
               {hasOverloads && (
                 <>
-                  <BracketsEllipsesDuotoneIcon className="icon-xs ml-1 inline text-icon-secondary" />
+                  <BracketsEllipsesDuotoneIcon className="icon-xs text-icon-secondary ml-1 inline" />
                   <span className="sr-only">Has overloads</span>
                 </>
               )}
@@ -85,7 +85,8 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
  * Replaces `Module.someFunction<T>(arguments: argType)` with `someFunction()`
  */
 function trimCodedTitle(str: string) {
-  if (!str.includes('...')) {
+  const hasParens = str.includes('(');
+  if (!str.includes('...') && hasParens) {
     const dotIdx = str.indexOf('.');
     if (dotIdx > 0) {
       str = str.slice(Math.max(0, dotIdx + 1));

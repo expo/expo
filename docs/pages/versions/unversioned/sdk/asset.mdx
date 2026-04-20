@@ -3,7 +3,7 @@ title: Asset
 description: A universal library that allows downloading assets and using them with other libraries.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-asset'
 packageName: 'expo-asset'
-platforms: ['android', 'ios', 'tvos', 'web']
+platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -50,6 +50,7 @@ You can configure `expo-asset` using its built-in [config plugin](/config-plugin
         '* Images: `.png`, `.jpg`, `.gif`',
         '* Media: `.mp4`, `.mp3`, `.lottie`, `.riv`',
         '* SQLite database files: `.db`',
+        '* 3D Models: `.glb`',
         '',
         '> **Note**: To import an existing database file (`.db`), see instructions in [SQLite API reference](./sqlite/#import-an-existing-database). For other file types (such as `.lottie` or `.riv`), see [how to add a file extension to `assetExts` in metro config](/guides/customizing-metro/#adding-more-file-extensions-to-assetexts).',
       ].join('\n'),

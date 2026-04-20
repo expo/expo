@@ -3,7 +3,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 export function createDevToolsPluginWebsocketEndpoint(): Record<string, WebSocketServer> {
   const wss = new WebSocketServer({ noServer: true });
 
-  wss.on('connection', (ws: WebSocket) => {
+  wss.on('connection', (ws, request) => {
     ws.on('message', (message, isBinary) => {
       // Broadcast the received message to all other connected clients
       wss.clients.forEach((client) => {

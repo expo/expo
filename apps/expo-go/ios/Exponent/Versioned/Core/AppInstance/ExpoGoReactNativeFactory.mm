@@ -4,6 +4,7 @@
 #import <RCTAppSetupUtils.h>
 #import <React/CoreModulesPlugins.h>
 #import <ExpoModulesCore/EXRuntime.h>
+#import <ExpoModulesCore/EXHostWrapper.h>
 #import <ExpoModulesCore-Swift.h>
 
 
@@ -40,6 +41,9 @@
 
 - (void)hostDidStart:(nonnull RCTHost *)host {
   host.runtimeDelegate = self;
+  if ([self.delegate respondsToSelector:@selector(hostDidStart:)]) {
+    [self.delegate hostDidStart:host];
+  }
 }
 
 - (void)host:(nonnull RCTHost *)host didInitializeRuntime:(jsi::Runtime &)runtime

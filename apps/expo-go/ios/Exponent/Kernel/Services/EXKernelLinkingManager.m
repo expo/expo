@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAbstractLoader.h"
-#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXUtil.h"
@@ -9,7 +8,6 @@
 #import "EXReactAppManager.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTUtils.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 

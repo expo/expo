@@ -5,6 +5,7 @@ import path from 'path';
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
+import { SPMConfig } from './prebuilds/SPMConfig.types';
 
 const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 const IOS_DIR = Directories.getExpoGoIosDir();
@@ -74,6 +75,11 @@ export type ExpoModuleConfig = {
     podName?: string;
     podspecPath?: string;
   };
+  apple?: {
+    subdirectory?: string;
+    podName?: string;
+    podspecPath?: string | string[];
+  };
   android?: {
     subdirectory?: string;
     name?: string;
@@ -84,6 +90,8 @@ export type ExpoModuleConfig = {
     }[];
   };
 };
+
+const SPMConfigFileName = 'spm.config.json';
 
 /**
  * Represents a package in the monorepo.
@@ -98,6 +106,18 @@ export class Package {
     this.path = rootPath;
     this.packageJson = packageJson || require(path.join(rootPath, 'package.json'));
     this.expoModuleConfig = readExpoModuleConfigJson(this.expoModulesConfigPath);
+  }
+
+  /**
+   * Path where build artifacts are stored, centralized under packages/precompile/.build/.
+   * Layout: packages/precompile/.build/<pkgName>/{generated,output,codegen}
+   */
+  get buildPath(): string {
+    return path.join(
+      Directories.getPrecompileDir(),
+      '.build',
+      this.packageJson.name ?? path.basename(this.path)
+    );
   }
 
   get hasPlugin(): boolean {
@@ -137,10 +157,18 @@ export class Package {
       return this.expoModuleConfig.ios.podspecPath;
     }
 
-    // Obtain podspecName by looking for podspecs in both package's root directory and ios subdirectory.
-    const [podspecPath] = glob.sync(`{*,${this.iosSubdirectory}/*}.podspec`, {
-      cwd: this.path,
-    });
+    const applePodspecPath = this.expoModuleConfig?.apple?.podspecPath;
+    if (applePodspecPath) {
+      return Array.isArray(applePodspecPath) ? applePodspecPath[0] : applePodspecPath;
+    }
+
+    // Look for podspecs in the package root and both iOS-style subdirectories.
+    const [podspecPath] = glob.sync(
+      `{*,${this.iosSubdirectory}/*,${this.appleSubdirectory}/*}.podspec`,
+      {
+        cwd: this.path,
+      }
+    );
 
     return podspecPath || null;
   }
@@ -165,6 +193,10 @@ export class Package {
 
   get iosSubdirectory(): string {
     return this.expoModuleConfig?.ios?.subdirectory ?? 'ios';
+  }
+
+  get appleSubdirectory(): string {
+    return this.expoModuleConfig?.apple?.subdirectory ?? 'apple';
   }
 
   get androidSubdirectory(): string {
@@ -317,6 +349,26 @@ export class Package {
   }
 
   /**
+   * Checks whether the package has a Swift PM configuration file
+   */
+  hasSwiftPMConfiguration(): boolean {
+    const swiftPMPackagePath = path.join(this.path, SPMConfigFileName);
+    return fs.pathExistsSync(swiftPMPackagePath);
+  }
+
+  /**
+   * @returns The swift PM configuration object.
+   * @throws Error if the configuration file doesn't exist or can't be parsed.
+   */
+  getSwiftPMConfiguration(): SPMConfig {
+    const swiftPMPackagePath = path.join(this.path, SPMConfigFileName);
+    if (!fs.pathExistsSync(swiftPMPackagePath)) {
+      throw new Error(`No SwiftPM configuration found for package: ${this.packageName}`);
+    }
+    return require(swiftPMPackagePath);
+  }
+
+  /**
    * Checks whether package has its own changelog file.
    */
   async hasChangelogAsync(): Promise<boolean> {
@@ -394,6 +446,7 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
         '**/__tests__/**',
         '**/__mocks__/**',
         '**/__fixtures__/**',
+        '**/e2e/**',
       ],
     });
     const templatesPaths = await glob('**/package.json', {

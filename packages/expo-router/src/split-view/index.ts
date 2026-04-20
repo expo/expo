@@ -1,3 +1,3 @@
 export { SplitView, SplitViewProps } from './split-view';
 export * from './elements';
-export { type SplitViewHostProps } from 'react-native-screens/experimental';
+export { type SplitHostProps } from 'react-native-screens/experimental';

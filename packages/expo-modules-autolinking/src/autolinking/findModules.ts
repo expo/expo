@@ -7,6 +7,7 @@ import {
   filterMapResolutionResult,
   mergeResolutionResults,
 } from '../dependencies';
+import { createMemoizer } from '../memoize';
 import { PackageRevision, SearchResults, SupportedPlatform } from '../types';
 
 export async function resolveExpoModule(
@@ -17,11 +18,20 @@ export async function resolveExpoModule(
   if (excludeNames.has(resolution.name)) {
     return null;
   }
-  const expoModuleConfig = await discoverExpoModuleConfigAsync(resolution.path);
+
+  // Workaround for Android Gradle/Prefab issue with special characters in paths.
+  // pnpm creates virtual store paths with '=' characters (e.g., _patch_hash=abc123),
+  // which cause build failures on Android due to Prefab not properly escaping them.
+  // See: https://github.com/google/prefab/issues/187
+  const shouldUseOriginPath =
+    platform === 'android' && resolution.path.includes('=') && resolution.path.includes('.pnpm');
+  const modulePath = shouldUseOriginPath ? resolution.originPath : resolution.path;
+
+  const expoModuleConfig = await discoverExpoModuleConfigAsync(modulePath);
   if (expoModuleConfig && expoModuleConfig.supportsPlatform(platform)) {
     return {
       name: resolution.name,
-      path: resolution.path,
+      path: modulePath,
       version: resolution.version,
       config: expoModuleConfig,
       duplicates:
@@ -46,6 +56,7 @@ export async function findModulesAsync({
   appRoot,
   autolinkingOptions,
 }: FindModulesParams): Promise<SearchResults> {
+  const memoizer = createMemoizer();
   const excludeNames = new Set(autolinkingOptions.exclude);
 
   // custom native modules should be resolved first so that they can override other modules
@@ -53,13 +64,15 @@ export async function findModulesAsync({
     ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
     : autolinkingOptions.searchPaths;
 
-  return filterMapResolutionResult(
-    mergeResolutionResults(
-      await Promise.all([
-        ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
-        scanDependenciesRecursively(appRoot),
-      ])
-    ),
-    (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames)
-  );
+  return memoizer.withMemoizer(async () => {
+    return filterMapResolutionResult(
+      mergeResolutionResults(
+        await Promise.all([
+          ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
+          scanDependenciesRecursively(appRoot),
+        ])
+      ),
+      (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames)
+    );
+  });
 }

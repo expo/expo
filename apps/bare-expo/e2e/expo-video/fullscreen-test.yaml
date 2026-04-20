@@ -1,0 +1,32 @@
+# Tests whether the fullscreen opens, and if appropriate events were sent
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://components/video/fullscreen
+
+- tapOn: "Enter Fullscreen"
+- runFlow:
+      when:
+          platform: Android
+      commands:
+          # Dismiss the android system fullscreen instruction popup
+          - tapOn:
+                text: "Got it"
+                optional: true
+          - assertVisible:
+                id: "dev.expo.payments:id/exo_content_frame"
+- runFlow:
+      when:
+          platform: iOS
+      commands:
+          - assertVisible: "Video"
+
+- assertNotVisible: "Enter Fullscreen"
+- tapOn:
+    point: '${maestro.platform == "android" ? "94%,97%" : "11%,10%"}'
+    delay: 400
+    repeat: 2
+
+- assertVisible: "Enter Fullscreen"
+- assertVisible: "0 = onFullscreenEnter"
+- assertVisible: "1 = onFullscreenExit"

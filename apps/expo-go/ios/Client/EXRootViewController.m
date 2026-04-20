@@ -10,7 +10,6 @@
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXRootViewController.h"
-#import "EXDevMenu-Swift.h"
 #import "EXUtil.h"
 
 #import "Expo_Go-Swift.h"
@@ -21,15 +20,12 @@
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
-NSString * const kEXIsLocalNetworkAccessGrantedKey = @"EXIsLocalNetworkAccessGranted";
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXRootViewController () <EXAppBrowserController>
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
-@property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
 @property (nonatomic, strong) HomeViewController *homeViewController;
 @property (nonatomic, strong) NSURL *pendingInitialHomeURL;
 
@@ -46,19 +42,41 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+  [super viewDidAppear:animated];
+  [self becomeFirstResponder];
+
+  // Attach three-finger long press gesture recognizer for dev menu
+  if (self.view.window) {
+    [[DevMenuManager shared] attachGestureRecognizerToWindow:self.view.window];
+  }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+  [super viewWillDisappear:animated];
+  [self resignFirstResponder];
+}
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent * _Nullable)event
+{
+  [super motionEnded:motion withEvent:event];
+  if (motion == UIEventSubtypeMotionShake && [DevMenuManager.shared getMotionGestureEnabled]) {
+    [DevMenuManager.shared toggleMenu];
+  }
+}
+
 #pragma mark - Screen Orientation
 
 - (BOOL)shouldAutorotate
 {
   return YES;
-}
-
-- (BOOL)isLocalNetworkAccessGranted {
-  if ([[NSUserDefaults standardUserDefaults] objectForKey:kEXIsLocalNetworkAccessGrantedKey] != nil) {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXIsLocalNetworkAccessGrantedKey];
-  } else {
-    return NO;
-  }
 }
 
 /**
@@ -108,39 +126,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
-  if ([EXUtil isExpoHostedUrl:appRecord.appLoader.manifestUrl] || [self isLocalNetworkAccessGranted]) {
-    [self foregroundApp:appRecord];
-    return;
-  }
-
-  [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (success) {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        [userDefaults setBool:YES forKey:kEXIsLocalNetworkAccessGrantedKey];
-        [self foregroundApp:appRecord];
-      } else {
-        [self createLocalNetworkDeniedAlert];
-      }
-    });
-  }];
+  [self foregroundApp:appRecord];
 }
 
 - (void)foregroundApp:(EXKernelAppRecord *)appRecord
 {
   [self _foregroundAppRecord:appRecord];
 }
-
-- (void)createLocalNetworkDeniedAlert
-{
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Local network access required"
-                                                                 message:@"Local network access has been denied. This permission is required to run projects in Expo Go. Enable \"Local Network\" for Expo Go from the Settings app."
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-  UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-  [alert addAction:okAction];
-  [self presentViewController:alert animated:YES completion:nil];
-}
-
 
 - (void)moveHomeToVisible
 {
@@ -229,13 +221,6 @@ NS_ASSUME_NONNULL_BEGIN
                                            iconUrl:iconUrl];
 }
 
-- (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString *))completion
-{
-  if (completion) {
-    completion(nil);
-  }
-}
-
 - (void)setIsNuxFinished:(BOOL)isFinished
 {
   [[NSUserDefaults standardUserDefaults] setBool:isFinished forKey:kEXHomeIsNuxFinishedDefaultsKey];
@@ -249,11 +234,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord
 {
-  // show nux if needed
-  if (!self.isNuxFinished && appRecord == [EXKernel sharedInstance].visibleApp) {
-    [DevMenuManager.shared openMenu];
-  }
-
   // Re-apply the default orientation after the app has been loaded (eq. after a reload)
   [self _applySupportedInterfaceOrientations];
 }
@@ -338,8 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentViewController = viewController;
 
     if (isShowingApp && appRecord.appManager.reactHost) {
-      [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
-      [[DevMenuManager shared] updateCurrentManifest:appRecord.appLoader.manifest manifestURL:appRecord.appLoader.manifestUrl];
+      [[DevMenuManager shared] notifyManifestChanged];
     }
   }
 
@@ -398,6 +377,15 @@ NS_ASSUME_NONNULL_BEGIN
     UIInterfaceOrientationMask orientationMask = [self supportedInterfaceOrientations];
     [ScreenOrientationRegistry.shared enforceDesiredDeviceOrientationWithOrientationMask:orientationMask];
   }
+}
+
+- (BOOL)_isSnackURL:(nullable NSURL *)url
+{
+  if (!url) {
+    return NO;
+  }
+  NSString *query = [url query];
+  return query && ([query containsString:@"snack"] || [query containsString:@"snack-channel"]);
 }
 
 @end

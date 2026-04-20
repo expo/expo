@@ -3,10 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-public final class GroupViewProps: UIBaseViewProps {
-  @Field var useTapGesture: Bool?
-  var onTap = EventDispatcher()
-}
+public final class GroupViewProps: UIBaseViewProps {}
 
 public struct GroupView: ExpoSwiftUI.View {
   @ObservedObject public var props: GroupViewProps
@@ -19,6 +16,5 @@ public struct GroupView: ExpoSwiftUI.View {
     Group {
       Children()
     }
-    .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
   }
 }

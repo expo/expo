@@ -41,6 +41,13 @@ internal struct DynamicDictionaryType: AnyDynamicType {
     throw Conversions.CastingException<[AnyHashable: Any]>(value)
   }
 
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    if let result = result as? [AnyHashable: Any] {
+      return result.mapValues { Conversions.convertFunctionResult($0, appContext: appContext) }
+    }
+    return result
+  }
+
   var description: String {
     "[Hashable: \(valueType.description)]"
   }

@@ -1,6 +1,6 @@
 {
   "name": "expo-processing",
-  "version": "3.0.5",
+  "version": "55.0.6",
   "description": "Utilities for using Processing.js on Expo",
   "main": "index.js",
   "keywords": [
@@ -22,10 +22,10 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-processing",
   "dependencies": {
-    "expo-gl": "16.0.7"
+    "expo-gl": "workspace:55.0.9"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "processing-js": "^1.6.6"
   }
 }

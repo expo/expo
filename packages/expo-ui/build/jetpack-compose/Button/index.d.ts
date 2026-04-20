@@ -1,84 +1,99 @@
-import { MaterialIcon } from './types';
-import { ExpoModifier, ViewEvent } from '../../types';
-import { ShapeJSXElement, ShapeProps } from '../Shape';
+import { type ColorValue } from 'react-native';
+import type { ModifierConfig, ViewEvent } from '../../types';
+import { ShapeJSXElement, ShapeRecordProps } from '../Shape';
 /**
- * The built-in button styles available on Android.
- * - `outlined` - A button with an outline.
- * - `elevated` - A filled button with a shadow.
+ * Colors for button elements.
  */
-export type ButtonVariant = 'default' | 'bordered' | 'borderless' | 'outlined' | 'elevated';
+export type ButtonColors = {
+    containerColor?: ColorValue;
+    contentColor?: ColorValue;
+    disabledContainerColor?: ColorValue;
+    disabledContentColor?: ColorValue;
+};
 /**
- * Colors for button's core elements.
+ * Content padding for the button's inner content.
+ * All values are in density-independent pixels (dp).
  */
-export type ButtonElementColors = {
-    containerColor?: string;
-    contentColor?: string;
-    disabledContainerColor?: string;
-    disabledContentColor?: string;
+export type ButtonContentPadding = {
+    start?: number;
+    top?: number;
+    end?: number;
+    bottom?: number;
 };
 export type ButtonProps = {
     /**
-     * A callback that is called when the button is pressed.
+     * Callback that is called when the button is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
-     * A string describing the leading icon to display in the button.
-     * Uses Material Icons on Android.
+     * Whether the button is enabled for user interaction.
+     * @default true
      */
-    leadingIcon?: MaterialIcon;
+    enabled?: boolean;
     /**
-     * A string describing the trailing icon to display in the button.
-     * Uses Material Icons on Android.
+     * Colors for button elements.
      */
-    trailingIcon?: MaterialIcon;
+    colors?: ButtonColors;
     /**
-     * A string describing the system image to display in the button.
-     * Uses Material Icons on Android.
-     * @deprecated Use `leadingIcon` instead.
+     * The padding between the button container and its content.
+     * Use this to adjust internal spacing, for example when adding a leading icon
      */
-    systemImage?: MaterialIcon;
+    contentPadding?: ButtonContentPadding;
     /**
-     * The button variant.
+     * The shape of the button.
      */
-    variant?: ButtonVariant;
-    /**
-     * The text to display inside the button.
-     */
-    children?: string | string[] | React.JSX.Element;
-    /**
-     * Colors for button's core elements.
-     * @platform android
-     */
-    elementColors?: ButtonElementColors;
-    /**
-     * Button color.
-     */
-    color?: string;
     shape?: ShapeJSXElement;
-    /**
-     * Disabled state of the button.
-     */
-    disabled?: boolean;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
+    /**
+     * Content to display inside the button.
+     */
+    children: React.ReactNode;
 };
-/**
- * @hidden
- */
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'leadingIcon' | 'trailingIcon' | 'systemImage' | 'shape'> & {
-    text: string;
-    leadingIcon?: string;
-    trailingIcon?: string;
-    shape: ShapeProps;
+type NativeButtonProps = Omit<ButtonProps, 'onClick' | 'shape' | 'children'> & {
+    shape?: ShapeRecordProps;
+    children?: React.ReactNode;
 } & ViewEvent<'onButtonPressed', void>;
 /**
  * @hidden
  */
-export declare function transformButtonProps(props: ButtonProps): NativeButtonProps;
+export declare function transformButtonProps(props: Omit<ButtonProps, 'children'>): NativeButtonProps;
 /**
- * Displays a native button component.
+ * A filled button component.
  */
-export declare function Button(props: ButtonProps): import("react").JSX.Element;
+export declare const Button: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
+/**
+ * A filled tonal button component.
+ */
+export declare const FilledTonalButton: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
+/**
+ * An outlined button component.
+ */
+export declare const OutlinedButton: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
+/**
+ * An elevated button component.
+ */
+export declare const ElevatedButton: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
+/**
+ * A text button component.
+ */
+export declare const TextButton: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
+export {};
 //# sourceMappingURL=index.d.ts.map

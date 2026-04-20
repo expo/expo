@@ -1,19 +1,25 @@
 'use client';
 
 import { requireNativeView } from 'expo';
+import type { ImageRef } from 'expo-image';
 import { Fragment, type PropsWithChildren } from 'react';
 import { Platform, StyleSheet, type ViewProps, type ColorValue } from 'react-native';
 
 import type { BasicTextStyle } from '../../utils/font';
 
+// TODO(@kitten): Replace with `globalThis`, add typings in `expo`
 const areNativeViewsAvailable =
-  process.env.EXPO_OS === 'ios' && !Platform.isTV && global.RN$Bridgeless === true;
+  process.env.EXPO_OS === 'ios' && !Platform.isTV && (global as any).RN$Bridgeless === true;
 
 // #region Action View
 export interface NativeLinkPreviewActionProps {
   identifier: string;
   title: string;
+  label?: string;
   icon?: string;
+  xcassetName?: string;
+  image?: ImageRef | null;
+  imageRenderingMode?: 'template' | 'original';
   children?: React.ReactNode;
   disabled?: boolean;
   destructive?: boolean;
@@ -44,15 +50,24 @@ export interface NativeLinkPreviewActionProps {
   onSelected: () => void;
   titleStyle?: BasicTextStyle;
 }
-const LinkPreviewNativeActionView: React.ComponentType<NativeLinkPreviewActionProps> | null =
-  areNativeViewsAvailable
-    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
-    : null;
+const LinkPreviewNativeActionView: React.ComponentType<
+  Omit<NativeLinkPreviewActionProps, 'image'> & { image?: number }
+> | null = areNativeViewsAvailable
+  ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
+  : null;
 export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
   if (!LinkPreviewNativeActionView) {
     return null;
   }
-  return <LinkPreviewNativeActionView {...props} />;
+  // Needed to pass shared object ID to native side
+  const imageObjectId = (
+    props.image as
+      | {
+          __expo_shared_object_id__: number;
+        }
+      | undefined
+  )?.__expo_shared_object_id__;
+  return <LinkPreviewNativeActionView {...props} image={imageObjectId} />;
 }
 // #endregion
 
@@ -115,6 +130,12 @@ export function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps) {
 // #endregion
 
 // #region Zoom transition enabler
+interface DismissalBoundsRect {
+  minX?: number;
+  maxX?: number;
+  minY?: number;
+  maxY?: number;
+}
 const LinkZoomTransitionEnablerNativeView: React.ComponentType<
   ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
 > | null = areNativeViewsAvailable
@@ -122,7 +143,7 @@ const LinkZoomTransitionEnablerNativeView: React.ComponentType<
   : null;
 export function LinkZoomTransitionEnabler(props: {
   zoomTransitionSourceIdentifier: string;
-  preventInteractiveDismissal?: boolean;
+  dismissalBoundsRect?: DismissalBoundsRect | null;
 }) {
   if (!LinkZoomTransitionEnablerNativeView) {
     return null;

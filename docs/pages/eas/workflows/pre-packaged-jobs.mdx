@@ -5,6 +5,7 @@ description: Learn how to set up and use pre-packaged jobs in EAS Workflows.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 
 Pre-packaged jobs are ready-to-use workflow jobs that help you automate common tasks like building, submitting, and testing your app. They provide a standardized way to handle these operations without having to write custom job configurations from scratch. This guide covers the available pre-packaged jobs and how to use them in your workflows.
 
@@ -297,6 +298,14 @@ jobs:
 #### Environment variables
 
 You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter               | Type    | Description                                                                                                                                               |
+| ----------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| unstable_skip_cng_check | boolean | Optional. Whether to skip the check for [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) compatibility. Defaults to `false`. |
 
 #### Outputs
 
@@ -833,6 +842,7 @@ jobs:
       maestro_version: string # optional - defaults to latest
       android_system_image_package: string # optional
       device_identifier: string | { android: string, ios: string } # optional
+      output_format: string # optional - defaults to junit
 ```
 
 #### Parameters
@@ -849,7 +859,7 @@ You can pass the following parameters into the `params` list:
 | include_tags                 | string or string[]                                    | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
 | exclude_tags                 | string or string[]                                    | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
 | maestro_version              | string                                                | Optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.                                                                                                                                                                                                                                                                                                                                  |
-| output_format                | string                                                | Optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.                                                                                                                                                                                                                                                                                                             |
+| output_format                | string                                                | Optional. Maestro test report format. Defaults to `junit`. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.                                                                                                                                                                                                                                                                                        |
 | android_system_image_package | string                                                | Optional. Android Emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note that newer images require more computing resources, for which you may want to use large runners.                                                 |
 | device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
 | skip_build_check             | boolean                                               | Optional. Skip validation of the build (whether an iOS build is a simulator build). Defaults to false.                                                                                                                                                                                                                                                                                                                                |
@@ -901,7 +911,7 @@ jobs:
 
 <Collapsible summary="Using Maestro prefixed environment variables">
 
-Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/advanced/parameters-and-constants#accessing-variables-from-the-shell).
+Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/maestro-flows/flow-control-and-logic/parameters-and-constants#accessing-shell-variables).
 
 ```yaml .eas/workflows/maestro-basic.yml
 name: Basic Maestro Test
@@ -941,7 +951,7 @@ jobs:
 
 <Collapsible summary="Saving screenshots and recordings">
 
-To save assets created by Maestro commands (such as [`takeScreenshot`](https://docs.maestro.dev/api-reference/commands/takescreenshot) or [`startRecording`](https://docs.maestro.dev/api-reference/commands/startrecording)) to use for debugging later, use the `MAESTRO_TESTS_DIR` environment variable.
+To save assets created by Maestro commands (such as [`takeScreenshot`](https://docs.maestro.dev/reference/commands-available/takescreenshot) or [`startRecording`](https://docs.maestro.dev/reference/commands-available/startrecording)) to use for debugging later, use the `MAESTRO_TESTS_DIR` environment variable.
 
 In your Maestro flow file, specify the asset locations:
 
@@ -964,7 +974,7 @@ The assets will be available within the "Maestro Test Results" artifact in the A
 
 Run Maestro tests on Maestro Cloud.
 
-> **important** This requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud) to learn more.
+> **important** This requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/maestro-cloud/run-tests-on-maestro-cloud) to learn more.
 
 ### Syntax
 
@@ -1016,6 +1026,21 @@ You can pass the following parameters into the `params` list:
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
 
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                     | Type   | Description                                                              |
+| -------------------------- | ------ | ------------------------------------------------------------------------ |
+| maestro_cloud_url          | string | URL to the Maestro Cloud upload results page.                            |
+| total_flows_count          | number | Total number of flows that were executed.                                |
+| successful_flows_count     | number | Number of flows that completed successfully (status SUCCESS or WARNING). |
+| failed_flows_count         | number | Number of flows that failed (status ERROR or STOPPED).                   |
+| successful_flow_names_json | string | JSON array containing the names of successful flows.                     |
+| failed_flow_names_json     | string | JSON array containing the names of failed flows.                         |
+
+> **Note:** When using `async: true` mode, only the `maestro_cloud_url` output is guaranteed to be valid. Other outputs (flow counts and flow names) may be invalid or empty because the job does not wait for the upload to complete and the flows have not been executed yet.
+
 ### Examples
 
 Here are some practical examples of using the Maestro job:
@@ -1042,7 +1067,7 @@ jobs:
 
 <Collapsible summary="Using Maestro prefixed environment variables">
 
-Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/advanced/parameters-and-constants#accessing-variables-from-the-shell).
+Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/maestro-flows/flow-control-and-logic/parameters-and-constants#accessing-shell-variables).
 
 ```yaml .eas/workflows/maestro-basic.yml
 name: Basic Maestro Test
@@ -1061,9 +1086,38 @@ jobs:
 
 </Collapsible>
 
+<Collapsible summary="Using Maestro Cloud outputs in subsequent jobs">
+
+This workflow runs Maestro Cloud tests and then uses the test results in a Slack notification.
+
+```yaml .eas/workflows/maestro-with-notification.yml
+name: Maestro Cloud with Notification
+
+jobs:
+  maestro_test:
+    name: Run Maestro Cloud Tests
+    type: maestro-cloud
+    environment: preview
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+
+  notify:
+    name: Send Test Results
+    after: [maestro_test]
+    type: slack
+    environment: production
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }} # make sure to set it up in the right environment (see "environment: ..." above)
+      message: 'Tests complete: ${{ after.maestro_test.outputs.successful_flows_count }}/${{ after.maestro_test.outputs.total_flows_count }} passed'
+```
+
+</Collapsible>
+
 ## Slack
 
-Send a message to a Slack channel using a [Slack webhook URL](https://api.slack.com/messaging/webhooks).
+Send a message to a Slack channel using a [Slack webhook URL](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks).
 
 ### Syntax
 
@@ -1085,7 +1139,7 @@ You can pass the following parameters into the `params` list:
 | ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | webhook_url | string | Required. The Slack webhook URL to send the message to. Currently only hardcoded strings are supported. Using webhooks stored in `env` are upcoming but not yet supported. |
 | message     | string | Required if payload is not provided. The message to send.                                                                                                                  |
-| payload     | object | Required if message is not provided. The [Slack Block Kit](https://api.slack.com/block-kit) payload to send.                                                               |
+| payload     | object | Required if message is not provided. The [Slack Block Kit](https://docs.slack.dev/block-kit) payload to send.                                                              |
 
 ### Examples
 
@@ -1166,7 +1220,7 @@ jobs:
 
 ## GitHub Comment
 
-Automatically post reports of your workflow's completed builds and updates to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
+Automatically post reports of your workflow's completed builds, updates, and deployments to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, displaying EAS Hosting deployment previews, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
 
 ### Prerequisites
 
@@ -1182,8 +1236,9 @@ jobs:
       message: string # optional - custom message to include in the report
       build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
       update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workflow
+      deployment_ids: string[] # optional - specific deployment IDs to include, defaults to all related to the workflow
 
-  # instead of using message and the builds and updates table, you can also override the comment contents with `payload`
+  # instead of using message and the builds, updates, and deployments table, you can also override the comment contents with `payload`
   custom_github_comment:
     type: github-comment
     params:
@@ -1200,11 +1255,12 @@ Default behavior is auto discovery builds and updates, you can specify any of th
 
 | Parameter        | Type     | Description                                                                                                                                                      |
 | ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| message          | string   | Optional. Custom message to include at the top of the comment. Defaults to "Your builds and updates are ready for testing!"                                      |
+| message          | string   | Optional. Custom message to include at the top of the comment. Defaults to "Your builds, updates, and deployments are ready for testing!"                        |
 | build_ids        | string[] | Optional. Array of specific build IDs to include. If not specified, auto-discovers all completed/failed/canceled builds. Use empty array `[]` to exclude builds. |
 | update_group_ids | string[] | Optional. Array of specific update group IDs to include. If not specified, auto-discovers all successful updates. Use empty array `[]` to exclude updates.       |
+| deployment_ids   | string[] | Optional. Array of specific deployment IDs to include. If not specified, auto-discovers all successful deployments. Use empty array `[]` to exclude deployments. |
 
-> **Auto-discovery behavior**: When `build_ids` or `update_group_ids` are not specified (undefined), the job automatically discovers all relevant builds and updates from the current workflow. To explicitly exclude builds or updates, pass an empty array `[]`.
+> **Auto-discovery behavior**: When `build_ids`, `update_group_ids`, or `deployment_ids` are not specified (undefined), the job automatically discovers all relevant builds, updates, and deployments from the current workflow. To explicitly exclude builds, updates, or deployments, pass an empty array `[]`.
 
 ##### Mode 2: Payload mode
 
@@ -1228,9 +1284,9 @@ Here are practical examples demonstrating both modes of the GitHub Comment job:
 
 #### Auto-with-overrides mode examples
 
-<Collapsible summary="Auto-discover all builds and updates">
+<Collapsible summary="Auto-discover all builds, updates, and deployments">
 
-This is the simplest usage - automatically discovers and posts all builds and updates from the workflow.
+This is the simplest usage - automatically discovers and posts all builds, updates, and deployments from the workflow.
 
 ```yaml .eas/workflows/pr-auto-comment.yml
 name: PR Auto Comment
@@ -1243,16 +1299,16 @@ jobs:
 
   comment_on_pr:
     name: Post Results to PR
-    after: [build_ios, build_android, publish_update]
+    after: [build_ios, build_android, publish_update, deploy]
     type: github-comment
-    # No params needed - auto-discovers all builds and updates
+    # No params needed - auto-discovers all builds, updates, and deployments
 ```
 
 </Collapsible>
 
 <Collapsible summary="Custom message with auto-discovery">
 
-Adds a custom message while still auto-discovering all builds and updates.
+Adds a custom message while still auto-discovering all builds, updates, and deployments.
 
 ```yaml .eas/workflows/pr-custom-message.yml
 name: PR Custom Message
@@ -1265,11 +1321,33 @@ jobs:
 
   comment_on_pr:
     name: Post Build to PR
-    after: [build_ios, build_android, publish_update]
+    after: [build_ios, build_android, publish_update, deploy]
     type: github-comment
     params:
       message: '🎉 Preview builds are ready! Please test these changes before approving the PR.'
-      # build_ids and update_group_ids are undefined, so auto-discovery is enabled
+      # build_ids, update_group_ids, and deployment_ids are undefined, so auto-discovery is enabled
+```
+
+</Collapsible>
+
+<Collapsible summary="PR preview with EAS Hosting deployment">
+
+This workflow deploys a preview of your website using EAS Hosting and posts the deployment details to the pull request.
+
+```yaml .eas/workflows/pr-preview.yml
+name: PR Preview
+
+on:
+  pull_request: {}
+
+jobs:
+  deploy:
+    type: deploy
+    name: Deploy PR Preview
+
+  comment:
+    needs: [deploy]
+    type: github-comment
 ```
 
 </Collapsible>
@@ -1302,7 +1380,7 @@ jobs:
 
 </Collapsible>
 
-<Collapsible summary="Exclude builds or updates">
+<Collapsible summary="Exclude builds, updates, or deployments">
 
 Use empty arrays to exclude specific content types.
 
@@ -1322,6 +1400,7 @@ jobs:
     params:
       message: 'New update available for testing!'
       build_ids: [] # Empty array excludes all builds
+      deployment_ids: [] # Empty array excludes all deployments
       # update_group_ids undefined = auto-discover updates
 ```
 
@@ -1586,14 +1665,18 @@ jobs:
       repack_version: string # optional
 ```
 
+> **Note:** If the build might still be in progress, use [`get-build`](#get-build) with `wait_for_in_progress: true`, then pass its `build_id` to `repack`.
+
 ### Common questions
+
+<FAQ>
 
 <Collapsible summary="When to use and when not to use repack?">
 
 Repack job is suitable for the following use cases:
 
 - Reducing CI build times by reusing existing builds
-- Trigging full native builds when required
+- Triggering full native builds when required
 - Delivering faster feedback loops to your team
 
 Repack job is not suitable for the following use cases:
@@ -1601,6 +1684,8 @@ Repack job is not suitable for the following use cases:
 - Production builds that require builds to go through the complete pipeline for correct symbolication and app signing
 
 </Collapsible>
+
+</FAQ>
 
 #### Parameters
 
@@ -1611,6 +1696,7 @@ You can pass the following parameters into the `params` list:
 | build_id            | string  | Required. The source build ID of the build to repack.                                                                                       |
 | profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
 | embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
+| js_bundle_only      | boolean | Optional. Whether to only repack the JavaScript bundle. Defaults to false, which means the entire app metadata will be updated.             |
 | message             | string  | Optional. Custom message attached to the build. Corresponds to the `--message` flag when running `eas build`.                               |
 | repack_version      | string  | Optional. The version of the `@expo/repack-app` to use. Defaults to the latest version.                                                     |
 

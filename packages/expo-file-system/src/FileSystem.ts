@@ -1,5 +1,14 @@
+import { uuid, type EventSubscription } from 'expo-modules-core';
+
 import ExpoFileSystem from './ExpoFileSystem';
-import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
+import {
+  FileMode,
+  type DownloadOptions,
+  type PathInfo,
+  type PickFileOptions,
+  type PickMultipleFilesResult,
+  type PickSingleFileResult,
+} from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -69,6 +78,12 @@ export class Paths extends PathUtilities {
  * ```
  */
 export class File extends ExpoFileSystem.FileSystemFile implements Blob {
+  static downloadFileAsync: (
+    url: string,
+    destination: Directory | File,
+    options?: DownloadOptions
+  ) => Promise<File>;
+
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
@@ -107,11 +122,13 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   readableStream() {
-    return new ReadableStream(new FileSystemReadableStreamSource(super.open()));
+    return new ReadableStream(new FileSystemReadableStreamSource(super.open(FileMode.ReadOnly)));
   }
 
   writableStream() {
-    return new WritableStream<Uint8Array>(new FileSystemWritableSink(super.open()));
+    return new WritableStream<Uint8Array>(
+      new FileSystemWritableSink(super.open(FileMode.WriteOnly))
+    );
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
@@ -128,20 +145,116 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 }
 
+function createAbortError(reason?: string): Error {
+  const error = new Error(reason ?? 'The operation was aborted.');
+  error.name = 'AbortError';
+  return error;
+}
+
 // Cannot use `static` keyword in class declaration because of a runtime error.
 File.downloadFileAsync = async function downloadFileAsync(
   url: string,
   to: File | Directory,
   options?: DownloadOptions
 ) {
-  const outputURI = await ExpoFileSystem.downloadFileAsync(url, to, options);
-  return new File(outputURI);
+  const needsUuid = options?.onProgress || options?.signal;
+  const downloadUuid = needsUuid ? uuid.v4() : undefined;
+
+  let subscription: EventSubscription | undefined;
+  let abortHandler: (() => void) | undefined;
+
+  try {
+    if (options?.signal?.aborted) {
+      throw createAbortError(options.signal.reason);
+    }
+
+    if (downloadUuid && options?.onProgress) {
+      subscription = ExpoFileSystem.addListener('downloadProgress', (event) => {
+        if (event.uuid === downloadUuid) {
+          options.onProgress!(event.data);
+        }
+      });
+    }
+
+    if (downloadUuid && options?.signal) {
+      abortHandler = () => {
+        ExpoFileSystem.cancelDownloadAsync(downloadUuid);
+      };
+      options.signal.addEventListener('abort', abortHandler, { once: true });
+    }
+
+    const outputURI = await ExpoFileSystem.downloadFileAsync(url, to, options, downloadUuid);
+    return new File(outputURI);
+  } catch (error: any) {
+    if (options?.signal?.aborted) {
+      throw createAbortError(options.signal.reason);
+    }
+    throw error;
+  } finally {
+    subscription?.remove();
+    if (abortHandler && options?.signal) {
+      options.signal.removeEventListener('abort', abortHandler);
+    }
+  }
 };
 
-File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
-  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType)).uri;
-  return new File(file);
-};
+/**
+ * Used to parse different APIs merged together.
+ * @hidden
+ */
+function parsePickFileOptions(
+  initialUriOrOptions?: string | PickFileOptions,
+  mimeType?: string
+): { options: PickFileOptions; usingOldAPI: boolean } {
+  if (typeof initialUriOrOptions === 'object') {
+    return { options: initialUriOrOptions, usingOldAPI: false };
+  }
+  return {
+    options: {
+      initialUri: initialUriOrOptions,
+      mimeTypes: mimeType,
+      multipleFiles: false,
+    },
+    usingOldAPI: mimeType !== undefined || typeof initialUriOrOptions === 'string',
+  };
+}
+
+/**
+ * Note that the original function had a signature (initialUri?: string, mimeType?: string) => Promise<File | File[]>
+ * The new signatures are:
+ *    (options?: PickSingleFileOptions) => Promise<PickSingleFileResult>
+ *    (options?: PickMultipleFilesOptions) => Promise<PickMultipleFilesResult>
+ * Also the new API doesn't throw on pick cancel, instead it sets the canceled flag in the result.
+ * @hidden
+ */
+File.pickFileAsync = async function (
+  initialUriOrOptions?: string | PickFileOptions,
+  mimeType?: string
+): Promise<File | File[] | PickSingleFileResult | PickMultipleFilesResult> {
+  const { options, usingOldAPI } = parsePickFileOptions(initialUriOrOptions, mimeType);
+  try {
+    if (options.multipleFiles) {
+      const files = await ExpoFileSystem.pickFileAsync(options);
+      return { result: files.map((file) => new File(file.uri)), canceled: false };
+    }
+    const file = await ExpoFileSystem.pickFileAsync(options);
+    if (usingOldAPI) {
+      return new File(file.uri);
+    }
+    return {
+      result: new File(file.uri),
+      canceled: false,
+    };
+  } catch (e) {
+    if (usingOldAPI) {
+      throw e;
+    }
+    return {
+      result: null,
+      canceled: true,
+    };
+  }
+} as typeof ExpoFileSystem.FileSystemFile.pickFileAsync;
 
 /**
  * Represents a directory on the filesystem.
@@ -155,6 +268,8 @@ File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
  * ```
  */
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
+  static pickDirectoryAsync: (initialUri?: string) => Promise<Directory>;
+
   /**
    * Creates an instance of a directory. It can be created for any path, and does not need to exist on the filesystem during creation.
    *

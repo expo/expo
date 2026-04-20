@@ -240,7 +240,7 @@ func createAsset(uri: URL, appContext: AppContext?, completion: @escaping (PHAss
     return
   }
 
-  guard FileSystemUtilities.permissions(appContext, for: uri).contains(.read) && FileManager.default.isReadableFile(atPath: uri.path) else {
+  guard FileSystemUtilities.isReadableFile(appContext, uri) else {
     completion(nil, UnreadableAssetException(uri.absoluteString))
     return
   }

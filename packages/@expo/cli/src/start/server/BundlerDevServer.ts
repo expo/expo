@@ -3,6 +3,7 @@ import resolveFrom from 'resolve-from';
 
 import { AsyncNgrok } from './AsyncNgrok';
 import { AsyncWsTunnel } from './AsyncWsTunnel';
+import { Bonjour } from './Bonjour';
 import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
@@ -12,12 +13,9 @@ import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
 import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { isInteractive } from '../../utils/interactive';
 import { openBrowserAsync } from '../../utils/open';
-import {
-  BaseOpenInCustomProps,
-  BaseResolveDeviceProps,
-  PlatformManager,
-} from '../platforms/PlatformManager';
+import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -87,6 +85,16 @@ const PLATFORM_MANAGERS = {
       .AndroidPlatformManager as typeof import('../platforms/android/AndroidPlatformManager').AndroidPlatformManager,
 };
 
+type PlatformManagers = {
+  [K in keyof typeof PLATFORM_MANAGERS]: InstanceType<ReturnType<(typeof PLATFORM_MANAGERS)[K]>>;
+};
+
+type PlatformDevice<Platform extends keyof PlatformManagers> =
+  PlatformManagers[Platform] extends PlatformManager<infer Device, any> ? Device : never;
+
+type PlatformLaunchProps<Platform extends keyof PlatformManagers> =
+  PlatformManagers[Platform] extends PlatformManager<any, infer LaunchProps> ? LaunchProps : never;
+
 export abstract class BundlerDevServer {
   /** Name of the bundler. */
   abstract get name(): string;
@@ -95,10 +103,13 @@ export abstract class BundlerDevServer {
   protected tunnel: AsyncNgrok | AsyncWsTunnel | null = null;
   /** Interfaces with the Expo 'Development Session' API. */
   protected devSession: DevelopmentSession | null = null;
+  /** Announces dev server via Bonjour */
+  protected bonjour: Bonjour | null = null;
   /** Http server and related info. */
   protected instance: DevServerInstance | null = null;
   /** Native platform interfaces for opening projects.  */
-  private platformManagers: Record<string, PlatformManager<any>> = {};
+  private platformManagers: { [K in keyof PlatformManagers]?: PlatformManagers[K] | undefined } =
+    {};
   /** Manages the creation of dev server URLs. */
   protected urlCreator?: UrlCreator | null = null;
 
@@ -186,8 +197,7 @@ export abstract class BundlerDevServer {
   private async startHeadlessAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     if (!options.port)
       throw new CommandError('HEADLESS_SERVER', 'headless dev server requires a port option');
-    this.urlCreator = this.getUrlCreator(options);
-
+    await this.initUrlCreator(options);
     return {
       // Create a mock server
       server: {
@@ -232,7 +242,7 @@ export abstract class BundlerDevServer {
     }
 
     if (!options.isExporting) {
-      await this.startDevSessionAsync();
+      await Promise.all([this.startDevSessionAsync(), this.startBonjourAsync()]);
       this.watchConfig();
     }
   }
@@ -273,6 +283,16 @@ export abstract class BundlerDevServer {
     });
   }
 
+  protected async startBonjourAsync() {
+    // This is used to make Expo Go open the project in either Expo Go, or the web browser.
+    // Must come after ngrok (`startTunnelAsync`) setup.
+    if (!this.bonjour) {
+      this.bonjour = new Bonjour(this.projectRoot, this.getInstance()?.location.port);
+    }
+
+    await this.bonjour.announceAsync({});
+  }
+
   public isTargetingNative() {
     // Temporary hack while we implement multi-bundler dev server proxy.
     return true;
@@ -303,11 +323,18 @@ export abstract class BundlerDevServer {
 
   /** Stop the running dev server instance. */
   async stopAsync() {
+    // Reset url creator
+    this.urlCreator = undefined;
+
     // Stop file watching.
     this.notifier?.stopObserving();
 
-    // Stop the dev session timer and tell Expo API to remove dev session.
-    await this.devSession?.closeAsync();
+    await Promise.all([
+      // Stop the bonjour advertiser
+      this.bonjour?.closeAsync(),
+      // Stop the dev session timer and tell Expo API to remove dev session.
+      this.devSession?.closeAsync(),
+    ]);
 
     // Stop tunnel if running.
     await this.tunnel?.stopAsync().catch((e) => {
@@ -350,14 +377,22 @@ export abstract class BundlerDevServer {
     );
   }
 
-  public getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
-    if (!this.urlCreator) {
-      assert(options?.port, 'Dev server instance not found');
-      this.urlCreator = new UrlCreator(options.location, {
-        port: options.port,
-        getTunnelUrl: this.getTunnelUrl.bind(this),
-      });
-    }
+  // TODO(@kitten): This should be created top-down rather than bottom up from implementors
+  protected async initUrlCreator(
+    options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}
+  ) {
+    assert(options?.port, 'Dev server instance not found');
+    assert(!this.urlCreator, 'Dev server is already initialized');
+    const urlCreator = await UrlCreator.init(options.location, {
+      port: options.port,
+      getTunnelUrl: this.getTunnelUrl.bind(this),
+    });
+    this.urlCreator = urlCreator;
+    return urlCreator;
+  }
+
+  public getUrlCreator() {
+    assert(this.urlCreator, 'Dev server is uninitialized');
     return this.urlCreator;
   }
 
@@ -417,14 +452,17 @@ export abstract class BundlerDevServer {
 
   /** Open the dev server in a runtime. */
   public async openPlatformAsync(
-    launchTarget: keyof typeof PLATFORM_MANAGERS | 'desktop',
+    launchTarget: keyof PlatformManagers | 'desktop',
     resolver: BaseResolveDeviceProps<any> = {}
   ) {
     if (launchTarget === 'desktop') {
       const serverUrl = this.getDevServerUrl({ hostType: 'localhost' });
       // Allow opening the tunnel URL when using Metro web.
       const url = this.name === 'metro' ? (this.getTunnelUrl() ?? serverUrl) : serverUrl;
-      await openBrowserAsync(url!);
+      // Only launch the browser automatically if the process is interactive, otherwise we'll assume it's an agent.
+      if (isInteractive()) {
+        await openBrowserAsync(url!);
+      }
       return { url };
     }
 
@@ -434,10 +472,10 @@ export abstract class BundlerDevServer {
   }
 
   /** Open the dev server in a runtime. */
-  public async openCustomRuntimeAsync<T extends BaseOpenInCustomProps = BaseOpenInCustomProps>(
-    launchTarget: keyof typeof PLATFORM_MANAGERS,
-    launchProps: Partial<T> = {},
-    resolver: BaseResolveDeviceProps<any> = {}
+  public async openCustomRuntimeAsync<Platform extends keyof PlatformManagers>(
+    launchTarget: Platform,
+    launchProps: Partial<PlatformLaunchProps<Platform>> = {},
+    resolver: BaseResolveDeviceProps<PlatformDevice<Platform>> = {}
   ) {
     const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
     if (runtime !== 'custom') {
@@ -447,7 +485,10 @@ export abstract class BundlerDevServer {
     }
 
     const manager = await this.getPlatformManagerAsync(launchTarget);
-    return manager.openAsync({ runtime: 'custom', props: launchProps }, resolver);
+    return manager.openAsync(
+      { runtime: 'custom', props: launchProps },
+      resolver as BaseResolveDeviceProps<any>
+    );
   }
 
   /** Get the URL for opening in Expo Go. */
@@ -467,7 +508,7 @@ export abstract class BundlerDevServer {
   }
 
   /** Get the redirect URL when redirecting is enabled. */
-  public getRedirectUrl(platform: keyof typeof PLATFORM_MANAGERS | null = null): string | null {
+  public getRedirectUrl(platform: keyof PlatformManagers | null = null): string | null {
     if (!this.isRedirectPageEnabled()) {
       debug('Redirect page is disabled');
       return null;
@@ -481,9 +522,11 @@ export abstract class BundlerDevServer {
     );
   }
 
-  protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
+  protected async getPlatformManagerAsync<Platform extends keyof PlatformManagers>(
+    ofPlatform: Platform
+  ): Promise<PlatformManagers[Platform]> {
+    const platform: keyof PlatformManagers = ofPlatform;
     if (!this.platformManagers[platform]) {
-      const Manager = PLATFORM_MANAGERS[platform]();
       const port = this.getInstance()?.location.port;
       if (!port || !this.urlCreator) {
         throw new CommandError(
@@ -492,13 +535,25 @@ export abstract class BundlerDevServer {
         );
       }
       debug(`Creating platform manager (platform: ${platform}, port: ${port})`);
-      this.platformManagers[platform] = new Manager(this.projectRoot, port, {
+      const managerParams = {
         getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
         getExpoGoUrl: this.getExpoGoUrl.bind(this),
         getRedirectUrl: this.getRedirectUrl.bind(this, platform),
         getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
-      });
+      };
+      switch (platform) {
+        case 'simulator': {
+          const Manager = PLATFORM_MANAGERS[platform]();
+          this.platformManagers[platform] = new Manager(this.projectRoot, port, managerParams);
+          break;
+        }
+        case 'emulator': {
+          const Manager = PLATFORM_MANAGERS[platform]();
+          this.platformManagers[platform] = new Manager(this.projectRoot, port, managerParams);
+          break;
+        }
+      }
     }
-    return this.platformManagers[platform];
+    return this.platformManagers[platform] as PlatformManagers[Platform];
   }
 }

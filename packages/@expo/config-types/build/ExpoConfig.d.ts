@@ -41,7 +41,7 @@ export interface ExpoConfig {
      */
     version?: string;
     /**
-     * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`.
+     * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`. If `react-dom` is installed, `web` is also included by default.
      */
     platforms?: ('android' | 'ios' | 'web')[];
     /**
@@ -69,7 +69,8 @@ export interface ExpoConfig {
      */
     icon?: string;
     /**
-     * Configuration for the status bar on Android. For more details please navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
+     * Configuration for the status bar on Android. For more details navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
+     * @deprecated Use the `expo-status-bar` plugin configuration instead
      */
     androidStatusBar?: {
         /**
@@ -88,34 +89,6 @@ export interface ExpoConfig {
          * When false, the system status bar pushes the content of your app down (similar to `position: relative`). When true, the status bar floats above the content in your app (similar to `position: absolute`). Defaults to `true` to match the iOS status bar behavior (which can only float above content). Explicitly setting this property to `true` will add `android:windowTranslucentStatus` to `styles.xml` and may cause unexpected keyboard behavior on Android when using the `softwareKeyboardLayoutMode` set to `resize`. In this case you will have to use `KeyboardAvoidingView` to manage the keyboard layout.
          */
         translucent?: boolean;
-    };
-    /**
-     * Configuration for the bottom navigation bar on Android. Can be used to configure the `expo-navigation-bar` module in EAS Build.
-     */
-    androidNavigationBar?: {
-        /**
-         * Determines how and when the navigation bar is shown. [Learn more](https://developer.android.com/training/system-ui/immersive). Requires `expo-navigation-bar` be installed in your project. Valid values: `leanback`, `immersive`, `sticky-immersive`
-         *
-         *  `leanback` results in the navigation bar being hidden until the first touch gesture is registered.
-         *
-         *  `immersive` results in the navigation bar being hidden until the user swipes up from the edge where the navigation bar is hidden.
-         *
-         *  `sticky-immersive` is identical to `'immersive'` except that the navigation bar will be semi-transparent and will be hidden again after a short period of time.
-         */
-        visible?: 'leanback' | 'immersive' | 'sticky-immersive';
-        /**
-         * Configure the navigation bar icons to have a light or dark color. Supported on Android Oreo and newer. Valid values: `'light-content'`, `'dark-content'`
-         */
-        barStyle?: 'light-content' | 'dark-content';
-        /**
-         * Specifies the background color of the navigation bar.
-         */
-        backgroundColor?: string;
-        /**
-         * Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content.
-         * Defaults to true.
-         */
-        enforceContrast?: boolean;
     };
     /**
      * Settings that apply specifically to running this app in a development client
@@ -196,12 +169,12 @@ export interface ExpoConfig {
          */
         useNativeDebug?: boolean;
         /**
-         * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to true. Set to false to force full asset downloads even when a server offers patch responses.
+         * Whether to enable support for downloading and applying bundle diffs using bsdiff. Defaults to false.
          */
         enableBsdiffPatchSupport?: boolean;
     };
     /**
-     * Provide overrides by locale for application name and System Dialog prompts like Permissions Boxes. [Learn more](https://docs.expo.dev/guides/localization/#translating-app-metadata).
+     * Provide per-locale values for System Dialog prompts such as Permissions Boxes, and create Localizable.strings file to localize (for example) push notifications. Platform-specific locale strings should be nested under `ios` and `android` keys.
      */
     locales?: {
         [k: string]: string | {
@@ -216,11 +189,6 @@ export interface ExpoConfig {
      * Config plugins for adding extra functionality to your project. [Learn more](https://docs.expo.dev/guides/config-plugins/).
      */
     plugins?: (string | [] | [string] | [string, any])[];
-    splash?: Splash;
-    /**
-     * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
-     */
-    jsEngine?: 'hermes' | 'jsc';
     /**
      * Enable downloading cached builds from remote.
      */
@@ -259,6 +227,10 @@ export interface ExpoConfig {
          */
         supportsTVOnly?: boolean;
         /**
+         * Enable React-based CSS support for native platforms. Only supports a subset of CSS properties, class names selectors, and has no cascading.
+         */
+        functionalCSS?: boolean;
+        /**
          * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
          */
         tsconfigPaths?: boolean;
@@ -272,7 +244,6 @@ export interface ExpoConfig {
         turboModules?: boolean;
         /**
          * Experimentally use a vendored canary build of React for testing upcoming features.
-         * @deprecated React 19 is enabled by default. Remove unused experiments.reactCanary flag.
          */
         reactCanary?: boolean;
         /**
@@ -287,6 +258,15 @@ export interface ExpoConfig {
          * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
          */
         reactServerFunctions?: boolean;
+        /**
+         * Configuration for inline modules. If defined it enables inline modules functionality in expo cli and expo-modules-autolinking.
+         */
+        inlineModules?: {
+            /**
+             * List of directories watched for inline modules.
+             */
+            watchedDirectories: string[];
+        };
     };
     /**
      * Internal properties for developer tools
@@ -300,24 +280,6 @@ export interface ExpoConfig {
         };
         [k: string]: any;
     };
-}
-/**
- * Configuration for loading and splash screen for standalone apps.
- */
-export interface Splash {
-    /**
-     * Color to fill the loading screen background
-     */
-    backgroundColor?: string;
-    /**
-     * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
-     */
-    resizeMode?: 'cover' | 'contain';
-    /**
-     * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-     */
-    image?: string;
-    [k: string]: any;
 }
 /**
  * Configuration that is specific to the iOS platform.
@@ -344,6 +306,10 @@ export interface IOS {
      */
     buildNumber?: string;
     /**
+     * Sets the iOS deployment target (minimum iOS version). The value should be in the format `MAJOR.MINOR` (e.g., `"18.6"`) or just a major version (e.g., `"26"`). This sets the minimum iOS version your app will support.
+     */
+    deploymentTarget?: string;
+    /**
      * The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present. Requires `expo-system-ui` be installed in your project to work on iOS.
      */
     backgroundColor?: string;
@@ -352,7 +318,7 @@ export interface IOS {
      */
     scheme?: string | string[];
     /**
-     * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
+     * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. You can also provide a path to a .icon directory. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
      *
      * Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo Go app.
      */
@@ -370,15 +336,6 @@ export interface IOS {
      */
     config?: {
         /**
-         * [Branch](https://branch.io/) key to hook up Branch linking services.
-         */
-        branch?: {
-            /**
-             * Your Branch API key
-             */
-            apiKey?: string;
-        };
-        /**
          * Sets `ITSAppUsesNonExemptEncryption` in the standalone ipa's Info.plist to the given boolean value.
          */
         usesNonExemptEncryption?: boolean;
@@ -386,14 +343,6 @@ export interface IOS {
          * [Google Maps iOS SDK](https://developers.google.com/maps/documentation/ios-sdk/start) key for your standalone app.
          */
         googleMapsApiKey?: string;
-        /**
-         * [Google Mobile Ads App ID](https://support.google.com/admob/answer/6232340) Google AdMob App ID.
-         */
-        googleMobileAdsAppId?: string;
-        /**
-         * A boolean indicating whether to initialize Google App Measurement and begin sending user-level event data to Google immediately when the app starts. The default in Expo (Go and in standalone apps) is `false`. [Sets the opposite of the given value to the following key in `Info.plist`.](https://developers.google.com/admob/ios/eu-consent#delay_app_measurement_optional)
-         */
-        googleMobileAdsAutoInit?: boolean;
     };
     /**
      * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `GoogleService-Info.plist` file for configuring Firebase.
@@ -482,54 +431,6 @@ export interface IOS {
      * A Boolean value that indicates whether the app may access the notes stored in contacts. You must [receive permission from Apple](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) before you can submit your app for review with this capability.
      */
     accessesContactNotes?: boolean;
-    /**
-     * Configuration for loading and splash screen for standalone iOS apps.
-     */
-    splash?: {
-        /**
-         * Color to fill the loading screen background
-         */
-        backgroundColor?: string;
-        /**
-         * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
-         */
-        resizeMode?: 'cover' | 'contain';
-        /**
-         * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-         */
-        image?: string;
-        /**
-         * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-         */
-        tabletImage?: string;
-        /**
-         * Configuration for loading and splash screen for standalone iOS apps in dark mode.
-         */
-        dark?: {
-            /**
-             * Color to fill the loading screen background
-             */
-            backgroundColor?: string;
-            /**
-             * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
-             */
-            resizeMode?: 'cover' | 'contain';
-            /**
-             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-             */
-            image?: string;
-            /**
-             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-             */
-            tabletImage?: string;
-            [k: string]: any;
-        };
-        [k: string]: any;
-    };
-    /**
-     * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for iOS apps. Not supported in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
-     */
-    jsEngine?: 'hermes' | 'jsc';
     /**
      * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
@@ -636,15 +537,6 @@ export interface Android {
      */
     config?: {
         /**
-         * [Branch](https://branch.io/) key to hook up Branch linking services.
-         */
-        branch?: {
-            /**
-             * Your Branch API key
-             */
-            apiKey?: string;
-        };
-        /**
          * [Google Maps Android SDK](https://developers.google.com/maps/documentation/android-api/signup) configuration for your standalone app.
          */
         googleMaps?: {
@@ -653,110 +545,6 @@ export interface Android {
              */
             apiKey?: string;
         };
-        /**
-         * [Google Mobile Ads App ID](https://support.google.com/admob/answer/6232340) Google AdMob App ID.
-         */
-        googleMobileAdsAppId?: string;
-        /**
-         * A boolean indicating whether to initialize Google App Measurement and begin sending user-level event data to Google immediately when the app starts. The default in Expo (Client and in standalone apps) is `false`. [Sets the opposite of the given value to the following key in `Info.plist`](https://developers.google.com/admob/ios/eu-consent#delay_app_measurement_optional)
-         */
-        googleMobileAdsAutoInit?: boolean;
-    };
-    /**
-     * Configuration for loading and splash screen for managed and standalone Android apps.
-     */
-    splash?: {
-        /**
-         * Color to fill the loading screen background
-         */
-        backgroundColor?: string;
-        /**
-         * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover`, `contain` or `native`, defaults to `contain`.
-         */
-        resizeMode?: 'cover' | 'contain' | 'native';
-        /**
-         * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-         */
-        image?: string;
-        /**
-         * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-         *
-         *  `Natural sized image (baseline)`
-         */
-        mdpi?: string;
-        /**
-         * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-         *
-         *  `Scale 1.5x`
-         */
-        hdpi?: string;
-        /**
-         * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-         *
-         *  `Scale 2x`
-         */
-        xhdpi?: string;
-        /**
-         * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-         *
-         *  `Scale 3x`
-         */
-        xxhdpi?: string;
-        /**
-         * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-         *
-         *  `Scale 4x`
-         */
-        xxxhdpi?: string;
-        /**
-         * Configuration for loading and splash screen for managed and standalone Android apps in dark mode.
-         */
-        dark?: {
-            /**
-             * Color to fill the loading screen background
-             */
-            backgroundColor?: string;
-            /**
-             * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover`, `contain` or `native`, defaults to `contain`.
-             */
-            resizeMode?: 'cover' | 'contain' | 'native';
-            /**
-             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
-             */
-            image?: string;
-            /**
-             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-             *
-             *  `Natural sized image (baseline)`
-             */
-            mdpi?: string;
-            /**
-             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-             *
-             *  `Scale 1.5x`
-             */
-            hdpi?: string;
-            /**
-             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-             *
-             *  `Scale 2x`
-             */
-            xhdpi?: string;
-            /**
-             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-             *
-             *  `Scale 3x`
-             */
-            xxhdpi?: string;
-            /**
-             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
-             *
-             *  `Scale 4x`
-             */
-            xxxhdpi?: string;
-            [k: string]: any;
-        };
-        [k: string]: any;
     };
     /**
      * Configuration for setting an array of custom intent filters in Android manifest. [Learn more](https://developer.android.com/guide/components/intents-filters)
@@ -779,10 +567,6 @@ export interface Android {
      */
     softwareKeyboardLayoutMode?: 'resize' | 'pan';
     /**
-     * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
-     */
-    jsEngine?: 'hermes' | 'jsc';
-    /**
      * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */
     runtimeVersion?: string | {
@@ -792,11 +576,6 @@ export interface Android {
      * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
      */
     version?: string;
-    /**
-     * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to true.
-     * @deprecated Android 16+ (API level 36) requires edge-to-edge to be enabled. This feature can't be disabled anymore. [learn more](https://developer.android.com/about/versions/16/behavior-changes-16#edge-to-edge)
-     */
-    edgeToEdgeEnabled?: true;
     /**
      * Enable your app to use the [predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) on Android 13 (API level 33) and later. Default to false.
      */
@@ -827,15 +606,6 @@ export interface AndroidIntentFiltersData {
      * Prefix for paths that should be matched by the filter, e.g. `/records/` will match `/records/123`
      */
     pathPrefix?: string;
-    /**
-     * Suffix for paths that should be matched by the filter, e.g. `.pdf` will match `/docs/file.pdf`
-     */
-    pathSuffix?: string;
-    /**
-     * Advanced pattern for paths, available in API 31+ (Android 12 and later),
-     * supports regular expressions. Example: `/records/[0-9]+`
-     */
-    pathAdvancedPattern?: string;
     /**
      * MIME type for URLs that should be matched by the filter
      */

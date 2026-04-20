@@ -1,6 +1,6 @@
 {
   "name": "expo-linear-gradient",
-  "version": "15.0.7",
+  "version": "55.0.8",
   "description": "Provides a React component that renders a gradient view.",
   "main": "build/LinearGradient.js",
   "types": "build/LinearGradient.d.ts",
@@ -11,7 +11,6 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -38,11 +37,12 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.2.0",
-    "expo-module-scripts": "^5.0.7"
+    "@testing-library/react-native": "^13.3.0",
+    "@types/react": "~19.2.0",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   }

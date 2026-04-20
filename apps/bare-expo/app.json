@@ -3,11 +3,6 @@
     "name": "BareExpo",
     "slug": "bare-expo",
     "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#000020"
-    },
     "scheme": "bareexpo",
     "facebookScheme": "fb629712900716487",
     "facebookAppId": "629712900716487",
@@ -34,7 +29,8 @@
       "requireFullScreen": false,
       "entitlements": {
         "com.apple.security.application-groups": ["group.dev.expo.Payments"]
-      }
+      },
+      "associatedDomains": ["applinks:bare-expo.expo.app", "webcredentials:bare-expo.expo.app"]
     },
     "web": {
       "bundler": "metro"
@@ -55,6 +51,14 @@
     "plugins": [
       "expo-video",
       "expo-background-fetch",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#000020"
+        }
+      ],
       [
         "expo-font",
         {
@@ -91,8 +95,21 @@
           }
         }
       ],
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": true
+        }
+      ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
-    ]
+    ],
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": [
+          "../native-component-list/src/screens/inlineModules/inlineModulesExamples"
+        ]
+      }
+    }
   }
 }

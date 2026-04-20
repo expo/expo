@@ -12,12 +12,9 @@ import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 
 public class ExpoNotificationsCategoriesSerializer implements NotificationsCategoriesSerializer {
-  @Nullable
+  @NonNull
   @Override
-  public Bundle toBundle(@Nullable NotificationCategory category) {
-    if (category == null) {
-      return null;
-    }
+  public Bundle toBundle(@NonNull NotificationCategory category) {
     Bundle serializedCategory = new Bundle();
     serializedCategory.putString("identifier", getIdentifier(category));
     serializedCategory.putParcelableArrayList("actions", toBundleList(category.getActions()));

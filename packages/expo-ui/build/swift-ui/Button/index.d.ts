@@ -30,6 +30,10 @@ export type ButtonProps = {
      * Only nested elements are supported, not plain strings.
      */
     children?: React.ReactElement | React.ReactElement[];
+    /**
+     * Target identifier for the button, used for identifying which button was pressed in widgets and live activities.
+     */
+    target?: string;
 } & CommonViewModifierProps;
 /**
  * Displays a native button component.

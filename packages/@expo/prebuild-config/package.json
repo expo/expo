@@ -1,14 +1,13 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "54.0.3",
+  "version": "55.0.7",
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },
@@ -32,24 +31,26 @@
     "build"
   ],
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@expo/plist": "workspace:*",
     "@types/debug": "^4.1.5",
-    "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^5.0.7"
+    "@types/semver": "^7.5.8",
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
   },
   "dependencies": {
-    "@expo/config": "~12.0.9",
-    "@expo/config-plugins": "~54.0.1",
-    "@expo/config-types": "^54.0.8",
-    "@expo/image-utils": "^0.8.7",
-    "@expo/json-file": "^10.0.7",
-    "@react-native/normalize-colors": "0.83.1",
+    "@expo/config": "workspace:~55.0.8",
+    "@expo/config-plugins": "workspace:~55.0.6",
+    "@expo/config-types": "workspace:^55.0.5",
+    "@expo/image-utils": "workspace:^0.8.12",
+    "@expo/json-file": "workspace:^10.0.12",
+    "@react-native/normalize-colors": "0.85.0",
     "debug": "^4.3.1",
     "resolve-from": "^5.0.0",
-    "semver": "^7.6.0",
-    "xml2js": "0.6.0"
+    "semver": "^7.6.0"
   },
   "publishConfig": {
     "access": "public"

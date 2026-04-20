@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.5.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.0 — 2026-01-21
+
+### 💡 Others
+
 - bump base64-js from 1.2.3 to 1.5.1 ([#41211](https://github.com/expo/expo/pull/41211) by [@hassankhan](https://github.com/hassankhan))
 
 ## 0.4.8 - 2025-12-05

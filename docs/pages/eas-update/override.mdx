@@ -14,11 +14,23 @@ This guide explains how you can change the update URL and request headers at run
 
 > **warning** The feature described in this section is available in Expo SDK 54 with the `expo-updates` version 0.29.0 and later.
 
-The primary use case for this feature is to **enable switching between update channels in a production build**. This is useful to enable non-technical stakeholders to test and validate updates of work-in-progress (such as from a pull request or different feature branches) without having to use a development build or create a separate preview build for each change.
+The primary use case for this feature is [channel surfing](#what-is-channel-surfing), which allows switching between update channels in a production build at runtime. This enables non-technical stakeholders to test and validate updates of work-in-progress (such as from a pull request or different feature branches) without having to use a development build or create a separate preview build for each change.
 
 For example, if you have a `default` channel for production updates and a `preview` channel for preview updates, you can override the `expo-channel-name` request header to point to the `preview` channel. This enables you to test preview updates in your current production builds.
 
 Another potential use case is to provide different updates to different users, for example, so that a group of internal users (such as employees) receive updates before end-users.
+
+### What is channel surfing?
+
+Channel surfing is the practice of switching the update channel an installed app pulls updates from at runtime. Instead of being permanently tied to the channel configured at build time, a running app can be redirected to another channel (such as a `preview` channel) and load updates from there.
+
+You can use channel surfing to:
+
+- Allow a single installed app to move between channels on demand. The app can switch channels at runtime instead of being permanently locked to the channel defined at build time.
+- Enable preview and testing workflows on real builds so that developers, QA, or other stakeholders can try in-progress updates using the same production build that users have installed.
+- Speed up iteration and validation updates can be tested, reviewed, or validated immediately by redirecting the app to another channel, without waiting for a new build.
+
+For more information about problem channel surfing solves and how to apply it, read the [blog post on channel surfing](https://expo.dev/blog/channel-surfing-for-expo-updates-how-to-switch-update-channels-at-runtime).
 
 ### How it works
 
@@ -38,6 +50,12 @@ Updates.setUpdateRequestHeadersOverride({ 'expo-channel-name': 'preview' });
 await Updates.fetchUpdateAsync();
 await Updates.reloadAsync();
 ```
+
+### Risks and considerations when switching channels
+
+Switching channels changes the JavaScript bundle the app runs. If your app depends on migrations or data shapes that are not compatible across channels, switching back and forth may cause issues.
+
+For example, if a beta update applies a database migration, the production version might not understand the new schema. Developers should ensure their updates remain safe to switch between or restrict switching to one direction when needed.
 
 ## Override both update URL and request headers
 

@@ -1,9 +1,8 @@
+import { resolveFrom, resolveGlobal } from '@expo/require-utils';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
-import resolveFrom from 'resolve-from';
-import resolveGlobal from 'resolve-global';
 import semver from 'semver';
 
 import { env } from './env';
@@ -118,16 +117,26 @@ async function findSharpBinAsync(): Promise<string> {
   if (_sharpBin) return _sharpBin;
 
   try {
-    const sharpCliPackagePath =
-      resolveGlobal.silent('sharp-cli/package.json') ??
-      require.resolve('sharp-cli/package.json', {
-        paths: require.resolve.paths('sharp-cli') ?? undefined,
-      });
+    let sharpCliPackagePath: string;
+    try {
+      sharpCliPackagePath = resolveGlobal('sharp-cli/package.json');
+    } catch {
+      sharpCliPackagePath = require.resolve('sharp-cli/package.json');
+    }
+
+    let sharpPath: string | null = null;
+    if (sharpCliPackagePath) {
+      sharpPath = resolveFrom(sharpCliPackagePath, 'sharp');
+      if (!sharpPath) {
+        throw Object.assign(
+          new Error(`"sharp" not found, while resolving from "${sharpCliPackagePath}"`),
+          { code: 'MODULE_NOT_FOUND' }
+        );
+      }
+    }
 
     const sharpCliPackage = require(sharpCliPackagePath);
-    const sharpInstance = sharpCliPackagePath
-      ? require(resolveFrom(sharpCliPackagePath, 'sharp'))
-      : null;
+    const sharpInstance = sharpPath ? require(sharpPath) : null;
 
     if (
       sharpCliPackagePath &&

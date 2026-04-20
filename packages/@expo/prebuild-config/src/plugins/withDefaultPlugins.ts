@@ -15,16 +15,12 @@ import Debug from 'debug';
 import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
-import { withSdk52ReactNative77CompatAndroid } from './sdk52/ReactNative77CompatPlugin';
-import { withSdk52ReactNative78CompatAndroid } from './sdk52/ReactNative78CompatPlugin';
 import withEdgeToEdge from './unversioned/edge-to-edge/withEdgeToEdge';
-import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
 import withDocumentPicker from './unversioned/expo-document-picker';
-import withNavigationBar from './unversioned/expo-navigation-bar/expo-navigation-bar';
+import withInlineModules from './unversioned/expo-inline-modules/withInlineModules';
 import withNotifications from './unversioned/expo-notifications/expo-notifications';
-import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
 import withMaps from './unversioned/react-native-maps';
@@ -54,7 +50,9 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Version.withBuildNumber,
     IOSConfig.Version.withVersion,
     IOSConfig.Google.withGoogleServicesFile,
-    IOSConfig.BuildProperties.withJsEnginePodfileProps,
+    // Deployment Target
+    IOSConfig.DeploymentTarget.withDeploymentTarget,
+    IOSConfig.DeploymentTarget.withDeploymentTargetPodfileProps,
     // Entitlements
     IOSConfig.Entitlements.withAssociatedDomains,
     // XcodeProject
@@ -80,9 +78,6 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
   if (!config.android) config.android = {};
   config.android.package = props.package;
   return withPlugins(config, [
-    // gradle.properties
-    AndroidConfig.BuildProperties.withJsEngineGradleProps,
-
     // settings.gradle
     AndroidConfig.Name.withNameSettingsGradle,
 
@@ -112,11 +107,9 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
 
     // Dangerous -- these plugins run in reverse order.
     AndroidConfig.GoogleServices.withGoogleServicesFile,
-    withSdk52ReactNative77CompatAndroid,
-    withSdk52ReactNative78CompatAndroid,
 
     // Modify colors.xml and styles.xml
-    AndroidConfig.StatusBar.withStatusBar,
+    AndroidConfig.SystemBars.withSystemBars,
     AndroidConfig.PrimaryColor.withPrimaryColor,
     withEdgeToEdge,
 
@@ -137,24 +130,20 @@ const versionedExpoSDKPackages: string[] = [
   'expo-updates',
   'expo-navigation-bar',
   'expo-document-picker',
-  'expo-splash-screen',
   'expo-system-ui',
+  'expo-inline-modules',
 ];
 
 export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
   return withPlugins(config, [
     withMaps,
-    withAdMob,
     withAppleAuthentication,
     withContacts,
     withNotifications,
     withUpdates,
     withDocumentPicker,
-    // System UI must come before splash screen as they overlap
-    // and splash screen will warn about conflicting rules.
     withSystemUI,
-    withSplashScreen,
-    withNavigationBar,
+    withInlineModules,
   ]);
 };
 

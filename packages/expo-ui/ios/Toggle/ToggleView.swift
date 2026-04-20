@@ -13,7 +13,7 @@ internal final class ToggleProps: UIBaseViewProps {
 internal struct ToggleView: ExpoSwiftUI.View {
   @ObservedObject var props: ToggleProps
   @State var checked: Bool = false
-  
+
   init(props: ToggleProps) {
     self.props = props
   }
@@ -29,16 +29,10 @@ internal struct ToggleView: ExpoSwiftUI.View {
         ])
       }
       .onChange(of: props.isOn) { newValue in
-        guard let newValue else {
-          checked = false
-          return
-        }
-        checked = newValue
+        checked = newValue ?? false
       }
       .onAppear {
-        if let isOn = props.isOn {
-          checked = isOn
-        }
+        checked = props.isOn ?? false
       }
   }
 

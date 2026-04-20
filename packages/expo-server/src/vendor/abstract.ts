@@ -56,6 +56,7 @@ export interface RequestHandlerInput {
   getRoutesManifest(): Promise<Manifest | null>;
   getApiRoute(route: Route): Promise<any>;
   getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
+  getLoaderData(request: Request, route: Route): Promise<Response>;
 }
 
 export function createRequestHandler({
@@ -63,6 +64,7 @@ export function createRequestHandler({
   getHtml,
   getApiRoute,
   getMiddleware,
+  getLoaderData,
   beforeErrorResponse = noopBeforeResponse,
   beforeResponse = noopBeforeResponse,
   beforeHTMLResponse = noopBeforeResponse,
@@ -71,9 +73,7 @@ export function createRequestHandler({
   let manifest: Manifest | null = null;
 
   return async function handler(request: Request): Promise<Response> {
-    if (!manifest) {
-      manifest = await getRoutesManifest();
-    }
+    manifest = await getRoutesManifest();
     return requestHandler(request, manifest);
   };
 
@@ -129,17 +129,35 @@ export function createRequestHandler({
         }
 
         // Replace URL and Request with rewrite target
-        url = getRedirectRewriteLocation(url, request, route);
+        url = new URL(getRedirectRewriteLocation(url, request, route), url);
         request = new Request(url, request);
       }
     }
 
-    // First, test static routes
+    // First, test static routes and loader data requests
     if (request.method === 'GET' || request.method === 'HEAD') {
+      const isLoaderRequest = url.pathname.startsWith('/_expo/loaders/');
+      const matchedPath = isLoaderRequest
+        ? url.pathname.replace('/_expo/loaders', '').replace(/\/index$/, '/')
+        : url.pathname;
+
       for (const route of manifest.htmlRoutes) {
-        if (!route.namedRegex.test(url.pathname)) {
+        if (!route.namedRegex.test(matchedPath)) {
           continue;
         }
+
+        // Handle loader data requests for client-side navigation
+        if (isLoaderRequest) {
+          if (!route.loader) {
+            continue; // Route matched but has no loader
+          }
+          // Create a request with the actual route path so `parseParams()` works correctly
+          // NOTE(@hassankhan): Relocate the request rewriting logic from here
+          url.pathname = matchedPath;
+          const loaderRequest = new Request(url, request);
+          return createResponseFrom('api', route, await getLoaderData(loaderRequest, route));
+        }
+
         const html = await getHtml(request, route);
         return respondHTML(html, route);
       }
@@ -334,6 +352,9 @@ export function createRequestHandler({
       status = route.permanent ? 308 : 307;
     }
 
-    return Response.redirect(target, status);
+    return new Response(null, {
+      status,
+      headers: { Location: target },
+    });
   }
 }

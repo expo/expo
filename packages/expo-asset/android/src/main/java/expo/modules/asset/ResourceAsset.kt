@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import androidx.core.net.toUri
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.core.errors.InvalidArgumentException
+import okhttp3.Request
 import java.io.InputStream
 
 internal const val ANDROID_EMBEDDED_URL_BASE_RESOURCE = "file:///android_res/"
@@ -58,4 +60,22 @@ private fun findResourceIdForAndroidResPath(context: Context, resourceFilePath: 
     resourceDirectory,
     context.packageName
   ).takeIf { it != 0 }
+}
+
+internal suspend fun openRemoteStream(url: String): InputStream? {
+  val response = Request
+    .Builder()
+    .url(url)
+    .build()
+    .await(
+      OkHttpClientProvider.getOkHttpClient()
+    )
+
+  val body = response.body
+  if (!response.isSuccessful || body == null) {
+    response.close()
+    return null
+  }
+
+  return body.byteStream()
 }

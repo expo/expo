@@ -1,17 +1,29 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
-import { ExpoModifier, ViewEvent } from '../../types';
+import { type ModifierConfig, ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
+
+type SlotNativeViewProps = {
+  slotName: string;
+  children: React.ReactNode;
+};
+
+const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
 
 /**
- * Colors for slider's core elements.
+ * Colors for slider elements. Maps directly to Material3's `SliderDefaults.colors()`.
  * @platform android
  */
-export type SliderElementColors = {
-  thumbColor?: string;
-  activeTrackColor?: string;
-  inactiveTrackColor?: string;
-  activeTickColor?: string;
-  inactiveTickColor?: string;
+export type SliderColors = {
+  thumbColor?: ColorValue;
+  activeTrackColor?: ColorValue;
+  inactiveTrackColor?: ColorValue;
+  activeTickColor?: ColorValue;
+  inactiveTickColor?: ColorValue;
 };
 
 export type SliderProps = {
@@ -36,61 +48,96 @@ export type SliderProps = {
    */
   max?: number;
   /**
-   * Colors for slider's core elements.
+   * Whether the slider is enabled for user interaction.
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Colors for slider elements. Maps to Material3's `SliderDefaults.colors()`.
    * @platform android
    */
-  elementColors?: SliderElementColors;
-  /**
-   * Slider color.
-   */
-  color?: string;
+  colors?: SliderColors;
   /**
    * Callback triggered on dragging along the slider.
    */
   onValueChange?: (value: number) => void;
-
+  /**
+   * Callback triggered when the user finishes changing the value (for example, lifts a finger).
+   * Maps to Material3's `onValueChangeFinished`.
+   */
+  onValueChangeFinished?: () => void;
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
+  /**
+   * Slot children for custom thumb and track.
+   */
+  children?: React.ReactNode;
 };
 
-type NativeSliderProps = Omit<SliderProps, 'onValueChange'> &
-  ViewEvent<'onValueChanged', { value: number }>;
+type NativeSliderProps = Omit<SliderProps, 'onValueChange' | 'onValueChangeFinished' | 'children'> &
+  ViewEvent<'onValueChange', { value: number }> &
+  ViewEvent<'onValueChangeFinished', void> & { children?: React.ReactNode };
 
 const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeView(
   'ExpoUI',
   'SliderView'
 );
 
-/**
- * @hidden
- */
-export function transformSliderProps(props: SliderProps): NativeSliderProps {
+function transformSliderProps(
+  props: Omit<SliderProps, 'children'>
+): Omit<NativeSliderProps, 'children'> {
+  const { modifiers, onValueChange, onValueChangeFinished, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     min: props.min ?? 0,
     max: props.max ?? 1,
     steps: props.steps ?? 0,
     value: props.value ?? 0,
-    onValueChanged: ({ nativeEvent: { value } }) => {
-      props?.onValueChange?.(value);
-    },
-    elementColors: props.elementColors
-      ? props.elementColors
-      : props.color
-        ? {
-            thumbColor: props.color,
-            activeTrackColor: props.color,
-            activeTickColor: props.color,
-          }
-        : undefined,
-    color: props.color,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
+    enabled: props.enabled ?? true,
+    onValueChange: onValueChange
+      ? ({ nativeEvent: { value } }) => {
+          onValueChange(value);
+        }
+      : undefined,
+    onValueChangeFinished: onValueChangeFinished ? () => onValueChangeFinished() : undefined,
   };
 }
 
-export function Slider(props: SliderProps) {
-  return <SliderNativeView {...transformSliderProps(props)} />;
+/**
+ * A custom thumb slot for `Slider`.
+ * Wrap any content to use as the slider's thumb indicator.
+ *
+ * @platform android
+ */
+function Thumb(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="thumb">{props.children}</SlotNativeView>;
 }
+
+/**
+ * A custom track slot for `Slider`.
+ * Wrap any content to use as the slider's track.
+ *
+ * @platform android
+ */
+function Track(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="track">{props.children}</SlotNativeView>;
+}
+
+/**
+ * A slider component that wraps Material3's `Slider`.
+ *
+ * @platform android
+ */
+function SliderComponent(props: SliderProps) {
+  const { children, ...restProps } = props;
+  return <SliderNativeView {...transformSliderProps(restProps)}>{children}</SliderNativeView>;
+}
+
+SliderComponent.Thumb = Thumb;
+SliderComponent.Track = Track;
+
+export { SliderComponent as Slider };

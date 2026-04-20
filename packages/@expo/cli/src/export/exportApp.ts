@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -15,11 +16,7 @@ import {
   transformDomEntryForMd5Filename,
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import {
-  exportApiRoutesStandaloneAsync,
-  exportFromServerAsync,
-  injectScriptTags,
-} from './exportStaticAsync';
+import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
@@ -38,12 +35,11 @@ import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { setNodeEnv } from '../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
   projectRoot: string,
@@ -54,6 +50,7 @@ export async function exportAppAsync(
     dev,
     dumpAssetmap,
     sourceMaps,
+    inlineSourceMaps,
     minify,
     bytecode,
     maxWorkers,
@@ -63,6 +60,7 @@ export async function exportAppAsync(
     Options,
     | 'dumpAssetmap'
     | 'sourceMaps'
+    | 'inlineSourceMaps'
     | 'dev'
     | 'clear'
     | 'outputDir'
@@ -78,8 +76,7 @@ export async function exportAppAsync(
   const environment = dev ? 'development' : 'production';
   process.env.NODE_ENV = environment;
   setNodeEnv(environment);
-
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {
@@ -190,13 +187,14 @@ export async function exportAppAsync(
                 splitChunks:
                   !env.EXPO_NO_BUNDLE_SPLITTING &&
                   ((devServer.isReactServerComponentsEnabled && !bytecode) || platform === 'web'),
-                mainModuleName: getEntryWithServerRoot(projectRoot, {
+                mainModuleName: resolveRelativeEntryPoint(projectRoot, {
                   platform,
                   pkg: projectConfig.pkg,
                 }),
                 mode: dev ? 'development' : 'production',
                 engine: isHermes ? 'hermes' : undefined,
-                serializerIncludeMaps: sourceMaps,
+                serializerIncludeMaps: sourceMaps || inlineSourceMaps,
+                inlineSourceMap: inlineSourceMaps,
                 bytecode: bytecode && isHermes,
                 reactCompiler: !!exp.experiments?.reactCompiler,
                 hosted: hostedNative,
@@ -222,14 +220,17 @@ export async function exportAppAsync(
             isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
           });
 
-          // TODO: Remove duplicates...
-          const expoDomComponentReferences = bundle.artifacts
-            .map((artifact) =>
-              Array.isArray(artifact.metadata.expoDomComponentReferences)
-                ? artifact.metadata.expoDomComponentReferences
-                : []
-            )
-            .flat();
+          const expoDomComponentReferences = [
+            ...new Set(
+              bundle.artifacts
+                .map((artifact) =>
+                  Array.isArray(artifact.metadata.expoDomComponentReferences)
+                    ? artifact.metadata.expoDomComponentReferences
+                    : []
+                )
+                .flat()
+            ),
+          ];
           await Promise.all(
             // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
             expoDomComponentReferences.map(async (filePath) => {
@@ -246,9 +247,10 @@ export async function exportAppAsync(
                   useMd5Filename: true,
                 });
 
-              // Merge the assets from the DOM component into the output assets.
+              // Merge the assets from the DOM component into the output assets, deduplicating by hash.
+              const existingHashes = new Set(bundle.assets.map((a) => a.hash));
               (bundle.assets as (typeof bundle.assets)[0][]).push(
-                ...platformDomComponentsBundle.assets
+                ...platformDomComponentsBundle.assets.filter((a) => !existingHashes.has(a.hash))
               );
 
               transformNativeBundleForMd5Filename({

@@ -135,7 +135,7 @@ struct SettingsTabView: View {
           }
           .frame(maxWidth: .infinity)
           .padding()
-          .background(Color(.secondarySystemBackground))
+          .background(Color.expoSecondarySystemBackground)
           .foregroundColor(.primary)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
         }
@@ -199,11 +199,6 @@ struct SettingsTabView: View {
     .navigationBarTitleDisplayMode(.inline)
     .task {
       await refreshTrackingStatus()
-    }
-    .onAppear {
-      Task {
-        await refreshTrackingStatus()
-      }
     }
   }
 

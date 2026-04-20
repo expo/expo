@@ -1,5 +1,4 @@
 import { Slot } from '@radix-ui/react-slot';
-import { TabNavigationState } from '@react-navigation/native';
 import { ReactNode, use, ReactElement, ComponentProps, useCallback } from 'react';
 import { View, StyleSheet, Pressable, PressableProps } from 'react-native';
 
@@ -9,6 +8,7 @@ import { appendBaseUrl } from '../fork/getPathFromState';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
 import { stripGroupSegmentsFromPath } from '../matchers';
+import { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigatorContext } from '../views/Navigator';
 
@@ -205,7 +205,9 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      switchTab(name, { resetOnFocus });
+      if (!trigger.isFocused) {
+        switchTab(name, { resetOnFocus });
+      }
     },
     [onPress, name, resetOnFocus, trigger]
   );
@@ -223,9 +225,11 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      switchTab(name, {
-        resetOnFocus,
-      });
+      if (!trigger.isFocused) {
+        switchTab(name, {
+          resetOnFocus,
+        });
+      }
     },
     [onLongPress, name, resetOnFocus, trigger]
   );

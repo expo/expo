@@ -1,5 +1,5 @@
 import { Route } from '../../manifest';
-import { getRedirectRewriteLocation } from '../matchers';
+import { getRedirectRewriteLocation, resolveLoaderContextKey } from '../matchers';
 
 describe('static routes', () => {
   it('should handle static route with no parameters', () => {
@@ -9,7 +9,7 @@ describe('static routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString().toString()).toBe('https://example.com/about');
+    expect(result.toString().toString()).toBe('/about');
   });
 
   it('should handle nested static route', () => {
@@ -19,7 +19,7 @@ describe('static routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/users/profile');
+    expect(result.toString()).toBe('/users/profile');
   });
 });
 
@@ -33,7 +33,7 @@ describe('dynamic routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/users/123');
+    expect(result.toString()).toBe('/users/123');
   });
 
   it('should handle multiple dynamic parameters', () => {
@@ -47,7 +47,7 @@ describe('dynamic routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/users/123/posts/456');
+    expect(result.toString()).toBe('/users/123/posts/456');
   });
 
   it('should handle catch all to dynamic parameter rewrite (take first segment)', () => {
@@ -59,7 +59,7 @@ describe('dynamic routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/dirs/folder'); // Only first segment
+    expect(result.toString()).toBe('/dirs/folder'); // Only first segment
   });
 
   it('should fallback to segment name when parameter is missing', () => {
@@ -71,7 +71,7 @@ describe('dynamic routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/users/[id]'); // Fallback to segment
+    expect(result.toString()).toBe('/users/[id]'); // Fallback to segment
   });
 
   it('should fallback to segment name when parameter is missing (multiple)', () => {
@@ -85,7 +85,7 @@ describe('dynamic routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/users/[id]/profile'); // Fallback to segment
+    expect(result.toString()).toBe('/users/[id]/profile'); // Fallback to segment
   });
 });
 
@@ -99,7 +99,7 @@ describe('catch-all routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/docs/api/users/create'); // Full path preserved
+    expect(result.toString()).toBe('/docs/api/users/create'); // Full path preserved
   });
 
   it('should handle catch-all with missing parameter', () => {
@@ -109,7 +109,7 @@ describe('catch-all routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/docs/[...slug]'); // Fallback to segment
+    expect(result.toString()).toBe('/docs/[...slug]'); // Fallback to segment
   });
 
   it('should handle nested catch-all', () => {
@@ -123,7 +123,7 @@ describe('catch-all routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/api/v1/users/123/posts');
+    expect(result.toString()).toBe('/api/v1/users/123/posts');
   });
 });
 
@@ -139,7 +139,7 @@ describe('mixed routes', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/users/123/files/docs/readme.md');
+    expect(result.toString()).toBe('/users/123/files/docs/readme.md');
   });
 });
 
@@ -153,7 +153,7 @@ describe('query parameters', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/users/123?tab=profile&sort=name');
+    expect(result.toString()).toBe('/users/123?tab=profile&sort=name');
   });
 
   it('should add leftover route parameters as query params', () => {
@@ -167,7 +167,7 @@ describe('query parameters', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/profile?userId=123');
+    expect(result.toString()).toBe('/profile?userId=123');
   });
 
   it('should combine leftover params with existing search params', () => {
@@ -179,7 +179,7 @@ describe('query parameters', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/dashboard?userId=123&tab=profile');
+    expect(result.toString()).toBe('/dashboard?userId=123&tab=profile');
   });
 
   it('should handle multiple leftover parameters', () => {
@@ -196,7 +196,7 @@ describe('query parameters', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/home?userId=123&postId=456');
+    expect(result.toString()).toBe('/home?userId=123&postId=456');
   });
 
   it('should handle no leftover params and no search params', () => {
@@ -208,7 +208,7 @@ describe('query parameters', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/users/123');
+    expect(result.toString()).toBe('/users/123');
   });
 });
 
@@ -220,7 +220,7 @@ describe('edge cases', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/');
+    expect(result.toString()).toBe('/');
   });
 
   it('should handle complex path with special characters', () => {
@@ -232,7 +232,72 @@ describe('edge cases', () => {
 
     const result = getRedirectRewriteLocation(url, request, route);
 
-    expect(result.toString()).toBe('https://example.com/files/my%20file.txt');
+    expect(result.toString()).toBe('/files/my%20file.txt');
+  });
+});
+
+// NOTE: These test cases are adapted from expo-router/src/__tests__/getId.test.ios.tsx
+describe(resolveLoaderContextKey, () => {
+  it(`returns the context string when the route is not dynamic and there are no search params`, () => {
+    expect(resolveLoaderContextKey('foo', {})).toBe('/foo');
+  });
+
+  it(`ignores search params`, () => {
+    expect(resolveLoaderContextKey('foo', { foo: 'bar' })).toBe('/foo');
+  });
+
+  it(`picks dynamic params`, () => {
+    expect(resolveLoaderContextKey('[foo]', { foo: 'bar' })).toBe('/bar');
+  });
+
+  it(`picks catch-all dynamic name`, () => {
+    expect(resolveLoaderContextKey('[...bacon]', {})).toBe('/[...bacon]');
+
+    // Matching param (ideal case)
+    expect(resolveLoaderContextKey('[...bacon]', { bacon: ['bacon', 'other'] })).toBe(
+      '/bacon/other'
+    );
+
+    // With search parameters
+    expect(resolveLoaderContextKey('[...bacon]', { bar: 'foo' })).toBe('/[...bacon]');
+
+    // Deep dynamic route
+    expect(resolveLoaderContextKey('[...bacon]', { bacon: ['foo', 'bar'] })).toBe('/foo/bar');
+    expect(resolveLoaderContextKey('[...bacon]', { bacon: ['foo'] })).toBe('/foo');
+
+    // Should never happen, but just in case.
+    expect(resolveLoaderContextKey('[...bacon]', { bacon: [] })).toBe('/');
+  });
+
+  it(`returns a function that picks the dynamic name from params`, () => {
+    expect(resolveLoaderContextKey('[user]', {})).toBe('/[user]');
+
+    // Matching param (ideal case)
+    expect(resolveLoaderContextKey('[user]', { user: 'bacon' })).toBe('/bacon');
+    // With search parameters
+    expect(resolveLoaderContextKey('[user]', { bar: 'foo' })).toBe('/[user]');
+    // No params
+    expect(resolveLoaderContextKey('[user]', {})).toBe('/[user]');
+
+    // Should never happen, but just in case.
+    expect(resolveLoaderContextKey('[user]', { user: '' })).toBe('/');
+  });
+
+  it(`picks multiple dynamic names from params`, () => {
+    expect(resolveLoaderContextKey('[user]/[bar]', {})).toBe('/[user]/[bar]');
+
+    expect(resolveLoaderContextKey('[user]/[bar]', { user: 'bacon', bar: 'hey' })).toBe(
+      '/bacon/hey'
+    );
+    // Fills partial params
+    expect(resolveLoaderContextKey('[user]/[bar]', { user: 'bacon' })).toBe('/bacon/[bar]');
+    // With search parameters
+    expect(resolveLoaderContextKey('[user]/[bar]', { baz: 'foo' })).toBe('/[user]/[bar]');
+    // No params
+    expect(resolveLoaderContextKey('[user]/[bar]', {})).toBe('/[user]/[bar]');
+
+    // Should never happen, but just in case.
+    expect(resolveLoaderContextKey('[user]/[bar]', { user: '' })).toBe('//[bar]');
   });
 });
 

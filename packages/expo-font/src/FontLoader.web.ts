@@ -26,10 +26,18 @@ function displayFromFontSource(asset: FontSource): FontDisplay {
   return FontDisplay.AUTO;
 }
 
+function testStringFromFontSource(asset: FontSource): string | undefined {
+  if (typeof asset === 'object' && 'testString' in asset) {
+    return asset.testString ?? undefined;
+  }
+
+  return undefined;
+}
+
 export function getAssetForSource(source: FontSource): Asset | FontResource {
   const uri = uriFromFontSource(source);
   const display = displayFromFontSource(source);
-
+  const testString = testStringFromFontSource(source);
   if (!uri || typeof uri !== 'string') {
     throwInvalidSourceError(uri);
   }
@@ -37,6 +45,7 @@ export function getAssetForSource(source: FontSource): Asset | FontResource {
   return {
     uri,
     display,
+    testString,
   };
 }
 

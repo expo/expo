@@ -34,18 +34,20 @@ object VideoManager {
 
   private var listeners = mutableListOf<WeakReference<VideoManagerListener>>()
 
-  fun onModuleCreated(appContext: AppContext) {
+  fun onModuleCreated(appContext: AppContext) = synchronized(this) {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    this.appContext = WeakReference(appContext)
 
     this.pictureInPicture = PictureInPictureManager(appContext)
-
     if (!this::audioFocusManager.isInitialized) {
       audioFocusManager = AudioFocusManager(appContext)
     }
     if (!this::cache.isInitialized) {
       cache = VideoCache(context)
+    } else if (this.appContext.get()?.reactContext != appContext.reactContext) {
+      cache.release()
+      cache = VideoCache(context)
     }
+    this.appContext = WeakReference(appContext)
   }
 
   fun onModuleDestroyed(appContext: AppContext) {
@@ -142,12 +144,6 @@ object VideoManager {
   fun onAppForegrounded() {
     listeners.forEach {
       it.get()?.onAppForegrounded()
-    }
-
-    // Pressing the app icon will bring up the mainActivity instead of the fullscreen activity (at least for BareExpo)
-    // In this case we have to manually finish the fullscreen activity
-    for (fullscreenActivity in fullscreenPlayerActivities.values) {
-      fullscreenActivity.get()?.finish()
     }
   }
 

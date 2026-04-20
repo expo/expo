@@ -1,0 +1,200 @@
+diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
+index 3f1c571b679..fc185e53bc3 100644
+--- a/templates/expo-template-bare-minimum/android/app/build.gradle
++++ b/templates/expo-template-bare-minimum/android/app/build.gradle
+@@ -11,7 +11,7 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+ react {
+     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
+     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+-    hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
++    hermesCommand = new File(["node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/hermesc/%OS-BIN%/hermesc"
+     codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+ 
+     enableBundleCompression = (findProperty('android.enableBundleCompression') ?: false).toBoolean()
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+index 150248b6b3c..14bdba124ab 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+@@ -1,12 +1,13 @@
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++  xmlns:tools="http://schemas.android.com/tools">
+ 
+   <uses-permission android:name="android.permission.INTERNET"/>
+   <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
+   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+   <uses-permission android:name="android.permission.VIBRATE"/>
+   <!-- These require runtime permissions on M -->
+-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
++  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
++  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
+   <!-- END OPTIONAL PERMISSIONS -->
+ 
+   <queries>
+@@ -19,7 +20,7 @@
+   </queries>
+ 
+   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true">
+-    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+index 5abad96fa00..cbb5ddb85d0 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
++++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
+@@ -6,37 +6,26 @@ import android.content.res.Configuration
+ import com.facebook.react.PackageList
+ import com.facebook.react.ReactApplication
+ import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
+-import com.facebook.react.ReactNativeHost
+ import com.facebook.react.ReactPackage
+ import com.facebook.react.ReactHost
+ import com.facebook.react.common.ReleaseLevel
+ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+-import com.facebook.react.defaults.DefaultReactNativeHost
+ 
+ import expo.modules.ApplicationLifecycleDispatcher
+-import expo.modules.ReactNativeHostWrapper
++import expo.modules.ExpoReactHostFactory
+ 
+ class MainApplication : Application(), ReactApplication {
+ 
+-  override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
+-      this,
+-      object : DefaultReactNativeHost(this) {
+-        override fun getPackages(): List<ReactPackage> =
+-            PackageList(this).packages.apply {
+-              // Packages that cannot be autolinked yet can be added manually here, for example:
+-              // add(MyReactNativePackage())
+-            }
+-
+-          override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
+-
+-          override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
+-
+-          override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+-      }
+-  )
+-
+-  override val reactHost: ReactHost
+-    get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
++  override val reactHost: ReactHost by lazy {
++    ExpoReactHostFactory.getDefaultReactHost(
++      context = applicationContext,
++      packageList =
++        PackageList(this).packages.apply {
++          // Packages that cannot be autolinked yet can be added manually here, for example:
++          // add(MyReactNativePackage())
++        }
++    )
++  }
+ 
+   override fun onCreate() {
+     super.onCreate()
+diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
+index 1b33c55baab..8bdaf60c75a 100644
+Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
+diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
+index d4081da476b..2a84e188b85 100644
+--- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
++++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.14.3-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-9.0.0-bin.zip
+ networkTimeout=10000
+ validateDistributionUrl=true
+ zipStoreBase=GRADLE_USER_HOME
+diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
+index 7f94d3d4777..bbb00327904 100755
+--- a/templates/expo-template-bare-minimum/android/gradlew
++++ b/templates/expo-template-bare-minimum/android/gradlew
+@@ -1,7 +1,7 @@
+ #!/bin/sh
+ 
+ #
+-# Copyright © 2015-2021 the original authors.
++# Copyright © 2015 the original authors.
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
+index a7887e1e5b1..9670a1ff07e 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
+@@ -1,9 +1,9 @@
+-import Expo
++internal import Expo
+ import React
+ import ReactAppDependencyProvider
+ 
+-@UIApplicationMain
+-public class AppDelegate: ExpoAppDelegate {
++@main
++class AppDelegate: ExpoAppDelegate {
+   var window: UIWindow?
+ 
+   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+@@ -19,7 +19,6 @@ public class AppDelegate: ExpoAppDelegate {
+ 
+     reactNativeDelegate = delegate
+     reactNativeFactory = factory
+-    bindReactNativeFactory(factory)
+ 
+ #if os(iOS) || os(tvOS)
+     window = UIWindow(frame: UIScreen.main.bounds)
+diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
+index 9743535e7ad..03484edf156 100644
+--- a/templates/expo-template-bare-minimum/ios/Podfile
++++ b/templates/expo-template-bare-minimum/ios/Podfile
+@@ -7,15 +7,15 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
+ def ccache_enabled?(podfile_properties)
+   # Environment variable takes precedence
+   return ENV['USE_CCACHE'] == '1' if ENV['USE_CCACHE']
+-  
++
+   # Fall back to Podfile properties
+   podfile_properties['apple.ccacheEnabled'] == 'true'
+ end
+ 
+-ENV['RCT_NEW_ARCH_ENABLED'] ||= '0' if podfile_properties['newArchEnabled'] == 'false'
+ ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+-ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
+-ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
++ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
++ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
++ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
+ platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+ 
+ prepare_react_native_project!
+diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
+index 0d90c6e603d..7d81baed15d 100644
+--- a/templates/expo-template-bare-minimum/package.json
++++ b/templates/expo-template-bare-minimum/package.json
+@@ -2,7 +2,7 @@
+   "name": "expo-template-bare-minimum",
+   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
+   "license": "0BSD",
+-  "version": "54.0.50",
++  "version": "55.0.26",
+   "main": "index.js",
+   "scripts": {
+     "start": "expo start --dev-client",
+@@ -11,9 +11,9 @@
+     "web": "expo start --web"
+   },
+   "dependencies": {
+-    "expo": "~54.0.33",
+-    "expo-status-bar": "~3.0.9",
+-    "react": "19.1.0",
+-    "react-native": "0.81.5"
++    "expo": "~55.0.14",
++    "expo-status-bar": "~55.0.5",
++    "react": "19.2.0",
++    "react-native": "0.83.4"
+   }
+ }

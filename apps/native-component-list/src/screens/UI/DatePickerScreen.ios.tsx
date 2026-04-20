@@ -7,16 +7,19 @@ import {
   LabeledContent,
   Picker,
   Section,
-  Switch,
+  Toggle,
   Text,
 } from '@expo/ui/swift-ui';
 import {
   animation,
   datePickerStyle,
+  disabled as disabledModifier,
+  environment,
   pickerStyle,
   tag,
   tint,
   Animation,
+  foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
@@ -44,6 +47,7 @@ export default function DatePickerScreen() {
   const today = new Date();
   const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
   const [animate, setAnimate] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -101,8 +105,34 @@ export default function DatePickerScreen() {
               </Text>
             ))}
           </Picker>
-          <Switch value={useRange} label="Limit to next 30 days" onValueChange={setUseRange} />
+          <Toggle isOn={useRange} label="Limit to next 30 days" onIsOnChange={setUseRange} />
           <ColorPicker label="Tint Color" selection={tintColor} onSelectionChange={setTintColor} />
+        </Section>
+        <Section title="Disabled">
+          <Toggle isOn={isDisabled} label="Disabled" onIsOnChange={setIsDisabled} />
+          <DatePicker
+            title="Select date"
+            selection={selectedDate}
+            onDateChange={(date) => setSelectedDate(date)}
+            modifiers={[disabledModifier(isDisabled)]}
+          />
+        </Section>
+        <Section title='locale="fr_FR"'>
+          <DatePicker
+            title="Sélectionner la date"
+            selection={selectedDate}
+            onDateChange={(date) => setSelectedDate(date)}
+            modifiers={[environment('locale', 'fr_FR')]}
+          />
+        </Section>
+        <Section title='timeZone="Asia/Tokyo"'>
+          <DatePicker
+            title="Tokyo time"
+            selection={selectedDate}
+            displayedComponents={['date', 'hourAndMinute']}
+            onDateChange={(date) => setSelectedDate(date)}
+            modifiers={[environment('timeZone', 'Asia/Tokyo')]}
+          />
         </Section>
         <Section title="Date Picker with custom label">
           <DatePicker
@@ -114,7 +144,9 @@ export default function DatePickerScreen() {
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
             onDateChange={(date) => setSelectedDate(date)}
             modifiers={[datePickerStyle(styleOptions[styleIndex])]}>
-            <Text color="#007AFF">Select date</Text>
+            <Text modifiers={[foregroundStyle({ type: 'color', color: '#007AFF' })]}>
+              Select date
+            </Text>
             <Text>{selectedDate.toDateString()}</Text>
           </DatePicker>
         </Section>

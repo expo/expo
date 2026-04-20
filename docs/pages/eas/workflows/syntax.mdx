@@ -13,7 +13,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 A workflow is a configurable automated process made up of one or more jobs. You must create a YAML file to define your workflow configuration.
 
-To get started with workflows, see [Get Started with EAS Workflows](/eas/workflows/get-started) or see [Examples](/eas/workflows/examples) for complete workflow configurations.
+To get started with workflows, see [Get Started with EAS Workflows](/eas/workflows/get-started) or see [Examples](/eas/workflows/examples/introduction) for complete workflow configurations.
 
 ## Workflow files
 
@@ -62,6 +62,8 @@ on:
       - version-*
 ```
 
+> **info** You can skip `push` and `pull_request` triggered workflow runs by including `[eas skip]`, `[skip eas]`, or `[no eas]` in the commit message.
+
 ### `on.push`
 
 Runs your workflow when you push a commit to matching branches and/or tags.
@@ -107,6 +109,7 @@ With the `branches` list, you can trigger the workflow only when those specified
 With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
 - `opened`
+- `ready_for_review`
 - `reopened`
 - `synchronize`
 - `labeled`
@@ -164,6 +167,110 @@ on:
     - Test
     - Preview
     # other labels
+```
+
+### `on.app_store_connect`
+
+Runs your workflow when one of the selected App Store Connect events occurs.
+
+> **info** To use this trigger, configure your App Store Connect connection in the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/settings). For setup steps, see the [App Store Connect trigger setup](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) section.
+
+When `on.app_store_connect` is present, you must specify at least one event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`). Within a configured event domain, you can specify which states should trigger your workflow.
+
+#### `on.app_store_connect.app_version.states`
+
+Filters app store app version state change events. Defaults to all supported app version states when not provided.
+
+Supported values:
+
+- `accepted`
+- `developer_rejected`
+- `in_review`
+- `invalid_binary`
+- `metadata_rejected`
+- `pending_apple_release`
+- `pending_developer_release`
+- `prepare_for_submission`
+- `processing_for_distribution`
+- `ready_for_distribution`
+- `ready_for_review`
+- `rejected`
+- `replaced_with_new_version`
+- `waiting_for_export_compliance`
+- `waiting_for_review`
+
+#### `on.app_store_connect.build_upload.states`
+
+Filters build upload events by state. Defaults to all supported build upload states when not provided.
+
+Supported values:
+
+- `complete`
+- `failed`
+- `processing`
+- `awaiting_upload`
+
+#### `on.app_store_connect.external_beta.states`
+
+Filters external beta events by state. Defaults to all supported external beta states when not provided.
+
+Supported values:
+
+- `processing`
+- `processing_exception`
+- `missing_export_compliance`
+- `ready_for_beta_testing`
+- `in_beta_testing`
+- `expired`
+- `ready_for_beta_submission`
+- `in_export_compliance_review`
+- `waiting_for_beta_review`
+- `in_beta_review`
+- `beta_rejected`
+- `beta_approved`
+
+#### `on.app_store_connect.beta_feedback.types`
+
+Filters beta feedback reported by testers by its type. Defaults to all supported beta feedback types when not provided.
+
+Supported values:
+
+- `crash`
+- `screenshot`
+
+All filter values must be lowercase and are case-sensitive.
+
+```yaml
+# Triggers when:
+# - the app version enters review,
+# - a build upload completes or fails,
+# - an external beta build is ready for testing or approved,
+# - a tester reports a crash via TestFlight.
+on:
+  app_store_connect:
+    app_version:
+      states:
+        - ready_for_review
+        - waiting_for_review
+    build_upload:
+      states:
+        - complete
+        - failed
+    external_beta:
+      states:
+        - ready_for_beta_testing
+        - beta_approved
+    beta_feedback:
+      types:
+        - crash
+```
+
+```yaml
+# Triggers on any app version or build upload state change.
+on:
+  app_store_connect:
+    app_version: {}
+    build_upload: {}
 ```
 
 ### `on.schedule.cron`
@@ -362,17 +469,17 @@ Default working directory to run the scripts in. Relative paths like "./assets" 
 
 Specific versions of tools that should be used for jobs defined in this workflow configuration. Follow each tool's documentation for available values.
 
-| Tool        | Description                                                                                                                              |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `node`      | Version of Node.js installed via `nvm`.                                                                                                  |
-| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                  |
-| `corepack`  | If set to `true`, [corepack](https://nodejs.org/api/corepack.html) will be enabled at the beginning of build process. Defaults to false. |
-| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                  |
-| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                               |
-| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                   |
-| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                              |
-| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                             |
-| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                            |
+| Tool        | Description                                                                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node`      | Version of Node.js installed via `nvm`.                                                                                                       |
+| `yarn`      | Version of Yarn installed via `npm -g`.                                                                                                       |
+| `corepack`  | If set to `true`, [corepack](https://github.com/nodejs/corepack#readme) will be enabled at the beginning of build process. Defaults to false. |
+| `pnpm`      | Version of pnpm installed via `npm -g`.                                                                                                       |
+| `bun`       | Version of Bun installed by passing `bun-v$VERSION` to Bun install script.                                                                    |
+| `ndk`       | Version of Android NDK installed through `sdkmanager`.                                                                                        |
+| `bundler`   | Version of Bundler that will be passed to `gem install -v`.                                                                                   |
+| `fastlane`  | Version of fastlane that will be passed to `gem install -v`.                                                                                  |
+| `cocoapods` | Version of CocoaPods that will be passed to `gem install -v`.                                                                                 |
 
 Example of workflow using `defaults.tools`:
 
@@ -620,6 +727,12 @@ type GitHubContext = {
     };
     pull_request?: {
       number: number;
+      title: string;
+      body: string | null;
+      state: 'open' | 'closed';
+      draft: boolean;
+      merged: boolean | null;
+      // ... Other fields from the GitHub Pull Request webhook payload
     };
     number?: number;
     schedule?: string;
@@ -627,6 +740,8 @@ type GitHubContext = {
   };
 };
 ```
+
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes all fields from GitHub's Pull Request webhook payload. The commonly used fields are shown above, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
@@ -648,7 +763,7 @@ jobs:
   title="${{ github }} context"
   description="View the ${{ github }} definition source code."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/eas-build-job/src/common.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/eas-build-job/src/common.ts"
 />
 
 #### `workflow`
@@ -675,6 +790,44 @@ jobs:
       message: |
         Workflow run completed: ${{ workflow.name }}
         View details: ${{ workflow.url }}
+```
+
+#### `app_store_connect`
+
+Information about App Store Connect entities associated with the workflow run. This context is available only for workflows triggered by an App Store Connect event. See [`on.app_store_connect`](#onapp_store_connect).
+
+```ts
+type AppStoreConnectContext = {
+  app: {
+    id: string;
+  };
+  build_upload?: {
+    id: string;
+    state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
+  };
+};
+```
+
+The `app_store_connect.build_upload` object is present only when the workflow is triggered by a `build_upload` event domain.
+
+Example:
+
+```yaml
+on:
+  app_store_connect:
+    build_upload:
+      states:
+        - complete
+
+jobs:
+  notify:
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: |
+        Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
+        Upload ID: ${{ app_store_connect.build_upload.id }}
+        Upload state: ${{ app_store_connect.build_upload.state }}
 ```
 
 #### `env`
@@ -1093,14 +1246,14 @@ jobs:
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
       android_system_image_package: string # optional. Android emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
-      output_format?: string # optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
 ```
 
 #### `maestro-cloud`
 
-Runs [Maestro](https://maestro.dev/) tests on a build in [Maestro Cloud](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud). See [Maestro Cloud job documentation](/eas/workflows/pre-packaged-jobs#maestro-cloud) for detailed information and examples.
+Runs [Maestro](https://maestro.dev/) tests on a build in [Maestro Cloud](https://docs.maestro.dev/maestro-cloud/run-tests-on-maestro-cloud). See [Maestro Cloud job documentation](/eas/workflows/pre-packaged-jobs#maestro-cloud) for detailed information and examples.
 
-> **important** Running tests in Maestro Cloud requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud) to learn more.
+> **important** Running tests in Maestro Cloud requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/maestro-cloud/run-tests-on-maestro-cloud) to learn more.
 
 ```yaml
 jobs:
@@ -1146,7 +1299,7 @@ jobs:
 
 #### `github-comment`
 
-Automatically posts comprehensive reports of your workflow's completed builds and updates to GitHub pull requests or content provided by you. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
+Automatically posts comprehensive reports of your workflow's completed builds, updates, and deployments to GitHub pull requests or content provided by you. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1158,8 +1311,9 @@ jobs:
       message: string # optional - custom message to include in the report
       build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
       update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workflow
+      deployment_ids: string[] # optional - specific deployment IDs to include, defaults to all related to the workflow
 
-  # instead of using message and the builds and updates table, you can also override the comment contents with `payload`
+  # instead of using message and the builds, updates, and deployments table, you can also override the comment contents with `payload`
   custom_github_comment:
     type: github-comment
     params:
@@ -1430,7 +1584,7 @@ jobs:
   title="eas/checkout source code"
   description="View the source code for the eas/checkout function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
 />
 
 #### `eas/install_node_modules`
@@ -1451,7 +1605,7 @@ jobs:
   title="eas/install_node_modules source code"
   description="View the source code for the eas/install_node_modules function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
 />
 
 #### `eas/download_build`
@@ -1503,7 +1657,7 @@ jobs:
   title="eas/download_build source code"
   description="View the source code for the eas/download_build function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
 />
 
 #### `eas/prebuild`
@@ -1546,12 +1700,97 @@ jobs:
   title="eas/prebuild source code"
   description="View the source code for the eas/prebuild function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+/>
+
+#### `eas/restore_cache`
+
+Restores a previously saved cache from a specified key. This is useful for speeding up builds by reusing cached artifacts like compiled dependencies, build tools, or other intermediate build outputs.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      # @info #
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          restore_keys: cache
+          path: /path/to/cache
+      # @end #
+```
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      # @info #
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      # @end #
+```
+
+| Property       | Type     | Required | Description                                                                                                                                              |
+| -------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`          | `string` | Yes      | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
+| `restore_keys` | `string` | No       | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
+| `path`         | `string` | Yes      | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
+
+<BoxLink
+  title="eas/restore_cache source code"
+  description="View the source code for the eas/restore_cache function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/restoreCache.ts"
+/>
+
+#### `eas/save_cache`
+
+Saves a cache to a specified key. This allows you to persist build artifacts, compiled dependencies, or other intermediate outputs that can be reused in subsequent builds to speed up the build process.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      - name: Build Android app
+        run: cd android && ./gradlew assembleRelease
+      # @info #
+      - uses: eas/save_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      # @end #
+```
+
+| Property | Type     | Required | Description                                                                                                                                                                                                       |
+| -------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`    | `string` | Yes      | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
+| `path`   | `string` | Yes      | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
+
+<BoxLink
+  title="eas/save_cache source code"
+  description="View the source code for the eas/save_cache function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/saveCache.ts"
 />
 
 #### `eas/send_slack_message`
 
-Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
+Sends a specified message to a configured [Slack webhook URL](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://docs.slack.dev/block-kit) message.
 
 With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: https://expo.dev/builds/${{ needs.build_ios.outputs.build_id }}`, `Build finished with status: ${{ after.build_android.status }}`.
 
@@ -1572,14 +1811,14 @@ jobs:
 | Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                                                            |
-| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                           |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://docs.slack.dev/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                          |
 | `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use [EAS Environment Variables](/eas/environment-variables/#managing-environment-variables) like `slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` Environment Variable, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink
   title="eas/send_slack_message source code"
   description="View the source code for the eas/send_slack_message function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
 />
 
 #### `eas/use_npm_token`
@@ -1605,7 +1844,7 @@ jobs:
   title="eas/use_npm_token source code"
   description="View the source code for the eas/use_npm_token function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
 />
 
 #### `eas/download_artifact`
@@ -1644,7 +1883,6 @@ jobs:
     params:
       build_id: '123-abc'
       flow_path: 'path/to/flow.yaml'
-      output_format: 'junit'
   my_job:
     needs: [maestro_tests]
     steps:
@@ -1660,7 +1898,7 @@ jobs:
   title="eas/download_artifact source code"
   description="View the source code for the eas/download_artifact function on GitHub."
   Icon={GithubIcon}
-  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
 />
 
 ## Built-in shell functions
@@ -1705,4 +1943,68 @@ jobs:
     needs: [job_1]
     steps:
       - run: echo ${{ needs.job_1.outputs.variable_1 }} # prints: Variable 1
+```
+
+### `set-env`
+
+Sets an environment variable that is available to subsequent steps within the same job. Environment variables exported using `export` in one step's command are not automatically exposed to other steps. To share an environment variable with other steps, use the `set-env` executable.
+
+```bash
+set-env <name> <value>
+```
+
+`set-env` expects to be called with two arguments: the environment variable's name and value. For example, `set-env NPM_TOKEN "abcdef"` will expose the `$NPM_TOKEN` variable with the value `abcdef` to subsequent steps.
+
+> **Note:** Variables shared with `set-env` are not automatically exported locally. You need to call `export` yourself if you want to use the variable in the current step.
+
+Example usage for sharing an environment variable with another step:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - name: Set environment variables
+        run: |
+          # Using export only makes it available in the current step
+          export LOCAL_VAR="only in this step"
+
+          # Using set-env makes it available in subsequent steps
+          # @info #
+          set-env SHARED_VAR "available in next steps"
+          # @end #
+
+          # SHARED_VAR is not yet available in current step's environment
+          echo "LOCAL_VAR: $LOCAL_VAR"     # prints: only in this step
+          echo "SHARED_VAR: $SHARED_VAR"   # prints: (empty)
+      - name: Use shared variable
+        run: |
+          # SHARED_VAR is now available
+          # @info #
+          echo "SHARED_VAR: $SHARED_VAR"   # prints: available in next steps
+          # @end #
+```
+
+#### Sharing environment variables between jobs
+
+The `set-env` function only shares environment variables with other steps **within the same job**. To share values between different jobs, use the job's [`outputs`](#jobsjob_idoutputs) with `set-output` and pass them via the [`env`](#jobsjob_idenv) property on the receiving job:
+
+```yaml
+jobs:
+  job_1:
+    # @info Define outputs to expose values to other jobs #
+    outputs:
+      my_value: ${{ steps.step_1.outputs.my_value }}
+    # @end #
+    steps:
+      - id: step_1
+        run: set-output my_value "value from job_1"
+
+  job_2:
+    needs: [job_1]
+    # @info Use env to set environment variables from upstream job outputs #
+    env:
+      MY_VALUE: ${{ needs.job_1.outputs.my_value }}
+    # @end #
+    steps:
+      - run: echo "MY_VALUE: $MY_VALUE"  # prints: value from job_1
 ```

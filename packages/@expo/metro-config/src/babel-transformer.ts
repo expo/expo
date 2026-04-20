@@ -9,10 +9,14 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import assert from 'node:assert';
+import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
+import { getPkgVersionFromPath } from './utils/getPkgVersion';
+import { transitiveResolveFrom } from './utils/transitiveResolveFrom';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
   babelRuntimeVersion?: string;
@@ -31,6 +35,9 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   platform?: string | null;
   routerRoot?: string;
   projectRoot: string;
+  /** When true, indicates this bundle should contain only the loader export */
+  isLoaderBundle?: boolean;
+  isHermesV1?: boolean;
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
@@ -55,6 +62,20 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 const memoizeWarning = memoize((message: string) => {
   debug(message);
 });
+
+function getIsHermesV1(projectRoot: string): boolean {
+  const hermesCompilerPackageJsonPath = transitiveResolveFrom(projectRoot, [
+    'react-native/package.json',
+    'hermes-compiler/package.json',
+  ]);
+  if (!hermesCompilerPackageJsonPath) {
+    return true;
+  }
+  const hermesVersion = getPkgVersionFromPath(hermesCompilerPackageJsonPath);
+  // hermes-compiler versions 250829098.x are Hermes V1, while 0.1.x are legacy Hermes.
+  const isLegacyHermes = typeof hermesVersion === 'string' && hermesVersion.startsWith('0.1');
+  return !isLegacyHermes;
+}
 
 function getBabelCaller({
   filename,
@@ -108,6 +129,8 @@ function getBabelCaller({
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
     engine: stringOrUndefined(options.customTransformOptions?.engine),
+    // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
+    isHermesV1: getIsHermesV1(options.projectRoot),
 
     // Provide the project root for accurately reading the Expo config.
     projectRoot: options.projectRoot,
@@ -135,6 +158,12 @@ function getBabelCaller({
       ? true
       : undefined,
 
+    // When true, indicates this bundle should contain only the loader export.
+    // Used by server-data-loaders-plugin to strip everything except the loader function.
+    isLoaderBundle: isCustomTruthy(options.customTransformOptions?.isLoaderBundle)
+      ? true
+      : undefined,
+
     // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
     // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
     // This option should be set to the project's version of `@babel/runtime`, if it's installed directly
@@ -156,6 +185,8 @@ const transform: BabelTransformer['transform'] = ({
 }: BabelTransformerArgs): ReturnType<BabelTransformer['transform']> => {
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
+
+  const { enableBabelRCLookup = true } = options;
 
   try {
     const babelConfig: TransformOptions = {
@@ -179,8 +210,8 @@ const transform: BabelTransformer['transform'] = ({
       // Load the project babel config file.
       ...loadBabelConfig(options),
 
-      babelrc:
-        typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+      babelrc: enableBabelRCLookup,
+      ...(enableBabelRCLookup === false && { configFile: false }),
 
       plugins,
 
@@ -207,7 +238,14 @@ const transform: BabelTransformer['transform'] = ({
     assert(result.ast);
     return { ast: result.ast, metadata: result.metadata };
   } finally {
-    if (OLD_BABEL_ENV) {
+    // Restore the old process.env.BABEL_ENV
+    if (OLD_BABEL_ENV != null) {
+      // We have to treat this as a special case because writing undefined to
+      // an environment variable coerces it to the string 'undefined'. To
+      // unset it, we must delete it.
+      // See https://github.com/facebook/metro/pull/446
+      delete process.env.BABEL_ENV;
+    } else {
       process.env.BABEL_ENV = OLD_BABEL_ENV;
     }
   }

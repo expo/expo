@@ -55,7 +55,7 @@ dependencies {
     implementation("com.facebook.react:hermes-android")
 }
 
-val projectRoot = File(rootDir.absoluteFile, "../../minimal-tester").absolutePath
+val projectRoot = File(rootDir.absoluteFile, "../expo-app").absolutePath
 
 react {
     root = File(projectRoot)

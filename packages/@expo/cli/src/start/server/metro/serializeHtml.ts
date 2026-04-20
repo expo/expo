@@ -1,4 +1,9 @@
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import {
+  createInjectedCssElements,
+  createInjectedScriptElements,
+  getHydrationFlagScript,
+} from '@expo/router-server/build/utils/html';
 import type { RouteNode } from 'expo-router/build/Route';
 
 const debug = require('debug')('expo:metro:html') as typeof console.log;
@@ -75,10 +80,7 @@ function htmlFromSerialAssets(
     .map(({ type, metadata, filename, source }) => {
       if (type === 'css') {
         if (isExporting) {
-          return [
-            `<link rel="preload" href="${combineUrlPath(baseUrl, filename)}" as="style">`,
-            `<link rel="stylesheet" href="${combineUrlPath(baseUrl, filename)}">`,
-          ].join('');
+          return createInjectedCssElements([combineUrlPath(baseUrl, filename)]);
         } else {
           return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
         }
@@ -88,7 +90,16 @@ function htmlFromSerialAssets(
     })
     .join('');
 
-  const orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
+  let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
+
+  if (route?.entryPoints && Array.isArray(route.entryPoints)) {
+    const syncAssets = orderedJsAssets.filter((a) => !a.metadata.isAsync);
+    const sortedAsync = sortMatchedAssetsByEntryPoints(
+      orderedJsAssets.filter((a) => a.metadata.isAsync),
+      route.entryPoints
+    );
+    orderedJsAssets = [...syncAssets, ...sortedAsync];
+  }
 
   const scripts = bundleUrl
     ? `<script src="${bundleUrl}" defer></script>`
@@ -119,18 +130,34 @@ function htmlFromSerialAssets(
             // return `<script src="${combineUrlPath(baseUrl, filename)" defer></script>`;
           }
 
-          return `<script src="${combineUrlPath(baseUrl, filename)}" defer></script>`;
+          return createInjectedScriptElements([combineUrlPath(baseUrl, filename)]);
         })
         .join('');
 
   if (hydrate) {
-    const hydrateScript = `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
-    template = template.replace('</head>', `${hydrateScript}</head>`);
+    template = template.replace('</head>', `${getHydrationFlagScript()}</head>`);
   }
 
   return template
     .replace('</head>', `${styleString}</head>`)
     .replace('</body>', `${scripts}\n</body>`);
+}
+
+/**
+ * Sorts matched async assets by their matching `entryPoint` in the route's `entryPoints` array.
+ * This ensures layout chunks come before page chunks.
+ */
+export function sortMatchedAssetsByEntryPoints(
+  matchedAssets: SerialAsset[],
+  entryPoints: string[]
+): SerialAsset[] {
+  const getEntryPointIndex = (modulePaths?: string[]) =>
+    modulePaths ? entryPoints.findIndex((ep) => modulePaths.includes(ep)) : -1;
+
+  return matchedAssets.sort(
+    (a, b) =>
+      getEntryPointIndex(a.metadata.modulePaths) - getEntryPointIndex(b.metadata.modulePaths)
+  );
 }
 
 /**

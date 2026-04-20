@@ -18,10 +18,10 @@ export const HeaderCell = ({
 }: HeaderCellProps) => (
   <th
     className={mergeClasses(
-      'border-r border-secondary px-4 py-3.5 text-2xs font-medium text-secondary',
+      'border-secondary text-secondary border-r px-4 py-3.5 text-xs font-medium',
       convertAlignToClass(align),
-      size === 'sm' && 'py-2 text-3xs',
-      '[&_code]:text-3xs [&_code]:text-secondary',
+      size === 'sm' && 'py-2 text-xs',
+      '[&_code]:text-secondary [&_code]:text-xs',
       'last:border-r-0',
       className
     )}>

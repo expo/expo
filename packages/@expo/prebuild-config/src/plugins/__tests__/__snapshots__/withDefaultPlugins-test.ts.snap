@@ -3,236 +3,7 @@
 exports[`built-in plugins compiles mods 1`] = `
 {
   "_internal": {
-    "modResults": {
-      "ios": {
-        "splashScreenStoryboard": {
-          "document": {
-            "$": {
-              "colorMatched": "YES",
-              "initialViewController": "EXPO-VIEWCONTROLLER-1",
-              "launchScreen": "YES",
-              "propertyAccessControl": "none",
-              "targetRuntime": "iOS.CocoaTouch",
-              "toolsVersion": "24093.7",
-              "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
-              "useAutolayout": "YES",
-              "useSafeAreas": "YES",
-              "useTraitCollections": "YES",
-              "version": "3.0",
-            },
-            "dependencies": [
-              {
-                "capability": [
-                  {
-                    "$": {
-                      "minToolsVersion": "9.0",
-                      "name": "Named colors",
-                    },
-                  },
-                  {
-                    "$": {
-                      "minToolsVersion": "9.0",
-                      "name": "Safe area layout guides",
-                    },
-                  },
-                  {
-                    "$": {
-                      "minToolsVersion": "11.0",
-                      "name": "System colors in document resources",
-                    },
-                  },
-                  {
-                    "$": {
-                      "minToolsVersion": "8.0",
-                      "name": "documents saved in the Xcode 8 format",
-                    },
-                  },
-                ],
-                "deployment": [
-                  {
-                    "$": {
-                      "identifier": "iOS",
-                    },
-                  },
-                ],
-                "plugIn": [
-                  {
-                    "$": {
-                      "identifier": "com.apple.InterfaceBuilder.IBCocoaTouchPlugin",
-                      "version": "24053.1",
-                    },
-                  },
-                ],
-              },
-            ],
-            "device": [
-              {
-                "$": {
-                  "appearance": "light",
-                  "id": "retina6_12",
-                  "orientation": "portrait",
-                },
-              },
-            ],
-            "resources": [
-              {
-                "image": [
-                  {
-                    "$": {
-                      "height": "90.333335876464844",
-                      "name": "SplashScreenLogo",
-                      "width": "100",
-                    },
-                  },
-                ],
-                "systemColor": [
-                  {
-                    "$": {
-                      "name": "systemBackgroundColor",
-                    },
-                    "color": [
-                      {
-                        "$": {
-                          "alpha": "1",
-                          "colorSpace": "custom",
-                          "customColorSpace": "genericGamma22GrayColorSpace",
-                          "white": "1",
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            "scenes": [
-              {
-                "scene": [
-                  {
-                    "$": {
-                      "sceneID": "EXPO-SCENE-1",
-                    },
-                    "objects": [
-                      {
-                        "placeholder": [
-                          {
-                            "$": {
-                              "id": "EXPO-PLACEHOLDER-1",
-                              "placeholderIdentifier": "IBFirstResponder",
-                              "sceneMemberID": "firstResponder",
-                              "userLabel": "First Responder",
-                            },
-                          },
-                        ],
-                        "viewController": [
-                          {
-                            "$": {
-                              "id": "EXPO-VIEWCONTROLLER-1",
-                              "sceneMemberID": "viewController",
-                              "storyboardIdentifier": "SplashScreenViewController",
-                            },
-                            "view": [
-                              {
-                                "$": {
-                                  "contentMode": "scaleToFill",
-                                  "id": "EXPO-ContainerView",
-                                  "insetsLayoutMarginsFromSafeArea": "NO",
-                                  "key": "view",
-                                  "userInteractionEnabled": "NO",
-                                  "userLabel": "ContainerView",
-                                },
-                                "autoresizingMask": [
-                                  {
-                                    "$": {
-                                      "flexibleMaxX": "YES",
-                                      "flexibleMaxY": "YES",
-                                      "key": "autoresizingMask",
-                                    },
-                                  },
-                                ],
-                                "color": [
-                                  {
-                                    "$": {
-                                      "key": "backgroundColor",
-                                      "systemColor": "systemBackgroundColor",
-                                    },
-                                  },
-                                ],
-                                "constraints": [
-                                  {
-                                    "constraint": [
-                                      {
-                                        "$": {
-                                          "firstAttribute": "centerY",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "0VC-Wk-OaO",
-                                          "secondAttribute": "centerY",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "centerX",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "zR4-NK-mVN",
-                                          "secondAttribute": "centerX",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                    ],
-                                  },
-                                ],
-                                "rect": [
-                                  {
-                                    "$": {
-                                      "height": "852",
-                                      "key": "frame",
-                                      "width": "393",
-                                      "x": "0.0",
-                                      "y": "0.0",
-                                    },
-                                  },
-                                ],
-                                "subviews": [
-                                  {
-                                    "imageView": [],
-                                  },
-                                ],
-                                "viewLayoutGuide": [
-                                  {
-                                    "$": {
-                                      "id": "Rmq-lb-GrQ",
-                                      "key": "safeArea",
-                                    },
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                    "point": [
-                      {
-                        "$": {
-                          "key": "canvasLocation",
-                          "x": "0.0",
-                          "y": "0.0",
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      },
-    },
     "pluginHistory": {
-      "expo-ads-admob": {
-        "name": "expo-ads-admob",
-        "version": "UNVERSIONED",
-      },
       "expo-apple-authentication": {
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
@@ -245,16 +16,8 @@ exports[`built-in plugins compiles mods 1`] = `
         "name": "expo-document-picker",
         "version": "UNVERSIONED",
       },
-      "expo-navigation-bar": {
-        "name": "expo-navigation-bar",
-        "version": "UNVERSIONED",
-      },
       "expo-notifications": {
         "name": "expo-notifications",
-        "version": "UNVERSIONED",
-      },
-      "expo-splash-screen": {
-        "name": "expo-splash-screen",
         "version": "UNVERSIONED",
       },
       "expo-system-ui": {
@@ -315,25 +78,8 @@ exports[`built-in plugins compiles mods 1`] = `
       "android.permission.ACCESS_COARSE_LOCATION",
     ],
     "softwareKeyboardLayoutMode": "pan",
-    "splash": {
-      "backgroundColor": "#ff00ff",
-      "dark": {
-        "backgroundColor": "#00ffff",
-      },
-    },
     "userInterfaceStyle": "light",
     "versionCode": 6,
-  },
-  "androidNavigationBar": {
-    "backgroundColor": "#ff0000",
-    "barStyle": "dark-content",
-    "visible": "sticky-immersive",
-  },
-  "androidStatusBar": {
-    "backgroundColor": "#000FFF",
-    "barStyle": "light-content",
-    "hidden": false,
-    "translucent": true,
   },
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
@@ -362,6 +108,7 @@ exports[`built-in plugins compiles mods 1`] = `
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
+    "deploymentTarget": "15.1",
     "entitlements": {
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
@@ -395,7 +142,6 @@ exports[`built-in plugins compiles mods 1`] = `
         },
       ],
       "CFBundleVersion": "6.5.0",
-      "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
       "LSMinimumSystemVersion": "12.0",
@@ -453,9 +199,6 @@ exports[`built-in plugins compiles mods 1`] = `
   "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
-  "splash": {
-    "backgroundColor": "#ff00ff",
-  },
   "updates": {
     "checkAutomatically": "ON_ERROR_RECOVERY",
     "enabled": true,
@@ -478,25 +221,13 @@ exports[`built-in plugins introspects mods 1`] = `
                 "$": {
                   "name": "splashscreen_background",
                 },
-                "_": "#ff00ff",
+                "_": "#FFFFFF",
               },
               {
                 "$": {
                   "name": "colorPrimary",
                 },
                 "_": "#fff000",
-              },
-              {
-                "$": {
-                  "name": "colorPrimaryDark",
-                },
-                "_": "#000FFF",
-              },
-              {
-                "$": {
-                  "name": "navigationBarColor",
-                },
-                "_": "#ff0000",
               },
               {
                 "$": {
@@ -508,16 +239,7 @@ exports[`built-in plugins introspects mods 1`] = `
           },
         },
         "colorsNight": {
-          "resources": {
-            "color": [
-              {
-                "$": {
-                  "name": "splashscreen_background",
-                },
-                "_": "#00ffff",
-              },
-            ],
-          },
+          "resources": {},
         },
         "gradleProperties": [
           {
@@ -768,15 +490,9 @@ exports[`built-in plugins introspects mods 1`] = `
             "type": "empty",
           },
           {
-            "type": "comment",
-            "value": "Specifies whether the app is configured to use edge-to-edge via the app config or plugin
-# WARNING: This property has been deprecated and will be removed in Expo SDK 55. Use \`edgeToEdgeEnabled\` or \`react.edgeToEdgeEnabled\` to determine whether the project is using edge-to-edge.",
-          },
-          {
-            "key": "expo.edgeToEdgeEnabled",
+            "key": "expo.inlineModules.watchedDirectories",
             "type": "property",
-            "value": "true
-",
+            "value": "[]",
           },
         ],
         "manifest": {
@@ -800,7 +516,7 @@ exports[`built-in plugins introspects mods 1`] = `
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
                       "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
@@ -916,18 +632,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
-                      "android:name": "com.google.android.gms.ads.APPLICATION_ID",
-                      "android:value": "MY_GOOGLE_MOBILE_ADS_APP_ID",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT",
-                      "android:value": "false",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "com.google.android.geo.API_KEY",
                       "android:value": "MY_GOOGLE_MAPS_ANDROID_KEY",
                     },
@@ -990,12 +694,16 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.READ_EXTERNAL_STORAGE",
+                  "tools:replace": "android:maxSdkVersion",
                 },
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
+                  "tools:replace": "android:maxSdkVersion",
                 },
               },
               {
@@ -1039,20 +747,6 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
-                  "name": "expo_splash_screen_resize_mode",
-                  "translatable": "false",
-                },
-                "_": "contain",
-              },
-              {
-                "$": {
-                  "name": "expo_splash_screen_status_bar_translucent",
-                  "translatable": "false",
-                },
-                "_": "true",
-              },
-              {
-                "$": {
                   "name": "expo_runtime_version",
                 },
                 "_": "1.0",
@@ -1074,13 +768,6 @@ exports[`built-in plugins introspects mods 1`] = `
                 "item": [
                   {
                     "$": {
-                      "name": "android:enforceNavigationBarContrast",
-                      "tools:targetApi": "29",
-                    },
-                    "_": "true",
-                  },
-                  {
-                    "$": {
                       "name": "android:editTextBackground",
                     },
                     "_": "@drawable/rn_edit_text_material",
@@ -1099,15 +786,9 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
-                      "name": "android:windowLightNavigationBar",
-                    },
-                    "_": "true",
-                  },
-                  {
-                    "$": {
                       "name": "android:navigationBarColor",
                     },
-                    "_": "@color/navigationBarColor",
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {
@@ -1127,7 +808,7 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "name": "android:windowBackground",
                     },
-                    "_": "@drawable/ic_launcher_background",
+                    "_": "@drawable/splashscreen_logo",
                   },
                 ],
               },
@@ -1174,7 +855,6 @@ exports[`built-in plugins introspects mods 1`] = `
             },
           ],
           "CFBundleVersion": "6.5.0",
-          "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
           "LSMinimumSystemVersion": "12.0",
@@ -1206,236 +886,13 @@ exports[`built-in plugins introspects mods 1`] = `
         },
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+          "expo.inlineModules.watchedDirectories": "[]",
           "expo.jsEngine": "hermes",
-        },
-        "splashScreenStoryboard": {
-          "document": {
-            "$": {
-              "colorMatched": "YES",
-              "initialViewController": "EXPO-VIEWCONTROLLER-1",
-              "launchScreen": "YES",
-              "propertyAccessControl": "none",
-              "targetRuntime": "iOS.CocoaTouch",
-              "toolsVersion": "24093.7",
-              "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
-              "useAutolayout": "YES",
-              "useSafeAreas": "YES",
-              "useTraitCollections": "YES",
-              "version": "3.0",
-            },
-            "dependencies": [
-              {
-                "capability": [
-                  {
-                    "$": {
-                      "minToolsVersion": "9.0",
-                      "name": "Named colors",
-                    },
-                  },
-                  {
-                    "$": {
-                      "minToolsVersion": "9.0",
-                      "name": "Safe area layout guides",
-                    },
-                  },
-                  {
-                    "$": {
-                      "minToolsVersion": "11.0",
-                      "name": "System colors in document resources",
-                    },
-                  },
-                  {
-                    "$": {
-                      "minToolsVersion": "8.0",
-                      "name": "documents saved in the Xcode 8 format",
-                    },
-                  },
-                ],
-                "deployment": [
-                  {
-                    "$": {
-                      "identifier": "iOS",
-                    },
-                  },
-                ],
-                "plugIn": [
-                  {
-                    "$": {
-                      "identifier": "com.apple.InterfaceBuilder.IBCocoaTouchPlugin",
-                      "version": "24053.1",
-                    },
-                  },
-                ],
-              },
-            ],
-            "device": [
-              {
-                "$": {
-                  "appearance": "light",
-                  "id": "retina6_12",
-                  "orientation": "portrait",
-                },
-              },
-            ],
-            "resources": [
-              {
-                "image": [
-                  {
-                    "$": {
-                      "height": "90.333335876464844",
-                      "name": "SplashScreenLogo",
-                      "width": "100",
-                    },
-                  },
-                ],
-                "systemColor": [
-                  {
-                    "$": {
-                      "name": "systemBackgroundColor",
-                    },
-                    "color": [
-                      {
-                        "$": {
-                          "alpha": "1",
-                          "colorSpace": "custom",
-                          "customColorSpace": "genericGamma22GrayColorSpace",
-                          "white": "1",
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            "scenes": [
-              {
-                "scene": [
-                  {
-                    "$": {
-                      "sceneID": "EXPO-SCENE-1",
-                    },
-                    "objects": [
-                      {
-                        "placeholder": [
-                          {
-                            "$": {
-                              "id": "EXPO-PLACEHOLDER-1",
-                              "placeholderIdentifier": "IBFirstResponder",
-                              "sceneMemberID": "firstResponder",
-                              "userLabel": "First Responder",
-                            },
-                          },
-                        ],
-                        "viewController": [
-                          {
-                            "$": {
-                              "id": "EXPO-VIEWCONTROLLER-1",
-                              "sceneMemberID": "viewController",
-                              "storyboardIdentifier": "SplashScreenViewController",
-                            },
-                            "view": [
-                              {
-                                "$": {
-                                  "contentMode": "scaleToFill",
-                                  "id": "EXPO-ContainerView",
-                                  "insetsLayoutMarginsFromSafeArea": "NO",
-                                  "key": "view",
-                                  "userInteractionEnabled": "NO",
-                                  "userLabel": "ContainerView",
-                                },
-                                "autoresizingMask": [
-                                  {
-                                    "$": {
-                                      "flexibleMaxX": "YES",
-                                      "flexibleMaxY": "YES",
-                                      "key": "autoresizingMask",
-                                    },
-                                  },
-                                ],
-                                "color": [
-                                  {
-                                    "$": {
-                                      "key": "backgroundColor",
-                                      "systemColor": "systemBackgroundColor",
-                                    },
-                                  },
-                                ],
-                                "constraints": [
-                                  {
-                                    "constraint": [
-                                      {
-                                        "$": {
-                                          "firstAttribute": "centerY",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "0VC-Wk-OaO",
-                                          "secondAttribute": "centerY",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "centerX",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "zR4-NK-mVN",
-                                          "secondAttribute": "centerX",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                    ],
-                                  },
-                                ],
-                                "rect": [
-                                  {
-                                    "$": {
-                                      "height": "852",
-                                      "key": "frame",
-                                      "width": "393",
-                                      "x": "0.0",
-                                      "y": "0.0",
-                                    },
-                                  },
-                                ],
-                                "subviews": [
-                                  {
-                                    "imageView": [],
-                                  },
-                                ],
-                                "viewLayoutGuide": [
-                                  {
-                                    "$": {
-                                      "id": "Rmq-lb-GrQ",
-                                      "key": "safeArea",
-                                    },
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                    "point": [
-                      {
-                        "$": {
-                          "key": "canvasLocation",
-                          "x": "0.0",
-                          "y": "0.0",
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
+          "ios.deploymentTarget": "15.1",
         },
       },
     },
     "pluginHistory": {
-      "expo-ads-admob": {
-        "name": "expo-ads-admob",
-        "version": "UNVERSIONED",
-      },
       "expo-apple-authentication": {
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
@@ -1448,16 +905,8 @@ exports[`built-in plugins introspects mods 1`] = `
         "name": "expo-document-picker",
         "version": "UNVERSIONED",
       },
-      "expo-navigation-bar": {
-        "name": "expo-navigation-bar",
-        "version": "UNVERSIONED",
-      },
       "expo-notifications": {
         "name": "expo-notifications",
-        "version": "UNVERSIONED",
-      },
-      "expo-splash-screen": {
-        "name": "expo-splash-screen",
         "version": "UNVERSIONED",
       },
       "expo-system-ui": {
@@ -1518,25 +967,8 @@ exports[`built-in plugins introspects mods 1`] = `
       "android.permission.ACCESS_COARSE_LOCATION",
     ],
     "softwareKeyboardLayoutMode": "pan",
-    "splash": {
-      "backgroundColor": "#ff00ff",
-      "dark": {
-        "backgroundColor": "#00ffff",
-      },
-    },
     "userInterfaceStyle": "light",
     "versionCode": 6,
-  },
-  "androidNavigationBar": {
-    "backgroundColor": "#ff0000",
-    "barStyle": "dark-content",
-    "visible": "sticky-immersive",
-  },
-  "androidStatusBar": {
-    "backgroundColor": "#000FFF",
-    "barStyle": "light-content",
-    "hidden": false,
-    "translucent": true,
   },
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
@@ -1565,6 +997,7 @@ exports[`built-in plugins introspects mods 1`] = `
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
+    "deploymentTarget": "15.1",
     "entitlements": {
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
@@ -1598,7 +1031,6 @@ exports[`built-in plugins introspects mods 1`] = `
         },
       ],
       "CFBundleVersion": "6.5.0",
-      "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
       "LSMinimumSystemVersion": "12.0",
@@ -1656,9 +1088,6 @@ exports[`built-in plugins introspects mods 1`] = `
   "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
-  "splash": {
-    "backgroundColor": "#ff00ff",
-  },
   "updates": {
     "checkAutomatically": "ON_ERROR_RECOVERY",
     "enabled": true,
@@ -1685,24 +1114,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               },
               {
                 "$": {
-                  "name": "colorPrimaryDark",
-                },
-                "_": "#000FFF",
-              },
-              {
-                "$": {
-                  "name": "navigationBarColor",
-                },
-                "_": "#ff0000",
-              },
-              {
-                "$": {
-                  "name": "splashscreen_background",
-                },
-                "_": "#ff00ff",
-              },
-              {
-                "$": {
                   "name": "activityBackground",
                 },
                 "_": "#ff0000",
@@ -1711,45 +1122,13 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           },
         },
         "colorsNight": {
-          "resources": {
-            "color": [
-              {
-                "$": {
-                  "name": "splashscreen_background",
-                },
-                "_": "#00ffff",
-              },
-            ],
-          },
+          "resources": {},
         },
         "gradleProperties": [
           {
-            "type": "comment",
-            "value": "Specifies whether the app is configured to use edge-to-edge via the app config or plugin
-# WARNING: This property has been deprecated and will be removed in Expo SDK 55. Use \`edgeToEdgeEnabled\` or \`react.edgeToEdgeEnabled\` to determine whether the project is using edge-to-edge.",
-          },
-          {
-            "key": "expo.edgeToEdgeEnabled",
+            "key": "expo.inlineModules.watchedDirectories",
             "type": "property",
-            "value": "true
-",
-          },
-          {
-            "type": "comment",
-            "value": "Use this property to enable edge-to-edge display support.
-# This allows your app to draw behind system bars for an immersive UI.
-# Note: Only works with ReactActivity and should not be used with custom Activity.",
-          },
-          {
-            "key": "edgeToEdgeEnabled",
-            "type": "property",
-            "value": "true
-",
-          },
-          {
-            "key": "hermesEnabled",
-            "type": "property",
-            "value": "true",
+            "value": "[]",
           },
         ],
         "manifest": {
@@ -1774,7 +1153,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
                       "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
@@ -1890,18 +1269,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
-                      "android:name": "com.google.android.gms.ads.APPLICATION_ID",
-                      "android:value": "MY_GOOGLE_MOBILE_ADS_APP_ID",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT",
-                      "android:value": "false",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "com.google.android.geo.API_KEY",
                       "android:value": "MY_GOOGLE_MAPS_ANDROID_KEY",
                     },
@@ -1964,12 +1331,16 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.READ_EXTERNAL_STORAGE",
+                  "tools:replace": "android:maxSdkVersion",
                 },
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
+                  "tools:replace": "android:maxSdkVersion",
                 },
               },
               {
@@ -2013,20 +1384,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               },
               {
                 "$": {
-                  "name": "expo_splash_screen_resize_mode",
-                  "translatable": "false",
-                },
-                "_": "contain",
-              },
-              {
-                "$": {
-                  "name": "expo_splash_screen_status_bar_translucent",
-                  "translatable": "false",
-                },
-                "_": "true",
-              },
-              {
-                "$": {
                   "name": "expo_runtime_version",
                 },
                 "_": "1.0",
@@ -2060,35 +1417,15 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
-                      "name": "android:windowLightNavigationBar",
-                    },
-                    "_": "true",
-                  },
-                  {
-                    "$": {
                       "name": "android:navigationBarColor",
                     },
-                    "_": "@color/navigationBarColor",
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {
                       "name": "android:windowBackground",
                     },
                     "_": "@color/activityBackground",
-                  },
-                ],
-              },
-              {
-                "$": {
-                  "name": "Theme.App.SplashScreen",
-                  "parent": "AppTheme",
-                },
-                "item": [
-                  {
-                    "$": {
-                      "name": "android:windowBackground",
-                    },
-                    "_": "@drawable/ic_launcher_background",
                   },
                 ],
               },
@@ -2135,7 +1472,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             },
           ],
           "CFBundleVersion": "6.5.0",
-          "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
           "LSMinimumSystemVersion": "12.0",
@@ -2170,226 +1506,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           },
         },
         "podfileProperties": {
-          "expo.jsEngine": "hermes",
-        },
-        "splashScreenStoryboard": {
-          "document": {
-            "$": {
-              "colorMatched": "YES",
-              "initialViewController": "EXPO-VIEWCONTROLLER-1",
-              "launchScreen": "YES",
-              "propertyAccessControl": "none",
-              "targetRuntime": "iOS.CocoaTouch",
-              "toolsVersion": "32700.99.1234",
-              "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
-              "useAutolayout": "YES",
-              "useSafeAreas": "YES",
-              "useTraitCollections": "YES",
-              "version": "3.0",
-            },
-            "dependencies": [
-              {
-                "capability": [
-                  {
-                    "$": {
-                      "minToolsVersion": "9.0",
-                      "name": "Safe area layout guides",
-                    },
-                  },
-                  {
-                    "$": {
-                      "minToolsVersion": "8.0",
-                      "name": "documents saved in the Xcode 8 format",
-                    },
-                  },
-                ],
-                "deployment": [
-                  {
-                    "$": {
-                      "identifier": "iOS",
-                    },
-                  },
-                ],
-                "plugIn": [
-                  {
-                    "$": {
-                      "identifier": "com.apple.InterfaceBuilder.IBCocoaTouchPlugin",
-                      "version": "22685",
-                    },
-                  },
-                ],
-              },
-            ],
-            "device": [
-              {
-                "$": {
-                  "appearance": "light",
-                  "id": "retina6_12",
-                  "orientation": "portrait",
-                },
-              },
-            ],
-            "resources": [
-              {
-                "image": [
-                  {
-                    "$": {
-                      "height": "90.333335876464844",
-                      "name": "SplashScreenLogo",
-                      "width": "100",
-                    },
-                  },
-                ],
-                "namedColor": [
-                  {
-                    "$": {
-                      "name": "SplashScreenBackground",
-                    },
-                    "color": [
-                      {
-                        "$": {
-                          "alpha": "1.000",
-                          "blue": "1.00000000000000",
-                          "colorSpace": "custom",
-                          "customColorSpace": "sRGB",
-                          "green": "1.00000000000000",
-                          "red": "1.00000000000000",
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-            "scenes": [
-              {
-                "scene": [
-                  {
-                    "$": {
-                      "sceneID": "EXPO-SCENE-1",
-                    },
-                    "objects": [
-                      {
-                        "placeholder": [
-                          {
-                            "$": {
-                              "id": "EXPO-PLACEHOLDER-1",
-                              "placeholderIdentifier": "IBFirstResponder",
-                              "sceneMemberID": "firstResponder",
-                              "userLabel": "First Responder",
-                            },
-                          },
-                        ],
-                        "viewController": [
-                          {
-                            "$": {
-                              "id": "EXPO-VIEWCONTROLLER-1",
-                              "sceneMemberID": "viewController",
-                              "storyboardIdentifier": "SplashScreenViewController",
-                            },
-                            "view": [
-                              {
-                                "$": {
-                                  "contentMode": "scaleToFill",
-                                  "id": "EXPO-ContainerView",
-                                  "insetsLayoutMarginsFromSafeArea": "NO",
-                                  "key": "view",
-                                  "userInteractionEnabled": "NO",
-                                  "userLabel": "ContainerView",
-                                },
-                                "autoresizingMask": [
-                                  {
-                                    "$": {
-                                      "flexibleMaxX": "YES",
-                                      "flexibleMaxY": "YES",
-                                      "key": "autoresizingMask",
-                                    },
-                                  },
-                                ],
-                                "color": [
-                                  {
-                                    "$": {
-                                      "key": "backgroundColor",
-                                      "name": "SplashScreenBackground",
-                                    },
-                                  },
-                                ],
-                                "constraints": [
-                                  {
-                                    "constraint": [
-                                      {
-                                        "$": {
-                                          "firstAttribute": "centerY",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "0VC-Wk-OaO",
-                                          "secondAttribute": "centerY",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "centerX",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "zR4-NK-mVN",
-                                          "secondAttribute": "centerX",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                    ],
-                                  },
-                                ],
-                                "rect": [
-                                  {
-                                    "$": {
-                                      "height": "852",
-                                      "key": "frame",
-                                      "width": "393",
-                                      "x": "0.0",
-                                      "y": "0.0",
-                                    },
-                                  },
-                                ],
-                                "subviews": [
-                                  {
-                                    "imageView": [],
-                                  },
-                                ],
-                                "viewLayoutGuide": [
-                                  {
-                                    "$": {
-                                      "id": "Rmq-lb-GrQ",
-                                      "key": "safeArea",
-                                    },
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                    "point": [
-                      {
-                        "$": {
-                          "key": "canvasLocation",
-                          "x": "140.625",
-                          "y": "129.4921875",
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
+          "expo.inlineModules.watchedDirectories": "[]",
+          "ios.deploymentTarget": "15.1",
         },
       },
     },
     "pluginHistory": {
-      "expo-ads-admob": {
-        "name": "expo-ads-admob",
-        "version": "UNVERSIONED",
-      },
       "expo-apple-authentication": {
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
@@ -2402,16 +1524,8 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         "name": "expo-document-picker",
         "version": "UNVERSIONED",
       },
-      "expo-navigation-bar": {
-        "name": "expo-navigation-bar",
-        "version": "UNVERSIONED",
-      },
       "expo-notifications": {
         "name": "expo-notifications",
-        "version": "UNVERSIONED",
-      },
-      "expo-splash-screen": {
-        "name": "expo-splash-screen",
         "version": "UNVERSIONED",
       },
       "expo-system-ui": {
@@ -2472,25 +1586,8 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       "android.permission.ACCESS_COARSE_LOCATION",
     ],
     "softwareKeyboardLayoutMode": "pan",
-    "splash": {
-      "backgroundColor": "#ff00ff",
-      "dark": {
-        "backgroundColor": "#00ffff",
-      },
-    },
     "userInterfaceStyle": "light",
     "versionCode": 6,
-  },
-  "androidNavigationBar": {
-    "backgroundColor": "#ff0000",
-    "barStyle": "dark-content",
-    "visible": "sticky-immersive",
-  },
-  "androidStatusBar": {
-    "backgroundColor": "#000FFF",
-    "barStyle": "light-content",
-    "hidden": false,
-    "translucent": true,
   },
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
@@ -2519,6 +1616,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       "googleMobileAdsAutoInit": true,
       "usesNonExemptEncryption": true,
     },
+    "deploymentTarget": "15.1",
     "entitlements": {
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
@@ -2552,7 +1650,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
       ],
       "CFBundleVersion": "6.5.0",
-      "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
       "LSMinimumSystemVersion": "12.0",
@@ -2614,9 +1711,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
   "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
-  "splash": {
-    "backgroundColor": "#ff00ff",
-  },
   "updates": {
     "checkAutomatically": "ON_ERROR_RECOVERY",
     "enabled": true,

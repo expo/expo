@@ -71,6 +71,17 @@ describe('launchApplicationIdAsync', () => {
   });
 });
 
+describe('ensureExpoGoAsync', () => {
+  it(`throws when device is an Apple Watch`, async () => {
+    const device = new AppleDeviceManager(
+      asDevice({ name: 'Apple Watch Series 7 - 41mm', udid: '123', osType: 'watchOS' })
+    );
+    await expect(device.ensureExpoGoAsync('51.0.0')).rejects.toThrow(
+      /Expo Go is not supported on Apple Watch/
+    );
+  });
+});
+
 describe('openUrlAsync', () => {
   it('launches into Expo Go', async () => {
     const device = createDevice();

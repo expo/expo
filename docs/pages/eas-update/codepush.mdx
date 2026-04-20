@@ -4,6 +4,7 @@ description: A guide to help migrate from CodePush to EAS Update.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -69,6 +70,8 @@ After successfully submitting your app, users will be able to download and use t
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="How do I release mandatory/critical updates with EAS Update?">
 
 CodePush CLI has a `--mandatory` flag that allows you to release mandatory updates. You can build this functionality with EAS Update but there is no specific flag for it.
@@ -129,6 +132,8 @@ Yes, EAS Update supports end-to-end code signing. It is available for EAS Produc
 - Each update and build created with EAS is associated with a [fingerprint](/versions/latest/sdk/fingerprint/). You can diff these fingerprints through the website UI or with `eas fingerprint:compare` to see what changed in the native runtime of your app between your builds and updates, to understand build/update compatibility, and guide your decision about when to bump the [`runtimeVersion`](/eas-update/runtime-versions/).
 
 </Collapsible>
+
+</FAQ>
 
 ## Conceptual differences between CodePush and EAS Update
 

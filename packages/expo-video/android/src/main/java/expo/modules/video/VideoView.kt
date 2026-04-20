@@ -26,6 +26,7 @@ import expo.modules.video.player.VideoPlayer
 import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.listeners.VideoViewListener
 import expo.modules.video.records.AudioTrack
+import expo.modules.video.records.ButtonOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoTrack
@@ -57,10 +58,24 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   var wasAutoPaused: Boolean = false
   var isInFullscreen: Boolean = false
     private set
-  var showsSubtitlesButton = false
+  var currentTrackHasSubtitles = false
     private set
   var showsAudioTracksButton = false
     private set
+
+  var requiresLinearPlayback: Boolean = false
+    set(value) {
+      field = value
+      videoPlayer?.requiresLinearPlayback = value
+      playerView.applyRequiresLinearPlayback(value)
+      applyButtonSettings()
+    }
+
+  var buttonOptions: ButtonOptions = ButtonOptions()
+    set(value) {
+      field = value
+      applyButtonSettings()
+    }
 
   private var listeners = mutableListOf<WeakReference<VideoViewListener>>()
   private val currentActivity = appContext.throwingActivity
@@ -131,8 +146,9 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
 
   var useNativeControls: Boolean = true
     set(value) {
+      val shouldShowSubtitle = value && (buttonOptions.showSubtitles ?: currentTrackHasSubtitles)
       playerView.useController = value
-      playerView.setShowSubtitleButton(value)
+      playerView.setShowSubtitleButton(shouldShowSubtitle)
       field = value
     }
 
@@ -272,6 +288,17 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     listeners.retainAll { it.get() != listener }
   }
 
+  override fun onSourceChanged(player: VideoPlayer, source: VideoSource?, oldSource: VideoSource?) {
+    // When replacing the media on the same player, keep the surface hidden until the first frame of
+    // the new item is rendered. Otherwise the previous stream can remain visible (often mis-scaled)
+    // while the new stream buffers — e.g. switching from a higher-resolution URL to a lower one.
+    // See https://github.com/expo/expo/issues/44385
+    if (player == videoPlayer && oldSource != null) {
+      shouldHideSurfaceView = true
+      applySurfaceViewVisibility()
+    }
+  }
+
   override fun onVideoSourceLoaded(
     player: VideoPlayer,
     videoSource: VideoSource?,
@@ -291,9 +318,9 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   }
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
-    showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
+    currentTrackHasSubtitles = player.subtitles.availableSubtitleTracks.isNotEmpty()
     showsAudioTracksButton = player.audioTracks.availableAudioTracks.size > 1
-    playerView.setShowSubtitleButton(showsSubtitlesButton)
+    playerView.setShowSubtitleButton(buttonOptions.showSubtitles ?: currentTrackHasSubtitles)
     super.onTracksChanged(player, tracks)
   }
 
@@ -405,6 +432,12 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     captioningChangeListener?.let { listener ->
       captioningManager?.addCaptioningChangeListener(listener)
     }
+  }
+
+  private fun applyButtonSettings() {
+    val shouldShowSubtitle = buttonOptions.showSubtitles ?: currentTrackHasSubtitles
+    playerView.applyButtonOptions(buttonOptions, requiresLinearPlayback)
+    playerView.setShowSubtitleButton(shouldShowSubtitle)
   }
 
   companion object {

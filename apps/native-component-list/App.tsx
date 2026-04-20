@@ -1,8 +1,8 @@
-import { ThemeProvider } from 'ThemeProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
 
+import { ThemeProvider, useTheme } from '../common/ThemeProvider';
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
@@ -31,13 +31,25 @@ function useSplashScreen(loadingFunction: () => Promise<void>) {
   return isLoadingCompleted;
 }
 
-export default function App() {
+function AppContent() {
+  const { name: themeName } = useTheme();
   const isLoadingCompleted = useSplashScreen(async () => {
-    if (Platform.OS === 'ios') {
-      StatusBar.setBarStyle('dark-content', false);
-    }
     await loadAssetsAsync();
   });
 
-  return <ThemeProvider>{isLoadingCompleted ? <RootNavigation /> : null}</ThemeProvider>;
+  React.useEffect(() => {
+    if (Platform.OS === 'ios') {
+      StatusBar.setBarStyle(themeName === 'dark' ? 'light-content' : 'dark-content', true);
+    }
+  }, [themeName]);
+
+  return isLoadingCompleted ? <RootNavigation /> : null;
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
 }

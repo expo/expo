@@ -150,7 +150,7 @@ function getDebugPluginStackFromStackTrace(stacktrace?: string): string {
   const treeStackLines: string[] = [];
   for (const line of stacktrace.split('\n')) {
     const [first, second] = line.trim().split(' ');
-    if (first === 'at') {
+    if (first === 'at' && second != null) {
       treeStackLines.push(second);
     }
   }

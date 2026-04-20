@@ -1,7 +1,11 @@
 import { renderHook, act } from '@testing-library/react-native';
+import React from 'react';
+import type { ImageSourcePropType } from 'react-native';
 
-import type { SymbolOrImageSource } from '../../types';
+import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../../common/elements';
+import type { NativeTabsProps, SymbolOrImageSource } from '../../types';
 import {
+  convertComponentSrcToImageSource,
   convertIconColorPropToObject,
   convertOptionsIconToRNScreensPropsIcon,
   useAwaitedScreensIcon,
@@ -29,7 +33,8 @@ describe(convertIconColorPropToObject, () => {
   });
 
   it('treats an object without default/selected as a ColorValue and returns it under default', () => {
-    const weird = { foo: 'bar' } as any;
+    // Intentionally passing wrong type to test edge case
+    const weird = { foo: 'bar' } as unknown as NativeTabsProps['iconColor'];
     expect(convertIconColorPropToObject(weird)).toEqual({ default: weird });
   });
 
@@ -38,7 +43,8 @@ describe(convertIconColorPropToObject, () => {
   });
 
   it('treats numeric 0 (falsy) as no color and returns empty object', () => {
-    expect(convertIconColorPropToObject(0 as any)).toEqual({});
+    // Intentionally passing wrong type to test edge case
+    expect(convertIconColorPropToObject(0 as unknown as NativeTabsProps['iconColor'])).toEqual({});
   });
 });
 
@@ -59,16 +65,16 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
     const src = { uri: 'https://example.com/icon.png' };
     const result = convertOptionsIconToRNScreensPropsIcon({ src });
     expect(result).toEqual({
-      ios: { type: 'templateSource', templateSource: src },
+      ios: { type: 'imageSource', imageSource: src },
       android: { type: 'imageSource', imageSource: src },
     });
   });
 
   it('returns ios and android icon objects when src is a numeric resource identifier', () => {
-    const src = 123 as any;
+    const src = 123;
     const result = convertOptionsIconToRNScreensPropsIcon({ src });
     expect(result).toEqual({
-      ios: { type: 'templateSource', templateSource: src },
+      ios: { type: 'imageSource', imageSource: src },
       android: { type: 'imageSource', imageSource: src },
     });
   });
@@ -82,7 +88,10 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
   });
 
   it('returns undefined when src is falsy (null)', () => {
-    expect(convertOptionsIconToRNScreensPropsIcon({ src: null })).toEqual({
+    // Intentionally passing null to test falsy value handling
+    expect(
+      convertOptionsIconToRNScreensPropsIcon({ src: null as unknown as ImageSourcePropType })
+    ).toEqual({
       ios: undefined,
       android: undefined,
     });
@@ -103,6 +112,74 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
     expect(convertOptionsIconToRNScreensPropsIcon(drawableOnly)).toEqual({
       ios: undefined,
       android: { type: 'drawableResource', name: 'ic_launcher' },
+    });
+  });
+
+  describe('renderingMode', () => {
+    it('returns templateSource for iOS when renderingMode is "template"', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'template' });
+      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+    });
+
+    it('returns imageSource for iOS when renderingMode is "original"', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'original' });
+      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+    });
+
+    it('returns imageSource for Android regardless of renderingMode', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const resultTemplate = convertOptionsIconToRNScreensPropsIcon({
+        src,
+        renderingMode: 'template',
+      });
+      const resultOriginal = convertOptionsIconToRNScreensPropsIcon({
+        src,
+        renderingMode: 'original',
+      });
+      // Android always uses imageSource
+      expect(resultTemplate?.android).toEqual({ type: 'imageSource', imageSource: src });
+      expect(resultOriginal?.android).toEqual({ type: 'imageSource', imageSource: src });
+    });
+  });
+
+  describe('smart default with iconColor', () => {
+    it('defaults to imageSource (original) when iconColor is undefined', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src }, undefined);
+      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+    });
+
+    it('defaults to templateSource (template) when iconColor is set', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src }, '#ff0000');
+      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+    });
+
+    it('respects explicit renderingMode="original" even when iconColor is set', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon(
+        { src, renderingMode: 'original' },
+        '#ff0000'
+      );
+      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+    });
+
+    it('respects explicit renderingMode="template" even when iconColor is undefined', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon(
+        { src, renderingMode: 'template' },
+        undefined
+      );
+      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+    });
+
+    it('does not affect Android behavior when iconColor is set', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src }, '#ff0000');
+      // Android always uses imageSource regardless of iconColor
+      expect(result?.android).toEqual({ type: 'imageSource', imageSource: src });
     });
   });
 });
@@ -130,9 +207,16 @@ describe('useAwaitedScreensIcon', () => {
     });
 
     it('returns src immediately when src is a numeric resource identifier', () => {
-      const src = 123 as any;
+      const src = 123;
       const { result } = renderHook(() => useAwaitedScreensIcon({ src }));
       expect(result.current).toEqual({ src });
+    });
+
+    it('returns src with renderingMode immediately when both are provided', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const icon = { src, renderingMode: 'template' as const };
+      const { result } = renderHook(() => useAwaitedScreensIcon(icon));
+      expect(result.current).toEqual({ src, renderingMode: 'template' });
     });
 
     it('returns drawable immediately when drawable is provided', () => {
@@ -158,7 +242,7 @@ describe('useAwaitedScreensIcon', () => {
       const promise = new Promise((res) => {
         resolve = res;
       });
-      const asyncSrc = promise;
+      const asyncSrc = promise as unknown as ImageSourcePropType;
       const { result, unmount } = renderHook(() => useAwaitedScreensIcon({ src: asyncSrc }));
       expect(result.current).toBeUndefined();
       unmount();
@@ -170,12 +254,41 @@ describe('useAwaitedScreensIcon', () => {
       expect(result.current).toBeUndefined();
     });
 
+    it('preserves renderingMode when resolving a promise src', async () => {
+      const asyncSrc = Promise.resolve({ uri: 'https://async.example/icon.png' });
+      const { result } = renderHook(() =>
+        useAwaitedScreensIcon({ src: asyncSrc, renderingMode: 'template' })
+      );
+      expect(result.current).toBeUndefined();
+      await act(async () => {
+        await asyncSrc;
+      });
+      expect(result.current).toEqual({
+        src: { uri: 'https://async.example/icon.png' },
+        renderingMode: 'template',
+      });
+    });
+
+    it('preserves renderingMode "original" when resolving a promise src', async () => {
+      const asyncSrc = Promise.resolve({ uri: 'https://async.example/icon.png' });
+      const { result } = renderHook(() =>
+        useAwaitedScreensIcon({ src: asyncSrc, renderingMode: 'original' })
+      );
+      await act(async () => {
+        await asyncSrc;
+      });
+      expect(result.current).toEqual({
+        src: { uri: 'https://async.example/icon.png' },
+        renderingMode: 'original',
+      });
+    });
+
     it('ignores late resolution of previous async src when icon prop changes', async () => {
       let resolveFirst: (value: any) => void;
       const firstPromise = new Promise((res) => {
         resolveFirst = res;
       });
-      const firstSrc = firstPromise;
+      const firstSrc = firstPromise as unknown as ImageSourcePropType;
       const { result, rerender } = renderHook(
         ({ icon }: { icon: SymbolOrImageSource }) => useAwaitedScreensIcon(icon),
         {
@@ -198,6 +311,52 @@ describe('useAwaitedScreensIcon', () => {
       });
 
       expect(result.current).toEqual({ src: nowSrc });
+    });
+  });
+});
+
+describe(convertComponentSrcToImageSource, () => {
+  const mockGetImageSource = jest.fn().mockReturnValue(Promise.resolve({ uri: 'resolved' }));
+  const mockFamily = { getImageSource: mockGetImageSource };
+
+  beforeEach(() => {
+    mockGetImageSource.mockClear();
+  });
+
+  it('forwards renderingMode for VectorIcon elements', () => {
+    const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
+    const result = convertComponentSrcToImageSource(element, 'template');
+    expect(result).toEqual({
+      src: expect.any(Promise),
+      renderingMode: 'template',
+    });
+  });
+
+  it('forwards renderingMode "original" for VectorIcon elements', () => {
+    const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
+    const result = convertComponentSrcToImageSource(element, 'original');
+    expect(result).toEqual({
+      src: expect.any(Promise),
+      renderingMode: 'original',
+    });
+  });
+
+  it('omits renderingMode when undefined for VectorIcon elements', () => {
+    const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
+    const result = convertComponentSrcToImageSource(element);
+    expect(result).toEqual({
+      src: expect.any(Promise),
+    });
+    expect(result).not.toHaveProperty('renderingMode');
+  });
+
+  it('forwards renderingMode for PromiseIcon elements', () => {
+    const loader = () => Promise.resolve({ uri: 'loaded' } as ImageSourcePropType);
+    const element = <NativeTabsTriggerPromiseIcon loader={loader} />;
+    const result = convertComponentSrcToImageSource(element, 'template');
+    expect(result).toEqual({
+      src: expect.any(Promise),
+      renderingMode: 'template',
     });
   });
 });

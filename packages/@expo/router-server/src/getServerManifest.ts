@@ -27,8 +27,8 @@ export interface RouteRegex {
   re: RegExp;
 }
 
-function isNotFoundRoute(route: RouteNode) {
-  return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
+function isNotFoundRoute(route: RouteNode): boolean {
+  return route.dynamic != null && (route.dynamic[route.dynamic.length - 1]?.notFound ?? false);
 }
 
 function uniqueBy<T>(arr: T[], key: (item: T) => string): T[] {
@@ -58,7 +58,7 @@ type GetServerManifestOptions = {
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(
-  route: RouteNode,
+  route: RouteNode | null,
   options: GetServerManifestOptions | undefined
 ): RoutesManifest<string> {
   function getFlatNodes(route: RouteNode, parentRoute: string = ''): FlatNode[] {
@@ -89,9 +89,11 @@ export function getServerManifest(
   }
 
   // Remove duplicates from the runtime manifest which expands array syntax.
-  const flat = getFlatNodes(route)
-    .sort(({ route: a }, { route: b }) => sortRoutes(b, a))
-    .reverse();
+  const flat = route
+    ? getFlatNodes(route)
+        .sort(({ route: a }, { route: b }) => sortRoutes(b, a))
+        .reverse()
+    : [];
 
   const apiRoutes = uniqueBy(
     flat.filter(({ route }) => route.type === 'api'),
@@ -150,7 +152,7 @@ export function getServerManifest(
     rewrites: getMatchableManifestForPaths(rewrites),
   };
 
-  if (route.middleware) {
+  if (route?.middleware) {
     manifest.middleware = {
       file: route.middleware.contextKey,
     };

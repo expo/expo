@@ -1,9 +1,12 @@
-import { CommonNavigationAction, ParamListBase, Router, TabActionType as RNTabActionType, TabNavigationState, TabRouterOptions as RNTabRouterOptions } from '@react-navigation/native';
 import { TriggerMap } from './common';
+import { CommonNavigationAction, ParamListBase, Router, TabActionType as RNTabActionType, TabNavigationState, TabRouterOptions as RNTabRouterOptions, type StackActionType } from '../react-navigation/native';
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
     triggerMap: TriggerMap;
 };
-export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | {
+type ReplaceAction = Extract<StackActionType, {
+    type: 'REPLACE';
+}>;
+export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | ReplaceAction | {
     type: 'JUMP_TO';
     source?: string;
     target?: string;
@@ -44,15 +47,15 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }> | import("@react-navigation/native").PartialState<Readonly<{
+    }> | import("../react-navigation/native").PartialState<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>> | (Omit<Readonly<{
@@ -60,11 +63,11 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "routes"> & {
-        routes: Omit<import("@react-navigation/native").Route<string>, "key">[];
+        routes: Omit<import("../react-navigation/native").Route<string>, "key">[];
     })) | undefined;
     source?: string;
     target?: string;
@@ -91,6 +94,14 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
     source?: string;
     target?: string;
 } | RNTabActionType | {
+    type: "REPLACE";
+    payload: {
+        name: string;
+        params?: object;
+    };
+    source?: string;
+    target?: string;
+} | {
     type: "JUMP_TO";
     source?: string;
     target?: string;
@@ -100,4 +111,5 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
         params?: object;
     };
 }>;
+export {};
 //# sourceMappingURL=TabRouter.d.ts.map

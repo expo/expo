@@ -18,4 +18,6 @@ export declare function normalizeHeadersInit(headers: HeadersInit | null | undef
  * Create a new header array by overriding the existing headers with new headers (by header key).
  */
 export declare function overrideHeaders(headers: NativeHeadersType, newHeaders: NativeHeadersType): NativeHeadersType;
+/** Normalizes known HTTP methods to uppercase */
+export declare function normalizeMethod(method: string): string;
 //# sourceMappingURL=RequestUtils.d.ts.map

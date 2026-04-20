@@ -71,11 +71,12 @@ void WorkletRuntimeInstaller::prepareRuntime(
     cxxPart
   );
 
-  MainRuntimeInstaller::installModules(
-    runtime,
-    cxxPart,
-    mainObject
-  );
+// TODO(@lukmccall): Re-enable module installation when iOS start supporting exporting native modules
+//  MainRuntimeInstaller::installModules(
+//    runtime,
+//    cxxPart,
+//    mainObject
+//  );
 #endif
 }
 

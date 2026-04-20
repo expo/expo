@@ -5,7 +5,7 @@ import {
   withInfoPlist,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-background-fetch/package.json');
+const pkg = require('../../package.json');
 
 const withBackgroundFetch: ConfigPlugin = (config) => {
   // TODO: Maybe entitlements are needed

@@ -18,7 +18,7 @@ The core implementation can be found in the [`expo-modules-autolinking`](https:/
 2. code that integrates with the Gradle build system for Android
 3. code that integrates with CocoaPods for iOS
 
-Since SDK 52, Expo Autolinking not only links Expo modules, but also React Native modules. To use the React Native community CLI autolinking instead, see [opting out of Expo Autolinking for React Native modules](#opting-out-of-expo-autolinking-for-react-native-modules) section.
+Expo Autolinking links both Expo modules and React Native modules. To use the React Native community CLI autolinking instead, see [opting out of Expo Autolinking for React Native modules](#opting-out-of-expo-autolinking-for-react-native-modules) section.
 
 ## Linking behavior
 
@@ -257,13 +257,13 @@ For example, with the `--platform ios` option, it returns an object in **react-n
 
 ## Dependency resolution and conflicts
 
-> **important** This is an alpha feature starting in SDK 54 and later.
-
 Autolinking and Node resolution have different goals and the module resolution algorithm in Node and Metro can sometimes come into conflict. If your app contains duplicate installations of a native module that is picked up by autolinking, your JavaScript bundle may contain both versions of the native module, while autolinking and your native app will only contain one version. This might cause runtime crashes and risks incompatibilities.
 
 This is an especially common problem with isolated dependencies or monorepos, and you should [check for and deduplicate native modules in your dependencies](/guides/monorepos/#duplicate-native-packages-within-monorepos).
 
 From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true` in your [app config](/workflow/configuration/) to apply autolinking to Expo CLI and Metro bundler automatically. This will force dependencies that Metro resolves to match the native modules that **autolinking** resolves.
+
+From **SDK 55**, the `experiments.autolinkingModuleResolution` flag is enabled by default for apps in monorepos.
 
 ## Common questions
 

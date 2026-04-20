@@ -28,11 +28,6 @@ module.exports = {
   // For testing the output bundle
   jsEngine: process.env.E2E_ROUTER_JS_ENGINE ?? (process.env.E2E_ROUTER_SRC ? 'jsc' : 'hermes'),
   newArchEnabled: true,
-  splash: {
-    image: './assets/splash.png',
-    resizeMode: 'contain',
-    backgroundColor: '#ffffff',
-  },
   experiments: {
     autolinkingModuleResolution: true,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
@@ -47,6 +42,14 @@ module.exports = {
     bundler: 'metro',
   },
   plugins: [
+    [
+      'expo-splash-screen',
+      {
+        image: './assets/splash-icon.png',
+        resizeMode: 'contain',
+        backgroundColor: '#ffffff',
+      },
+    ],
     [
       'expo-build-properties',
       {
@@ -85,7 +88,12 @@ module.exports = {
         unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',
         unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
         unstable_useServerRendering: process.env.E2E_ROUTER_SERVER_RENDERING === 'true',
-        unstable_splitView: process.env.E2E_ROUTER_SPLIT_VIEW === 'true',
+      },
+    ],
+    [
+      'expo-asset',
+      {
+        assets: ['./assets/expo-logo.png', './assets/expo-transparent.png'],
       },
     ],
   ],

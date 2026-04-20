@@ -117,8 +117,10 @@ async function applyChangesToRootAsync(options: ActionOptions, versions: any) {
 }
 
 async function applyChangesToSDKVersionAsync(options: ActionOptions, versions: any) {
-  const sdkVersions = Object.keys(versions.sdkVersions).sort(semver.rcompare);
-  const sdkVersion = options.sdkVersion || (await chooseSdkVersionAsync(sdkVersions));
+  const sdkVersions = Versions.getSortedSdkVersionKeys(versions);
+  const sdkVersion = Versions.normalizeSdkVersion(
+    options.sdkVersion || (await chooseSdkVersionAsync(sdkVersions))
+  );
   const containsSdk = sdkVersions.includes(sdkVersion);
 
   if (!semver.valid(sdkVersion)) {

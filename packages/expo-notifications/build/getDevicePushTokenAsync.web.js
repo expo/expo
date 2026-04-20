@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { CodedError, Platform } from 'expo-modules-core';
 import { DeviceEventEmitter } from 'react-native';
-export default async function getDevicePushTokenAsync() {
+export async function getDevicePushTokenAsync() {
     const data = await _subscribeDeviceToPushNotificationsAsync();
     DeviceEventEmitter.emit('onDevicePushToken', { devicePushToken: data });
     return { type: Platform.OS, data };

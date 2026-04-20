@@ -4,11 +4,54 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- bump android dependency, expose new `DECLARED` user status ([#43345](https://github.com/expo/expo/pull/43345) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
+- Updated remaining `AgeRangeResponse` fields to allow null values to match native API behavior. ([#44393](https://github.com/expo/expo/pull/44393) by [@vonovak](https://github.com/vonovak))
+- Update AgeRangeResponse to allow null values ([#44310](https://github.com/expo/expo/pull/44310) by [@joshbuchea](https://github.com/joshbuchea))
+
 ### 💡 Others
+
+## 0.2.10 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.9 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.8 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.7 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.6 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.5 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.4 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.3 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.2 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
 
 ## 0.2.0 — 2025-12-16
 

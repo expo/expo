@@ -9,6 +9,14 @@ import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
 
+/** Enforce conversion of `true` to `'true'` */
+function toBoolStr(x: true): 'true';
+function toBoolStr(x: false): 'false';
+function toBoolStr(x: boolean): 'true' | 'false';
+function toBoolStr(x: boolean): 'true' | 'false' {
+  return x ? 'true' : 'false';
+}
+
 export type MetroEnvironment = 'node' | 'react-server' | 'client';
 
 export type ExpoMetroOptions = {
@@ -49,6 +57,8 @@ export type ExpoMetroOptions = {
   hosted?: boolean;
   /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
   liveBindings?: boolean;
+  /** When true, indicates this bundle should contain only the loader export. */
+  isLoaderBundle?: boolean;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -164,6 +174,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     useMd5Filename,
     hosted,
     liveBindings,
+    isLoaderBundle,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -195,16 +206,17 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     clientBoundaries,
     preserveEnvVars: preserveEnvVars || undefined,
     // Use string to match the query param behavior.
-    asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
+    asyncRoutes: asyncRoutes ? toBoolStr(asyncRoutes) : undefined,
     environment,
     baseUrl: baseUrl || undefined,
     routerRoot,
     bytecode: bytecode ? '1' : undefined,
-    reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
+    reactCompiler: reactCompiler ? toBoolStr(reactCompiler) : undefined,
     dom: domRoot,
     hosted: hosted ? '1' : undefined,
     useMd5Filename: useMd5Filename || undefined,
-    liveBindings: !liveBindings ? String(liveBindings) : undefined,
+    liveBindings: !liveBindings ? toBoolStr(!!liveBindings) : undefined,
+    isLoaderBundle: isLoaderBundle ? toBoolStr(isLoaderBundle) : undefined,
   };
 
   // Iterate and delete undefined values

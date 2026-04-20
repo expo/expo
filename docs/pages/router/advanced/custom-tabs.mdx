@@ -8,12 +8,13 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { FileTree } from '~/ui/components/FileTree';
 import { DiffBlock } from '~/ui/components/Snippet';
 
-> **important** Experimentally available in SDK 52 and later.
+> **important** This is an [experimental](/more/release-statuses/#experimental) feature.
 
-Expo Router offers a set of components to create custom tab layouts via the submodule [`expo-router/ui`](/versions/latest/sdk/router-ui/). Unlike the React Navigation styled `Tabs`, these components are unstyled and flexible. They are designed to allow you build complex UI patterns from scratch in your project.
+Expo Router offers a set of components to create custom tab layouts via the submodule [`expo-router/ui`](/versions/latest/sdk/router/ui/). Unlike the React Navigation styled `Tabs`, these components are unstyled and flexible. They are designed to allow you build complex UI patterns from scratch in your project.
 
 For other tab layouts see:
 
@@ -44,7 +45,7 @@ There are four components offered by `expo-router/ui` to create custom tab layou
 
 A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component, as shown here:
 
-```tsx app/(tabs)/_layout.tsx|collapseHeight=440
+```tsx src/app/(tabs)/_layout.tsx|collapseHeight=440
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
 import { Text } from 'react-native';
 
@@ -105,7 +106,7 @@ A `TabTrigger` can link to a deeply nested route. `<TabTrigger name="route" href
 
 The `TabSlot` component renders the current route. `TabSlot` can be nested inside other components within `Tabs` but cannot be within the `TabList`.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 <Tabs>
   <TabList>
     <TabTrigger name="home" href="/">
@@ -217,7 +218,7 @@ The `TabList` is both the configuration and default appearance of the `Tabs`, bu
 
 `TabTrigger` will forward an `isFocused` prop, so you can create a separate tab button component that reacts to focused status.
 
-```tsx TabButton.tsx
+```tsx tab-button.tsx
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { TabTriggerSlotProps } from 'expo-router/ui';
 import { ComponentProps, Ref } from 'react';
@@ -262,17 +263,19 @@ In Expo SDK 52 and earlier (React 18), use the legacy `forwardRef` function to a
 
 ### Hooks
 
-All components also have a hook version giving you control over the render tree. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for a full list of the hooks available.
+All components also have a hook version giving you control over the render tree. See the [Router UI Reference](/versions/latest/sdk/router/ui/) for a full list of the hooks available.
 
 Using hooks is considered advanced usage of this library. For most use-cases, using the components with `asChild` should give you enough control over the render tree.
 
-If you are developing a custom `<TabTrigger />`, you may also need to develop a custom `<TabList />` as `<TabList />` uses the [`useTabsWithChildren()`](/versions/latest/sdk/router-ui/#usetabswithchildrenoptions) which requires using the exported `<TabTrigger />` component.
+If you are developing a custom `<TabTrigger />`, you may also need to develop a custom `<TabList />` as `<TabList />` uses the [`useTabsWithChildren()`](/versions/latest/sdk/router/ui/#usetabswithchildrenoptions) which requires using the exported `<TabTrigger />` component.
 
 ### Customizing how tab screens are rendered
 
-The `TabSlot` accepts a `renderFn` property. This function can be used to override how your screen is rendered, allowing you to implement advanced functionality such as animations or persisting/unmounting screens. See the [Router UI Reference](/versions/latest/sdk/router-ui/) for more information.
+The `TabSlot` accepts a `renderFn` property. This function can be used to override how your screen is rendered, allowing you to implement advanced functionality such as animations or persisting/unmounting screens. See the [Router UI Reference](/versions/latest/sdk/router/ui/) for more information.
 
 ## Common questions
+
+<FAQ>
 
 <Collapsible summary="How do I create multiple tabs for the same route?">
 
@@ -312,3 +315,5 @@ You can provide a custom renderer to `TabSlot` to customize how it renders a scr
 A `TabTrigger` with a relative href is relative to the local path name `Tabs` was rendered on. This is different from normal relative hrefs which are relative to the current displayed route. For example, the `<TabTrigger href="./profile" />` will resolve to `/directory/profile`, even when the `/directory/page` route is showing. Expo recommends against using relative hrefs.
 
 </Collapsible>
+
+</FAQ>

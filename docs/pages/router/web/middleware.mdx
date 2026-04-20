@@ -1,15 +1,16 @@
 ---
 title: Server middleware
 description: Learn how to create middleware that runs for every request to the server in Expo Router.
+isAlpha: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **important** Server middleware is in alpha and is available in SDK 54 and later. It requires a [deployed server](/router/web/api-routes/#deployment) for production use.
+> **important** Server middleware is in [alpha](/more/release-statuses/#alpha) and is available in SDK 54 and later. It requires a [deployed server](/router/web/api-routes/#deployment) for production use.
 
-Server middleware in Expo Router allows you to run code before requests reach your routes, enabling powerful server-side functionality like authentication and logging for every request. Unlike [API routes](/router/web/api-routes) that handle specific endpoints, middleware runs for **every** request in your app, so it should run as quickly as possible to avoid slowing down your app's performance. Client-side navigation such as on native, or in a web app when using [`<Link />`](/versions/latest/sdk/router/#link), will not move through the server middleware.
+Server middleware in Expo Router allows you to run code before requests reach your routes, enabling powerful server-side functionality like authentication and logging for every request. Unlike [API routes](/router/web/api-routes) that handle specific endpoints, middleware runs for **every** request in your app, so it should run as quickly as possible to avoid slowing down your app's performance. Client-side navigation such as on native, or in a web app when using [`<Link />`](/versions/latest/sdk/router/link/#link), will not move through the server middleware.
 
 ## Setup
 
@@ -49,9 +50,9 @@ First, configure your app to use server output by adding the server configuratio
 
 ### Create your middleware file
 
-Create a **+middleware.ts** file in your **app** directory, to define your server middleware function:
+Create a **+middleware.ts** file in your **src/app** directory, to define your server middleware function:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export default function middleware(request) {
   console.log(`Middleware executed for: ${request.url}`);
   // Your middleware logic goes here
@@ -88,7 +89,7 @@ Visit your app in a browser or make requests to test that your middleware is wor
 
 By default, middleware runs on all server requests. You can add a matcher to control when your middleware executes with `unstable_settings`:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export const unstable_settings = {
   matcher: {
     // Only run on GET requests
@@ -163,7 +164,7 @@ Middleware executes only for actual HTTP requests to your server. This means it 
 
 Middleware does not run for:
 
-- Client-side navigation using [`<Link />`](/versions/latest/sdk/router/#link) or [`router`](/versions/latest/sdk/router/#router)
+- Client-side navigation using [`<Link />`](/versions/latest/sdk/router/link/#link) or [`router`](/versions/latest/sdk/router/#router)
 - Native app screen transitions
 - Prefetched routes
 - Static asset requests like images and fonts
@@ -174,7 +175,7 @@ Middleware does not run for:
 
 Middleware is often used to perform authorization checks before a route has loaded. You can check headers, cookies, or query parameters to determine if a user has access to certain routes:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 import { jwtVerify } from 'jose';
 
 export default function middleware(request) {
@@ -193,7 +194,7 @@ export default function middleware(request) {
 
 You can use middleware to log requests for debugging or analytics purposes. This can help you track user activity or diagnose issues in your app:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export default function middleware(request) {
   console.log(`${request.method} ${request.url}`);
 }
@@ -205,7 +206,7 @@ export default function middleware(request) {
 
 Middleware can also be used to perform dynamic redirects. This allows you to control user navigation based on specific conditions:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export default function middleware(request) {
   if (request.headers.has('specific-header')) {
     return Response.redirect('https://expo.dev');
@@ -219,7 +220,7 @@ export default function middleware(request) {
 
 Use matchers to run middleware only for API routes, keeping other routes unaffected:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export const unstable_settings = {
   matcher: {
     patterns: ['/api'],
@@ -243,7 +244,7 @@ export default function middleware(request) {
 
 Protect write operations (POST, PUT, DELETE) while allowing public read access:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export const unstable_settings = {
   matcher: {
     methods: ['POST', 'PUT', 'DELETE'],
@@ -271,7 +272,7 @@ function isValidToken(token: string): boolean {
 
 Monitor specific endpoints without logging every request:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export const unstable_settings = {
   matcher: {
     patterns: ['/api/users/[userId]', '/admin', /^\/webhook/],
@@ -300,7 +301,7 @@ export default function middleware(request) {
 
 ### Typed middleware
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 import { MiddlewareFunction } from 'expo-router/server';
 
 const middleware: MiddlewareFunction = request => {
@@ -314,7 +315,7 @@ export default middleware;
 
 ### Limitations
 
-- Middleware runs exclusively on the server and only for HTTP requests. It does not execute during client-side navigation, for example, with [`<Link />`](/versions/latest/sdk/router/#link) or native app screen transitions.
+- Middleware runs exclusively on the server and only for HTTP requests. It does not execute during client-side navigation, for example, with [`<Link />`](/versions/latest/sdk/router/link/#link) or native app screen transitions.
 - The request object passed to middleware is [immutable](#request-immutability) to prevent side effects. You cannot modify headers or consume the request body, ensuring it remains available for route handlers.
 - You can only have one root-level **+middleware.ts** in your app.
 - The same limitations that [apply to API routes](/router/web/api-routes/#known-limitations) also apply to middleware.

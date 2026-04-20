@@ -33,13 +33,13 @@ export const SidebarSingleEntry = ({
         <LinkBase
           href={href}
           className={mergeClasses(
-            'flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm !leading-[100%] text-secondary',
+            'text-secondary flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm leading-[100!%]',
             'hocus:bg-element',
             'focus-visible:relative focus-visible:z-10',
             allowCompactDisplay && 'compact-height:justify-center compact-height:bg-subtle',
-            secondary && 'text-xs',
+            secondary && 'text-sm',
             isActive &&
-              '!bg-palette-blue3 font-medium text-link hocus:!bg-palette-blue4 hocus:text-link'
+              'bg-palette-blue3! text-link hocus:bg-palette-blue4! hocus:text-link font-medium'
           )}
           {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
           {...(isActive && mainSection && { 'data-main-section': mainSection })}>
@@ -53,13 +53,13 @@ export const SidebarSingleEntry = ({
           <span className={mergeClasses(allowCompactDisplay && 'compact-height:hidden')}>
             {title}
           </span>
-          {isExternal && <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary" />}
+          {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
         </LinkBase>
       </Tooltip.Trigger>
       <Tooltip.Content
         side="bottom"
         className={mergeClasses('z-50 hidden', allowCompactDisplay && 'compact-height:flex')}>
-        <span className="text-2xs text-secondary">{title}</span>
+        <span className="text-secondary text-xs">{title}</span>
       </Tooltip.Content>
     </Tooltip.Root>
   );

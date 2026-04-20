@@ -7,5 +7,5 @@ import { NotificationCategory } from './Notifications.types';
  * @platform ios
  * @header categories
  */
-export default function getNotificationCategoriesAsync(): Promise<NotificationCategory[]>;
+export declare function getNotificationCategoriesAsync(): Promise<NotificationCategory[]>;
 //# sourceMappingURL=getNotificationCategoriesAsync.d.ts.map

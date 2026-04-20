@@ -21,6 +21,12 @@ internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition {
    */
   @discardableResult
   func call(_ appContext: AppContext, withThis this: JavaScriptValue?, arguments: [JavaScriptValue]) throws -> JavaScriptValue
+
+  /**
+   Builds the sync function in a specific runtime.
+   Used to install functions in alternate runtimes (e.g. the worklet runtime).
+   */
+  func build(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject
 }
 
 /**
@@ -61,7 +67,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
     do {
       let result = try call(by: owner, withArguments: args, appContext: appContext)
       callback(.success(Conversions.convertFunctionResult(result, appContext: appContext, dynamicType: ~ReturnType.self)))
@@ -144,11 +150,19 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   @JavaScriptActor
   func build(appContext: AppContext) throws -> JavaScriptObject {
+    return try build(appContext: appContext, in: appContext.runtime)
+  }
+
+  /**
+   Builds the sync function in a specific runtime.
+   Used to install functions in alternate runtimes (e.g. the worklet runtime).
+   */
+  func build(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
     // We intentionally capture a strong reference to `self`, otherwise the "detached" objects would
     // immediately lose the reference to the definition and thus the underlying native function.
     // It may potentially cause memory leaks, but at the time of writing this comment,
     // the native definition instance deallocates correctly when the JS VM triggers the garbage collector.
-    return try appContext.runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak appContext, self] this, arguments in
+    return try runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak appContext, self] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }

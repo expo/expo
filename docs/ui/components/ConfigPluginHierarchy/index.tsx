@@ -8,8 +8,8 @@ import {
   MarkerType,
   BackgroundVariant,
 } from '@xyflow/react';
-import React from 'react';
 import '@xyflow/react/dist/style.css';
+import React from 'react';
 
 type ConfigPluginHierarchyProps = {
   highlightedNodeId?: string;
@@ -80,8 +80,8 @@ const getNodeStyles = (isHighlighted: boolean) => ({
     ? 'bg-palette-green9 text-palette-white'
     : 'bg-palette-blue9 text-palette-white',
   container: isHighlighted
-    ? 'bg-palette-green3 border-palette-green9 border-2 dark:bg-palette-green4 dark:border-palette-green8 !border-palette-green9 dark:!border-palette-green8 !bg-palette-green3 dark:!bg-palette-green4'
-    : 'bg-palette-blue3 border-palette-blue9 border-2 dark:bg-palette-blue4 dark:border-palette-blue8 !border-palette-blue9 dark:!border-palette-blue8 !bg-palette-blue3 dark:!bg-palette-blue4',
+    ? 'bg-palette-green3 border-palette-green9 border-2 dark:bg-palette-green4 dark:border-palette-green8 border-palette-green9! dark:border-palette-green8! bg-palette-green3! dark:bg-palette-green4!'
+    : 'bg-palette-blue3 border-palette-blue9 border-2 dark:bg-palette-blue4 dark:border-palette-blue8 border-palette-blue9! dark:border-palette-blue8! bg-palette-blue3! dark:bg-palette-blue4!',
 });
 
 const createNodeLabel = (data: NodeData, isHighlighted: boolean) => {
@@ -98,8 +98,8 @@ const createNodeLabel = (data: NodeData, isHighlighted: boolean) => {
           {data.extraTitle}
         </div>
       )}
-      {data.subtitle && <div className={`text-xs ${styles.subtitleText}`}>{data.subtitle}</div>}
-      <div className={`mt-1 rounded-md px-2 py-1 text-xs ${styles.badge}`}>{data.badge}</div>
+      {data.subtitle && <div className={`text-sm ${styles.subtitleText}`}>{data.subtitle}</div>}
+      <div className={`mt-1 rounded-md px-2 py-1 text-sm ${styles.badge}`}>{data.badge}</div>
     </div>
   );
 };
@@ -161,8 +161,19 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
     setNodes(createNodes(highlightedNodeId, highlightedNodeIds));
   }, [highlightedNodeId, highlightedNodeIds, setNodes]);
 
+  const diagramAlt = nodesData
+    .map(n => {
+      const names = [n.title, n.extraTitle].filter(Boolean).join(', ');
+      const sub = n.subtitle ? ` (${n.subtitle})` : '';
+      return `${names}${sub} [${n.badge}]`;
+    })
+    .join('\n→ ');
+
   return (
-    <div className="mb-4 h-[300px] w-full overflow-hidden rounded-lg border border-default bg-default">
+    <div
+      className="border-default bg-default mb-4 h-[300px] w-full overflow-hidden rounded-lg border"
+      data-md="diagram"
+      data-md-alt={diagramAlt}>
       <style dangerouslySetInnerHTML={{ __html: nodeHandleStyles }} />
       <ReactFlow
         nodes={nodes}

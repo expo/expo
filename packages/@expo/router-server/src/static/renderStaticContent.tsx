@@ -17,6 +17,11 @@ import ReactDOMServer from 'react-dom/server.node';
 import { getRootComponent } from './getRootComponent';
 import { PreloadedDataScript } from './html';
 import { createDebug } from '../utils/debug';
+import {
+  createInjectedCssElements,
+  createInjectedScriptElements,
+  serializeHelmetToHtml,
+} from '../utils/html';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 
@@ -33,6 +38,8 @@ function resetReactNavigationContexts() {
 export type GetStaticContentOptions = {
   loader?: {
     data?: any;
+    /** Unique key for the route. Derived from the route's contextKey */
+    key: string;
   };
   request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
@@ -72,7 +79,13 @@ export async function getStaticContent(
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
+  const loaderKey = options?.loader ? options.loader.key + location.search : null;
+
+  const loadedData = loaderKey
+    ? {
+        [loaderKey]: options?.loader?.data ?? null,
+      }
+    : null;
 
   const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
@@ -92,7 +105,6 @@ export async function getStaticContent(
   // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
-
   if (loadedData) {
     const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
       <PreloadedDataScript data={loadedData} />
@@ -103,25 +115,12 @@ export async function getStaticContent(
   // Inject hydration assets (JS/CSS bundles). Used in SSR mode
   if (options?.assets) {
     if (options.assets.css.length > 0) {
-      /**
-       * For each CSS file, inject two link elements; one for preloading and one as the actual
-       * stylesheet. This matches what we do for SSG
-       *
-       * @see @expo/cli/src/start/server/metro/serializeHtml.ts
-       */
-      const injectedCSS = options.assets.css
-        .flatMap((href) => [
-          `<link rel="preload" href="${href}" as="style">`,
-          `<link rel="stylesheet" href="${href}">`,
-        ])
-        .join('\n');
+      const injectedCSS = createInjectedCssElements(options.assets.css);
       output = output.replace('</head>', `${injectedCSS}\n</head>`);
     }
 
     if (options.assets.js.length > 0) {
-      const injectedJS = options.assets.js
-        .map((src) => `<script src="${src}" defer></script>`)
-        .join('\n');
+      const injectedJS = createInjectedScriptElements(options.assets.js);
       output = output.replace('</body>', `${injectedJS}\n</body>`);
     }
   }
@@ -130,17 +129,15 @@ export async function getStaticContent(
 }
 
 function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
-  // Head components
-  for (const key of ['title', 'priority', 'meta', 'link', 'script', 'style'].reverse()) {
-    const result = helmet?.[key]?.toString();
-    if (result) {
-      html = html.replace('<head>', `<head>${result}`);
-    }
+  const { headTags, htmlAttributes, bodyAttributes } = serializeHelmetToHtml(helmet);
+
+  if (headTags) {
+    html = html.replace('<head>', `<head>${headTags}`);
   }
 
   // attributes
-  html = html.replace('<html ', `<html ${helmet?.htmlAttributes.toString()} `);
-  html = html.replace('<body ', `<body ${helmet?.bodyAttributes.toString()} `);
+  html = html.replace('<html ', `<html ${htmlAttributes} `);
+  html = html.replace('<body ', `<body ${bodyAttributes} `);
 
   return html;
 }

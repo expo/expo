@@ -30,6 +30,13 @@ function _jsonFile() {
   };
   return data;
 }
+function _requireUtils() {
+  const data = require("@expo/require-utils");
+  _requireUtils = function () {
+    return data;
+  };
+  return data;
+}
 function _deepmerge() {
   const data = _interopRequireDefault(require("deepmerge"));
   _deepmerge = function () {
@@ -54,13 +61,6 @@ function _glob() {
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
-    return data;
-  };
-  return data;
-}
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
     return data;
   };
   return data;
@@ -166,10 +166,10 @@ function reduceExpoObject(config) {
  */
 function getSupportedPlatforms(projectRoot) {
   const platforms = [];
-  if (_resolveFrom().default.silent(projectRoot, 'react-native')) {
+  if ((0, _requireUtils().resolveFrom)(projectRoot, 'react-native/package.json')) {
     platforms.push('ios', 'android');
   }
-  if (_resolveFrom().default.silent(projectRoot, 'react-dom')) {
+  if ((0, _requireUtils().resolveFrom)(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
   }
   return platforms;
@@ -312,21 +312,29 @@ function getConfigFilePaths(projectRoot) {
     staticConfigPath: getStaticConfigFilePath(projectRoot)
   };
 }
+const DYNAMIC_CONFIG_EXTS = ['.ts', '.mts', '.cts', '.mjs', '.cjs', '.js'];
 function getDynamicConfigFilePath(projectRoot) {
-  for (const fileName of ['app.config.ts', 'app.config.js']) {
+  const fileNames = DYNAMIC_CONFIG_EXTS.map(ext => `app.config${ext}`);
+  for (const fileName of fileNames) {
     const configPath = _path().default.join(projectRoot, fileName);
-    if (_fs().default.existsSync(configPath)) {
-      return configPath;
-    }
+    try {
+      const stat = _fs().default.statSync(configPath);
+      if (stat.isFile()) {
+        return configPath;
+      }
+    } catch {}
   }
   return null;
 }
 function getStaticConfigFilePath(projectRoot) {
   for (const fileName of ['app.config.json', 'app.json']) {
     const configPath = _path().default.join(projectRoot, fileName);
-    if (_fs().default.existsSync(configPath)) {
-      return configPath;
-    }
+    try {
+      const stat = _fs().default.statSync(configPath);
+      if (stat.isFile()) {
+        return configPath;
+      }
+    } catch {}
   }
   return null;
 }

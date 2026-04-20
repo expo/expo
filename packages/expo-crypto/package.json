@@ -1,6 +1,6 @@
 {
   "name": "expo-crypto",
-  "version": "15.0.7",
+  "version": "55.0.8",
   "description": "Provides cryptography primitives for Android, iOS and web.",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",
@@ -10,7 +10,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -40,9 +39,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   }
 }

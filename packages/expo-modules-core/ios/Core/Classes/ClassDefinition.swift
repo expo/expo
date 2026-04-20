@@ -117,6 +117,27 @@ public final class ClassDefinition: ObjectDefinition {
 
     return try appContext.runtime.createSharedObjectClass(name, constructor: consturctor)
   }
+
+  /**
+   Builds a prototype object for this class in the given runtime, inheriting from the provided base prototype.
+   Installs property getter/setters that route to the same native SharedObjects via the shared registry.
+   Used to make SharedObject properties accessible in alternate runtimes (e.g. the worklet runtime).
+   */
+  func buildPrototype(in runtime: JavaScriptRuntime, appContext: AppContext, basePrototype: JavaScriptObject) throws -> JavaScriptObject? {
+    guard let proto = try runtime.createObject(withPrototype: basePrototype) else {
+      return nil
+    }
+    for property in properties.values {
+      let descriptor = try property.buildDescriptor(appContext: appContext, in: runtime)
+      proto.defineProperty(property.name, descriptor: descriptor)
+    }
+    for fn in functions.values {
+      if let syncFn = fn as? AnySyncFunctionDefinition {
+        proto.setProperty(fn.name, value: try syncFn.build(appContext: appContext, in: runtime))
+      }
+    }
+    return proto
+  }
 }
 
 // MARK: - ClassAssociatedObject
@@ -147,6 +168,6 @@ extension SharedObject: ClassAssociatedObject {}
  - Redefining prototype's `constructor` is a bad idea so a function with this name
    needs to be filtered out when decorating the prototype.
  */
-fileprivate func isConstructor(_ item: AnyDefinition) -> Bool {
+private func isConstructor(_ item: AnyDefinition) -> Bool {
   return (item as? AnySyncFunctionDefinition)?.name == "constructor"
 }

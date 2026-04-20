@@ -105,7 +105,7 @@ In development, you must start the website **before installing the app on your d
 
 In any route that you want to support handoff, use the `Head` component from `expo-router/head`:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import Head from 'expo-router/head';
 import { Text } from 'react-native';
 
@@ -135,7 +135,7 @@ The `expo-router/head` component supports the following meta tags:
 You may want to switch the values between platforms, for that you can use **Platform.select**:
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import Head from 'expo-router/head';
 
 export default function App() {
@@ -185,7 +185,7 @@ If you're having issues, the best thing you can do is enable the most aggressive
 }
 ```
 
-In the application, ensure you are not rendering the `<Head />` element conditionally (for example, in an `if/else` block), it must be rendered on every page that you want to support handoff. We recommend adding it to the [Root Layout](/router/basics/layout/#root-layout) component to ensure every route is linkable while debugging.
+In the application, ensure you are not rendering the `<Head />` element conditionally (for example, in an `if/else` block), it must be rendered on every page that you want to support handoff. We recommend adding it to the [Root Layout](/router/basics/navigation-layouts/#root-layout) component to ensure every route is linkable while debugging.
 
 Ensure you can access the Ngrok URL (for example, via the browser), before installing the app on your device. If you can't access the URL, the OS will not be able to find the file and handoff will not work.
 

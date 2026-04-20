@@ -46,7 +46,7 @@ For example, you might see something like this on your Android builds:
   ]}
 />
 
-While you may or may not be interested in following up on that warning, it is not the cause of your failed build. So how do you know which logs are truly responsible? If you are building a bare project, you will already be good at this. If you are building a [managed project](/archive/managed-vs-bare/), it may be tricky because you don't directly interact with the native code, only write JavaScript.
+While you may or may not be interested in following up on that warning, it is not the cause of your failed build. So how do you know which logs are truly responsible? If you are building a bare project, you will already be good at this. If you are building a [managed project](/workflow/overview/), it may be tricky because you don't directly interact with the native code, only write JavaScript.
 
 A good path forward is to **determine if the build failed due to a native or JavaScript error**. When your build fails due to a JavaScript build error, you will usually see something like this:
 
@@ -101,7 +101,7 @@ If your project imports a file listed in **.gitignore**, the build will fail wit
 
 - Encode the file with `base64`, save that string as secrets, and create the file in an EAS Build hook. See [How can I upload files to EAS Build if they are gitignored?](https://expo.fyi/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored) for more information.
 
-- Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/build-reference/variables/#using-secrets-in-environment-variables) for more information.
+- Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/eas/environment-variables/#visibility-settings-for-environment-variables) for more information.
 
 </Collapsible>
 
@@ -149,7 +149,7 @@ You can build the production bundle locally by running `npx expo export` to bypa
 If the logs weren't enough to immediately help you understand and fix the root cause, it's time to try to reproduce the issue locally. If your project builds and runs locally in release mode then it will also build on EAS Build, provided that the following are all true:
 
 - Relevant [Build tool versions](/build/eas-json#configuring-your-build-tools) (for example, Xcode, Node.js, npm, Yarn) are the same in both environments.
-- Relevant [environment variables](/build-reference/variables) are the same in both environments.
+- Relevant [environment variables](/eas/environment-variables) are the same in both environments.
 - The [archive](https://expo.fyi/eas-build-archive) that is uploaded to EAS Build includes the same relevant source files.
 
 You can verify that your project builds on your local machine with the `npx expo run:android` and `npx expo run:ios` commands, with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).
@@ -171,7 +171,7 @@ You can verify that your project builds on your local machine with the `npx expo
 > series of steps that is as close as it can be to what runs remotely on the hosted EAS Build
 > service. It will copy your project to a temporary directory and make any necessary changes there.
 > [Learn how to set this up and use it for
-> debugging](/build-reference/local-builds.mdx#using-local-builds-for-debugging).
+> debugging](/build-reference/local-builds/#use-local-builds-for-debugging).
 
 If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
 

@@ -363,11 +363,14 @@ export class AFCProtocolClient extends ProtocolClient {
 
     const reader = this.readerFactory.create((resp, err) => {
       if (err && err instanceof AFCInternalError) {
-        this.requestCallbacks[err.requestId](resp, err);
+        this.requestCallbacks[err.requestId]?.(resp, err);
       } else if (isErrorStatusResponse(resp)) {
-        this.requestCallbacks[resp.id](resp, new AFCError(AFC_STATUS[resp.data], resp.data));
+        this.requestCallbacks[resp.id]?.(
+          resp,
+          new AFCError(AFC_STATUS?.[resp.data] ?? 'UNKNOWN_ERROR', resp.data)
+        );
       } else {
-        this.requestCallbacks[resp.id](resp);
+        this.requestCallbacks[resp.id]?.(resp);
       }
     });
     socket.on('data', reader.onData);

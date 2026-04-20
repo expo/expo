@@ -1,5 +1,5 @@
 import type { ExpoConfig } from '@expo/config';
-import JsonFile from '@expo/json-file';
+import JsonFile, { JSONObject } from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -16,7 +16,6 @@ import {
   applyBetaTag,
   applyKnownNpmPackageNameRules,
   downloadAndExtractNpmModuleAsync,
-  ExtractProps,
   getResolvedTemplateName,
 } from './utils/npm';
 
@@ -128,15 +127,13 @@ export async function extractAndPrepareTemplateAppAsync(
   const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-default');
 
   if (type === 'repository') {
-    await downloadAndExtractGitHubRepositoryAsync(uri, {
-      cwd: projectRoot,
-      name: projectName,
+    await downloadAndExtractGitHubRepositoryAsync(uri, projectRoot, {
+      expName: projectName,
     });
   } else {
     const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
-    await downloadAndExtractNpmModuleAsync(resolvedUri, {
-      cwd: projectRoot,
-      name: projectName,
+    await downloadAndExtractNpmModuleAsync(resolvedUri, projectRoot, {
+      expName: projectName,
       disableCache: type === 'file',
     });
   }
@@ -175,7 +172,7 @@ function escapeXMLCharacters(original: string): string {
  * specified.
  *
  * By convention, the app name of all templates is "HelloWorld". During
- * extraction, filepaths are transformed via `createEntryResolver()` in
+ * extraction, filepaths are transformed via `createEntryRenamer()` in
  * `createFileTransform.ts`, but the contents of files are left untouched.
  * Technically, the contents used to be transformed during extraction as well,
  * but due to poor configurability, we've moved to a post-extraction approach.
@@ -240,11 +237,16 @@ export async function getTemplateFilesToRenameAsync({
    * @see defaultRenameConfig
    */
   renameConfig: userConfig,
-}: Pick<ExtractProps, 'cwd'> & { renameConfig?: string[] }) {
+}: {
+  cwd: string;
+  renameConfig?: string[];
+}) {
   let config = userConfig ?? defaultRenameConfig;
 
   // Strip comments, trim whitespace, and remove empty lines.
-  config = config.map((line) => line.split(/(?<!\\)#/, 2)[0].trim()).filter((line) => line !== '');
+  config = config
+    .map((line) => line.split(/(?<!\\)#/, 2)[0]?.trim() ?? '')
+    .filter((line) => line !== '');
 
   return await glob(config, {
     cwd,
@@ -262,7 +264,9 @@ export async function renameTemplateAppNameAsync({
   cwd,
   name,
   files,
-}: Pick<ExtractProps, 'cwd' | 'name'> & {
+}: {
+  cwd: string;
+  name: string;
   /**
    * An array of files to transform. Usually provided by calling
    * getTemplateFilesToRenameAsync().
@@ -313,6 +317,12 @@ export async function renameTemplateAppNameAsync({
   );
 }
 
+function templateHasNativeCode(root: string): boolean {
+  return [path.join(root, 'android'), path.join(root, 'ios')].some((folder) =>
+    fs.existsSync(folder)
+  );
+}
+
 /**
  * Sanitize a template (or example) with expected `package.json` properties and files.
  */
@@ -323,8 +333,21 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
 
   const templatePath = path.join(__dirname, '../template/gitignore');
   const ignorePath = path.join(projectRoot, '.gitignore');
+
+  let nativeFoldersIgnored = false;
   if (!fs.existsSync(ignorePath)) {
-    await fs.promises.copyFile(templatePath, ignorePath);
+    if (process.env.NODE_ENV !== 'test') {
+      await fs.promises.copyFile(templatePath, ignorePath);
+    }
+  } else {
+    // If the template has a gitignore file already, we apply a heuristic to check if it ignores
+    // native folders. We're not strictly checking both ios|android but either loosely
+    try {
+      const ignoreContents = fs.readFileSync(ignorePath, 'utf-8');
+      nativeFoldersIgnored = /^\/?(?:ios|android)\/?/gm.test(ignoreContents);
+    } catch {
+      nativeFoldersIgnored = false;
+    }
   }
 
   const defaultConfig: ExpoConfig = {
@@ -354,6 +377,35 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
   delete packageJson.description;
   delete packageJson.tags;
   delete packageJson.repository;
+
+  if (
+    (typeof packageJson.scripts === 'object' || packageJson.scripts == null) &&
+    !(packageJson.scripts as JSONObject)?.android &&
+    !(packageJson.scripts as JSONObject)?.ios
+  ) {
+    // When we're creating a template that:
+    // - does not have ios/android scripts
+    // - doesn't have native codes
+    // - has native folders ignored
+    // we automatically add ios/android scripts since prebuild will likely trigger, and used to add these scripts automatically
+    // but doesn't anymore
+    if (templateHasNativeCode(projectRoot)) {
+      packageJson.scripts = {
+        ...packageJson.scripts,
+        android: 'expo run:android',
+        ios: 'expo run:ios',
+      };
+    } else if (nativeFoldersIgnored) {
+      packageJson.scripts = {
+        ...packageJson.scripts,
+        android: 'expo start --android',
+        ios: 'expo start --ios',
+      };
+    } else {
+      // By default we don't do anything since we don't know if `start` or `run:*` are good defaults
+      // We assume that most templates have scripts in this case (e.g. the default template has its own already)
+    }
+  }
 
   // Only strip the license if it's 0BSD, used by our templates. Leave other licenses alone.
   if (packageJson.license === '0BSD') {

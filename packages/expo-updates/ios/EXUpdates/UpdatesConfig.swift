@@ -145,7 +145,7 @@ public final class UpdatesConfig: NSObject {
   }
 
   private static func configDictionaryWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> [String: Any] {
-    guard let configPlistPath = Bundle.main.path(forResource: PlistName, ofType: "plist") else {
+    guard let configPlistPath = updatesBundle.path(forResource: PlistName, ofType: "plist") else {
       throw UpdatesConfigError.ExpoUpdatesConfigPlistError
     }
 
@@ -290,7 +290,7 @@ public final class UpdatesConfig: NSObject {
     }
 
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
-    let enableBsdiffPatchSupport = config.optionalValue(forKey: EXUpdatesConfigEnableBsdiffPatchSupportKey) ?? true
+    let enableBsdiffPatchSupport = config.optionalValue(forKey: EXUpdatesConfigEnableBsdiffPatchSupportKey) ?? false
 
     return UpdatesConfig(
       cachedConfigDictionary: config,

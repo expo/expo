@@ -2,26 +2,6 @@ import { Ref } from 'react';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 /**
- * Determines which keyboard to open. For example, `'numeric'`.
- *
- * Available options:
- * - default
- * - numeric
- * - email-address
- * - phone-pad
- * - decimal-pad
- * - ascii-capable
- * - url
- * - numbers-and-punctuation
- * - name-phone-pad
- * - twitter
- * - web-search
- * - ascii-capable-number-pad
- *
- * @default default
- */
-export type TextFieldKeyboardType = 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'decimal-pad' | 'twitter' | 'web-search' | 'ascii-capable-number-pad';
-/**
  * Can be used for imperatively setting text and focus on the `TextField` component.
  */
 export type TextFieldRef = {
@@ -36,74 +16,48 @@ export type TextFieldRef = {
 };
 export type TextFieldProps = {
     ref?: Ref<TextFieldRef>;
-    /**
-     * Initial value that the `TextField` displays when being mounted. As the `TextField` is an uncontrolled component, change the key prop if you need to change the text value.
-     */
+    /** Initial value displayed when mounted. Uncontrolled — change `key` to reset. */
     defaultValue?: string;
+    /** If true, the text field will be focused automatically when mounted. @default false */
+    autoFocus?: boolean;
     /**
      * A text that is displayed when the field is empty.
      */
     placeholder?: string;
     /**
-     * A callback triggered when user types in text into the `TextField`.
+     * A callback triggered when the text value changes.
      */
-    onChangeText?: (value: string) => void;
+    onValueChange?: (value: string) => void;
     /**
-     * A callback triggered when user focuses or blurs the `TextField`.
+     * A callback triggered when the field gains or loses focus.
      */
-    onChangeFocus?: (focused: boolean) => void;
-    /**
-     * A callback triggered when user submits the `TextField` by pressing the return key.
-     */
-    onSubmit?: (value: string) => void;
+    onFocusChange?: (focused: boolean) => void;
     /**
      * A callback triggered when user selects text in the TextField.
      * @platform ios 18.0+ tvos 18.0+
      */
-    onChangeSelection?: ({ start, end }: {
+    onSelectionChange?: ({ start, end }: {
         start: number;
         end: number;
     }) => void;
     /**
-     * If true, the text input can be multiple lines.
-     * While the content will wrap, there's no keyboard button to insert a new line.
+     * The axis along which the text field grows when content exceeds a single line.
+     * - `'horizontal'` — single line (default).
+     * - `'vertical'` — expands vertically for multiline content. Use `lineLimit` modifier to cap visible lines.
+     * @default 'horizontal'
      */
-    multiline?: boolean;
-    /**
-     * If true, the text input will add new lines when the user presses the return key.
-     * @default true
-     */
-    allowNewlines?: boolean;
-    /**
-     * The number of lines to display when `multiline` is set to true.
-     * If the number of lines in the view is above this number, the view scrolls.
-     * @default undefined, which means unlimited lines.
-     */
-    numberOfLines?: number;
-    keyboardType?: TextFieldKeyboardType;
-    /**
-     * If true, autocorrection is enabled.
-     * @default true
-     */
-    autocorrection?: boolean;
-    /**
-     * If true, the text input will be focused automatically when the component is mounted.
-     * @default false
-     */
-    autoFocus?: boolean;
+    axis?: 'horizontal' | 'vertical';
 } & CommonViewModifierProps;
-export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText' | 'onSubmit'> & {} & ViewEvent<'onValueChanged', {
+export type NativeTextFieldProps = Omit<TextFieldProps, 'onValueChange' | 'onFocusChange' | 'onSelectionChange'> & ViewEvent<'onValueChange', {
     value: string;
-}> & ViewEvent<'onFocusChanged', {
+}> & ViewEvent<'onFocusChange', {
     value: boolean;
-}> & ViewEvent<'onSelectionChanged', {
+}> & ViewEvent<'onSelectionChange', {
     start: number;
     end: number;
-}> & ViewEvent<'onSubmit', {
-    value: string;
 }>;
 /**
- * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
+ * Renders a SwiftUI `TextField`.
  */
 export declare function TextField(props: TextFieldProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

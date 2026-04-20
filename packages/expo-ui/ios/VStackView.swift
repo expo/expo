@@ -22,10 +22,7 @@ internal enum HorizontalAlignmentOptions: String, Enumerable {
 
 public final class VStackViewProps: UIBaseViewProps {
   @Field var spacing: Double?
-  @Field var useTapGesture: Bool?
   @Field var alignment: HorizontalAlignmentOptions?
-  @Field var backgroundColor: Color?
-  var onTap = EventDispatcher()
 }
 
 public struct VStackView: ExpoSwiftUI.View {
@@ -41,7 +38,5 @@ public struct VStackView: ExpoSwiftUI.View {
       spacing: CGFloat(props.spacing ?? 0)) {
         Children()
     }
-      .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
-      .background(props.backgroundColor)
   }
 }

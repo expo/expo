@@ -36,10 +36,10 @@ class Serializable @DoNotStrip private constructor(
 
   @Throws(Throwable::class)
   protected fun finalize() {
-    deallocate()
+    mHybridData.resetNative()
   }
 
-  override fun deallocate() {
-    mHybridData.resetNative()
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
   }
 }

@@ -3,6 +3,7 @@
 #import <ExpoModulesCore/EXHostWrapper.h>
 
 #import <ReactCommon/RCTHost.h>
+#import <ReactCommon/RCTHost+Internal.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -19,10 +20,21 @@
   return self;
 }
 
+- (nullable id)findModuleWithName:(nonnull NSString *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary
+{
+  RCTModuleRegistry *moduleRegistry = _host.moduleRegistry;
+  return [moduleRegistry moduleForName:[name UTF8String] lazilyLoadIfNecessary:lazilyLoadIfNecessary];
+}
+
 - (nullable UIView *)findViewWithTag:(NSInteger)tag
 {
   RCTComponentViewRegistry *componentViewRegistry = _host.surfacePresenter.mountingManager.componentViewRegistry;
   return [componentViewRegistry findComponentViewWithTag:tag];
+}
+
+- (nullable NSURL *)bundleURL
+{
+  return [_host.bundleManager bundleURL];
 }
 
 @end

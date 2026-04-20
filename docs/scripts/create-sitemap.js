@@ -11,7 +11,14 @@ const IGNORED_PAGES = new Set([
  * Create a sitemap for crawlers like Algolia Docsearch.
  * This allows crawlers to index _all_ pages, without a full page-link-chain.
  */
-export default function createSitemap({ pathMap, domain, output, pathsPriority, pathsHidden }) {
+export default function createSitemap({
+  pathMap,
+  domain,
+  output,
+  pathsPriority,
+  pathsHidden,
+  modificationDates = {},
+}) {
   if (!pathMap) {
     throw new Error(`⚠️ Couldn't generate sitemap, no 'pathMap' provided`);
   }
@@ -44,7 +51,11 @@ export default function createSitemap({ pathMap, domain, output, pathsPriority, 
   });
 
   sitemap.pipe(target);
-  urls.forEach(url => sitemap.write({ url }));
+  urls.forEach(url => {
+    const key = url.endsWith('/') ? url.slice(0, -1) : url;
+    const lastmod = modificationDates[key];
+    sitemap.write(lastmod ? { url, lastmod } : { url });
+  });
   sitemap.end();
 
   return urls;
@@ -64,7 +75,7 @@ function pathWithStartingSlash(url) {
  *   - Index page is always moved to the top
  *   - Matches the order of prioritized paths using "startsWith" check
  */
-function pathSortedByPriority(a, b, priorities = []) {
+export function pathSortedByPriority(a, b, priorities = []) {
   if (a === '/') {
     return -1;
   }
@@ -74,8 +85,15 @@ function pathSortedByPriority(a, b, priorities = []) {
 
   const aPriority = priorities.findIndex(prio => a.startsWith(prio));
   const bPriority = priorities.findIndex(prio => b.startsWith(prio));
-  if (aPriority >= 0 || bPriority >= 0) {
+  if (aPriority >= 0 && bPriority >= 0) {
     return aPriority - bPriority;
+  }
+  // Sort priority items before non-priority items
+  if (aPriority >= 0) {
+    return -1;
+  }
+  if (bPriority >= 0) {
+    return 1;
   }
 
   return 0;

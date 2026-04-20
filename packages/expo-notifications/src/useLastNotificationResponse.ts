@@ -45,7 +45,7 @@ import {
  * ```
  * @header listen
  */
-export default function useLastNotificationResponse() {
+export function useLastNotificationResponse() {
   const [lastNotificationResponse, setLastNotificationResponse] =
     useState<MaybeNotificationResponse>(undefined);
 

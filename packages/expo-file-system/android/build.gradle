@@ -4,13 +4,17 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '19.0.14'
+version = '55.0.9'
 
 android {
   namespace "expo.modules.filesystem"
   defaultConfig {
     versionCode 30
-    versionName "19.0.14"
+    versionName "55.0.9"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  testOptions {
+    unitTests.includeAndroidResources = true
   }
 }
 
@@ -22,4 +26,11 @@ dependencies {
   api 'com.squareup.okio:okio:2.9.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.documentfile:documentfile:1.1.0"
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.robolectric:robolectric:4.16'
+
+  if (project.findProject(':expo-modules-test-core')) {
+    androidTestImplementation project(':expo-modules-test-core')
+  }
 }

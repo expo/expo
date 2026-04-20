@@ -1,0 +1,16 @@
+---
+Name: jsi
+
+Namespaces:
+- Name: facebook
+  Namespaces:
+  - Name: jsi
+    Tags:
+    # Runtime is an abstract C++ class with pure virtual methods (not callable on
+    # Swift value types) and is managed externally. Import as an immortal reference
+    # type (SWIFT_IMMORTAL_REFERENCE) so Swift treats it like a class without
+    # attempting to manage its lifetime via retain/release.
+    - Name: Runtime
+      SwiftImportAs: reference
+      SwiftReleaseOp: immortal
+      SwiftRetainOp: immortal

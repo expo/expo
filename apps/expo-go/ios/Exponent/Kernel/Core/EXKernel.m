@@ -2,13 +2,13 @@
 
 #import "EXAppState.h"
 #import "EXAppViewController.h"
-#import "EXBuildConstants.h"
 #import "EXKernel.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
-#import "EXVersions.h"
 #import "EXKernelDevKeyCommands.h"
 
 #import <EXConstants/EXConstantsService.h>
@@ -16,10 +16,7 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-#import "EXDevMenu-Swift.h"
-#import "EXDevMenuInterface-Swift.h"
-
-@interface EXKernel () <DevMenuHostDelegate>
+@interface EXKernel ()
 @end
 
 NS_ASSUME_NONNULL_BEGIN
@@ -61,7 +58,8 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     // init service registry: classes which manage shared resources among all hosts
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
-    [DevMenuManager.shared setDelegate:self];
+    // Initialize the Expo Go dev menu manager (triggers lazy singleton init)
+    (void)[DevMenuManager shared];
 
     // Register keyboard commands (e.g., Cmd+D) for simulator
     [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
@@ -131,13 +129,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 - (void)_postNotificationName: (NSNotificationName)name
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
-}
-
-#pragma mark - App props
-
-- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
-{
-  return nil;
 }
 
 #pragma mark - App State
@@ -214,12 +205,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
+      [self _unregisterUnusedAppRecords];
     } else {
       _visibleApp = nil;
-    }
-    
-    if (_visibleApp != nil) {
-      [self _unregisterUnusedAppRecords];
+      if (appRecordPreviouslyVisible) {
+        [_appRegistry unregisterAppWithRecord:appRecordPreviouslyVisible];
+      }
     }
   }
 }
@@ -292,12 +283,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
       [self->_browserController moveAppToVisible:appRecord];
     }];
   }
-}
-
-#pragma mark - DevMenuHostDelegate
-
-- (void)devMenuNavigateHome {
-  [self switchTasks];
 }
 
 @end

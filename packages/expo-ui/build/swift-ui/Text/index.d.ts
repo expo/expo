@@ -1,36 +1,46 @@
-import type { ColorValue } from 'react-native';
-import { type CommonViewModifierProps } from '../types';
+import * as React from 'react';
+import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
+/**
+ * The style used to format a date in a SwiftUI `Text` view.
+ */
+export type TextDateStyle = 'timer' | 'relative' | 'offset' | 'date' | 'time';
 export interface TextProps extends CommonViewModifierProps {
     /**
-     * The children of the text.
-     * Only string and number are supported.
+     * Text content or nested Text components.
      */
     children?: React.ReactNode;
     /**
-     * The font weight of the text.
-     * Maps to iOS system font weights.
-     * @deprecated Use the font() modifier instead: modifiers={[font({ weight: 'bold' })]}
+     * Enables Markdown formatting for the text content using SwiftUI LocalizedStringKey.
      */
-    weight?: 'ultraLight' | 'thin' | 'light' | 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy' | 'black';
+    markdownEnabled?: boolean;
     /**
-     * The font design of the text.
-     * Maps to iOS system font designs.
-     * @deprecated Use the font() modifier instead: modifiers={[font({ design: 'rounded' })]}
+     * A date to display using the specified `dateStyle`. The text auto-updates as time passes.
      */
-    design?: 'default' | 'rounded' | 'serif' | 'monospaced';
+    date?: Date;
     /**
-     * The font size of the text.
-     * @deprecated Use the font() modifier instead: modifiers={[font({ size: 18 })]}
+     * The style used to format the `date` prop.
+     * @default 'date'
      */
-    size?: number;
+    dateStyle?: TextDateStyle;
     /**
-     * The line limit of the text.
+     * A time interval to display as a live-updating timer.
+     * @platform ios 16.0+
+     * @platform tvos 16.0+
      */
-    lineLimit?: number;
+    timerInterval?: ClosedRangeDate;
     /**
-     * The color of the text.
+     * Whether the timer counts down (`true`) or up (`false`).
+     * @default true
+     * @platform ios 16.0+
+     * @platform tvos 16.0+
      */
-    color?: ColorValue;
+    countsDown?: boolean;
+    /**
+     * A date at which the timer should appear paused.
+     * @platform ios 16.0+
+     * @platform tvos 16.0+
+     */
+    pauseTime?: Date;
 }
-export declare function Text(props: TextProps): import("react").JSX.Element;
+export declare function Text(props: TextProps): React.JSX.Element | null;
 //# sourceMappingURL=index.d.ts.map

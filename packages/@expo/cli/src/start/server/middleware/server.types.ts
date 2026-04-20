@@ -1,8 +1,6 @@
 import type express from 'express';
 import type http from 'http';
 
-/** Headers */
-export type ServerHeaders = Map<string, number | string | readonly string[]>;
 /** Request */
 export type ServerRequest = express.Request | http.IncomingMessage;
 /** Response */

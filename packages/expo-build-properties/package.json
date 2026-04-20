@@ -1,15 +1,20 @@
 {
   "name": "expo-build-properties",
-  "version": "1.0.8",
+  "version": "55.0.9",
   "description": "Config plugin to customize native build properties on prebuild",
   "main": "build/withBuildProperties.js",
   "types": "build/withBuildProperties.d.ts",
+  "exports": {
+    ".": "./build/withBuildProperties.js",
+    "./plugin": "./build/index.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -31,13 +36,16 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/build-properties",
   "dependencies": {
-    "ajv": "^8.11.0",
+    "@expo/schema-utils": "workspace:^55.0.2",
+    "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "@types/semver": "^7.0.0",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   }
 }
