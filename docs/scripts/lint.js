@@ -144,17 +144,6 @@ let failed = false;
 if (oxfmtResult.status !== 0) {
   console.error('\n\x1b[1;31moxfmt failed:\x1b[0m');
   if (oxfmtResult.output) {
-    if (isCI) {
-      const fileRe = /^(.+?) \(\d+(?:\.\d+)?[mnµ]?s\)\s*$/gm;
-      const cwd = process.cwd();
-      for (const match of oxfmtResult.output.matchAll(fileRe)) {
-        const filePath = match[1];
-        const relPath = filePath.startsWith(cwd) ? filePath.slice(cwd.length + 1) : filePath;
-        console.error(
-          `::error file=${workingDir}/${relPath},line=1,col=1::File has formatting issues. Run \`yarn format\` to fix.`
-        );
-      }
-    }
     const output = oxfmtResult.output.replace(
       /Run without `--check` to fix\./g,
       'Run `yarn format` to fix.'
