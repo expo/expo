@@ -12,6 +12,7 @@
 #include "../NativeArrayBuffer.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
+#include "../JSCallback.h"
 #include "../javaclasses/Collections.h"
 #include "../worklets/Serializable.h"
 
@@ -313,6 +314,33 @@ jobject JavaScriptFunctionFrontendConverter::convert(
 }
 
 bool JavaScriptFunctionFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  return value.isObject() && value.getObject(rt).isFunction(rt);
+}
+
+jobject JSCallbackFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+  auto jsFunction = std::make_shared<jsi::Function>(value.asObject(rt).asFunction(rt));
+  std::shared_ptr<react::CallInvoker> jsInvoker = jsiContext->runtimeHolder->jsInvoker;
+
+  auto callbackContext = std::make_shared<JSCallback::CallbackContext>(
+    rt,
+    std::move(jsInvoker),
+    std::move(jsFunction)
+  );
+
+  react::LongLivedObjectCollection::get(rt).add(callbackContext);
+
+  return JSCallback::newInstance(jsiContext, std::move(callbackContext)).release();
+}
+
+bool JSCallbackFrontendConverter::canConvert(
   jsi::Runtime &rt,
   const jsi::Value &value
 ) const {

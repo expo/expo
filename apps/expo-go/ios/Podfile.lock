@@ -186,7 +186,6 @@ PODS:
     - boost
     - DoubleConversion
     - ExpoModulesJSI
-    - ExpoModulesMacros
     - fast_float
     - fmt
     - glog
@@ -217,7 +216,6 @@ PODS:
     - boost
     - DoubleConversion
     - ExpoModulesJSI
-    - ExpoModulesMacros
     - ExpoModulesTestCore
     - fast_float
     - fmt
@@ -255,8 +253,6 @@ PODS:
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesMacros (0.0.7)
-  - ExpoModulesMacros/Tests (0.0.7)
   - ExpoModulesTestCore (55.0.2):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
@@ -4043,8 +4039,6 @@ DEPENDENCIES:
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
-  - "ExpoModulesMacros (from `../../../node_modules/.pnpm/@expo+expo-modules-macros-plugin@0.0.7/node_modules/@expo/expo-modules-macros-plugin/apple`)"
-  - "ExpoModulesMacros/Tests (from `../../../node_modules/.pnpm/@expo+expo-modules-macros-plugin@0.0.7/node_modules/@expo/expo-modules-macros-plugin/apple`)"
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
@@ -4317,8 +4311,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
     :path: "../../../packages/expo-modules-core"
-  ExpoModulesMacros:
-    :path: "../../../node_modules/.pnpm/@expo+expo-modules-macros-plugin@0.0.7/node_modules/@expo/expo-modules-macros-plugin/apple"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoModulesWorklets:
@@ -4610,9 +4602,8 @@ SPEC CHECKSUMS:
   ExpoLogBox: 4a892fbcf6e343ffc1a6b714dcdc04a754d7e42f
   ExpoMailComposer: edd4f46a26ea55ff0e3a83ef0192e79f647911c8
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
-  ExpoModulesCore: 5ba50360a4a0bb7089aebcded3329af3ee63fbdb
+  ExpoModulesCore: 936a4fb73792d8c8bc861d57522539c35fc36e40
   ExpoModulesJSI: 793687b04cbaa73ee8548bfdbcfba85954d1b2b5
-  ExpoModulesMacros: 6e01118aed19527180871e271177089c34d90dd2
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoModulesWorklets: fe2384a395429f5148f20204d229fb50926f9392
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007

@@ -9,7 +9,8 @@
       "ThemeProvider": ["../common/ThemeProvider"],
       "benchmarking": ["../bare-expo/modules/benchmarking"],
       "worklets-tester": ["../bare-expo/modules/worklets-tester"],
-      "test-expo-ui": ["../bare-expo/modules/test-expo-ui"]
+      "test-expo-ui": ["../bare-expo/modules/test-expo-ui"],
+      "callback-test": ["../bare-expo/modules/callback-test"]
     },
     "types": ["jest"],
     "strictNullChecks": true,

@@ -34,6 +34,7 @@ enum class CppType {
   JS_ARRAY_BUFFER = 1 << 22,
   NATIVE_ARRAY_BUFFER = 1 << 23,
   SERIALIZABLE = 1 << 24,
+  JS_CALLBACK = 1 << 25,
 };
 
 } // namespace expo

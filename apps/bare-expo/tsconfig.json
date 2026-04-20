@@ -7,7 +7,8 @@
       "ThemeProvider": ["../common/ThemeProvider"],
       "benchmarking": ["./modules/benchmarking"],
       "worklets-tester": ["./modules/worklets-tester"],
-      "test-expo-ui": ["./modules/test-expo-ui"]
+      "test-expo-ui": ["./modules/test-expo-ui"],
+      "callback-test": ["./modules/callback-test"]
     }
   }
 }
