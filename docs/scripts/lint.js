@@ -147,7 +147,7 @@ if (oxfmtResult.status !== 0) {
     // oxfmt lists each unformatted file on its own line like `path/to/file.ts (3ms)`.
     // In CI, surface them as GitHub Actions annotations so they show up inline on PRs.
     if (isCI) {
-      const fileRe = /^(.+?) \(\d+(?:\.\d+)?[nµm]?s\)\s*$/gm;
+      const fileRe = /^(.+?) \(\d+(?:\.\d+)?[mnµ]?s\)\s*$/gm;
       const cwd = process.cwd();
       for (const match of oxfmtResult.output.matchAll(fileRe)) {
         const filePath = match[1];
