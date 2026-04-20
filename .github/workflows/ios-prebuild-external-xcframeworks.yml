@@ -121,7 +121,7 @@ jobs:
           FILE_LIST="$RUNNER_TEMP/xcframeworks-${{ matrix.flavor }}.txt"
 
           cd packages/precompile/.build
-          find . -type f -path "./*/output/${FLAVOR_LOWER}/xcframeworks/*.tar.gz" | sort > "$FILE_LIST"
+          find . -type f -name "*.tar.gz" | grep "/${FLAVOR_LOWER}/xcframeworks/" | sort > "$FILE_LIST"
 
           if [ ! -s "$FILE_LIST" ]; then
             echo "No XCFramework tarballs found for flavor ${{ matrix.flavor }}"
