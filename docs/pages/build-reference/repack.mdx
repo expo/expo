@@ -51,7 +51,9 @@ If you do not already have signing credentials locally, see [App credentials](/a
 Re-sign the repacked APK with a keystore:
 
 <Terminal
-  cmd={[ '$ npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias' ]}
+  cmd={[
+    '$ npx @expo/repack-app --platform android --source-app MyApp.apk --ks keystore.jks --ks-key-alias my-alias',
+  ]}
 />
 
 See the [Android-specific options](#android-specific-options) for keystore password flags and other settings.
@@ -63,7 +65,9 @@ Pass a signing identity and provisioning profile:
 > **Note**: iOS repacking supports ad-hoc and development signing only.
 
 <Terminal
-  cmd={[ '$ npx @expo/repack-app --platform ios --source-app MyApp.ipa --signing-identity "Apple Distribution: ..." --provisioning-profile /path/to/profile.mobileprovision',
+  cmd={[
+    '$ npx @expo/repack-app --platform ios --source-app MyApp.ipa --signing-identity "Apple Distribution: ..." --provisioning-profile /path/to/profile.mobileprovision',
+  ]}
 />
 
 See the [iOS-specific options](#ios-specific-options) for the full list of signing flags.
@@ -82,7 +86,9 @@ EAS Workflows provides a pre-packaged `repack` job type that handles signing and
 
 By default, repack updates the JS bundle, assets, and app metadata (app name, version, bundle identifier, and the expo-updates manifest). Pass `--js-bundle-only` when you intentionally want to update only the JS bundle and leave all native config untouched.
 
-<Terminal cmd={['$ npx @expo/repack-app --platform android --source-app MyApp.apk --js-bundle-only']} />
+<Terminal
+  cmd={['$ npx @expo/repack-app --platform android --source-app MyApp.apk --js-bundle-only']}
+/>
 
 ## Limitations
 
@@ -105,7 +111,7 @@ Usage: @expo/repack-app [options] [project-root]
 | Option                                    | Description                                                                                                                                              |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-p, --platform <platform>`               | **Required.** Platform to repack the app for (`android` or `ios`).                                                                                       |
-| `--source-app <path>`                     | **Required.** Path to the source app (APK for Android, or IPA or **.app** for iOS). The output format matches the input.                                    |
+| `--source-app <path>`                     | **Required.** Path to the source app (APK for Android, or IPA or **.app** for iOS). The output format matches the input.                                 |
 | `-o, --output <path>`                     | Path to the output artifact. Defaults to `repacked.apk`, `repacked.ipa`, or `repacked.app` in the project root, matching the source format.              |
 | `-w, --working-directory <path>`          | Path to the working directory for temporary files.                                                                                                       |
 | `--skip-working-dir-cleanup`              | Skip cleaning up the working directory after the repack completes. Useful for debugging.                                                                 |
