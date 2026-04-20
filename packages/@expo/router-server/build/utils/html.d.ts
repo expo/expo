@@ -1,9 +1,11 @@
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2026 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type { ServerFontResourceDescriptor } from 'expo-font/build/ExpoFontLoader';
+import { type ReactNode } from 'react';
 /**
  * Replaces unsafe characters in a string with their escaped equivalents. This is to safely
  * embed data in an HTML context to prevent XSS.
@@ -32,6 +34,8 @@ export declare function createInjectedScriptElements(srcs: string[]): string;
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
 export declare function getHydrationFlagScript(): string;
+export declare function getHydrationFlagScriptContents(): string;
+export declare function getHydrationFlagScriptElement(): ReactNode;
 /**
  * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
  * with the given data, safely embedded as JSON.
@@ -40,6 +44,14 @@ export declare function getHydrationFlagScript(): string;
  * @see https://v8.dev/blog/cost-of-javascript-2019#json
  */
 export declare function createLoaderDataScript(data: Record<string, unknown>): string;
+export declare function createLoaderDataScriptContents(data: Record<string, unknown>): string;
+export declare function createLoaderDataScriptElement(data: Record<string, unknown>): ReactNode;
+export declare function createInjectedCssNodes(hrefs: string[]): ReactNode[];
+export declare function createInjectedScriptNodes(srcs: string[]): {
+    headNodes: ReactNode[];
+    bodyNodes: ReactNode[];
+};
+export declare function createFontResourceNodes(descriptors: ServerFontResourceDescriptor[]): ReactNode[];
 /**
  * Extracts head tags and document attributes from a `react-helmet-async` helmet instance.
  *

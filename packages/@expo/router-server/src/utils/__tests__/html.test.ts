@@ -1,11 +1,21 @@
 import {
   createInjectedCssElements,
+  createInjectedCssNodes,
   createInjectedScriptElements,
+  createInjectedScriptNodes,
   createLoaderDataScript,
+  createLoaderDataScriptElement,
   escapeUnsafeCharacters,
   getHydrationFlagScript,
+  getHydrationFlagScriptElement,
   serializeHelmetToHtml,
 } from '../html';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server.node';
+
+function renderNodes(node: React.ReactNode) {
+  return ReactDOMServer.renderToStaticMarkup(React.createElement(React.Fragment, null, node));
+}
 
 describe(escapeUnsafeCharacters, () => {
   it('escapes unsafe HTML and JavaScript characters', () => {
@@ -91,6 +101,12 @@ describe(getHydrationFlagScript, () => {
       '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
     );
   });
+
+  it('creates an equivalent React element', () => {
+    expect(renderNodes(getHydrationFlagScriptElement())).toBe(
+      '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
+    );
+  });
 });
 
 describe(createLoaderDataScript, () => {
@@ -114,6 +130,29 @@ describe(createLoaderDataScript, () => {
     expect(result).toContain(
       '\\\\u003cscript\\\\u003ealert(\\\\\\"xss\\\\\\")\\\\u003c/script\\\\u003e'
     );
+  });
+
+  it('creates an equivalent React element', () => {
+    expect(renderNodes(createLoaderDataScriptElement({ '/': { foo: 'bar' } }))).toBe(
+      createLoaderDataScript({ '/': { foo: 'bar' } })
+    );
+  });
+});
+
+describe(createInjectedCssNodes, () => {
+  it('creates equivalent React nodes', () => {
+    expect(renderNodes(createInjectedCssNodes(['/styles/main.css']))).toBe(
+      '<link as="style" href="/styles/main.css" rel="preload"/><link href="/styles/main.css" rel="stylesheet"/>'
+    );
+  });
+});
+
+describe(createInjectedScriptNodes, () => {
+  it('creates script preload and body script nodes for streaming', () => {
+    const nodes = createInjectedScriptNodes(['/bundle.js']);
+
+    expect(renderNodes(nodes.headNodes)).toBe('<link as="script" href="/bundle.js" rel="preload"/>');
+    expect(renderNodes(nodes.bodyNodes)).toBe('<script async="" src="/bundle.js"></script>');
   });
 });
 

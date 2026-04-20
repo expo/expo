@@ -7,6 +7,13 @@ jest.mock('expo-router/_ctx', () => ({
   ctx: jest.fn(),
 }));
 
+import { ImmutableRequest } from 'expo-server/private';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server.node';
+
+import { resolveMetadata } from '../metadata';
+import { ctx } from 'expo-router/_ctx';
+
 const mockedCtx = jest.mocked(ctx);
 
 function createMockRequest(
@@ -47,11 +54,13 @@ describe(resolveMetadata, () => {
       params: { id: '123' },
     });
 
-    expect(generateMetadata).toHaveBeenCalledWith(request, { id: '123' });
-    expect(result).toEqual({
-      metadata: { title: 'Post 123' },
-      headTags: '<title>Post 123</title>',
-    });
+    expect(generateMetadata).toHaveBeenCalledWith(expect.any(ImmutableRequest), { id: '123' });
+    expect(result?.metadata).toEqual({ title: 'Post 123' });
+    expect(
+      ReactDOMServer.renderToStaticMarkup(React.createElement(React.Fragment, null, result?.headNodes))
+    ).toBe(
+      '<title>Post 123</title>'
+    );
   });
 
   it('normalizes nullish metadata results to null', async () => {

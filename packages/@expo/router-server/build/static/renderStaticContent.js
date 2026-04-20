@@ -36,9 +36,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getManifest = exports.getBuildTimeServerManifestAsync = exports.resolveMetadata = void 0;
+exports.getManifest = exports.getBuildTimeServerManifestAsync = exports.resolveMetadata = exports.getStreamingContent = void 0;
 exports.getStaticContent = getStaticContent;
-exports.getStreamingContent = getStreamingContent;
 const jsx_runtime_1 = require("react/jsx-runtime");
 /**
  * Copyright © 2023 650 Industries.
@@ -54,23 +53,20 @@ const head_1 = __importDefault(require("expo-router/head"));
 const static_1 = require("expo-router/internal/static");
 const server_1 = __importDefault(require("react-dom/server"));
 const getRootComponent_1 = require("./getRootComponent");
-const metadata_1 = require("../server/metadata");
-Object.defineProperty(exports, "resolveMetadata", { enumerable: true, get: function () { return metadata_1.resolveMetadata; } });
 const debug_1 = require("../utils/debug");
 const html_1 = require("../utils/html");
-const streams_1 = require("../utils/streams");
 const debug = (0, debug_1.createDebug)('expo:router:server:renderStaticContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
     // React Navigation is storing providers in a global, this is fine for the first static render
     // but subsequent static renders of Stack or Tabs will cause React to throw a warning. To prevent this warning, we'll reset the globals before rendering.
+    // TODO(@hassankhan): Share this request-scoped setup with renderStreamingContent.tsx.
     const contexts = '__react_navigation__elements_contexts';
     globalThis[contexts] = new Map();
 }
 /**
- * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
- * tree, resets server contexts, and computes loader data.
+ * Creates the React element tree, resets server contexts, and computes loader data.
  */
 function prepareRenderContext(location, options) {
     const headContext = {};
@@ -89,6 +85,7 @@ function prepareRenderContext(location, options) {
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
+    // TODO(@hassankhan): Share loader-data shaping with renderStreamingContent.tsx.
     const loaderKey = options?.loader ? options.loader.key + location.search : null;
     const loadedData = loaderKey
         ? {
@@ -134,49 +131,10 @@ function mixHeadComponentsWithStaticResults(helmet, html) {
     html = html.replace('<body ', `<body ${bodyAttributes} `);
     return html;
 }
-/**
- * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
- * that emits the full HTML document with head injections applied.
- *
- * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
- * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
- * the client after hydration instead.
- *
- * @privateRemarks This function should be moved to a separate file
- * (i.e. `renderStreamingContent.tsx`) as it doesn't belong with static rendering logic.
- */
-async function getStreamingContent(location, options) {
-    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
-    const stream = await server_1.default.renderToReadableStream((0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }), {
-        bootstrapScripts: options?.assets?.js,
-        signal: options?.request?.signal,
-    });
-    // Collect head injection content after the shell stream is ready.
-    const css = server_1.default.renderToStaticMarkup(getStyleElement());
-    const { headTags, htmlAttributes, bodyAttributes } = (0, html_1.serializeHelmetToHtml)(headContext.helmet);
-    const fonts = Font.getServerResources();
-    debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-    const injectionParts = [];
-    if (options?.metadata?.headTags)
-        injectionParts.push(options.metadata.headTags);
-    if (headTags)
-        injectionParts.push(headTags);
-    injectionParts.push((0, html_1.getHydrationFlagScript)());
-    if (css)
-        injectionParts.push(css);
-    if (fonts.length > 0)
-        injectionParts.push(fonts.join(''));
-    if (loadedData)
-        injectionParts.push((0, html_1.createLoaderDataScript)(loadedData));
-    if (options?.assets?.css && options.assets.css.length > 0) {
-        injectionParts.push((0, html_1.createInjectedCssElements)(options.assets.css));
-    }
-    return stream.pipeThrough((0, streams_1.createDocumentMetadataInjectionTransform)({
-        injectionParts,
-        htmlAttributes,
-        bodyAttributes,
-    }));
-}
+// Re-export for use in server
+var renderStreamingContent_1 = require("./renderStreamingContent");
+Object.defineProperty(exports, "getStreamingContent", { enumerable: true, get: function () { return renderStreamingContent_1.getStreamingContent; } });
+Object.defineProperty(exports, "resolveMetadata", { enumerable: true, get: function () { return renderStreamingContent_1.resolveMetadata; } });
 var getServerManifest_1 = require("./getServerManifest");
 Object.defineProperty(exports, "getBuildTimeServerManifestAsync", { enumerable: true, get: function () { return getServerManifest_1.getBuildTimeServerManifestAsync; } });
 Object.defineProperty(exports, "getManifest", { enumerable: true, get: function () { return getServerManifest_1.getManifest; } });

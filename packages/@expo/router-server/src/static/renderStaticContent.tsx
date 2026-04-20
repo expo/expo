@@ -15,16 +15,13 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from './getRootComponent';
-import { resolveMetadata } from '../server/metadata';
 import { createDebug } from '../utils/debug';
 import {
   createInjectedCssElements,
   createInjectedScriptElements,
   createLoaderDataScript,
-  getHydrationFlagScript,
   serializeHelmetToHtml,
 } from '../utils/html';
-import { createDocumentMetadataInjectionTransform } from '../utils/streams';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 
@@ -34,6 +31,7 @@ function resetReactNavigationContexts() {
 
   // React Navigation is storing providers in a global, this is fine for the first static render
   // but subsequent static renders of Stack or Tabs will cause React to throw a warning. To prevent this warning, we'll reset the globals before rendering.
+  // TODO(@hassankhan): Share this request-scoped setup with renderStreamingContent.tsx.
   const contexts = '__react_navigation__elements_contexts';
   (globalThis as any)[contexts] = new Map<string, React.Context<any>>();
 }
@@ -44,9 +42,6 @@ export type GetStaticContentOptions = {
     /** Unique key for the route. Derived from the route's contextKey */
     key: string;
   };
-  metadata?: {
-    headTags: string;
-  } | null;
   request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
   assets?: {
@@ -56,8 +51,7 @@ export type GetStaticContentOptions = {
 };
 
 /**
- * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
- * tree, resets server contexts, and computes loader data.
+ * Creates the React element tree, resets server contexts, and computes loader data.
  */
 function prepareRenderContext(location: URL, options?: GetStaticContentOptions) {
   const headContext: { helmet?: any } = {};
@@ -86,6 +80,7 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
+  // TODO(@hassankhan): Share loader-data shaping with renderStreamingContent.tsx.
   const loaderKey = options?.loader ? options.loader.key + location.search : null;
 
   const loadedData = loaderKey
@@ -160,62 +155,7 @@ function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
   return html;
 }
 
-/**
- * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
- * that emits the full HTML document with head injections applied.
- *
- * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
- * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
- * the client after hydration instead.
- *
- * @privateRemarks This function should be moved to a separate file
- * (i.e. `renderStreamingContent.tsx`) as it doesn't belong with static rendering logic.
- */
-export async function getStreamingContent(
-  location: URL,
-  options?: GetStaticContentOptions
-): Promise<ReadableStream<Uint8Array>> {
-  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
-    location,
-    options
-  );
-
-  const stream = await ReactDOMServer.renderToReadableStream(
-    <Head.Provider context={headContext}>
-      <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-    </Head.Provider>,
-    {
-      bootstrapScripts: options?.assets?.js,
-      signal: options?.request?.signal,
-    }
-  );
-
-  // Collect head injection content after the shell stream is ready.
-  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
-  const { headTags, htmlAttributes, bodyAttributes } = serializeHelmetToHtml(headContext.helmet);
-  const fonts = Font.getServerResources();
-  debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-
-  const injectionParts: string[] = [];
-  if (options?.metadata?.headTags) injectionParts.push(options.metadata.headTags);
-  if (headTags) injectionParts.push(headTags);
-  injectionParts.push(getHydrationFlagScript());
-  if (css) injectionParts.push(css);
-  if (fonts.length > 0) injectionParts.push(fonts.join(''));
-  if (loadedData) injectionParts.push(createLoaderDataScript(loadedData));
-  if (options?.assets?.css && options.assets.css.length > 0) {
-    injectionParts.push(createInjectedCssElements(options.assets.css));
-  }
-
-  return stream.pipeThrough(
-    createDocumentMetadataInjectionTransform({
-      injectionParts,
-      htmlAttributes,
-      bodyAttributes,
-    })
-  );
-}
-
 // Re-export for use in server
-export { resolveMetadata };
+export { getStreamingContent, resolveMetadata } from './renderStreamingContent';
+export type { GetStreamingContentOptions } from './renderStreamingContent';
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';

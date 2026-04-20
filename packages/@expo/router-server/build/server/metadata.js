@@ -23,7 +23,7 @@ async function resolveMetadata(options) {
     }
     return {
         metadata,
-        headTags: (0, serialize_1.serializeMetadataToHtml)(metadata),
+        headNodes: (0, serialize_1.serializeMetadataToReactElements)(metadata),
     };
 }
 //# sourceMappingURL=metadata.js.map

@@ -5,18 +5,29 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ScrollViewStyleReset } from 'expo-router/html';
+import type { ServerDocumentProps } from 'expo-router/internal/server';
 import type { PropsWithChildren } from 'react';
 
-export function Html({ children }: PropsWithChildren) {
+export function Html({
+  bodyAttributes,
+  bodyNodes,
+  children,
+  headNodes,
+  htmlAttributes,
+}: PropsWithChildren<ServerDocumentProps>) {
   return (
-    <html lang="en">
+    <html lang="en" {...htmlAttributes}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <ScrollViewStyleReset />
+        {headNodes}
       </head>
-      <body>{children}</body>
+      <body {...bodyAttributes}>
+        {children}
+        {bodyNodes}
+      </body>
     </html>
   );
 }

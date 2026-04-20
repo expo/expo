@@ -1,4 +1,5 @@
 import type { ImmutableRequest, Metadata } from 'expo-server';
+import type { ReactNode } from 'react';
 type ResolveMetadataOptions = {
     route: {
         file: string;
@@ -9,7 +10,7 @@ type ResolveMetadataOptions = {
 };
 type ResolvedMetadata = {
     metadata: Metadata;
-    headTags: string;
+    headNodes: ReactNode[];
 };
 export declare function resolveMetadata(options: ResolveMetadataOptions): Promise<ResolvedMetadata | null>;
 export {};
