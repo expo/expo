@@ -75,6 +75,11 @@ export type ExpoModuleConfig = {
     podName?: string;
     podspecPath?: string;
   };
+  apple?: {
+    subdirectory?: string;
+    podName?: string;
+    podspecPath?: string | string[];
+  };
   android?: {
     subdirectory?: string;
     name?: string;
@@ -152,10 +157,18 @@ export class Package {
       return this.expoModuleConfig.ios.podspecPath;
     }
 
-    // Obtain podspecName by looking for podspecs in both package's root directory and ios subdirectory.
-    const [podspecPath] = glob.sync(`{*,${this.iosSubdirectory}/*}.podspec`, {
-      cwd: this.path,
-    });
+    const applePodspecPath = this.expoModuleConfig?.apple?.podspecPath;
+    if (applePodspecPath) {
+      return Array.isArray(applePodspecPath) ? applePodspecPath[0] : applePodspecPath;
+    }
+
+    // Look for podspecs in the package root and both iOS-style subdirectories.
+    const [podspecPath] = glob.sync(
+      `{*,${this.iosSubdirectory}/*,${this.appleSubdirectory}/*}.podspec`,
+      {
+        cwd: this.path,
+      }
+    );
 
     return podspecPath || null;
   }
@@ -180,6 +193,10 @@ export class Package {
 
   get iosSubdirectory(): string {
     return this.expoModuleConfig?.ios?.subdirectory ?? 'ios';
+  }
+
+  get appleSubdirectory(): string {
+    return this.expoModuleConfig?.apple?.subdirectory ?? 'apple';
   }
 
   get androidSubdirectory(): string {
