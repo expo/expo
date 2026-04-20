@@ -149,8 +149,7 @@ if (oxfmtResult.status !== 0) {
     if (isCI) {
       const fileRe = /^(.+?) \(\d+(?:\.\d+)?[nµm]?s\)\s*$/gm;
       const cwd = process.cwd();
-      let match;
-      while ((match = fileRe.exec(oxfmtResult.output)) !== null) {
+      for (const match of oxfmtResult.output.matchAll(fileRe)) {
         const filePath = match[1];
         const relPath = filePath.startsWith(cwd) ? filePath.slice(cwd.length + 1) : filePath;
         console.error(
