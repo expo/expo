@@ -325,7 +325,6 @@ PODS:
     - React-Core
   - ExpoModulesCore (55.0.12):
     - ExpoModulesJSI
-    - ExpoModulesMacros
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -350,7 +349,6 @@ PODS:
     - Yoga
   - ExpoModulesCore/Tests (55.0.12):
     - ExpoModulesJSI
-    - ExpoModulesMacros
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -2933,7 +2931,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: 0acdce934cb6a71b507da1117399645265e51ed5
   ExpoImage: d9446e7c2d365c063df7c8acd9c88b76a7b48ee4
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
-  ExpoModulesCore: 175c54e26f394abfc6da4371b3fb4f8d2d0716c8
+  ExpoModulesCore: a3dfc5e19028675ac402beedd870eae5a6d4a4d2
   ExpoModulesJSI: 793687b04cbaa73ee8548bfdbcfba85954d1b2b5
   ExpoModulesMacros: 6e01118aed19527180871e271177089c34d90dd2
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
