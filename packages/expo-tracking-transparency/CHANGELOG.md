@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix web stub to prevent import error. ([#40383](https://github.com/expo/expo/pull/40383) by [@reichhartd](https://github.com/reichhartd))
+
 ### 💡 Others
 
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
