@@ -99,6 +99,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Picker replacement',
+    route: 'ui/community-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPickerScreen'));
+    },
+  },
+  {
     name: 'Community DateTimePicker replacement',
     route: 'ui/community-datetimepicker',
     options: {},

@@ -34,6 +34,10 @@
     "./community/segmented-control": {
       "types": "./build/community/segmented-control/index.d.ts",
       "default": "./src/community/segmented-control/index.tsx"
+    },
+    "./community/picker": {
+      "types": "./build/community/picker/index.d.ts",
+      "default": "./src/community/picker/index.tsx"
     }
   },
   "scripts": {
