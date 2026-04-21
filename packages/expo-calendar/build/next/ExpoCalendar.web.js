@@ -9,6 +9,9 @@ class ExpoCalendar {
     constructor(id) {
         throw new Error('Calendar API is not available on web');
     }
+    async addEventWithForm(options) {
+        throw new Error('Calendar API is not available on web');
+    }
 }
 class ExpoCalendarEvent {
     constructor() {
