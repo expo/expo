@@ -5,9 +5,9 @@ import { type ColorSchemeName, type ColorValue } from 'react-native';
  */
 export type RgbaHex = `#${string}`;
 /**
- * Material 3 color palette exposed to JavaScript as `#RRGGBBAA` strings.
+ * Material 3 color palette exposed to TypeScript/JavaScript as `#RRGGBBAA` strings.
  *
- * On Android 12+ devices these values are derived from the user's wallpaper
+ * On Android 12+ devices these values are derived from the app user's wallpaper
  * (Material You). On older devices they fall back to the static Material 3
  * baseline palette. Use [`isDynamicColorAvailable`](#materialcolorsisdynamiccoloravailable) to distinguish the
  * two at runtime.
@@ -164,8 +164,8 @@ export declare const HostPaletteContext: import("react").Context<MaterialColors 
 export declare function getMaterialColors(options?: MaterialColorsOptions): MaterialColors;
 /**
  * Returns the Material 3 color palette.
- * Call with no arguments inside a `<Host>` to get the palette that `<Host>` is themed with;
- * pass `scheme` and/or `seedColor` to get a specific palette.
+ * Call with no arguments inside a `<Host>` to get the palette that `<Host>` is themed with.
+ * Pass `scheme` and/or `seedColor` to get a specific palette.
  */
 export declare function useMaterialColors(options?: UseMaterialColorsOptions): MaterialColors;
 //# sourceMappingURL=colors.d.ts.map
