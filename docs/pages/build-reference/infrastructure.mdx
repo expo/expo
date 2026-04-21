@@ -414,7 +414,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Git LFS 3.6.1
 - applesimutils 0.9.10
 - idb-companion 1.1.8
-- Default iOS Simulator runtime: iOS 18.5
+- Default iOS Simulator runtime: iOS 18.6
 - Pre-warmed Simulator device: iPhone 16 Plus
 
 </Collapsible>
@@ -637,27 +637,27 @@ Some jobs use an iOS Simulator. Examples include [Maestro](/eas/workflows/pre-pa
 
 #### Default iOS Simulator runtime
 
-The default runtime is the iOS version that ships with the image's Xcode. Picking an image sets your default iOS version. See Apple's [Xcode release notes](https://developer.apple.com/documentation/xcode-release-notes) for the iOS SDK that ships with each Xcode release.
+The default runtime is the iOS version that ships with the image's Xcode. Picking an image sets your default iOS version. Apple's [Xcode release notes](https://developer.apple.com/documentation/xcode-release-notes) document the iOS SDK included in each Xcode release.
 
-An image can ship additional Simulator runtimes beyond the default. Run `xcrun simctl list runtimes` in a workflow step to list what's installed on a specific runner. The `eas/start_ios_simulator` function also prints the available runtimes and devices to the job logs.
+An image can include additional Simulator runtimes beyond the default. Run `xcrun simctl list runtimes` in a workflow step to see what's installed on a specific runner. The `eas/start_ios_simulator` function also prints the available runtimes and devices to the job logs.
 
 #### Pre-warmed iOS Simulator
 
 Each macOS runner image ships with a pre-warmed iOS Simulator, configured for the device and default runtime shown under that image's heading. EAS boots that Simulator once while building the image, then shuts it down cleanly. This leaves the OS and Simulator caches populated, so your job's first Simulator boot and app install complete faster than they would on a cold image.
 
-Pre-warming is best-effort and applies only to iOS Simulator jobs in EAS Workflows. If you pick a device or runtime that differs from the defaults shown for that image, Simulator boot and app install can take longer because your job no longer matches the warmed configuration.
+Pre-warming is best-effort and applies only to iOS Simulator jobs in EAS Workflows. If you pick a device or runtime that differs from the image's defaults, Simulator boot and app install can take longer because your job doesn't match the warmed configuration.
 
 > **Note:** Pre-warming does not apply to [EAS Build](/build/introduction/), which compiles the app and does not boot a Simulator.
 
 #### Target a different iOS version
 
-Compare the default iOS Simulator runtime across the macOS runner images in [iOS server images](#ios-server-images) to find one that ships the runtime you want. Run `xcrun simctl list runtimes` in a workflow step to list the runtimes on a specific runner.
+Compare the default iOS Simulator runtime across the macOS runner images in [iOS server images](#ios-server-images) to find one that includes the runtime you want. An image can also include runtimes beyond its default, so check a specific runner with `xcrun simctl list runtimes` before ruling it out.
 
-If no image ships the runtime you need, install it in a workflow step before the Simulator boots. Apple publishes Simulator runtime downloads at [More Downloads for Apple Developers](https://developer.apple.com/download/all/). Runtime downloads are several GB, so use [`eas/restore_cache`](/eas/workflows/syntax/#easrestore_cache) and [`eas/save_cache`](/eas/workflows/syntax/#eassave_cache) to avoid re-downloading on every run.
+If no image includes the runtime you need, install it in a workflow step before the Simulator boots. Apple publishes Simulator runtime downloads at [More Downloads for Apple Developers](https://developer.apple.com/download/all/). Runtime downloads are several GB, so use [`eas/restore_cache`](/eas/workflows/syntax/#easrestore_cache) and [`eas/save_cache`](/eas/workflows/syntax/#eassave_cache) to avoid re-downloading on every run.
 
 #### Target a different device
 
-Device availability varies by image, so a name that works on one macOS runner image may not exist on another. To choose a device, pass [`device_identifier`](/eas/workflows/pre-packaged-jobs/#maestro) to the Maestro job, or pass it to [`eas/start_ios_simulator`](/custom-builds/schema/#easstart_ios_simulator) in a custom step. Check the job logs for the device names a runner exposes.
+Device availability varies by image, so a name that works on one macOS runner image may not be available on another. To choose a device, pass [`device_identifier`](/eas/workflows/pre-packaged-jobs/#maestro) to the Maestro job, or pass it to [`eas/start_ios_simulator`](/custom-builds/schema/#easstart_ios_simulator) in a custom step. Check the job logs for the device names available on each runner.
 
 ### Supported Xcode versions
 
