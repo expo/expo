@@ -8,7 +8,7 @@ on:
         required: false
         default: ''
       publish:
-        description: 'Publish XCFramework archive to GCS even on non-sdk branches'
+        description: 'Publish XCFramework archive to GCS'
         required: false
         type: boolean
         default: false
@@ -59,18 +59,6 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
 
-      - name: Decide whether to publish XCFramework archive
-        env:
-          INPUT_PUBLISH: ${{ github.event.inputs.publish }}
-        run: |
-          if [[ "$GITHUB_REF" == refs/heads/sdk-* ]] || [[ "$INPUT_PUBLISH" == "true" ]]; then
-            echo "PUBLISH_XCFRAMEWORK_ARCHIVE=1" >> $GITHUB_ENV
-            echo "Publishing XCFramework archive to GCS from ref $GITHUB_REF"
-          else
-            echo "PUBLISH_XCFRAMEWORK_ARCHIVE=0" >> $GITHUB_ENV
-            echo "Skipping XCFramework archive publish for ref $GITHUB_REF"
-          fi
-
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
         env:
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
@@ -104,20 +92,20 @@ jobs:
           echo "THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH=$ARCHIVE_PATH" >> $GITHUB_ENV
 
       - name: Authenticate to Google Cloud
-        if: ${{ success() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        if: ${{ success() && github.event.inputs.publish == 'true' }}
         uses: google-github-actions/auth@v3
         with:
           project_id: exponentjs
           workload_identity_provider: projects/321830142373/locations/global/workloadIdentityPools/github/providers/expo
 
       - name: Setup gcloud
-        if: ${{ success() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        if: ${{ success() && github.event.inputs.publish == 'true' }}
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: exponentjs
 
       - name: Upload XCFramework zip to GCS
-        if: ${{ success() && env.PUBLISH_XCFRAMEWORK_ARCHIVE == '1' }}
+        if: ${{ success() && github.event.inputs.publish == 'true' }}
         run: |
           gcloud storage cp \
             "$THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH" \
