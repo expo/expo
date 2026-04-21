@@ -28,11 +28,13 @@ const withCalendar: ConfigPlugin<Props | void> = (
     NSCalendarsUsageDescription: CALENDARS_USAGE,
     NSRemindersUsageDescription: REMINDERS_USAGE,
     NSCalendarsFullAccessUsageDescription: CALENDARS_USAGE,
+    NSCalendarsWriteOnlyAccessUsageDescription: CALENDARS_USAGE,
     NSRemindersFullAccessUsageDescription: REMINDERS_USAGE,
   })(config, {
     NSCalendarsUsageDescription: calendarPermission,
     NSRemindersUsageDescription: remindersPermission,
     NSCalendarsFullAccessUsageDescription: calendarPermission,
+    NSCalendarsWriteOnlyAccessUsageDescription: calendarPermission,
     NSRemindersFullAccessUsageDescription: remindersPermission,
   });
 

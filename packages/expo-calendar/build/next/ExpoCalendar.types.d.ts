@@ -13,6 +13,9 @@ export type AddEventWithFormOptions = {
     alarms?: Alarm[];
     recurrenceRule?: RecurrenceRule;
 };
+export type CalendarPermissionOptions = {
+    writeOnly?: boolean;
+};
 export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
 export type ModifiableEventProperties = Pick<ExpoCalendarEvent, 'title' | 'location' | 'timeZone' | 'url' | 'notes' | 'alarms' | 'recurrenceRule' | 'availability' | 'startDate' | 'endDate' | 'allDay'>;
 export type ModifiableReminderProperties = Pick<ExpoCalendarReminder, 'title' | 'location' | 'timeZone' | 'url' | 'notes' | 'alarms' | 'recurrenceRule' | 'startDate' | 'dueDate' | 'completed' | 'completionDate'>;

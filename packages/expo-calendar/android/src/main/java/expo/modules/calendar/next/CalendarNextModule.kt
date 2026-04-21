@@ -23,6 +23,7 @@ import expo.modules.calendar.next.records.RecurringEventOptions
 import expo.modules.calendar.next.permissions.CalendarPermissionsDelegate
 import expo.modules.calendar.next.records.AttendeeUpdateRecord
 import expo.modules.calendar.next.records.CalendarInputRecord
+import expo.modules.calendar.next.records.CalendarPermissionOptions
 import expo.modules.calendar.next.records.CalendarUpdateRecord
 import expo.modules.calendar.next.records.EventInputRecord
 import expo.modules.interfaces.permissions.Permissions
@@ -115,7 +116,16 @@ class CalendarNextModule : Module() {
       ExpoCalendar.getById(calendarId, calendarRepository, expoCalendarFactory)
     }
 
-    AsyncFunction("requestCalendarPermissions") { promise: Promise ->
+    AsyncFunction("getCalendarPermissions") { _: CalendarPermissionOptions?, promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(
+        appContext.permissions,
+        promise,
+        Manifest.permission.READ_CALENDAR,
+        Manifest.permission.WRITE_CALENDAR
+      )
+    }
+
+    AsyncFunction("requestCalendarPermissions") { _: CalendarPermissionOptions?, promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
         appContext.permissions,
         promise,

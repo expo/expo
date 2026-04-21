@@ -1,6 +1,6 @@
 import { NativeModule, PermissionResponse } from 'expo-modules-core';
 import { ProcessedColorValue } from 'react-native';
-import { ExpoCalendar, ExpoCalendarAttendee, ExpoCalendarEvent, ExpoCalendarReminder } from './ExpoCalendar.types';
+import { CalendarPermissionOptions, ExpoCalendar, ExpoCalendarAttendee, ExpoCalendarEvent, ExpoCalendarReminder } from './ExpoCalendar.types';
 import { Calendar, EntityTypes, Source } from '../Calendar';
 declare class ExpoCalendarNextModule extends NativeModule {
     ExpoCalendar: typeof ExpoCalendar;
@@ -18,8 +18,8 @@ declare class ExpoCalendarNextModule extends NativeModule {
     presentPicker(): Promise<ExpoCalendar | null>;
     getEventById(eventId: string): Promise<ExpoCalendarEvent>;
     getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
-    requestCalendarPermissions(): Promise<PermissionResponse>;
-    getCalendarPermissions(): Promise<PermissionResponse>;
+    requestCalendarPermissions(options?: CalendarPermissionOptions): Promise<PermissionResponse>;
+    getCalendarPermissions(options?: CalendarPermissionOptions): Promise<PermissionResponse>;
     requestRemindersPermissions(): Promise<PermissionResponse>;
     getRemindersPermissions(): Promise<PermissionResponse>;
     getSourcesSync(): Source[];
