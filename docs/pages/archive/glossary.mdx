@@ -21,6 +21,14 @@ ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK]
 
 **Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `npx expo prebuild`](/workflow/customizing/).**
 
+### Flipper
+
+A mobile app debugger used internally at Meta. It was previously recommended for use with React Native, but the integration is now deprecated and no longer supported by the React Native team [(RFC-0641)](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0641-decoupling-flipper-from-react-native-core.md).
+
+### Global Expo CLI
+
+The package `expo-cli` was installed globally on the user's machine and used across all projects. This CLI was introduced in SDK 30 (2018), and deprecated in favor of the [Local Expo CLI](#local-expo-cli) in SDK 46 (2022).
+
 ### Shell app
 
 Another term we occasionally use for [Standalone app](/more/glossary-of-terms/#standalone-app).
