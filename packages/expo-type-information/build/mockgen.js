@@ -154,7 +154,7 @@ function getFunctionReturnBlock(functionDeclaration, fileTypeInformation) {
     return maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation);
 }
 function getMockedFunctionDeclaration(functionDeclaration, fileTypeInformation, async, exported) {
-    return (0, typescriptGeneration_1.getTsFunction)({
+    return (0, typescriptGeneration_1.buildFunction)({
         functionDeclaration,
         async,
         method: false,
@@ -164,7 +164,7 @@ function getMockedFunctionDeclaration(functionDeclaration, fileTypeInformation, 
     });
 }
 function getMockedClass(classDeclaration, fileInfo) {
-    return (0, typescriptGeneration_1.getTsClassDeclaration)({
+    return (0, typescriptGeneration_1.buildClass)({
         classDeclaration,
         exported: true,
         getFunctionReturnBlock: (func) => getFunctionReturnBlock(func, fileInfo),
@@ -172,7 +172,7 @@ function getMockedClass(classDeclaration, fileInfo) {
 }
 function getMockedView(viewDeclaration) {
     const propsTypeName = (0, typescriptGeneration_1.getViewPropsTypeName)(viewDeclaration);
-    const propsType = (0, typescriptGeneration_1.getViewPropsDeclaration)(viewDeclaration, { export: true });
+    const propsType = (0, typescriptGeneration_1.buildViewPropsTypeAlias)(viewDeclaration, { exported: true });
     const propsParameter = typescript_1.default.factory.createParameterDeclaration(undefined, undefined, 'props', undefined, typescript_1.default.factory.createTypeReferenceNode(propsTypeName, undefined), undefined);
     const viewFunction = typescript_1.default.factory.createFunctionDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)], undefined, (viewDeclaration.name?.length ?? 0) > 0 ? viewDeclaration.name : 'View', undefined, [propsParameter], undefined, typescript_1.default.factory.createBlock([]));
     return [...propsType, viewFunction];
@@ -180,12 +180,12 @@ function getMockedView(viewDeclaration) {
 function getMockForModule(module, fileTypeInformation) {
     const undeclaredTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers
         .difference(fileTypeInformation.declaredTypeIdentifiers)
-        .difference((0, typescriptGeneration_1.basicTypesIdentifiers)());
-    const recordDeclarationMap = (record) => (0, typescriptGeneration_1.getRecordDeclaration)(record, true);
-    const enumDeclarationMap = (e) => (0, typescriptGeneration_1.getEnumDeclaration)(e, true, false);
+        .difference((0, typescriptGeneration_1.getBasicTypesIdentifiers)());
+    const recordDeclarationMap = (record) => (0, typescriptGeneration_1.buildRecordTypeAlias)(record, true);
+    const enumDeclarationMap = (e) => (0, typescriptGeneration_1.buildEnumTypeDeclaration)(e, true, false);
     return (0, typescriptGeneration_1.joinTSNodesWithNewlines)([
         getPrefix(),
-        [...undeclaredTypeIdentifiers].map((identifier) => (0, typescriptGeneration_1.getIdentifierUnknownDeclaration)(identifier, true, fileTypeInformation.inferredTypeParametersCount)),
+        [...undeclaredTypeIdentifiers].map((identifier) => (0, typescriptGeneration_1.buildUnknownTypeAlias)(identifier, true, fileTypeInformation.inferredTypeParametersCount)),
         fileTypeInformation.records.flatMap(recordDeclarationMap),
         fileTypeInformation.enums.flatMap(enumDeclarationMap),
         module.functions.map((f) => getMockedFunctionDeclaration(f, fileTypeInformation, false, true)),

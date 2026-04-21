@@ -11,11 +11,11 @@ import {
   TypeInferenceOption,
 } from './typeInformation';
 import {
-  getGeneratedExpoModuleTypescriptFilesContents,
-  getGeneratedJSXIntrinsicsViewDeclaration,
-  getGeneratedModuleTypescriptInterface,
-  getGeneratedModuleTypesFileContent,
-  getGeneratedViewTypesFileContent,
+  generateFullTsInterface,
+  generateJSXIntrinsicsFileContent,
+  generateConciseTsInterface,
+  generateModuleTypesFileContent,
+  generateViewTypesFileContent,
 } from './typescriptGeneration';
 
 export type TypeInformationCommandCommonArguments = {
@@ -27,7 +27,10 @@ export type TypeInformationCommandCommonArguments = {
 
 function addCommonOptions(command: commander.Command): commander.Command {
   return command
-    .requiredOption('-i, --input-paths <filePaths...>', 'Paths to Swift files.')
+    .requiredOption(
+      '-i, --input-paths <filePaths...>',
+      'Paths to Swift files. First file provided should be the file with the Native module'
+    )
     .option(
       '-o, --output-path <filePath>',
       'Path to save the generated output. If this option is not provided the generated output is printed to console.'
@@ -223,7 +226,7 @@ function generateModuleTypesCommand(cli: commander.Command) {
         const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
         if (!typeInfo) return;
 
-        const moduleTypesFileContent = await getGeneratedModuleTypesFileContent(typeInfo);
+        const moduleTypesFileContent = await generateModuleTypesFileContent(typeInfo);
         if (!moduleTypesFileContent) return;
         writeStringToFileOrPrintToConsole(moduleTypesFileContent, realOutputPath);
       };
@@ -243,7 +246,7 @@ function generateViewTypesCommand(cli: commander.Command) {
         const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
         if (!typeInfo) return;
 
-        const viewTypesFileContent = await getGeneratedViewTypesFileContent(typeInfo);
+        const viewTypesFileContent = await generateViewTypesFileContent(typeInfo);
         if (!viewTypesFileContent) {
           console.error("Couldn't generate view types!");
           return;
@@ -283,8 +286,7 @@ function generateJsxIntrinsics(cli: commander.Command) {
         const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
         if (!typeInfo) return;
 
-        const jsxIntrinsicViewFileContent =
-          await getGeneratedJSXIntrinsicsViewDeclaration(typeInfo);
+        const jsxIntrinsicViewFileContent = await generateJSXIntrinsicsFileContent(typeInfo);
         if (!jsxIntrinsicViewFileContent) {
           console.error("Couldn't generate view types!");
           return;
@@ -314,7 +316,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
       if (!typeInfo) return;
 
       const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
-        await getGeneratedModuleTypescriptInterface(typeInfo);
+        await generateConciseTsInterface(typeInfo);
 
       const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
       const dirName = realOutputPath ?? path.dirname(realInputPaths[0] as string);
@@ -355,7 +357,7 @@ function generateTypeFiles(cli: commander.Command) {
       const command = async () => {
         const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
         if (!typeInfo) return;
-        const generatedFiles = await getGeneratedExpoModuleTypescriptFilesContents(typeInfo);
+        const generatedFiles = await generateFullTsInterface(typeInfo);
         if (!generatedFiles) return;
         const { moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile } = generatedFiles;
 

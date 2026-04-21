@@ -22,16 +22,16 @@ import {
   ViewDeclaration,
 } from './typeInformation';
 import {
-  basicTypesIdentifiers,
-  getEnumDeclaration,
-  getIdentifierUnknownDeclaration,
-  getViewPropsDeclaration,
-  getRecordDeclaration,
-  getTsClassDeclaration,
-  getTsFunction,
+  getBasicTypesIdentifiers,
+  buildEnumTypeDeclaration,
+  buildViewPropsTypeAlias,
+  buildRecordTypeAlias,
+  buildClass,
+  buildFunction,
   getViewPropsTypeName,
   joinTSNodesWithNewlines,
   prettifyCode,
+  buildUnknownTypeAlias,
 } from './typescriptGeneration';
 
 const directoryPath = process.cwd();
@@ -188,7 +188,7 @@ function getMockedFunctionDeclaration(
   async: boolean,
   exported: boolean
 ): ts.FunctionDeclaration {
-  return getTsFunction({
+  return buildFunction({
     functionDeclaration,
     async,
     method: false,
@@ -205,7 +205,7 @@ function getMockedClass(
   classDeclaration: ClassDeclaration,
   fileInfo: FileTypeInformation
 ): ts.ClassDeclaration {
-  return getTsClassDeclaration({
+  return buildClass({
     classDeclaration,
     exported: true,
     getFunctionReturnBlock: (func) => getFunctionReturnBlock(func, fileInfo),
@@ -214,7 +214,7 @@ function getMockedClass(
 
 function getMockedView(viewDeclaration: ViewDeclaration): ts.Node[] {
   const propsTypeName = getViewPropsTypeName(viewDeclaration);
-  const propsType = getViewPropsDeclaration(viewDeclaration, { export: true });
+  const propsType = buildViewPropsTypeAlias(viewDeclaration, { exported: true });
   const propsParameter = ts.factory.createParameterDeclaration(
     undefined,
     undefined,
@@ -241,17 +241,13 @@ function getMockForModule(
 ): ts.Node[] {
   const undeclaredTypeIdentifiers: Set<string> = fileTypeInformation.usedTypeIdentifiers
     .difference(fileTypeInformation.declaredTypeIdentifiers)
-    .difference(basicTypesIdentifiers());
-  const recordDeclarationMap = (record: RecordType) => getRecordDeclaration(record, true);
-  const enumDeclarationMap = (e: EnumType) => getEnumDeclaration(e, true, false);
+    .difference(getBasicTypesIdentifiers());
+  const recordDeclarationMap = (record: RecordType) => buildRecordTypeAlias(record, true);
+  const enumDeclarationMap = (e: EnumType) => buildEnumTypeDeclaration(e, true, false);
   return joinTSNodesWithNewlines([
     getPrefix(),
     [...undeclaredTypeIdentifiers].map((identifier) =>
-      getIdentifierUnknownDeclaration(
-        identifier,
-        true,
-        fileTypeInformation.inferredTypeParametersCount
-      )
+      buildUnknownTypeAlias(identifier, true, fileTypeInformation.inferredTypeParametersCount)
     ),
     fileTypeInformation.records.flatMap(recordDeclarationMap),
     fileTypeInformation.enums.flatMap(enumDeclarationMap),
