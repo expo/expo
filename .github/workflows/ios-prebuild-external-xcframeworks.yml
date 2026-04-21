@@ -28,6 +28,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    env:
+      SDK_VERSION: ${{ github.event.inputs.sdk-version }}
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -56,19 +58,6 @@ jobs:
 
       - name: Install node modules
         run: pnpm install --frozen-lockfile
-
-      - name: Resolve SDK version
-        env:
-          INPUT_SDK_VERSION: ${{ github.event.inputs.sdk-version }}
-        run: |
-          SDK_VERSION="${INPUT_SDK_VERSION//[[:space:]]/}"
-
-          if [[ -z "$SDK_VERSION" ]]; then
-            echo "sdk-version input cannot be empty"
-            exit 1
-          fi
-
-          echo "SDK_VERSION=$SDK_VERSION" >> "$GITHUB_ENV"
 
       - name: Decide whether to publish XCFramework archive
         env:
