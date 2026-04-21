@@ -10,10 +10,9 @@ export type PageIndexDisplayMode = 'automatic' | 'always' | 'never';
  * Configuration for the `tabViewStyle` modifier.
  *
  *  - `'page'` — swipeable horizontal pager with optional dot indicators.
- *  - `'automatic'` — SwiftUI's default tab-bar style. Use `<Tab>` children
- *    with `label` and/or `systemImage` props to populate the bar.
+ *  - `'automatic'` — SwiftUI's default tab-bar style.
  *  - `'sidebarAdaptable'` — iOS 18+. Sidebar on iPad/Mac, bottom bar on
- *    iPhone. Children must be `<Tab>` components for this style to work.
+ *    iPhone.
  */
 export type TabViewStyleConfig =
   | {

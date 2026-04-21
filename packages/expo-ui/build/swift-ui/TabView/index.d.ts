@@ -1,32 +1,27 @@
 import { type CommonViewModifierProps } from '../types';
-/**
- * Identifies a tab.
- *
- * - Pager style (plain children): a numeric **index** (0, 1, 2, ...).
- * - Tab bar / sidebar styles (`<Tab>` children): the `value` prop of the selected tab.
- */
-export type TabSelection = number | string;
-export type TabViewProps<S extends TabSelection = TabSelection> = {
+import { Tab } from './Tab';
+export type TabViewProps = {
     /**
      * The selected tab (controlled mode). Pair with `onSelectionChange`.
      * Pass `defaultSelection` instead to let the native view manage state.
      */
-    selection?: S;
+    selection?: string;
     /**
      * The initially selected tab when the component is uncontrolled
      * (no `selection` prop). Ignored if `selection` is provided.
      */
-    defaultSelection?: S;
+    defaultSelection?: string;
     /**
      * Called when the selected tab changes.
      */
-    onSelectionChange?: (selection: S) => void;
+    onSelectionChange?: (selection: string) => void;
     /**
-     * The pages to display. Use `<Tab>` children for labeled tabs, or plain
-     * children with `tabViewStyle({ type: 'page' })` for a swipeable pager.
+     * `<TabView.Tab>` elements defining the pages.
      */
     children: React.ReactElement | React.ReactElement[];
 } & CommonViewModifierProps;
+declare function TabView(props: TabViewProps): import("react/jsx-runtime").JSX.Element;
+export type { TabProps } from './Tab';
 /**
  * A SwiftUI `TabView`. Pair with modifiers to choose the appearance:
  *
@@ -34,14 +29,16 @@ export type TabViewProps<S extends TabSelection = TabSelection> = {
  * - `tabViewStyle({ type: 'automatic' })` — bottom tab bar.
  * - `tabViewStyle({ type: 'sidebarAdaptable' })` — sidebar on iPad, tab bar on iPhone.
  *
- * Use `<Tab>` children for labeled tabs with value-based selection, or plain
- * children for a simple pager with index-based selection.
+ * Use `<TabView.Tab>` children to define pages. Each tab is identified by its
+ * `value` prop, which is used for selection.
  *
  * For routed bottom-tab navigation across full-screen routes, prefer
  * `expo-router/unstable-native-tabs`.
  *
  * @platform ios
  */
-export declare function TabView<S extends TabSelection>(props: TabViewProps<S>): import("react").JSX.Element;
-export { Tab, type TabProps } from './Tab';
+declare const _TabView: typeof TabView & {
+    Tab: typeof Tab;
+};
+export { _TabView as TabView };
 //# sourceMappingURL=index.d.ts.map

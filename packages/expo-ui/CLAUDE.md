@@ -15,6 +15,7 @@ Prefer controlled components: state lives in JS and is passed as props, not mana
 - Don't turn native-layer modifiers into props in the JS layer — modifiers stay as modifiers.
 - Use `export function ComponentName` (the dominant pattern in this codebase). Use `export const` only for non-component values like modifiers or constants. Avoid the `export { LocalName as ExportName }` rename pattern unless the local name must differ.
 - Props, constants, and enum values must use the same names as the native API. If SwiftUI calls it `scrollEnabled`, the JS prop is `scrollEnabled`. If Compose calls it `userScrollEnabled`, the JS prop is `userScrollEnabled`.
+- Ensure components have the correct display name in React DevTools. Either name the function directly (e.g. `function TabView`) or set `.displayName`.
 
 ## Props and events
 

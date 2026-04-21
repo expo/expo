@@ -4,14 +4,13 @@ import {
   Host,
   Section,
   Spacer,
-  Tab,
-  TabProps,
   TabView,
   Text,
   TextField,
   Toggle,
   VStack,
 } from '@expo/ui/swift-ui';
+import type { TabProps } from '@expo/ui/swift-ui';
 import {
   animation,
   Animation,
@@ -104,7 +103,7 @@ function NotePage({ index }: { index: number }) {
 
 export default function TabViewScreen() {
   // 1. uncontrolled
-  const [uncontrolledPage, setUncontrolledPage] = React.useState(1);
+  const [uncontrolledPage, setUncontrolledPage] = React.useState('1');
 
   // dots toggle — drives a `tabViewStyle` modifier shared across all pagers below
   const [showDots, setShowDots] = React.useState(true);
@@ -115,7 +114,7 @@ export default function TabViewScreen() {
 
   // 3. programmatic navigation
   const NAV_COUNT = 5;
-  const [sel2, setSel2] = React.useState(0);
+  const [sel2, setSel2] = React.useState('0');
 
   // 4. reorderable notes — per-page native state must travel with content.
   // Each note's `index` is its stable identity (used for label, color, key).
@@ -127,12 +126,9 @@ export default function TabViewScreen() {
     { index: 3 },
   ]);
   const nextPrependedIndex = React.useRef(0);
-  const [selNotes, setSelNotes] = React.useState(0);
+  const [selNotes, setSelNotes] = React.useState('1');
 
-  // 5. value-based selection via <Tab> (iOS 18+)
-  const [selectedTab, setSelectedTab] = React.useState<string | number>('home');
-
-  // 6. value-based selection — distinctive per-tab pages so it's visually
+  // 5. value-based selection — distinctive per-tab pages so it's visually
   // obvious that the selected tab stays selected when the bar is reordered.
   type MailTab = {
     value: string;
@@ -159,7 +155,7 @@ export default function TabViewScreen() {
       color: '#AF52DE',
     },
   ]);
-  const [selectedMail, setSelectedMail] = React.useState<string | number>('drafts');
+  const [selectedMail, setSelectedMail] = React.useState('drafts');
   const shuffleMail = () => {
     setMailTabs((prev) => {
       const copy = [...prev];
@@ -177,14 +173,14 @@ export default function TabViewScreen() {
         <Section title="Selection survives reordering (iOS 18+)">
           <Text>
             Tap Shuffle: the bar reorders, but the page on screen stays the same — value-based
-            selection follows the tab, not its position. Only `{'<Tab>'}` children can do this.
+            selection follows the tab, not its position.
           </Text>
           <TabView
             selection={selectedMail}
             onSelectionChange={setSelectedMail}
             modifiers={[tabViewFrame, tabViewStyle({ type: 'sidebarAdaptable' })]}>
             {mailTabs.map((t) => (
-              <Tab
+              <TabView.Tab
                 key={t.value}
                 value={t.value}
                 label={t.label}
@@ -205,7 +201,7 @@ export default function TabViewScreen() {
                   </Text>
                   <Spacer />
                 </VStack>
-              </Tab>
+              </TabView.Tab>
             ))}
           </TabView>
           <Button onPress={shuffleMail} label="Shuffle tabs" />
@@ -217,14 +213,20 @@ export default function TabViewScreen() {
             defaultSelection. The `tabViewStyle({"{ type: 'page' }"})` modifier opts in to the
             swipeable page style.
           </Text>
-          <Text>Last reported page: {uncontrolledPage + 1}</Text>
+          <Text>Last reported page: {uncontrolledPage}</Text>
           <TabView
-            defaultSelection={1}
+            defaultSelection="1"
             onSelectionChange={setUncontrolledPage}
             modifiers={[tabViewFrame, tabViewStyle({ type: 'page' })]}>
-            <ColorPage index={0} />
-            <ColorPage index={1} />
-            <ColorPage index={2} />
+            <TabView.Tab value="0">
+              <ColorPage index={0} />
+            </TabView.Tab>
+            <TabView.Tab value="1">
+              <ColorPage index={1} />
+            </TabView.Tab>
+            <TabView.Tab value="2">
+              <ColorPage index={2} />
+            </TabView.Tab>
           </TabView>
         </Section>
 
@@ -239,35 +241,45 @@ export default function TabViewScreen() {
               tabViewStyle({ type: 'page', indexDisplayMode: 'always' }),
               indexViewStyle({ backgroundDisplayMode: 'always' }),
             ]}>
-            <ColorPage index={5} />
-            <ColorPage index={6} />
-            <ColorPage index={7} />
+            <TabView.Tab value="5">
+              <ColorPage index={5} />
+            </TabView.Tab>
+            <TabView.Tab value="6">
+              <ColorPage index={6} />
+            </TabView.Tab>
+            <TabView.Tab value="7">
+              <ColorPage index={7} />
+            </TabView.Tab>
           </TabView>
-          <Toggle
-            isOn={showDots}
-            onIsOnChange={setShowDots}
-            label="Show dots on other pagers below"
-          />
+        </Section>
+
+        <Section>
+          <Toggle isOn={showDots} onIsOnChange={setShowDots} label="Show dots on pagers below" />
         </Section>
 
         <Section title="Programmatic navigation (controlled)">
           <Text>
-            Page {sel2 + 1} / {NAV_COUNT}
+            Page {Number(sel2) + 1} / {NAV_COUNT}
           </Text>
           <TabView
             selection={sel2}
             onSelectionChange={setSel2}
-            modifiers={[tabViewFrame, dotsModifier, animation(Animation.default, sel2)]}>
+            modifiers={[tabViewFrame, dotsModifier, animation(Animation.default, Number(sel2))]}>
             {Array.from({ length: NAV_COUNT }).map((_, i) => (
-              <ColorPage key={i} index={i} />
+              <TabView.Tab key={i} value={String(i)}>
+                <ColorPage index={i} />
+              </TabView.Tab>
             ))}
           </TabView>
-          <Button onPress={() => setSel2(0)} label="First" />
-          <Button onPress={() => setSel2(Math.max(0, sel2 - 1))} label="Prev" />
-          <Button onPress={() => setSel2(Math.min(NAV_COUNT - 1, sel2 + 1))} label="Next" />
-          <Button onPress={() => setSel2(NAV_COUNT - 1)} label="Last" />
-          <Button onPress={() => setSel2(-1)} label="-1" />
-          <Button onPress={() => setSel2(NAV_COUNT)} label="Last + 1" />
+          <Button onPress={() => setSel2('0')} label="First" />
+          <Button onPress={() => setSel2(String(Math.max(0, Number(sel2) - 1)))} label="Prev" />
+          <Button
+            onPress={() => setSel2(String(Math.min(NAV_COUNT - 1, Number(sel2) + 1)))}
+            label="Next"
+          />
+          <Button onPress={() => setSel2(String(NAV_COUNT - 1))} label="Last" />
+          <Button onPress={() => setSel2('-1')} label="-1" />
+          <Button onPress={() => setSel2(String(NAV_COUNT))} label="Last + 1" />
         </Section>
 
         <Section title="Reorderable notes (state stays with content)">
@@ -277,62 +289,38 @@ export default function TabViewScreen() {
             stay at array position 1 with a brand-new page.
           </Text>
           <Text>
-            Notes: {notes.map((n) => n.index).join(', ')} — selected{' '}
-            {notes[Math.min(selNotes, notes.length - 1)]?.index ?? '–'}
+            Notes: {notes.map((n) => n.index).join(', ')} — selected {selNotes}
           </Text>
           <TabView
-            selection={Math.min(selNotes, notes.length - 1)}
+            selection={selNotes}
             onSelectionChange={setSelNotes}
             modifiers={[tabViewFrame, dotsModifier]}>
             {notes.map((note) => (
-              <NotePage key={note.index} index={note.index} />
+              <TabView.Tab key={note.index} value={String(note.index)}>
+                <NotePage index={note.index} />
+              </TabView.Tab>
             ))}
           </TabView>
           <Button
             onPress={() => {
               const index = nextPrependedIndex.current--;
               setNotes((prev) => [{ index }, ...prev]);
-              // Keep the same logical page selected after the front insert.
-              setSelNotes((s) => s + 1);
+              // No need to adjust selection — value-based selection
+              // follows the note, not its position.
             }}
             label="Insert at beginning"
           />
           <Button
             onPress={() => {
               if (notes.length <= 1) return;
+              const removedValue = String(notes[0].index);
               setNotes((prev) => prev.slice(1));
-              setSelNotes((s) => Math.max(0, s - 1));
+              if (selNotes === removedValue) {
+                setSelNotes(String(notes[1]?.index ?? notes[0].index));
+              }
             }}
             label="Remove first"
           />
-        </Section>
-
-        <Section title="Value-based selection with <Tab/> (iOS 18+)">
-          <Text>
-            On iOS 18 the parent `TabView` detects `{'<Tab>'}` children and uses SwiftUI's
-            value-based `Tab(value:)` API. Selection is by `value` (string or number) instead of by
-            index, which is the only path compatible with sidebar styles like `sidebarAdaptable`. On
-            iOS 17 the parent falls back to the legacy index-tagged path; the synthesized `tabItem`
-            keeps labels visible.
-          </Text>
-          <Text>Selected: {String(selectedTab)}</Text>
-          <TabView
-            selection={selectedTab}
-            onSelectionChange={setSelectedTab}
-            modifiers={[tabViewFrame, tabViewStyle({ type: 'automatic' })]}>
-            <Tab value="home" label="Home" systemImage="house.fill">
-              <ColorPage index={0} label="Home" />
-            </Tab>
-            <Tab value="search" label="Search" systemImage="magnifyingglass">
-              <ColorPage index={1} label="Search" />
-            </Tab>
-            <Tab value="profile" label="Profile" systemImage="person.crop.circle">
-              <ColorPage index={2} label="Profile" />
-            </Tab>
-          </TabView>
-          <Button onPress={() => setSelectedTab('home')} label="Go Home" />
-          <Button onPress={() => setSelectedTab('search')} label="Go Search" />
-          <Button onPress={() => setSelectedTab('profile')} label="Go Profile" />
         </Section>
       </Form>
     </Host>

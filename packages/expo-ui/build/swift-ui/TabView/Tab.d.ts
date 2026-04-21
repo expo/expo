@@ -5,7 +5,7 @@ export type TabProps = {
      * Identifies this tab. Matched against the parent `TabView`'s `selection`
      * and `defaultSelection` props.
      */
-    value: number | string;
+    value: string;
     /**
      * Text label shown in the tab bar or sidebar.
      */
@@ -25,12 +25,12 @@ export type TabProps = {
  * @example
  * ```tsx
  * <TabView selection={selected} onSelectionChange={setSelected}>
- *   <Tab value="home" label="Home" systemImage="house"><Home /></Tab>
- *   <Tab value="profile" label="Profile" systemImage="person"><Profile /></Tab>
+ *   <TabView.Tab value="home" label="Home" systemImage="house"><Home /></TabView.Tab>
+ *   <TabView.Tab value="profile" label="Profile" systemImage="person"><Profile /></TabView.Tab>
  * </TabView>
  * ```
  *
  * @platform ios
  */
-export declare function Tab(props: TabProps): import("react").JSX.Element;
+export declare function Tab(props: TabProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Tab.d.ts.map

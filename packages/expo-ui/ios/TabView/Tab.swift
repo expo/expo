@@ -4,7 +4,7 @@ import SwiftUI
 import ExpoModulesCore
 
 internal final class TabProps: UIBaseViewProps {
-  @Field var value: Either<Double, String>?
+  @Field var value: String
   @Field var label: String?
   @Field var systemImage: String?
 }
@@ -32,16 +32,4 @@ internal struct Tab: ExpoSwiftUI.View {
       }
   }
 
-  var hashableValue: AnyHashable {
-    guard let value = props.value else {
-      fatalError("Tab requires a `value` prop")
-    }
-    if let stringValue: String = value.get() {
-      return stringValue
-    }
-    if let doubleValue: Double = value.get() {
-      return doubleValue
-    }
-    fatalError("Tab `value` must be a string or number")
-  }
 }
