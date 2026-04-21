@@ -10,7 +10,8 @@ import { describe, it } from 'node:test';
 
 import type { SPMPackageSource } from '../ExternalPackage';
 import type { BuildFlavor } from '../Prebuilder.types';
-import { logPackageBanner } from './Reporter';
+import { computeSummaryCounts, logPackageBanner } from './Reporter';
+import type { UnitStatus } from './Types';
 
 // ---------------------------------------------------------------------------
 // Stub helpers
@@ -78,5 +79,70 @@ describe('logPackageBanner', () => {
         '/repo/packages/precompile/.cache'
       );
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeSummaryCounts
+// ---------------------------------------------------------------------------
+
+function makeUnit(overrides: Partial<UnitStatus> = {}): UnitStatus {
+  return {
+    packageName: 'pkg',
+    productName: 'prod',
+    flavor: 'Release',
+    unitId: 'pkg/prod[Release]',
+    stages: {
+      generate: 'success',
+      build: 'success',
+      compose: 'success',
+      verify: 'success',
+    },
+    elapsedMs: 0,
+    ...overrides,
+  };
+}
+
+describe('computeSummaryCounts', () => {
+  it('counts a fully successful unit as successful', () => {
+    const counts = computeSummaryCounts([makeUnit()]);
+    assert.equal(counts.successful, 1);
+    assert.equal(counts.failed, 0);
+  });
+
+  it('counts a unit with a failed stage as failed', () => {
+    const counts = computeSummaryCounts([
+      makeUnit({
+        stages: { generate: 'failed', build: 'skipped', compose: 'skipped', verify: 'skipped' },
+      }),
+    ]);
+    assert.equal(counts.successful, 0);
+    assert.equal(counts.failed, 1);
+  });
+
+  it('counts a unit with a verify warning as successful-with-warning', () => {
+    const counts = computeSummaryCounts([
+      makeUnit({
+        stages: { generate: 'success', build: 'success', compose: 'success', verify: 'warning' },
+      }),
+    ]);
+    assert.equal(counts.successful, 1);
+    assert.equal(counts.warnings, 1);
+    assert.equal(counts.failed, 0);
+  });
+
+  it('counts a unit with skipReason as failed even when all stages are skipped', () => {
+    // This is the core behavior for "skipped due to upstream failure": every
+    // stage is `'skipped'` (which normally counts as success), but the presence
+    // of skipReason flips the unit into the failed bucket so counts + exit
+    // code remain accurate.
+    const counts = computeSummaryCounts([
+      makeUnit({
+        stages: { generate: 'skipped', build: 'skipped', compose: 'skipped', verify: 'skipped' },
+        skipReason: 'dependency foo failed',
+      }),
+    ]);
+    assert.equal(counts.successful, 0);
+    assert.equal(counts.failed, 1);
   });
 });
