@@ -3,8 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createDefaultGenerationContext = createDefaultGenerationContext;
 exports.basicTypesIdentifiers = basicTypesIdentifiers;
-exports.getPropsTypeDeclaration = getPropsTypeDeclaration;
+exports.joinTSNodesWithNewlines = joinTSNodesWithNewlines;
+exports.getViewPropsDeclaration = getViewPropsDeclaration;
 exports.getArgumentDeclarationAndName = getArgumentDeclarationAndName;
 exports.getTsFunction = getTsFunction;
 exports.mapTypeToTsTypeNode = mapTypeToTsTypeNode;
@@ -13,12 +15,14 @@ exports.getTsClassDeclaration = getTsClassDeclaration;
 exports.getIdentifierUnknownDeclaration = getIdentifierUnknownDeclaration;
 exports.getRecordDeclaration = getRecordDeclaration;
 exports.getEnumDeclaration = getEnumDeclaration;
+exports.getTypeDeclarations = getTypeDeclarations;
 exports.getViewPropsTypeName = getViewPropsTypeName;
 exports.prettifyCode = prettifyCode;
 exports.getGeneratedViewTypesFileContent = getGeneratedViewTypesFileContent;
 exports.getGeneratedJSXIntrinsicsViewDeclaration = getGeneratedJSXIntrinsicsViewDeclaration;
 exports.getGeneratedModuleTypesFileContent = getGeneratedModuleTypesFileContent;
 exports.getGeneratedModuleTypescriptInterface = getGeneratedModuleTypescriptInterface;
+exports.getGeneratedExpoModuleTypescriptFilesContents = getGeneratedExpoModuleTypescriptFilesContents;
 const prettier_1 = __importDefault(require("prettier"));
 const typescript_1 = __importDefault(require("typescript"));
 const typeInformation_1 = require("./typeInformation");
@@ -41,6 +45,19 @@ let freeId = 0;
 function getNextFreeId() {
     freeId += 1;
     return freeId;
+}
+function createDefaultGenerationContext(fileInfo) {
+    const module = fileInfo.moduleClasses[0];
+    if (!module) {
+        return null;
+    }
+    const view = module.views[0] ?? null;
+    return {
+        fileInfo,
+        module,
+        view,
+        missingTypes: getMissingTypeIdentifiers(fileInfo),
+    };
 }
 function basicTypesIdentifiers() {
     return new Set(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set', 'Promise']);
@@ -121,16 +138,17 @@ function getMissingTypeIdentifiers(fileTypeInformation) {
         .difference(fileTypeInformation.declaredTypeIdentifiers)
         .difference(basicTypesIdentifiers());
 }
-function getPropsType(propsDeclaration, events) {
+function getPropsType({ props, events }) {
     return typescript_1.default.factory.createTypeLiteralNode([
-        ...propsDeclaration
-            .map(getPropTypeElementDeclaration)
-            .filter((p) => p),
+        ...props.map(getPropTypeElementDeclaration).filter((p) => p),
         ...events.map(getPropEventElementDeclaration),
     ]);
 }
-function getPropsTypeDeclaration(propsTypeName, propsDeclaration, events, exported = true) {
-    return [].concat(typescript_1.default.factory.createTypeAliasDeclaration(exported ? [exportModifier] : [], propsTypeName, undefined, getPropsType(propsDeclaration, events)));
+function getViewPropsDeclaration(view, options) {
+    if (!view) {
+        return [];
+    }
+    return [].concat(typescript_1.default.factory.createTypeAliasDeclaration(getModifiersArray(options), getViewPropsTypeName(view), undefined, getPropsType(view)));
 }
 function wrapWithPromise(typeNode) {
     return typescript_1.default.factory.createTypeReferenceNode('Promise', [typeNode]);
@@ -150,15 +168,15 @@ function getClassPropertyDeclaration(declaration) {
 }
 function getClassDeclarationInModule(classDeclaration) {
     return getPropertyDeclaration({
-        // TODO(@HubertBer) that's a hack, but I couldn't find a proper way to do this
+        // TODO(@HubertBer): that's a hack, but I couldn't find a proper way to do this
         // The problem is that declare class semantics seem somewhat different than class semantics.
         name: classDeclaration.name,
         typeNode: typescript_1.default.factory.createTypeReferenceNode('typeof ' + classDeclaration.name),
     });
 }
-function getExportedModuleDeclaration(moduleClassDeclaration) {
+function getExportedModuleDeclaration({ moduleClassDeclaration, exportedModuleName, }) {
     return [
-        typescript_1.default.factory.createClassDeclaration([exportModifier, declareModifier], `${moduleClassDeclaration.name}NativeModuleType`, undefined, [
+        typescript_1.default.factory.createClassDeclaration([exportModifier, declareModifier], exportedModuleName ?? `${moduleClassDeclaration.name}NativeModuleType`, undefined, [
             typescript_1.default.factory.createHeritageClause(typescript_1.default.SyntaxKind.ExtendsKeyword, [
                 typescript_1.default.factory.createExpressionWithTypeArguments(typescript_1.default.factory.createIdentifier('NativeModule'), undefined),
             ]),
@@ -181,31 +199,29 @@ function getAsyncMethodDeclaration(functionDeclaration) {
         functionDeclaration,
         async: true,
         method: true,
-        exported: false,
         declaration: true,
     });
 }
 function getSyncMethodDeclaration(functionDeclaration) {
     return getTsFunction({
         functionDeclaration,
-        async: false,
         method: true,
-        exported: false,
         declaration: true,
     });
 }
-function getTsFunction({ functionDeclaration, async, method, exported, declaration, returnStatement, overrideArgumentDeclarations, includeReturnType, }) {
+function getTsFunction({ functionDeclaration, async, method, exported, declaration, returnStatement, overrideArgumentDeclarations, omitReturnType, }) {
     const functionModifiers = getModifiersArray({ export: exported, async: async && !declaration });
     const customReturn = !!returnStatement;
     const bareReturnTypeNode = mapTypeToTsTypeNode(functionDeclaration.returnType);
-    const includeReturnTypeBoolean = includeReturnType ?? true;
     let returnTypeNode = async
         ? wrapWithPromise(bareReturnTypeNode)
         : bareReturnTypeNode;
-    returnTypeNode = includeReturnTypeBoolean ? returnTypeNode : undefined;
+    if (omitReturnType) {
+        returnTypeNode = undefined;
+    }
     const argumentDeclarations = overrideArgumentDeclarations ?? functionDeclaration.arguments.map(getArgumentDeclaration);
     if (method) {
-        return typescript_1.default.factory.createMethodDeclaration(functionModifiers, undefined, functionDeclaration.name, undefined, undefined, argumentDeclarations, includeReturnTypeBoolean ? returnTypeNode : undefined, declaration ? undefined : typescript_1.default.factory.createBlock(customReturn ? returnStatement : []));
+        return typescript_1.default.factory.createMethodDeclaration(functionModifiers, undefined, functionDeclaration.name, undefined, undefined, argumentDeclarations, returnTypeNode, declaration ? undefined : typescript_1.default.factory.createBlock(customReturn ? returnStatement : []));
     }
     return typescript_1.default.factory.createFunctionDeclaration(functionModifiers, undefined, functionDeclaration.name, undefined, argumentDeclarations, returnTypeNode, declaration ? undefined : typescript_1.default.factory.createBlock(customReturn ? returnStatement : []));
 }
@@ -248,7 +264,7 @@ function mapTypeToTsTypeNode(type) {
         // for example when creating arguemnt adding the '?' token.
         //
         // However we can just make it (type | undefined) in here.
-        // TODO(@HubertBer) Maybe also need null?
+        // TODO(@HubertBer): Maybe also need null?
         case typeInformation_1.TypeKind.OPTIONAL:
             return typescript_1.default.factory.createUnionTypeNode([
                 mapTypeToTsTypeNode(type.type),
@@ -259,40 +275,43 @@ function mapTypeToTsTypeNode(type) {
     }
     return mapBasicTypeToTsNode(typeInformation_1.BasicType.UNRESOLVED);
 }
-function getClassConstructorDeclaration(constructor, declaration = true) {
+function getClassConstructorDeclaration(constructor, declaration) {
     return typescript_1.default.factory.createConstructorDeclaration(undefined, constructor.arguments.map(getArgumentDeclaration), declaration ? undefined : typescript_1.default.factory.createBlock([]));
 }
-// TODO(@HubertBer) figure out what about inheritance, should or should not inherit SharedObject
-function getTsClassDeclaration(classDeclaration, fileTypeInformation, exported, declaration, getFunctionReturnBlock) {
+// TODO(@HubertBer): figure out what about inheritance, should or should not inherit SharedObject
+function getTsClassDeclaration({ classDeclaration, exported, declaration, getFunctionReturnBlock, }) {
     const constructorDeclaration = classDeclaration.constructor
-        ? getClassConstructorDeclaration(classDeclaration.constructor, declaration)
+        ? getClassConstructorDeclaration(classDeclaration.constructor, declaration ?? false)
         : undefined;
     return typescript_1.default.factory.createClassDeclaration(getModifiersArray({ export: exported, declare: declaration }), typescript_1.default.factory.createIdentifier(classDeclaration.name), undefined, [], []
         .concat(classDeclaration.methods.map((method) => getTsFunction({
         functionDeclaration: method,
-        async: false,
         method: true,
-        exported: false,
         declaration,
-        returnStatement: !declaration && getFunctionReturnBlock
-            ? getFunctionReturnBlock(method, fileTypeInformation)
-            : null,
+        returnStatement: !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null,
     })), classDeclaration.asyncMethods.map((method) => getTsFunction({
         functionDeclaration: method,
         async: true,
         method: true,
-        exported: false,
         declaration,
-        returnStatement: !declaration && getFunctionReturnBlock
-            ? getFunctionReturnBlock(method, fileTypeInformation)
-            : null,
+        returnStatement: !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null,
     })), declaration ? classDeclaration.properties.map(getClassPropertyDeclaration) : [], constructorDeclaration)
         .filter((v) => !!v));
 }
-function getModuleDefaultValueExport(defaultValueTypename) {
+function createRequireNativeModuleExpression({ moduleType, moduleName, }) {
+    return typescript_1.default.factory.createCallExpression(typescript_1.default.factory.createIdentifier('requireNativeModule'), moduleType ? [typescript_1.default.factory.createTypeReferenceNode(moduleType)] : undefined, [typescript_1.default.factory.createStringLiteral(moduleName)]);
+}
+function getModuleDefaultValueExport({ moduleName, moduleType, declaration, }) {
     const name = '_default';
-    const type = typescript_1.default.factory.createTypeReferenceNode(defaultValueTypename);
-    return [].concat(getParameterDeclaration({ modifiers: [constModifier], name, type }), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier('_default')));
+    const type = moduleType ? typescript_1.default.factory.createTypeReferenceNode(moduleType) : undefined;
+    return [].concat(getParameterDeclaration({
+        modifiers: [constModifier],
+        name,
+        type,
+        initializer: declaration
+            ? undefined
+            : createRequireNativeModuleExpression({ moduleName, moduleType }),
+    }), typescript_1.default.factory.createExportDefault(typescript_1.default.factory.createIdentifier('_default')));
 }
 function getNTypeParameterDeclaration(n) {
     const params = [];
@@ -316,22 +335,48 @@ function getRecordDeclaration(recordType, exported) {
 function getEnumDeclaration(enumType, exported, declared) {
     return typescript_1.default.factory.createEnumDeclaration(getModifiersArray({ export: exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
 }
-function getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers) {
-    return [].concat([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount)));
+function getUndeclaredIdentifiersDeclaration(ctx) {
+    return [].concat([...ctx.missingTypes].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, ctx.fileInfo.inferredTypeParametersCount)));
 }
-function getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, recordTypes, enumTypes, undeclaredTypeIdentifiers) {
-    const recordDeclarationMap = (recordType) => getRecordDeclaration(recordType, true);
-    const enumDeclarationMap = (enumType) => getEnumDeclaration(enumType, true, false);
-    const classDeclarationMap = (classDeclaration) => getTsClassDeclaration(classDeclaration, fileTypeInformation, true, true, null);
+function getDefaultReactComponentDeclaration({ componentName, propsTypeAlias, }) {
+    const propsTypeNode = typescript_1.default.factory.createTypeReferenceNode(propsTypeAlias);
+    return [
+        typescript_1.default.factory.createFunctionExpression([exportModifier, defaultModifier], undefined, componentName + 'Component', undefined, [getParameterDeclaration({ name: 'props', type: propsTypeNode })], undefined, typescript_1.default.factory.createBlock([
+            typescript_1.default.factory.createReturnStatement(typescript_1.default.factory.createJsxSelfClosingElement(typescript_1.default.factory.createIdentifier(componentName), undefined, typescript_1.default.factory.createJsxAttributes([
+                typescript_1.default.factory.createJsxSpreadAttribute(typescript_1.default.factory.createIdentifier('props')),
+            ]))),
+        ])),
+    ];
+}
+function createExportDefaultAsDeclaration({ exportAsName, importFromName, }) {
+    return [
+        typescript_1.default.factory.createExportDeclaration(undefined, false, typescript_1.default.factory.createNamedExports([
+            typescript_1.default.factory.createExportSpecifier(false, typescript_1.default.factory.createIdentifier('default'), typescript_1.default.factory.createIdentifier(exportAsName)),
+        ]), typescript_1.default.factory.createStringLiteral(importFromName)),
+    ];
+}
+function getTypeDeclarations(ctx, options) {
+    const recordDeclarationMap = (recordType) => getRecordDeclaration(recordType, options.export ?? false);
+    const enumDeclarationMap = (enumType) => getEnumDeclaration(enumType, options.export ?? false, options.declare ?? false);
+    const classDeclarationMap = (classDeclaration) => getTsClassDeclaration({ classDeclaration, exported: true, declaration: true });
+    return joinTSNodesWithNewlines([
+        getOneNamedImport('NativeModule', 'expo'),
+        getUndeclaredIdentifiersDeclaration(ctx),
+        ctx.fileInfo.records.flatMap(recordDeclarationMap),
+        ctx.fileInfo.enums.flatMap(enumDeclarationMap),
+        ctx.module.classes.map(classDeclarationMap),
+    ]);
+}
+function getModuleDeclarationFileNodes(ctx) {
     return joinTSNodesWithNewlines([
         getPrefix(),
-        getOneNamedImport('NativeModule', 'expo'),
-        getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers),
-        recordTypes.flatMap(recordDeclarationMap),
-        enumTypes.flatMap(enumDeclarationMap),
-        moduleClassDeclaration.classes.map(classDeclarationMap),
-        getExportedModuleDeclaration(moduleClassDeclaration),
-        getModuleDefaultValueExport(moduleClassDeclaration.name),
+        getTypeDeclarations(ctx, { export: true }),
+        getExportedModuleDeclaration({ moduleClassDeclaration: ctx.module }),
+        getModuleDefaultValueExport({
+            moduleName: ctx.module.name,
+            moduleType: ctx.module.name,
+            declaration: true,
+        }),
     ]);
 }
 function getViewDefaultValueExport(view) {
@@ -344,19 +389,15 @@ function getViewDefaultValueExport(view) {
 function getViewPropsTypeName(view) {
     return view.name + (view.name.endsWith('View') ? 'Props' : 'ViewProps');
 }
-function getViewTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation) {
-    if (moduleClassDeclaration.views.length === 0) {
+function getViewTypesDeclarationsForModule(ctx) {
+    if (!ctx.view) {
         return [];
     }
-    const mainView = moduleClassDeclaration.views[0];
-    const undeclaredTypeIdentifiers = getMissingTypeIdentifiers(fileTypeInformation);
     return joinTSNodesWithNewlines([
         getPrefix(),
-        [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount)),
-        mainView
-            ? getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false)
-            : [],
-        mainView ? getViewDefaultValueExport(mainView) : [],
+        [...ctx.missingTypes].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, ctx.fileInfo.inferredTypeParametersCount)),
+        getViewPropsDeclaration(ctx.view, {}),
+        getViewDefaultValueExport(ctx.view),
     ]);
 }
 function getJsxIntrinsicElementsInterfaceDeclaration(intrinsicElements) {
@@ -371,51 +412,30 @@ function getJsxIntrinsicElementsInterfaceDeclaration(intrinsicElements) {
         ]), typescript_1.default.NodeFlags.GlobalAugmentation),
     ];
 }
-function getGeneratedJSXIntrinsicsViewDeclarationForModule(moduleClassDeclaration, fileTypeInformation) {
-    const mainView = moduleClassDeclaration.views[0];
-    const undeclaredTypeIdentifiers = getMissingTypeIdentifiers(fileTypeInformation);
-    const recordDeclarationMap = (recordType) => getRecordDeclaration(recordType, false);
-    const enumDeclarationMap = (enumType) => getEnumDeclaration(enumType, false, true);
-    const classDeclarationMap = (classDeclaration) => getTsClassDeclaration(classDeclaration, fileTypeInformation, false, true, null);
-    const name = moduleClassDeclaration.name;
-    const propsTypeNode = mainView ? getPropsType(mainView.props, mainView.events) : undefined;
+function getGeneratedJSXIntrinsicsViewDeclarationForModule(ctx) {
+    const name = ctx.module.name;
+    const propsTypeNode = ctx.view ? getPropsType(ctx.view) : undefined;
     return joinTSNodesWithNewlines([
-        getPrefix(),
-        [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, false, fileTypeInformation.inferredTypeParametersCount)),
-        fileTypeInformation.records.flatMap(recordDeclarationMap),
-        fileTypeInformation.enums.flatMap(enumDeclarationMap),
-        moduleClassDeclaration.classes.map(classDeclarationMap),
-        mainView
+        getTypeDeclarations(ctx, { declare: true }),
+        ctx.view
             ? getJsxIntrinsicElementsInterfaceDeclaration([
                 getPropertySignature({ name, typeNode: propsTypeNode }),
             ])
             : [],
     ]);
 }
-function getGeneratedFileDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, recordTypes, enumTypes, undeclaredTypeIdentifiers) {
-    const mainView = moduleClassDeclaration.views.length > 0 ? moduleClassDeclaration.views[0] : null;
-    const recordDeclarationMap = (recordType) => getRecordDeclaration(recordType, true);
-    const enumDeclarationMap = (enumType) => getEnumDeclaration(enumType, true, false);
-    const classDeclarationMap = (classDeclaration) => getTsClassDeclaration(classDeclaration, fileTypeInformation, true, true, null);
+function getGeneratedFileDeclarationsForModule(ctx) {
     return joinTSNodesWithNewlines([
         getPrefix(),
-        getOneNamedImport('NativeModule', 'expo'),
-        getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers),
-        recordTypes.flatMap(recordDeclarationMap),
-        enumTypes.flatMap(enumDeclarationMap),
-        moduleClassDeclaration.classes.map(classDeclarationMap),
-        mainView
-            ? getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, true)
-            : [],
-        getExportedModuleDeclaration(moduleClassDeclaration),
+        getTypeDeclarations(ctx, { export: true }),
+        getViewPropsDeclaration(ctx.view, { export: true }),
+        getExportedModuleDeclaration({ moduleClassDeclaration: ctx.module }),
     ]);
 }
-function getStableFileDeclarationsForModule(moduleClassDeclaration, fileTypeInformation) {
-    const usedTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers;
-    const mainView = moduleClassDeclaration.views.length > 0 ? moduleClassDeclaration.views[0] : null;
-    const generatedModuleAlias = moduleClassDeclaration.name;
-    const generatedModuleTypeAlias = `${moduleClassDeclaration.name}NativeModuleType`;
-    const generatedFilePath = `./${moduleClassDeclaration.name}.generated`;
+function getStableFileDeclarationsForModule(ctx) {
+    const generatedModuleAlias = ctx.module.name;
+    const generatedModuleTypeAlias = `${ctx.module.name}NativeModuleType`;
+    const generatedFilePath = `./${ctx.module.name}.generated`;
     const exportedFunctionReturnStatement = (functionDeclaration, overrideArguments) => {
         const expression = `${generatedModuleAlias}.${functionDeclaration.name}`;
         const args = overrideArguments ??
@@ -437,33 +457,23 @@ function getStableFileDeclarationsForModule(moduleClassDeclaration, fileTypeInfo
             getTsFunction({
                 functionDeclaration,
                 async: isAsync,
-                method: false,
                 exported: true,
-                declaration: false,
                 returnStatement: [
                     exportedFunctionReturnStatement(functionDeclaration, argumentNames.map(typescript_1.default.factory.createIdentifier)),
                 ],
                 overrideArgumentDeclarations: argumentDeclarations,
-                includeReturnType: false,
+                omitReturnType: true,
             }),
         ];
     };
     const mapSyncFunctionDeclaration = mapFunctionDeclarationTemplate(false);
     const mapAsyncFunctionDeclaration = mapFunctionDeclarationTemplate(true);
-    const getDefaultReactComponentDeclaration = (componentName, propsTypeAlias) => {
-        const propsTypeNode = typescript_1.default.factory.createTypeReferenceNode(propsTypeAlias);
-        return [
-            typescript_1.default.factory.createFunctionExpression([exportModifier, defaultModifier], undefined, componentName + 'Component', undefined, [getParameterDeclaration({ name: 'props', type: propsTypeNode })], undefined, typescript_1.default.factory.createBlock([
-                typescript_1.default.factory.createReturnStatement(typescript_1.default.factory.createJsxSelfClosingElement(typescript_1.default.factory.createIdentifier(componentName), undefined, typescript_1.default.factory.createJsxAttributes([
-                    typescript_1.default.factory.createJsxSpreadAttribute(typescript_1.default.factory.createIdentifier('props')),
-                ]))),
-            ])),
-        ];
-    };
     return joinTSNodesWithNewlines([
-        mainView ? getImport({ importFromName: 'react', defaultImportName: 'React' }) : [],
+        ctx.view ? getImport({ importFromName: 'react', defaultImportName: 'React' }) : [],
         getImport({
-            namedImportsNames: [...usedTypeIdentifiers.difference(basicTypesIdentifiers())].concat([generatedModuleTypeAlias, mainView ? getViewPropsTypeName(mainView) : null].filter((v) => v !== null)),
+            namedImportsNames: [
+                ...ctx.fileInfo.usedTypeIdentifiers.difference(basicTypesIdentifiers()),
+            ].concat([generatedModuleTypeAlias, ctx.view ? getViewPropsTypeName(ctx.view) : null].filter((v) => v !== null)),
             importFromName: generatedFilePath,
         }),
         getImport({
@@ -473,40 +483,43 @@ function getStableFileDeclarationsForModule(moduleClassDeclaration, fileTypeInfo
         [
             getParameterDeclaration({
                 modifiers: [constModifier],
-                name: moduleClassDeclaration.name,
+                name: ctx.module.name,
                 type: typescript_1.default.factory.createTypeReferenceNode(generatedModuleTypeAlias),
                 initializer: getCallExpression({
                     expression: 'requireNativeModule',
                     typeArgs: [typescript_1.default.factory.createTypeReferenceNode(generatedModuleTypeAlias)],
-                    args: [typescript_1.default.factory.createStringLiteral(moduleClassDeclaration.name)],
+                    args: [typescript_1.default.factory.createStringLiteral(ctx.module.name)],
                 }),
             }),
         ],
-        mainView
+        ctx.view
             ? [
                 getParameterDeclaration({
                     modifiers: [constModifier],
-                    name: mainView.name,
+                    name: ctx.view.name,
                     initializer: getCallExpression({
                         expression: 'requireNativeView',
-                        args: [typescript_1.default.factory.createStringLiteral(moduleClassDeclaration.name)],
+                        args: [typescript_1.default.factory.createStringLiteral(ctx.module.name)],
                     }),
                 }),
             ]
             : [],
-        moduleClassDeclaration.constants.flatMap((constant) => [
+        ctx.module.constants.flatMap((constant) => [
             getConstantExportDeclaration(constant.name, constant.type, `${generatedModuleAlias}.${constant.name}`),
         ]),
-        moduleClassDeclaration.functions.flatMap(mapSyncFunctionDeclaration),
-        moduleClassDeclaration.asyncFunctions.flatMap(mapAsyncFunctionDeclaration),
-        mainView
-            ? getDefaultReactComponentDeclaration(mainView.name, getViewPropsTypeName(mainView))
+        ctx.module.functions.flatMap(mapSyncFunctionDeclaration),
+        ctx.module.asyncFunctions.flatMap(mapAsyncFunctionDeclaration),
+        ctx.view
+            ? getDefaultReactComponentDeclaration({
+                componentName: ctx.view.name,
+                propsTypeAlias: getViewPropsTypeName(ctx.view),
+            })
             : [],
     ]);
 }
-async function prettyPrintTSNodesToString(file, elements) {
+async function tsNodesToString(elements) {
     const printer = typescript_1.default.createPrinter({ newLine: typescript_1.default.NewLineKind.LineFeed });
-    const resultFile = typescript_1.default.createSourceFile(file, '', typescript_1.default.ScriptTarget.Latest, false, typescript_1.default.ScriptKind.TSX);
+    const resultFile = typescript_1.default.createSourceFile('', '', typescript_1.default.ScriptTarget.Latest, false, typescript_1.default.ScriptKind.TSX);
     const viewTypes = typescript_1.default.factory.createNodeArray(elements);
     const printedTs = printer.printList(typescript_1.default.ListFormat.MultiLine + typescript_1.default.ListFormat.PreserveLines, viewTypes, resultFile);
     return await prettifyCode(printedTs, 'typescript');
@@ -520,46 +533,153 @@ async function prettifyCode(text, parser = 'babel') {
         singleQuote: true,
     });
 }
-async function getGeneratedViewTypesFileContent(file, fileTypeInformation) {
-    const outputModuleDefinition = fileTypeInformation.moduleClasses[0];
-    if (!outputModuleDefinition) {
+async function getGeneratedViewTypesFileContent(fileTypeInformation) {
+    const ctx = createDefaultGenerationContext(fileTypeInformation);
+    if (!ctx) {
         return null;
     }
-    return prettyPrintTSNodesToString(file, getViewTypesDeclarationsForModule(outputModuleDefinition, fileTypeInformation));
+    return tsNodesToString(getViewTypesDeclarationsForModule(ctx));
 }
-async function getGeneratedJSXIntrinsicsViewDeclaration(file, fileTypeInformation) {
-    const outputModuleDefinition = fileTypeInformation.moduleClasses[0];
-    if (!outputModuleDefinition) {
+async function getGeneratedJSXIntrinsicsViewDeclaration(fileTypeInformation) {
+    const ctx = createDefaultGenerationContext(fileTypeInformation);
+    if (!ctx) {
         return null;
     }
-    return prettyPrintTSNodesToString(file, getGeneratedJSXIntrinsicsViewDeclarationForModule(outputModuleDefinition, fileTypeInformation));
+    return tsNodesToString(getGeneratedJSXIntrinsicsViewDeclarationForModule(ctx));
 }
-async function getGeneratedModuleTypesFileContent(file, fileTypeInformation) {
-    const moduleClassDeclaration = fileTypeInformation.moduleClasses.at(0) ?? {
-        name: 'EmptyModule',
-        constructor: null,
-        asyncFunctions: [],
-        functions: [],
-        properties: [],
-        classes: [],
-        views: [],
-        constants: [],
-        props: [],
-        events: [],
-        definitionOffset: 0,
-    };
-    return prettyPrintTSNodesToString(file, getModuleTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInformation, fileTypeInformation.records, fileTypeInformation.enums, getMissingTypeIdentifiers(fileTypeInformation)));
+async function getGeneratedModuleTypesFileContent(fileTypeInformation) {
+    const ctx = createDefaultGenerationContext(fileTypeInformation);
+    if (!ctx) {
+        return null;
+    }
+    return tsNodesToString(getModuleDeclarationFileNodes(ctx));
 }
-async function getGeneratedModuleTypescriptInterface(file, fileTypeInformation) {
-    const firstModule = fileTypeInformation.moduleClasses[0];
-    if (!firstModule) {
+async function getGeneratedModuleTypescriptInterface(fileTypeInformation) {
+    const ctx = createDefaultGenerationContext(fileTypeInformation);
+    if (!ctx) {
         return { volitileGeneratedFileContent: '', moduleTypescriptInterfaceFileContent: '' };
     }
-    const volitileGeneratedFileContent = await prettyPrintTSNodesToString(file, getGeneratedFileDeclarationsForModule(firstModule, fileTypeInformation, fileTypeInformation.records, fileTypeInformation.enums, getMissingTypeIdentifiers(fileTypeInformation)));
-    const moduleTypescriptInterfaceFileContent = await prettyPrintTSNodesToString(file, getStableFileDeclarationsForModule(firstModule, fileTypeInformation));
+    const volitileGeneratedFileContent = await tsNodesToString(getGeneratedFileDeclarationsForModule(ctx));
+    const moduleTypescriptInterfaceFileContent = await tsNodesToString(getStableFileDeclarationsForModule(ctx));
     return {
         volitileGeneratedFileContent,
         moduleTypescriptInterfaceFileContent,
+    };
+}
+function createRequireNativeViewDeclaration(ctx) {
+    return ctx.view
+        ? [
+            getParameterDeclaration({
+                modifiers: [constModifier],
+                name: ctx.view.name,
+                initializer: getCallExpression({
+                    expression: 'requireNativeView',
+                    typeArgs: [typescript_1.default.factory.createTypeReferenceNode(getViewPropsTypeName(ctx.view))],
+                    args: [typescript_1.default.factory.createStringLiteral(ctx.module.name)],
+                }),
+            }),
+        ]
+        : [];
+}
+function getAllNonBasicTypes(fileInfo) {
+    return fileInfo.declaredTypeIdentifiers
+        .union(fileInfo.usedTypeIdentifiers)
+        .difference(basicTypesIdentifiers());
+}
+function createExportAllDeclaration({ importFromName, justTypes, }) {
+    return [
+        typescript_1.default.factory.createExportDeclaration(undefined, justTypes ?? false, undefined, typescript_1.default.factory.createStringLiteral(importFromName)),
+    ];
+}
+async function getGeneratedExpoModuleTypescriptFilesContents(fileTypeInformation) {
+    const ctx = createDefaultGenerationContext(fileTypeInformation);
+    if (!ctx) {
+        return null;
+    }
+    const moduleNativeFileImportName = `Expo${ctx?.module.name}`;
+    const moduleTypesFileImportName = `${ctx?.module.name}.types`;
+    const moduleViewFileImportName = `${ctx?.module.name}View`;
+    const moduleTypesFileNodes = joinTSNodesWithNewlines([
+        getPrefix(),
+        getTypeDeclarations(ctx, { export: true }),
+        getViewPropsDeclaration(ctx.view, { export: true }),
+    ]);
+    let moduleViewFileNodes;
+    if (ctx.view) {
+        moduleViewFileNodes = joinTSNodesWithNewlines([
+            getPrefix(),
+            getImport({
+                namedImportsNames: ['requireNativeView'],
+                importFromName: 'expo',
+            }),
+            getImport({
+                namedImportsNames: [getViewPropsTypeName(ctx.view)],
+                importFromName: `./${moduleTypesFileImportName}`,
+            }),
+            createRequireNativeViewDeclaration(ctx),
+            getDefaultReactComponentDeclaration({
+                componentName: ctx.view.name,
+                propsTypeAlias: getViewPropsTypeName(ctx.view),
+            }),
+        ]);
+    }
+    const moduleNativeModuleNodes = joinTSNodesWithNewlines([
+        getPrefix(),
+        getImport({
+            namedImportsNames: ['requireNativeModule', 'NativeModule'],
+            importFromName: 'expo-modules-core',
+        }),
+        getImport({
+            namedImportsNames: [...getAllNonBasicTypes(ctx.fileInfo)],
+            importFromName: `./${moduleTypesFileImportName}`,
+        }),
+        getExportedModuleDeclaration({
+            moduleClassDeclaration: ctx.module,
+            exportedModuleName: ctx.module.name,
+        }),
+        getModuleDefaultValueExport({ moduleName: ctx.module.name, moduleType: ctx.module.name }),
+    ]);
+    const indexFileNodes = joinTSNodesWithNewlines([
+        getPrefix(),
+        createExportAllDeclaration({
+            importFromName: `./${moduleTypesFileImportName}`,
+            justTypes: true,
+        }),
+        createExportDefaultAsDeclaration({
+            exportAsName: ctx.module.name,
+            importFromName: `./${moduleNativeFileImportName}`,
+        }),
+        ctx.view
+            ? createExportDefaultAsDeclaration({
+                exportAsName: ctx.view.name,
+                importFromName: `./${moduleViewFileImportName}`,
+            })
+            : [],
+    ]);
+    const [moduleTypesFileContent, moduleViewFileContent, moduleNativeFileContent, indexFileContent] = await Promise.all([
+        tsNodesToString(moduleTypesFileNodes),
+        tsNodesToString(moduleViewFileNodes ?? []),
+        tsNodesToString(moduleNativeModuleNodes),
+        tsNodesToString(indexFileNodes),
+    ]);
+    const moduleTypesFile = {
+        content: moduleTypesFileContent,
+        name: `${moduleTypesFileImportName}.ts`,
+    };
+    const moduleViewFile = {
+        content: moduleViewFileContent,
+        name: `${moduleViewFileImportName}.tsx`,
+    };
+    const moduleNativeFile = {
+        content: moduleNativeFileContent,
+        name: `${moduleNativeFileImportName}.ts`,
+    };
+    const indexFile = { content: indexFileContent, name: `index.ts` };
+    return {
+        moduleTypesFile,
+        moduleViewFile,
+        moduleNativeFile,
+        indexFile,
     };
 }
 //# sourceMappingURL=typescriptGeneration.js.map

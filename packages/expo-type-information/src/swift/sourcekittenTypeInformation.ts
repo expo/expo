@@ -31,7 +31,7 @@ import {
 } from '../typeInformation';
 import { Attribute, FileType, Structure } from '../types';
 
-// TODO(@HubertBer) maybe take the taskAll from cli?
+// TODO(@HubertBer): maybe take the taskAll from cli?
 export const taskAll = <T, R>(
   inputs: T[],
   map: (input: T, index: number) => Promise<R>
@@ -253,7 +253,7 @@ async function findReturnType(
     structure['key.name'].startsWith('returnValueDeclaration_') &&
     options.typeInference
   ) {
-    // TODO(@HubertBer) this return type inference is really costly
+    // TODO(@HubertBer): this return type inference is really costly
     return getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
   }
   if (hasSubstructure(structure)) {
@@ -289,7 +289,7 @@ async function extractDeclarationType(
   if (structure['key.typename']) {
     return mapSwiftTypeToTsType(structure['key.typename'] as string);
   }
-  // TODO(@HubertBer) this type inference is really costly
+  // TODO(@HubertBer): this type inference is really costly
   if (options.typeInference) {
     const inferReturn = await getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
     return inferReturn ? mapSwiftTypeToTsType(inferReturn) : getUnresolvedType();
@@ -298,7 +298,7 @@ async function extractDeclarationType(
 }
 
 // Read type description with sourcekitten, works only for variables
-// TODO(@HubertBer) This function is extremely slow and inefficient
+// TODO(@HubertBer): This function is extremely slow and inefficient
 // consider other options
 async function getTypeOfByteOffsetVariable(
   byteOffset: number,
@@ -378,14 +378,14 @@ async function parseModuleConstructorDeclaration(
   const definitionParams = substructure['key.substructure'];
   let types = null;
 
-  // TODO(@HubertBer) rethink this maybe split based on what closure is expected
+  // TODO(@HubertBer): rethink this maybe split based on what closure is expected
   // Maybe this should be the last substructure
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = await parseClosureTypes(definitionParams[1], file, options);
   } else if (definitionParams[0] && hasSubstructure(definitionParams[0])) {
     types = await parseClosureTypes(definitionParams[0], file, options);
   } else {
-    // TODO(@HubertBer) REDO THIS
+    // TODO(@HubertBer): REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
   }
 
@@ -409,7 +409,7 @@ async function parseModuleConstantSubstructure(
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = await parseClosureTypes(definitionParams[1], file, options);
   } else {
-    // TODO(@HubertBer) REDO THIS
+    // TODO(@HubertBer): REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
   }
 
@@ -478,14 +478,14 @@ async function parseModuleFunctionSubstructure(
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = await parseClosureTypes(definitionParams[1], file, options);
   } else {
-    // TODO(@HubertBer) REDO THIS
+    // TODO(@HubertBer): REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
   }
 
   return {
     name,
     returnType: mapSwiftTypeToTsType(types?.returnType ?? undefined), // any or void ? Probably any
-    parameters: [], // TODO(@HubertBer) Module function is not generic. I think so. Check it
+    parameters: [], // TODO(@HubertBer): Module function is not generic. I think so. Check it
     arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
     definitionOffset: substructure['key.offset'],
   };
@@ -505,7 +505,7 @@ async function parseModulePropDeclaration(
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = await parseClosureTypes(definitionParams[1], file, options);
   } else {
-    // TODO(@HubertBer) REDO THIS
+    // TODO(@HubertBer): REDO THIS
     // types = getTypeOfByteOffsetVariable(definitionParams[1]['key.offset'], file);
   }
 
@@ -993,7 +993,7 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): number {
   let escaped = false;
   let parenCount = 0;
   let braceCount = 0;
-  // TODO(@HubertBer) figure out what also changes the typical end of expression
+  // TODO(@HubertBer): figure out what also changes the typical end of expression
 
   let i = returnIndex;
   while (i < fileContent.length) {

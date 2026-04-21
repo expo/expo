@@ -10,6 +10,7 @@ import {
   TypeInferenceOption,
 } from '../src/typeInformation';
 import {
+  getGeneratedExpoModuleTypescriptFilesContents,
   getGeneratedModuleTypescriptInterface,
   getGeneratedModuleTypesFileContent,
   getGeneratedViewTypesFileContent,
@@ -48,14 +49,14 @@ it('Same generated view file', async () => {
   const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
-    expect(await getGeneratedViewTypesFileContent(swiftFile, fileInfo)).toMatchSnapshot();
+    expect(await getGeneratedViewTypesFileContent(fileInfo)).toMatchSnapshot();
   }
 });
 it('Same generated module file', async () => {
   const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
-    expect(await getGeneratedModuleTypesFileContent(swiftFile, fileInfo)).toMatchSnapshot();
+    expect(await getGeneratedModuleTypesFileContent(fileInfo)).toMatchSnapshot();
   }
 });
 it('Same generated mock file', async () => {
@@ -77,14 +78,23 @@ it('Same generated mock file JS', async () => {
   }
 });
 
-it('Same generated ts', async () => {
+it('Same generated concise ts interface', async () => {
   const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
     const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
-      await getGeneratedModuleTypescriptInterface(swiftFile, fileInfo);
+      await getGeneratedModuleTypescriptInterface(fileInfo);
     expect(volitileGeneratedFileContent).toMatchSnapshot();
     expect(moduleTypescriptInterfaceFileContent).toMatchSnapshot();
+  }
+});
+
+it('Same generated full ts interface', async () => {
+  const fileInfo = defaultArgsFileInfo;
+  expect(fileInfo).toBeTruthy();
+  if (fileInfo) {
+    const result = await getGeneratedExpoModuleTypescriptFilesContents(fileInfo);
+    expect(result).toMatchSnapshot();
   }
 });
 

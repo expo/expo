@@ -11,6 +11,7 @@ import {
   TypeInferenceOption,
 } from './typeInformation';
 import {
+  getGeneratedExpoModuleTypescriptFilesContents,
   getGeneratedJSXIntrinsicsViewDeclaration,
   getGeneratedModuleTypescriptInterface,
   getGeneratedModuleTypesFileContent,
@@ -208,16 +209,14 @@ function generateModuleTypesCommand(cli: commander.Command) {
     async (options: TypeInformationCommandCommonArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) return;
-      const { realInputPath, realOutputPath } = parsedArgs;
+      const { realOutputPath } = parsedArgs;
 
       const command = async () => {
         const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
         if (!typeInfo) return;
 
-        const moduleTypesFileContent = await getGeneratedModuleTypesFileContent(
-          realInputPath,
-          typeInfo
-        );
+        const moduleTypesFileContent = await getGeneratedModuleTypesFileContent(typeInfo);
+        if (!moduleTypesFileContent) return;
         writeStringToFileOrPrintToConsole(moduleTypesFileContent, realOutputPath);
       };
       runCommandOnWatch(parsedArgs, command);
@@ -230,16 +229,13 @@ function generateViewTypesCommand(cli: commander.Command) {
     async (options: TypeInformationCommandCommonArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) return;
-      const { realInputPath, realOutputPath } = parsedArgs;
+      const { realOutputPath } = parsedArgs;
 
       const command = async () => {
         const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
         if (!typeInfo) return;
 
-        const viewTypesFileContent = await getGeneratedViewTypesFileContent(
-          realInputPath,
-          typeInfo
-        );
+        const viewTypesFileContent = await getGeneratedViewTypesFileContent(typeInfo);
         if (!viewTypesFileContent) {
           console.error("Couldn't generate view types!");
           return;
@@ -273,16 +269,14 @@ function generateJsxIntrinsics(cli: commander.Command) {
     async (options: TypeInformationCommandCommonArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) return;
-      const { realInputPath, realOutputPath } = parsedArgs;
+      const { realOutputPath } = parsedArgs;
 
       const command = async () => {
         const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
         if (!typeInfo) return;
 
-        const jsxIntrinsicViewFileContent = await getGeneratedJSXIntrinsicsViewDeclaration(
-          realInputPath,
-          typeInfo
-        );
+        const jsxIntrinsicViewFileContent =
+          await getGeneratedJSXIntrinsicsViewDeclaration(typeInfo);
         if (!jsxIntrinsicViewFileContent) {
           console.error("Couldn't generate view types!");
           return;
@@ -312,7 +306,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
       if (!typeInfo) return;
 
       const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
-        await getGeneratedModuleTypescriptInterface(realInputPath, typeInfo);
+        await getGeneratedModuleTypescriptInterface(typeInfo);
 
       const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
       const dirName = realOutputPath ?? path.dirname(realInputPath);
@@ -343,6 +337,45 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
   });
 }
 
+function generateTypeFiles(cli: commander.Command) {
+  return addCommonOptions(cli.command('generate-type-files')).action(
+    async (options: TypeInformationCommandCommonArguments) => {
+      const parsedArgs = await parseCommandArguments(options);
+      if (!parsedArgs) return;
+      const { realInputPath, realOutputPath } = parsedArgs;
+
+      const command = async () => {
+        const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+        if (!typeInfo) return;
+        const generatedFiles = await getGeneratedExpoModuleTypescriptFilesContents(typeInfo);
+        if (!generatedFiles) return;
+        const { moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile } = generatedFiles;
+
+        const dirName = realOutputPath ?? path.dirname(realInputPath);
+        const writeFilePromises = [];
+        for (const outputFile of [moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile]) {
+          if (!outputFile) {
+            continue;
+          }
+          writeFilePromises.push(
+            fs.promises.writeFile(path.resolve(dirName, outputFile.name), outputFile.content, {
+              flag: 'wx',
+              encoding: 'utf-8',
+            })
+          );
+        }
+        try {
+          await Promise.all(writeFilePromises);
+        } catch (e) {
+          console.error(`Error writing to file.${e}`);
+        }
+      };
+
+      runCommandOnWatch(parsedArgs, command);
+    }
+  );
+}
+
 async function main(args: string[]) {
   const cli = new Command();
   cli
@@ -352,6 +385,7 @@ async function main(args: string[]) {
 
   generateConciseExpoModuleTSInterfaceCommand(cli);
   generateMocksForFileCommand(cli);
+  generateTypeFiles(cli);
 
   const otherCommands = cli.command('other').description('internal or very specific commands');
   typeInformationCommand(otherCommands);
