@@ -267,17 +267,6 @@ export abstract class ManifestMiddleware<
       }
       return bundleUrl!.match(/^https?:\/\/.*?\//)![0] + 'assets/' + path;
     };
-    await resolveManifestAssets(this.projectRoot, {
-      manifest,
-      resolver: async (path) => {
-        if (this.options.isNativeWebpack) {
-          // When using our custom dev server, just do assets normally
-          // without the `assets/` subpath redirect.
-          return resolve(bundleUrl!.match(/^https?:\/\/.*?\//)![0], path);
-        }
-        return bundleUrl!.match(/^https?:\/\/.*?\//)![0] + 'assets/' + path;
-      },
-    });
     await resolveManifestAssets(this.projectRoot, { manifest, resolver });
     // expo-splash-screen stashes its config under `extra`, so it's invisible to the SDK asset
     // schema used by `resolveManifestAssets`. Resolve its image paths explicitly.
