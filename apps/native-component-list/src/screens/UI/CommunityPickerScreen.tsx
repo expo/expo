@@ -1,6 +1,6 @@
-import { Picker, type PickerProps } from '@expo/ui/community/picker';
-import React, { useState } from 'react';
-import { Text } from 'react-native';
+import { Picker, type PickerProps, type PickerRef } from '@expo/ui/community/picker';
+import React, { useRef, useState } from 'react';
+import { Button, Text } from 'react-native';
 
 import { ScrollPage, Section } from '../../components/Page';
 
@@ -25,6 +25,10 @@ export default function CommunityPickerScreen() {
 
       <Section title="Item enabled (Android)">
         <ItemEnabledPicker />
+      </Section>
+
+      <Section title="Imperative focus and blur (Android)">
+        <RefPicker />
       </Section>
 
       <Section title="Disabled">
@@ -80,6 +84,32 @@ function ItemEnabledPicker() {
         <Picker.Item label="JavaScript" value="js" enabled={false} />
         <Picker.Item label="Objective C" value="objc" />
         <Picker.Item label="Swift" value="swift" enabled={false} />
+      </Picker>
+      <Text>Selected: {value}</Text>
+    </>
+  );
+}
+
+function RefPicker() {
+  const [value, setValue] = useState<string>('java');
+  const pickerRef = useRef<PickerRef>(null);
+
+  return (
+    <>
+      <Button
+        title="Imperative open and close with a delay"
+        onPress={() => {
+          pickerRef.current?.focus();
+          setTimeout(() => {
+            pickerRef.current?.blur();
+          }, 2000);
+        }}
+      />
+      <Picker ref={pickerRef} selectedValue={value} onValueChange={setValue}>
+        <Picker.Item label="Java" value="java" />
+        <Picker.Item label="JavaScript" value="js" />
+        <Picker.Item label="Objective C" value="objc" />
+        <Picker.Item label="Swift" value="swift" />
       </Picker>
       <Text>Selected: {value}</Text>
     </>

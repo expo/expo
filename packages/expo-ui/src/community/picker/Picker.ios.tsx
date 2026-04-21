@@ -25,13 +25,19 @@ import { type ModifierConfig } from '../../types';
  * Renders a SwiftUI wheel picker wrapped in a Host.
  */
 function PickerImpl<T extends PickerItemValue>(props: PickerProps<T>) {
-  const { selectedValue, onValueChange, enabled, style, children } = props;
+  const { selectedValue, onValueChange, enabled, style, children, ref } = props;
   const items = extractPickerItems<T>(children);
   const modifiers = [
     pickerStyle('wheel'),
     fixedSize(),
     ...(enabled === false ? [disabledModifier(true)] : []),
   ];
+
+  // focus/blur are no-ops on iOS (wheel picker is always visible)
+  React.useImperativeHandle(ref, () => ({
+    focus: () => {},
+    blur: () => {},
+  }));
 
   return (
     <Host matchContents={{ vertical: true }} style={style}>

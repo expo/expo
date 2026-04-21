@@ -53,6 +53,10 @@ export function PickerItem<T extends PickerItemValue>(
  */
 export type PickerProps<T extends PickerItemValue = PickerItemValue> = {
   /**
+   * Ref handle exposing `focus()` and `blur()` methods.
+   */
+  ref?: React.Ref<PickerRef>;
+  /**
    * The currently selected value. Must match the `value` of one of the `Picker.Item` children.
    */
   selectedValue?: T;
@@ -76,6 +80,23 @@ export type PickerProps<T extends PickerItemValue = PickerItemValue> = {
    * `Picker.Item` children that define the available options.
    */
   children?: React.ReactNode;
+};
+
+/**
+ * Ref handle for the `Picker` component.
+ * Compatible with `@react-native-picker/picker`.
+ */
+export type PickerRef = {
+  /**
+   * Programmatically opens the picker.
+   * @platform android
+   */
+  focus: () => void;
+  /**
+   * Programmatically closes the picker.
+   * @platform android
+   */
+  blur: () => void;
 };
 
 export type PickerWithItems = {

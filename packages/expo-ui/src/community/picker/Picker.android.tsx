@@ -22,9 +22,14 @@ import { menuAnchor } from '../../jetpack-compose/modifiers';
  * Renders a Material 3 `ExposedDropdownMenuBox` wrapped in a Host.
  */
 function PickerImpl<T extends PickerItemValue>(props: PickerProps<T>) {
-  const { selectedValue, onValueChange, enabled, style, children } = props;
+  const { selectedValue, onValueChange, enabled, style, children, ref } = props;
   const items = extractPickerItems<T>(children);
   const [expanded, setExpanded] = React.useState(false);
+
+  React.useImperativeHandle(ref, () => ({
+    focus: () => setExpanded(true),
+    blur: () => setExpanded(false),
+  }));
 
   const selectedItem = items.find((item) => item.value === selectedValue);
   const selectedLabel = selectedItem?.label ?? '';
