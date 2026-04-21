@@ -590,6 +590,10 @@ PODS:
   - ExpoTaskManager (55.0.14):
     - ExpoModulesCore
     - UMAppLoader
+  - ExpoTaskManager/Tests (55.0.14):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - UMAppLoader
   - ExpoTrackingTransparency (55.0.13):
     - ExpoModulesCore
   - ExpoUI (55.0.11):
@@ -3136,6 +3140,8 @@ PODS:
     - ExpoModulesCore
     - ExpoUI
   - UMAppLoader (55.0.4)
+  - UMAppLoader/Tests (55.0.4):
+    - ExpoModulesTestCore
   - WorkletsTester (0.0.1):
     - ExpoModulesCore
     - hermes-engine
@@ -3256,6 +3262,7 @@ DEPENDENCIES:
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTaskManager (from `../../../packages/expo-task-manager/ios`)
+  - ExpoTaskManager/Tests (from `../../../packages/expo-task-manager/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
@@ -3360,6 +3367,7 @@ DEPENDENCIES:
   - RNWorklets (from `../../../node_modules/react-native-worklets`)
   - TestExpoUi (from `../modules/test-expo-ui/ios`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
+  - UMAppLoader/Tests (from `../../../packages/unimodules-app-loader/ios`)
   - WorkletsTester (from `../modules/worklets-tester/ios`)
   - Yoga (from `../../../node_modules/react-native/ReactCommon/yoga`)
 
@@ -3892,7 +3900,7 @@ SPEC CHECKSUMS:
   ExpoStoreReview: dd070408095f59c82a019de10a5a414f751741b2
   ExpoSymbols: 9dfd60e35b2fafb284adefaefe1c6d757e331708
   ExpoSystemUI: f4a4f3dd9f62f0d4e6799c57f600288fd861ce95
-  ExpoTaskManager: c9b0af884aa9e1e512b4926cded2e6c2097e12d3
+  ExpoTaskManager: edb9b99ff0d469bf3cdbcb9aeb0dec6fb1af8e6b
   ExpoTrackingTransparency: 287445639184c0f885ccff78f6e2b6d8414d58c4
   ExpoUI: b5d265006b73002c70856d87e922ded4ee64d99d
   ExpoVideo: fe990ba488ca5e4b2e9b7b63c4039134de9e6205
@@ -4005,7 +4013,7 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   TestExpoUi: 3c8a53d43492d7db3f4c94cf4a48cba7a82da424
-  UMAppLoader: 6f70977c93a7033f0dc7cf2f0de9b49ce006f7bd
+  UMAppLoader: af22141262810c8c91c50ce14c3e41690fb6c6b4
   WorkletsTester: f76956000cdf163c71f8eb20fe09f1bfa21acbaf
   Yoga: e41d64347f52d634dd8c2f6bac33f95081959fd3
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5

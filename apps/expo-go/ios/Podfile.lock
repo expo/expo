@@ -398,6 +398,10 @@ PODS:
   - ExpoTaskManager (55.0.14):
     - ExpoModulesCore
     - UMAppLoader
+  - ExpoTaskManager/Tests (55.0.14):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - UMAppLoader
   - ExpoTrackingTransparency (55.0.13):
     - ExpoModulesCore
   - ExpoVideo (55.0.15):
@@ -4087,6 +4091,8 @@ PODS:
     - StripeCore (= 25.10.0)
   - SwiftUIIntrospect (1.3.0)
   - UMAppLoader (55.0.4)
+  - UMAppLoader/Tests (55.0.4):
+    - ExpoModulesTestCore
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
   - ZXingObjC/OneD (3.6.9):
@@ -4176,6 +4182,7 @@ DEPENDENCIES:
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTaskManager (from `../../../packages/expo-task-manager/ios`)
+  - ExpoTaskManager/Tests (from `../../../packages/expo-task-manager/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
@@ -4293,6 +4300,7 @@ DEPENDENCIES:
   - SocketRocket (~> 0.7.1)
   - "stripe-react-native (from `../../../node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
+  - UMAppLoader/Tests (from `../../../packages/unimodules-app-loader/ios`)
   - Yoga (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -4753,7 +4761,7 @@ SPEC CHECKSUMS:
   ExpoStoreReview: dd070408095f59c82a019de10a5a414f751741b2
   ExpoSymbols: 9dfd60e35b2fafb284adefaefe1c6d757e331708
   ExpoSystemUI: f4a4f3dd9f62f0d4e6799c57f600288fd861ce95
-  ExpoTaskManager: c9b0af884aa9e1e512b4926cded2e6c2097e12d3
+  ExpoTaskManager: edb9b99ff0d469bf3cdbcb9aeb0dec6fb1af8e6b
   ExpoTrackingTransparency: 287445639184c0f885ccff78f6e2b6d8414d58c4
   ExpoVideo: fe990ba488ca5e4b2e9b7b63c4039134de9e6205
   ExpoVideoThumbnails: e33e336b7db87b701d62ce309d99ce8bc003cc2a
@@ -4893,7 +4901,7 @@ SPEC CHECKSUMS:
   StripePaymentsUI: 1610639b178ee3148b8f6b53c30279ea412f2cac
   StripeUICore: 90b4e5f1d78761a2b9d6bda6afab7b237ebf5428
   SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
-  UMAppLoader: 6f70977c93a7033f0dc7cf2f0de9b49ce006f7bd
+  UMAppLoader: af22141262810c8c91c50ce14c3e41690fb6c6b4
   Yoga: cf2a67aa1c8a225f0cb98a5f531d6f305d3f12e5
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
