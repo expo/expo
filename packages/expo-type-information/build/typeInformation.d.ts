@@ -193,7 +193,7 @@ export type StringInputOption = {
 };
 export type FileInputOption = {
     type: 'file';
-    inputFileAbsolutePath: string;
+    inputFileAbsolutePaths: string[];
 };
 /**
  * Options specifying the input source and inference level for retrieving type information.

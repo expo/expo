@@ -20,7 +20,7 @@ import { GetFileTypeInformationOptions } from '../build';
 const swiftFile = fs.realpathSync('./tests/TestModule.swift');
 const getDefaultArgs = (): GetFileTypeInformationOptions => {
   return {
-    input: { inputFileAbsolutePath: swiftFile, type: 'file' },
+    input: { inputFileAbsolutePaths: [swiftFile], type: 'file' },
     typeInference: TypeInferenceOption.PREPROCESS_AND_INFERENCE,
   };
 };
@@ -109,7 +109,7 @@ it('Generation from string is the same as generation from file. Preprocessing.',
 
 it('Generation from string is the same as generation from file. Simple type inference.', async () => {
   const fileInfo = await getFileTypeInformation({
-    input: { type: 'file', inputFileAbsolutePath: swiftFile },
+    input: { type: 'file', inputFileAbsolutePaths: [swiftFile] },
     typeInference: TypeInferenceOption.NO_INFERENCE,
   });
   const fileInfoForString = await getFileTypeInformation({
@@ -121,7 +121,7 @@ it('Generation from string is the same as generation from file. Simple type infe
 
 it('Generation from string is the same as generation from file. No type inference.', async () => {
   const fileInfo = await getFileTypeInformation({
-    input: { type: 'file', inputFileAbsolutePath: swiftFile },
+    input: { type: 'file', inputFileAbsolutePaths: [swiftFile] },
     typeInference: TypeInferenceOption.SIMPLE_INFERENCE,
   });
   const fileInfoForString = await getFileTypeInformation({
