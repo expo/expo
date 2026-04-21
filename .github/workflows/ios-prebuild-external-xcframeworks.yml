@@ -33,6 +33,7 @@ jobs:
       contents: read
       id-token: write
     strategy:
+      fail-fast: false
       matrix:
         flavor: [Debug, Release]
     steps:
@@ -72,6 +73,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
+        id: prebuild_xcframeworks
+        continue-on-error: true
         env:
           INPUT_PACKAGES: ${{ github.event.inputs.packages }}
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
@@ -95,11 +98,13 @@ jobs:
         with:
           name: xcframeworks-${{ matrix.flavor }}
           path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
           include-hidden-files: true
 
       - name: Package XCFrameworks (${{ matrix.flavor }})
+        id: package_xcframeworks
+        if: ${{ !cancelled() }}
         run: |
           FLAVOR_LOWER=$(echo "${{ matrix.flavor }}" | tr '[:upper:]' '[:lower:]')
           ARCHIVE_PATH="$RUNNER_TEMP/xcframeworks-${{ matrix.flavor }}.zip"
@@ -109,33 +114,34 @@ jobs:
           find . -type f -name "*.tar.gz" | grep "/${FLAVOR_LOWER}/xcframeworks/" | sort > "$FILE_LIST"
 
           if [ ! -s "$FILE_LIST" ]; then
-            echo "No XCFramework tarballs found for flavor ${{ matrix.flavor }}"
-            exit 1
+            echo "::warning::No XCFramework tarballs found for flavor ${{ matrix.flavor }}; skipping zip packaging."
+            echo "archive_path=" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
           rm -f "$ARCHIVE_PATH"
           zip -q "$ARCHIVE_PATH" -@ < "$FILE_LIST"
-          echo "THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH=$ARCHIVE_PATH" >> $GITHUB_ENV
+          echo "archive_path=$ARCHIVE_PATH" >> $GITHUB_OUTPUT
 
       - name: Authenticate to Google Cloud
-        if: ${{ success() && github.event.inputs.publish == 'true' }}
+        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
         uses: google-github-actions/auth@v3
         with:
           project_id: exponentjs
           workload_identity_provider: projects/321830142373/locations/global/workloadIdentityPools/github/providers/expo
 
       - name: Setup gcloud
-        if: ${{ success() && github.event.inputs.publish == 'true' }}
+        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: exponentjs
 
       - name: Upload XCFramework zip to GCS
-        if: ${{ success() && github.event.inputs.publish == 'true' }}
+        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
         run: |
           # Create the canonical artifact only if it does not already exist.
           # This keeps concurrent publish attempts from overwriting each other.
           gcloud storage cp \
             --if-generation-match=0 \
-            "$THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH" \
+            "${{ steps.package_xcframeworks.outputs.archive_path }}" \
             "gs://eas-build-precompiled-modules/precompiled-modules/${{ github.event.inputs.sdk-version }}/xcframeworks-${{ matrix.flavor }}.zip"
