@@ -74,7 +74,6 @@ jobs:
 
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
         id: prebuild_xcframeworks
-        continue-on-error: true
         env:
           INPUT_PACKAGES: ${{ github.event.inputs.packages }}
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
@@ -124,20 +123,20 @@ jobs:
           echo "archive_path=$ARCHIVE_PATH" >> $GITHUB_OUTPUT
 
       - name: Authenticate to Google Cloud
-        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
+        if: ${{ success() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
         uses: google-github-actions/auth@v3
         with:
           project_id: exponentjs
           workload_identity_provider: projects/321830142373/locations/global/workloadIdentityPools/github/providers/expo
 
       - name: Setup gcloud
-        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
+        if: ${{ success() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: exponentjs
 
       - name: Upload XCFramework zip to GCS
-        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
+        if: ${{ success() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
         run: |
           gcloud storage cp \
             "${{ steps.package_xcframeworks.outputs.archive_path }}" \
