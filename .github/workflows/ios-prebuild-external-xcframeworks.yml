@@ -11,6 +11,15 @@ on:
         description: 'Max parallel packages (default: auto)'
         required: false
         default: ''
+      publish:
+        description: 'Publish XCFramework archive to GCS'
+        required: false
+        type: boolean
+        default: false
+      sdk-version:
+        description: 'SDK version used in the GCS object path'
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -20,7 +29,11 @@ jobs:
   prebuild:
     runs-on: macos-15
     timeout-minutes: 120
+    permissions:
+      contents: read
+      id-token: write
     strategy:
+      fail-fast: false
       matrix:
         flavor: [Debug, Release]
     steps:
@@ -28,6 +41,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+
+      - name: Validate inputs
+        env:
+          INPUT_PACKAGES: ${{ github.event.inputs.packages }}
+          INPUT_PUBLISH: ${{ github.event.inputs.publish }}
+        run: |
+          if [[ "$INPUT_PUBLISH" == "true" ]] && [[ -n "$INPUT_PACKAGES" ]]; then
+            echo "packages input must be empty when publish=true"
+            exit 1
+          fi
 
       - name: Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
@@ -45,6 +68,8 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
+        id: prebuild_xcframeworks
+        continue-on-error: true
         env:
           INPUT_PACKAGES: ${{ github.event.inputs.packages }}
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
@@ -68,6 +93,47 @@ jobs:
         with:
           name: xcframeworks-${{ matrix.flavor }}
           path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
           include-hidden-files: true
+
+      - name: Package XCFrameworks (${{ matrix.flavor }})
+        id: package_xcframeworks
+        if: ${{ !cancelled() }}
+        run: |
+          FLAVOR_LOWER=$(echo "${{ matrix.flavor }}" | tr '[:upper:]' '[:lower:]')
+          ARCHIVE_PATH="$RUNNER_TEMP/xcframeworks-${{ matrix.flavor }}.zip"
+          FILE_LIST="$RUNNER_TEMP/xcframeworks-${{ matrix.flavor }}.txt"
+
+          cd packages/precompile/.build
+          find . -type f -name "*.tar.gz" | grep "/${FLAVOR_LOWER}/xcframeworks/" | sort > "$FILE_LIST"
+
+          if [ ! -s "$FILE_LIST" ]; then
+            echo "::warning::No XCFramework tarballs found for flavor ${{ matrix.flavor }}; skipping zip packaging."
+            echo "archive_path=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          rm -f "$ARCHIVE_PATH"
+          zip -q "$ARCHIVE_PATH" -@ < "$FILE_LIST"
+          echo "archive_path=$ARCHIVE_PATH" >> $GITHUB_OUTPUT
+
+      - name: Authenticate to Google Cloud
+        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: exponentjs
+          workload_identity_provider: projects/321830142373/locations/global/workloadIdentityPools/github/providers/expo
+
+      - name: Setup gcloud
+        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: exponentjs
+
+      - name: Upload XCFramework zip to GCS
+        if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
+        run: |
+          gcloud storage cp \
+            "${{ steps.package_xcframeworks.outputs.archive_path }}" \
+            "gs://eas-build-precompiled-modules/precompiled-modules/${{ github.event.inputs.sdk-version }}/xcframeworks-${{ matrix.flavor }}.zip"
