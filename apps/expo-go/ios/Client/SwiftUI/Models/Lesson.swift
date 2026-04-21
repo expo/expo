@@ -99,7 +99,7 @@ function FormattedText({ children, style }) {
   );
 }
 
-function LessonContent({ children }) {
+function LessonContent({ children, hideBottomPanel }) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -108,22 +108,24 @@ function LessonContent({ children }) {
         {children}
       </ScrollView>
 
-      <View style={[styles.content, { paddingBottom: insets.bottom + 20 }]}>
-        <FormattedText style={styles.description}>{description}</FormattedText>
-        <View style={styles.instructionBox}>
-          <Text style={styles.instruction}>
-            <Text style={styles.bold}>Tip:</Text> Press the gear icon, then tap Source code explorer and open <Text style={styles.bold}>App.js</Text> to edit this example. Drag the gear to move the panel if it's in the way.
-          </Text>
+      {hideBottomPanel ? null : (
+        <View style={[styles.content, { paddingBottom: insets.bottom + 20 }]}>
+          <FormattedText style={styles.description}>{description}</FormattedText>
+          <View style={styles.instructionBox}>
+            <Text style={styles.instruction}>
+              <Text style={styles.bold}>Tip:</Text> Press the gear icon, then tap Source code explorer and open <Text style={styles.bold}>App.js</Text> to edit this example. Drag the gear to move the panel if it's in the way.
+            </Text>
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 }
 
-export default function Lesson({ children }) {
+export default function Lesson({ children, hideBottomPanel }) {
   return (
     <SafeAreaProvider>
-      <LessonContent>{children}</LessonContent>
+      <LessonContent hideBottomPanel={hideBottomPanel}>{children}</LessonContent>
     </SafeAreaProvider>
   );
 }
@@ -838,6 +840,146 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+  },
+});
+"""
+    ),
+
+    // Lesson 11: Write code on your computer (placeholder — instructions only)
+    Lesson(
+      id: 11,
+      title: "Write code on your computer",
+      icon: "desktopcomputer",
+      description: "Set up a full Expo project on your computer so you can edit in a real editor and see changes live on this phone. Full guide at https://docs.expo.dev/get-started/create-a-project",
+      shortDescription: "Set up a local project",
+      appCode: """
+import Lesson from './lesson-files/Lesson';
+import { View, Text, Pressable, Platform, Linking, StyleSheet } from 'react-native';
+
+const STEPS = [
+  { text: 'In a terminal, run the following (requires Node.js):', code: 'npx create-expo-app@latest my-app' },
+  { text: 'Sign in to Expo on your computer:', code: 'npx expo login' },
+  { text: 'From the project folder, start the dev server:', code: 'npx expo start' },
+  { text: 'Sign in to the same Expo account in this Expo Go app to open your project — only you can open your project. You can view the source here, or edit it in your editor on your computer.' },
+  { text: 'Ready to move beyond the Expo Go playground? Learn how you can get started with developing your app with Xcode and shipping with TestFlight and the App Store:', link: 'https://docs.expo.dev/', linkLabel: "I'm ready to move on from Expo Go!" },
+];
+
+function Step({ n, text, code, link, linkLabel }) {
+  return (
+    <View style={styles.step}>
+      <View style={styles.circle}>
+        <Text style={styles.circleText}>{n}</Text>
+      </View>
+      <View style={styles.stepBody}>
+        <Text style={styles.stepText}>{text}</Text>
+        {code ? <Text style={styles.code}>{code}</Text> : null}
+        {link && linkLabel ? (
+          <Pressable
+            style={({ pressed }) => [styles.linkButton, pressed && styles.linkButtonPressed]}
+            onPress={() => Linking.openURL(link)}
+          >
+            <Text style={styles.linkButtonText}>{linkLabel}</Text>
+          </Pressable>
+        ) : null}
+        {link && !linkLabel ? (
+          <Text style={styles.link} onPress={() => Linking.openURL(link)}>
+            {link}
+          </Text>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <Lesson hideBottomPanel>
+      <View style={styles.container}>
+        <View style={styles.steps}>
+          {STEPS.map((step, i) => (
+            <Step key={i} n={i + 1} text={step.text} code={step.code} link={step.link} linkLabel={step.linkLabel} />
+          ))}
+        </View>
+      </View>
+    </Lesson>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 180,
+  },
+  steps: {
+    gap: 14,
+  },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  circle: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: '#0077FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  circleText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  stepBody: {
+    flex: 1,
+    paddingTop: 2,
+  },
+  stepText: {
+    fontSize: 14,
+    color: '#333',
+    lineHeight: 20,
+  },
+  code: {
+    marginTop: 6,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    fontSize: 13,
+    color: '#c41a68',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  link: {
+    marginTop: 6,
+    color: '#0077FF',
+    fontSize: 13,
+    textDecorationLine: 'underline',
+  },
+  linkButton: {
+    marginTop: 12,
+    backgroundColor: '#0077FF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignSelf: 'flex-start',
+    shadowColor: '#0077FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  linkButtonPressed: {
+    backgroundColor: '#005EE0',
+    shadowOpacity: 0.1,
+  },
+  linkButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 """

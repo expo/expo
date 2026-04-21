@@ -10,8 +10,20 @@ enum HomeTab: Hashable {
   case settings
 }
 
+// Dev flag: flip to `true` to see the onboarding flow in the simulator on every launch.
+// Normally simulator runs skip onboarding (treated as already completed).
+// Has no effect on physical devices — they always use the persisted state.
+private let debugShowOnboardingInSimulator = false
+
 #if targetEnvironment(simulator)
-var initialOnboardingState: Bool = true
+var initialOnboardingState: Bool = {
+  if debugShowOnboardingInSimulator {
+    // Reset persisted state so the flow restarts from page 1 each launch.
+    UserDefaults.standard.removeObject(forKey: "ExpoGoOnboardingFinished")
+    return false
+  }
+  return true
+}()
 #else
 var initialOnboardingState: Bool = false
 #endif
