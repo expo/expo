@@ -28,8 +28,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    env:
-      SDK_VERSION: ${{ github.event.inputs.sdk-version }}
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -72,6 +70,16 @@ jobs:
           echo "Running: et prebuild $ARGS"
           et prebuild $ARGS
 
+      - name: Upload XCFrameworks
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: xcframeworks-${{ matrix.flavor }}
+          path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+
       - name: Package XCFrameworks (${{ matrix.flavor }})
         if: ${{ !cancelled() }}
         run: |
@@ -91,16 +99,6 @@ jobs:
           zip -q "$ARCHIVE_PATH" -@ < "$FILE_LIST"
           echo "THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH=$ARCHIVE_PATH" >> $GITHUB_ENV
 
-      - name: Upload XCFrameworks
-        uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: xcframeworks-${{ matrix.flavor }}
-          path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: true
-
       - name: Authenticate to Google Cloud
         if: ${{ success() && github.event.inputs.publish == 'true' }}
         uses: google-github-actions/auth@v3
@@ -119,4 +117,4 @@ jobs:
         run: |
           gcloud storage cp \
             "$THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH" \
-            "gs://eas-build-precompiled-modules/precompiled-modules/$SDK_VERSION/xcframeworks-${{ matrix.flavor }}.zip"
+            "gs://eas-build-precompiled-modules/precompiled-modules/${{ github.event.inputs.sdk-version }}/xcframeworks-${{ matrix.flavor }}.zip"
