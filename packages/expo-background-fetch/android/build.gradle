@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '55.0.14'
+version = '55.0.15'
 
 android {
   namespace "expo.modules.backgroundfetch"
   defaultConfig {
     versionCode 23
-    versionName "55.0.14"
+    versionName "55.0.15"
     consumerProguardFiles("proguard-rules.pro")
   }
 }

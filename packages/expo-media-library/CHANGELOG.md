@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Read video dimensions from MediaStore cursor instead of opening each file with `MediaMetadataRetriever`, fixing extremely slow `getAssetsAsync` on devices with many videos. ([#44714](https://github.com/expo/expo/pull/44714) by [@oeddyo](https://github.com/oeddyo))
-
 ### 💡 Others
+
+## 55.0.15 — 2026-04-21
+
+### 🐛 Bug fixes
+
+- [Android] Read video dimensions from MediaStore cursor instead of opening each file with `MediaMetadataRetriever`, fixing extremely slow `getAssetsAsync` on devices with many videos. ([#44714](https://github.com/expo/expo/pull/44714) by [@oeddyo](https://github.com/oeddyo))
 
 ## 55.0.14 — 2026-04-09
 

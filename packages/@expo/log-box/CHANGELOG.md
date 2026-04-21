@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.11 — 2026-04-21
+
+### 💡 Others
+
 - Use `OkHttpClientProvider` instead of raw `OkHttpClient` ([#44416](https://github.com/expo/expo/pull/44416)) by [@cortinico](https://github.com/cortinico)
 
 ## 55.0.10 — 2026-04-02

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add check that warns about invalid `overrides`/`resolutions` for critical package versions ([#44770](https://github.com/expo/expo/pull/44770) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.18.19 — 2026-04-21
+
+### 🎉 New features
+
+- Add check that warns about invalid `overrides`/`resolutions` for critical package versions ([#44770](https://github.com/expo/expo/pull/44770) by [@kitten](https://github.com/kitten))
 
 ## 1.18.18 — 2026-04-09
 

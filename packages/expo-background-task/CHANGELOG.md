@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed background task execution failing with "Could not find TaskService module" due to broken `ModuleRegistryProvider.singletonModules()` lookup after `EXTaskService` was migrated from `EXSingletonModule` to `NSObject`. ([#44646](https://github.com/expo/expo/pull/44646) by [@xTMNTxRaphaelx](https://github.com/xTMNTxRaphaelx))
-
 ### 💡 Others
+
+## 55.0.17 — 2026-04-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed background task execution failing with "Could not find TaskService module" due to broken `ModuleRegistryProvider.singletonModules()` lookup after `EXTaskService` was migrated from `EXSingletonModule` to `NSObject`. ([#44646](https://github.com/expo/expo/pull/44646) by [@xTMNTxRaphaelx](https://github.com/xTMNTxRaphaelx))
 
 ## 55.0.16 — 2026-04-13
 

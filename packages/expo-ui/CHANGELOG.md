@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.12 — 2026-04-21
+
+### 🎉 New features
+
+- [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 55.0.11 — 2026-04-09
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.21 — 2026-04-21
+
+### 💡 Others
+
 - [ios] resolve Expo.plist lookup in brownfield xcframework builds ([#44645](https://github.com/expo/expo/pull/44645) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [ios] Support multiple root view creations in brownfield ([#44771](https://github.com/expo/expo/pull/44771) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 

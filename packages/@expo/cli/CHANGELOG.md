@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Prompt before clearing native folders when we detect project as a native module ([#44458](https://github.com/expo/expo/pull/44458) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.25 — 2026-04-21
+
+### 🎉 New features
+
+- Prompt before clearing native folders when we detect project as a native module ([#44458](https://github.com/expo/expo/pull/44458) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
