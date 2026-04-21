@@ -131,6 +131,11 @@ struct OpenInCalendarOptions: Record {
   var allowsCalendarPreview: Bool = false
 }
 
+struct CalendarPermissionOptions: Record {
+  @Field
+  var writeOnly: Bool = false
+}
+
 struct AddEventWithFormOptions: Record {
   @Field
   var title: String?

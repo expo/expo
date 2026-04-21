@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError, createPermissionHook } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
 import {
@@ -8,6 +8,7 @@ import {
   EntityTypes,
   Event,
   OpenEventDialogResult,
+  PermissionResponse,
   RecurringEventOptions,
   Reminder,
   ReminderStatus,
@@ -20,6 +21,7 @@ import {
   ModifiableCalendarProperties,
   CalendarDialogOpenParamsNext,
   CalendarDialogParamsNext,
+  CalendarPermissionOptions,
   ModifiableAttendeeProperties,
   AddEventWithFormOptions,
 } from './ExpoCalendar.types';
@@ -326,6 +328,7 @@ export type {
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
   AddEventWithFormOptions,
+  CalendarPermissionOptions,
 } from './ExpoCalendar.types';
 
 export type {
@@ -364,4 +367,15 @@ export {
   createEventInCalendarAsync,
   openEventInCalendarAsync,
 } from '../Calendar';
-export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';
+export const useCalendarPermissions = createPermissionHook<
+  PermissionResponse,
+  CalendarPermissionOptions
+>({
+  getMethod: getCalendarPermissions,
+  requestMethod: requestCalendarPermissions,
+});
+
+export const useRemindersPermissions = createPermissionHook({
+  getMethod: getRemindersPermissions,
+  requestMethod: requestRemindersPermissions,
+});

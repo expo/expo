@@ -39,6 +39,10 @@ export type AddEventWithFormOptions = {
   recurrenceRule?: RecurrenceRule;
 };
 
+export type CalendarPermissionOptions = {
+  writeOnly?: boolean;
+};
+
 export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
 
 export type ModifiableEventProperties = Pick<

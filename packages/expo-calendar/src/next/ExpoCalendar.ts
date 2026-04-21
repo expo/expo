@@ -3,6 +3,7 @@ import { NativeModule, PermissionResponse, requireNativeModule } from 'expo-modu
 import { ProcessedColorValue } from 'react-native';
 
 import {
+  CalendarPermissionOptions,
   ExpoCalendar,
   ExpoCalendarAttendee,
   ExpoCalendarEvent,
@@ -36,8 +37,8 @@ declare class ExpoCalendarNextModule extends NativeModule {
   getEventById(eventId: string): Promise<ExpoCalendarEvent>;
   getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
 
-  requestCalendarPermissions(): Promise<PermissionResponse>;
-  getCalendarPermissions(): Promise<PermissionResponse>;
+  requestCalendarPermissions(options?: CalendarPermissionOptions): Promise<PermissionResponse>;
+  getCalendarPermissions(options?: CalendarPermissionOptions): Promise<PermissionResponse>;
   requestRemindersPermissions(): Promise<PermissionResponse>;
   getRemindersPermissions(): Promise<PermissionResponse>;
 

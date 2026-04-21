@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError, createPermissionHook } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
@@ -239,5 +239,12 @@ export const getRemindersPermissions = InternalExpoCalendar.getRemindersPermissi
  */
 export const getSourcesSync = InternalExpoCalendar.getSourcesSync;
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, createEventInCalendarAsync, openEventInCalendarAsync, } from '../Calendar';
-export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';
+export const useCalendarPermissions = createPermissionHook({
+    getMethod: getCalendarPermissions,
+    requestMethod: requestCalendarPermissions,
+});
+export const useRemindersPermissions = createPermissionHook({
+    getMethod: getRemindersPermissions,
+    requestMethod: requestRemindersPermissions,
+});
 //# sourceMappingURL=Calendar.js.map

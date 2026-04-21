@@ -9,7 +9,7 @@ import TabIcon from '../components/TabIcon';
 import getStackNavWithConfig from '../navigation/StackConfig';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
 import { BlobScreens } from '../screens/Blob/BlobScreen';
-import { CalendarsNextScreens } from '../screens/CalendarsNextScreen';
+import { CalendarNextScreens } from '../screens/Calendar@Next/CalendarNextScreens';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { apiScreensToListElements } from '../screens/ComponentListScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
@@ -218,7 +218,7 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/CalendarsNextScreen'));
+      return optionalRequire(() => require('../screens/Calendar@Next/CalendarNextScreens'));
     },
     name: 'Calendars@next',
   },
@@ -500,7 +500,7 @@ export const Screens: ScreenConfig[] = [
   ...ContactsScreens,
   ...ContactsNextScreens,
   ...CalendarsScreens,
-  ...CalendarsNextScreens,
+  ...CalendarNextScreens,
   ...CryptoScreens,
   ...WorkletsScreens,
 ];
