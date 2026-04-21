@@ -38,6 +38,7 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
@@ -141,8 +142,23 @@ internal data class OffsetParams(
 ) : Record
 
 @OptimizedRecord
+internal data class GradientPoint(
+  @Field val x: Float = 0f,
+  @Field val y: Float = 0f
+) : Record
+
+@OptimizedRecord
+internal data class BrushParams(
+  @Field val type: String = "",
+  @Field val colors: List<Color> = emptyList(),
+  @Field val startPoint: GradientPoint = GradientPoint(),
+  @Field val endPoint: GradientPoint = GradientPoint(1f, 1f)
+) : Record
+
+@OptimizedRecord
 internal data class BackgroundParams(
-  @Field val color: Color? = null
+  @Field val color: Color? = null,
+  @Field val brush: BrushParams? = null
 ) : Record
 
 @OptimizedRecord
@@ -455,9 +471,25 @@ object ModifierRegistry {
     // Appearance modifiers
     register("background") { map, _, _, _ ->
       val params = recordFromMap<BackgroundParams>(map)
-      params.color?.let { color ->
-        Modifier.background(color.compose)
-      } ?: Modifier
+      val brush = params.brush
+      when {
+        brush?.type == "linearGradient" && brush.colors.size >= 2 -> {
+          val colors = brush.colors.map { it.compose }
+          val start = brush.startPoint
+          val end = brush.endPoint
+          Modifier.drawBehind {
+            drawRect(
+              brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                colors = colors,
+                start = androidx.compose.ui.geometry.Offset(start.x * size.width, start.y * size.height),
+                end = androidx.compose.ui.geometry.Offset(end.x * size.width, end.y * size.height)
+              )
+            )
+          }
+        }
+        params.color != null -> Modifier.background(params.color.compose)
+        else -> Modifier
+      }
     }
 
     register("border") { map, _, _, _ ->

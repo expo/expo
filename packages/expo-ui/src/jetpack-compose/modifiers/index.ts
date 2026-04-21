@@ -141,10 +141,46 @@ export const offset = (x: number, y: number) => createModifier('offset', { x, y 
 // =============================================================================
 
 /**
- * Sets the background color.
- * @param color - Color string (hex, e.g., '#FF0000').
+ * A point in a normalized [0, 1] coordinate space, used to define gradient start and end positions.
  */
-export const background = (color: ColorValue) => createModifier('background', { color });
+export type GradientPoint = { x: number; y: number };
+
+/**
+ * A brush describes how a region is painted. Mirrors Compose's `Brush` shapes
+ * (currently supports `Brush.linearGradient`).
+ */
+export type Brush = {
+  type: 'linearGradient';
+  /** Array of color strings (hex, e.g., '#FF0000'). At least 2 entries. */
+  colors: ColorValue[];
+  /** Start point in normalized [0, 1] coordinates. @default { x: 0, y: 0 } */
+  startPoint?: GradientPoint;
+  /** End point in normalized [0, 1] coordinates. @default { x: 1, y: 1 } */
+  endPoint?: GradientPoint;
+};
+
+/**
+ * Sets the background color or brush.
+ * @param value - A color string (hex, e.g., '#FF0000') or a `Brush` (e.g., `{ type: 'linearGradient', ... }`).
+ */
+export function background(value: ColorValue | Brush) {
+  if (typeof value === 'object' && 'type' in value) {
+    if (value.colors.length < 2) {
+      throw new Error(
+        `background() ${value.type} requires at least 2 colors, got ${value.colors.length}. Pass two or more entries in 'colors', or pass a single color string for a solid background.`
+      );
+    }
+    return createModifier('background', {
+      brush: {
+        type: value.type,
+        colors: value.colors,
+        startPoint: value.startPoint ?? { x: 0, y: 0 },
+        endPoint: value.endPoint ?? { x: 1, y: 1 },
+      },
+    });
+  }
+  return createModifier('background', { color: value });
+}
 
 /**
  * Adds a border around the view.
