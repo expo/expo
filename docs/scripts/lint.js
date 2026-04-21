@@ -144,7 +144,11 @@ let failed = false;
 if (oxfmtResult.status !== 0) {
   console.error('\n\x1b[1;31moxfmt failed:\x1b[0m');
   if (oxfmtResult.output) {
-    console.error(oxfmtResult.output);
+    const output = oxfmtResult.output.replace(
+      /Run without `--check` to fix\./g,
+      'Run `yarn format` to fix.'
+    );
+    console.error(output);
   }
   failed = true;
 } else {
