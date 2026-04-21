@@ -601,9 +601,6 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (55.0.14):
     - ExpoModulesCore
-  - ExpoWidgets (55.0.13):
-    - ExpoModulesCore
-    - ExpoUI
   - EXStructuredHeaders (55.0.2)
   - EXStructuredHeaders/Tests (55.0.2)
   - EXUpdates (55.0.20):
@@ -3264,7 +3261,6 @@ DEPENDENCIES:
   - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
-  - ExpoWidgets (from `../../../packages/expo-widgets/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
@@ -3618,9 +3614,6 @@ EXTERNAL SOURCES:
   ExpoWebBrowser:
     inhibit_warnings: false
     :path: "../../../packages/expo-web-browser/ios"
-  ExpoWidgets:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-widgets/ios"
   EXStructuredHeaders:
     inhibit_warnings: false
     :path: "../../../packages/expo-structured-headers/ios"
