@@ -18,8 +18,8 @@ on:
         type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.event.inputs.publish == 'true' && format('{0}-publish-{1}', github.workflow, github.event.inputs.sdk-version) || format('{0}-run-{1}', github.workflow, github.run_id) }}
+  cancel-in-progress: false
 
 jobs:
   prebuild:
