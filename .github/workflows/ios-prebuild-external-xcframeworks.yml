@@ -3,10 +3,6 @@ name: Prebuild External iOS XCFrameworks
 on:
   workflow_dispatch:
     inputs:
-      packages:
-        description: 'Space-separated external package names (leave empty for all external packages)'
-        required: false
-        default: ''
       concurrency:
         description: 'Max parallel packages (default: auto)'
         required: false
@@ -16,10 +12,10 @@ on:
         required: false
         type: boolean
         default: false
-      publish-prefix:
-        description: 'GCS prefix under the bucket (release default: precompiled-modules)'
-        required: false
-        default: 'precompiled-modules'
+      sdk-version:
+        description: 'SDK version used in the GCS object path'
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -62,11 +58,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Resolve SDK version
+        env:
+          INPUT_SDK_VERSION: ${{ github.event.inputs.sdk-version }}
         run: |
-          SDK_VERSION="$(node -p "require('./packages/expo/package.json').version")"
+          SDK_VERSION="${INPUT_SDK_VERSION//[[:space:]]/}"
 
           if [[ -z "$SDK_VERSION" ]]; then
-            echo "Failed to resolve SDK version"
+            echo "sdk-version input cannot be empty"
             exit 1
           fi
 
@@ -74,37 +72,21 @@ jobs:
 
       - name: Decide whether to publish XCFramework archive
         env:
-          INPUT_PACKAGES: ${{ github.event.inputs.packages }}
           INPUT_PUBLISH: ${{ github.event.inputs.publish }}
-          INPUT_PUBLISH_PREFIX: ${{ github.event.inputs.publish-prefix }}
         run: |
-          INPUT_PACKAGES_TRIMMED="${INPUT_PACKAGES//[[:space:]]/}"
-          INPUT_PUBLISH_PREFIX_TRIMMED="${INPUT_PUBLISH_PREFIX//[[:space:]]/}"
-
-          if [[ -z "$INPUT_PUBLISH_PREFIX_TRIMMED" ]]; then
-            echo "publish-prefix input cannot be empty"
-            exit 1
-          fi
-
-          if ([[ "$GITHUB_REF" == refs/heads/sdk-* ]] && [[ -z "$INPUT_PACKAGES_TRIMMED" ]]) || [[ "$INPUT_PUBLISH" == "true" ]]; then
+          if [[ "$GITHUB_REF" == refs/heads/sdk-* ]] || [[ "$INPUT_PUBLISH" == "true" ]]; then
             echo "PUBLISH_XCFRAMEWORK_ARCHIVE=1" >> $GITHUB_ENV
-            echo "XCFRAMEWORK_ARCHIVE_PUBLISH_PREFIX=$INPUT_PUBLISH_PREFIX_TRIMMED" >> $GITHUB_ENV
-            echo "Publishing XCFramework archive to GCS from ref $GITHUB_REF with prefix $INPUT_PUBLISH_PREFIX_TRIMMED"
+            echo "Publishing XCFramework archive to GCS from ref $GITHUB_REF"
           else
             echo "PUBLISH_XCFRAMEWORK_ARCHIVE=0" >> $GITHUB_ENV
-            echo "Skipping XCFramework archive publish for ref $GITHUB_REF (packages input: '${INPUT_PACKAGES}')"
+            echo "Skipping XCFramework archive publish for ref $GITHUB_REF"
           fi
 
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
         env:
-          INPUT_PACKAGES: ${{ github.event.inputs.packages }}
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
         run: |
           ARGS="-f ${{ matrix.flavor }} -v --external-only"
-
-          if [ -n "$INPUT_PACKAGES" ]; then
-            ARGS="$ARGS $INPUT_PACKAGES"
-          fi
 
           if [ -n "$INPUT_CONCURRENCY" ]; then
             ARGS="$ARGS -j $INPUT_CONCURRENCY"
@@ -150,7 +132,7 @@ jobs:
         run: |
           gcloud storage cp \
             "$THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH" \
-            "gs://eas-build-precompiled-modules/$XCFRAMEWORK_ARCHIVE_PUBLISH_PREFIX/$SDK_VERSION/xcframeworks-${{ matrix.flavor }}.zip"
+            "gs://eas-build-precompiled-modules/precompiled-modules/$SDK_VERSION/xcframeworks-${{ matrix.flavor }}.zip"
 
       - name: Upload XCFrameworks
         uses: actions/upload-artifact@v4
