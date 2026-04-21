@@ -2,6 +2,7 @@ package expo.modules.kotlin.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.viewevent.CoalescingKey
 import expo.modules.kotlin.viewevent.EventDispatcher
@@ -90,6 +92,34 @@ abstract class ExpoComposeView<T : ComposeProps>(
         }
       }
     }
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    if (!withHostingView) {
+      validateHostingAncestor()
+    }
+  }
+
+  /**
+   * Validates that this non-hosting Compose view has a valid Compose parent.
+   *
+   * This check is intentionally strict: the immediate parent must be an
+   * [ExpoComposeView] or a [ComposeView]. Compose's composition context does not
+   * propagate through arbitrary Android [ViewGroup]s, so inserting a plain RN
+   * `View` (or any other non-Compose [ViewGroup]) between `<Host>` and this
+   * component breaks the composition boundary — even though the ancestor chain
+   * eventually reaches a `<Host>`. The fix is to make `<Host>` the direct parent.
+   */
+  private fun validateHostingAncestor() {
+    val parentView = parent
+    if (parentView is ExpoComposeView<*> || parentView is ComposeView) {
+      return
+    }
+    val componentName = (this as? ViewFunctionHolder)?.name ?: this.javaClass.simpleName
+    val exception = MissingHostException(componentName)
+    Log.e("ExpoComposeView", "", exception)
+    appContext.jsLogger?.error(exception.message ?: "Missing <Host>")
   }
 
   @Composable
@@ -479,3 +509,11 @@ class ComposeFunctionHolder<Props : ComposeProps>(
     }
   }
 }
+
+internal class MissingHostException(componentName: String) :
+  CodedException(
+    "A Jetpack Compose view \"$componentName\" must be rendered as a direct child of a <Host> component. " +
+      "Wrap your component with `<Host>` from '@expo/ui/jetpack-compose'. " +
+      "Note that inserting another `<View>` (or any non-Compose ViewGroup) between `<Host>` and this " +
+      "component breaks the Compose composition boundary and will still trigger this error."
+  )

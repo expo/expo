@@ -36,6 +36,7 @@
 - [iOS] Fixed adding SwiftUI views to tabs BottomAccessory. ([#44247](https://github.com/expo/expo/pull/44247) by [@t0maboro](https://github.com/t0maboro))
 - [iOS] Fix finding EXConstants.bundle inside framework bundle for brownfield ([#44810](https://github.com/expo/expo/pull/44810) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix missing jsi headers when building static frameworks ([#44865](https://github.com/expo/expo/pull/44865) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fixed runtime crash when missing `Host` component for SwiftUI or Jetpack Compose components. ([#44118](https://github.com/expo/expo/pull/44118) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
