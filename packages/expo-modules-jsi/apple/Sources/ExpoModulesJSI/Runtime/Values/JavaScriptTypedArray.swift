@@ -63,11 +63,6 @@ public struct JavaScriptTypedArray: ~Copyable {
     }
   }
 
-  @available(*, deprecated, message: "Use `withUnsafeBytes`, `withUnsafeMutableBytes`, or their typed counterparts instead. Escaping the pointer risks a use-after-free once the typed array goes out of scope.")
-  public func getUnsafeMutableRawPointer() -> UnsafeMutableRawPointer {
-    return UnsafeMutableRawPointer(startPointer())
-  }
-
   /**
    Returns a pointer to the first byte of the typed array's data — the beginning of the underlying
    ArrayBuffer, advanced by `byteOffset`. The pointer is tied to the ArrayBuffer retained by this
