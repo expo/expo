@@ -27,7 +27,9 @@ const CLAUDE_MD_CONTENT = `@AGENTS.md
 `;
 
 const CLAUDE_SETTINGS_CONTENT = `{
-  "plugins": ["expo"]
+  "enabledPlugins": {
+    "expo@claude-plugins-official": true
+  }
 }
 `;
 
