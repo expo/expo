@@ -236,7 +236,7 @@ const pattern = `${rootDir}/**/*.swift`;
 async function getAllExpoModulesInWorkingDirectory() {
     const files = (0, fs_1.globSync)(pattern);
     return (await Promise.all(files.map((file) => (0, typeInformation_1.getFileTypeInformation)({
-        input: { type: 'file', inputFileAbsolutePath: fs_1.default.realpathSync(file) },
+        input: { type: 'file', inputFileAbsolutePaths: [fs_1.default.realpathSync(file)] },
     })))).filter((f) => f);
 }
 //# sourceMappingURL=mockgen.js.map

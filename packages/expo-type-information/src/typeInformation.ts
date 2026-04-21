@@ -261,7 +261,7 @@ export type StringInputOption = {
 
 export type FileInputOption = {
   type: 'file';
-  inputFileAbsolutePath: string;
+  inputFileAbsolutePaths: string[];
 };
 
 /**
@@ -273,6 +273,17 @@ export type GetFileTypeInformationOptions = {
   /** The desired level of type inference. Defaults to PREPROCESS_AND_INFERENCE if omitted. */
   typeInference?: TypeInferenceOption;
 };
+
+const taskAll = <T, R>(inputs: T[], map: (input: T) => Promise<R>): Promise<R[]> => {
+  return Promise.all(inputs.map((input) => map(input)));
+};
+
+async function mergeFileContents(absoluteFilePaths: string[]): Promise<string> {
+  const filesContents = await taskAll(absoluteFilePaths, (filePath) =>
+    fs.promises.readFile(filePath, 'utf-8')
+  );
+  return filesContents.join();
+}
 
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
@@ -287,15 +298,15 @@ export async function getFileTypeInformation({
 }: GetFileTypeInformationOptions): Promise<FileTypeInformation | null> {
   const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
   const typeInferenceOn = typeInference !== TypeInferenceOption.NO_INFERENCE;
-  if (!shouldPreprocessFile && input.type === 'file') {
-    return getSwiftFileTypeInformation(input.inputFileAbsolutePath, {
+  if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
+    return getSwiftFileTypeInformation(input.inputFileAbsolutePaths[0] as string, {
       typeInference: typeInferenceOn,
     });
   }
 
   const fileContent =
     input.type === 'file'
-      ? fs.readFileSync(input.inputFileAbsolutePath, 'utf-8')
+      ? await mergeFileContents(input.inputFileAbsolutePaths)
       : input.fileContent;
   const preprocessedContent = shouldPreprocessFile ? preprocessSwiftFile(fileContent) : fileContent;
 

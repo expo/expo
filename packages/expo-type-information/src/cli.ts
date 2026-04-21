@@ -19,7 +19,7 @@ import {
 } from './typescriptGeneration';
 
 export type TypeInformationCommandCommonArguments = {
-  inputPath: string;
+  inputPaths: string[];
   outputPath?: string;
   typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
   watcher?: boolean;
@@ -27,7 +27,7 @@ export type TypeInformationCommandCommonArguments = {
 
 function addCommonOptions(command: commander.Command): commander.Command {
   return command
-    .requiredOption('-i, --input-path <filePath>', 'Path to the Swift file.')
+    .requiredOption('-i, --input-paths <filePaths...>', 'Paths to Swift files.')
     .option(
       '-o, --output-path <filePath>',
       'Path to save the generated output. If this option is not provided the generated output is printed to console.'
@@ -57,15 +57,21 @@ function debounce<T extends (...args: any[]) => any>(
   };
 }
 
+const taskAll = <T, R>(inputs: T[], map: (input: T) => Promise<R>): Promise<R[]> => {
+  return Promise.all(inputs.map((input) => map(input)));
+};
+
 async function runCommandOnWatch(parsedArgs: ParsedArguments, command: () => Promise<void>) {
   const debounced_command = debounce(command, 1000);
   debounced_command();
   if (!parsedArgs.watcher) return;
 
-  for await (const _ of fs.promises.watch(parsedArgs.realInputPath)) {
-    if (!fs.existsSync(parsedArgs.realInputPath)) return;
-    debounced_command();
-  }
+  await taskAll(parsedArgs.realInputPaths, async (realInputPath) => {
+    for await (const _ of fs.promises.watch(realInputPath)) {
+      if (!fs.existsSync(realInputPath)) return;
+      debounced_command();
+    }
+  });
 }
 
 function sanitizeAndValidatePath(rawPath: string): string | null {
@@ -121,7 +127,7 @@ function parseInferenceOption(option?: string): TypeInferenceOption | null {
 }
 
 interface ParsedArguments {
-  realInputPath: string;
+  realInputPaths: string[];
   realOutputPath?: string;
   typeInference: TypeInferenceOption;
   watcher: boolean;
@@ -130,9 +136,11 @@ interface ParsedArguments {
 function parseCommandArguments(
   options: TypeInformationCommandCommonArguments
 ): ParsedArguments | null {
-  const realInputPath = sanitizeAndValidatePath(options.inputPath);
-  if (!realInputPath) {
-    console.error(`Path ${options.inputPath} is not a valid path to an existing file.`);
+  const realInputPaths: string[] = options.inputPaths
+    .map(sanitizeAndValidatePath)
+    .filter((p) => p != null);
+  if (!realInputPaths || realInputPaths.length == 0) {
+    console.error(`Provide valid paths to existing files.`);
     return null;
   }
 
@@ -155,21 +163,21 @@ function parseCommandArguments(
   }
 
   const watcher = options.watcher ?? false;
-  return { realInputPath, realOutputPath, typeInference, watcher };
+  return { realInputPaths, realOutputPath, typeInference, watcher };
 }
 
 async function getFileTypeInformationFromArgs({
-  realInputPath,
+  realInputPaths,
   typeInference,
 }: ParsedArguments): Promise<FileTypeInformation | null> {
   const typeInfo = await getFileTypeInformation({
-    input: { type: 'file', inputFileAbsolutePath: realInputPath },
+    input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
     typeInference,
   });
 
   if (!typeInfo) {
     console.log(
-      chalk.red(`Provided file: ${realInputPath} couldn't be parsed for type information!`)
+      chalk.red(`Provided files: ${realInputPaths} couldn't be parsed for type information!`)
     );
     return null;
   }
@@ -299,7 +307,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
   ).action(async (options: TypeInformationCommandCommonArguments) => {
     const parsedArgs = await parseCommandArguments(options);
     if (!parsedArgs) return;
-    const { realInputPath, realOutputPath } = parsedArgs;
+    const { realInputPaths, realOutputPath } = parsedArgs;
 
     const command = async () => {
       const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
@@ -309,7 +317,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
         await getGeneratedModuleTypescriptInterface(typeInfo);
 
       const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
-      const dirName = realOutputPath ?? path.dirname(realInputPath);
+      const dirName = realOutputPath ?? path.dirname(realInputPaths[0] as string);
 
       try {
         await Promise.all([
@@ -342,7 +350,7 @@ function generateTypeFiles(cli: commander.Command) {
     async (options: TypeInformationCommandCommonArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) return;
-      const { realInputPath, realOutputPath } = parsedArgs;
+      const { realInputPaths, realOutputPath } = parsedArgs;
 
       const command = async () => {
         const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
@@ -351,7 +359,7 @@ function generateTypeFiles(cli: commander.Command) {
         if (!generatedFiles) return;
         const { moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile } = generatedFiles;
 
-        const dirName = realOutputPath ?? path.dirname(realInputPath);
+        const dirName = realOutputPath ?? path.dirname(realInputPaths[0] as string);
         const writeFilePromises = [];
         for (const outputFile of [moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile]) {
           if (!outputFile) {

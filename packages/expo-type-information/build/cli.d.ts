@@ -1,5 +1,5 @@
 export type TypeInformationCommandCommonArguments = {
-    inputPath: string;
+    inputPaths: string[];
     outputPath?: string;
     typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
     watcher?: boolean;
