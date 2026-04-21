@@ -4,7 +4,7 @@
 // SwiftUIVirtualViewObjC.mm (NSObject base) and SwiftUIVirtualViewObjCDev.mm (UIView base).
 //
 // Before including this file, the .mm must:
-//   1. #import the relevant header
+//   1. #include this header inside the `@implementation` block
 //   2. Define the C++ namespace aliases and helper functions
 //   3. Open an @implementation block with these ivars:
 //        react::SharedViewProps _props;
