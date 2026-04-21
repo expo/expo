@@ -79,6 +79,29 @@ function stageIcon(status: StageStatus): string {
   }
 }
 
+export interface SummaryCounts {
+  successful: number;
+  warnings: number;
+  failed: number;
+}
+
+export function computeSummaryCounts(statuses: UnitStatus[]): SummaryCounts {
+  // A unit with skipReason is never successful, regardless of stage values
+  // (all 'skipped' by construction) — that's what flips skipped-due-to-dep
+  // into the failed bucket.
+  const isOk = (st: StageStatus) => st === 'success' || st === 'skipped';
+  const successful = statuses.filter(
+    (s) =>
+      !s.skipReason &&
+      isOk(s.stages.generate) &&
+      isOk(s.stages.build) &&
+      isOk(s.stages.compose) &&
+      (isOk(s.stages.verify) || s.stages.verify === 'warning')
+  ).length;
+  const warnings = statuses.filter((s) => !s.skipReason && s.stages.verify === 'warning').length;
+  return { successful, warnings, failed: statuses.length - successful };
+}
+
 export function printPrebuildSummary(statuses: UnitStatus[], elapsedMs: number): void {
   if (statuses.length === 0) {
     return;
@@ -93,22 +116,17 @@ export function printPrebuildSummary(statuses: UnitStatus[], elapsedMs: number):
         ? chalk.cyan(status.packageName)
         : `${chalk.cyan(status.packageName)}/${chalk.yellow(`${status.productName} [${status.flavor}]`)}`;
 
+    if (status.skipReason) {
+      logger.info(`${productDisplay}: ${chalk.red('⛔ Skipped')} (${status.skipReason})`);
+      continue;
+    }
+
     logger.info(
       `${productDisplay}: Gen ${stageIcon(status.stages.generate)} | Build ${stageIcon(status.stages.build)} | Compose ${stageIcon(status.stages.compose)} | Verify ${stageIcon(status.stages.verify)}`
     );
   }
 
-  const successful = statuses.filter(
-    (s) =>
-      (s.stages.generate === 'success' || s.stages.generate === 'skipped') &&
-      (s.stages.build === 'success' || s.stages.build === 'skipped') &&
-      (s.stages.compose === 'success' || s.stages.compose === 'skipped') &&
-      (s.stages.verify === 'success' ||
-        s.stages.verify === 'skipped' ||
-        s.stages.verify === 'warning')
-  ).length;
-  const warnings = statuses.filter((s) => s.stages.verify === 'warning').length;
-  const failed = statuses.length - successful;
+  const { successful, warnings, failed } = computeSummaryCounts(statuses);
 
   logger.info('─'.repeat(80));
   const warningText = warnings > 0 ? ` | ${chalk.yellow(`⚠️  ${warnings} with warnings`)}` : '';
