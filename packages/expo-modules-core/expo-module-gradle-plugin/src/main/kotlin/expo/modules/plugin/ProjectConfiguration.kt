@@ -40,6 +40,11 @@ internal fun Project.applyPikaPlugin() {
   pika.introspectableAnnotation("expo.modules.kotlin.types.OptimizedRecord")
 }
 
+internal fun Project.configurePika(shouldBeEnabled: Boolean = true) {
+  val pika = extensions.getByType(PikaGradleExtension::class.java)
+  pika.enabled = shouldBeEnabled
+}
+
 internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
   extra.set("kotlinVersion", kotlinVersion)
   extra.set("kspVersion", kspVersion)
