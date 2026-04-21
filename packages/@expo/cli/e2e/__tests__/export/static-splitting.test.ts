@@ -101,6 +101,7 @@ describe('exports static with bundle splitting', () => {
         'asset',
         'links',
         'styled',
+        'metadata',
       ]
         .sort()
         .map((file) =>
