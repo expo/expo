@@ -15,7 +15,7 @@ const withTargetXcodeProject_1 = __importDefault(require("./xcode/withTargetXcod
 const pkg = require('../../package.json');
 const withWidgets = (config, props) => {
     let plugins = [];
-    const deploymentTarget = '16.2';
+    const deploymentTarget = '16.4';
     const targetName = 'ExpoWidgetsTarget';
     let bundleIdentifier = props?.bundleIdentifier;
     if (!bundleIdentifier) {
