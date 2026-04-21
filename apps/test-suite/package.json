@@ -49,7 +49,6 @@
     "expo-linking": "workspace:*",
     "expo-localization": "workspace:*",
     "expo-location": "workspace:*",
-    "expo-image-picker": "workspace:*",
     "expo-media-library": "workspace:*",
     "expo-modules-core": "workspace:*",
     "expo-navigation-bar": "workspace:*",
