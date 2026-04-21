@@ -10,6 +10,7 @@ import android.media.AudioManager
 import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -344,12 +345,35 @@ class AudioControlsService : MediaSessionService() {
 
         addPlayerListener(player)
 
+        // Set artwork URI on MediaMetadata so Android 13+ lock screen uses the
+        // full-resolution bitmap via the session's BitmapLoader instead of
+        // falling back to the notification largeIcon (which gets downsampled).
+        applyArtworkUriToSession()
+
         // Initial update now that session exists
         postOrStartForegroundNotification(startInForeground = false)
       }
     } else {
       clearSessionInternal()
     }
+  }
+
+  private fun applyArtworkUriToSession() {
+    val url = currentArtworkUrl ?: return
+    val player = currentPlayer?.ref ?: return
+    val index = player.currentMediaItemIndex
+    if (index < 0 || index >= player.mediaItemCount) return
+    val currentItem = player.getMediaItemAt(index)
+    val newMetadata = currentItem.mediaMetadata.buildUpon().apply {
+      setTitle(currentMetadata?.title)
+      setArtist(currentMetadata?.artist)
+      setAlbumTitle(currentMetadata?.albumTitle)
+      setArtworkUri(Uri.parse(url.toString()))
+    }.build()
+    player.replaceMediaItem(
+      index,
+      currentItem.buildUpon().setMediaMetadata(newMetadata).build()
+    )
   }
 
   private fun updateMetadataInternal(player: AudioPlayer, metadata: Metadata?) {
