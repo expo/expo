@@ -33,6 +33,7 @@
 ### 🎉 New features
 
 - [compose] Added worklet and `ObservableState` support to `TextField`. Added `value` prop accepting `ObservableState<string | TextFieldValue>` (create via `useNativeState`). `onValueChange` now supports worklets for synchronous UI-thread updates. Added `TextFieldValue` type with `text` + `selection` for worklet-driven caret control. Replaced `defaultValue`, callers pass state via `useNativeState` or omit for an empty field. ([#45024](https://github.com/expo/expo/pull/45024) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] add mask view ([#44958](https://github.com/expo/expo/pull/44958) by [@vonovak](https://github.com/vonovak))
 - [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44681](https://github.com/expo/expo/pull/44681) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `ObservableState` shared object and `useNativeState` hook for controlling native Compose state from JS. ([#44655](https://github.com/expo/expo/pull/44655) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))

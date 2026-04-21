@@ -81,10 +81,28 @@ export declare const imePadding: () => import("./createModifier").ModifierConfig
  */
 export declare const offset: (x: number, y: number) => import("./createModifier").ModifierConfig;
 /**
- * Sets the background color.
- * @param color - Color string (hex, e.g., '#FF0000').
+ * A point in a normalized [0, 1] coordinate space, used to define gradient start and end positions.
  */
-export declare const background: (color: ColorValue) => import("./createModifier").ModifierConfig;
+export type GradientPoint = {
+    x: number;
+    y: number;
+};
+/**
+ * Configuration for a linear gradient background.
+ */
+export type LinearGradient = {
+    /** Array of color strings (hex, e.g., '#FF0000'). */
+    colors: ColorValue[];
+    /** Start point of the gradient in normalized coordinates. @default { x: 0, y: 0 } */
+    startPoint?: GradientPoint;
+    /** End point of the gradient in normalized coordinates. @default { x: 1, y: 1 } */
+    endPoint?: GradientPoint;
+};
+/**
+ * Sets the background color or gradient.
+ * @param colorOrGradient - A color string (hex, e.g., '#FF0000') or a `LinearGradient` configuration object.
+ */
+export declare function background(colorOrGradient: ColorValue | LinearGradient): import("./createModifier").ModifierConfig;
 /**
  * Adds a border around the view.
  * @param borderWidth - Border width in dp.
