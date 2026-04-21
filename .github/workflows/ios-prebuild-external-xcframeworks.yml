@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       packages:
-        description: 'Space-separated external package names to prebuild (leave empty for all)'
+        description: 'Space-separated external package names (leave empty for all external packages)'
         required: false
         default: ''
       concurrency:
@@ -22,8 +22,8 @@ on:
         type: string
 
 concurrency:
-  group: ${{ github.event.inputs.publish == 'true' && format('{0}-publish-{1}', github.workflow, github.event.inputs.sdk-version) || format('{0}-run-{1}', github.workflow, github.run_id) }}
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   prebuild:
@@ -102,7 +102,6 @@ jobs:
           include-hidden-files: true
 
       - name: Package XCFrameworks (${{ matrix.flavor }})
-        if: ${{ !cancelled() }}
         run: |
           FLAVOR_LOWER=$(echo "${{ matrix.flavor }}" | tr '[:upper:]' '[:lower:]')
           ARCHIVE_PATH="$RUNNER_TEMP/xcframeworks-${{ matrix.flavor }}.zip"
@@ -136,6 +135,9 @@ jobs:
       - name: Upload XCFramework zip to GCS
         if: ${{ success() && github.event.inputs.publish == 'true' }}
         run: |
+          # Create the canonical artifact only if it does not already exist.
+          # This keeps concurrent publish attempts from overwriting each other.
           gcloud storage cp \
+            --if-generation-match=0 \
             "$THIRD_PARTY_PRECOMPILED_MODULES_ARCHIVE_PATH" \
             "gs://eas-build-precompiled-modules/precompiled-modules/${{ github.event.inputs.sdk-version }}/xcframeworks-${{ matrix.flavor }}.zip"
