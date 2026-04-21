@@ -33,14 +33,9 @@ Given a bandwidth allocation, we estimate how many updates can be downloaded in 
 
 First, generate your uncompressed production bundle with the following command:
 
-<Terminal
-  cmd={[
-    '$ npx expo export'
-  ]}
-  cmdCopy="npx expo export"
-/>
+<Terminal cmd={['$ npx expo export']} cmdCopy="npx expo export" />
 
-Look in the **dist/_expo/static/js** directory. There will be **android** and **ios** folders with a **.hbc** file in each. The size of the **.hbc** file is the uncompressed size of your Hermes bundle. Note that Android and iOS bundles may differ in size, especially if you make use of platform-specific code files.
+Look in the **dist/\_expo/static/js** directory. There will be **android** and **ios** folders with a **.hbc** file in each. The size of the **.hbc** file is the uncompressed size of your Hermes bundle. Note that Android and iOS bundles may differ in size, especially if you make use of platform-specific code files.
 
 These files have long names that include a hash. For the sake of this exercise, rename the file you would like to analyze to **bundle.hbc**.
 
