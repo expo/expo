@@ -3020,7 +3020,7 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native-macos/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native-macos/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native-macos/sdks/hermes-engine/hermes-engine.podspec`)
-  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.6_patch_hash=37746ba73ff63ad55f0b85b8f86a7d5cb4a571f6a70dfb1882_86bc1bfbcc28520aa9f62dea40288f9e/node_modules/lottie-react-native`)"
+  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.3.6_patch_hash=37746ba73ff63ad55f0b85b8f86a7d5cb4a571f6a70dfb1882_c2ad4381419d24d88ade1559425adfc7/node_modules/lottie-react-native`)"
   - RCT-Folly (from `../node_modules/react-native-macos/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native-macos/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
   - RCTRequired (from `../node_modules/react-native-macos/Libraries/Required`)
@@ -3055,9 +3055,9 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native-macos/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native-macos/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks`)
-  - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_347edc3f536539175853bb0a8dacb949/node_modules/@react-native-community/netinfo`)"
-  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.1_patch_hash=26e2b529e765bf444b7_4ec88588ee87102beabe79c29c9161c0/node_modules/react-native-safe-area-context`)"
-  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.0_react-native@0.85.1_patch_hash=26e2b529e765bf444b707b628f5_40dd099121671867ce37048cc0719afa/node_modules/react-native-webview`)"
+  - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_8c00f34e506f253739502776a6b151b3/node_modules/@react-native-community/netinfo`)"
+  - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.2_patch_hash=26e2b529e765bf444b7_4c4e874d7e413c452c675c18547f03af/node_modules/react-native-safe-area-context`)"
+  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.0_react-native@0.85.2_patch_hash=26e2b529e765bf444b707b628f5_ed94a4777d932f77580fcbe7088d9627/node_modules/react-native-webview`)"
   - React-NativeModulesApple (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native-macos/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native-macos/ReactCommon/reactperflogger`)
@@ -3088,10 +3088,10 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native-macos/ReactCommon`)
-  - "RNCAsyncStorage (from `../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.85.1_patch_hash=26e2b529_7201567b4737935f12fd891660d84182/node_modules/@react-native-async-storage/async-storage`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.30.0_react-native@0.85.1_patch_hash=26e2b529e765bf444b70_d202eaf580aba3a352071db50dc4b6cc/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_8d8351ce6b89377955b4b9d31a48752d/node_modules/react-native-reanimated`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.1_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_493f046b66a6afbc6679b9b1bb853ae3/node_modules/react-native-worklets`)"
+  - "RNCAsyncStorage (from `../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.85.2_patch_hash=26e2b529_b044ebd20cc5ecbcdb2bd0989d915941/node_modules/@react-native-async-storage/async-storage`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.30.0_react-native@0.85.2_patch_hash=26e2b529e765bf444b70_6358249b5529bf8bf711045dadefcef4/node_modules/react-native-gesture-handler`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_0fedd36eff10fd1be5140aec862daae6/node_modules/react-native-reanimated`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.1_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_bc3f67456b46d4b595389bc345cda557/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
   - Yoga (from `../node_modules/react-native-macos/ReactCommon/yoga`)
 
@@ -3192,7 +3192,7 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native-macos/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-07-07-RNv0.81.0-e0fc67142ec0763c6b6153ca2bf96df815539782
   lottie-react-native:
-    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.6_patch_hash=37746ba73ff63ad55f0b85b8f86a7d5cb4a571f6a70dfb1882_86bc1bfbcc28520aa9f62dea40288f9e/node_modules/lottie-react-native"
+    :path: "../../../node_modules/.pnpm/lottie-react-native@7.3.6_patch_hash=37746ba73ff63ad55f0b85b8f86a7d5cb4a571f6a70dfb1882_c2ad4381419d24d88ade1559425adfc7/node_modules/lottie-react-native"
   RCT-Folly:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -3260,11 +3260,11 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks"
   react-native-netinfo:
-    :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_347edc3f536539175853bb0a8dacb949/node_modules/@react-native-community/netinfo"
+    :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_8c00f34e506f253739502776a6b151b3/node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
-    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.1_patch_hash=26e2b529e765bf444b7_4ec88588ee87102beabe79c29c9161c0/node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.2_patch_hash=26e2b529e765bf444b7_4c4e874d7e413c452c675c18547f03af/node_modules/react-native-safe-area-context"
   react-native-webview:
-    :path: "../../../node_modules/.pnpm/react-native-webview@13.16.0_react-native@0.85.1_patch_hash=26e2b529e765bf444b707b628f5_40dd099121671867ce37048cc0719afa/node_modules/react-native-webview"
+    :path: "../../../node_modules/.pnpm/react-native-webview@13.16.0_react-native@0.85.2_patch_hash=26e2b529e765bf444b707b628f5_ed94a4777d932f77580fcbe7088d9627/node_modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -3326,13 +3326,13 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../node_modules/react-native-macos/ReactCommon"
   RNCAsyncStorage:
-    :path: "../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.85.1_patch_hash=26e2b529_7201567b4737935f12fd891660d84182/node_modules/@react-native-async-storage/async-storage"
+    :path: "../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.85.2_patch_hash=26e2b529_b044ebd20cc5ecbcdb2bd0989d915941/node_modules/@react-native-async-storage/async-storage"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.30.0_react-native@0.85.1_patch_hash=26e2b529e765bf444b70_d202eaf580aba3a352071db50dc4b6cc/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.30.0_react-native@0.85.2_patch_hash=26e2b529e765bf444b70_6358249b5529bf8bf711045dadefcef4/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_8d8351ce6b89377955b4b9d31a48752d/node_modules/react-native-reanimated"
+    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_0fedd36eff10fd1be5140aec862daae6/node_modules/react-native-reanimated"
   RNWorklets:
-    :path: "../../../node_modules/.pnpm/react-native-worklets@0.8.1_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_493f046b66a6afbc6679b9b1bb853ae3/node_modules/react-native-worklets"
+    :path: "../../../node_modules/.pnpm/react-native-worklets@0.8.1_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_bc3f67456b46d4b595389bc345cda557/node_modules/react-native-worklets"
   Yoga:
     :path: "../node_modules/react-native-macos/ReactCommon/yoga"
 
@@ -3358,7 +3358,7 @@ SPEC CHECKSUMS:
   ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
   ExpoModulesCore: 6ac10871b4b9b56a13ecccb798cb7de19ae63b63
   ExpoModulesJSI: 793687b04cbaa73ee8548bfdbcfba85954d1b2b5
-  ExpoModulesWorklets: a609fafb8e544d2adfa2d93eeeea3856ec687224
+  ExpoModulesWorklets: c333b8e54a0a3785c48720f497de4fd6212142d3
   ExpoSQLite: bb89f888d972448c0594042c6654c41957b006a8
   ExpoWebBrowser: b65b3921741b51c5513e2a369f59c37076987d9b
   EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
@@ -3436,12 +3436,12 @@ SPEC CHECKSUMS:
   React-timing: f91e37f2154ef9b25e1ded28326f9998669145f1
   React-utils: 35e85af00d70760e6fda280c78d184da64d89e3d
   ReactAppDependencyProvider: 17d150a60ad301142905427154168f58641e38c4
-  ReactCodegen: a4812e80e0a0d1546203274bbd3ac407a24c6f0d
+  ReactCodegen: e4bbe2efd9da85d7876829eb9f58cd8770c0e311
   ReactCommon: b2b6ff304cf01e1b67d8e9646e34d58320be0964
   RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
   RNGestureHandler: 9573b15d45c38e5771aac3330c89ab4683834bb6
-  RNReanimated: 824d47b94fb177d7601059a3135cbf5175898957
-  RNWorklets: ec6294d8d8cbfba7b608ee4a1ba712b86f261ffc
+  RNReanimated: 3973ec11f4fc93bae13beecedd5f530257bf9ee8
+  RNWorklets: ef7fddf9c4c1fcd4cb44256c33c04940b5b5e7f8
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 8a0df683a71bee13fe0b9d8b653d1a062ff65b2e
 
