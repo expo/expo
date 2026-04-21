@@ -1,6 +1,10 @@
 import { type WatchEvent, type WatchOptions, type WatchSubscription } from './ExpoFileSystem.types';
 import type { Directory, File } from './FileSystem';
 type TargetFactory<T> = (uri: string, isDirectory: boolean) => T;
+/**
+ * @hidden
+ * Internal implementation of file system watching. Use `File.watch()` or `Directory.watch()` instead.
+ */
 export declare class FileSystemWatcher<T extends File | Directory> implements WatchSubscription {
     private readonly targetFactory;
     private nativeWatcher;

@@ -25,6 +25,10 @@ function normalizePath(path: string): string {
   return path.replace(/\/+$/, '');
 }
 
+/**
+ * @hidden
+ * Internal implementation of file system watching. Use `File.watch()` or `Directory.watch()` instead.
+ */
 export class FileSystemWatcher<T extends File | Directory> implements WatchSubscription {
   private nativeWatcher: InstanceType<typeof ExpoFileSystem.FileSystemWatcher> | null;
   private subscription: EventSubscription | null = null;

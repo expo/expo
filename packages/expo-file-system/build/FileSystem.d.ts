@@ -70,6 +70,27 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     upload(url: string, options?: UploadOptions): Promise<UploadResult>;
     createUploadTask(url: string, options?: UploadOptions): UploadTask;
     static createDownloadTask(url: string, destination: File | Directory, options?: DownloadTaskOptions): DownloadTask;
+    /**
+     * Watches this file for changes on the filesystem.
+     *
+     * The watcher automatically stops when the file is deleted or renamed. To stop watching manually,
+     * call `remove()` on the returned subscription.
+     *
+     * @param callback Invoked when a change is detected. Receives a `WatchEvent` describing what changed.
+     * @param options Configuration for debouncing and filtering events.
+     * @return A subscription handle. Call `remove()` to stop watching.
+     *
+     * @example
+     * ```ts
+     * const file = new File(Paths.cache, 'data.json');
+     * const subscription = file.watch((event) => {
+     *   console.log(`File ${event.type}`);
+     * });
+     *
+     * // Later, stop watching:
+     * subscription.remove();
+     * ```
+     */
     watch(callback: (event: WatchEvent<File>) => void, options?: WatchOptions): WatchSubscription;
 }
 /**
@@ -109,6 +130,28 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
     get name(): string;
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
+    /**
+     * Watches this directory for changes to its contents or the directory itself.
+     *
+     * Events are emitted when files or subdirectories are created, modified, deleted, or renamed
+     * within this directory. The watcher automatically stops when the directory is deleted or renamed.
+     * To stop watching manually, call `remove()` on the returned subscription.
+     *
+     * @param callback Invoked when a change is detected. Receives a `WatchEvent` describing what changed.
+     * @param options Configuration for debouncing and filtering events.
+     * @return A subscription handle. Call `remove()` to stop watching.
+     *
+     * @example
+     * ```ts
+     * const cacheDir = new Directory(Paths.cache);
+     * const subscription = cacheDir.watch((event) => {
+     *   console.log(`${event.type}: ${event.target.uri}`);
+     * });
+     *
+     * // Later, stop watching:
+     * subscription.remove();
+     * ```
+     */
     watch(callback: (event: WatchEvent<File | Directory>) => void, options?: WatchOptions): WatchSubscription;
 }
 /**

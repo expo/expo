@@ -48,10 +48,26 @@ export type FileWriteOptions = {
  */
 export const DEFAULT_DEBOUNCE_MS = 100;
 
+/**
+ * The type of change that triggered a watcher event.
+ * - `created` &mdash; a new file or directory was created
+ * - `modified` &mdash; the file contents or metadata changed
+ * - `deleted` &mdash; the file or directory was removed
+ * - `renamed` &mdash; the file or directory was renamed or moved
+ */
 export type WatchEventType = 'created' | 'modified' | 'deleted' | 'renamed';
 
+/**
+ * Describes a change detected by a file system watcher.
+ */
 export type WatchEvent<T extends File | Directory> = {
+  /**
+   * The kind of change that occurred.
+   */
   type: WatchEventType;
+  /**
+   * The file or directory that changed. For `renamed` events, this is the original path before the rename.
+   */
   target: T;
   /**
    * Raw platform-specific event flags for advanced use cases.
@@ -67,19 +83,29 @@ export type WatchEvent<T extends File | Directory> = {
   newTarget?: T;
 };
 
+/**
+ * Options for configuring a file system watcher.
+ */
 export type WatchOptions = {
   /**
-   * The debounce interval for coalescing watcher events.
+   * The debounce interval in milliseconds for coalescing rapid successive events into a single callback.
    * @default DEFAULT_DEBOUNCE_MS
    */
   debounce?: number;
   /**
-   * The event types to observe.
+   * Limits which event types trigger the callback. If omitted, all event types are observed.
    */
   events?: WatchEventType[];
 };
 
+/**
+ * A handle to an active file system watcher. Call `remove()` to stop watching and release resources.
+ */
 export type WatchSubscription = {
+  /**
+   * Stops watching for changes and releases native resources.
+   * After calling this method, the callback will no longer be invoked.
+   */
   remove(): void;
 };
 
