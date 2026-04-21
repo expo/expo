@@ -34,7 +34,9 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
   const isSelected = isRouteActive(info, router?.asPath, router?.pathname);
 
   useEffect(() => {
-    if (isSelected && ref?.current && !isLinkInViewport(ref?.current)) {
+    const willRestoreSavedScroll =
+      typeof window !== 'undefined' && (window.__sidebarScroll ?? 0) > 0;
+    if (isSelected && ref?.current && !isLinkInViewport(ref?.current) && !willRestoreSavedScroll) {
       setTimeout(() => {
         if (ref?.current) {
           ref.current.scrollIntoView({ behavior: 'smooth' });
