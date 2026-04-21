@@ -46,7 +46,7 @@ struct OnboardingWelcomeView: View {
 
       Spacer()
 
-      OnboardingPrimaryButton(title: "Get Started") {
+      OnboardingPrimaryButton(title: "Get started") {
         viewModel.advance()
       }
     }

@@ -3,9 +3,9 @@
 import SwiftUI
 
 enum OnboardingTopic: String, CaseIterable, Identifiable {
-  case styling = "Styling & Layout"
-  case animations = "Animations & Gestures"
-  case deviceFeatures = "Device Features"
+  case styling = "Styling & layout"
+  case animations = "Animations & gestures"
+  case deviceFeatures = "Device features"
   case course = "Taking a course"
 
   var id: String { rawValue }

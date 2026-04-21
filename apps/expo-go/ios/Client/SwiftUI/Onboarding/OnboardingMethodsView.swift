@@ -14,7 +14,7 @@ struct OnboardingMethodsView: View {
           .font(.system(size: 32, weight: .bold))
           .multilineTextAlignment(.center)
 
-        Text("Start learning on your phone. When you're ready for more, our course walks you through setting up a local project too.")
+        Text("Start learning on your phone. When you're ready for more, our course walks you through continuing to learn on your computer.")
           .font(.body)
           .foregroundColor(.expoSecondaryText)
           .multilineTextAlignment(.center)
@@ -26,26 +26,20 @@ struct OnboardingMethodsView: View {
           icon: "iphone",
           title: "Learn on your phone",
           items: [
-            ("Read", "Follow bite-sized lessons"),
-            ("Edit", "Write real code right here"),
-            ("See", "Watch your changes instantly"),
+            "Follow bite-sized lessons",
+            "Write real code right here",
+            "Watch your changes instantly",
           ]
         )
-        
+
         MethodCard(
           icon: "desktopcomputer",
           title: "Learn with your computer",
           items: [
-            ("Set up", "Create a project on your machine"),
-            ("Code", "Get more space to write with a full editor"),
-            ("Preview", "See your work live on your phone"),
+            "Create a project on your machine",
+            "Get more space to write with a full editor",
+            "See your work live on your phone",
           ]
-        )
-        
-        MethodCard(
-          icon: "chevron.left.forwardslash.chevron.right",
-          title: "Build",
-          items: []
         )
       }
       
@@ -68,7 +62,7 @@ struct OnboardingMethodsView: View {
 private struct MethodCard: View {
   let icon: String
   let title: String
-  let items: [(label: String, detail: String)]
+  let items: [String]
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -84,12 +78,14 @@ private struct MethodCard: View {
 
       if !items.isEmpty {
         VStack(alignment: .leading, spacing: 10) {
-          ForEach(items, id: \.label) { item in
-            HStack(spacing: 0) {
-              Text(item.label)
-                .font(.system(size: 12, weight: .medium))
-              Text(" - \(item.detail)")
-                .font(.system(size: 12))
+          ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+              Text("\(index + 1).")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.expoSecondaryText)
+                .frame(width: 18, alignment: .trailing)
+              Text(item)
+                .font(.system(size: 13))
                 .foregroundColor(.expoSecondaryText)
             }
           }
