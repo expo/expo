@@ -25,11 +25,12 @@ import {
   basicTypesIdentifiers,
   getEnumDeclaration,
   getIdentifierUnknownDeclaration,
-  getPropsTypeDeclaration,
+  getViewPropsDeclaration,
   getRecordDeclaration,
   getTsClassDeclaration,
   getTsFunction,
   getViewPropsTypeName,
+  joinTSNodesWithNewlines,
   prettifyCode,
 } from './typescriptGeneration';
 
@@ -51,8 +52,6 @@ function getNextFreeId() {
   return freeId;
 }
 
-const newlineIdentifier = ts.factory.createIdentifier('\n\n') as any;
-
 function maybeWrapWithReturnStatement(
   type: Type,
   fileTypeInformation: FileTypeInformation
@@ -64,7 +63,7 @@ function maybeWrapWithReturnStatement(
     }
   }
 
-  // TODO(@HubertBer) maybe add a comment when we couldn't create a mock for the return type
+  // TODO(@HubertBer): maybe add a comment when we couldn't create a mock for the return type
   const returnExpression = getMockedValueForType(type, fileTypeInformation);
   if (returnExpression || type.kind !== TypeKind.BASIC || type.type === BasicType.UNRESOLVED) {
     return [ts.factory.createReturnStatement(returnExpression)];
@@ -204,24 +203,18 @@ function getMockedFunctionDeclaration(
 
 function getMockedClass(
   classDeclaration: ClassDeclaration,
-  fileTypeInformation: FileTypeInformation
+  fileInfo: FileTypeInformation
 ): ts.ClassDeclaration {
-  return getTsClassDeclaration(
+  return getTsClassDeclaration({
     classDeclaration,
-    fileTypeInformation,
-    true,
-    false,
-    getFunctionReturnBlock
-  );
+    exported: true,
+    getFunctionReturnBlock: (func) => getFunctionReturnBlock(func, fileInfo),
+  });
 }
 
 function getMockedView(viewDeclaration: ViewDeclaration): ts.Node[] {
   const propsTypeName = getViewPropsTypeName(viewDeclaration);
-  const propsType = getPropsTypeDeclaration(
-    propsTypeName,
-    viewDeclaration.props,
-    viewDeclaration.events
-  );
+  const propsType = getViewPropsDeclaration(viewDeclaration, { export: true });
   const propsParameter = ts.factory.createParameterDeclaration(
     undefined,
     undefined,
@@ -245,38 +238,30 @@ function getMockedView(viewDeclaration: ViewDeclaration): ts.Node[] {
 function getMockForModule(
   module: ModuleClassDeclaration,
   fileTypeInformation: FileTypeInformation
-) {
+): ts.Node[] {
   const undeclaredTypeIdentifiers: Set<string> = fileTypeInformation.usedTypeIdentifiers
     .difference(fileTypeInformation.declaredTypeIdentifiers)
     .difference(basicTypesIdentifiers());
   const recordDeclarationMap = (record: RecordType) => getRecordDeclaration(record, true);
   const enumDeclarationMap = (e: EnumType) => getEnumDeclaration(e, true, false);
-  return ([] as ts.Node[])
-    .concat(
-      getPrefix(),
-      newlineIdentifier,
-      [...undeclaredTypeIdentifiers].map((identifier) =>
-        getIdentifierUnknownDeclaration(
-          identifier,
-          true,
-          fileTypeInformation.inferredTypeParametersCount
-        )
-      ),
-      newlineIdentifier,
-      fileTypeInformation.records.flatMap(recordDeclarationMap),
-      newlineIdentifier,
-      fileTypeInformation.enums.flatMap(enumDeclarationMap),
-      newlineIdentifier,
-      module.functions.map((f) =>
-        getMockedFunctionDeclaration(f, fileTypeInformation, false, true)
-      ),
-      module.asyncFunctions.map((f) =>
-        getMockedFunctionDeclaration(f, fileTypeInformation, true, true)
-      ),
-      module.classes.map((c) => getMockedClass(c, fileTypeInformation)),
-      module.views.map((v) => getMockedView(v)).flat()
-    )
-    .flat();
+  return joinTSNodesWithNewlines([
+    getPrefix(),
+    [...undeclaredTypeIdentifiers].map((identifier) =>
+      getIdentifierUnknownDeclaration(
+        identifier,
+        true,
+        fileTypeInformation.inferredTypeParametersCount
+      )
+    ),
+    fileTypeInformation.records.flatMap(recordDeclarationMap),
+    fileTypeInformation.enums.flatMap(enumDeclarationMap),
+    module.functions.map((f) => getMockedFunctionDeclaration(f, fileTypeInformation, false, true)),
+    module.asyncFunctions.map((f) =>
+      getMockedFunctionDeclaration(f, fileTypeInformation, true, true)
+    ),
+    module.classes.map((c) => getMockedClass(c, fileTypeInformation)),
+    module.views.map((v) => getMockedView(v)).flat(),
+  ]).flat();
 }
 
 export function generateTSMockForModule(
