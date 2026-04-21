@@ -53,7 +53,7 @@ export declare const height: (value: number) => import("./createModifier").Modif
  * are only applied when the incoming corresponding constraint is `0`.
  * @param options.minWidth - Minimum width in dp.
  * @param options.minHeight - Minimum height in dp.
- * @see [Compose defaultMinSize modifier](https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#%28androidx.compose.ui.Modifier%29.defaultMinSize%28androidx.compose.ui.unit.Dp%2Candroidx.compose.ui.unit.Dp%29)
+ * @see [Compose `defaultMinSize` modifier](https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#%28androidx.compose.ui.Modifier%29.defaultMinSize%28androidx.compose.ui.unit.Dp%2Candroidx.compose.ui.unit.Dp%29)
  */
 export declare const defaultMinSize: (options: {
     minWidth?: number;
