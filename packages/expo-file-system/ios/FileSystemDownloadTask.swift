@@ -243,7 +243,7 @@ class FileSystemDownloadTask: SharedObject {
   private var downloadTask: URLSessionDownloadTask?
   private var delegateKey: String?
   private var sessionType: NetworkTaskSessionType = .background
-  var isPausing = false
+  private(set) var isPausing = false
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
@@ -306,6 +306,7 @@ class FileSystemDownloadTask: SharedObject {
   }
 
   func finishTask() {
+    // Delegate is unregistered by NetworkTaskSessionDispatcher after didCompleteWithError returns.
     cleanup(unregisterDelegate: false)
   }
 

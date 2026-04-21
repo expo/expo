@@ -1105,15 +1105,16 @@ function DownloadTaskSection() {
   };
 
   const handleRestoreFromSaved = async () => {
-    if (!savedState) return;
+    if (!savedState) {
+      return;
+    }
     setStatus('downloading');
     setProgress('Resuming from saved state...');
     setResultInfo('');
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
+    abortControllerRef.current = new AbortController();
     const task = DownloadTask.fromSavable(savedState, {
       onProgress,
-      signal: abortController.signal,
+      signal: abortControllerRef.current.signal,
     });
     taskRef.current = task;
     setTaskState(task.state);
@@ -1182,8 +1183,6 @@ function DownloadTaskSection() {
     </>
   );
 }
-
-// ===== Styles =====
 
 const styles = StyleSheet.create({
   container: {

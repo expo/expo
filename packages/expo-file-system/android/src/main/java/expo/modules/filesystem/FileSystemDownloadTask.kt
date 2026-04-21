@@ -9,6 +9,7 @@ import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -24,12 +25,14 @@ import java.net.URI
 import java.net.URLConnection
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
  * Record type for download task options.
  */
+@OptimizedRecord
 class DownloadTaskOptions : Record {
   @Field var headers: Map<String, String>? = null
 }
@@ -55,14 +58,14 @@ class FileSystemDownloadTask : SharedObject() {
 
   @Volatile private var bytesWritten = 0L
   private var lastProgressTime: Long = 0
-  private val progressThrottleInterval: Long = 100 // 100ms
+  private val progressThrottleInterval = 100.milliseconds
 
   suspend fun start(url: URI, to: FileSystemPath, options: DownloadTaskOptions?): String? {
     isPausing = false
     isCancelling = false
     bytesWritten = 0L
 
-    val destination = determineDestination(to, url)
+    val destination = resolveDownloadDestination(to, url)
     destinationFile = destination
 
     val requestBuilder = Request.Builder().url(url.toString())
@@ -86,9 +89,8 @@ class FileSystemDownloadTask : SharedObject() {
     // would extend the file with zeros, corrupting the download.
     // For SAF-backed files, DocumentFile.length() metadata may lag behind the actual
     // written bytes, but this is still safe — worst case we re-download a small amount.
-    val fileLength = destinationFile?.length()
-    val resumeData = (if (fileLength != null && fileLength > 0) fileLength else bytesWritten).toString()
-    return mapOf("resumeData" to resumeData)
+    val resumeData = destinationFile?.length()?.takeIf { it > 0 } ?: bytesWritten
+    return mapOf("resumeData" to resumeData.toString())
   }
 
   suspend fun resume(url: URI, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?): String? {
@@ -101,7 +103,7 @@ class FileSystemDownloadTask : SharedObject() {
       throw InvalidResumeDataException()
     }
     bytesWritten = offset
-    val destination = determineDestination(to, url)
+    val destination = resolveDownloadDestination(to, url)
     destinationFile = destination
 
     val requestBuilder = Request.Builder().url(url.toString())
@@ -164,51 +166,7 @@ class FileSystemDownloadTask : SharedObject() {
         override fun onResponse(call: Call, response: Response) {
           response.use { resp ->
             try {
-              if (!resp.isSuccessful) {
-                safeResumeWithException(UnableToDownloadException("HTTP ${resp.code}"))
-                return
-              }
-
-              val responseBody = resp.body
-                ?: throw UnableToDownloadException("Empty response body")
-
-              // 206 = server supports Range, 200 = server ignored it (sends full content)
-              val isPartial = resp.code == 206
-              val effectiveOffset = if (isResume && isPartial) offset else 0L
-
-              val contentLength = responseBody.contentLength()
-              val totalBytes = calculateDownloadTotalBytes(resp.code, contentLength, effectiveOffset)
-
-              prepareDestinationForWrite(destination, isResume && isPartial, effectiveOffset)
-
-              BufferedInputStream(responseBody.byteStream()).use { input ->
-                destination.outputStream(isResume && isPartial).use { output ->
-                  val buffer = ByteArray(8192)
-                  var bytesRead: Int
-                  var totalBytesWritten = effectiveOffset
-                  bytesWritten = totalBytesWritten
-
-                  while (input.read(buffer).also { bytesRead = it } != -1) {
-                    if (isPausing) {
-                      safeResume(null)
-                      return
-                    }
-
-                    output.write(buffer, 0, bytesRead)
-                    totalBytesWritten += bytesRead
-                    bytesWritten = totalBytesWritten
-
-                    emitProgress(totalBytesWritten, totalBytes)
-                  }
-                }
-              }
-
-              // Reset throttle to guarantee final progress fires
-              lastProgressTime = 0
-              bytesWritten = destination.length()
-              emitProgress(bytesWritten, bytesWritten)
-
-              safeResume(destination.uri.toString())
+              processDownloadResponse(resp, destination, isResume, offset, ::safeResume)
             } catch (e: IOException) {
               if (isPausing) {
                 safeResume(null)
@@ -226,14 +184,66 @@ class FileSystemDownloadTask : SharedObject() {
 
       continuation.invokeOnCancellation {
         if (!isPausing) {
-          call?.cancel()
+          cancel()
         }
       }
     }
   }
 
-  private fun determineDestination(to: FileSystemPath, url: URI): UnifiedFileInterface {
-    return resolveDownloadDestination(to, url)
+  private inline fun processDownloadResponse(
+    resp: Response,
+    destination: UnifiedFileInterface,
+    isResume: Boolean,
+    offset: Long,
+    onComplete: (String?) -> Unit
+  ) {
+    if (!resp.isSuccessful) {
+      throw UnableToDownloadException("HTTP ${resp.code}")
+    }
+
+    val responseBody = resp.body
+      ?: throw UnableToDownloadException("Empty response body")
+
+    // 206 = server supports Range, 200 = server ignored it (sends full content)
+    val isPartial = resp.code == 206
+    val effectiveOffset = if (isResume && isPartial) offset else 0L
+
+    val contentLength = responseBody.contentLength()
+    val totalBytes = calculateDownloadTotalBytes(resp.code, contentLength, effectiveOffset)
+
+    prepareDestinationForWrite(destination, isResume && isPartial, effectiveOffset)
+
+    BufferedInputStream(responseBody.byteStream()).use { input ->
+      destination.outputStream(isResume && isPartial).use { output ->
+        val buffer = ByteArray(8192)
+        var bytesRead: Int
+        var totalBytesWritten = effectiveOffset
+        bytesWritten = totalBytesWritten
+
+        while (input.read(buffer).also { bytesRead = it } != -1) {
+          if (isCancelling) {
+            return
+          }
+          if (isPausing) {
+            onComplete(null)
+            return
+          }
+
+          output.write(buffer, 0, bytesRead)
+          totalBytesWritten += bytesRead
+          bytesWritten = totalBytesWritten
+
+          emitProgress(totalBytesWritten, totalBytes)
+        }
+      }
+    }
+
+    // Reset throttle to guarantee final progress fires
+    lastProgressTime = 0
+    bytesWritten = destination.length()
+    emitProgress(bytesWritten, bytesWritten)
+
+    onComplete(destination.uri.toString())
   }
 
   private fun prepareDestinationForWrite(
@@ -271,7 +281,7 @@ class FileSystemDownloadTask : SharedObject() {
 
   private fun emitProgress(bytesWritten: Long, totalBytes: Long) {
     val currentTime = System.currentTimeMillis()
-    val shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval || bytesWritten == totalBytes
+    val shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval.inWholeMilliseconds || bytesWritten == totalBytes
 
     if (shouldEmit) {
       lastProgressTime = currentTime
@@ -286,13 +296,14 @@ class FileSystemDownloadTask : SharedObject() {
   }
 }
 
-fun filenameFromUrl(url: URI): String {
-  val path = url.path.orEmpty()
-  val filename = path.substringAfterLast('/').ifBlank {
-    Uri.parse(url.toString()).lastPathSegment.orEmpty()
+val URI.filename: String
+  get() {
+    val urlPath = path.orEmpty()
+    val filename = urlPath.substringAfterLast('/').ifBlank {
+      Uri.parse(toString()).lastPathSegment.orEmpty()
+    }
+    return filename.ifBlank { "download" }
   }
-  return filename.ifBlank { "download" }
-}
 
 fun calculateDownloadTotalBytes(
   responseCode: Int,
@@ -309,7 +320,7 @@ fun calculateDownloadTotalBytes(
 fun resolveDownloadDestination(to: FileSystemPath, url: URI): UnifiedFileInterface {
   return when (to) {
     is FileSystemDirectory -> {
-      val filename = filenameFromUrl(url)
+      val filename = url.filename
       when (val directory = to.file) {
         is SAFDocumentFile -> {
           directory.findFile(filename)

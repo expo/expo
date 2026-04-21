@@ -6,6 +6,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -24,6 +25,7 @@ import java.io.IOException
 import java.net.URLConnection
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -35,6 +37,7 @@ enum class UploadType(val value: Int) : Enumerable {
 /**
  * Record type for upload options.
  */
+@OptimizedRecord
 class UploadTaskOptions : Record {
   @Field var headers: Map<String, String>? = null
 
@@ -52,6 +55,7 @@ class UploadTaskOptions : Record {
 /**
  * Record type for upload result.
  */
+@OptimizedRecord
 class UploadTaskResult : Record {
   @Field var body: String = ""
 
@@ -76,11 +80,16 @@ class FileSystemUploadTask : SharedObject() {
 
   @Volatile private var cancelled = false
   private var lastProgressTime: Long = 0
-  private val progressThrottleInterval: Long = 100 // 100ms
+  private val progressThrottleInterval = 100.milliseconds
 
   suspend fun start(url: String, file: FileSystemFile, options: UploadTaskOptions): UploadTaskResult {
-    val unifiedFile = file.file
     cancelled = false
+    val request = buildUploadRequest(url, file, options)
+    return executeUploadRequest(request)
+  }
+
+  private fun buildUploadRequest(url: String, file: FileSystemFile, options: UploadTaskOptions): Request {
+    val unifiedFile = file.file
 
     if (!unifiedFile.exists()) {
       throw UnableToUploadException("File does not exist")
@@ -101,8 +110,10 @@ class FileSystemUploadTask : SharedObject() {
       requestBuilder.addHeader(key, value)
     }
 
-    val request = requestBuilder.method(options.httpMethod, requestBody).build()
+    return requestBuilder.method(options.httpMethod, requestBody).build()
+  }
 
+  private suspend fun executeUploadRequest(request: Request): UploadTaskResult {
     return suspendCancellableCoroutine { continuation ->
       val settled = AtomicBoolean(false)
 
@@ -158,7 +169,7 @@ class FileSystemUploadTask : SharedObject() {
   }
 
   override fun sharedObjectDidRelease() {
-    call?.cancel()
+    cancel()
   }
 
   private fun createBinaryBody(file: UnifiedFileInterface): RequestBody {
@@ -170,7 +181,7 @@ class FileSystemUploadTask : SharedObject() {
 
   private fun emitProgress(bytesWritten: Long, totalBytes: Long) {
     val currentTime = System.currentTimeMillis()
-    val shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval || bytesWritten == totalBytes
+    val shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval.inWholeMilliseconds || bytesWritten == totalBytes
 
     if (shouldEmit) {
       lastProgressTime = currentTime
