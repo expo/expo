@@ -28,7 +28,7 @@ internal struct TabView: ExpoSwiftUI.View {
     // No default tabViewStyle — the innermost modifier wins, so a default
     // here would shadow the user's. Callers must supply one explicitly.
     Group {
-      if #available(iOS 18.0, *), usesTabChildren {
+      if #available(iOS 18.0, tvOS 18.0, *), usesTabChildren {
         valueBasedTabView(tabs)
       } else {
         indexBasedTabView(children, tabs: usesTabChildren ? tabs : nil)
@@ -45,7 +45,7 @@ internal struct TabView: ExpoSwiftUI.View {
 
   // MARK: - iOS 18+: value-based Tab(value:) API
 
-  @available(iOS 18.0, *)
+  @available(iOS 18.0, tvOS 18.0, *)
   @ViewBuilder
   private func valueBasedTabView(_ tabs: [Tab]) -> some View {
     SwiftUI.TabView(selection: hashableBinding) {
@@ -59,8 +59,20 @@ internal struct TabView: ExpoSwiftUI.View {
         ) {
           Self.tabContent(for: tab.props.children ?? [])
         }
+#if !os(tvOS)
+        .badge(Self.badgeText(from: tab.props.modifiers))
+#endif
       }
     }
+  }
+
+  private static func badgeText(from modifiers: ModifierArray?) -> Text? {
+    guard let modifiers,
+          let badgeModifier = modifiers.first(where: { $0["$type"] as? String == "badge" }),
+          let value = badgeModifier["value"] as? String else {
+      return nil
+    }
+    return Text(value)
   }
 
   private static func tabContent(for children: [any ExpoSwiftUI.AnyChild]) -> AnyView {

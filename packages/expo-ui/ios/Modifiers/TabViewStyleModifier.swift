@@ -35,7 +35,7 @@ internal struct TabViewStyleModifier: ViewModifier, Record {
     case .automatic:
       content.tabViewStyle(.automatic)
     case .sidebarAdaptable:
-      if #available(iOS 18.0, *) {
+      if #available(iOS 18.0, tvOS 18.0, *) {
         content.tabViewStyle(.sidebarAdaptable)
       } else {
         content.tabViewStyle(.automatic)
