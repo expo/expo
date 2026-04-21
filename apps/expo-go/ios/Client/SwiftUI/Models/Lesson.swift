@@ -49,7 +49,10 @@ struct Lesson: Identifiable {
   static let snackDependencies: [String: [String: Any]] = [
     "react-native-safe-area-context": ["version": "*"],
     "@expo/vector-icons": ["version": "*"],
-    "@shopify/react-native-skia": ["version": "*"]
+    "@shopify/react-native-skia": ["version": "*"],
+    "react-native-reanimated": ["version": "*"],
+    "expo-haptics": ["version": "*"],
+    "expo-device": ["version": "*"]
   ]
 }
 
@@ -109,7 +112,7 @@ function LessonContent({ children }) {
         <FormattedText style={styles.description}>{description}</FormattedText>
         <View style={styles.instructionBox}>
           <Text style={styles.instruction}>
-            💡 Press the ⚙️ icon → Source code explorer → open <Text style={styles.bold}>App.js</Text> to edit this example. Drag the gear to move the panel if it's in the way.
+            <Text style={styles.bold}>Tip:</Text> Press the gear icon, then tap Source code explorer and open <Text style={styles.bold}>App.js</Text> to edit this example. Drag the gear to move the panel if it's in the way.
           </Text>
         </View>
       </View>
@@ -258,9 +261,63 @@ const styles = StyleSheet.create({
 """
     ),
 
-    // Lesson 3: Pressable & State
+    // Lesson 3: Flexbox Layout
     Lesson(
       id: 3,
+      title: "Flexbox Layout",
+      icon: "square.grid.3x1.below.line.grid.1x2",
+      description: "`flexDirection` controls whether children stack in a `column` (default) or a `row`. `justifyContent` spaces them along that direction; `alignItems` aligns them across it. Use `flex: 1` on a child to make it grow. Try flipping `flexDirection` to `'row'`, or changing `justifyContent` to `'space-between'`.",
+      shortDescription: "Arrange things with flexbox",
+      appCode: """
+import Lesson from './lesson-files/Lesson';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <Lesson>
+      <View style={styles.container}>
+        <View style={[styles.box, { backgroundColor: '#FF6B6B' }]}>
+          <Text style={styles.label}>A</Text>
+        </View>
+        <View style={[styles.box, { backgroundColor: '#4ECDC4' }]}>
+          <Text style={styles.label}>B</Text>
+        </View>
+        <View style={[styles.box, { backgroundColor: '#FFD93D' }]}>
+          <Text style={styles.label}>C</Text>
+        </View>
+      </View>
+    </Lesson>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+    padding: 16,
+  },
+  box: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+});
+"""
+    ),
+
+    // Lesson 4: Pressable & State
+    Lesson(
+      id: 4,
       title: "Pressable & State",
       icon: "hand.tap.fill",
       description: "`<Pressable>` fires `onPress` when tapped. `useState` stores a value and re-renders the screen when it changes. Try adding `onLongPress` to decrement, or reset to 0 at 10.",
@@ -312,9 +369,9 @@ const styles = StyleSheet.create({
 """
     ),
 
-    // Lesson 4: TextInput
+    // Lesson 5: TextInput
     Lesson(
-      id: 4,
+      id: 5,
       title: "TextInput",
       icon: "keyboard",
       description: "`<TextInput>` accepts keyboard input. Store text in state, pass it as `value`, and update via `onChangeText` to keep everything in sync. Try adding `keyboardType='numeric'` or `secureTextEntry`.",
@@ -366,9 +423,9 @@ const styles = StyleSheet.create({
 """
     ),
 
-    // Lesson 5: Mini Todo List
+    // Lesson 6: Mini Todo List
     Lesson(
-      id: 5,
+      id: 6,
       title: "Mini Todo List",
       icon: "checklist",
       description: "This combines everything: `View`, `Text`, `TextInput`, `Pressable`, `useState`, and `ScrollView`. Try adding delete-on-tap (hint: `filter` by index) or a 'done' style.",
@@ -475,9 +532,9 @@ const styles = StyleSheet.create({
 """
     ),
 
-    // Lesson 6: Icons
+    // Lesson 7: Icons
     Lesson(
-      id: 6,
+      id: 7,
       title: "Icons",
       icon: "star.fill",
       description: "`@expo/vector-icons` includes thousands of icons from popular sets like Ionicons, MaterialIcons, and FontAwesome. Just import and use with `name`, `size`, and `color`. Browse all icons at https://icons.expo.fyi",
@@ -521,9 +578,219 @@ const styles = StyleSheet.create({
 """
     ),
 
-    // Lesson 7: Drawing with Skia
+    // Lesson 8: Haptics
     Lesson(
-      id: 7,
+      id: 8,
+      title: "Haptics",
+      icon: "iphone.radiowaves.left.and.right",
+      description: "`expo-haptics` triggers physical feedback when a user taps. `impactAsync` comes in Light/Medium/Heavy strengths for general taps; `notificationAsync` plays success/warning/error patterns; `selectionAsync` is a tiny click for picker-style choices. Try attaching `impactAsync('Heavy')` to `onPressIn` for immediate feedback.",
+      shortDescription: "Make your app feel alive",
+      appCode: """
+import { useRef, useState } from 'react';
+import Lesson from './lesson-files/Lesson';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import * as Device from 'expo-device';
+
+const IS_SIMULATOR = !Device.isDevice;
+
+const BUTTONS = [
+  { label: 'Light', fire: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), color: '#4ECDC4' },
+  { label: 'Medium', fire: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), color: '#0077FF' },
+  { label: 'Heavy', fire: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy), color: '#1a1a2e' },
+  { label: 'Success', fire: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), color: '#34C759' },
+  { label: 'Warning', fire: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning), color: '#FFB020' },
+  { label: 'Error', fire: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error), color: '#FF3B30' },
+];
+
+export default function App() {
+  const [fired, setFired] = useState(null);
+  const timeoutRef = useRef(null);
+
+  const handlePress = (button) => {
+    button.fire();
+    setFired(button.label);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setFired(null), 1200);
+  };
+
+  return (
+    <Lesson>
+      <View style={styles.container}>
+        <Text style={styles.title}>Tap a button to feel it</Text>
+
+        {IS_SIMULATOR && (
+          <View style={styles.simulatorBanner}>
+            <Text style={styles.simulatorBannerText}>
+              <Text style={styles.simulatorBannerLabel}>Simulator:</Text> the call still runs, but haptics only fire on a physical device.
+            </Text>
+          </View>
+        )}
+
+        <View style={styles.statusBox}>
+          <Text style={styles.statusText}>
+            {fired
+              ? (IS_SIMULATOR ? 'Called (no vibration): ' : 'Fired: ') + fired
+              : 'Waiting for a tap...'}
+          </Text>
+        </View>
+
+        <View style={styles.grid}>
+          {BUTTONS.map((button) => (
+            <Pressable
+              key={button.label}
+              style={[styles.button, { backgroundColor: button.color }]}
+              onPress={() => handlePress(button)}
+            >
+              <Text style={styles.buttonText}>{button.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    </Lesson>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  title: {
+    fontSize: 18,
+    color: '#333',
+    marginBottom: 16,
+  },
+  simulatorBanner: {
+    backgroundColor: '#FFF4E5',
+    borderColor: '#FFB020',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 16,
+    maxWidth: 320,
+  },
+  simulatorBannerText: {
+    fontSize: 13,
+    color: '#6B4A00',
+    lineHeight: 18,
+  },
+  simulatorBannerLabel: {
+    fontWeight: '700',
+  },
+  statusBox: {
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  statusText: {
+    fontSize: 15,
+    color: '#0077FF',
+    fontWeight: '600',
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12,
+    maxWidth: 320,
+  },
+  button: {
+    width: 100,
+    height: 72,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+"""
+    ),
+
+    // Lesson 9: Animations
+    Lesson(
+      id: 9,
+      title: "Animations",
+      icon: "wand.and.sparkles",
+      description: "`react-native-reanimated` runs animations on the UI thread for 60fps motion. `useSharedValue` is like `useState` but for animated values. Wrap style values in `useAnimatedStyle`, then change them with `withSpring` or `withTiming`. Try swapping `withSpring` for `withTiming(value, { duration: 500 })`, or animating `scale` instead of `translateX`.",
+      shortDescription: "Springs and smooth motion",
+      appCode: """
+import Lesson from './lesson-files/Lesson';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
+
+export default function App() {
+  const translateX = useSharedValue(0);
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { scale: scale.value },
+    ],
+  }));
+
+  const animate = () => {
+    translateX.value = withSpring(translateX.value === 0 ? 100 : -100);
+    scale.value = withSpring(scale.value === 1 ? 1.4 : 1);
+  };
+
+  return (
+    <Lesson>
+      <View style={styles.container}>
+        <Animated.View style={[styles.circle, animatedStyle]} />
+        <Pressable style={styles.button} onPress={animate}>
+          <Text style={styles.buttonText}>Animate!</Text>
+        </Pressable>
+      </View>
+    </Lesson>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 40,
+    padding: 16,
+  },
+  circle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#0077FF',
+  },
+  button: {
+    backgroundColor: '#0077FF',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+});
+"""
+    ),
+
+    // Lesson 10: Drawing with Skia
+    Lesson(
+      id: 10,
       title: "2D Graphics",
       icon: "paintpalette.fill",
       description: "Draw on a `<Canvas>` using shape components like `<Circle>`, `<Rect>`, and `<RoundedRect>`. Nest a `<LinearGradient>` inside any shape for smooth color blends. Try changing the gradient `colors`, moving shapes with `cx`/`cy`, adjusting `opacity`, or adding more `<Circle>` elements.",
