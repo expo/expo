@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { type DownloadOptions, type PathInfo, type UploadOptions, type UploadResult, type DownloadTaskOptions, type DownloadPauseState, type UploadTaskState, type DownloadTaskState } from './ExpoFileSystem.types';
+import { type DownloadOptions, type PathInfo, type UploadOptions, type UploadResult, type DownloadTaskOptions, type DownloadPauseState, type UploadTaskState, type DownloadTaskState, type WatchEvent, type WatchOptions, type WatchSubscription } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -67,6 +67,7 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     arrayBuffer(): Promise<ArrayBuffer>;
     stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     slice(start?: number, end?: number, contentType?: string): Blob;
+    watch(callback: (event: WatchEvent<File>) => void, options?: WatchOptions): WatchSubscription;
 }
 /**
  * Represents a directory on the filesystem.
@@ -105,6 +106,7 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
     get name(): string;
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
+    watch(callback: (event: WatchEvent<File | Directory>) => void, options?: WatchOptions): WatchSubscription;
 }
 /**
  * Represents an upload task with progress tracking and cancellation support.

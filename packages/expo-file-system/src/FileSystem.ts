@@ -14,7 +14,11 @@ import {
   type DownloadPauseState,
   type UploadTaskState,
   type DownloadTaskState,
+  type WatchEvent,
+  type WatchOptions,
+  type WatchSubscription,
 } from './ExpoFileSystem.types';
+import { FileSystemWatcher } from './FileSystemWatcher';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -148,6 +152,10 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
 
   slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
+  }
+
+  watch(callback: (event: WatchEvent<File>) => void, options?: WatchOptions): WatchSubscription {
+    return new FileSystemWatcher<File>(this.uri, callback, options, (uri) => new File(uri));
   }
 }
 
@@ -324,6 +332,18 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
 
   createDirectory(name: string): Directory {
     return new Directory(super.createDirectory(name).uri);
+  }
+
+  watch(
+    callback: (event: WatchEvent<File | Directory>) => void,
+    options?: WatchOptions
+  ): WatchSubscription {
+    return new FileSystemWatcher<File | Directory>(
+      this.uri,
+      callback,
+      options,
+      (uri, isDirectory) => (isDirectory ? new Directory(uri) : new File(uri))
+    );
   }
 }
 

@@ -43,6 +43,46 @@ export type FileWriteOptions = {
   append?: boolean;
 };
 
+/**
+ * The default debounce time for file system watcher events in milliseconds.
+ */
+export const DEFAULT_DEBOUNCE_MS = 100;
+
+export type WatchEventType = 'created' | 'modified' | 'deleted' | 'renamed';
+
+export type WatchEvent<T extends File | Directory> = {
+  type: WatchEventType;
+  target: T;
+  /**
+   * Raw platform-specific event flags for advanced use cases.
+   * On Android: FileObserver event flags.
+   * On iOS: DispatchSource.FileSystemEvent flags.
+   */
+  nativeEventFlags?: number;
+  /**
+   * For rename events, the new path after rename.
+   * Populated when MOVED_FROM and MOVED_TO events are correlated within the debounce window.
+   * @platform android
+   */
+  newTarget?: T;
+};
+
+export type WatchOptions = {
+  /**
+   * The debounce interval for coalescing watcher events.
+   * @default DEFAULT_DEBOUNCE_MS
+   */
+  debounce?: number;
+  /**
+   * The event types to observe.
+   */
+  events?: WatchEventType[];
+};
+
+export type WatchSubscription = {
+  remove(): void;
+};
+
 export type DirectoryCreateOptions = {
   /**
    * Whether to create intermediate directories if they do not exist.
@@ -149,6 +189,20 @@ export declare class Directory {
   createFile(name: string, mimeType: string | null): File;
 
   createDirectory(name: string): Directory;
+
+  /**
+   * Watches this directory for changes to its contents.
+   *
+   * On iOS, DispatchSource can only detect that the directory changed,
+   * not which specific child was affected. The `target` will always be
+   * the directory itself. Call `directory.list()` to determine what changed.
+   *
+   * On Android, FileObserver provides granular child-level events.
+   */
+  watch(
+    callback: (event: WatchEvent<File | Directory>) => void,
+    options?: WatchOptions
+  ): WatchSubscription;
 
   /**
    * Copies a directory.
@@ -518,6 +572,11 @@ export declare class File {
    * @platform android
    */
   contentUri: string;
+
+  /**
+   * Watches for changes affecting this file.
+   */
+  watch(callback: (event: WatchEvent<File>) => void, options?: WatchOptions): WatchSubscription;
 }
 
 export declare class FileHandle {

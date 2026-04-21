@@ -121,6 +121,8 @@ class FileSystemModule : Module() {
         FileSystemFile(uri)
       }
 
+      OnStartObserving {  }
+
       Function("delete") { file: FileSystemFile ->
         file.delete()
       }
@@ -384,6 +386,22 @@ class FileSystemModule : Module() {
 
       Function("cancel") { task: FileSystemDownloadTask ->
         task.cancel()
+      }
+    }
+
+    Class(FileSystemWatcher::class) {
+      Events("change")
+
+      Constructor { uri: Uri, options: WatchOptions? ->
+        FileSystemWatcher(appContext, uri, options)
+      }
+
+      Function("start") { watcher: FileSystemWatcher ->
+        watcher.start()
+      }
+
+      Function("stop") { watcher: FileSystemWatcher ->
+        watcher.stop()
       }
     }
   }
