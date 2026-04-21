@@ -1,7 +1,51 @@
-import { PickerItem, type PickerWithItems } from './types';
+import * as React from 'react';
 
-function PickerImpl(): never {
-  throw new Error('Picker is not supported on web. Use a <select> element instead.');
+import {
+  extractPickerItems,
+  PickerItem,
+  type PickerWithItems,
+  type PickerItemValue,
+  type PickerProps,
+} from './types';
+
+/**
+ * A drop-in replacement for `@react-native-picker/picker` on web.
+ * Renders a native `<select>` element.
+ */
+function PickerImpl<T extends PickerItemValue>(props: PickerProps<T>) {
+  const { selectedValue, onValueChange, enabled, style, children, ref } = props;
+  const items = extractPickerItems<T>(children);
+  const selectRef = React.useRef<HTMLSelectElement>(null);
+
+  React.useImperativeHandle(ref, () => ({
+    focus: () => selectRef.current?.focus(),
+    blur: () => selectRef.current?.blur(),
+  }));
+
+  return (
+    <select
+      ref={selectRef}
+      disabled={enabled === false}
+      value={selectedValue == null ? undefined : String(selectedValue)}
+      onChange={(e) => {
+        const index = e.target.selectedIndex;
+        const item = items[index];
+        if (item && onValueChange) {
+          onValueChange(item.value, index);
+        }
+      }}
+      style={style as React.CSSProperties}>
+      {items.map((item, index) => (
+        <option
+          key={String(item.value ?? index)}
+          value={String(item.value)}
+          disabled={item.enabled === false}>
+          {item.label}
+        </option>
+      ))}
+    </select>
+  );
 }
 
+PickerImpl.displayName = 'Picker';
 export const Picker: PickerWithItems = Object.assign(PickerImpl, { Item: PickerItem });

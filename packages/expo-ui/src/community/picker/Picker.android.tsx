@@ -66,4 +66,5 @@ function PickerImpl<T extends PickerItemValue>(props: PickerProps<T>) {
   );
 }
 
+PickerImpl.displayName = 'Picker';
 export const Picker: PickerWithItems = Object.assign(PickerImpl, { Item: PickerItem });

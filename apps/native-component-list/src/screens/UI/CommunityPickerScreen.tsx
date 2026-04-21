@@ -97,7 +97,7 @@ function RefPicker() {
   return (
     <>
       <Button
-        title="Imperative open and close with a delay"
+        title="Imperative focus and blur with a delay"
         onPress={() => {
           pickerRef.current?.focus();
           setTimeout(() => {
