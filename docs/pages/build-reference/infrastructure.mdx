@@ -645,6 +645,8 @@ An image can include additional Simulator runtimes beyond the default. Run `xcru
 
 Each macOS runner image ships with a pre-warmed iOS Simulator, configured for the device and default runtime shown under that image's heading. EAS boots that Simulator once while building the image, then shuts it down cleanly. This leaves the OS and Simulator caches populated, so your job's first Simulator boot and app install complete faster than they would on a cold image.
 
+The device name shown under each image's heading is what EAS warmed when it built the image. The build doesn't hardcode a model. It boots the lexicographically first iPhone Simulator name reported by CoreSimulator at image-build time. That rule differs from the default used by [`eas/start_ios_simulator`](/custom-builds/schema/#easstart_ios_simulator) when you omit `device_identifier`: at job time, the worker picks the shortest `iPhone` name among the available devices, following the [open-source build tools logic](https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/startIosSimulator.ts). The two heuristics often agree but can diverge, and both depend on which Simulators the image's Xcode makes available.
+
 Pre-warming is best-effort and applies only to iOS Simulator jobs in EAS Workflows. If you pick a device or runtime that differs from the image's defaults, Simulator boot and app install can take longer because your job doesn't match the warmed configuration.
 
 > **Note:** Pre-warming does not apply to [EAS Build](/build/introduction/), which compiles the app and does not boot a Simulator.
