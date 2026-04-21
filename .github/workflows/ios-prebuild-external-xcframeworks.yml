@@ -139,9 +139,6 @@ jobs:
       - name: Upload XCFramework zip to GCS
         if: ${{ !cancelled() && github.event.inputs.publish == 'true' && steps.package_xcframeworks.outputs.archive_path != '' }}
         run: |
-          # Create the canonical artifact only if it does not already exist.
-          # This keeps concurrent publish attempts from overwriting each other.
           gcloud storage cp \
-            --if-generation-match=0 \
             "${{ steps.package_xcframeworks.outputs.archive_path }}" \
             "gs://eas-build-precompiled-modules/precompiled-modules/${{ github.event.inputs.sdk-version }}/xcframeworks-${{ matrix.flavor }}.zip"
