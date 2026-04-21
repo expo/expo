@@ -210,7 +210,6 @@ async function executePackageStepsInner(
   artifactLock: ArtifactLock,
   signal: AbortSignal
 ): Promise<PackageResult> {
-
   // Create a per-package context that shares immutable/shared state by reference
   // but has its own iteration pointers, statuses, and errors.
   const ctx: PrebuildContext = {

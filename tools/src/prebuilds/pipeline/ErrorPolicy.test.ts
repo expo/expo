@@ -480,5 +480,4 @@ describe('synthesizeSkippedResult', () => {
     assert.equal(result.statuses[0].productName, 'ProdTwo');
     assert.equal(result.errors.length, 1);
   });
-
 });

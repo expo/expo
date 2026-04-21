@@ -112,7 +112,9 @@ describe('computeSummaryCounts', () => {
 
   it('counts a unit with a failed stage as failed', () => {
     const counts = computeSummaryCounts([
-      makeUnit({ stages: { generate: 'failed', build: 'skipped', compose: 'skipped', verify: 'skipped' } }),
+      makeUnit({
+        stages: { generate: 'failed', build: 'skipped', compose: 'skipped', verify: 'skipped' },
+      }),
     ]);
     assert.equal(counts.successful, 0);
     assert.equal(counts.failed, 1);
@@ -120,7 +122,9 @@ describe('computeSummaryCounts', () => {
 
   it('counts a unit with a verify warning as successful-with-warning', () => {
     const counts = computeSummaryCounts([
-      makeUnit({ stages: { generate: 'success', build: 'success', compose: 'success', verify: 'warning' } }),
+      makeUnit({
+        stages: { generate: 'success', build: 'success', compose: 'success', verify: 'warning' },
+      }),
     ]);
     assert.equal(counts.successful, 1);
     assert.equal(counts.warnings, 1);
