@@ -7,6 +7,7 @@ import {
   ArrayType,
   BasicType,
   ClassDeclaration,
+  ConstantDeclaration,
   ConstructorDeclaration,
   DictionaryType,
   EnumType,
@@ -77,22 +78,28 @@ export function createDefaultGenerationContext(
   };
 }
 
-export function basicTypesIdentifiers(): Set<string> {
+export function getBasicTypesIdentifiers(): Set<string> {
   return new Set<string>(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set', 'Promise']);
 }
 
-function getPrefix(): ts.Node[] {
+function getAllNonBasicTypes(fileInfo: FileTypeInformation): Set<string> {
+  return fileInfo.declaredTypeIdentifiers
+    .union(fileInfo.usedTypeIdentifiers)
+    .difference(getBasicTypesIdentifiers());
+}
+
+function createGeneratedPrefix(): ts.Node[] {
   return [ts.factory.createJSDocComment(prefix)];
 }
 
-function getModifiersArray(modifiers: {
-  export?: boolean;
+function constructModifiersArray(modifiers: {
+  exported?: boolean;
   declare?: boolean;
   async?: boolean;
   readonly?: boolean;
 }): ts.Modifier[] {
   const modifiersArray: ts.Modifier[] = [];
-  if (modifiers.export) modifiersArray.push(exportModifier);
+  if (modifiers.exported) modifiersArray.push(exportModifier);
   if (modifiers.declare) modifiersArray.push(declareModifier);
   if (modifiers.async) modifiersArray.push(asyncModifier);
   if (modifiers.readonly) modifiersArray.push(readonlyModifier);
@@ -110,11 +117,75 @@ export function joinTSNodesWithNewlines(nodes: ts.Node[][]): ts.Node[] {
   return new_nodes;
 }
 
+function mapBasicTypeToTypeNode(basicType: BasicType): ts.TypeNode {
+  if (basicType === BasicType.UNRESOLVED) {
+    return ts.addSyntheticTrailingComment(
+      unknownKeywordType,
+      ts.SyntaxKind.MultiLineCommentTrivia,
+      "The type couldn't be resolved automatically."
+    );
+  }
+
+  const BASIC_TYPE_MAP: Record<BasicType, KeywordTypeSyntaxKind> = {
+    [BasicType.ANY]: ts.SyntaxKind.AnyKeyword,
+    [BasicType.BOOLEAN]: ts.SyntaxKind.BooleanKeyword,
+    [BasicType.NUMBER]: ts.SyntaxKind.NumberKeyword,
+    [BasicType.STRING]: ts.SyntaxKind.StringKeyword,
+    [BasicType.VOID]: ts.SyntaxKind.VoidKeyword,
+    [BasicType.UNDEFINED]: ts.SyntaxKind.UndefinedKeyword,
+    [BasicType.UNRESOLVED]: ts.SyntaxKind.UndefinedKeyword, // This is handled earlier
+  };
+
+  return ts.factory.createKeywordTypeNode(BASIC_TYPE_MAP[basicType]);
+}
+
+export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
+  switch (type.kind) {
+    case TypeKind.BASIC:
+      return mapBasicTypeToTypeNode(type.type as BasicType);
+    case TypeKind.IDENTIFIER:
+      return ts.factory.createTypeReferenceNode(type.type as string);
+    case TypeKind.SUM:
+      return ts.factory.createUnionTypeNode((type.type as SumType).types.map(mapTypeToTsTypeNode));
+    case TypeKind.ARRAY:
+      return ts.factory.createArrayTypeNode(mapTypeToTsTypeNode(type.type as ArrayType));
+    case TypeKind.DICTIONARY:
+      const dictionaryType = type.type as DictionaryType;
+      const name = 'key';
+      const typeNode = mapTypeToTsTypeNode(dictionaryType.key);
+      const valueType = mapTypeToTsTypeNode(dictionaryType.value);
+      return ts.factory.createTypeLiteralNode([
+        ts.factory.createIndexSignature(
+          undefined,
+          [createParameter({ name, type: typeNode })],
+          valueType
+        ),
+      ]);
+
+    // Technically this one should only be the top one and it should be handled somewhere else
+    // for example when creating arguemnt adding the '?' token.
+    //
+    // However we can just make it (type | undefined) in here.
+    // TODO(@HubertBer): Maybe also need null?
+    case TypeKind.OPTIONAL:
+      return ts.factory.createUnionTypeNode([
+        mapTypeToTsTypeNode(type.type as Type),
+        mapBasicTypeToTypeNode(BasicType.UNDEFINED),
+      ]);
+    case TypeKind.PARAMETRIZED:
+      return ts.factory.createTypeReferenceNode(
+        (type.type as ParametrizedType).name,
+        (type.type as ParametrizedType).types.map(mapTypeToTsTypeNode)
+      );
+  }
+  return mapBasicTypeToTypeNode(BasicType.UNRESOLVED);
+}
+
 //
 // ts.factory wrapper functions
 //
 
-function getImport({
+function createImportDeclaration({
   defaultImportName,
   namedImportsNames,
   importFromName,
@@ -148,14 +219,7 @@ function getImport({
   ];
 }
 
-function getOneNamedImport(importedName: string, importFromName: string): ts.Node[] {
-  return getImport({
-    importFromName,
-    namedImportsNames: [importedName],
-  });
-}
-
-function getParameterDeclaration({
+function createParameter({
   modifiers,
   name,
   type,
@@ -180,7 +244,7 @@ function getParameterDeclaration({
   );
 }
 
-function getPropertyDeclaration({
+function createProperty({
   modifiers,
   name,
   typeNode,
@@ -202,7 +266,7 @@ function getPropertyDeclaration({
   );
 }
 
-function getPropertySignature({
+function createPropertySignature({
   name,
   typeNode,
   optional,
@@ -221,7 +285,7 @@ function getPropertySignature({
   );
 }
 
-function getCallExpression({
+function createCall({
   expression,
   args,
   typeArgs,
@@ -237,333 +301,6 @@ function getCallExpression({
   );
 }
 
-function getPropEventElementDeclaration(eventDeclaration: EventDeclaration): ts.TypeElement {
-  const name = eventDeclaration;
-  const typeNode = ts.factory.createFunctionTypeNode(
-    undefined,
-    [getParameterDeclaration({ name: 'event', type: anyKeywordType })],
-    voidKeywordType
-  );
-  return getPropertySignature({ name, typeNode });
-}
-
-function getPropTypeElementDeclaration(
-  propDeclaration: PropDeclaration
-): ts.TypeElement | undefined {
-  const propTypeArgument = propDeclaration.arguments[1]?.type;
-  if (!propDeclaration || !propDeclaration.arguments || !propTypeArgument) {
-    return undefined;
-  }
-  const name = propDeclaration.name;
-  const typeNode = mapTypeToTsTypeNode(propTypeArgument);
-  return getPropertySignature({ name, typeNode });
-}
-
-function getMissingTypeIdentifiers(fileTypeInformation: FileTypeInformation): Set<string> {
-  return fileTypeInformation.usedTypeIdentifiers
-    .difference(fileTypeInformation.declaredTypeIdentifiers)
-    .difference(basicTypesIdentifiers());
-}
-
-function getPropsType({ props, events }: ViewDeclaration): ts.TypeLiteralNode {
-  return ts.factory.createTypeLiteralNode([
-    ...(props.map(getPropTypeElementDeclaration).filter((p) => p) as ts.PropertySignature[]),
-    ...events.map(getPropEventElementDeclaration),
-  ]);
-}
-
-export function getViewPropsDeclaration(
-  view: ViewDeclaration | null,
-  options: { export?: boolean }
-): ts.Node[] {
-  if (!view) {
-    return [];
-  }
-  return ([] as ts.Node[]).concat(
-    ts.factory.createTypeAliasDeclaration(
-      getModifiersArray(options),
-      getViewPropsTypeName(view),
-      undefined,
-      getPropsType(view)
-    )
-  );
-}
-
-function wrapWithPromise(typeNode: ts.TypeNode): ts.TypeNode {
-  return ts.factory.createTypeReferenceNode('Promise', [typeNode]);
-}
-
-function getConstantExportDeclaration(name: string, type: Type, value: string): ts.Node {
-  const typeNode = mapTypeToTsTypeNode(type);
-  const modifiers = [exportModifier, constModifier];
-  const initializer = ts.factory.createIdentifier(value);
-  return getPropertyDeclaration({ modifiers, name, typeNode, initializer });
-}
-
-function getClassPropertyDeclaration(declaration: PropertyDeclaration): ts.PropertyDeclaration {
-  return getPropertyDeclaration({
-    modifiers: [readonlyModifier],
-    name: declaration.name,
-    typeNode: mapTypeToTsTypeNode(declaration.type),
-  });
-}
-
-function getClassDeclarationInModule(classDeclaration: ClassDeclaration): ts.ClassElement {
-  return getPropertyDeclaration({
-    // TODO(@HubertBer): that's a hack, but I couldn't find a proper way to do this
-    // The problem is that declare class semantics seem somewhat different than class semantics.
-    name: classDeclaration.name,
-    typeNode: ts.factory.createTypeReferenceNode('typeof ' + classDeclaration.name),
-  });
-}
-
-function getExportedModuleDeclaration({
-  moduleClassDeclaration,
-  exportedModuleName,
-}: {
-  moduleClassDeclaration: ModuleClassDeclaration;
-  exportedModuleName?: string;
-}): ts.Node[] {
-  return [
-    ts.factory.createClassDeclaration(
-      [exportModifier, declareModifier],
-      exportedModuleName ?? `${moduleClassDeclaration.name}NativeModuleType`,
-      undefined,
-      [
-        ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
-          ts.factory.createExpressionWithTypeArguments(
-            ts.factory.createIdentifier('NativeModule'),
-            undefined
-          ),
-        ]),
-      ],
-      ([] as ts.ClassElement[]).concat(
-        moduleClassDeclaration.constants.map(getClassPropertyDeclaration),
-        moduleClassDeclaration.properties.map(getClassPropertyDeclaration),
-        moduleClassDeclaration.functions.map(getSyncMethodDeclaration),
-        moduleClassDeclaration.asyncFunctions.map(getAsyncMethodDeclaration),
-        moduleClassDeclaration.classes.map(getClassDeclarationInModule)
-      )
-    ),
-  ];
-}
-
-export function getArgumentDeclarationAndName(arg: Argument): {
-  argDeclaration: ts.ParameterDeclaration;
-  argName: string;
-} {
-  const argName = arg.name ?? '_' + getNextFreeId();
-  const argDeclaration = getParameterDeclaration({
-    name: argName,
-    type: mapTypeToTsTypeNode(arg.type),
-  });
-  return { argDeclaration, argName };
-}
-
-function getArgumentDeclaration(arg: Argument): ts.ParameterDeclaration {
-  return getArgumentDeclarationAndName(arg).argDeclaration;
-}
-
-function getAsyncMethodDeclaration(functionDeclaration: FunctionDeclaration): ts.MethodDeclaration {
-  return getTsFunction({
-    functionDeclaration,
-    async: true,
-    method: true,
-    declaration: true,
-  }) as ts.MethodDeclaration;
-}
-
-function getSyncMethodDeclaration(functionDeclaration: FunctionDeclaration): ts.MethodDeclaration {
-  return getTsFunction({
-    functionDeclaration,
-    method: true,
-    declaration: true,
-  }) as MethodDeclaration;
-}
-
-export function getTsFunction({
-  functionDeclaration,
-  async,
-  method,
-  exported,
-  declaration,
-  returnStatement,
-  overrideArgumentDeclarations,
-  omitReturnType,
-}: {
-  functionDeclaration: FunctionDeclaration;
-  async?: boolean;
-  method?: boolean;
-  exported?: boolean;
-  declaration?: boolean;
-  returnStatement?: null | ts.ReturnStatement[];
-  overrideArgumentDeclarations?: ts.ParameterDeclaration[];
-  omitReturnType?: boolean;
-}): ts.FunctionDeclaration | ts.MethodDeclaration {
-  const functionModifiers = getModifiersArray({ export: exported, async: async && !declaration });
-  const customReturn = !!returnStatement;
-  const bareReturnTypeNode = mapTypeToTsTypeNode(functionDeclaration.returnType);
-
-  let returnTypeNode: ts.TypeNode | undefined = async
-    ? wrapWithPromise(bareReturnTypeNode)
-    : bareReturnTypeNode;
-  if (omitReturnType) {
-    returnTypeNode = undefined;
-  }
-  const argumentDeclarations =
-    overrideArgumentDeclarations ?? functionDeclaration.arguments.map(getArgumentDeclaration);
-
-  if (method) {
-    return ts.factory.createMethodDeclaration(
-      functionModifiers,
-      undefined,
-      functionDeclaration.name,
-      undefined,
-      undefined,
-      argumentDeclarations,
-      returnTypeNode,
-      declaration ? undefined : ts.factory.createBlock(customReturn ? returnStatement : [])
-    );
-  }
-  return ts.factory.createFunctionDeclaration(
-    functionModifiers,
-    undefined,
-    functionDeclaration.name,
-    undefined,
-    argumentDeclarations,
-    returnTypeNode,
-    declaration ? undefined : ts.factory.createBlock(customReturn ? returnStatement : [])
-  );
-}
-
-function mapBasicTypeToTsNode(basicType: BasicType): ts.TypeNode {
-  if (basicType === BasicType.UNRESOLVED) {
-    return ts.addSyntheticTrailingComment(
-      unknownKeywordType,
-      ts.SyntaxKind.MultiLineCommentTrivia,
-      "The type couldn't be resolved automatically."
-    );
-  }
-
-  const BASIC_TYPE_MAP: Record<BasicType, KeywordTypeSyntaxKind> = {
-    [BasicType.ANY]: ts.SyntaxKind.AnyKeyword,
-    [BasicType.BOOLEAN]: ts.SyntaxKind.BooleanKeyword,
-    [BasicType.NUMBER]: ts.SyntaxKind.NumberKeyword,
-    [BasicType.STRING]: ts.SyntaxKind.StringKeyword,
-    [BasicType.VOID]: ts.SyntaxKind.VoidKeyword,
-    [BasicType.UNDEFINED]: ts.SyntaxKind.UndefinedKeyword,
-    [BasicType.UNRESOLVED]: ts.SyntaxKind.UndefinedKeyword, // This is handled earlier
-  };
-
-  return ts.factory.createKeywordTypeNode(BASIC_TYPE_MAP[basicType]);
-}
-
-function createDictionaryTypeNode(dictionaryType: DictionaryType): ts.TypeNode {
-  const name = 'key';
-  const type = mapTypeToTsTypeNode(dictionaryType.key);
-  const valueType = mapTypeToTsTypeNode(dictionaryType.value);
-  return ts.factory.createTypeLiteralNode([
-    ts.factory.createIndexSignature(
-      undefined,
-      [getParameterDeclaration({ name, type })],
-      valueType
-    ),
-  ]);
-}
-
-export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
-  switch (type.kind) {
-    case TypeKind.BASIC:
-      return mapBasicTypeToTsNode(type.type as BasicType);
-    case TypeKind.IDENTIFIER:
-      return ts.factory.createTypeReferenceNode(type.type as string);
-    case TypeKind.SUM:
-      return ts.factory.createUnionTypeNode((type.type as SumType).types.map(mapTypeToTsTypeNode));
-    case TypeKind.ARRAY:
-      return ts.factory.createArrayTypeNode(mapTypeToTsTypeNode(type.type as ArrayType));
-    case TypeKind.DICTIONARY:
-      return createDictionaryTypeNode(type.type as DictionaryType);
-
-    // Technically this one should only be the top one and it should be handled somewhere else
-    // for example when creating arguemnt adding the '?' token.
-    //
-    // However we can just make it (type | undefined) in here.
-    // TODO(@HubertBer): Maybe also need null?
-    case TypeKind.OPTIONAL:
-      return ts.factory.createUnionTypeNode([
-        mapTypeToTsTypeNode(type.type as Type),
-        mapBasicTypeToTsNode(BasicType.UNDEFINED),
-      ]);
-    case TypeKind.PARAMETRIZED:
-      return ts.factory.createTypeReferenceNode(
-        (type.type as ParametrizedType).name,
-        (type.type as ParametrizedType).types.map(mapTypeToTsTypeNode)
-      );
-  }
-  return mapBasicTypeToTsNode(BasicType.UNRESOLVED);
-}
-
-export function getClassConstructorDeclaration(
-  constructor: ConstructorDeclaration,
-  declaration: boolean
-): ts.ClassElement {
-  return ts.factory.createConstructorDeclaration(
-    undefined,
-    constructor.arguments.map(getArgumentDeclaration),
-    declaration ? undefined : ts.factory.createBlock([])
-  );
-}
-
-// TODO(@HubertBer): figure out what about inheritance, should or should not inherit SharedObject
-export function getTsClassDeclaration({
-  classDeclaration,
-  exported,
-  declaration,
-  getFunctionReturnBlock,
-}: {
-  classDeclaration: ClassDeclaration;
-  exported?: boolean;
-  declaration?: boolean;
-  getFunctionReturnBlock?: (functionDeclaration: FunctionDeclaration) => ts.ReturnStatement[];
-}): ts.ClassDeclaration {
-  const constructorDeclaration = classDeclaration.constructor
-    ? getClassConstructorDeclaration(classDeclaration.constructor, declaration ?? false)
-    : undefined;
-  return ts.factory.createClassDeclaration(
-    getModifiersArray({ export: exported, declare: declaration }),
-    ts.factory.createIdentifier(classDeclaration.name),
-    undefined,
-    [],
-    ([] as (ts.ClassElement | undefined)[])
-      .concat(
-        classDeclaration.methods.map(
-          (method) =>
-            getTsFunction({
-              functionDeclaration: method,
-              method: true,
-              declaration,
-              returnStatement:
-                !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null,
-            }) as ts.MethodDeclaration
-        ),
-        classDeclaration.asyncMethods.map(
-          (method) =>
-            getTsFunction({
-              functionDeclaration: method,
-              async: true,
-              method: true,
-              declaration,
-              returnStatement:
-                !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null,
-            }) as ts.MethodDeclaration
-        ),
-        declaration ? classDeclaration.properties.map(getClassPropertyDeclaration) : [],
-        constructorDeclaration
-      )
-      .filter((v) => !!v)
-  );
-}
-
 function createRequireNativeModuleExpression({
   moduleType,
   moduleName,
@@ -576,119 +313,6 @@ function createRequireNativeModuleExpression({
     moduleType ? [ts.factory.createTypeReferenceNode(moduleType)] : undefined,
     [ts.factory.createStringLiteral(moduleName)]
   );
-}
-
-function getModuleDefaultValueExport({
-  moduleName,
-  moduleType,
-  declaration,
-}: {
-  moduleName: string;
-  moduleType?: string;
-  declaration?: boolean;
-}): ts.Node[] {
-  const name = '_default';
-  const type = moduleType ? ts.factory.createTypeReferenceNode(moduleType) : undefined;
-  return ([] as ts.Node[]).concat(
-    getParameterDeclaration({
-      modifiers: [constModifier],
-      name,
-      type,
-      initializer: declaration
-        ? undefined
-        : createRequireNativeModuleExpression({ moduleName, moduleType }),
-    }),
-    ts.factory.createExportDefault(ts.factory.createIdentifier('_default'))
-  );
-}
-
-function getNTypeParameterDeclaration(n: number): ts.TypeParameterDeclaration[] {
-  const params: ts.TypeParameterDeclaration[] = [];
-  for (let i = 0; i < n; i += 1) {
-    params.push(ts.factory.createTypeParameterDeclaration(undefined, 'T' + i));
-  }
-  return params;
-}
-
-export function getIdentifierUnknownDeclaration(
-  identifier: string,
-  exported: boolean,
-  inferredTypeParametersCount: Map<string, number>
-): ts.Statement {
-  const paramCount = inferredTypeParametersCount.get(identifier);
-  return ts.factory.createTypeAliasDeclaration(
-    exported ? [exportModifier] : undefined,
-    identifier,
-    paramCount !== undefined ? getNTypeParameterDeclaration(paramCount) : undefined,
-    unknownKeywordType
-  );
-}
-
-export function getRecordDeclaration(recordType: RecordType, exported: boolean): ts.Node {
-  return ts.factory.createTypeAliasDeclaration(
-    exported ? [exportModifier] : [],
-    recordType.name,
-    undefined,
-    ts.factory.createTypeLiteralNode(
-      recordType.fields.map((field) => {
-        const optional = field.type.kind === TypeKind.OPTIONAL;
-        const typeNode = mapTypeToTsTypeNode(optional ? (field.type.type as Type) : field.type);
-        const name = field.name ?? '_' + getNextFreeId();
-        return getPropertySignature({ name, optional, typeNode });
-      })
-    )
-  );
-}
-
-export function getEnumDeclaration(
-  enumType: EnumType,
-  exported: boolean,
-  declared: boolean
-): ts.Node {
-  return ts.factory.createEnumDeclaration(
-    getModifiersArray({ export: exported, declare: declared }),
-    enumType.name,
-    enumType.cases.map((enumcase) => ts.factory.createEnumMember(enumcase))
-  );
-}
-
-function getUndeclaredIdentifiersDeclaration(ctx: GenerationContext): ts.Node[] {
-  return ([] as ts.Node[]).concat(
-    [...ctx.missingTypes].map((identifier) =>
-      getIdentifierUnknownDeclaration(identifier, true, ctx.fileInfo.inferredTypeParametersCount)
-    )
-  );
-}
-
-function getDefaultReactComponentDeclaration({
-  componentName,
-  propsTypeAlias,
-}: {
-  componentName: string;
-  propsTypeAlias: string;
-}) {
-  const propsTypeNode = ts.factory.createTypeReferenceNode(propsTypeAlias);
-  return [
-    ts.factory.createFunctionExpression(
-      [exportModifier, defaultModifier],
-      undefined,
-      componentName + 'Component',
-      undefined,
-      [getParameterDeclaration({ name: 'props', type: propsTypeNode })],
-      undefined,
-      ts.factory.createBlock([
-        ts.factory.createReturnStatement(
-          ts.factory.createJsxSelfClosingElement(
-            ts.factory.createIdentifier(componentName),
-            undefined,
-            ts.factory.createJsxAttributes([
-              ts.factory.createJsxSpreadAttribute(ts.factory.createIdentifier('props')),
-            ])
-          )
-        ),
-      ])
-    ),
-  ];
 }
 
 function createExportDefaultAsDeclaration({
@@ -714,32 +338,440 @@ function createExportDefaultAsDeclaration({
   ];
 }
 
-export function getTypeDeclarations(
+function createTypeAlias({
+  exported,
+  alias,
+  typeParams,
+  type,
+}: {
+  exported?: boolean;
+  alias: string;
+  typeParams?: ts.TypeParameterDeclaration[];
+  type: ts.TypeNode;
+}) {
+  return ts.factory.createTypeAliasDeclaration(
+    constructModifiersArray({ exported: exported }),
+    alias,
+    typeParams,
+    type
+  );
+}
+
+function createRequireNativeViewDeclaration(ctx: GenerationContext) {
+  return ctx.view
+    ? [
+        createParameter({
+          modifiers: [constModifier],
+          name: ctx.view.name,
+          initializer: createCall({
+            expression: 'requireNativeView',
+            typeArgs: [ts.factory.createTypeReferenceNode(getViewPropsTypeName(ctx.view))],
+            args: [ts.factory.createStringLiteral(ctx.module.name)],
+          }),
+        }),
+      ]
+    : [];
+}
+
+function createExportAllDeclaration({
+  importFromName,
+  justTypes,
+}: {
+  importFromName: string;
+  justTypes?: boolean;
+}): ts.Node[] {
+  return [
+    ts.factory.createExportDeclaration(
+      undefined,
+      justTypes ?? false,
+      undefined,
+      ts.factory.createStringLiteral(importFromName)
+    ),
+  ];
+}
+
+function createExportDefault(name: string = '_default'): ts.Node[] {
+  return [ts.factory.createExportDefault(ts.factory.createIdentifier(name))];
+}
+
+function createComponentType(propsTypeName: string) {
+  return ts.factory.createTypeReferenceNode('React.JSXElementConstructor', [
+    ts.factory.createTypeReferenceNode(propsTypeName),
+  ]);
+}
+
+function getMissingTypeIdentifiers(fileTypeInformation: FileTypeInformation): Set<string> {
+  return fileTypeInformation.usedTypeIdentifiers
+    .difference(fileTypeInformation.declaredTypeIdentifiers)
+    .difference(getBasicTypesIdentifiers());
+}
+
+function buildPropsTypeLiteral({ props, events }: ViewDeclaration): ts.TypeLiteralNode {
+  const buildEventPropertySignature = (eventDeclaration: EventDeclaration) => {
+    const name = eventDeclaration;
+    const typeNode = ts.factory.createFunctionTypeNode(
+      undefined,
+      [createParameter({ name: 'event', type: anyKeywordType })],
+      voidKeywordType
+    );
+    return createPropertySignature({ name, typeNode });
+  };
+
+  const buildPropPropertySignature = (propDeclaration: PropDeclaration) => {
+    const propTypeArgument = propDeclaration.arguments[1]?.type;
+    if (!propDeclaration || !propDeclaration.arguments || !propTypeArgument) {
+      return undefined;
+    }
+    const name = propDeclaration.name;
+    const typeNode = mapTypeToTsTypeNode(propTypeArgument);
+    return createPropertySignature({ name, typeNode });
+  };
+
+  return ts.factory.createTypeLiteralNode([
+    ...(props.map(buildPropPropertySignature).filter((p) => p) as ts.PropertySignature[]),
+    ...events.map(buildEventPropertySignature),
+  ]);
+}
+
+export function buildViewPropsTypeAlias(
+  view: ViewDeclaration | null,
+  options: { exported?: boolean }
+): ts.Node[] {
+  if (!view) {
+    return [];
+  }
+  return [
+    createTypeAlias({
+      exported: options.exported ?? false,
+      alias: getViewPropsTypeName(view),
+      type: buildPropsTypeLiteral(view),
+    }),
+  ];
+}
+
+function buildClassProperty(declaration: PropertyDeclaration): ts.PropertyDeclaration {
+  return createProperty({
+    modifiers: [readonlyModifier],
+    name: declaration.name,
+    typeNode: mapTypeToTsTypeNode(declaration.type),
+  });
+}
+
+function buildNativeModuleClassDeclaration({
+  moduleClassDeclaration,
+  exportedModuleName,
+}: {
+  moduleClassDeclaration: ModuleClassDeclaration;
+  exportedModuleName?: string;
+}): ts.Node[] {
+  const buildClassTypeProperty = (classDeclaration: ClassDeclaration) =>
+    createProperty({
+      // TODO(@HubertBer): that's a hack, but I couldn't find a proper way to do this
+      // The problem is that declare class semantics seem somewhat different than class semantics.
+      name: classDeclaration.name,
+      typeNode: ts.factory.createTypeQueryNode(ts.factory.createIdentifier(classDeclaration.name)),
+    });
+
+  const buildSyncMethod = (functionDeclaration: FunctionDeclaration): ts.MethodDeclaration =>
+    buildFunction({
+      functionDeclaration,
+      method: true,
+      declaration: true,
+    }) as MethodDeclaration;
+
+  const buildAsyncMethod = (functionDeclaration: FunctionDeclaration): ts.MethodDeclaration =>
+    buildFunction({
+      functionDeclaration,
+      async: true,
+      method: true,
+      declaration: true,
+    }) as MethodDeclaration;
+
+  return [
+    ts.factory.createClassDeclaration(
+      [exportModifier, declareModifier],
+      exportedModuleName ?? `${moduleClassDeclaration.name}NativeModuleType`,
+      undefined,
+      [
+        ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
+          ts.factory.createExpressionWithTypeArguments(
+            ts.factory.createIdentifier('NativeModule'),
+            undefined
+          ),
+        ]),
+      ],
+      [
+        ...moduleClassDeclaration.constants.map(buildClassProperty),
+        ...moduleClassDeclaration.properties.map(buildClassProperty),
+        ...moduleClassDeclaration.functions.map(buildSyncMethod),
+        ...moduleClassDeclaration.asyncFunctions.map(buildAsyncMethod),
+        ...moduleClassDeclaration.classes.map(buildClassTypeProperty),
+      ]
+    ),
+  ];
+}
+
+function buildArgumentDeclarationAndName(arg: Argument): {
+  argDeclaration: ts.ParameterDeclaration;
+  argName: string;
+} {
+  const argName = arg.name ?? '_' + getNextFreeId();
+  const argDeclaration = createParameter({
+    name: argName,
+    type: mapTypeToTsTypeNode(arg.type),
+  });
+  return { argDeclaration, argName };
+}
+
+function buildArgumentDeclaration(arg: Argument): ts.ParameterDeclaration {
+  return buildArgumentDeclarationAndName(arg).argDeclaration;
+}
+
+export function buildFunction({
+  functionDeclaration,
+  async,
+  method,
+  exported,
+  declaration,
+  returnStatement,
+  overrideArgumentDeclarations,
+  omitReturnType,
+}: {
+  functionDeclaration: FunctionDeclaration;
+  async?: boolean;
+  method?: boolean;
+  exported?: boolean;
+  declaration?: boolean;
+  returnStatement?: null | ts.ReturnStatement[];
+  overrideArgumentDeclarations?: ts.ParameterDeclaration[];
+  omitReturnType?: boolean;
+}): ts.FunctionDeclaration | ts.MethodDeclaration {
+  const functionModifiers = constructModifiersArray({ exported, async: async && !declaration });
+  const customReturn = !!returnStatement;
+  const bareReturnTypeNode = mapTypeToTsTypeNode(functionDeclaration.returnType);
+
+  const wrapWithPromiseType = (typeNode: ts.TypeNode): ts.TypeNode =>
+    ts.factory.createTypeReferenceNode('Promise', [typeNode]);
+
+  let returnTypeNode: ts.TypeNode | undefined = async
+    ? wrapWithPromiseType(bareReturnTypeNode)
+    : bareReturnTypeNode;
+  if (omitReturnType) {
+    returnTypeNode = undefined;
+  }
+  const argumentDeclarations =
+    overrideArgumentDeclarations ?? functionDeclaration.arguments.map(buildArgumentDeclaration);
+
+  if (method) {
+    return ts.factory.createMethodDeclaration(
+      functionModifiers,
+      undefined,
+      functionDeclaration.name,
+      undefined,
+      undefined,
+      argumentDeclarations,
+      returnTypeNode,
+      declaration ? undefined : ts.factory.createBlock(customReturn ? returnStatement : [])
+    );
+  }
+  return ts.factory.createFunctionDeclaration(
+    functionModifiers,
+    undefined,
+    functionDeclaration.name,
+    undefined,
+    argumentDeclarations,
+    returnTypeNode,
+    declaration ? undefined : ts.factory.createBlock(customReturn ? returnStatement : [])
+  );
+}
+
+export function buildConstructor(
+  constructor: ConstructorDeclaration,
+  declaration: boolean
+): ts.ClassElement {
+  return ts.factory.createConstructorDeclaration(
+    undefined,
+    constructor.arguments.map(buildArgumentDeclaration),
+    declaration ? undefined : ts.factory.createBlock([])
+  );
+}
+
+// TODO(@HubertBer): figure out what about inheritance, should or should not inherit SharedObject
+export function buildClass({
+  classDeclaration,
+  exported,
+  declaration,
+  getFunctionReturnBlock,
+}: {
+  classDeclaration: ClassDeclaration;
+  exported?: boolean;
+  declaration?: boolean;
+  getFunctionReturnBlock?: (functionDeclaration: FunctionDeclaration) => ts.ReturnStatement[];
+}): ts.ClassDeclaration {
+  const constructorDeclaration = classDeclaration.constructor
+    ? buildConstructor(classDeclaration.constructor, declaration ?? false)
+    : undefined;
+  return ts.factory.createClassDeclaration(
+    constructModifiersArray({ exported: exported, declare: declaration }),
+    ts.factory.createIdentifier(classDeclaration.name),
+    undefined,
+    [],
+    [
+      ...classDeclaration.methods.map(
+        (method) =>
+          buildFunction({
+            functionDeclaration: method,
+            method: true,
+            declaration,
+            returnStatement:
+              !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null,
+          }) as ts.MethodDeclaration
+      ),
+      ...classDeclaration.asyncMethods.map(
+        (method) =>
+          buildFunction({
+            functionDeclaration: method,
+            async: true,
+            method: true,
+            declaration,
+            returnStatement:
+              !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null,
+          }) as ts.MethodDeclaration
+      ),
+      ...(declaration ? classDeclaration.properties.map(buildClassProperty) : []),
+      constructorDeclaration,
+    ].filter((v) => !!v)
+  );
+}
+
+function buildModuleDefaultExport({
+  moduleName,
+  moduleType,
+  declaration,
+}: {
+  moduleName: string;
+  moduleType?: string;
+  declaration?: boolean;
+}): ts.Node[] {
+  const name = '_default';
+  const type = moduleType ? ts.factory.createTypeReferenceNode(moduleType) : undefined;
+  return [
+    createParameter({
+      modifiers: [constModifier],
+      name,
+      type,
+      initializer: declaration
+        ? undefined
+        : createRequireNativeModuleExpression({ moduleName, moduleType }),
+    }),
+    ts.factory.createExportDefault(ts.factory.createIdentifier('_default')),
+  ];
+}
+
+export function buildUnknownTypeAlias(
+  identifier: string,
+  exported: boolean,
+  inferredTypeParametersCount: Map<string, number>
+): ts.Statement {
+  const paramCount = inferredTypeParametersCount.get(identifier);
+  const typeParamsList = [];
+  for (let i = 0; i < (paramCount ?? 0); i += 1) {
+    typeParamsList.push(ts.factory.createTypeParameterDeclaration(undefined, 'T' + i));
+  }
+  const typeParams = (paramCount ?? 0) == 0 ? undefined : typeParamsList;
+  return createTypeAlias({ exported, alias: identifier, type: unknownKeywordType, typeParams });
+}
+
+export function buildRecordTypeAlias(recordType: RecordType, exported: boolean): ts.Node {
+  return createTypeAlias({
+    exported,
+    alias: recordType.name,
+    type: ts.factory.createTypeLiteralNode(
+      recordType.fields.map((field) => {
+        const optional = field.type.kind === TypeKind.OPTIONAL;
+        const typeNode = mapTypeToTsTypeNode(optional ? (field.type.type as Type) : field.type);
+        const name = field.name ?? '_' + getNextFreeId();
+        return createPropertySignature({ name, optional, typeNode });
+      })
+    ),
+  });
+}
+
+export function buildEnumTypeDeclaration(
+  enumType: EnumType,
+  exported: boolean,
+  declared: boolean
+): ts.Node {
+  return ts.factory.createEnumDeclaration(
+    constructModifiersArray({ exported: exported, declare: declared }),
+    enumType.name,
+    enumType.cases.map((enumcase) => ts.factory.createEnumMember(enumcase))
+  );
+}
+
+function buildMissingTypesDeclarations(ctx: GenerationContext): ts.Node[] {
+  return [...ctx.missingTypes].map((identifier) =>
+    buildUnknownTypeAlias(identifier, true, ctx.fileInfo.inferredTypeParametersCount)
+  );
+}
+
+function buildDefaultViewComponent({
+  componentName,
+  propsTypeAlias,
+}: {
+  componentName: string;
+  propsTypeAlias: string;
+}) {
+  const propsTypeNode = ts.factory.createTypeReferenceNode(propsTypeAlias);
+  return [
+    ts.factory.createFunctionExpression(
+      [exportModifier, defaultModifier],
+      undefined,
+      componentName + 'Component',
+      undefined,
+      [createParameter({ name: 'props', type: propsTypeNode })],
+      undefined,
+      ts.factory.createBlock([
+        ts.factory.createReturnStatement(
+          ts.factory.createJsxSelfClosingElement(
+            ts.factory.createIdentifier(componentName),
+            undefined,
+            ts.factory.createJsxAttributes([
+              ts.factory.createJsxSpreadAttribute(ts.factory.createIdentifier('props')),
+            ])
+          )
+        ),
+      ])
+    ),
+  ];
+}
+
+export function buildExposedTypesDeclarations(
   ctx: GenerationContext,
-  options: { export?: boolean; declare?: boolean }
+  options: { exported?: boolean; declare?: boolean }
 ): ts.Node[] {
   const recordDeclarationMap = (recordType: RecordType) =>
-    getRecordDeclaration(recordType, options.export ?? false);
+    buildRecordTypeAlias(recordType, options.exported ?? false);
   const enumDeclarationMap = (enumType: EnumType) =>
-    getEnumDeclaration(enumType, options.export ?? false, options.declare ?? false);
+    buildEnumTypeDeclaration(enumType, options.exported ?? false, options.declare ?? false);
   const classDeclarationMap = (classDeclaration: ClassDeclaration) =>
-    getTsClassDeclaration({ classDeclaration, exported: true, declaration: true });
+    buildClass({ classDeclaration, exported: true, declaration: true });
 
   return joinTSNodesWithNewlines([
-    getOneNamedImport('NativeModule', 'expo'),
-    getUndeclaredIdentifiersDeclaration(ctx),
+    createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
+    buildMissingTypesDeclarations(ctx),
     ctx.fileInfo.records.flatMap(recordDeclarationMap),
     ctx.fileInfo.enums.flatMap(enumDeclarationMap),
     ctx.module.classes.map(classDeclarationMap),
   ]);
 }
 
-function getModuleDeclarationFileNodes(ctx: GenerationContext): ts.Node[] {
+function buildModuleDeclarationNodes(ctx: GenerationContext): ts.Node[] {
   return joinTSNodesWithNewlines([
-    getPrefix(),
-    getTypeDeclarations(ctx, { export: true }),
-    getExportedModuleDeclaration({ moduleClassDeclaration: ctx.module }),
-    getModuleDefaultValueExport({
+    createGeneratedPrefix(),
+    buildExposedTypesDeclarations(ctx, { exported: true }),
+    buildNativeModuleClassDeclaration({ moduleClassDeclaration: ctx.module }),
+    buildModuleDefaultExport({
       moduleName: ctx.module.name,
       moduleType: ctx.module.name,
       declaration: true,
@@ -747,90 +779,75 @@ function getModuleDeclarationFileNodes(ctx: GenerationContext): ts.Node[] {
   ] as ts.Node[][]);
 }
 
-function getViewDefaultValueExport(view: ViewDeclaration): ts.Node[] {
-  const name = '_default';
-  const type = ts.factory.createTypeReferenceNode('React.JSXElementConstructor', [
-    ts.factory.createTypeReferenceNode(getViewPropsTypeName(view)),
-  ]);
-  return ([] as ts.Node[]).concat(
-    getParameterDeclaration({ modifiers: [exportModifier, constModifier], name, type }),
-    ts.factory.createExportDefault(ts.factory.createIdentifier(name))
-  );
-}
-
 export function getViewPropsTypeName(view: ViewDeclaration): string {
   return view.name + (view.name.endsWith('View') ? 'Props' : 'ViewProps');
 }
 
-function getViewTypesDeclarationsForModule(ctx: GenerationContext): ts.Node[] {
+function buildViewDeclarationNodes(ctx: GenerationContext): ts.Node[] {
   if (!ctx.view) {
     return [];
   }
+  const viewComponentType = createComponentType(getViewPropsTypeName(ctx.view));
+  const modifiers = [declareModifier, constModifier];
   return joinTSNodesWithNewlines([
-    getPrefix(),
-    [...ctx.missingTypes].map((identifier) =>
-      getIdentifierUnknownDeclaration(identifier, true, ctx.fileInfo.inferredTypeParametersCount)
-    ),
-    getViewPropsDeclaration(ctx.view, {}),
-    getViewDefaultValueExport(ctx.view),
+    createGeneratedPrefix(),
+    buildMissingTypesDeclarations(ctx),
+    buildViewPropsTypeAlias(ctx.view, {}),
+    [createParameter({ modifiers, name: '_default', type: viewComponentType })],
+    createExportDefault(),
   ]);
 }
 
-function getJsxIntrinsicElementsInterfaceDeclaration(
-  intrinsicElements: ts.TypeElement[]
-): ts.Node[] {
-  const globalIdentifier = ts.factory.createIdentifier('global');
-  const jsxIdentifier = ts.factory.createIdentifier('JSX');
-  const intrinsicElementsIdentifier = ts.factory.createIdentifier('IntrinsicElements');
-  return [
-    ts.factory.createModuleDeclaration(
-      [declareModifier],
-      globalIdentifier,
-      ts.factory.createModuleBlock([
-        ts.factory.createModuleDeclaration(
-          undefined,
-          jsxIdentifier,
-          ts.factory.createModuleBlock([
-            ts.factory.createInterfaceDeclaration(
-              undefined,
-              intrinsicElementsIdentifier,
-              undefined,
-              undefined,
-              intrinsicElements
-            ),
-          ]),
-          ts.NodeFlags.Namespace
-        ),
-      ]),
-      ts.NodeFlags.GlobalAugmentation
-    ),
-  ];
-}
-
-function getGeneratedJSXIntrinsicsViewDeclarationForModule(ctx: GenerationContext): ts.Node[] {
+function buildJSXIntrinsicsViewNodes(ctx: GenerationContext): ts.Node[] {
   const name = ctx.module.name;
-  const propsTypeNode = ctx.view ? getPropsType(ctx.view) : undefined;
+  const propsTypeNode = ctx.view ? buildPropsTypeLiteral(ctx.view) : undefined;
+
+  const jsxIntrinsicElementsNodes = [];
+  if (ctx.view) {
+    const globalIdentifier = ts.factory.createIdentifier('global');
+    const jsxIdentifier = ts.factory.createIdentifier('JSX');
+    const intrinsicElementsIdentifier = ts.factory.createIdentifier('IntrinsicElements');
+    jsxIntrinsicElementsNodes.push(
+      ts.factory.createModuleDeclaration(
+        [declareModifier],
+        globalIdentifier,
+        ts.factory.createModuleBlock([
+          ts.factory.createModuleDeclaration(
+            undefined,
+            jsxIdentifier,
+            ts.factory.createModuleBlock([
+              ts.factory.createInterfaceDeclaration(
+                undefined,
+                intrinsicElementsIdentifier,
+                undefined,
+                undefined,
+                [createPropertySignature({ name, typeNode: propsTypeNode })]
+              ),
+            ]),
+            ts.NodeFlags.Namespace
+          ),
+        ]),
+        ts.NodeFlags.GlobalAugmentation
+      )
+    );
+  }
 
   return joinTSNodesWithNewlines([
-    getTypeDeclarations(ctx, { declare: true }),
-    ctx.view
-      ? getJsxIntrinsicElementsInterfaceDeclaration([
-          getPropertySignature({ name, typeNode: propsTypeNode }),
-        ])
-      : [],
+    buildExposedTypesDeclarations(ctx, { declare: true }),
+    jsxIntrinsicElementsNodes,
   ]);
 }
 
-function getGeneratedFileDeclarationsForModule(ctx: GenerationContext): ts.Node[] {
+function buildNativeModuleGeneratedNodes(ctx: GenerationContext): ts.Node[] {
   return joinTSNodesWithNewlines([
-    getPrefix(),
-    getTypeDeclarations(ctx, { export: true }),
-    getViewPropsDeclaration(ctx.view, { export: true }),
-    getExportedModuleDeclaration({ moduleClassDeclaration: ctx.module }),
+    createGeneratedPrefix(),
+    buildExposedTypesDeclarations(ctx, { exported: true }),
+    buildViewPropsTypeAlias(ctx.view, { exported: true }),
+    buildNativeModuleClassDeclaration({ moduleClassDeclaration: ctx.module }),
   ]);
 }
 
-function getStableFileDeclarationsForModule(ctx: GenerationContext): ts.Node[] {
+function buildStableNativeModuleInterface(ctx: GenerationContext): ts.Node[] {
   const generatedModuleAlias = ctx.module.name;
   const generatedModuleTypeAlias = `${ctx.module.name}NativeModuleType`;
   const generatedFilePath = `./${ctx.module.name}.generated`;
@@ -847,7 +864,7 @@ function getStableFileDeclarationsForModule(ctx: GenerationContext): ts.Node[] {
       );
 
     return ts.factory.createReturnStatement(
-      getCallExpression({
+      createCall({
         expression,
         args,
       })
@@ -859,12 +876,12 @@ function getStableFileDeclarationsForModule(ctx: GenerationContext): ts.Node[] {
       const argumentDeclarations = [];
       const argumentNames = [];
       for (const arg of functionDeclaration.arguments) {
-        const { argDeclaration, argName } = getArgumentDeclarationAndName(arg);
+        const { argDeclaration, argName } = buildArgumentDeclarationAndName(arg);
         argumentDeclarations.push(argDeclaration);
         argumentNames.push(argName);
       }
       return [
-        getTsFunction({
+        buildFunction({
           functionDeclaration,
           async: isAsync,
           exported: true,
@@ -882,65 +899,54 @@ function getStableFileDeclarationsForModule(ctx: GenerationContext): ts.Node[] {
 
   const mapSyncFunctionDeclaration = mapFunctionDeclarationTemplate(false);
   const mapAsyncFunctionDeclaration = mapFunctionDeclarationTemplate(true);
+  const buildConstantExportProperty = (constant: ConstantDeclaration): ts.Node => {
+    const typeNode = mapTypeToTsTypeNode(constant.type);
+    const modifiers = [exportModifier, constModifier];
+    const initializer = ts.factory.createIdentifier(`${generatedModuleAlias}.${constant.name}`);
+    return createProperty({ modifiers, name: constant.name, typeNode, initializer });
+  };
 
   return joinTSNodesWithNewlines([
-    ctx.view ? getImport({ importFromName: 'react', defaultImportName: 'React' }) : [],
+    ctx.view
+      ? createImportDeclaration({ importFromName: 'react', defaultImportName: 'React' })
+      : [],
 
-    getImport({
+    createImportDeclaration({
       namedImportsNames: [
-        ...ctx.fileInfo.usedTypeIdentifiers.difference(basicTypesIdentifiers()),
-      ].concat(
-        [generatedModuleTypeAlias, ctx.view ? getViewPropsTypeName(ctx.view) : null].filter(
+        ...ctx.fileInfo.usedTypeIdentifiers.difference(getBasicTypesIdentifiers()),
+        ...[generatedModuleTypeAlias, ctx.view ? getViewPropsTypeName(ctx.view) : null].filter(
           (v) => v !== null
-        )
-      ),
+        ),
+      ],
       importFromName: generatedFilePath,
     }),
 
-    getImport({
+    createImportDeclaration({
       namedImportsNames: ['requireNativeModule', 'requireNativeView'],
       importFromName: 'expo',
     }),
 
     [
-      getParameterDeclaration({
+      createParameter({
         modifiers: [constModifier],
         name: ctx.module.name,
         type: ts.factory.createTypeReferenceNode(generatedModuleTypeAlias),
-        initializer: getCallExpression({
-          expression: 'requireNativeModule',
-          typeArgs: [ts.factory.createTypeReferenceNode(generatedModuleTypeAlias)],
-          args: [ts.factory.createStringLiteral(ctx.module.name)],
+        initializer: createRequireNativeModuleExpression({
+          moduleName: ctx.module.name,
+          moduleType: generatedModuleTypeAlias,
         }),
       }),
     ],
 
-    ctx.view
-      ? [
-          getParameterDeclaration({
-            modifiers: [constModifier],
-            name: ctx.view.name,
-            initializer: getCallExpression({
-              expression: 'requireNativeView',
-              args: [ts.factory.createStringLiteral(ctx.module.name)],
-            }),
-          }),
-        ]
-      : [],
+    createRequireNativeViewDeclaration(ctx),
 
-    ctx.module.constants.flatMap((constant) => [
-      getConstantExportDeclaration(
-        constant.name,
-        constant.type,
-        `${generatedModuleAlias}.${constant.name}`
-      ),
-    ]),
+    ctx.module.constants.map(buildConstantExportProperty),
 
     ctx.module.functions.flatMap(mapSyncFunctionDeclaration),
     ctx.module.asyncFunctions.flatMap(mapAsyncFunctionDeclaration),
 
     ctx.view
-      ? getDefaultReactComponentDeclaration({
+      ? buildDefaultViewComponent({
           componentName: ctx.view.name,
           propsTypeAlias: getViewPropsTypeName(ctx.view),
         })
@@ -970,37 +976,37 @@ export async function prettifyCode(text: string, parser: 'babel' | 'typescript' 
   });
 }
 
-export async function getGeneratedViewTypesFileContent(
+export async function generateViewTypesFileContent(
   fileTypeInformation: FileTypeInformation
 ): Promise<string | null> {
   const ctx = createDefaultGenerationContext(fileTypeInformation);
   if (!ctx) {
     return null;
   }
-  return tsNodesToString(getViewTypesDeclarationsForModule(ctx));
+  return tsNodesToString(buildViewDeclarationNodes(ctx));
 }
 
-export async function getGeneratedJSXIntrinsicsViewDeclaration(
+export async function generateJSXIntrinsicsFileContent(
   fileTypeInformation: FileTypeInformation
 ): Promise<string | null> {
   const ctx = createDefaultGenerationContext(fileTypeInformation);
   if (!ctx) {
     return null;
   }
-  return tsNodesToString(getGeneratedJSXIntrinsicsViewDeclarationForModule(ctx));
+  return tsNodesToString(buildJSXIntrinsicsViewNodes(ctx));
 }
 
-export async function getGeneratedModuleTypesFileContent(
+export async function generateModuleTypesFileContent(
   fileTypeInformation: FileTypeInformation
 ): Promise<string | null> {
   const ctx = createDefaultGenerationContext(fileTypeInformation);
   if (!ctx) {
     return null;
   }
-  return tsNodesToString(getModuleDeclarationFileNodes(ctx));
+  return tsNodesToString(buildModuleDeclarationNodes(ctx));
 }
 
-export async function getGeneratedModuleTypescriptInterface(
+export async function generateConciseTsInterface(
   fileTypeInformation: FileTypeInformation
 ): Promise<{
   volitileGeneratedFileContent: string;
@@ -1011,12 +1017,10 @@ export async function getGeneratedModuleTypescriptInterface(
     return { volitileGeneratedFileContent: '', moduleTypescriptInterfaceFileContent: '' };
   }
 
-  const volitileGeneratedFileContent = await tsNodesToString(
-    getGeneratedFileDeclarationsForModule(ctx)
-  );
+  const volitileGeneratedFileContent = await tsNodesToString(buildNativeModuleGeneratedNodes(ctx));
 
   const moduleTypescriptInterfaceFileContent = await tsNodesToString(
-    getStableFileDeclarationsForModule(ctx)
+    buildStableNativeModuleInterface(ctx)
   );
 
   return {
@@ -1025,48 +1029,7 @@ export async function getGeneratedModuleTypescriptInterface(
   };
 }
 
-function createRequireNativeViewDeclaration(ctx: GenerationContext) {
-  return ctx.view
-    ? [
-        getParameterDeclaration({
-          modifiers: [constModifier],
-          name: ctx.view.name,
-          initializer: getCallExpression({
-            expression: 'requireNativeView',
-            typeArgs: [ts.factory.createTypeReferenceNode(getViewPropsTypeName(ctx.view))],
-            args: [ts.factory.createStringLiteral(ctx.module.name)],
-          }),
-        }),
-      ]
-    : [];
-}
-
-function getAllNonBasicTypes(fileInfo: FileTypeInformation): Set<string> {
-  return fileInfo.declaredTypeIdentifiers
-    .union(fileInfo.usedTypeIdentifiers)
-    .difference(basicTypesIdentifiers());
-}
-
-function createExportAllDeclaration({
-  importFromName,
-  justTypes,
-}: {
-  importFromName: string;
-  justTypes?: boolean;
-}): ts.Node[] {
-  return [
-    ts.factory.createExportDeclaration(
-      undefined,
-      justTypes ?? false,
-      undefined,
-      ts.factory.createStringLiteral(importFromName)
-    ),
-  ];
-}
-
-export async function getGeneratedExpoModuleTypescriptFilesContents(
-  fileTypeInformation: FileTypeInformation
-): Promise<{
+export async function generateFullTsInterface(fileTypeInformation: FileTypeInformation): Promise<{
   moduleTypesFile: OutputFile;
   moduleViewFile: OutputFile;
   moduleNativeFile: OutputFile;
@@ -1081,26 +1044,26 @@ export async function getGeneratedExpoModuleTypescriptFilesContents(
   const moduleTypesFileImportName = `${ctx?.module.name}.types`;
   const moduleViewFileImportName = `${ctx?.module.name}View`;
   const moduleTypesFileNodes = joinTSNodesWithNewlines([
-    getPrefix(),
-    getTypeDeclarations(ctx, { export: true }),
-    getViewPropsDeclaration(ctx.view, { export: true }),
+    createGeneratedPrefix(),
+    buildExposedTypesDeclarations(ctx, { exported: true }),
+    buildViewPropsTypeAlias(ctx.view, { exported: true }),
   ]);
 
   let moduleViewFileNodes;
   if (ctx.view) {
     moduleViewFileNodes = joinTSNodesWithNewlines([
-      getPrefix(),
-      getImport({
+      createGeneratedPrefix(),
+      createImportDeclaration({
         namedImportsNames: ['requireNativeView'],
         importFromName: 'expo',
       }),
-      getImport({
+      createImportDeclaration({
         namedImportsNames: [getViewPropsTypeName(ctx.view)],
         importFromName: `./${moduleTypesFileImportName}`,
       }),
       createRequireNativeViewDeclaration(ctx),
 
-      getDefaultReactComponentDeclaration({
+      buildDefaultViewComponent({
         componentName: ctx.view.name,
         propsTypeAlias: getViewPropsTypeName(ctx.view),
       }),
@@ -1108,24 +1071,24 @@ export async function getGeneratedExpoModuleTypescriptFilesContents(
   }
 
   const moduleNativeModuleNodes = joinTSNodesWithNewlines([
-    getPrefix(),
-    getImport({
+    createGeneratedPrefix(),
+    createImportDeclaration({
       namedImportsNames: ['requireNativeModule', 'NativeModule'],
       importFromName: 'expo-modules-core',
     }),
-    getImport({
+    createImportDeclaration({
       namedImportsNames: [...getAllNonBasicTypes(ctx.fileInfo)],
       importFromName: `./${moduleTypesFileImportName}`,
     }),
-    getExportedModuleDeclaration({
+    buildNativeModuleClassDeclaration({
       moduleClassDeclaration: ctx.module,
       exportedModuleName: ctx.module.name,
     }),
-    getModuleDefaultValueExport({ moduleName: ctx.module.name, moduleType: ctx.module.name }),
+    buildModuleDefaultExport({ moduleName: ctx.module.name, moduleType: ctx.module.name }),
   ]);
 
   const indexFileNodes = joinTSNodesWithNewlines([
-    getPrefix(),
+    createGeneratedPrefix(),
     createExportAllDeclaration({
       importFromName: `./${moduleTypesFileImportName}`,
       justTypes: true,
