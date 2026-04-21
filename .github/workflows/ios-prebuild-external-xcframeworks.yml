@@ -41,6 +41,16 @@ jobs:
         with:
           submodules: true
 
+      - name: Validate inputs
+        env:
+          INPUT_PACKAGES: ${{ github.event.inputs.packages }}
+          INPUT_PUBLISH: ${{ github.event.inputs.publish }}
+        run: |
+          if [[ "$INPUT_PUBLISH" == "true" ]] && [[ -n "$INPUT_PACKAGES" ]]; then
+            echo "packages input must be empty when publish=true"
+            exit 1
+          fi
+
       - name: Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
 
@@ -60,18 +70,6 @@ jobs:
 
       - name: Install node modules
         run: pnpm install --frozen-lockfile
-
-      - name: Validate inputs
-        env:
-          INPUT_PACKAGES: ${{ github.event.inputs.packages }}
-          INPUT_PUBLISH: ${{ github.event.inputs.publish }}
-        run: |
-          INPUT_PACKAGES_TRIMMED="${INPUT_PACKAGES//[[:space:]]/}"
-
-          if [[ "$INPUT_PUBLISH" == "true" ]] && [[ -n "$INPUT_PACKAGES_TRIMMED" ]]; then
-            echo "packages input must be empty when publish=true"
-            exit 1
-          fi
 
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
         env:
