@@ -1,6 +1,7 @@
 import type { PromptObject } from 'prompts';
 
 import type { Feature } from './features';
+import type { PackageManagerName } from './packageManager';
 import type { Platform } from './prompts';
 
 export type { Feature };
@@ -28,6 +29,7 @@ export type CommandOptions = {
   platform?: Platform[];
   features?: Feature[];
   fullExample?: boolean;
+  packageManager?: PackageManagerName;
 };
 
 /**
