@@ -516,7 +516,7 @@ export type { PermissionResponse };
 // @needsAudit
 /**
  * Confidence level for motion activity detection. Maps directly to `CMMotionActivityConfidence`
- * on iOS. On Android the raw `DetectedActivity` confidence (0–100) is bucketed into these
+ * on iOS. On Android, the raw `DetectedActivity` confidence (0-100) is bucketed into these
  * three levels.
  */
 export enum MotionActivityConfidence {
@@ -544,7 +544,7 @@ export enum MotionActivityConfidence {
  */
 export enum MotionActivityType {
   /**
-   * The device is in a motorised vehicle (car, bus, train, etc.).
+   * The device is in a motorized vehicle (car, bus, train, and so on).
    */
   Automotive = 'automotive',
   /**

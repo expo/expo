@@ -95,8 +95,8 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
       val result = ActivityRecognitionResult.extractResult(intent) ?: return
 
-      // Aggregate raw confidence (0–100) per unified type. When multiple Android types map to
-      // the same unified type (e.g. WALKING + ON_FOOT → "walking"), take the maximum.
+      // Aggregate raw confidence (0-100) per unified type. When multiple Android types map to
+      // the same unified type (for example, WALKING + ON_FOOT maps to "walking"), take the maximum.
       val rawConfidenceByType = mutableMapOf<String, Int>()
       for (detected in result.probableActivities) {
         val type = when (detected.type) {

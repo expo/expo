@@ -98,7 +98,7 @@ export var LocationGeofencingRegionState;
 // @needsAudit
 /**
  * Confidence level for motion activity detection. Maps directly to `CMMotionActivityConfidence`
- * on iOS. On Android the raw `DetectedActivity` confidence (0–100) is bucketed into these
+ * on iOS. On Android, the raw `DetectedActivity` confidence (0-100) is bucketed into these
  * three levels.
  */
 export var MotionActivityConfidence;
@@ -127,7 +127,7 @@ export var MotionActivityConfidence;
 export var MotionActivityType;
 (function (MotionActivityType) {
     /**
-     * The device is in a motorised vehicle (car, bus, train, etc.).
+     * The device is in a motorized vehicle (car, bus, train, and so on).
      */
     MotionActivityType["Automotive"] = "automotive";
     /**

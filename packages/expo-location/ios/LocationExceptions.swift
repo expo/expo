@@ -80,7 +80,7 @@ extension Exceptions {
   internal final class MotionActivityUnauthorized: Exception {
     override var reason: String {
       "Motion activity access has been denied. Add NSMotionUsageDescription to Info.plist, " +
-        "then direct the user to Settings → Privacy → Motion & Fitness to re-enable access"
+        "then direct the user to Settings > Privacy > Motion and Fitness to re-enable access"
     }
   }
 }

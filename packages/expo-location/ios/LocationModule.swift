@@ -16,7 +16,7 @@ private func motionActivityPermissionResponse() -> [String: Any] {
   case .authorized:
     return ["status": "granted", "granted": true, "canAskAgain": true, "expires": "never"]
   case .denied:
-    return ["status": "denied", "granted": false, "canAskAgain": true, "expires": "never"]
+    return ["status": "denied", "granted": false, "canAskAgain": false, "expires": "never"]
   case .restricted:
     return ["status": "denied", "granted": false, "canAskAgain": false, "expires": "never"]
   case .notDetermined:
@@ -215,7 +215,7 @@ public final class LocationModule: Module {
         return motionActivityPermissionResponse()
       }
       // Issuing a short historical query is the standard way to trigger the system
-      // Motion & Fitness permission prompt when the status is .notDetermined.
+      // Motion and Fitness permission prompt when the status is .notDetermined.
       let manager = CMMotionActivityManager()
       await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
         manager.queryActivityStarting(from: Date(timeIntervalSinceNow: -1), to: Date(), to: .main) { _, _ in

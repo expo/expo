@@ -362,7 +362,7 @@ export async function getMotionActivityPermissionsAsync(): Promise<PermissionRes
 /**
  * Asks the user to grant permissions for motion activity detection.
  * On Android 10+, this requests the `ACTIVITY_RECOGNITION` runtime permission.
- * On iOS, this triggers the system prompt for Motion & Fitness access the first time it is called.
+ * On iOS, this triggers the system prompt for Motion and Fitness access the first time it is called.
  * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
  *
  * @platform android
@@ -374,7 +374,7 @@ export async function requestMotionActivityPermissionsAsync(): Promise<Permissio
 
 // @needsAudit
 /**
- * Check or request permissions for motion activity detection.
+ * Checks or requests permissions for motion activity detection.
  * This uses both `requestMotionActivityPermissionsAsync` and `getMotionActivityPermissionsAsync`
  * to interact with the permissions.
  *
@@ -396,12 +396,13 @@ export const useMotionActivityPermissions = createPermissionHook({
 // @needsAudit
 /**
  * Fetches the current motion activity status of the device by subscribing to the first available
- * activity update and immediately unsubscribing afterwards. Resolves with the same object shape
- * as the `watchMotionActivityAsync` callback.
+ * activity update and immediately unsubscribing afterwards.
+ * The returned promise fulfills with the same object shape as the `watchMotionActivityAsync`
+ * callback.
  *
  * The method uses the platform's motion coprocessor (iOS) or Google Play Services activity
  * recognition (Android) and does **not** require location permissions. On iOS, the system will
- * prompt the user for motion & fitness access the first time this method is called.
+ * prompt the user for Motion and Fitness access the first time this method is called.
  * On Android 10+, the `ACTIVITY_RECOGNITION` runtime permission must be granted beforehand.
  *
  * @return A promise which fulfills with a [`MotionActivityObject`](#motionactivityobject).

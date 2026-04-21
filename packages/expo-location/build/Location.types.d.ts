@@ -468,7 +468,7 @@ export type LocationPermissionResponse = PermissionResponse & {
 export type { PermissionResponse };
 /**
  * Confidence level for motion activity detection. Maps directly to `CMMotionActivityConfidence`
- * on iOS. On Android the raw `DetectedActivity` confidence (0–100) is bucketed into these
+ * on iOS. On Android, the raw `DetectedActivity` confidence (0-100) is bucketed into these
  * three levels.
  */
 export declare enum MotionActivityConfidence {
@@ -494,7 +494,7 @@ export declare enum MotionActivityConfidence {
  */
 export declare enum MotionActivityType {
     /**
-     * The device is in a motorised vehicle (car, bus, train, etc.).
+     * The device is in a motorized vehicle (car, bus, train, and so on).
      */
     Automotive = "automotive",
     /**

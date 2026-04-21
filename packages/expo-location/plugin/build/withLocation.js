@@ -8,6 +8,7 @@ const fs_1 = require("fs");
 const path_1 = require("path");
 const pkg = require('../../package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
+const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to detect your current motion activity';
 exports.ANDROID_RES_PATH = 'android/app/src/main/res/';
 exports.dpiValues = {
     mdpi: { folderName: 'mipmap-mdpi', scale: 1 },
@@ -101,7 +102,7 @@ function removeForegroundServiceIconImageFiles(projectRoot) {
         }
     });
 }
-const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAlwaysPermission, locationWhenInUsePermission, isIosBackgroundLocationEnabled, isAndroidBackgroundLocationEnabled, isAndroidForegroundServiceEnabled, androidForegroundServiceIcon, } = {}) => {
+const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAlwaysPermission, locationWhenInUsePermission, motionUsagePermission, isIosBackgroundLocationEnabled, isAndroidBackgroundLocationEnabled, isAndroidForegroundServiceEnabled, androidForegroundServiceIcon, } = {}) => {
     if (isIosBackgroundLocationEnabled) {
         config = withBackgroundLocation(config);
     }
@@ -110,10 +111,12 @@ const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAl
         NSLocationAlwaysAndWhenInUseUsageDescription: LOCATION_USAGE,
         NSLocationAlwaysUsageDescription: LOCATION_USAGE,
         NSLocationWhenInUseUsageDescription: LOCATION_USAGE,
+        NSMotionUsageDescription: MOTION_USAGE,
     })(config, {
         NSLocationAlwaysAndWhenInUseUsageDescription: locationAlwaysAndWhenInUsePermission,
         NSLocationAlwaysUsageDescription: locationAlwaysPermission,
         NSLocationWhenInUseUsageDescription: locationWhenInUsePermission,
+        NSMotionUsageDescription: motionUsagePermission,
     });
     // If the user has not specified a value for isAndroidForegroundServiceEnabled,
     // we default to the value of isAndroidBackgroundLocationEnabled because we want
