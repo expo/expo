@@ -85,6 +85,11 @@ export const CICD_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
     completed: false,
     slug: '/tutorial/cicd/e2e-tests',
   },
+  {
+    title: 'Chapter 5: Production deployments',
+    completed: false,
+    slug: '/tutorial/cicd/production',
+  },
 ];
 
 // The following data is for the Get started Tutorial (/tutorial/).
