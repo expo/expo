@@ -176,6 +176,34 @@ function toPosixPath(filePath) {
   return filePath.replace(/\\/g, '/');
 }
 
+/**
+ * Try to express an absolute entry point as a path reachable from within the server root.
+ *
+ * When the entry point resolves through symlinks to a location outside the server root
+ * (e.g., in git worktrees where node_modules is symlinked from the main checkout),
+ * the relative path has leading "../" segments that are invalid as URLs. This function
+ * extracts the node_modules-relative portion from the original resolution path so the
+ * entry stays reachable.
+ */
+function resolveEntryWithinRoot(serverRoot, originalAbsolutePath) {
+  // Find the last "node_modules/" segment in the original (non-realpath) resolution.
+  // This preserves the logical module path even when symlinks point outside the root.
+  const nodeModulesSegment = _path().default.sep + 'node_modules' + _path().default.sep;
+  const nodeModulesIndex = originalAbsolutePath.lastIndexOf(nodeModulesSegment);
+  if (nodeModulesIndex === -1) return null;
+  const afterNodeModules = originalAbsolutePath.slice(nodeModulesIndex + nodeModulesSegment.length);
+
+  // Verify that serverRoot has a node_modules directory (real or symlinked)
+  const serverNodeModules = _path().default.join(serverRoot, 'node_modules');
+  try {
+    // Use lstat to check existence without following broken symlinks
+    _fs().default.lstatSync(serverNodeModules);
+  } catch {
+    return null;
+  }
+  return toPosixPath(_path().default.join('node_modules', afterNodeModules));
+}
+
 // TODO: Move to internals
 /**
  * Convert an absolute entry point to a server or project root relative filepath.
@@ -186,6 +214,10 @@ function convertEntryPointToRelative(projectRoot, absolutePath, extname = '.js')
   if (!_path().default.isAbsolute(absolutePath)) {
     absolutePath = _path().default.resolve(process.cwd(), projectRoot, absolutePath);
   }
+
+  // Save the original resolved path before symlink resolution — it preserves the
+  // logical path through node_modules which may be needed if realpath escapes the root.
+  const originalAbsolutePath = absolutePath;
 
   // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
   // We need to make sure to get the non-symlinked path to the server or project root.
@@ -218,6 +250,18 @@ function convertEntryPointToRelative(projectRoot, absolutePath, extname = '.js')
     // NOTE: `fs.realpathSync` can fail if `projectRoot` doesn't exist (e.g. mocked folder)
   }
   let entry = toPosixPath(_path().default.relative(serverRoot, absolutePath));
+
+  // When the entry escapes the server root (starts with ../), it means the resolved
+  // entry point is outside the server root tree — typically because node_modules is
+  // a symlink pointing elsewhere (e.g., in git worktrees where node_modules is
+  // symlinked from the main checkout). URLs cannot express paths above the root, so
+  // try to find a logical path through node_modules within the server root.
+  if (entry.startsWith('../')) {
+    const resolved = resolveEntryWithinRoot(serverRoot, originalAbsolutePath);
+    if (resolved != null) {
+      entry = resolved;
+    }
+  }
 
   // Strip extname, if it's set and trivially resolvable by Metro
   if (extname != null) {
