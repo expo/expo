@@ -35,6 +35,7 @@ export * from './Stepper';
 export * from './Text';
 export { useNativeState } from '../State/useNativeState';
 export * from './SyncToggle';
+export * from './TabView';
 export * from './Toggle';
 export * from './TextField';
 export * from './SecureField';
