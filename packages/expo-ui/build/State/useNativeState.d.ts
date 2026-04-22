@@ -4,7 +4,9 @@ import { type SharedObject } from 'expo-modules-core';
  */
 export type ObservableState<T> = SharedObject & {
     /**
-     * The current value. Read or write directly.
+     * The current value. Reads are safe from any thread; prefer writing from a worklet
+     * so the update runs on SwiftUI's UI thread. Updating state from the JS thread
+     * might show a SwiftUI warning.
      */
     value: T;
 };
