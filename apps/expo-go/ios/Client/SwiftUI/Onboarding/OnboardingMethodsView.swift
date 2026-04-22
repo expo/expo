@@ -38,7 +38,7 @@ struct OnboardingMethodsView: View {
           items: [
             "Create a project on your machine",
             "Get more space to write with a full editor",
-            "See your work live on your phone",
+            "See your work live",
           ]
         )
       }
@@ -83,14 +83,14 @@ private struct MethodCard: View {
               Text("\(index + 1).")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundColor(.expoSecondaryText)
-                .frame(width: 18, alignment: .trailing)
+                .frame(width: 18, alignment: .leading)
               Text(item)
                 .font(.system(size: 13))
                 .foregroundColor(.expoSecondaryText)
             }
           }
         }
-        .padding(.leading, 34)
+        .padding(.leading, 8)
       }
     }
     .padding(16)

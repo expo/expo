@@ -861,7 +861,7 @@ const STEPS = [
   { text: 'Sign in to Expo on your computer:', code: 'npx expo login' },
   { text: 'From the project folder, start the dev server:', code: 'npx expo start' },
   { text: 'Sign in to the same Expo account in this Expo Go app to open your project — only you can open your project. You can view the source here, or edit it in your editor on your computer.' },
-  { text: 'Ready to move beyond the Expo Go playground? Learn how you can get started with developing your app with Xcode and shipping with TestFlight and the App Store:', link: 'https://docs.expo.dev/', linkLabel: "I'm ready to move on from Expo Go!" },
+  { text: 'Ready to move beyond the Expo Go playground?\\nLearn how to get started developing with Xcode, TestFlight, and the App Store:', link: 'https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local&platform=ios&device=physical#set-up-an-ios-device-with-a-development-build', linkLabel: "I'm ready to move on from Expo Go!" },
 ];
 
 function Step({ n, text, code, link, linkLabel }) {
@@ -910,7 +910,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingBottom: 20,
-    paddingTop: 180,
+    paddingTop: 250,
   },
   steps: {
     gap: 14,
