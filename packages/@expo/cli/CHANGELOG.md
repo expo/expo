@@ -17,6 +17,7 @@
 
 ### 🐛 Bug fixes
 
+- Resolve entry points that fall outside the Metro server root by matching against configured `watchFolders`. ([#45010](https://github.com/expo/expo/pull/45010) by [@huntie](https://github.com/huntie))
 - Prevent opening Expo Go on Apple Watch. ([#44147](https://github.com/expo/expo/pull/44147) by [@EvanBacon](https://github.com/EvanBacon))
 - Support files >= 2 GiB in AFC device upload ([#43755](https://github.com/expo/expo/pull/43755) by [@yocontra](https://github.com/yocontra))
 - Revert the `-quiet` change to ensure build env vars are always printed. ([#43906](https://github.com/expo/expo/pull/43906) by [@EvanBacon](https://github.com/EvanBacon))
