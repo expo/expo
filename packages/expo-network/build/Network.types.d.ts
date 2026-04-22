@@ -75,9 +75,20 @@ export declare enum NetworkStateType {
  */
 export type NetworkStateEvent = NetworkState;
 /**
+ * Represents the signal strength of a network connection.
+ * The value is in the range [0, 4], where 0 is the weakest and 4 is the strongest.
+ * A value of `-1` indicates the signal strength could not be determined.
+ * @platform android
+ */
+export type NetworkSignalStrengthEvent = {
+    strength: number;
+};
+/**
  * @hidden
  */
 export type NetworkEvents = {
     onNetworkStateChanged(event: NetworkStateEvent): void;
+    onCellSignalStrengthChanged(event: NetworkSignalStrengthEvent): void;
+    onWifiSignalStrengthChanged(event: NetworkSignalStrengthEvent): void;
 };
 //# sourceMappingURL=Network.types.d.ts.map

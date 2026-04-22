@@ -8,6 +8,10 @@
 
 ### 🎉 New features
 
+- [Android] Added `getCellSignalStrengthAsync` and `getWifiSignalStrengthAsync` to read signal strength on demand, returning a value in the range [0, 4] or -1 if unavailable. ([#44708](https://github.com/expo/expo/pull/44708) by [@LumaDevelopment](https://github.com/LumaDevelopment))
+- [Android] Added `addCellSignalStrengthListener` and `addWifiSignalStrengthListener` to subscribe to signal strength changes. ([#44708](https://github.com/expo/expo/pull/44708) by [@LumaDevelopment](https://github.com/LumaDevelopment))
+- [Android] Added `useCellSignalStrength`, `useWifiSignalStrength`, and `useActiveSignalStrength` hooks that reactively track signal strength, automatically switching between cellular and Wi-Fi based on the active network type. ([#44708](https://github.com/expo/expo/pull/44708) by [@LumaDevelopment](https://github.com/LumaDevelopment))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed network state listener emitting a stale "connected" event when the device disconnects from the network on Android 13+. ([#44656](https://github.com/expo/expo/pull/44656) by [@gueroverdenwshq](https://github.com/gueroverdenwshq))

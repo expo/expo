@@ -1,6 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
-export { NetworkState, NetworkStateEvent, NetworkStateType };
+import { NetworkSignalStrengthEvent, NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
+export { NetworkSignalStrengthEvent, NetworkState, NetworkStateEvent, NetworkStateType };
+export declare const INVALID_SIGNAL_STRENGTH = -1;
 /**
  * Gets the device's current network connection state.
  *
@@ -65,6 +66,30 @@ export declare function isAirplaneModeEnabledAsync(): Promise<boolean>;
  */
 export declare function addNetworkStateListener(listener: (event: NetworkStateEvent) => void): EventSubscription;
 /**
+ * Gets the current cellular signal strength on Android.
+ * @platform android
+ * @returns A promise fulfilled with a number in the range [0, 4], or `INVALID_SIGNAL_STRENGTH` if
+ *   unavailable.
+ */
+export declare function getCellSignalStrengthAsync(): Promise<number>;
+/**
+ * Gets the current Wi-Fi signal strength on Android.
+ * @platform android
+ * @returns A promise fulfilled with a number in the range [0, 4], or `INVALID_SIGNAL_STRENGTH` if
+ *   unavailable.
+ */
+export declare function getWifiSignalStrengthAsync(): Promise<number>;
+/**
+ * Adds a listener that fires whenever the cellular signal strength changes.
+ * @platform android
+ */
+export declare function addCellSignalStrengthListener(listener: (event: NetworkSignalStrengthEvent) => void): EventSubscription;
+/**
+ * Adds a listener that fires whenever the Wi-Fi signal strength changes.
+ * @platform android
+ */
+export declare function addWifiSignalStrengthListener(listener: (event: NetworkSignalStrengthEvent) => void): EventSubscription;
+/**
  * Returns the current network state of the device. This method
  * initiates a listener for network state changes and cleans up before unmounting.
  *
@@ -77,4 +102,24 @@ export declare function addNetworkStateListener(listener: (event: NetworkStateEv
  * @return The current network state of the device, including connectivity and type.
  */
 export declare function useNetworkState(): NetworkState;
+/**
+ * Returns the current cellular signal strength and subscribes to updates.
+ * The value is in the range [0, 4], or -1 if unavailable.
+ * @platform android
+ */
+export declare function useCellSignalStrength(): number;
+/**
+ * Returns the current Wi-Fi signal strength and subscribes to updates.
+ * The value is in the range [0, 4], or -1 if unavailable.
+ * @platform android
+ */
+export declare function useWifiSignalStrength(): number;
+/**
+ * Returns the signal strength of the currently active network and subscribes to updates.
+ * Automatically switches between cellular and Wi-Fi signal strength as the active network changes.
+ * The value is in the range [0, 4], or -1 if the active network type does not support signal
+ * strength (for example, Ethernet or VPN) or if the value is unavailable.
+ * @platform android
+ */
+export declare function useActiveSignalStrength(): number;
 //# sourceMappingURL=Network.d.ts.map

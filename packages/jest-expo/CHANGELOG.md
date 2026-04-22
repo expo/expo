@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Added mocks for `getCellSignalStrengthAsync` and `getWifiSignalStrengthAsync` in `ExpoNetwork` module. ([#44708](https://github.com/expo/expo/pull/44708) by [@LumaDevelopment](https://github.com/LumaDevelopment))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
