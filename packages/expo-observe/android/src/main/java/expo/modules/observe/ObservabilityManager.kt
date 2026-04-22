@@ -85,7 +85,8 @@ class BaseObservabilityManager(
     }
 
     // When disabled, mark pending metrics as sent without dispatching
-    if (!ObservePreferences.getDispatchingEnabled(context)) {
+    val dispatchingEnabled = ObservePreferences.getConfig(context)?.dispatchingEnabled ?: true
+    if (!dispatchingEnabled) {
       pendingMetricsManager.removePendingMetrics(pendingIds)
       return
     }

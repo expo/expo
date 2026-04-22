@@ -50,7 +50,8 @@ internal struct ObservabilityManager {
           environment: entry.environment)
       }
 
-      if events.isEmpty || !ObserveUserDefaults.dispatchingEnabled {
+      let dispatchingEnabled = ObserveUserDefaults.config?.dispatchingEnabled ?? true
+      if events.isEmpty || !dispatchingEnabled {
         // All entries were filtered out or dispatching is disabled — mark as dispatched
         ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
         return
