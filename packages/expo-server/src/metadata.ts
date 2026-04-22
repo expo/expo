@@ -170,7 +170,6 @@ export type MetadataVerification = {
 };
 
 export type MetadataAppleWebApp = {
-  capable?: boolean;
   title?: string;
   statusBarStyle?: 'default' | 'black' | 'black-translucent';
   startupImage?:
@@ -179,13 +178,13 @@ export type MetadataAppleWebApp = {
         url: string;
         media?: string;
       }
-    | Array<
+    | (
         | string
         | {
             url: string;
             media?: string;
           }
-      >;
+      )[];
 };
 
 export type MetadataItunes = {

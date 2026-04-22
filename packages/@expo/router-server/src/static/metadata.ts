@@ -2,7 +2,7 @@ import { ctx } from 'expo-router/_ctx';
 import type { GenerateMetadataFunction, Metadata } from 'expo-server';
 import { ImmutableRequest } from 'expo-server/private';
 
-import { serializeMetadataToHtml } from '../utils/metadata';
+import { serializeMetadataToHtml } from '../utils/metadata/serialize';
 
 type RouteModuleExports = {
   generateMetadata?: GenerateMetadataFunction;
@@ -59,7 +59,9 @@ async function waitForMetadataResult<T>(promise: Promise<T>, signal?: AbortSigna
 }
 
 function getGenerateMetadata(moduleExports: RouteModuleExports): GenerateMetadataFunction | null {
-  return typeof moduleExports.generateMetadata === 'function' ? moduleExports.generateMetadata : null;
+  return typeof moduleExports.generateMetadata === 'function'
+    ? moduleExports.generateMetadata
+    : null;
 }
 
 export async function resolveMetadata(

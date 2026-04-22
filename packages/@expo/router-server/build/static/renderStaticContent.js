@@ -54,11 +54,11 @@ const head_1 = __importDefault(require("expo-router/head"));
 const static_1 = require("expo-router/internal/static");
 const server_1 = __importDefault(require("react-dom/server"));
 const getRootComponent_1 = require("./getRootComponent");
+const metadata_1 = require("./metadata");
+Object.defineProperty(exports, "resolveMetadata", { enumerable: true, get: function () { return metadata_1.resolveMetadata; } });
 const debug_1 = require("../utils/debug");
 const html_1 = require("../utils/html");
 const streams_1 = require("../utils/streams");
-const metadata_1 = require("./metadata");
-Object.defineProperty(exports, "resolveMetadata", { enumerable: true, get: function () { return metadata_1.resolveMetadata; } });
 const debug = (0, debug_1.createDebug)('expo:router:server:renderStaticContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588

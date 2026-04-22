@@ -15,6 +15,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from './getRootComponent';
+import { resolveMetadata } from './metadata';
 import { createDebug } from '../utils/debug';
 import {
   createInjectedCssElements,
@@ -24,7 +25,6 @@ import {
   serializeHelmetToHtml,
 } from '../utils/html';
 import { createDocumentMetadataInjectionTransform } from '../utils/streams';
-import { resolveMetadata } from './metadata';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 

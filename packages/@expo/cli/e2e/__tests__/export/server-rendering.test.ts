@@ -445,16 +445,34 @@ describe('exports server', () => {
       ).toBe('TEST_VALUE');
     });
 
-    it('injects shell-available head metadata but not late suspended head metadata', async () => {
-      const page = getHtml(await server.fetchAsync('/head').then((res) => res.text()));
+    it('injects `generateMetadata()` tags into streamed HTML <head>', async () => {
+      const page = getHtml(await server.fetchAsync('/metadata').then((res) => res.text()));
 
-      expect(page.querySelector('html > body [data-testid="late-head-text"]')?.innerText).toBe(
-        'Late Head'
+      expect(page.querySelector('html > body [data-testid="metadata-text"]')?.innerText).toBe(
+        'Metadata'
+      );
+      expect(page.querySelector('html > head > title')?.innerText).toBe('Metadata Page');
+      expect(page.querySelector('html > head > meta[name="description"]')?.attributes.content).toBe(
+        'Page with generateMetadata'
+      );
+      expect(page.querySelector('html > head > meta[name="keywords"]')?.attributes.content).toBe(
+        'metadata, e2e'
       );
       expect(
-        page.querySelector('html > head > meta[name="expo-e2e-shell-head"]')?.attributes.content
-      ).toBe('shell');
-      expect(page.querySelector('html > head > meta[name="expo-e2e-late-head"]')).toBeNull();
+        page.querySelector('html > head > meta[property="og:title"]')?.attributes.content
+      ).toBe('Metadata OG Title');
+      expect(
+        page.querySelector('html > head > meta[property="og:description"]')?.attributes.content
+      ).toBe('Metadata OG Description');
+      expect(
+        page.querySelector('html > head > meta[name="twitter:card"]')?.attributes.content
+      ).toBe('summary');
+      expect(
+        page.querySelector('html > head > meta[name="twitter:title"]')?.attributes.content
+      ).toBe('Metadata Twitter Title');
+      expect(
+        page.querySelector('html > head > meta[name="expo-e2e-metadata-head"]')?.attributes.content
+      ).toBe('head');
     });
 
     it('injects generateMetadata tags into the initial server HTML head before Head tags', async () => {

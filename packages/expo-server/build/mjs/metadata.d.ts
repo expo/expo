@@ -137,16 +137,15 @@ export type MetadataVerification = {
     other?: Record<string, string | string[]>;
 };
 export type MetadataAppleWebApp = {
-    capable?: boolean;
     title?: string;
     statusBarStyle?: 'default' | 'black' | 'black-translucent';
     startupImage?: string | {
         url: string;
         media?: string;
-    } | Array<string | {
+    } | (string | {
         url: string;
         media?: string;
-    }>;
+    })[];
 };
 export type MetadataItunes = {
     appId: string;

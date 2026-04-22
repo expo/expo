@@ -1,4 +1,11 @@
-import { serializeMetadataToHtml, serializeMetadataToTags } from '../metadata';
+import {
+  resolveAppleWebApp,
+  resolveOpenGraph,
+  resolveOther,
+  resolveRobots,
+  resolveVerification,
+} from '../metadata/resolve';
+import { serializeMetadataToHtml, serializeMetadataToTags } from '../metadata/serialize';
 
 describe(serializeMetadataToTags, () => {
   it('serializes metadata in stable tag order', () => {
@@ -49,10 +56,10 @@ describe(serializeMetadataToTags, () => {
         : `${tag.tagName}:${tag.attributes?.name ?? tag.attributes?.property ?? tag.attributes?.rel}`
     );
 
-      expect(result).toEqual([
-        'title:Page',
-        'meta:description',
-        'meta:application-name',
+    expect(result).toEqual([
+      'title:Page',
+      'meta:description',
+      'meta:application-name',
       'meta:keywords',
       'meta:generator',
       'meta:referrer',
@@ -65,7 +72,7 @@ describe(serializeMetadataToTags, () => {
       'link:canonical',
       'link:alternate',
       'meta:og:title',
-        'meta:twitter:card',
+      'meta:twitter:card',
       'link:icon',
       'meta:format-detection',
       'meta:google-site-verification',
@@ -123,6 +130,16 @@ describe(serializeMetadataToHtml, () => {
     expect(html).toContain('name="twitter:image" content="/b.png"');
     expect(html).toContain('name="author" content="one"');
     expect(html).toContain('name="author" content="two"');
+  });
+
+  it('stringifies numeric other values', () => {
+    const html = serializeMetadataToHtml({
+      other: {
+        rating: 5,
+      },
+    });
+
+    expect(html).toContain('name="rating" content="5"');
   });
 
   describe('robots', () => {
@@ -260,9 +277,7 @@ describe(serializeMetadataToHtml, () => {
       expect(html).toContain(
         'property="article:published_time" content="2024-01-01T00:00:00.000Z"'
       );
-      expect(html).toContain(
-        'property="article:modified_time" content="2024-01-02T00:00:00.000Z"'
-      );
+      expect(html).toContain('property="article:modified_time" content="2024-01-02T00:00:00.000Z"');
       expect(html).toContain(
         'property="article:expiration_time" content="2025-01-01T00:00:00.000Z"'
       );
@@ -271,6 +286,27 @@ describe(serializeMetadataToHtml, () => {
       expect(html).toContain('property="article:tag" content="react"');
       expect(html).toContain('property="article:author" content="Author One"');
       expect(html).toContain('property="article:author" content="Author Two"');
+    });
+
+    it('does not serialize article-specific fields for non-article types', () => {
+      const html = serializeMetadataToHtml({
+        openGraph: {
+          type: 'website',
+          publishedTime: '2024-01-01T00:00:00.000Z',
+          modifiedTime: '2024-01-02T00:00:00.000Z',
+          expirationTime: '2025-01-01T00:00:00.000Z',
+          section: 'Technology',
+          tags: ['expo', 'react'],
+          authors: ['Author One', 'Author Two'],
+        },
+      });
+
+      expect(html).not.toContain('property="article:published_time"');
+      expect(html).not.toContain('property="article:modified_time"');
+      expect(html).not.toContain('property="article:expiration_time"');
+      expect(html).not.toContain('property="article:section"');
+      expect(html).not.toContain('property="article:tag"');
+      expect(html).not.toContain('property="article:author"');
     });
 
     it('serializes additional OG properties', () => {
@@ -373,9 +409,7 @@ describe(serializeMetadataToHtml, () => {
       expect(html).toContain('name="twitter:app:id:iphone" content="id123"');
       expect(html).toContain('name="twitter:app:id:ipad" content="id456"');
       expect(html).toContain('name="twitter:app:id:googleplay" content="com.example.app"');
-      expect(html).toContain(
-        'name="twitter:app:url:iphone" content="https://iphone.example.dev"'
-      );
+      expect(html).toContain('name="twitter:app:url:iphone" content="https://iphone.example.dev"');
       expect(html).toContain('name="twitter:app:url:ipad" content="https://ipad.example.dev"');
       expect(html).toContain(
         'name="twitter:app:url:googleplay" content="https://play.example.dev"'
@@ -484,7 +518,6 @@ describe(serializeMetadataToHtml, () => {
     it('serializes apple web app metadata', () => {
       const html = serializeMetadataToHtml({
         appleWebApp: {
-          capable: true,
           title: 'My App',
           statusBarStyle: 'black-translucent',
           startupImage: [
@@ -514,14 +547,6 @@ describe(serializeMetadataToHtml, () => {
       });
 
       expect(html).toContain('name="mobile-web-app-capable" content="yes"');
-    });
-
-    it('serializes capable as no when false', () => {
-      const html = serializeMetadataToHtml({
-        appleWebApp: { capable: false },
-      });
-
-      expect(html).toContain('name="mobile-web-app-capable" content="no"');
     });
   });
 
@@ -637,5 +662,100 @@ describe(serializeMetadataToHtml, () => {
 
       expect(html).toContain('rel="manifest" href="/manifest.json"');
     });
+  });
+});
+
+describe('resolveMetadata helpers', () => {
+  it('resolveOpenGraph drops article fields unless type is article', () => {
+    expect(
+      resolveOpenGraph({
+        type: 'website',
+        publishedTime: '2024-01-01T00:00:00.000Z',
+        tags: ['expo'],
+        authors: ['Author One'],
+      })?.article
+    ).toEqual([]);
+
+    expect(
+      resolveOpenGraph({
+        type: 'article',
+        publishedTime: '2024-01-01T00:00:00.000Z',
+        tags: ['expo'],
+        authors: ['Author One'],
+      })?.article
+    ).toEqual([
+      { property: 'article:published_time', content: '2024-01-01T00:00:00.000Z' },
+      { property: 'article:tag', content: 'expo' },
+      { property: 'article:author', content: 'Author One' },
+    ]);
+  });
+
+  it('resolveAppleWebApp normalizes startupImage descriptors', () => {
+    expect(
+      resolveAppleWebApp({
+        title: 'My App',
+        startupImage: [
+          '/startup-768.png',
+          {
+            url: '/startup-1536.png',
+            media: '(device-width: 768px)',
+          },
+        ],
+      })
+    ).toEqual({
+      capable: 'yes',
+      title: 'My App',
+      statusBarStyle: undefined,
+      startupImages: [
+        { href: '/startup-768.png' },
+        { href: '/startup-1536.png', media: '(device-width: 768px)' },
+      ],
+    });
+  });
+
+  it('resolveRobots emits robots and googleBot strings', () => {
+    expect(
+      resolveRobots({
+        index: true,
+        follow: false,
+        googleBot: {
+          index: true,
+          'max-image-preview': 'large',
+        },
+      })
+    ).toEqual({
+      robots: 'index, nofollow',
+      googleBot: 'index, max-image-preview:large',
+    });
+  });
+
+  it('resolveVerification flattens provider arrays', () => {
+    expect(
+      resolveVerification({
+        google: ['abc', 'def'],
+        other: {
+          me: ['mailto:test@example.dev', 'https://example.dev/about'],
+        },
+      })
+    ).toEqual({
+      google: ['abc', 'def'],
+      yahoo: [],
+      yandex: [],
+      other: [
+        { name: 'me', content: 'mailto:test@example.dev' },
+        { name: 'me', content: 'https://example.dev/about' },
+      ],
+    });
+  });
+
+  it('resolveOther repeats array values', () => {
+    expect(
+      resolveOther({
+        author: ['one', 'two'],
+      })
+    ).toEqual([
+      { name: 'author', content: 'one' },
+      { name: 'author', content: 'two' },
+    ]);
   });
 });
