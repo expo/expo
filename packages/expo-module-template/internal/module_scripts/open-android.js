@@ -27,7 +27,7 @@ function openApp(command, args, options = {}) {
 
 switch (process.platform) {
   case 'darwin':
-    // On MacOS we spawn xed, which is a short running process so we can inherit stdio
+    // Open command sends an AppleEvent to launch the app and then exits immediately, so we can inherit the stdio.
     openApp('open', ['-a', 'Android Studio', projectPath], {
       detached: false,
       stdio: 'inherit',
