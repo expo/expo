@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react-native';
-import React from 'react';
 import { View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 

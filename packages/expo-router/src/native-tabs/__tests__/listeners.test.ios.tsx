@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, type NativeSyntheticEvent } from 'react-native';
 import {
   Tabs as _Tabs,

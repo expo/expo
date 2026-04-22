@@ -1,5 +1,4 @@
 import { renderHook, act } from '@testing-library/react-native';
-import React from 'react';
 import type { ImageSourcePropType } from 'react-native';
 
 import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../../common/elements';

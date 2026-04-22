@@ -1,5 +1,4 @@
 import { render, renderHook, within } from '@testing-library/react-native';
-import React from 'react';
 import { Platform, View } from 'react-native';
 
 import type { NativeStackHeaderItem } from '../types';
