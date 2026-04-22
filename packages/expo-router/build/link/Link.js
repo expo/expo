@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Redirect = exports.Link = void 0;
-const ExpoLink_1 = require("./ExpoLink");
-const elements_1 = require("./elements");
-const href_1 = require("./href");
-const link_apple_zoom_1 = require("./zoom/link-apple-zoom");
-const link_apple_zoom_target_1 = require("./zoom/link-apple-zoom-target");
-exports.Link = Object.assign(
+import { ExpoLink } from './ExpoLink';
+import { LinkMenu, LinkMenuAction, LinkPreview, LinkTrigger } from './elements';
+import { resolveHref } from './href';
+import { LinkAppleZoom } from './zoom/link-apple-zoom';
+import { LinkAppleZoomTarget } from './zoom/link-apple-zoom-target';
+export const Link = Object.assign(
 /**
  * Component that renders a link using [`href`](#href) to another route.
  * By default, it accepts children and wraps them in a `<Text>` component.
@@ -35,16 +32,15 @@ exports.Link = Object.assign(
  */
 function Link(props) {
     // Re-exporting ExpoLink here so that Link.* can be used in server components.
-    return <ExpoLink_1.ExpoLink {...props}/>;
+    return <ExpoLink {...props}/>;
 }, {
-    resolveHref: href_1.resolveHref,
-    Menu: elements_1.LinkMenu,
-    Trigger: elements_1.LinkTrigger,
-    Preview: elements_1.LinkPreview,
-    MenuAction: elements_1.LinkMenuAction,
-    AppleZoom: link_apple_zoom_1.LinkAppleZoom,
-    AppleZoomTarget: link_apple_zoom_target_1.LinkAppleZoomTarget,
+    resolveHref,
+    Menu: LinkMenu,
+    Trigger: LinkTrigger,
+    Preview: LinkPreview,
+    MenuAction: LinkMenuAction,
+    AppleZoom: LinkAppleZoom,
+    AppleZoomTarget: LinkAppleZoomTarget,
 });
-var Redirect_1 = require("./Redirect");
-Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Redirect_1.Redirect; } });
+export { Redirect } from './Redirect';
 //# sourceMappingURL=Link.js.map

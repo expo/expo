@@ -1,18 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TabTrigger = TabTrigger;
-exports.isTabTrigger = isTabTrigger;
-exports.useTabTrigger = useTabTrigger;
-const react_slot_1 = require("@radix-ui/react-slot");
-const react_1 = require("react");
-const react_native_1 = require("react-native");
-const TabContext_1 = require("./TabContext");
-const getPathFromState_1 = require("../fork/getPathFromState");
-const imperative_api_1 = require("../imperative-api");
-const useLinkToPathProps_1 = require("../link/useLinkToPathProps");
-const matchers_1 = require("../matchers");
-const Navigator_1 = require("../views/Navigator");
-const TabTriggerSlot = react_slot_1.Slot;
+import { Slot } from '@radix-ui/react-slot';
+import { use, useCallback } from 'react';
+import { StyleSheet, Pressable } from 'react-native';
+import { TabTriggerMapContext } from './TabContext';
+import { appendBaseUrl } from '../fork/getPathFromState';
+import { router } from '../imperative-api';
+import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
+import { stripGroupSegmentsFromPath } from '../matchers';
+import { useNavigatorContext } from '../views/Navigator';
+const TabTriggerSlot = Slot;
 /**
  * Creates a trigger to navigate to a tab. When used as child of `TabList`, its
  * functionality slightly changes since the `href` prop is required,
@@ -30,7 +25,7 @@ const TabTriggerSlot = react_slot_1.Slot;
  * </Tabs>
  * ```
  */
-function TabTrigger({ asChild, name, href, resetOnFocus, ...props }) {
+export function TabTrigger({ asChild, name, href, resetOnFocus, ...props }) {
     const { trigger, triggerProps } = useTabTrigger({
         name,
         resetOnFocus,
@@ -45,25 +40,25 @@ function TabTrigger({ asChild, name, href, resetOnFocus, ...props }) {
     else {
         // These props are not typed, but are allowed by React Native Web
         const reactNativeWebProps = { href: trigger?.resolvedHref };
-        return (<react_native_1.Pressable style={styles.tabTrigger} {...reactNativeWebProps} {...props} {...triggerProps}>
+        return (<Pressable style={styles.tabTrigger} {...reactNativeWebProps} {...props} {...triggerProps}>
         {props.children}
-      </react_native_1.Pressable>);
+      </Pressable>);
     }
 }
 /**
  * @hidden
  */
-function isTabTrigger(child) {
+export function isTabTrigger(child) {
     return child.type === TabTrigger;
 }
 /**
  * Utility hook creating custom `TabTrigger`.
  */
-function useTabTrigger(options) {
-    const { state, navigation } = (0, Navigator_1.useNavigatorContext)();
+export function useTabTrigger(options) {
+    const { state, navigation } = useNavigatorContext();
     const { name, resetOnFocus, onPress, onLongPress } = options;
-    const triggerMap = (0, react_1.use)(TabContext_1.TabTriggerMapContext);
-    const getTrigger = (0, react_1.useCallback)((name) => {
+    const triggerMap = use(TabTriggerMapContext);
+    const getTrigger = useCallback((name) => {
         const config = triggerMap[name];
         if (!config) {
             return;
@@ -71,16 +66,16 @@ function useTabTrigger(options) {
         return {
             isFocused: state.index === config.index,
             route: state.routes[config.index],
-            resolvedHref: (0, matchers_1.stripGroupSegmentsFromPath)((0, getPathFromState_1.appendBaseUrl)(config.href)),
+            resolvedHref: stripGroupSegmentsFromPath(appendBaseUrl(config.href)),
             ...config,
         };
     }, [triggerMap]);
     const trigger = name !== undefined ? getTrigger(name) : undefined;
-    const switchTab = (0, react_1.useCallback)((name, options) => {
+    const switchTab = useCallback((name, options) => {
         const config = triggerMap[name];
         if (config) {
             if (config.type === 'external') {
-                return imperative_api_1.router.navigate(config.href);
+                return router.navigate(config.href);
             }
             else {
                 return navigation?.dispatch({
@@ -102,7 +97,7 @@ function useTabTrigger(options) {
             });
         }
     }, [navigation, triggerMap]);
-    const handleOnPress = (0, react_1.useCallback)((event) => {
+    const handleOnPress = useCallback((event) => {
         onPress?.(event);
         if (!trigger)
             return;
@@ -113,13 +108,13 @@ function useTabTrigger(options) {
             target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
             canPreventDefault: true,
         });
-        if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
+        if (!shouldHandleMouseEvent(event))
             return;
         if (!trigger.isFocused) {
             switchTab(name, { resetOnFocus });
         }
     }, [onPress, name, resetOnFocus, trigger]);
-    const handleOnLongPress = (0, react_1.useCallback)((event) => {
+    const handleOnLongPress = useCallback((event) => {
         onLongPress?.(event);
         if (!trigger)
             return;
@@ -129,7 +124,7 @@ function useTabTrigger(options) {
             type: 'tabLongPress',
             target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
         });
-        if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
+        if (!shouldHandleMouseEvent(event))
             return;
         if (!trigger.isFocused) {
             switchTab(name, {
@@ -149,7 +144,7 @@ function useTabTrigger(options) {
         triggerProps,
     };
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     tabTrigger: {
         flexDirection: 'row',
         justifyContent: 'space-between',

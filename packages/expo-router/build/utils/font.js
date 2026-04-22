@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertTextStyleToRNTextStyle = convertTextStyleToRNTextStyle;
-const react_native_1 = require("react-native");
-function convertTextStyleToRNTextStyle(style) {
-    const flattenedStyle = react_native_1.StyleSheet.flatten(style);
+import { StyleSheet } from 'react-native';
+export function convertTextStyleToRNTextStyle(style) {
+    const flattenedStyle = StyleSheet.flatten(style);
     if (!flattenedStyle) {
         return undefined;
     }

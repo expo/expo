@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DarkTheme = void 0;
-const fonts_1 = require("./fonts");
-exports.DarkTheme = {
+import { fonts } from './fonts';
+export const DarkTheme = {
     dark: true,
     colors: {
         primary: 'rgb(10, 132, 255)',
@@ -12,6 +9,6 @@ exports.DarkTheme = {
         border: 'rgb(39, 39, 41)',
         notification: 'rgb(255, 69, 58)',
     },
-    fonts: fonts_1.fonts,
+    fonts,
 };
 //# sourceMappingURL=DarkTheme.js.map

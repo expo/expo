@@ -1,89 +1,50 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useNavigationBuilder = useNavigationBuilder;
-const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
-const React = __importStar(require("react"));
-const react_1 = require("react");
+import deepEqual from 'fast-deep-equal';
+import * as React from 'react';
+import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
-const react_is_1 = require("react-is");
-const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
-const routers_1 = require("../routers");
-const Group_1 = require("./Group");
-const NavigationHelpersContext_1 = require("./NavigationHelpersContext");
-const NavigationMetaContext_1 = require("./NavigationMetaContext");
-const NavigationProvider_1 = require("./NavigationProvider");
-const NavigationStateContext_1 = require("./NavigationStateContext");
-const PreventRemoveProvider_1 = require("./PreventRemoveProvider");
-const Screen_1 = require("./Screen");
-const UnhandledActionContext_1 = require("./UnhandledActionContext");
-const deepFreeze_1 = require("./deepFreeze");
-const isArrayEqual_1 = require("./isArrayEqual");
-const isRecordEqual_1 = require("./isRecordEqual");
-const types_1 = require("./types");
-const useChildListeners_1 = require("./useChildListeners");
-const useClientLayoutEffect_1 = require("./useClientLayoutEffect");
-const useComponent_1 = require("./useComponent");
-const useCurrentRender_1 = require("./useCurrentRender");
-const useDescriptors_1 = require("./useDescriptors");
-const useEventEmitter_1 = require("./useEventEmitter");
-const useFocusEvents_1 = require("./useFocusEvents");
-const useFocusedListenersChildrenAdapter_1 = require("./useFocusedListenersChildrenAdapter");
-const useIsFocused_1 = require("./useIsFocused");
-const useKeyedChildListeners_1 = require("./useKeyedChildListeners");
-const useLazyValue_1 = require("./useLazyValue");
-const useNavigationHelpers_1 = require("./useNavigationHelpers");
-const useNavigationState_1 = require("./useNavigationState");
-const useOnAction_1 = require("./useOnAction");
-const useOnGetState_1 = require("./useOnGetState");
-const useOnRouteFocus_1 = require("./useOnRouteFocus");
-const useRegisterNavigator_1 = require("./useRegisterNavigator");
-const useScheduleUpdate_1 = require("./useScheduleUpdate");
+import { isValidElementType } from 'react-is';
+import useLatestCallback from '../../utils/useLatestCallback';
+import { CommonActions, } from '../routers';
+import { Group } from './Group';
+import { NavigationHelpersContext } from './NavigationHelpersContext';
+import { NavigationMetaContext } from './NavigationMetaContext';
+import { NavigationRouteContext } from './NavigationProvider';
+import { NavigationStateContext } from './NavigationStateContext';
+import { PreventRemoveProvider } from './PreventRemoveProvider';
+import { Screen } from './Screen';
+import { UnhandledActionContext } from './UnhandledActionContext';
+import { deepFreeze } from './deepFreeze';
+import { isArrayEqual } from './isArrayEqual';
+import { isRecordEqual } from './isRecordEqual';
+import { PrivateValueStore, } from './types';
+import { useChildListeners } from './useChildListeners';
+import { useClientLayoutEffect } from './useClientLayoutEffect';
+import { useComponent } from './useComponent';
+import { useCurrentRender } from './useCurrentRender';
+import { useDescriptors } from './useDescriptors';
+import { useEventEmitter } from './useEventEmitter';
+import { useFocusEvents } from './useFocusEvents';
+import { useFocusedListenersChildrenAdapter } from './useFocusedListenersChildrenAdapter';
+import { FocusedRouteKeyContext } from './useIsFocused';
+import { useKeyedChildListeners } from './useKeyedChildListeners';
+import { useLazyValue } from './useLazyValue';
+import { useNavigationHelpers } from './useNavigationHelpers';
+import { NavigationStateListenerProvider } from './useNavigationState';
+import { useOnAction } from './useOnAction';
+import { useOnGetState } from './useOnGetState';
+import { useOnRouteFocus } from './useOnRouteFocus';
+import { useRegisterNavigator } from './useRegisterNavigator';
+import { useScheduleUpdate } from './useScheduleUpdate';
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-types_1.PrivateValueStore;
+PrivateValueStore;
 const CONSUMED_PARAMS = Symbol('CONSUMED_PARAMS');
 const isScreen = (child) => {
-    return child.type === Screen_1.Screen;
+    return child.type === Screen;
 };
 const isGroup = (child) => {
-    return child.type === React.Fragment || child.type === Group_1.Group;
+    return child.type === React.Fragment || child.type === Group;
 };
 const isValidKey = (key) => key === undefined || (typeof key === 'string' && key !== '');
 /**
@@ -124,7 +85,7 @@ const getRouteConfigsFromChildren = (children, groupKey, groupOptions, groupLayo
                 acc.push(...getRouteConfigsFromChildren(child.props.children, child.props.navigationKey, 
                 // FIXME
                 // @ts-expect-error: add validation
-                child.type !== Group_1.Group
+                child.type !== Group
                     ? groupOptions
                     : groupOptions != null
                         ? [...groupOptions, child.props.screenOptions]
@@ -159,7 +120,7 @@ const getRouteConfigsFromChildren = (children, groupKey, groupOptions, groupLayo
                 if (children != null && typeof children !== 'function') {
                     throw new Error(`Got an invalid value for 'children' prop for the screen '${name}'. It must be a function returning a React Element.`);
                 }
-                if (component !== undefined && !(0, react_is_1.isValidElementType)(component)) {
+                if (component !== undefined && !isValidElementType(component)) {
                     throw new Error(`Got an invalid value for 'component' prop for the screen '${name}'. It must be a valid React Component.`);
                 }
                 if (getComponent !== undefined && typeof getComponent !== 'function') {
@@ -208,15 +169,15 @@ const getStateFromParams = (params) => {
  * @param options Options object containing `children` and additional options for the router.
  * @returns An object containing `state`, `navigation`, `descriptors` objects.
  */
-function useNavigationBuilder(createRouter, options) {
-    const navigatorKey = (0, useRegisterNavigator_1.useRegisterNavigator)();
-    const route = (0, react_1.use)(NavigationProvider_1.NavigationRouteContext);
+export function useNavigationBuilder(createRouter, options) {
+    const navigatorKey = useRegisterNavigator();
+    const route = use(NavigationRouteContext);
     const isNestedParamsConsumed = typeof route?.params === 'object' && route.params != null
         ? CONSUMED_PARAMS in route.params && route.params[CONSUMED_PARAMS] === route.params
         : false;
     const { children, layout, screenOptions, screenLayout, screenListeners, UNSTABLE_router, ...rest } = options;
     const routeConfigs = getRouteConfigsFromChildren(children);
-    const router = (0, useLazyValue_1.useLazyValue)(() => {
+    const router = useLazyValue(() => {
         if (rest.initialRouteName != null &&
             routeConfigs.every((config) => config.props.name !== rest.initialRouteName)) {
             throw new Error(`Couldn't find a screen named '${rest.initialRouteName}' to use as 'initialRouteName'.`);
@@ -257,10 +218,10 @@ function useNavigationBuilder(createRouter, options) {
     const isStateValid = React.useCallback((state) => state.type === undefined || state.type === router.type, [router.type]);
     const isStateInitialized = React.useCallback((state) => state !== undefined && state.stale === false && isStateValid(state), [isStateValid]);
     const doesStateHaveOnlyInvalidRoutes = React.useCallback((state) => state.routes.every((r) => !routeNames.includes(r.name)), [routeNames]);
-    const { state: currentState, getState: getCurrentState, setState: setCurrentState, setKey, getKey, getIsInitial, } = (0, react_1.use)(NavigationStateContext_1.NavigationStateContext);
+    const { state: currentState, getState: getCurrentState, setState: setCurrentState, setKey, getKey, getIsInitial, } = use(NavigationStateContext);
     const stateCleanupRef = React.useRef(false);
     const lastStateRef = React.useRef(undefined);
-    const setState = (0, useLatestCallback_1.default)((state) => {
+    const setState = useLatestCallback((state) => {
         if (stateCleanupRef.current) {
             // Store the state locally in case the current navigator is in `Activity`
             lastStateRef.current = state;
@@ -383,8 +344,8 @@ function useNavigationBuilder(createRouter, options) {
             routeGetIdList,
         });
     }
-    else if (!(0, isArrayEqual_1.isArrayEqual)(state.routeNames, routeNames) ||
-        !(0, isRecordEqual_1.isRecordEqual)(routeKeyList, previousRouteKeyList)) {
+    else if (!isArrayEqual(state.routeNames, routeNames) ||
+        !isRecordEqual(routeKeyList, previousRouteKeyList)) {
         // When the list of route names change, the router should handle it to remove invalid routes
         nextState = router.getStateForRouteNamesChange(state, {
             routeNames,
@@ -408,7 +369,7 @@ function useNavigationBuilder(createRouter, options) {
             }
             else {
                 // If the route was updated with new state, we should reset to it
-                action = routers_1.CommonActions.reset(route.params.state);
+                action = CommonActions.reset(route.params.state);
             }
         }
         else if (typeof route.params.screen === 'string' &&
@@ -417,13 +378,13 @@ function useNavigationBuilder(createRouter, options) {
             if (options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
                 !routeNames.includes(route.params.screen)) {
                 const state = getStateFromParams(route.params);
-                if (state != null && !(0, fast_deep_equal_1.default)(state, unhandledState)) {
+                if (state != null && !deepEqual(state, unhandledState)) {
                     setUnhandledState(state);
                 }
             }
             else {
                 // If the route was updated with new screen name and/or params, we should navigate there
-                action = routers_1.CommonActions.navigate({
+                action = CommonActions.navigate({
                     name: route.params.screen,
                     params: route.params.params,
                     path: route.params.path,
@@ -460,7 +421,7 @@ function useNavigationBuilder(createRouter, options) {
         }
     }, [didConsumeNestedParams, route?.params]);
     const shouldUpdate = state !== nextState;
-    (0, useScheduleUpdate_1.useScheduleUpdate)(() => {
+    useScheduleUpdate(() => {
         if (shouldUpdate) {
             // Schedule an update if the state needs to be updated
             setState(nextState);
@@ -508,14 +469,14 @@ function useNavigationBuilder(createRouter, options) {
     // To avoid this, we use a ref for render phase, and immediately clear it on commit
     const stateRef = React.useRef(state);
     stateRef.current = state;
-    (0, useClientLayoutEffect_1.useClientLayoutEffect)(() => {
+    useClientLayoutEffect(() => {
         stateRef.current = null;
     });
-    const getState = (0, useLatestCallback_1.default)(() => {
+    const getState = useLatestCallback(() => {
         const currentState = getCurrentState();
-        return (0, deepFreeze_1.deepFreeze)((isStateInitialized(currentState) ? currentState : initializedState));
+        return deepFreeze((isStateInitialized(currentState) ? currentState : initializedState));
     });
-    const emitter = (0, useEventEmitter_1.useEventEmitter)((e) => {
+    const emitter = useEventEmitter((e) => {
         const routeNames = [];
         let route;
         if (e.target) {
@@ -556,13 +517,13 @@ function useNavigationBuilder(createRouter, options) {
             .filter((cb, i, self) => cb && self.lastIndexOf(cb) === i);
         listeners.forEach((listener) => listener?.(e));
     });
-    (0, useFocusEvents_1.useFocusEvents)({ state, emitter });
+    useFocusEvents({ state, emitter });
     React.useEffect(() => {
         emitter.emit({ type: 'state', data: { state } });
     }, [emitter, state]);
-    const { listeners: childListeners, addListener } = (0, useChildListeners_1.useChildListeners)();
-    const { keyedListeners, addKeyedListener } = (0, useKeyedChildListeners_1.useKeyedChildListeners)();
-    const onAction = (0, useOnAction_1.useOnAction)({
+    const { listeners: childListeners, addListener } = useChildListeners();
+    const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
+    const onAction = useOnAction({
         router,
         getState,
         setState,
@@ -576,14 +537,14 @@ function useNavigationBuilder(createRouter, options) {
         },
         emitter,
     });
-    const onRouteFocus = (0, useOnRouteFocus_1.useOnRouteFocus)({
+    const onRouteFocus = useOnRouteFocus({
         router,
         key: route?.key,
         getState,
         setState,
     });
-    const onUnhandledActionParent = (0, react_1.use)(UnhandledActionContext_1.UnhandledActionContext);
-    const onUnhandledAction = (0, useLatestCallback_1.default)((action) => {
+    const onUnhandledActionParent = use(UnhandledActionContext);
+    const onUnhandledAction = useLatestCallback((action) => {
         if (options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
             action.type === 'NAVIGATE' &&
             action.payload != null &&
@@ -609,7 +570,7 @@ function useNavigationBuilder(createRouter, options) {
         }
         onUnhandledActionParent?.(action);
     });
-    const navigation = (0, useNavigationHelpers_1.useNavigationHelpers)({
+    const navigation = useNavigationHelpers({
         id: options.id,
         onAction,
         onUnhandledAction,
@@ -618,15 +579,15 @@ function useNavigationBuilder(createRouter, options) {
         router,
         stateRef,
     });
-    (0, useFocusedListenersChildrenAdapter_1.useFocusedListenersChildrenAdapter)({
+    useFocusedListenersChildrenAdapter({
         navigation,
         focusedListeners: childListeners.focus,
     });
-    (0, useOnGetState_1.useOnGetState)({
+    useOnGetState({
         getState,
         getStateListeners: keyedListeners.getState,
     });
-    const { describe, descriptors } = (0, useDescriptors_1.useDescriptors)({
+    const { describe, descriptors } = useDescriptors({
         state,
         screens,
         navigation,
@@ -642,12 +603,12 @@ function useNavigationBuilder(createRouter, options) {
         // @ts-expect-error: this should have both core and custom events, but too much work right now
         emitter,
     });
-    (0, useCurrentRender_1.useCurrentRender)({
+    useCurrentRender({
         state,
         navigation,
         descriptors,
     });
-    const NavigationContent = (0, useComponent_1.useComponent)((children) => {
+    const NavigationContent = useComponent((children) => {
         const element = layout != null
             ? layout({
                 state,
@@ -656,15 +617,15 @@ function useNavigationBuilder(createRouter, options) {
                 children,
             })
             : children;
-        return (<NavigationMetaContext_1.NavigationMetaContext.Provider value={undefined}>
-        <NavigationHelpersContext_1.NavigationHelpersContext.Provider value={navigation}>
-          <useNavigationState_1.NavigationStateListenerProvider state={state}>
-            <useIsFocused_1.FocusedRouteKeyContext.Provider value={state.routes[state.index].key}>
-              <PreventRemoveProvider_1.PreventRemoveProvider>{element}</PreventRemoveProvider_1.PreventRemoveProvider>
-            </useIsFocused_1.FocusedRouteKeyContext.Provider>
-          </useNavigationState_1.NavigationStateListenerProvider>
-        </NavigationHelpersContext_1.NavigationHelpersContext.Provider>
-      </NavigationMetaContext_1.NavigationMetaContext.Provider>);
+        return (<NavigationMetaContext.Provider value={undefined}>
+        <NavigationHelpersContext.Provider value={navigation}>
+          <NavigationStateListenerProvider state={state}>
+            <FocusedRouteKeyContext.Provider value={state.routes[state.index].key}>
+              <PreventRemoveProvider>{element}</PreventRemoveProvider>
+            </FocusedRouteKeyContext.Provider>
+          </NavigationStateListenerProvider>
+        </NavigationHelpersContext.Provider>
+      </NavigationMetaContext.Provider>);
     });
     return {
         state,

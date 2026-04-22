@@ -1,65 +1,26 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseNavigationContainer = BaseNavigationContainer;
-const React = __importStar(require("react"));
-const react_1 = require("react");
-const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
-const routers_1 = require("../routers");
-const DeprecatedNavigationInChildContext_1 = require("./DeprecatedNavigationInChildContext");
-const EnsureSingleNavigator_1 = require("./EnsureSingleNavigator");
-const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
-const NavigationContainerRefContext_1 = require("./NavigationContainerRefContext");
-const NavigationIndependentTreeContext_1 = require("./NavigationIndependentTreeContext");
-const NavigationStateContext_1 = require("./NavigationStateContext");
-const UnhandledActionContext_1 = require("./UnhandledActionContext");
-const checkDuplicateRouteNames_1 = require("./checkDuplicateRouteNames");
-const checkSerializable_1 = require("./checkSerializable");
-const createNavigationContainerRef_1 = require("./createNavigationContainerRef");
-const findFocusedRoute_1 = require("./findFocusedRoute");
-const ThemeProvider_1 = require("./theming/ThemeProvider");
-const useChildListeners_1 = require("./useChildListeners");
-const useEventEmitter_1 = require("./useEventEmitter");
-const useKeyedChildListeners_1 = require("./useKeyedChildListeners");
-const useNavigationIndependentTree_1 = require("./useNavigationIndependentTree");
-const useOptionsGetters_1 = require("./useOptionsGetters");
-const useSyncState_1 = require("./useSyncState");
+import * as React from 'react';
+import { use } from 'react';
+import useLatestCallback from '../../utils/useLatestCallback';
+import { CommonActions, } from '../routers';
+import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChildContext';
+import { EnsureSingleNavigator } from './EnsureSingleNavigator';
+import { NavigationBuilderContext } from './NavigationBuilderContext';
+import { NavigationContainerRefContext } from './NavigationContainerRefContext';
+import { NavigationIndependentTreeContext } from './NavigationIndependentTreeContext';
+import { NavigationStateContext } from './NavigationStateContext';
+import { UnhandledActionContext } from './UnhandledActionContext';
+import { checkDuplicateRouteNames } from './checkDuplicateRouteNames';
+import { checkSerializable } from './checkSerializable';
+import { NOT_INITIALIZED_ERROR } from './createNavigationContainerRef';
+import { findFocusedRoute } from './findFocusedRoute';
+import { ThemeProvider } from './theming/ThemeProvider';
+import { useChildListeners } from './useChildListeners';
+import { useEventEmitter } from './useEventEmitter';
+import { useKeyedChildListeners } from './useKeyedChildListeners';
+import { useNavigationIndependentTree } from './useNavigationIndependentTree';
+import { useOptionsGetters } from './useOptionsGetters';
+import { useSyncState } from './useSyncState';
 const serializableWarnings = [];
 const duplicateNameWarnings = [];
 /**
@@ -96,30 +57,30 @@ const getPartialState = (state) => {
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
-function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, onUnhandledAction, navigationInChildEnabled = false, theme, children, }) {
-    const parent = (0, react_1.use)(NavigationStateContext_1.NavigationStateContext);
-    const independent = (0, useNavigationIndependentTree_1.useNavigationIndependentTree)();
+export function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, onUnhandledAction, navigationInChildEnabled = false, theme, children, }) {
+    const parent = use(NavigationStateContext);
+    const independent = useNavigationIndependentTree();
     if (!parent.isDefault && !independent) {
         throw new Error("Looks like you have nested a 'NavigationContainer' inside another. Normally you need only one container at the root of the app, so this was probably an error. If this was intentional, wrap the container in 'NavigationIndependentTree' explicitly. Note that this will make the child navigators disconnected from the parent and you won't be able to navigate between them.");
     }
-    const { state, getState, setState, scheduleUpdate, flushUpdates } = (0, useSyncState_1.useSyncState)(() => getPartialState(initialState == null ? undefined : initialState));
+    const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState(() => getPartialState(initialState == null ? undefined : initialState));
     const isFirstMountRef = React.useRef(true);
     const navigatorKeyRef = React.useRef(undefined);
     const getKey = React.useCallback(() => navigatorKeyRef.current, []);
     const setKey = React.useCallback((key) => {
         navigatorKeyRef.current = key;
     }, []);
-    const { listeners, addListener } = (0, useChildListeners_1.useChildListeners)();
-    const { keyedListeners, addKeyedListener } = (0, useKeyedChildListeners_1.useKeyedChildListeners)();
-    const dispatch = (0, useLatestCallback_1.default)((action) => {
+    const { listeners, addListener } = useChildListeners();
+    const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
+    const dispatch = useLatestCallback((action) => {
         if (listeners.focus[0] == null) {
-            console.error(createNavigationContainerRef_1.NOT_INITIALIZED_ERROR);
+            console.error(NOT_INITIALIZED_ERROR);
         }
         else {
             listeners.focus[0]((navigation) => navigation.dispatch(action));
         }
     });
-    const canGoBack = (0, useLatestCallback_1.default)(() => {
+    const canGoBack = useLatestCallback(() => {
         if (listeners.focus[0] == null) {
             return false;
         }
@@ -131,37 +92,37 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
             return false;
         }
     });
-    const resetRoot = (0, useLatestCallback_1.default)((state) => {
+    const resetRoot = useLatestCallback((state) => {
         const target = state?.key ?? keyedListeners.getState.root?.().key;
         if (target == null) {
-            console.error(createNavigationContainerRef_1.NOT_INITIALIZED_ERROR);
+            console.error(NOT_INITIALIZED_ERROR);
         }
         else {
             listeners.focus[0]((navigation) => navigation.dispatch({
-                ...routers_1.CommonActions.reset(state),
+                ...CommonActions.reset(state),
                 target,
             }));
         }
     });
-    const getRootState = (0, useLatestCallback_1.default)(() => {
+    const getRootState = useLatestCallback(() => {
         return keyedListeners.getState.root?.();
     });
-    const getCurrentRoute = (0, useLatestCallback_1.default)(() => {
+    const getCurrentRoute = useLatestCallback(() => {
         const state = getRootState();
         if (state == null) {
             return undefined;
         }
-        const route = (0, findFocusedRoute_1.findFocusedRoute)(state);
+        const route = findFocusedRoute(state);
         return route;
     });
-    const isReady = (0, useLatestCallback_1.default)(() => listeners.focus[0] != null);
-    const emitter = (0, useEventEmitter_1.useEventEmitter)();
-    const { addOptionsGetter, getCurrentOptions } = (0, useOptionsGetters_1.useOptionsGetters)({});
+    const isReady = useLatestCallback(() => listeners.focus[0] != null);
+    const emitter = useEventEmitter();
+    const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
     const navigation = React.useMemo(() => ({
-        ...Object.keys(routers_1.CommonActions).reduce((acc, name) => {
+        ...Object.keys(CommonActions).reduce((acc, name) => {
             acc[name] = (...args) => 
             // @ts-expect-error: this is ok
-            dispatch(routers_1.CommonActions[name](...args));
+            dispatch(CommonActions[name](...args));
             return acc;
         }, {}),
         ...emitter.create('root'),
@@ -190,14 +151,14 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
         resetRoot,
     ]);
     React.useImperativeHandle(ref, () => navigation, [navigation]);
-    const onDispatchAction = (0, useLatestCallback_1.default)((action, noop) => {
+    const onDispatchAction = useLatestCallback((action, noop) => {
         emitter.emit({
             type: '__unsafe_action__',
             data: { action, noop, stack: stackRef.current },
         });
     });
     const lastEmittedOptionsRef = React.useRef(undefined);
-    const onOptionsChange = (0, useLatestCallback_1.default)((options) => {
+    const onOptionsChange = useLatestCallback((options) => {
         if (lastEmittedOptionsRef.current === options) {
             return;
         }
@@ -247,7 +208,7 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
         const hydratedState = getRootState();
         if (process.env.NODE_ENV !== 'production') {
             if (hydratedState !== undefined) {
-                const serializableResult = (0, checkSerializable_1.checkSerializable)(hydratedState);
+                const serializableResult = checkSerializable(hydratedState);
                 if (!serializableResult.serializable) {
                     const { location, reason } = serializableResult;
                     let path = '';
@@ -290,7 +251,7 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
                         console.warn(message);
                     }
                 }
-                const duplicateRouteNamesResult = (0, checkDuplicateRouteNames_1.checkDuplicateRouteNames)(hydratedState);
+                const duplicateRouteNamesResult = checkDuplicateRouteNames(hydratedState);
                 if (duplicateRouteNamesResult.length) {
                     const message = `Found screens with the same name nested inside one another. Check:\n${duplicateRouteNamesResult.map((locations) => `\n${locations.join(', ')}`)}\n\nThis can cause confusing behavior during navigation. Consider using unique names for each screen instead.`;
                     if (!duplicateNameWarnings.includes(message)) {
@@ -306,7 +267,7 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
         }
         isFirstMountRef.current = false;
     }, [getRootState, emitter, state]);
-    const defaultOnUnhandledAction = (0, useLatestCallback_1.default)((action) => {
+    const defaultOnUnhandledAction = useLatestCallback((action) => {
         if (process.env.NODE_ENV === 'production') {
             return;
         }
@@ -340,20 +301,20 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
         message += `\n\nThis is a development-only warning and won't be shown in production.`;
         console.error(message);
     });
-    return (<NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider value={false}>
-      <NavigationContainerRefContext_1.NavigationContainerRefContext.Provider value={navigation}>
-        <NavigationBuilderContext_1.NavigationBuilderContext.Provider value={builderContext}>
-          <NavigationStateContext_1.NavigationStateContext.Provider value={context}>
-            <UnhandledActionContext_1.UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
-              <DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                <EnsureSingleNavigator_1.EnsureSingleNavigator>
-                  <ThemeProvider_1.ThemeProvider value={theme}>{children}</ThemeProvider_1.ThemeProvider>
-                </EnsureSingleNavigator_1.EnsureSingleNavigator>
-              </DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext.Provider>
-            </UnhandledActionContext_1.UnhandledActionContext.Provider>
-          </NavigationStateContext_1.NavigationStateContext.Provider>
-        </NavigationBuilderContext_1.NavigationBuilderContext.Provider>
-      </NavigationContainerRefContext_1.NavigationContainerRefContext.Provider>
-    </NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider>);
+    return (<NavigationIndependentTreeContext.Provider value={false}>
+      <NavigationContainerRefContext.Provider value={navigation}>
+        <NavigationBuilderContext.Provider value={builderContext}>
+          <NavigationStateContext.Provider value={context}>
+            <UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
+              <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
+                <EnsureSingleNavigator>
+                  <ThemeProvider value={theme}>{children}</ThemeProvider>
+                </EnsureSingleNavigator>
+              </DeprecatedNavigationInChildContext.Provider>
+            </UnhandledActionContext.Provider>
+          </NavigationStateContext.Provider>
+        </NavigationBuilderContext.Provider>
+      </NavigationContainerRefContext.Provider>
+    </NavigationIndependentTreeContext.Provider>);
 }
 //# sourceMappingURL=BaseNavigationContainer.js.map

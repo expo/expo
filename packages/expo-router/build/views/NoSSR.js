@@ -1,13 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NoSSR = NoSSR;
-const react_1 = __importDefault(require("react"));
-function NoSSR({ children }) {
-    const [mounted, setMounted] = react_1.default.useState(false);
-    react_1.default.useEffect(() => {
+import React from 'react';
+export function NoSSR({ children }) {
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => {
         setMounted(true);
     }, []);
     if (!mounted) {

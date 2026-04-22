@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.findFocusedRoute = findFocusedRoute;
-function findFocusedRoute(state) {
+export function findFocusedRoute(state) {
     let current = state;
     while (current?.routes[current.index ?? 0].state != null) {
         current = current.routes[current.index ?? 0].state;

@@ -1,13 +1,10 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createStackNavigator = createStackNavigator;
-const core_1 = require("../../core");
+import { createNavigatorFactory, StackRouter, useNavigationBuilder, } from '../../core';
 const StackNavigator = (props) => {
-    const { state, descriptors, NavigationContent } = (0, core_1.useNavigationBuilder)(core_1.StackRouter, props);
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
     return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 };
-function createStackNavigator() {
-    return (0, core_1.createNavigatorFactory)(StackNavigator)();
+export function createStackNavigator() {
+    return createNavigatorFactory(StackNavigator)();
 }
 //# sourceMappingURL=createStackNavigator.js.map

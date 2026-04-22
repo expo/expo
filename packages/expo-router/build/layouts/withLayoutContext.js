@@ -1,54 +1,17 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFilterScreenChildren = useFilterScreenChildren;
-exports.withLayoutContext = withLayoutContext;
-const react_1 = __importStar(require("react"));
-const Route_1 = require("../Route");
-const NativeTabTrigger_1 = require("../native-tabs/NativeTabTrigger");
-const useScreens_1 = require("../useScreens");
-const IsWithinLayoutContext_1 = require("./IsWithinLayoutContext");
-const Protected_1 = require("../views/Protected");
-const Screen_1 = require("../views/Screen");
-function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
-    return (0, react_1.useMemo)(() => {
+import React, { Children, forwardRef, useMemo, } from 'react';
+import { useContextKey } from '../Route';
+import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
+import { useSortedScreens } from '../useScreens';
+import { IsWithinLayoutContext } from './IsWithinLayoutContext';
+import { isProtectedReactElement, Protected } from '../views/Protected';
+import { isScreen, Screen } from '../views/Screen';
+export function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = {}) {
+    return useMemo(() => {
         const customChildren = [];
         const screens = [];
         const protectedScreens = new Set();
         function flattenChild(child, exclude = false) {
-            if ((0, Screen_1.isScreen)(child, contextKey)) {
+            if (isScreen(child, contextKey)) {
                 if (exclude) {
                     protectedScreens.add(child.props.name);
                 }
@@ -57,12 +20,12 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                 }
                 return;
             }
-            if ((0, NativeTabTrigger_1.isNativeTabTrigger)(child, contextKey)) {
+            if (isNativeTabTrigger(child, contextKey)) {
                 if (exclude) {
                     protectedScreens.add(child.props.name);
                 }
                 else {
-                    const options = (0, NativeTabTrigger_1.convertTabPropsToOptions)(child.props);
+                    const options = convertTabPropsToOptions(child.props);
                     if (options.hidden === false) {
                         screens.push({
                             ...child.props,
@@ -78,9 +41,9 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                 }
                 return;
             }
-            if ((0, Protected_1.isProtectedReactElement)(child)) {
+            if (isProtectedReactElement(child)) {
                 const excludeChildren = exclude || !child.props.guard;
-                react_1.Children.forEach(child.props.children, (protectedChild) => {
+                Children.forEach(child.props.children, (protectedChild) => {
                     flattenChild(protectedChild, excludeChildren);
                 });
                 return;
@@ -92,7 +55,7 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
             console.warn(`Layout children must be of type Screen, all other children are ignored. To use custom children, create a custom <Layout />. Update Layout Route at: "app${contextKey}/_layout"`);
             return null;
         }
-        react_1.Children.forEach(children, (child) => flattenChild(child));
+        Children.forEach(children, (child) => flattenChild(child));
         // Add an assertion for development
         if (process.env.NODE_ENV !== 'production') {
             // Assert if names are not unique
@@ -145,24 +108,24 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
  * }
  * ```
  */
-function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
-    return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
-        const contextKey = (0, Route_1.useContextKey)();
+export function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
+    return Object.assign(forwardRef(({ children: userDefinedChildren, ...props }, ref) => {
+        const contextKey = useContextKey();
         const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
             contextKey,
         });
         const processed = processor ? processor(screens ?? []) : screens;
-        const sorted = (0, useScreens_1.useSortedScreens)(processed ?? [], protectedScreens, useOnlyUserDefinedScreens);
+        const sorted = useSortedScreens(processed ?? [], protectedScreens, useOnlyUserDefinedScreens);
         // Prevent throwing an error when there are no screens.
         if (!sorted.length) {
             return null;
         }
-        return (<IsWithinLayoutContext_1.IsWithinLayoutContext value>
+        return (<IsWithinLayoutContext value>
           <Nav {...props} id={contextKey} ref={ref} children={sorted}/>
-        </IsWithinLayoutContext_1.IsWithinLayoutContext>);
+        </IsWithinLayoutContext>);
     }), {
-        Screen: Screen_1.Screen,
-        Protected: Protected_1.Protected,
+        Screen,
+        Protected,
     });
 }
 //# sourceMappingURL=withLayoutContext.js.map

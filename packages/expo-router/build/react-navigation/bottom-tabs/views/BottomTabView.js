@@ -1,58 +1,22 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BottomTabView = BottomTabView;
-const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const elements_1 = require("../../elements");
-const native_1 = require("../../native");
-const TransitionPresets_1 = require("../TransitionConfigs/TransitionPresets");
-const BottomTabBar_1 = require("./BottomTabBar");
-const ScreenFallback_1 = require("./ScreenFallback");
-const BottomTabBarHeightCallbackContext_1 = require("../utils/BottomTabBarHeightCallbackContext");
-const BottomTabBarHeightContext_1 = require("../utils/BottomTabBarHeightContext");
-const useAnimatedHashMap_1 = require("../utils/useAnimatedHashMap");
+import * as React from 'react';
+import { Animated, Platform, StyleSheet } from 'react-native';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+import { getHeaderTitle, Header, SafeAreaProviderCompat, Screen } from '../../elements';
+import { StackActions, } from '../../native';
+import { FadeTransition, ShiftTransition } from '../TransitionConfigs/TransitionPresets';
+import { BottomTabBar, getTabBarHeight } from './BottomTabBar';
+import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
+import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
+import { BottomTabBarHeightContext } from '../utils/BottomTabBarHeightContext';
+import { useAnimatedHashMap } from '../utils/useAnimatedHashMap';
 const EPSILON = 1e-5;
 const STATE_INACTIVE = 0;
 const STATE_TRANSITIONING_OR_BELOW_TOP = 1;
 const STATE_ON_TOP = 2;
 const NAMED_TRANSITIONS_PRESETS = {
-    fade: TransitionPresets_1.FadeTransition,
-    shift: TransitionPresets_1.ShiftTransition,
+    fade: FadeTransition,
+    shift: ShiftTransition,
     none: {
         sceneStyleInterpolator: undefined,
         transitionSpec: {
@@ -61,7 +25,7 @@ const NAMED_TRANSITIONS_PRESETS = {
         },
     },
 };
-const useNativeDriver = react_native_1.Platform.OS !== 'web';
+const useNativeDriver = Platform.OS !== 'web';
 const hasAnimation = (options) => {
     const { animation, transitionSpec } = options;
     if (animation) {
@@ -69,11 +33,11 @@ const hasAnimation = (options) => {
     }
     return Boolean(transitionSpec);
 };
-const renderTabBarDefault = (props) => <BottomTabBar_1.BottomTabBar {...props}/>;
-function BottomTabView(props) {
-    const { tabBar = renderTabBarDefault, state, navigation, descriptors, safeAreaInsets, detachInactiveScreens = react_native_1.Platform.OS === 'web' ||
-        react_native_1.Platform.OS === 'android' ||
-        react_native_1.Platform.OS === 'ios', } = props;
+const renderTabBarDefault = (props) => <BottomTabBar {...props}/>;
+export function BottomTabView(props) {
+    const { tabBar = renderTabBarDefault, state, navigation, descriptors, safeAreaInsets, detachInactiveScreens = Platform.OS === 'web' ||
+        Platform.OS === 'android' ||
+        Platform.OS === 'ios', } = props;
     const focusedRouteKey = state.routes[state.index].key;
     /**
      * List of loaded tabs, tabs will be loaded when navigated to.
@@ -84,7 +48,7 @@ function BottomTabView(props) {
         setLoaded([...loaded, focusedRouteKey]);
     }
     const previousRouteKeyRef = React.useRef(focusedRouteKey);
-    const tabAnims = (0, useAnimatedHashMap_1.useAnimatedHashMap)(state);
+    const tabAnims = useAnimatedHashMap(state);
     React.useEffect(() => {
         const previousRouteKey = previousRouteKeyRef.current;
         let popToTopAction;
@@ -93,7 +57,7 @@ function BottomTabView(props) {
             const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
             if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
                 popToTopAction = {
-                    ...native_1.StackActions.popToTop(),
+                    ...StackActions.popToTop(),
                     target: prevRoute.state.key,
                 };
             }
@@ -105,7 +69,7 @@ function BottomTabView(props) {
                     target: focusedRouteKey,
                 });
             }
-            react_native_1.Animated.parallel(state.routes
+            Animated.parallel(state.routes
                 .map((route, index) => {
                 const { options } = descriptors[route.key];
                 const { animation = 'none', transitionSpec = NAMED_TRANSITIONS_PRESETS[animation].transitionSpec, } = options;
@@ -117,7 +81,7 @@ function BottomTabView(props) {
                 }
                 spec = spec ?? NAMED_TRANSITIONS_PRESETS.none.transitionSpec;
                 const toValue = index === state.index ? 0 : index >= state.index ? 1 : -1;
-                return react_native_1.Animated[spec.animation](tabAnims[route.key], {
+                return Animated[spec.animation](tabAnims[route.key], {
                     ...spec.config,
                     toValue,
                     useNativeDriver,
@@ -138,19 +102,19 @@ function BottomTabView(props) {
         animateToIndex();
         previousRouteKeyRef.current = focusedRouteKey;
     }, [descriptors, focusedRouteKey, navigation, state.index, state.routes, tabAnims]);
-    const dimensions = elements_1.SafeAreaProviderCompat.initialMetrics.frame;
-    const [tabBarHeight, setTabBarHeight] = React.useState(() => (0, BottomTabBar_1.getTabBarHeight)({
+    const dimensions = SafeAreaProviderCompat.initialMetrics.frame;
+    const [tabBarHeight, setTabBarHeight] = React.useState(() => getTabBarHeight({
         state,
         descriptors,
         dimensions,
         insets: {
-            ...elements_1.SafeAreaProviderCompat.initialMetrics.insets,
+            ...SafeAreaProviderCompat.initialMetrics.insets,
             ...props.safeAreaInsets,
         },
         style: descriptors[state.routes[state.index].key].options.tabBarStyle,
     }));
     const renderTabBar = () => {
-        return (<react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer>
+        return (<SafeAreaInsetsContext.Consumer>
         {(insets) => tabBar({
                 state,
                 descriptors,
@@ -162,20 +126,20 @@ function BottomTabView(props) {
                     left: safeAreaInsets?.left ?? insets?.left ?? 0,
                 },
             })}
-      </react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer>);
+      </SafeAreaInsetsContext.Consumer>);
     };
     const { routes } = state;
     // If there is no animation, we only have 2 states: visible and invisible
     const hasTwoStates = !routes.some((route) => hasAnimation(descriptors[route.key].options));
     const { tabBarPosition = 'bottom' } = descriptors[focusedRouteKey].options;
-    const tabBarElement = (<BottomTabBarHeightCallbackContext_1.BottomTabBarHeightCallbackContext.Provider key="tabbar" value={setTabBarHeight}>
+    const tabBarElement = (<BottomTabBarHeightCallbackContext.Provider key="tabbar" value={setTabBarHeight}>
       {renderTabBar()}
-    </BottomTabBarHeightCallbackContext_1.BottomTabBarHeightCallbackContext.Provider>);
-    return (<elements_1.SafeAreaProviderCompat style={{
+    </BottomTabBarHeightCallbackContext.Provider>);
+    return (<SafeAreaProviderCompat style={{
             flexDirection: tabBarPosition === 'left' || tabBarPosition === 'right' ? 'row' : 'column',
         }}>
       {tabBarPosition === 'top' || tabBarPosition === 'left' ? tabBarElement : null}
-      <ScreenFallback_1.MaybeScreenContainer key="screens" enabled={detachInactiveScreens} hasTwoStates={hasTwoStates} style={styles.screens}>
+      <MaybeScreenContainer key="screens" enabled={detachInactiveScreens} hasTwoStates={hasTwoStates} style={styles.screens}>
         {routes.map((route, index) => {
             const descriptor = descriptors[route.key];
             const { lazy = true, animation = 'none', sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation].sceneStyleInterpolator, } = descriptor.options;
@@ -185,7 +149,7 @@ function BottomTabView(props) {
                 // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
                 return null;
             }
-            const { freezeOnBlur, header = ({ layout, options }) => (<elements_1.Header {...options} layout={layout} title={(0, elements_1.getHeaderTitle)(options, route.name)}/>), headerShown, headerStatusBarHeight, headerTransparent, sceneStyle: customSceneStyle, } = descriptor.options;
+            const { freezeOnBlur, header = ({ layout, options }) => (<Header {...options} layout={layout} title={getHeaderTitle(options, route.name)}/>), headerShown, headerStatusBarHeight, headerTransparent, sceneStyle: customSceneStyle, } = descriptor.options;
             const { sceneStyle } = sceneStyleInterpolator?.({
                 current: {
                     progress: tabAnims[route.key],
@@ -205,24 +169,24 @@ function BottomTabView(props) {
                         extrapolate: 'extend',
                     })
                     : STATE_INACTIVE;
-            return (<ScreenFallback_1.MaybeScreen key={route.key} style={[react_native_1.StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]} active={activityState} enabled={detachInactiveScreens} freezeOnBlur={freezeOnBlur} shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}>
-              <BottomTabBarHeightContext_1.BottomTabBarHeightContext.Provider value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
-                <elements_1.Screen focused={isFocused} route={descriptor.route} navigation={descriptor.navigation} headerShown={headerShown} headerStatusBarHeight={headerStatusBarHeight} headerTransparent={headerTransparent} header={header({
+            return (<MaybeScreen key={route.key} style={[StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]} active={activityState} enabled={detachInactiveScreens} freezeOnBlur={freezeOnBlur} shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}>
+              <BottomTabBarHeightContext.Provider value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
+                <Screen focused={isFocused} route={descriptor.route} navigation={descriptor.navigation} headerShown={headerShown} headerStatusBarHeight={headerStatusBarHeight} headerTransparent={headerTransparent} header={header({
                     layout: dimensions,
                     route: descriptor.route,
                     navigation: descriptor.navigation,
                     options: descriptor.options,
                 })} style={[customSceneStyle, animationEnabled && sceneStyle]}>
                   {descriptor.render()}
-                </elements_1.Screen>
-              </BottomTabBarHeightContext_1.BottomTabBarHeightContext.Provider>
-            </ScreenFallback_1.MaybeScreen>);
+                </Screen>
+              </BottomTabBarHeightContext.Provider>
+            </MaybeScreen>);
         })}
-      </ScreenFallback_1.MaybeScreenContainer>
+      </MaybeScreenContainer>
       {tabBarPosition === 'bottom' || tabBarPosition === 'right' ? tabBarElement : null}
-    </elements_1.SafeAreaProviderCompat>);
+    </SafeAreaProviderCompat>);
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     screens: {
         flex: 1,
         overflow: 'hidden',

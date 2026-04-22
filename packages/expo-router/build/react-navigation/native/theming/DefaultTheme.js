@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DefaultTheme = void 0;
-const fonts_1 = require("./fonts");
-exports.DefaultTheme = {
+import { fonts } from './fonts';
+export const DefaultTheme = {
     dark: false,
     colors: {
         primary: 'rgb(0, 122, 255)',
@@ -12,6 +9,6 @@ exports.DefaultTheme = {
         border: 'rgb(216, 216, 216)',
         notification: 'rgb(255, 59, 48)',
     },
-    fonts: fonts_1.fonts,
+    fonts,
 };
 //# sourceMappingURL=DefaultTheme.js.map

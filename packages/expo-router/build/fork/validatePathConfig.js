@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = validatePathConfig;
 const formatToList = (items) => items.map((key) => `- ${key}`).join('\n');
-function validatePathConfig(config, root = true) {
+export default function validatePathConfig(config, root = true) {
     const validKeys = ['initialRouteName', 'screens', '_route'];
     if (!root) {
         validKeys.push('path', 'exact', 'stringify', 'parse');

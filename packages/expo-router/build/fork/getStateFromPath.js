@@ -1,47 +1,8 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStateFromPath = getStateFromPath;
-const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const findFocusedRoute_1 = require("./findFocusedRoute");
-const expo = __importStar(require("./getStateFromPath-forks"));
-const constants_1 = require("../constants");
-const native_1 = require("../react-navigation/native");
+import escape from 'escape-string-regexp';
+import { findFocusedRoute } from './findFocusedRoute';
+import * as expo from './getStateFromPath-forks';
+import { INTERNAL_SLOT_NAME } from '../constants';
+import { validatePathConfig } from '../react-navigation/native';
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -63,7 +24,7 @@ const native_1 = require("../react-navigation/native");
  * @param path Path string to parse and convert, e.g. /foo/bar?count=42.
  * @param options Extra options to fine-tune how to parse the path.
  */
-function getStateFromPath(path, options, 
+export function getStateFromPath(path, options, 
 // START FORK
 segments = []
 // END FORK
@@ -167,7 +128,7 @@ previousSegments
 }
 function prepareConfigResources(options, previousSegments) {
     if (options) {
-        (0, native_1.validatePathConfig)(options);
+        validatePathConfig(options);
     }
     const initialRoutes = getInitialRoutes(options);
     const configs = getNormalizedConfigs(initialRoutes, options?.screens, previousSegments);
@@ -322,7 +283,7 @@ const matchAgainstConfigs = (remaining, configs) => {
                 // Get the number of segments in the initial pattern
                 const numInitialSegments = routeConfig?.pattern
                     // Extract the prefix from the pattern by removing the ending path pattern (e.g pattern=`a/b/c/d` and normalizedPath=`c/d` becomes `a/b`)
-                    .replace(new RegExp(`${(0, escape_string_regexp_1.default)(normalizedPath)}$`), '')
+                    .replace(new RegExp(`${escape(normalizedPath)}$`), '')
                     ?.split('/').length;
                 const params = normalizedPath
                     ?.split('/')
@@ -385,7 +346,7 @@ const createNormalizedConfigs = (screen, routeConfig, routeNames = [], initials,
                 config.exact !== true
                     ? joinPaths(parentPattern || '', config.path || '')
                     : config.path || '';
-            if (screen !== constants_1.INTERNAL_SLOT_NAME) {
+            if (screen !== INTERNAL_SLOT_NAME) {
                 configs.push(createConfigItem(screen, routeNames, pattern, config.path, config.parse, config));
             }
         }
@@ -515,7 +476,7 @@ const createNestedStateObject = ({ path, ...expoURL }, routes, initialRoutes, fl
             parentScreens.push(route.name);
         }
     }
-    route = (0, findFocusedRoute_1.findFocusedRoute)(state);
+    route = findFocusedRoute(state);
     // START FORK
     route.path = expoURL.pathWithoutGroups;
     // route.path = path;

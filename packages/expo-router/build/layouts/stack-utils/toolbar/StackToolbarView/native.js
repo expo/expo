@@ -1,6 +1,2 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeToolbarView = void 0;
-const NativeToolbarView = () => null;
-exports.NativeToolbarView = NativeToolbarView;
+export const NativeToolbarView = () => null;
 //# sourceMappingURL=native.js.map

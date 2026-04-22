@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.fonts = void 0;
-const react_native_1 = require("react-native");
+import { Platform } from 'react-native';
 const WEB_FONT_STACK = 'system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"';
-exports.fonts = react_native_1.Platform.select({
+export const fonts = Platform.select({
     web: {
         regular: {
             fontFamily: WEB_FONT_STACK,

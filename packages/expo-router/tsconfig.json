@@ -3,11 +3,9 @@
   "compilerOptions": {
     "outDir": "./build",
     "rootDir": "./src",
-    "module": "commonjs",
-    "moduleResolution": "node10",
     "noEmit": false,
     "resolveJsonModule": true,
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "../@expo/cli/ts-declarations/react-server-dom-webpack"],
 
     // TODO: Enable in the future
     "noUncheckedIndexedAccess": false

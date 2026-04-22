@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFocusedRouteNameFromRoute = getFocusedRouteNameFromRoute;
-const useRouteCache_1 = require("./useRouteCache");
-function getFocusedRouteNameFromRoute(route) {
+import { CHILD_STATE } from './useRouteCache';
+export function getFocusedRouteNameFromRoute(route) {
     // @ts-expect-error: this isn't in type definitions coz we want this private
-    const state = route[useRouteCache_1.CHILD_STATE] ?? route.state;
+    const state = route[CHILD_STATE] ?? route.state;
     const params = route.params;
     const routeName = state
         ? // Get the currently active route name in the nested navigator

@@ -1,18 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createStandardAppearanceFromOptions = createStandardAppearanceFromOptions;
-exports.createScrollEdgeAppearanceFromOptions = createScrollEdgeAppearanceFromOptions;
-exports.appendSelectedStyleToAppearance = appendSelectedStyleToAppearance;
-exports.appendStyleToAppearance = appendStyleToAppearance;
-exports.convertStyleToAppearance = convertStyleToAppearance;
-exports.convertStyleToItemStateAppearance = convertStyleToItemStateAppearance;
-const types_1 = require("./types");
-const style_1 = require("../utils/style");
-const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
-function createStandardAppearanceFromOptions(options) {
+import { SUPPORTED_BLUR_EFFECTS, } from './types';
+import { convertFontWeightToStringFontWeight } from '../utils/style';
+const supportedBlurEffectsSet = new Set(SUPPORTED_BLUR_EFFECTS);
+export function createStandardAppearanceFromOptions(options) {
     let blurEffect = options.blurEffect;
     if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
-        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
+        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
         blurEffect = undefined;
     }
     const appearance = appendStyleToAppearance({
@@ -31,10 +23,10 @@ function createStandardAppearanceFromOptions(options) {
         titlePositionAdjustment: options.selectedTitlePositionAdjustment,
     }, appearance);
 }
-function createScrollEdgeAppearanceFromOptions(options) {
+export function createScrollEdgeAppearanceFromOptions(options) {
     let blurEffect = options.disableTransparentOnScrollEdge ? options.blurEffect : 'none';
     if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
-        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${types_1.SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
+        console.warn(`Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`);
         blurEffect = undefined;
     }
     const appearance = appendStyleToAppearance({
@@ -53,7 +45,7 @@ function createScrollEdgeAppearanceFromOptions(options) {
         titlePositionAdjustment: options.selectedTitlePositionAdjustment,
     }, appearance);
 }
-function appendSelectedStyleToAppearance(selectedStyle, appearance) {
+export function appendSelectedStyleToAppearance(selectedStyle, appearance) {
     return appendStyleToAppearance(selectedStyle, appearance, ['selected', 'focused']);
 }
 const EMPTY_APPEARANCE_ITEM = {
@@ -62,7 +54,7 @@ const EMPTY_APPEARANCE_ITEM = {
     focused: {},
     disabled: {},
 };
-function appendStyleToAppearance(style, appearance, states) {
+export function appendStyleToAppearance(style, appearance, states) {
     const baseItemAppearance = appearance.stacked || appearance.inline || appearance.compactInline || {};
     const styleAppearance = convertStyleToAppearance(style);
     const newAppearances = states.map((state) => ({
@@ -89,7 +81,7 @@ function appendStyleToAppearance(style, appearance, states) {
         tabBarShadowColor: styleAppearance.tabBarShadowColor ?? appearance.tabBarShadowColor,
     };
 }
-function convertStyleToAppearance(style) {
+export function convertStyleToAppearance(style) {
     if (!style) {
         return {};
     }
@@ -109,7 +101,7 @@ function convertStyleToAppearance(style) {
         tabBarShadowColor: style?.shadowColor,
     };
 }
-function convertStyleToItemStateAppearance(style) {
+export function convertStyleToItemStateAppearance(style) {
     if (!style) {
         return {};
     }
@@ -119,7 +111,7 @@ function convertStyleToItemStateAppearance(style) {
         tabBarItemIconColor: style.iconColor,
         tabBarItemTitleFontFamily: style.fontFamily,
         tabBarItemTitleFontSize: style.fontSize,
-        tabBarItemTitleFontWeight: (0, style_1.convertFontWeightToStringFontWeight)(style.fontWeight),
+        tabBarItemTitleFontWeight: convertFontWeightToStringFontWeight(style.fontWeight),
         tabBarItemTitleFontStyle: style.fontStyle,
         tabBarItemTitleFontColor: style.color,
     };

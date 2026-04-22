@@ -1,42 +1,6 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFocusEffect = useFocusEffect;
-const React = __importStar(require("react"));
-const useNavigation_1 = require("./useNavigation");
+import * as React from 'react';
+import { useNavigation } from './useNavigation';
 /**
  * Hook to run an effect in a focused screen, similar to `React.useEffect`.
  * This can be used to perform side-effects such as fetching data or subscribing to events.
@@ -44,8 +8,8 @@ const useNavigation_1 = require("./useNavigation");
  *
  * @param callback Memoized callback containing the effect, should optionally return a cleanup function.
  */
-function useFocusEffect(effect) {
-    const navigation = (0, useNavigation_1.useNavigation)();
+export function useFocusEffect(effect) {
+    const navigation = useNavigation();
     // eslint-disable-next-line prefer-rest-params
     if (arguments[1] !== undefined) {
         const message = "You passed a second argument to 'useFocusEffect', but it only accepts one argument. " +

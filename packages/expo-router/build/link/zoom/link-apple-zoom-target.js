@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LinkAppleZoomTarget = LinkAppleZoomTarget;
-const react_1 = require("react");
-const zoom_transition_context_1 = require("./zoom-transition-context");
-const native_1 = require("../preview/native");
+import { Children, use } from 'react';
+import { ZoomTransitionTargetContext } from './zoom-transition-context';
+import { LinkZoomTransitionAlignmentRectDetector } from '../preview/native';
 /**
  * Defines the target for an Apple zoom transition.
  *
@@ -24,17 +21,17 @@ const native_1 = require("../preview/native");
  *
  * @platform ios 18+
  */
-function LinkAppleZoomTarget({ children }) {
-    if (react_1.Children.count(children) > 1) {
+export function LinkAppleZoomTarget({ children }) {
+    if (Children.count(children) > 1) {
         console.warn('[expo-router] Link.AppleZoomTarget only accepts a single child component. Please wrap multiple children in a View or another container component.');
         return null;
     }
-    const { identifier } = (0, react_1.use)(zoom_transition_context_1.ZoomTransitionTargetContext);
+    const { identifier } = use(ZoomTransitionTargetContext);
     if (!identifier) {
         return children;
     }
-    return (<native_1.LinkZoomTransitionAlignmentRectDetector identifier={identifier}>
+    return (<LinkZoomTransitionAlignmentRectDetector identifier={identifier}>
       {children}
-    </native_1.LinkZoomTransitionAlignmentRectDetector>);
+    </LinkZoomTransitionAlignmentRectDetector>);
 }
 //# sourceMappingURL=link-apple-zoom-target.js.map

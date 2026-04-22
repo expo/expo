@@ -1,9 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parsePathAndParamsFromExpoGoLink = parsePathAndParamsFromExpoGoLink;
-exports.parsePathFromExpoGoLink = parsePathFromExpoGoLink;
-exports.extractExpoPathFromURL = extractExpoPathFromURL;
-function parsePathAndParamsFromExpoGoLink(url) {
+export function parsePathAndParamsFromExpoGoLink(url) {
     // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
     // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
     const href = parsePathFromExpoGoLink(url);
@@ -13,7 +8,7 @@ function parsePathAndParamsFromExpoGoLink(url) {
         queryString: results?.[2] ?? '',
     };
 }
-function parsePathFromExpoGoLink(url) {
+export function parsePathFromExpoGoLink(url) {
     // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
     // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
     return url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1] ?? '';
@@ -102,7 +97,7 @@ function fromDeepLink(url) {
     }
     return results;
 }
-function extractExpoPathFromURL(_prefixes, url = '') {
+export function extractExpoPathFromURL(_prefixes, url = '') {
     return (extractExactPathFromURL(url)
         // TODO: We should get rid of this, dropping specificities is not good
         .replace(/^\//, ''));

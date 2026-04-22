@@ -1,20 +1,15 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTabPathFromRootStateByHref = getTabPathFromRootStateByHref;
-exports.getPreloadedRouteFromRootStateByHref = getPreloadedRouteFromRootStateByHref;
-exports.deepEqual = deepEqual;
-const router_store_1 = require("../../global-state/router-store");
-const routing_1 = require("../../global-state/routing");
-const navigationParams_1 = require("../../navigationParams");
-const href_1 = require("../href");
-function getTabPathFromRootStateByHref(href, rootState) {
-    const hrefState = router_store_1.store.getStateForHref((0, href_1.resolveHref)(href));
+import { store } from '../../global-state/router-store';
+import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
+import { removeInternalExpoRouterParams } from '../../navigationParams';
+import { resolveHref } from '../href';
+export function getTabPathFromRootStateByHref(href, rootState) {
+    const hrefState = store.getStateForHref(resolveHref(href));
     const state = rootState;
     if (!hrefState || !state) {
         return [];
     }
     // Replicating the logic from `linkTo`
-    const { navigationRoutes } = (0, routing_1.findDivergentState)(hrefState, state, true);
+    const { navigationRoutes } = findDivergentState(hrefState, state, true);
     if (!navigationRoutes.length) {
         return [];
     }
@@ -33,36 +28,36 @@ function getTabPathFromRootStateByHref(href, rootState) {
     });
     return tabPath;
 }
-function getPreloadedRouteFromRootStateByHref(href, rootState) {
-    const hrefState = router_store_1.store.getStateForHref((0, href_1.resolveHref)(href));
+export function getPreloadedRouteFromRootStateByHref(href, rootState) {
+    const hrefState = store.getStateForHref(resolveHref(href));
     const state = rootState;
     if (!hrefState || !state) {
         return undefined;
     }
     // Replicating the logic from `linkTo`
-    const { navigationState, actionStateRoute } = (0, routing_1.findDivergentState)(hrefState, state, true);
+    const { navigationState, actionStateRoute } = findDivergentState(hrefState, state, true);
     if (!navigationState || !actionStateRoute) {
         return undefined;
     }
     if (navigationState.type === 'stack') {
         const stackState = navigationState;
-        const payload = (0, routing_1.getPayloadFromStateRoute)(actionStateRoute);
+        const payload = getPayloadFromStateRoute(actionStateRoute);
         const preloadedRoute = stackState.preloadedRoutes.find((route) => route.name === actionStateRoute.name &&
-            deepEqual((0, navigationParams_1.removeInternalExpoRouterParams)(route.params), (0, navigationParams_1.removeInternalExpoRouterParams)(payload.params)));
+            deepEqual(removeInternalExpoRouterParams(route.params), removeInternalExpoRouterParams(payload.params)));
         const activeRoute = stackState.routes[stackState.index];
         // When the active route is the same as the preloaded route,
         // then we should not navigate. It aligns with base link behavior.
         if (activeRoute.name === preloadedRoute?.name &&
             deepEqual(
             // using ?? {}, because from our perspective undefined === {}, as both mean no params
-            (0, navigationParams_1.removeInternalExpoRouterParams)(activeRoute.params ?? {}), (0, navigationParams_1.removeInternalExpoRouterParams)(payload.params ?? {}))) {
+            removeInternalExpoRouterParams(activeRoute.params ?? {}), removeInternalExpoRouterParams(payload.params ?? {}))) {
             return undefined;
         }
         return preloadedRoute;
     }
     return undefined;
 }
-function deepEqual(a, b) {
+export function deepEqual(a, b) {
     if (a === b) {
         return true;
     }

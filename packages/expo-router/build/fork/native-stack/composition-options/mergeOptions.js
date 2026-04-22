@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeOptions = mergeOptions;
 /**
  * Merges composition component options into navigation descriptors.
  *
@@ -9,7 +6,7 @@ exports.mergeOptions = mergeOptions;
  * 2. If route is preloaded AND not focused → skip composition (pass through)
  * 3. Otherwise → merge descriptor.options with composition options (composition wins)
  */
-function mergeOptions(descriptors, registry, state) {
+export function mergeOptions(descriptors, registry, state) {
     const result = {};
     const focusedKey = state.routes[state.index]?.key;
     for (const key in descriptors) {

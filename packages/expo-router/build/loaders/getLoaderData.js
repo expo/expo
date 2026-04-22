@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Copyright © 2026 650 Industries.
  *
@@ -6,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLoaderData = getLoaderData;
-function getLoaderData({ resolvedPath, cache, fetcher, }) {
+export function getLoaderData({ resolvedPath, cache, fetcher, }) {
     // Check error cache first to prevent infinite retry loops when a loader fails.
     // We throw the cached error instead of starting a new fetch
     const cachedError = cache.getError(resolvedPath);

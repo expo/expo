@@ -1,8 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLoaderModulePath = getLoaderModulePath;
-exports.fetchLoader = fetchLoader;
-const url_1 = require("../utils/url");
+import { parseUrlUsingCustomBase } from '../utils/url';
 /**
  * Convert a route's pathname to a loader module path.
  *
@@ -11,8 +7,8 @@ const url_1 = require("../utils/url");
  * getLoaderModulePath(`/about`)   // `/_expo/loaders/about`
  * getLoaderModulePath(`/posts/1`) // `/_expo/loaders/posts/1`
  */
-function getLoaderModulePath(routePath) {
-    const { pathname, search } = (0, url_1.parseUrlUsingCustomBase)(routePath);
+export function getLoaderModulePath(routePath) {
+    const { pathname, search } = parseUrlUsingCustomBase(routePath);
     const normalizedPath = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
     const pathSegment = normalizedPath === '/' ? '/index' : normalizedPath;
     return `/_expo/loaders${pathSegment}${search}`;
@@ -27,7 +23,7 @@ function getLoaderModulePath(routePath) {
  * @see import('packages/@expo/cli/src/start/server/metro/createServerRouteMiddleware.ts').createRouteHandlerMiddleware
  * @see import('packages/expo-server/src/vendor/environment/common.ts').createEnvironment
  */
-async function fetchLoader(routePath) {
+export async function fetchLoader(routePath) {
     const loaderPath = getLoaderModulePath(routePath);
     const response = await fetch(loaderPath, {
         headers: {

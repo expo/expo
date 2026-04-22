@@ -1,9 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TabList = TabList;
-exports.isTabList = isTabList;
-const react_native_1 = require("react-native");
-const common_1 = require("./common");
+import { View, StyleSheet } from 'react-native';
+import { ViewSlot } from './common';
 /**
  * Wrapper component for `TabTriggers`. `TabTriggers` within the `TabList` define the tabs.
  *
@@ -17,17 +13,17 @@ const common_1 = require("./common");
  * </Tabs>
  * ```
  */
-function TabList({ asChild, style, ...props }) {
-    const Comp = asChild ? common_1.ViewSlot : react_native_1.View;
+export function TabList({ asChild, style, ...props }) {
+    const Comp = asChild ? ViewSlot : View;
     return <Comp style={[styles.tabList, style]} {...props}/>;
 }
 /**
  * @hidden
  */
-function isTabList(child) {
+export function isTabList(child) {
     return child.type === TabList;
 }
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     tabList: {
         flexDirection: 'row',
         justifyContent: 'space-between',

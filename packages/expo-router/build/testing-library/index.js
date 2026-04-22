@@ -1,19 +1,10 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.testRouter = exports.getMockContext = exports.getMockConfig = void 0;
-exports.renderRouter = renderRouter;
-require("./expect");
-require("./mocks");
-const react_1 = __importDefault(require("react"));
-const mock_config_1 = require("./mock-config");
-Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
-Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
-const ExpoRoot_1 = require("../ExpoRoot");
-const router_store_1 = require("../global-state/router-store");
-const imperative_api_1 = require("../imperative-api");
+import './expect';
+import './mocks';
+import React from 'react';
+import { getMockConfig, getMockContext } from './mock-config';
+import { ExpoRoot } from '../ExpoRoot';
+import { store } from '../global-state/router-store';
+import { router } from '../imperative-api';
 const rnTestingLibrary = (() => {
     try {
         return require('@testing-library/react-native');
@@ -34,12 +25,13 @@ Object.defineProperty(exports, 'screen', {
         return rnTestingLibrary.screen;
     },
 });
-function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
+export { getMockConfig, getMockContext };
+export function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
     jest.useFakeTimers();
-    const mockContext = (0, mock_config_1.getMockContext)(context);
+    const mockContext = getMockContext(context);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-    const result = rnTestingLibrary.render(<ExpoRoot_1.ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
+    const result = rnTestingLibrary.render(<ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
     /**
      * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
      * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
@@ -47,60 +39,60 @@ function renderRouter(context = './app', { initialUrl = '/', linking, ...options
      */
     return Object.assign(result, {
         getPathname() {
-            return router_store_1.store.getRouteInfo().pathname;
+            return store.getRouteInfo().pathname;
         },
         getSegments() {
-            return router_store_1.store.getRouteInfo().segments;
+            return store.getRouteInfo().segments;
         },
         getSearchParams() {
-            return router_store_1.store.getRouteInfo().params;
+            return store.getRouteInfo().params;
         },
         getPathnameWithParams() {
-            return router_store_1.store.getRouteInfo().pathnameWithParams;
+            return store.getRouteInfo().pathnameWithParams;
         },
         getRouterState() {
-            return router_store_1.store.state;
+            return store.state;
         },
     });
 }
-exports.testRouter = {
+export const testRouter = {
     /** Navigate to the provided pathname and the pathname */
     navigate(path) {
-        rnTestingLibrary.act(() => imperative_api_1.router.navigate(path));
+        rnTestingLibrary.act(() => router.navigate(path));
         expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
     },
     /** Push the provided pathname and assert the pathname */
     push(path) {
-        rnTestingLibrary.act(() => imperative_api_1.router.push(path));
+        rnTestingLibrary.act(() => router.push(path));
         expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
     },
     /** Replace with provided pathname and assert the pathname */
     replace(path) {
-        rnTestingLibrary.act(() => imperative_api_1.router.replace(path));
+        rnTestingLibrary.act(() => router.replace(path));
         expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
     },
     /** Go back in history and asset the new pathname */
     back(path) {
-        expect(imperative_api_1.router.canGoBack()).toBe(true);
-        rnTestingLibrary.act(() => imperative_api_1.router.back());
+        expect(router.canGoBack()).toBe(true);
+        rnTestingLibrary.act(() => router.back());
         if (path) {
             expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
         }
     },
     /** If there's history that supports invoking the `back` function. */
     canGoBack() {
-        return imperative_api_1.router.canGoBack();
+        return router.canGoBack();
     },
     /** Update the current route query params and assert the new pathname */
     setParams(params, path) {
-        imperative_api_1.router.setParams(params);
+        router.setParams(params);
         if (path) {
-            expect(exports.screen).toHavePathnameWithParams(path);
+            expect(screen).toHavePathnameWithParams(path);
         }
     },
     /** If there's history that supports invoking the `back` function. */
     dismissAll() {
-        rnTestingLibrary.act(() => imperative_api_1.router.dismissAll());
+        rnTestingLibrary.act(() => router.dismissAll());
     },
 };
 //# sourceMappingURL=index.js.map

@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createNavigatorFactory = createNavigatorFactory;
-const Group_1 = require("./Group");
-const Screen_1 = require("./Screen");
+import { Group } from './Group';
+import { Screen } from './Screen';
 /**
  * Higher order component to create a `Navigator` and `Screen` pair.
  * Custom navigators should wrap the navigator component in `createNavigator` before exporting.
@@ -12,20 +9,20 @@ const Screen_1 = require("./Screen");
  *
  * @deprecated This function may be replaced in the future version of expo-router.
  */
-function createNavigatorFactory(Navigator) {
+export function createNavigatorFactory(Navigator) {
     function createNavigator(config) {
         if (config != null) {
             return {
                 Navigator,
-                Screen: Screen_1.Screen,
-                Group: Group_1.Group,
+                Screen,
+                Group,
                 config,
             };
         }
         return {
             Navigator,
-            Screen: Screen_1.Screen,
-            Group: Group_1.Group,
+            Screen,
+            Group,
         };
     }
     return createNavigator;

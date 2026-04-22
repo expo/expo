@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 try {
     require('react-native-gesture-handler/jestSetup');
 }
@@ -33,4 +31,5 @@ jest.mock('expo-linking', () => {
     };
     return module;
 });
+export {};
 //# sourceMappingURL=mocks.js.map

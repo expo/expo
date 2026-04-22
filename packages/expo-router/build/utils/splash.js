@@ -1,29 +1,22 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.hide = hide;
-exports.hideAsync = hideAsync;
-exports.preventAutoHideAsync = preventAutoHideAsync;
-exports._internal_preventAutoHideAsync = _internal_preventAutoHideAsync;
-exports._internal_maybeHideAsync = _internal_maybeHideAsync;
-const expo_1 = require("expo");
-const SplashModule = (0, expo_1.requireOptionalNativeModule)('ExpoSplashScreen');
+import { requireOptionalNativeModule } from 'expo';
+const SplashModule = requireOptionalNativeModule('ExpoSplashScreen');
 let _initializedErrorHandler = false;
-function hide() {
+export function hide() {
     if (!SplashModule) {
         return;
     }
     SplashModule.hide();
 }
-async function hideAsync() {
+export async function hideAsync() {
     hide();
 }
-async function preventAutoHideAsync() {
+export async function preventAutoHideAsync() {
     if (!SplashModule) {
         return;
     }
     return SplashModule.preventAutoHideAsync();
 }
-async function _internal_preventAutoHideAsync() {
+export async function _internal_preventAutoHideAsync() {
     // The internal function might be missing if an app is using an older version of the SplashModule
     if (!SplashModule || !SplashModule.internalPreventAutoHideAsync) {
         return false;
@@ -42,7 +35,7 @@ async function _internal_preventAutoHideAsync() {
     }
     return SplashModule.internalPreventAutoHideAsync();
 }
-async function _internal_maybeHideAsync() {
+export async function _internal_maybeHideAsync() {
     // The internal function might be missing if an app is using an older version of the SplashModule
     if (!SplashModule || !SplashModule.internalMaybeHideAsync) {
         return false;

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.addCancelListener = void 0;
-const addCancelListener = (callback) => {
+export const addCancelListener = (callback) => {
     const handleEscape = (e) => {
         if (e.key === 'Escape') {
             callback();
@@ -12,5 +9,4 @@ const addCancelListener = (callback) => {
         document?.body?.removeEventListener?.('keyup', handleEscape);
     };
 };
-exports.addCancelListener = addCancelListener;
 //# sourceMappingURL=addCancelListener.js.map

@@ -1,37 +1,30 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = exports.SuspenseFallbackContext = void 0;
-exports.useRouteNode = useRouteNode;
-exports.useContextKey = useContextKey;
-exports.Route = Route;
-const react_1 = require("react");
-const matchers_1 = require("./matchers");
-const sortRoutes_1 = require("./sortRoutes");
-Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return sortRoutes_1.sortRoutesWithInitial; } });
-Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return sortRoutes_1.sortRoutes; } });
-const CurrentRouteContext = (0, react_1.createContext)(null);
+import { createContext, use } from 'react';
+import { getContextKey } from './matchers';
+import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+const CurrentRouteContext = createContext(null);
 /** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */
-exports.SuspenseFallbackContext = (0, react_1.createContext)(undefined);
-exports.LocalRouteParamsContext = (0, react_1.createContext)({});
+export const SuspenseFallbackContext = createContext(undefined);
+export const LocalRouteParamsContext = createContext({});
 if (process.env.NODE_ENV !== 'production') {
     CurrentRouteContext.displayName = 'RouteNode';
 }
 /** Return the RouteNode at the current contextual boundary. */
-function useRouteNode() {
-    return (0, react_1.use)(CurrentRouteContext);
+export function useRouteNode() {
+    return use(CurrentRouteContext);
 }
-function useContextKey() {
+export function useContextKey() {
     const node = useRouteNode();
     if (node == null) {
         throw new Error('No filename found. This is likely a bug in expo-router.');
     }
-    return (0, matchers_1.getContextKey)(node.contextKey);
+    return getContextKey(node.contextKey);
 }
 /** Provides the matching routes and filename to the children. */
-function Route({ children, node, params }) {
-    return (<exports.LocalRouteParamsContext.Provider value={params}>
+export function Route({ children, node, params }) {
+    return (<LocalRouteParamsContext.Provider value={params}>
       <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
-    </exports.LocalRouteParamsContext.Provider>);
+    </LocalRouteParamsContext.Provider>);
 }
+export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.js.map

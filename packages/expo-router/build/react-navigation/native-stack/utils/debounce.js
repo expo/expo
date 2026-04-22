@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.debounce = debounce;
-function debounce(func, duration) {
+export function debounce(func, duration) {
     let timeout;
     return function (...args) {
         clearTimeout(timeout);

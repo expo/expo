@@ -1,13 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPayloadFromStateRoute = getPayloadFromStateRoute;
-exports.findDivergentState = findDivergentState;
-const matchers_1 = require("../matchers");
+import { matchDynamicName } from '../matchers';
 /**
  * React Navigation uses params to store information about the screens, rather then create new state for each level.
  * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
  */
-function getPayloadFromStateRoute(_actionStateRoute) {
+export function getPayloadFromStateRoute(_actionStateRoute) {
     const rootPayload = { params: {} };
     let payload = rootPayload;
     let params = payload.params;
@@ -39,7 +35,7 @@ function getPayloadFromStateRoute(_actionStateRoute) {
  *
  * @private
  */
-function findDivergentState(_actionState, _navigationState, 
+export function findDivergentState(_actionState, _navigationState, 
 // If true, look through all tabs to find the target state, rather then just the current tab
 lookThroughAllTabs = false) {
     let actionState = _actionState;
@@ -57,7 +53,7 @@ lookThroughAllTabs = false) {
         })();
         const childState = actionStateRoute.state;
         const nextNavigationState = stateRoute.state;
-        const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
+        const dynamicName = matchDynamicName(actionStateRoute.name);
         const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
             !childState ||
             !nextNavigationState ||

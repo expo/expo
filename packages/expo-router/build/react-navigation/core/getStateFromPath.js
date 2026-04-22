@@ -1,49 +1,10 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStateFromPath = getStateFromPath;
-const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const queryString = __importStar(require("query-string"));
-const arrayStartsWith_1 = require("./arrayStartsWith");
-const findFocusedRoute_1 = require("./findFocusedRoute");
-const getPatternParts_1 = require("./getPatternParts");
-const isArrayEqual_1 = require("./isArrayEqual");
-const validatePathConfig_1 = require("./validatePathConfig");
+import escape from 'escape-string-regexp';
+import * as queryString from 'query-string';
+import { arrayStartsWith } from './arrayStartsWith';
+import { findFocusedRoute } from './findFocusedRoute';
+import { getPatternParts } from './getPatternParts';
+import { isArrayEqual } from './isArrayEqual';
+import { validatePathConfig } from './validatePathConfig';
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -66,7 +27,7 @@ const validatePathConfig_1 = require("./validatePathConfig");
  * @param options Extra options to fine-tune how to parse the path.
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-function getStateFromPath(path, options) {
+export function getStateFromPath(path, options) {
     const { initialRoutes, configs } = getConfigResources(options);
     const screens = options?.screens;
     let remaining = path
@@ -144,7 +105,7 @@ function getConfigResources(options) {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 function prepareConfigResources(options) {
     if (options) {
-        (0, validatePathConfig_1.validatePathConfig)(options);
+        validatePathConfig(options);
     }
     const initialRoutes = getInitialRoutes(options);
     const configs = getSortedNormalizedConfigs(initialRoutes, options?.screens);
@@ -179,15 +140,15 @@ function getSortedNormalizedConfigs(initialRoutes, screens = {}) {
         // - wildcard
         // If 2 patterns are same, move the one with less route names up
         // This is an error state, so it's only useful for consistent error messages
-        if ((0, isArrayEqual_1.isArrayEqual)(a.segments, b.segments)) {
+        if (isArrayEqual(a.segments, b.segments)) {
             return b.routeNames.join('>').localeCompare(a.routeNames.join('>'));
         }
         // If one of the patterns starts with the other, it's more exhaustive
         // So move it up
-        if ((0, arrayStartsWith_1.arrayStartsWith)(a.segments, b.segments)) {
+        if (arrayStartsWith(a.segments, b.segments)) {
             return -1;
         }
-        if ((0, arrayStartsWith_1.arrayStartsWith)(b.segments, a.segments)) {
+        if (arrayStartsWith(b.segments, a.segments)) {
             return 1;
         }
         for (let i = 0; i < Math.max(a.segments.length, b.segments.length); i++) {
@@ -277,7 +238,7 @@ const matchAgainstConfigs = (remaining, configs) => {
             routes = config.routeNames.map((routeName) => {
                 const routeConfig = configs.find((c) => {
                     // Check matching name AND pattern in case same screen is used at different levels in config
-                    return c.screen === routeName && (0, arrayStartsWith_1.arrayStartsWith)(config.segments, c.segments);
+                    return c.screen === routeName && arrayStartsWith(config.segments, c.segments);
                 });
                 const params = routeConfig && match.groups
                     ? Object.fromEntries(Object.entries(match.groups)
@@ -377,7 +338,7 @@ const createConfigItem = (screen, routeNames, paths, parse) => {
     const parts = [];
     // Parse the path string into parts for easier matching
     for (const { screen, path } of paths) {
-        parts.push(...(0, getPatternParts_1.getPatternParts)(path).map((part) => ({ ...part, screen })));
+        parts.push(...getPatternParts(path).map((part) => ({ ...part, screen })));
     }
     const regex = parts.length
         ? new RegExp(`^(${parts
@@ -386,7 +347,7 @@ const createConfigItem = (screen, routeNames, paths, parse) => {
                 const reg = it.regex || '[^/]+';
                 return `(((?<param_${i}>${reg})\\/)${it.optional ? '?' : ''})`;
             }
-            return `${it.segment === '*' ? '.*' : (0, escape_string_regexp_1.default)(it.segment)}\\/`;
+            return `${it.segment === '*' ? '.*' : escape(it.segment)}\\/`;
         })
             .join('')})$`)
         : undefined;
@@ -483,7 +444,7 @@ const createNestedStateObject = (path, routes, initialRoutes, flatConfig) => {
             parentScreens.push(route.name);
         }
     }
-    route = (0, findFocusedRoute_1.findFocusedRoute)(state);
+    route = findFocusedRoute(state);
     route.path = path.replace(/\/$/, '');
     const params = parseQueryParams(path, flatConfig ? findParseConfigForRoute(route.name, flatConfig) : undefined);
     if (params) {

@@ -1,22 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.matchDynamicName = matchDynamicName;
-exports.testNotFound = testNotFound;
-exports.matchGroupName = matchGroupName;
-exports.matchLastGroupName = matchLastGroupName;
-exports.matchArrayGroupName = matchArrayGroupName;
-exports.getNameFromFilePath = getNameFromFilePath;
-exports.getContextKey = getContextKey;
-exports.removeSupportedExtensions = removeSupportedExtensions;
-exports.removeFileSystemExtensions = removeFileSystemExtensions;
-exports.removeFileSystemDots = removeFileSystemDots;
-exports.stripGroupSegmentsFromPath = stripGroupSegmentsFromPath;
-exports.stripInvisibleSegmentsFromPath = stripInvisibleSegmentsFromPath;
-exports.isTypedRoute = isTypedRoute;
 /** Match `[page]` -> `page` or `[...group]` -> `...group` */
 const dynamicNameRe = /^\[([^[\]]+?)\]$/;
 /** Match `[page]` -> `page` */
-function matchDynamicName(name) {
+export function matchDynamicName(name) {
     const paramName = name.match(dynamicNameRe)?.[1];
     if (paramName == null) {
         return undefined;
@@ -29,25 +14,25 @@ function matchDynamicName(name) {
     }
 }
 /** Test `/` -> `page` */
-function testNotFound(name) {
+export function testNotFound(name) {
     return /\+not-found$/.test(name);
 }
 /** Match `(page)` -> `page` */
-function matchGroupName(name) {
+export function matchGroupName(name) {
     return name.match(/^(?:[^\\()])*?\(([^\\/]+)\)/)?.[1];
 }
 /** Match `(app)/(page)` -> `page` */
-function matchLastGroupName(name) {
+export function matchLastGroupName(name) {
     return name.match(/.*(?:\/|^)\(([^\\/]+)\)[^\s]*$/)?.[1];
 }
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
-function matchArrayGroupName(name) {
+export function matchArrayGroupName(name) {
     return name.match(/(?:[^\\()])*?\(([^\\/]+,[^\\/]+)\)/)?.[1];
 }
-function getNameFromFilePath(name) {
+export function getNameFromFilePath(name) {
     return removeSupportedExtensions(removeFileSystemDots(name));
 }
-function getContextKey(name) {
+export function getContextKey(name) {
     // The root path is `` (empty string) so always prepend `/` to ensure
     // there is some value.
     const normal = '/' + getNameFromFilePath(name);
@@ -57,18 +42,18 @@ function getContextKey(name) {
     return normal.replace(/\/?_layout$/, '');
 }
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx`, and the +api suffix */
-function removeSupportedExtensions(name) {
+export function removeSupportedExtensions(name) {
     return name.replace(/(\+api)?\.[jt]sx?$/g, '');
 }
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
-function removeFileSystemExtensions(name) {
+export function removeFileSystemExtensions(name) {
     return name.replace(/\.[jt]sx?$/g, '');
 }
 // Remove any amount of `./` and `../` from the start of the string
-function removeFileSystemDots(filePath) {
+export function removeFileSystemDots(filePath) {
     return filePath.replace(/^(?:\.\.?\/)+/g, '');
 }
-function stripGroupSegmentsFromPath(path) {
+export function stripGroupSegmentsFromPath(path) {
     return path
         .split('/')
         .reduce((acc, v) => {
@@ -79,7 +64,7 @@ function stripGroupSegmentsFromPath(path) {
     }, [])
         .join('/');
 }
-function stripInvisibleSegmentsFromPath(path) {
+export function stripInvisibleSegmentsFromPath(path) {
     return stripGroupSegmentsFromPath(path).replace(/\/?index$/, '');
 }
 /**
@@ -87,7 +72,7 @@ function stripInvisibleSegmentsFromPath(path) {
  *  - _layout files, +html, +not-found, string+api, etc
  *  - Routes can still use `+`, but it cannot be in the last segment.
  */
-function isTypedRoute(name) {
+export function isTypedRoute(name) {
     return !name.startsWith('+') && name.match(/(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/) === null;
 }
 //# sourceMappingURL=matchers.js.map

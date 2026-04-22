@@ -1,47 +1,10 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createComponentForStaticNavigation = createComponentForStaticNavigation;
-exports.createPathConfigForStaticNavigation = createPathConfigForStaticNavigation;
-const React = __importStar(require("react"));
+import * as React from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
-const react_is_1 = require("react-is");
-const useRoute_1 = require("./useRoute");
+import { isValidElementType } from 'react-is';
+import { useRoute } from './useRoute';
 const MemoizedScreen = React.memo(({ component }) => {
-    const route = (0, useRoute_1.useRoute)();
+    const route = useRoute();
     const children = React.createElement(component, { route });
     return children;
 });
@@ -57,7 +20,7 @@ const getItemsFromScreens = (Screen, screens) => {
             const { screen, if: _if, ...rest } = item;
             useIf = _if;
             props = rest;
-            if ((0, react_is_1.isValidElementType)(screen)) {
+            if (isValidElementType(screen)) {
                 component = screen;
             }
             else if ('config' in screen) {
@@ -65,7 +28,7 @@ const getItemsFromScreens = (Screen, screens) => {
                 component = createComponentForStaticNavigation(screen, `${name}Navigator`);
             }
         }
-        else if ((0, react_is_1.isValidElementType)(item)) {
+        else if (isValidElementType(item)) {
             component = item;
         }
         else if ('config' in item) {
@@ -94,7 +57,7 @@ const getItemsFromScreens = (Screen, screens) => {
  * @param displayName Name of the component to be displayed in React DevTools.
  * @returns A component which renders the navigator.
  */
-function createComponentForStaticNavigation(tree, displayName
+export function createComponentForStaticNavigation(tree, displayName
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 ) {
     const { Navigator, Group, Screen, config } = tree;
@@ -152,7 +115,7 @@ function createComponentForStaticNavigation(tree, displayName
  * };
  * ```
  */
-function createPathConfigForStaticNavigation(tree, options, auto) {
+export function createPathConfigForStaticNavigation(tree, options, auto) {
     let initialScreenHasPath = false;
     let initialScreenConfig;
     const createPathConfigForTree = (t, o, 

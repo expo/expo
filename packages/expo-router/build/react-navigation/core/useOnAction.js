@@ -1,45 +1,9 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useOnAction = useOnAction;
-const React = __importStar(require("react"));
-const react_1 = require("react");
-const DeprecatedNavigationInChildContext_1 = require("./DeprecatedNavigationInChildContext");
-const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
-const useOnPreventRemove_1 = require("./useOnPreventRemove");
+import * as React from 'react';
+import { use } from 'react';
+import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChildContext';
+import { NavigationBuilderContext, } from './NavigationBuilderContext';
+import { shouldPreventRemove, useOnPreventRemove } from './useOnPreventRemove';
 /**
  * Hook to handle actions for a navigator, including state updates and bubbling.
  *
@@ -49,9 +13,9 @@ const useOnPreventRemove_1 = require("./useOnPreventRemove");
  *
  * When the action handler handles as action, it returns `true`, otherwise `false`.
  */
-function useOnAction({ router, getState, setState, key, actionListeners, beforeRemoveListeners, routerConfigOptions, emitter, }) {
-    const { onAction: onActionParent, onRouteFocus: onRouteFocusParent, addListener: addListenerParent, onDispatchAction, } = (0, react_1.use)(NavigationBuilderContext_1.NavigationBuilderContext);
-    const navigationInChildEnabled = (0, react_1.use)(DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext);
+export function useOnAction({ router, getState, setState, key, actionListeners, beforeRemoveListeners, routerConfigOptions, emitter, }) {
+    const { onAction: onActionParent, onRouteFocus: onRouteFocusParent, addListener: addListenerParent, onDispatchAction, } = use(NavigationBuilderContext);
+    const navigationInChildEnabled = use(DeprecatedNavigationInChildContext);
     const routerConfigOptionsRef = React.useRef(routerConfigOptions);
     React.useEffect(() => {
         routerConfigOptionsRef.current = routerConfigOptions;
@@ -72,7 +36,7 @@ function useOnAction({ router, getState, setState, key, actionListeners, beforeR
             if (result !== null) {
                 onDispatchAction(action, state === result);
                 if (state !== result) {
-                    const isPrevented = (0, useOnPreventRemove_1.shouldPreventRemove)(emitter, beforeRemoveListeners, state.routes, result.routes, action);
+                    const isPrevented = shouldPreventRemove(emitter, beforeRemoveListeners, state.routes, result.routes, action);
                     if (isPrevented) {
                         return true;
                     }
@@ -122,7 +86,7 @@ function useOnAction({ router, getState, setState, key, actionListeners, beforeR
         router,
         setState,
     ]);
-    (0, useOnPreventRemove_1.useOnPreventRemove)({
+    useOnPreventRemove({
         getState,
         emitter,
         beforeRemoveListeners,

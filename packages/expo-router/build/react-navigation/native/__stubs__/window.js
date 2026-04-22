@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.window = void 0;
 let location = new URL('', 'http://example.com');
 let listeners = [];
 let entries = [{ state: null, href: location.href }];
@@ -50,7 +47,7 @@ const removeEventListener = (type, listener) => {
         listeners = listeners.filter((cb) => cb !== listener);
     }
 };
-exports.window = {
+export const window = {
     document: { title: '' },
     get location() {
         return location;
@@ -59,7 +56,7 @@ exports.window = {
     addEventListener,
     removeEventListener,
     get window() {
-        return exports.window;
+        return window;
     },
 };
 //# sourceMappingURL=window.js.map

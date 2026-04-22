@@ -1,11 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.forFade = forFade;
-exports.forShift = forShift;
 /**
  * Simple cross fade animation
  */
-function forFade({ current, }) {
+export function forFade({ current, }) {
     return {
         sceneStyle: {
             opacity: current.progress.interpolate({
@@ -18,7 +14,7 @@ function forFade({ current, }) {
 /**
  * Animation where the screens slightly shift to left/right
  */
-function forShift({ current, }) {
+export function forShift({ current, }) {
     return {
         sceneStyle: {
             opacity: current.progress.interpolate({

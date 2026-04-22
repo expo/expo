@@ -1,56 +1,20 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackView = void 0;
-const React = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const CardStack_1 = require("./CardStack");
-const elements_1 = require("../../../elements");
-const native_1 = require("../../../native");
-const ModalPresentationContext_1 = require("../../utils/ModalPresentationContext");
-const GestureHandler_1 = require("../GestureHandler");
-const HeaderContainer_1 = require("../Header/HeaderContainer");
-const GestureHandlerWrapper = GestureHandler_1.GestureHandlerRootView ?? react_native_1.View;
+import * as React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+import { CardStack, getAnimationEnabled } from './CardStack';
+import { HeaderShownContext, SafeAreaProviderCompat } from '../../../elements';
+import { CommonActions, StackActions, } from '../../../native';
+import { ModalPresentationContext } from '../../utils/ModalPresentationContext';
+import { GestureHandlerRootView } from '../GestureHandler';
+import { HeaderContainer } from '../Header/HeaderContainer';
+const GestureHandlerWrapper = GestureHandlerRootView ?? View;
 /**
  * Compare two arrays with primitive values as the content.
  * We need to make sure that both values and order match.
  */
 const isArrayEqual = (a, b) => a.length === b.length && a.every((it, index) => Object.is(it, b[index]));
-class StackView extends React.Component {
+export class StackView extends React.Component {
     static getDerivedStateFromProps(props, state) {
         const allRoutes = [...props.state.routes, ...props.state.preloadedRoutes];
         const previousRoutes = state.previousState
@@ -120,7 +84,7 @@ class StackView extends React.Component {
         const nextFocusedRoute = routes[routes.length - 1];
         const isAnimationEnabled = (key) => {
             const descriptor = props.descriptors[key] || state.descriptors[key];
-            return (0, CardStack_1.getAnimationEnabled)(descriptor?.options.animation);
+            return getAnimationEnabled(descriptor?.options.animation);
         };
         const getAnimationTypeForReplace = (key) => {
             const descriptor = props.descriptors[key] || state.descriptors[key];
@@ -228,7 +192,7 @@ class StackView extends React.Component {
         return routes[index - 1];
     };
     renderHeader = (props) => {
-        return <HeaderContainer_1.HeaderContainer {...props}/>;
+        return <HeaderContainer {...props}/>;
     };
     handleOpenRoute = ({ route }) => {
         const { state, navigation } = this.props;
@@ -241,7 +205,7 @@ class StackView extends React.Component {
             // So we need to add this route back to the state
             navigation.dispatch((state) => {
                 const routes = [...state.routes.filter((r) => r.key !== route.key), route];
-                return native_1.CommonActions.reset({
+                return CommonActions.reset({
                     ...state,
                     routes,
                     index: routes.length - 1,
@@ -274,7 +238,7 @@ class StackView extends React.Component {
             // This will happen in when the route was closed from the card component
             // e.g. When the close animation triggered from a gesture ends
             navigation.dispatch({
-                ...native_1.StackActions.pop(),
+                ...StackActions.pop(),
                 source: route.key,
                 target: state.key,
             });
@@ -326,20 +290,19 @@ class StackView extends React.Component {
             return acc;
         }, {});
         return (<GestureHandlerWrapper style={styles.container}>
-        <elements_1.SafeAreaProviderCompat>
-          <react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer>
-            {(insets) => (<ModalPresentationContext_1.ModalPresentationContext.Consumer>
-                {(isParentModal) => (<elements_1.HeaderShownContext.Consumer>
-                    {(isParentHeaderShown) => (<CardStack_1.CardStack insets={insets} isParentHeaderShown={isParentHeaderShown} isParentModal={isParentModal} getPreviousRoute={this.getPreviousRoute} routes={routes} openingRouteKeys={openingRouteKeys} closingRouteKeys={closingRouteKeys} onOpenRoute={this.handleOpenRoute} onCloseRoute={this.handleCloseRoute} onTransitionStart={this.handleTransitionStart} onTransitionEnd={this.handleTransitionEnd} renderHeader={this.renderHeader} state={state} descriptors={descriptors} onGestureStart={this.handleGestureStart} onGestureEnd={this.handleGestureEnd} onGestureCancel={this.handleGestureCancel} preloadedDescriptors={preloadedDescriptors} {...rest}/>)}
-                  </elements_1.HeaderShownContext.Consumer>)}
-              </ModalPresentationContext_1.ModalPresentationContext.Consumer>)}
-          </react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer>
-        </elements_1.SafeAreaProviderCompat>
+        <SafeAreaProviderCompat>
+          <SafeAreaInsetsContext.Consumer>
+            {(insets) => (<ModalPresentationContext.Consumer>
+                {(isParentModal) => (<HeaderShownContext.Consumer>
+                    {(isParentHeaderShown) => (<CardStack insets={insets} isParentHeaderShown={isParentHeaderShown} isParentModal={isParentModal} getPreviousRoute={this.getPreviousRoute} routes={routes} openingRouteKeys={openingRouteKeys} closingRouteKeys={closingRouteKeys} onOpenRoute={this.handleOpenRoute} onCloseRoute={this.handleCloseRoute} onTransitionStart={this.handleTransitionStart} onTransitionEnd={this.handleTransitionEnd} renderHeader={this.renderHeader} state={state} descriptors={descriptors} onGestureStart={this.handleGestureStart} onGestureEnd={this.handleGestureEnd} onGestureCancel={this.handleGestureCancel} preloadedDescriptors={preloadedDescriptors} {...rest}/>)}
+                  </HeaderShownContext.Consumer>)}
+              </ModalPresentationContext.Consumer>)}
+          </SafeAreaInsetsContext.Consumer>
+        </SafeAreaProviderCompat>
       </GestureHandlerWrapper>);
     }
 }
-exports.StackView = StackView;
-const styles = react_native_1.StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
     },

@@ -1,60 +1,24 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoRoot = ExpoRoot;
-const react_1 = __importStar(require("react"));
-const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const constants_1 = require("./constants");
-const useDomComponentNavigation_1 = require("./domComponents/useDomComponentNavigation");
-const NavigationContainer_1 = require("./fork/NavigationContainer");
-const router_store_1 = require("./global-state/router-store");
-const serverLocationContext_1 = require("./global-state/serverLocationContext");
-const storeContext_1 = require("./global-state/storeContext");
-const utils_1 = require("./global-state/utils");
-const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
-const primitives_1 = require("./primitives");
-const native_1 = require("./react-navigation/native");
-const screensFeatureFlags_1 = require("./screensFeatureFlags");
-const url_1 = require("./utils/url");
-const Sitemap_1 = require("./views/Sitemap");
-const SplashScreen = __importStar(require("./views/Splash"));
-const Unmatched_1 = require("./views/Unmatched");
+import React, { Fragment, useMemo } from 'react';
+import { Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
+import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
+import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
+import { store, useStore } from './global-state/router-store';
+import { ServerContext } from './global-state/serverLocationContext';
+import { StoreContext } from './global-state/storeContext';
+import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
+import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
+import { Screen } from './primitives';
+import { StackRouter, useNavigationBuilder, } from './react-navigation/native';
+import { initScreensFeatureFlags } from './screensFeatureFlags';
+import { parseUrlUsingCustomBase } from './utils/url';
+import { Sitemap } from './views/Sitemap';
+import * as SplashScreen from './views/Splash';
+import { Unmatched } from './views/Unmatched';
 const isTestEnv = process.env.NODE_ENV === 'test';
-const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
+const INITIAL_METRICS = Platform.OS === 'web' || isTestEnv
     ? {
         frame: { x: 0, y: 0, width: 0, height: 0 },
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -66,37 +30,37 @@ const documentTitle = {
 /**
  * @hidden
  */
-function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
-    (0, screensFeatureFlags_1.initScreensFeatureFlags)();
+export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }) {
+    initScreensFeatureFlags();
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
      * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
      * is a HTML document, we need to ensure its inside the <body>
      */
-    const wrapper = (0, react_1.useMemo)(() => ({ children }) => {
+    const wrapper = useMemo(() => ({ children }) => {
         return (<ParentWrapper>
-            <LinkPreviewContext_1.LinkPreviewContextProvider>
-              <react_native_safe_area_context_1.SafeAreaProvider 
+            <LinkPreviewContextProvider>
+              <SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
                 {children}
-              </react_native_safe_area_context_1.SafeAreaProvider>
-            </LinkPreviewContext_1.LinkPreviewContextProvider>
+              </SafeAreaProvider>
+            </LinkPreviewContextProvider>
           </ParentWrapper>);
     }, [ParentWrapper]);
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
-const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
+const initialUrl = Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
-function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, linking = {}, }) {
+function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = Fragment, linking = {}, }) {
     // location and linking.getInitialURL are both used to initialize the router state
     //  - location is used on web and during static rendering
     //  - linking.getInitialURL is used on native
-    const serverContext = (0, react_1.useMemo)(() => {
+    const serverContext = useMemo(() => {
         let contextType = {};
         const url = typeof initialLocation === 'string'
-            ? (0, url_1.parseUrlUsingCustomBase)(initialLocation)
+            ? parseUrlUsingCustomBase(initialLocation)
             : initialLocation;
         if (url && url instanceof URL) {
             contextType = {
@@ -116,8 +80,8 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     const serverUrl = serverContext.location
         ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
         : undefined;
-    const store = (0, router_store_1.useStore)(context, linking, serverUrl);
-    (0, useDomComponentNavigation_1.useDomComponentNavigation)();
+    const store = useStore(context, linking, serverUrl);
+    useDomComponentNavigation();
     if (store.shouldShowTutorial()) {
         SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -131,27 +95,27 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
             return null;
         }
     }
-    return (<storeContext_1.StoreContext.Provider value={store}>
-      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} onStateChange={store.onStateChange} documentTitle={documentTitle} onReady={store.onReady}>
-        <serverLocationContext_1.ServerContext.Provider value={serverContext}>
+    return (<StoreContext.Provider value={store}>
+      <UpstreamNavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} onStateChange={store.onStateChange} documentTitle={documentTitle} onReady={store.onReady}>
+        <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
             <Content />
           </WrapperComponent>
-        </serverLocationContext_1.ServerContext.Provider>
-      </NavigationContainer_1.NavigationContainer>
-    </storeContext_1.StoreContext.Provider>);
+        </ServerContext.Provider>
+      </UpstreamNavigationContainer>
+    </StoreContext.Provider>);
 }
 function Content() {
-    const children = [<primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>];
-    if ((0, utils_1.shouldAppendNotFound)()) {
-        children.push(<primitives_1.Screen name={constants_1.NOT_FOUND_ROUTE_NAME} component={Unmatched_1.Unmatched}/>);
+    const children = [<Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent}/>];
+    if (shouldAppendNotFound()) {
+        children.push(<Screen name={NOT_FOUND_ROUTE_NAME} component={Unmatched}/>);
     }
-    if ((0, utils_1.shouldAppendSitemap)()) {
-        children.push(<primitives_1.Screen name={constants_1.SITEMAP_ROUTE_NAME} component={Sitemap_1.Sitemap}/>);
+    if (shouldAppendSitemap()) {
+        children.push(<Screen name={SITEMAP_ROUTE_NAME} component={Sitemap}/>);
     }
-    const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
         children,
-        id: constants_1.INTERNAL_SLOT_NAME,
+        id: INTERNAL_SLOT_NAME,
     });
     return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 }

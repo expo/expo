@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getActionFromState = getActionFromState;
-function getActionFromState(state, options) {
+export function getActionFromState(state, options) {
     // Create a normalized configs object which will be easier to use
     const normalizedConfig = options
         ? createNormalizedConfigItem(options)

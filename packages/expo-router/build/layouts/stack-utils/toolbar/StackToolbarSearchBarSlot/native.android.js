@@ -1,10 +1,6 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeToolbarSearchBarSlot = void 0;
 /**
  * Toolbar search bar slot is not supported on Android.
  */
-const NativeToolbarSearchBarSlot = () => null;
-exports.NativeToolbarSearchBarSlot = NativeToolbarSearchBarSlot;
+export const NativeToolbarSearchBarSlot = () => null;
 //# sourceMappingURL=native.android.js.map

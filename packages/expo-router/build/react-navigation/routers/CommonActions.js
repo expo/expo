@@ -1,16 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.goBack = goBack;
-exports.navigate = navigate;
-exports.navigateDeprecated = navigateDeprecated;
-exports.reset = reset;
-exports.setParams = setParams;
-exports.replaceParams = replaceParams;
-exports.preload = preload;
-function goBack() {
+export function goBack() {
     return { type: 'GO_BACK' };
 }
-function navigate(...args) {
+export function navigate(...args) {
     if (typeof args[0] === 'string') {
         const [name, params, options] = args;
         if (typeof options === 'boolean') {
@@ -34,7 +25,7 @@ function navigate(...args) {
         return { type: 'NAVIGATE', payload };
     }
 }
-function navigateDeprecated(...args) {
+export function navigateDeprecated(...args) {
     if (typeof args[0] === 'string') {
         return {
             type: 'NAVIGATE_DEPRECATED',
@@ -49,22 +40,22 @@ function navigateDeprecated(...args) {
         return { type: 'NAVIGATE_DEPRECATED', payload };
     }
 }
-function reset(state) {
+export function reset(state) {
     return { type: 'RESET', payload: state };
 }
-function setParams(params) {
+export function setParams(params) {
     return {
         type: 'SET_PARAMS',
         payload: { params },
     };
 }
-function replaceParams(params) {
+export function replaceParams(params) {
     return {
         type: 'REPLACE_PARAMS',
         payload: { params },
     };
 }
-function preload(name, params) {
+export function preload(name, params) {
     return {
         type: 'PRELOAD',
         payload: { name, params },

@@ -1,11 +1,8 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createDrawerNavigator = createDrawerNavigator;
-const native_1 = require("../../native");
-const DrawerView_1 = require("../views/DrawerView");
+import { createNavigatorFactory, DrawerRouter, useNavigationBuilder, } from '../../native';
+import { DrawerView } from '../views/DrawerView';
 function DrawerNavigator({ id, initialRouteName, defaultStatus = 'closed', backBehavior, UNSTABLE_routeNamesChangeBehavior, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
-    const { state, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.DrawerRouter, {
+    const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder(DrawerRouter, {
         id,
         initialRouteName,
         defaultStatus,
@@ -19,10 +16,10 @@ function DrawerNavigator({ id, initialRouteName, defaultStatus = 'closed', backB
         UNSTABLE_router,
     });
     return (<NavigationContent>
-      <DrawerView_1.DrawerView {...rest} defaultStatus={defaultStatus} state={state} descriptors={descriptors} navigation={navigation}/>
+      <DrawerView {...rest} defaultStatus={defaultStatus} state={state} descriptors={descriptors} navigation={navigation}/>
     </NavigationContent>);
 }
-function createDrawerNavigator(config) {
-    return (0, native_1.createNavigatorFactory)(DrawerNavigator)(config);
+export function createDrawerNavigator(config) {
+    return createNavigatorFactory(DrawerNavigator)(config);
 }
 //# sourceMappingURL=createDrawerNavigator.js.map

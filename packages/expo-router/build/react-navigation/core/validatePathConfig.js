@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.validatePathConfig = validatePathConfig;
 const formatToList = (items) => Object.entries(items)
     .map(([key, value]) => `- ${key} (${value})`)
     .join('\n');
-function validatePathConfig(config, root = true) {
+export function validatePathConfig(config, root = true) {
     const validation = {
         path: 'string',
         initialRouteName: 'string',

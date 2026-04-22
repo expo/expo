@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertMaterialIconNameToImageSource = convertMaterialIconNameToImageSource;
-const expo_symbols_1 = require("expo-symbols");
-const icon_1 = require("./icon");
-const elements_1 = require("../common/elements");
-function convertMaterialIconNameToImageSource(name) {
-    return (0, icon_1.convertComponentSrcToImageSource)(<elements_1.NativeTabsTriggerPromiseIcon loader={() => (0, expo_symbols_1.unstable_getMaterialSymbolSourceAsync)(name, 24, 'white')}/>);
+import { unstable_getMaterialSymbolSourceAsync } from 'expo-symbols';
+import { convertComponentSrcToImageSource } from './icon';
+import { NativeTabsTriggerPromiseIcon } from '../common/elements';
+export function convertMaterialIconNameToImageSource(name) {
+    return convertComponentSrcToImageSource(<NativeTabsTriggerPromiseIcon loader={() => unstable_getMaterialSymbolSourceAsync(name, 24, 'white')}/>);
 }
 //# sourceMappingURL=materialIconConverter.android.js.map

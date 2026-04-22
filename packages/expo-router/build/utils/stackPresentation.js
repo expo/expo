@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isModalPresentation = isModalPresentation;
 const MODAL_PRESENTATIONS = [
     'modal',
     'transparentModal',
@@ -18,7 +15,7 @@ const MODAL_PRESENTATIONS = [
  *
  * @internal
  */
-function isModalPresentation(options) {
+export function isModalPresentation(options) {
     const presentation = options?.presentation;
     if (!presentation) {
         return false;

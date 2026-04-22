@@ -1,7 +1,4 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.usePreventZoomTransitionDismissal = usePreventZoomTransitionDismissal;
 /**
  * Limits the screen area where interactive dismissal gestures are allowed for zoom transitions.
  *
@@ -35,7 +32,7 @@ exports.usePreventZoomTransitionDismissal = usePreventZoomTransitionDismissal;
  *
  * @platform ios
  */
-function usePreventZoomTransitionDismissal(_options) {
+export function usePreventZoomTransitionDismissal(_options) {
     // No-op on non-iOS platforms
 }
 //# sourceMappingURL=usePreventZoomTransitionDismissal.js.map

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkDuplicateRouteNames = checkDuplicateRouteNames;
-function checkDuplicateRouteNames(state) {
+export function checkDuplicateRouteNames(state) {
     const duplicates = [];
     const getRouteNames = (location, state) => {
         state.routes.forEach((route) => {

@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getShadowStyle = getShadowStyle;
-const react_native_1 = require("react-native");
-const color_1 = require("../../../utils/color");
-function getShadowStyle({ offset, radius, opacity, color = '#000' }) {
-    const result = react_native_1.Platform.select({
+import { Platform } from 'react-native';
+import { Color } from '../../../utils/color';
+export function getShadowStyle({ offset, radius, opacity, color = '#000' }) {
+    const result = Platform.select({
         web: {
-            boxShadow: `${offset.width}px ${offset.height}px ${radius}px ${(0, color_1.Color)(color)?.alpha(opacity).toString() ?? ''}`,
+            boxShadow: `${offset.width}px ${offset.height}px ${radius}px ${Color(color)?.alpha(opacity).toString() ?? ''}`,
         },
         default: {
             shadowOffset: offset,

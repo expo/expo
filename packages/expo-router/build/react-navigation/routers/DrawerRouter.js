@@ -1,11 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DrawerActions = void 0;
-exports.DrawerRouter = DrawerRouter;
-const non_secure_1 = require("nanoid/non-secure");
-const TabRouter_1 = require("./TabRouter");
-exports.DrawerActions = {
-    ...TabRouter_1.TabActions,
+import { nanoid } from 'nanoid/non-secure';
+import { TabActions, TabRouter, } from './TabRouter';
+export const DrawerActions = {
+    ...TabActions,
     openDrawer() {
         return { type: 'OPEN_DRAWER' };
     },
@@ -19,8 +15,8 @@ exports.DrawerActions = {
 /**
  * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
  */
-function DrawerRouter({ defaultStatus = 'closed', ...rest }) {
-    const router = (0, TabRouter_1.TabRouter)(rest);
+export function DrawerRouter({ defaultStatus = 'closed', ...rest }) {
+    const router = TabRouter(rest);
     const isDrawerInHistory = (state) => Boolean(state.history?.some((it) => it.type === 'drawer'));
     const addDrawerToHistory = (state) => {
         if (isDrawerInHistory(state)) {
@@ -72,7 +68,7 @@ function DrawerRouter({ defaultStatus = 'closed', ...rest }) {
                 default: defaultStatus,
                 stale: false,
                 type: 'drawer',
-                key: `drawer-${(0, non_secure_1.nanoid)()}`,
+                key: `drawer-${nanoid()}`,
             };
         },
         getRehydratedState(partialState, { routeNames, routeParamList, routeGetIdList }) {
@@ -93,7 +89,7 @@ function DrawerRouter({ defaultStatus = 'closed', ...rest }) {
                 ...state,
                 default: defaultStatus,
                 type: 'drawer',
-                key: `drawer-${(0, non_secure_1.nanoid)()}`,
+                key: `drawer-${nanoid()}`,
             };
         },
         getStateForRouteFocus(state, key) {
@@ -129,7 +125,7 @@ function DrawerRouter({ defaultStatus = 'closed', ...rest }) {
                     return router.getStateForAction(state, action, options);
             }
         },
-        actionCreators: exports.DrawerActions,
+        actionCreators: DrawerActions,
     };
 }
 //# sourceMappingURL=DrawerRouter.js.map

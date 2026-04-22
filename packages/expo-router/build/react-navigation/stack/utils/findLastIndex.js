@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.findLastIndex = findLastIndex;
-function findLastIndex(array, callback) {
+export function findLastIndex(array, callback) {
     for (let i = array.length - 1; i >= 0; i--) {
         if (callback(array[i])) {
             return i;

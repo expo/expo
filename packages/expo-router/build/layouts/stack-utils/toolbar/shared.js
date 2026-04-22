@@ -1,17 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.extractXcassetName = extractXcassetName;
-exports.extractIconRenderingMode = extractIconRenderingMode;
-exports.areAllChildrenPrimitiveValues = areAllChildrenPrimitiveValues;
-exports.convertChildrenToString = convertChildrenToString;
-exports.convertStackHeaderSharedPropsToRNSharedHeaderItem = convertStackHeaderSharedPropsToRNSharedHeaderItem;
-const react_1 = require("react");
-const toolbar_primitives_1 = require("./toolbar-primitives");
-const children_1 = require("../../../utils/children");
-const font_1 = require("../../../utils/font");
+import { Children } from 'react';
+import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
+import { getFirstChildOfType } from '../../../utils/children';
+import { convertTextStyleToRNTextStyle } from '../../../utils/font';
 /** @internal */
-function extractXcassetName(props) {
-    const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
+export function extractXcassetName(props) {
+    const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
     if (iconComponentProps && 'xcasset' in iconComponentProps) {
         return iconComponentProps.xcasset;
     }
@@ -22,35 +15,35 @@ function extractXcassetName(props) {
  * Returns undefined if no explicit rendering mode is set on the Icon child.
  * @internal
  */
-function extractIconRenderingMode(props) {
-    const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
+export function extractIconRenderingMode(props) {
+    const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
     if (iconComponentProps && 'renderingMode' in iconComponentProps) {
         return iconComponentProps.renderingMode;
     }
     return undefined;
 }
 const PRIMITIVE_TYPES = ['string', 'number'];
-function areAllChildrenPrimitiveValues(children) {
-    const childrenArray = react_1.Children.toArray(children);
+export function areAllChildrenPrimitiveValues(children) {
+    const childrenArray = Children.toArray(children);
     return (childrenArray.filter((child) => PRIMITIVE_TYPES.includes(typeof child)).length ===
         childrenArray.length);
 }
-function convertChildrenToString(children) {
-    return react_1.Children.toArray(children)
+export function convertChildrenToString(children) {
+    return Children.toArray(children)
         .filter((child) => PRIMITIVE_TYPES.includes(typeof child))
         .join('');
 }
-function convertStackHeaderSharedPropsToRNSharedHeaderItem(props, isBottomPlacement = false) {
+export function convertStackHeaderSharedPropsToRNSharedHeaderItem(props, isBottomPlacement = false) {
     const { children, style, separateBackground, icon, ...rest } = props;
     const stringChildren = convertChildrenToString(children);
-    const label = (0, children_1.getFirstChildOfType)(children, toolbar_primitives_1.StackToolbarLabel);
+    const label = getFirstChildOfType(children, StackToolbarLabel);
     const iconPropConvertedToIcon = props.icon
         ? typeof props.icon === 'string'
             ? { sf: props.icon }
             : { src: props.icon }
         : undefined;
-    const iconComponentProps = (0, children_1.getFirstChildOfType)(children, toolbar_primitives_1.StackToolbarIcon)?.props ?? iconPropConvertedToIcon;
-    const badgeComponent = (0, children_1.getFirstChildOfType)(children, toolbar_primitives_1.StackToolbarBadge);
+    const iconComponentProps = getFirstChildOfType(children, StackToolbarIcon)?.props ?? iconPropConvertedToIcon;
+    const badgeComponent = getFirstChildOfType(children, StackToolbarBadge);
     const rnsIcon = (() => {
         if (!iconComponentProps) {
             return undefined;
@@ -86,14 +79,14 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props, isBottomPlacem
         sharesBackground: !separateBackground,
     };
     if (style) {
-        const convertedStyle = (0, font_1.convertTextStyleToRNTextStyle)(style) ?? {};
+        const convertedStyle = convertTextStyleToRNTextStyle(style) ?? {};
         item.labelStyle = convertedStyle;
     }
     if (badgeComponent) {
         item.badge = {
             value: badgeComponent.props.children ?? '',
         };
-        const badgeStyle = (0, font_1.convertTextStyleToRNTextStyle)(badgeComponent.props.style);
+        const badgeStyle = convertTextStyleToRNTextStyle(badgeComponent.props.style);
         if (badgeStyle) {
             item.badge.style = badgeStyle;
         }

@@ -1,29 +1,26 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.usePreventZoomTransitionDismissal = usePreventZoomTransitionDismissal;
-const react_1 = require("react");
-const zoom_transition_context_1 = require("./zoom-transition-context");
-const descriptors_context_1 = require("../../fork/native-stack/descriptors-context");
-const navigationParams_1 = require("../../navigationParams");
-const native_1 = require("../../react-navigation/native");
-const useNavigation_1 = require("../../useNavigation");
-const stack_1 = require("../../utils/stack");
-const stackPresentation_1 = require("../../utils/stackPresentation");
-const useSafeLayoutEffect_1 = require("../../views/useSafeLayoutEffect");
-const PreviewRouteContext_1 = require("../preview/PreviewRouteContext");
-function usePreventZoomTransitionDismissal(options) {
-    const context = (0, react_1.use)(zoom_transition_context_1.ZoomTransitionTargetContext);
-    const route = (0, native_1.useRoute)();
-    const navigation = (0, useNavigation_1.useNavigation)();
-    const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
+import { use } from 'react';
+import { ZoomTransitionTargetContext } from './zoom-transition-context';
+import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
+import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../navigationParams';
+import { useRoute } from '../../react-navigation/native';
+import { useNavigation } from '../../useNavigation';
+import { isRoutePreloadedInStack } from '../../utils/stack';
+import { isModalPresentation } from '../../utils/stackPresentation';
+import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
+import { useIsPreview } from '../preview/PreviewRouteContext';
+export function usePreventZoomTransitionDismissal(options) {
+    const context = use(ZoomTransitionTargetContext);
+    const route = useRoute();
+    const navigation = useNavigation();
+    const isPreview = useIsPreview();
     const isFocused = navigation.isFocused();
-    const isPreloaded = isPreview ? false : (0, stack_1.isRoutePreloadedInStack)(navigation.getState(), route);
-    const descriptorsMap = (0, react_1.use)(descriptors_context_1.DescriptorsContext);
+    const isPreloaded = isPreview ? false : isRoutePreloadedInStack(navigation.getState(), route);
+    const descriptorsMap = use(DescriptorsContext);
     const currentDescriptor = descriptorsMap[route.key];
     const gestureEnabled = currentDescriptor?.options?.gestureEnabled;
-    const isModal = (0, stackPresentation_1.isModalPresentation)(currentDescriptor?.options);
-    (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
+    const isModal = isModalPresentation(currentDescriptor?.options);
+    useSafeLayoutEffect(() => {
         if (isPreview)
             return;
         if (isModal) {
@@ -59,7 +56,7 @@ function usePreventZoomTransitionDismissal(options) {
             // The native zoom transition's interactiveDismissShouldBegin callback handles dismissal instead.
             // We use the internal option to preserve the user's gestureEnabled setting.
             navigation.setOptions({
-                [navigationParams_1.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]: computedRect ? false : undefined,
+                [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]: computedRect ? false : undefined,
             });
         }
         // Cleanup on unmount

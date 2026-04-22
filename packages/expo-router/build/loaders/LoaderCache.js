@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Copyright © 2026 650 Industries.
  *
@@ -6,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.LoaderCacheContext = exports.defaultLoaderCache = exports.LoaderCache = void 0;
-const react_1 = require("react");
-class LoaderCache {
+import { createContext } from 'react';
+export class LoaderCache {
     data = new Map();
     errors = new Map();
     promises = new Map();
@@ -49,7 +46,6 @@ class LoaderCache {
         this.promises.clear();
     }
 }
-exports.LoaderCache = LoaderCache;
-exports.defaultLoaderCache = new LoaderCache();
-exports.LoaderCacheContext = (0, react_1.createContext)(exports.defaultLoaderCache);
+export const defaultLoaderCache = new LoaderCache();
+export const LoaderCacheContext = createContext(defaultLoaderCache);
 //# sourceMappingURL=LoaderCache.js.map

@@ -1,42 +1,6 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPathFromState = getPathFromState;
-const queryString = __importStar(require("query-string"));
-const getPatternParts_1 = require("./getPatternParts");
-const validatePathConfig_1 = require("./validatePathConfig");
+import * as queryString from 'query-string';
+import { getPatternParts } from './getPatternParts';
+import { validatePathConfig } from './validatePathConfig';
 const getActiveRoute = (state) => {
     const route = typeof state.index === 'number'
         ? state.routes[state.index]
@@ -86,12 +50,12 @@ const getNormalizedConfigs = (options) => {
  * @param options Extra options to fine-tune how to serialize the path.
  * @returns Path representing the state, e.g. /foo/bar?count=42.
  */
-function getPathFromState(state, options) {
+export function getPathFromState(state, options) {
     if (state == null) {
         throw Error(`Got '${String(state)}' for the navigation state. You must pass a valid state object.`);
     }
     if (options) {
-        (0, validatePathConfig_1.validatePathConfig)(options);
+        validatePathConfig(options);
     }
     const configs = getNormalizedConfigs(options);
     let path = '/';
@@ -235,7 +199,7 @@ function getPathFromState(state, options) {
 const createConfigItem = (config, parentParts) => {
     if (typeof config === 'string') {
         // If a string is specified as the value of the key(e.g. Foo: '/path'), use it as the pattern
-        const parts = (0, getPatternParts_1.getPatternParts)(config);
+        const parts = getPatternParts(config);
         if (parentParts) {
             return { parts: [...parentParts, ...parts] };
         }
@@ -247,9 +211,9 @@ const createConfigItem = (config, parentParts) => {
     // If an object is specified as the value (e.g. Foo: { ... }),
     // It can have `path` property and `screens` prop which has nested configs
     const parts = config.exact !== true
-        ? [...(parentParts || []), ...(config.path ? (0, getPatternParts_1.getPatternParts)(config.path) : [])]
+        ? [...(parentParts || []), ...(config.path ? getPatternParts(config.path) : [])]
         : config.path
-            ? (0, getPatternParts_1.getPatternParts)(config.path)
+            ? getPatternParts(config.path)
             : undefined;
     const screens = config.screens ? createNormalizedConfigs(config.screens, parts) : undefined;
     return {

@@ -1,72 +1,32 @@
-"use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFrameSize = useFrameSize;
-exports.FrameSizeProvider = FrameSizeProvider;
-const React = __importStar(require("react"));
-const react_1 = require("react");
-const react_native_1 = require("react-native");
-const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
-const useSyncExternalStoreWithSelector_1 = require("../../utils/useSyncExternalStoreWithSelector");
+import * as React from 'react';
+import { use } from 'react';
+import { Platform } from 'react-native';
+import useLatestCallback from '../../utils/useLatestCallback';
+import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
 const FrameContext = React.createContext(undefined);
-function useFrameSize(selector, throttle) {
-    const context = (0, react_1.use)(FrameContext);
+export function useFrameSize(selector, throttle) {
+    const context = use(FrameContext);
     if (context == null) {
         throw new Error('useFrameSize must be used within a FrameSizeProvider');
     }
-    const value = (0, useSyncExternalStoreWithSelector_1.useSyncExternalStoreWithSelector)(throttle ? context.subscribeThrottled : context.subscribe, context.getCurrent, context.getCurrent, selector);
+    const value = useSyncExternalStoreWithSelector(throttle ? context.subscribeThrottled : context.subscribe, context.getCurrent, context.getCurrent, selector);
     return value;
 }
-function FrameSizeProvider({ initialFrame, render }) {
+export function FrameSizeProvider({ initialFrame, render }) {
     const frameRef = React.useRef({
         width: initialFrame.width,
         height: initialFrame.height,
     });
     const listeners = React.useRef(new Set());
-    const getCurrent = (0, useLatestCallback_1.default)(() => frameRef.current);
-    const subscribe = (0, useLatestCallback_1.default)((listener) => {
+    const getCurrent = useLatestCallback(() => frameRef.current);
+    const subscribe = useLatestCallback((listener) => {
         listeners.current.add(listener);
         return () => {
             listeners.current.delete(listener);
         };
     });
-    const subscribeThrottled = (0, useLatestCallback_1.default)((listener) => {
+    const subscribeThrottled = useLatestCallback((listener) => {
         const delay = 100; // Throttle delay in milliseconds
         let timer;
         let updated = false;
@@ -104,7 +64,7 @@ function FrameSizeProvider({ initialFrame, render }) {
         subscribe,
         subscribeThrottled,
     }), [subscribe, subscribeThrottled, getCurrent]);
-    const onChange = (0, useLatestCallback_1.default)((frame) => {
+    const onChange = useLatestCallback((frame) => {
         if (frameRef.current.height === frame.height && frameRef.current.width === frame.width) {
             return;
         }
@@ -113,7 +73,7 @@ function FrameSizeProvider({ initialFrame, render }) {
     });
     const viewRef = React.useRef(null);
     React.useEffect(() => {
-        if (react_native_1.Platform.OS === 'web') {
+        if (Platform.OS === 'web') {
             // We use ResizeObserver on web
             return;
         }
@@ -126,7 +86,7 @@ function FrameSizeProvider({ initialFrame, render }) {
         onChange({ width, height });
     };
     return (<FrameContext.Provider value={context}>
-      {react_native_1.Platform.OS === 'web' ? <FrameSizeListenerWeb onChange={onChange}/> : null}
+      {Platform.OS === 'web' ? <FrameSizeListenerWeb onChange={onChange}/> : null}
       {render({ ref: viewRef, onLayout })}
     </FrameContext.Provider>);
 }

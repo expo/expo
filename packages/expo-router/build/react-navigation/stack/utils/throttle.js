@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.throttle = throttle;
-function throttle(func, duration) {
+export function throttle(func, duration) {
     let timeout;
     return function (...args) {
         if (timeout == null) {

@@ -1,6 +1,2 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeToolbarButton = void 0;
-const NativeToolbarButton = () => null;
-exports.NativeToolbarButton = NativeToolbarButton;
+export const NativeToolbarButton = () => null;
 //# sourceMappingURL=native.js.map

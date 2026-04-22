@@ -1,9 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseRouteSegments = parseRouteSegments;
-exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
-exports.getReactNavigationConfig = getReactNavigationConfig;
-const matchers_1 = require("./matchers");
+import { matchDynamicName } from './matchers';
 // `[page]` -> `:page`
 // `page` -> `page`
 function convertDynamicRouteToReactNavigation(segment) {
@@ -14,7 +9,7 @@ function convertDynamicRouteToReactNavigation(segment) {
     if (segment === '+not-found') {
         return '*not-found';
     }
-    const dynamicName = (0, matchers_1.matchDynamicName)(segment);
+    const dynamicName = matchDynamicName(segment);
     if (dynamicName && !dynamicName.deep) {
         return `:${dynamicName.name}`;
     }
@@ -25,7 +20,7 @@ function convertDynamicRouteToReactNavigation(segment) {
         return segment;
     }
 }
-function parseRouteSegments(segments) {
+export function parseRouteSegments(segments) {
     return (
     // NOTE(EvanBacon): When there are nested routes without layouts
     // the node.route will be something like `app/home/index`
@@ -68,10 +63,10 @@ function convertRouteNodeToScreen(node, metaOnly) {
     }
     return screen;
 }
-function getReactNavigationScreensConfig(nodes, metaOnly) {
+export function getReactNavigationScreensConfig(nodes, metaOnly) {
     return Object.fromEntries(nodes.map((node) => [node.route, convertRouteNodeToScreen(node, metaOnly)]));
 }
-function getReactNavigationConfig(routeTree, metaOnly) {
+export function getReactNavigationConfig(routeTree, metaOnly) {
     const config = {
         initialRouteName: undefined,
         screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},

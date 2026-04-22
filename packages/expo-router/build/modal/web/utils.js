@@ -1,15 +1,6 @@
-"use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isTransparentModalPresentation = isTransparentModalPresentation;
-exports.useIsDesktop = useIsDesktop;
-exports.convertStackStateToNonModalState = convertStackStateToNonModalState;
-exports.findLastNonModalIndex = findLastNonModalIndex;
-const react_1 = __importDefault(require("react"));
-const stackPresentation_1 = require("../../utils/stackPresentation");
+import React from 'react';
+import { isModalPresentation } from '../../utils/stackPresentation';
 /**
  * Helper to determine if a given screen should be treated as a transparent modal-type presentation
  *
@@ -18,7 +9,7 @@ const stackPresentation_1 = require("../../utils/stackPresentation");
  *
  * @internal
  */
-function isTransparentModalPresentation(options) {
+export function isTransparentModalPresentation(options) {
     const presentation = options?.presentation;
     return presentation === 'transparentModal' || presentation === 'containedTransparentModal';
 }
@@ -29,11 +20,11 @@ function isTransparentModalPresentation(options) {
  *
  * @internal
  */
-function useIsDesktop(breakpoint = 768) {
+export function useIsDesktop(breakpoint = 768) {
     const isWeb = process.env.EXPO_OS === 'web';
     // Ensure server-side and initial client render agree (mobile first).
-    const [isDesktop, setIsDesktop] = react_1.default.useState(false);
-    react_1.default.useEffect(() => {
+    const [isDesktop, setIsDesktop] = React.useState(false);
+    React.useEffect(() => {
         if (!isWeb || typeof window === 'undefined')
             return;
         const mql = window.matchMedia(`(min-width: ${breakpoint}px)`);
@@ -63,13 +54,13 @@ function useIsDesktop(breakpoint = 768) {
  *
  * @internal
  */
-function convertStackStateToNonModalState(state, descriptors, isWeb) {
+export function convertStackStateToNonModalState(state, descriptors, isWeb) {
     if (!isWeb) {
         return { routes: state.routes, index: state.index };
     }
     // Remove every modal-type route from the stack on web.
     const routes = state.routes.filter((route) => {
-        return !(0, stackPresentation_1.isModalPresentation)(descriptors[route.key].options);
+        return !isModalPresentation(descriptors[route.key].options);
     });
     // Recalculate the active index so it still points at the same non-modal route, or –
     // if that route was filtered out – at the last remaining route.
@@ -88,10 +79,10 @@ function convertStackStateToNonModalState(state, descriptors, isWeb) {
  *
  * @internal
  */
-function findLastNonModalIndex(state, descriptors) {
+export function findLastNonModalIndex(state, descriptors) {
     // Iterate backwards through the stack to find the last non-modal route.
     for (let i = state.routes.length - 1; i >= 0; i--) {
-        if (!(0, stackPresentation_1.isModalPresentation)(descriptors[state.routes[i].key].options)) {
+        if (!isModalPresentation(descriptors[state.routes[i].key].options)) {
             return i;
         }
     }

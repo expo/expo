@@ -1,21 +1,13 @@
-"use strict";
 'use client';
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeLinkPreviewAction = NativeLinkPreviewAction;
-exports.NativeLinkPreview = NativeLinkPreview;
-exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
-exports.LinkZoomTransitionEnabler = LinkZoomTransitionEnabler;
-exports.LinkZoomTransitionSource = LinkZoomTransitionSource;
-exports.LinkZoomTransitionAlignmentRectDetector = LinkZoomTransitionAlignmentRectDetector;
-const expo_1 = require("expo");
-const react_1 = require("react");
-const react_native_1 = require("react-native");
+import { requireNativeView } from 'expo';
+import { Fragment } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 // TODO(@kitten): Replace with `globalThis`, add typings in `expo`
-const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && !react_native_1.Platform.isTV && global.RN$Bridgeless === true;
+const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && !Platform.isTV && global.RN$Bridgeless === true;
 const LinkPreviewNativeActionView = areNativeViewsAvailable
-    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
     : null;
-function NativeLinkPreviewAction(props) {
+export function NativeLinkPreviewAction(props) {
     if (!LinkPreviewNativeActionView) {
         return null;
     }
@@ -24,22 +16,22 @@ function NativeLinkPreviewAction(props) {
     return <LinkPreviewNativeActionView {...props} image={imageObjectId}/>;
 }
 const NativeLinkPreviewView = areNativeViewsAvailable
-    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')
     : null;
-function NativeLinkPreview(props) {
+export function NativeLinkPreview(props) {
     if (!NativeLinkPreviewView) {
         return null;
     }
     return <NativeLinkPreviewView {...props}/>;
 }
 const NativeLinkPreviewContentView = areNativeViewsAvailable
-    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewContentView')
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewContentView')
     : null;
-function NativeLinkPreviewContent(props) {
+export function NativeLinkPreviewContent(props) {
     if (!NativeLinkPreviewContentView) {
         return null;
     }
-    const style = react_native_1.StyleSheet.flatten([
+    const style = StyleSheet.flatten([
         props.style,
         {
             position: 'absolute',
@@ -50,18 +42,18 @@ function NativeLinkPreviewContent(props) {
     return <NativeLinkPreviewContentView {...props} style={style}/>;
 }
 const LinkZoomTransitionEnablerNativeView = areNativeViewsAvailable
-    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
     : null;
-function LinkZoomTransitionEnabler(props) {
+export function LinkZoomTransitionEnabler(props) {
     if (!LinkZoomTransitionEnablerNativeView) {
         return null;
     }
     return (<LinkZoomTransitionEnablerNativeView {...props} disableForceFlatten style={{ display: 'contents' }}/>);
 }
 const LinkZoomTransitionSourceNativeView = areNativeViewsAvailable
-    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
     : null;
-function LinkZoomTransitionSource(props) {
+export function LinkZoomTransitionSource(props) {
     if (!LinkZoomTransitionSourceNativeView) {
         return null;
     }
@@ -70,13 +62,12 @@ function LinkZoomTransitionSource(props) {
 // #endregion
 // #region Zoom transition rect detector
 const LinkZoomTransitionAlignmentRectDetectorNative = areNativeViewsAvailable
-    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionAlignmentRectDetector')
-    : react_1.Fragment;
-function LinkZoomTransitionAlignmentRectDetector(props) {
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionAlignmentRectDetector')
+    : Fragment;
+export function LinkZoomTransitionAlignmentRectDetector(props) {
     if (!LinkZoomTransitionAlignmentRectDetectorNative) {
         return null;
     }
     return (<LinkZoomTransitionAlignmentRectDetectorNative {...props} disableForceFlatten collapsable={false} collapsableChildren={false} style={{ display: 'contents' }}/>);
 }
-// #endregion
 //# sourceMappingURL=native.js.map
