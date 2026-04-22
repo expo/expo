@@ -53,7 +53,7 @@
     "@react-native-segmented-control/segmented-control": "2.5.7",
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.4.18",
-    "expo": "~55.0.16",
+    "expo": "~55.0.17",
     "expo-brownfield": "~55.0.21",
     "expo-build-properties": "~55.0.13",
     "expo-camera": "~55.0.16",
