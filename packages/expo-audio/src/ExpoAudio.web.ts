@@ -203,4 +203,6 @@ export function getPreloadedSources(): string[] {
   return AudioModule.getPreloadedSources();
 }
 
+export { useAudioStream } from './AudioStream.web';
+
 export { AudioModule };

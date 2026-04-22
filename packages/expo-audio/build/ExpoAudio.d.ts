@@ -400,5 +400,6 @@ export declare function clearAllPreloadedSources(): Promise<void>;
  * @returns An array of URI strings for sources currently in the preload cache.
  */
 export declare function getPreloadedSources(): Promise<string[]>;
+export { useAudioStream } from './AudioStream';
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.d.ts.map

@@ -658,4 +658,6 @@ export async function getPreloadedSources(): Promise<string[]> {
   return AudioModule.getPreloadedSources();
 }
 
+export { useAudioStream } from './AudioStream';
+
 export { AudioModule };
