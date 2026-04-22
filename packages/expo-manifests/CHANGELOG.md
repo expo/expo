@@ -12,8 +12,7 @@
 
 ### 💡 Others
 
-- Read splash screen config from `extra["expo-splash-screen"]` instead of the legacy `splash` / `ios.splash` / `android.splash` manifest paths. ([#44732](https://github.com/expo/expo/pull/44732) by [@zoontek](https://github.com/zoontek))
-- Removed unused `jsEngine` accessor. ([#44732](https://github.com/expo/expo/pull/44732) by [@zoontek](https://github.com/zoontek))
+- Removed unused `splash`, `ios.splash` / `android.splash` and `jsEngine` accessors. ([#44732](https://github.com/expo/expo/pull/44732) by [@zoontek](https://github.com/zoontek))
 - Replaced deprecated `androidStatusBar` and `androidNavigationBar` manifest accessors with `extra["expo-status-bar"]` and `extra["expo-navigation-bar"]`. ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
 - Remove unused `@expo/config` dependency ([#44722](https://github.com/expo/expo/pull/44722) by [@kitten](https://github.com/kitten))
 
