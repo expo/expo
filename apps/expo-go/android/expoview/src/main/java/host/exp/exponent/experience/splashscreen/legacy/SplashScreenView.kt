@@ -78,8 +78,11 @@ fun SplashScreenView(
     animationSpec = tween(300),
     label = "splash-fade",
     targetValue =
-      if (state is AsyncImagePainter.State.Success || state is AsyncImagePainter.State.Error) 1f
-      else 0f
+    if (state is AsyncImagePainter.State.Success || state is AsyncImagePainter.State.Error) {
+      1f
+    } else {
+      0f
+    }
   )
 
   Box(
@@ -97,7 +100,7 @@ fun SplashScreenView(
           contentDescription = "Splash Screen Image",
           contentScale = ContentScale.Fit,
           modifier =
-            Modifier.size(200.dp).background(Color.White).shadow(4.dp, RoundedCornerShape(30.dp))
+          Modifier.size(200.dp).background(Color.White).shadow(4.dp, RoundedCornerShape(30.dp))
         )
       }
       Text(appName, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
