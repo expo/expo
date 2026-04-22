@@ -77,6 +77,7 @@ type SuitesProps = {
   done: boolean;
   failedCount: number;
   passedCount: number;
+  selectionQuery?: string;
   results?: string;
   failures?: string;
   totalDuration?: number;
@@ -89,6 +90,7 @@ export default function Suites({
   done,
   failedCount,
   passedCount,
+  selectionQuery,
   results,
   failures,
   totalDuration,
@@ -132,6 +134,7 @@ export default function Suites({
         done={done}
         failedCount={failedCount}
         passedCount={passedCount}
+        selectionQuery={selectionQuery}
         results={results}
         onCancel={onCancel}
       />
@@ -152,7 +155,7 @@ export default function Suites({
         {content}
       </View>
     );
-  }, [done, failedCount, passedCount, results, onCancel, theme]);
+  }, [done, failedCount, passedCount, selectionQuery, results, onCancel, theme]);
 
   const footer = useMemo(() => {
     if (!done) {
@@ -160,9 +163,19 @@ export default function Suites({
     }
     const totalCount = passedCount + failedCount;
 
+    // Maestro E2E assertions wait for test_suite_text_results to appear and contain "All tests passed!" text
     return (
-      <View style={[styles.summary, { borderTopColor: theme.border.secondary }]}>
-        <Text style={[styles.summaryTitle, { color: theme.text.default }]}>Summary</Text>
+      <View
+        testID="test_suite_text_results"
+        style={[styles.summary, { borderTopColor: theme.border.secondary }]}>
+        <Text
+          testID="test_suite_summary_result_text"
+          style={[
+            styles.summaryTitle,
+            { color: failedCount > 0 ? theme.text.danger : theme.text.success },
+          ]}>
+          {failedCount > 0 ? 'Some tests failed!' : 'All tests passed!'}
+        </Text>
         <Text style={[styles.summaryLine, { color: theme.text.secondary }]}>
           {suites.length} suite{suites.length !== 1 ? 's' : ''}, {totalCount} test
           {totalCount !== 1 ? 's' : ''} —{' '}

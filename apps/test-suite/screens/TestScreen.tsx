@@ -427,7 +427,7 @@ export default function TestScreen({ route }: { route: { params?: { tests?: stri
     totalDuration,
   } = state;
 
-  if (!selectedModules?.length) {
+  if (!selectedModules?.length && !selectionQuery) {
     const moduleLinks = getTestModules().map(getScreenIdForLinking);
 
     return (
@@ -447,6 +447,11 @@ export default function TestScreen({ route }: { route: { params?: { tests?: stri
       <Suites
         failedCount={failedCount}
         passedCount={passedCount}
+        selectionQuery={
+          selectedModules.length > 0
+            ? selectedModules.map((m) => m.name).join(', ')
+            : selectionQuery
+        }
         results={results}
         failures={failures}
         done={done}
