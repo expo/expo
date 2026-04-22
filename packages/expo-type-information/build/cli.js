@@ -7,6 +7,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const commander_1 = require("commander");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const node_crypto_1 = require("node:crypto");
 const mockgen_1 = require("./mockgen");
 const typeInformation_1 = require("./typeInformation");
 const typescriptGeneration_1 = require("./typescriptGeneration");
@@ -260,6 +261,25 @@ function generateJsxIntrinsics(cli) {
         runCommandOnWatch(parsedArgs, command);
     });
 }
+function getContentHash(content) {
+    return (0, node_crypto_1.createHash)('sha256').update(content).digest('hex');
+}
+function contentHasChanged(fileContent) {
+    const hashRegex = /^\/\/ File hash: ([a-f0-9]{64})\r?\n/;
+    const match = fileContent.match(hashRegex);
+    if (!match) {
+        return true;
+    }
+    const storedHash = match[1];
+    const originalContent = fileContent.slice(match[0].length);
+    const calculatedHash = getContentHash(originalContent);
+    return storedHash !== calculatedHash;
+}
+function insertFileHashComment(fileContent) {
+    const hashString = getContentHash(fileContent);
+    return `// File hash: ${hashString}
+${fileContent}`;
+}
 function generateConciseExpoModuleTSInterfaceCommand(cli) {
     addCommonOptions(cli
         .command('generate-concise-ts')
@@ -282,9 +302,9 @@ function generateConciseExpoModuleTSInterfaceCommand(cli) {
                         flag: 'w',
                         encoding: 'utf-8',
                     }),
-                    fs_1.default.promises.writeFile(path_1.default.resolve(dirName, `${moduleName}.tsx`), moduleTypescriptInterfaceFileContent, {
-                        flag: 'wx',
-                        encoding: 'utf-8',
+                    writeToStableFile({
+                        filePath: path_1.default.resolve(dirName, `${moduleName}.tsx`),
+                        content: moduleTypescriptInterfaceFileContent,
                     }),
                 ]);
             }
@@ -292,6 +312,23 @@ function generateConciseExpoModuleTSInterfaceCommand(cli) {
         };
         runCommandOnWatch(parsedArgs, command);
     });
+}
+async function writeToStableFile({ filePath, content }) {
+    let flag = 'wx';
+    if (fs_1.default.existsSync(filePath) &&
+        !contentHasChanged(await fs_1.default.promises.readFile(filePath, 'utf-8'))) {
+        // Overwrite the file if it wasn't changed since the last generation
+        flag = 'w';
+    }
+    try {
+        await fs_1.default.promises.writeFile(filePath, insertFileHashComment(content), {
+            flag,
+            encoding: 'utf-8',
+        });
+    }
+    catch (e) {
+        console.error(`Error writing to file.${e}`);
+    }
 }
 function generateTypeFiles(cli) {
     return addCommonOptions(cli.command('generate-type-files')).action(async (options) => {
@@ -318,17 +355,10 @@ function generateTypeFiles(cli) {
                 if (!outputFile) {
                     continue;
                 }
-                writeFilePromises.push(fs_1.default.promises.writeFile(path_1.default.resolve(dirName, outputFile.name), outputFile.content, {
-                    flag: 'wx',
-                    encoding: 'utf-8',
-                }));
+                const outputFilePath = path_1.default.resolve(dirName, outputFile.name);
+                writeFilePromises.push(writeToStableFile({ filePath: outputFilePath, content: outputFile.content }));
             }
-            try {
-                await Promise.all(writeFilePromises);
-            }
-            catch (e) {
-                console.error(`Error writing to file.${e}`);
-            }
+            await Promise.all(writeFilePromises);
         };
         runCommandOnWatch(parsedArgs, command);
     });

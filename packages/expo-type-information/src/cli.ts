@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import commander, { Command } from 'commander';
 import fs from 'fs';
 import path from 'path';
+import { createHash } from 'node:crypto';
 
 import { generateMocks } from './mockgen';
 import {
@@ -347,6 +348,30 @@ function generateJsxIntrinsics(cli: commander.Command) {
   );
 }
 
+function getContentHash(content: string): string {
+  return createHash('sha256').update(content).digest('hex');
+}
+
+function contentHasChanged(fileContent: string): boolean {
+  const hashRegex = /^\/\/ File hash: ([a-f0-9]{64})\r?\n/;
+  const match = fileContent.match(hashRegex);
+
+  if (!match) {
+    return true;
+  }
+
+  const storedHash = match[1];
+  const originalContent = fileContent.slice(match[0].length);
+  const calculatedHash = getContentHash(originalContent);
+  return storedHash !== calculatedHash;
+}
+
+function insertFileHashComment(fileContent: string): string {
+  const hashString = getContentHash(fileContent);
+  return `// File hash: ${hashString}
+${fileContent}`;
+}
+
 function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
   addCommonOptions(
     cli
@@ -380,20 +405,35 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
               encoding: 'utf-8',
             }
           ),
-          fs.promises.writeFile(
-            path.resolve(dirName, `${moduleName}.tsx`),
-            moduleTypescriptInterfaceFileContent,
-            {
-              flag: 'wx',
-              encoding: 'utf-8',
-            }
-          ),
+          writeToStableFile({
+            filePath: path.resolve(dirName, `${moduleName}.tsx`),
+            content: moduleTypescriptInterfaceFileContent,
+          }),
         ]);
       } catch (e) {}
     };
 
     runCommandOnWatch(parsedArgs, command);
   });
+}
+
+async function writeToStableFile({ filePath, content }: { filePath: string; content: string }) {
+  let flag = 'wx';
+  if (
+    fs.existsSync(filePath) &&
+    !contentHasChanged(await fs.promises.readFile(filePath, 'utf-8'))
+  ) {
+    // Overwrite the file if it wasn't changed since the last generation
+    flag = 'w';
+  }
+  try {
+    await fs.promises.writeFile(filePath, insertFileHashComment(content), {
+      flag,
+      encoding: 'utf-8',
+    });
+  } catch (e) {
+    console.error(`Error writing to file.${e}`);
+  }
 }
 
 function generateTypeFiles(cli: commander.Command) {
@@ -421,18 +461,12 @@ function generateTypeFiles(cli: commander.Command) {
           if (!outputFile) {
             continue;
           }
+          const outputFilePath = path.resolve(dirName, outputFile.name);
           writeFilePromises.push(
-            fs.promises.writeFile(path.resolve(dirName, outputFile.name), outputFile.content, {
-              flag: 'wx',
-              encoding: 'utf-8',
-            })
+            writeToStableFile({ filePath: outputFilePath, content: outputFile.content })
           );
         }
-        try {
-          await Promise.all(writeFilePromises);
-        } catch (e) {
-          console.error(`Error writing to file.${e}`);
-        }
+        await Promise.all(writeFilePromises);
       };
 
       runCommandOnWatch(parsedArgs, command);
