@@ -48,10 +48,6 @@ export async function unzip(
 /**
  * Synchronous version of `unzip()`.
  */
-export function unzipSync(
-  source: File,
-  destination: Directory,
-  options?: UnzipOptions
-): Directory {
+export function unzipSync(source: File, destination: Directory, options?: UnzipOptions): Directory {
   return ExpoFileSystem.unzipSync(source, destination, options);
 }

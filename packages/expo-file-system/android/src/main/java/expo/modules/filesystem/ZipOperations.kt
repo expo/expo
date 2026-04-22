@@ -256,7 +256,8 @@ internal object ZipOperations {
 
     if (normalized.startsWith("/") ||
       segments.any { it == "." || it == ".." } ||
-      (segments.firstOrNull()?.contains(':') == true)) {
+      (segments.firstOrNull()?.contains(':') == true)
+    ) {
       throw UnableToUnzipException("entry '$entryName' is outside of the target directory (zip slip)")
     }
 

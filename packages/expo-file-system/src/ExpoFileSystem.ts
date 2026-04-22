@@ -35,21 +35,9 @@ declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
     destination: File | Directory,
     options?: ZipOptions
   ): Promise<File>;
-  zipSync(
-    sources: (File | Directory)[],
-    destination: File | Directory,
-    options?: ZipOptions
-  ): File;
-  unzip(
-    source: File,
-    destination: Directory,
-    options?: UnzipOptions
-  ): Promise<Directory>;
-  unzipSync(
-    source: File,
-    destination: Directory,
-    options?: UnzipOptions
-  ): Directory;
+  zipSync(sources: (File | Directory)[], destination: File | Directory, options?: ZipOptions): File;
+  unzip(source: File, destination: Directory, options?: UnzipOptions): Promise<Directory>;
+  unzipSync(source: File, destination: Directory, options?: UnzipOptions): Directory;
   totalDiskSpace: number;
   availableDiskSpace: number;
   documentDirectory: string;

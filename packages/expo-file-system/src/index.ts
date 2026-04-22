@@ -25,11 +25,6 @@ export {
   CompressionLevel,
 } from './ExpoFileSystem.types';
 
-export {
-  zip,
-  zipSync,
-  unzip,
-  unzipSync,
-} from './ZipOperations';
+export { zip, zipSync, unzip, unzipSync } from './ZipOperations';
 
 export * from './legacyWarnings';

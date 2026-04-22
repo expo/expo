@@ -2,7 +2,18 @@
 import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import { File, Directory, Paths, FileMode, zip, zipSync, unzip, unzipSync, CompressionLevel, ZipArchive } from 'expo-file-system';
+import {
+  File,
+  Directory,
+  Paths,
+  FileMode,
+  zip,
+  zipSync,
+  unzip,
+  unzipSync,
+  CompressionLevel,
+  ZipArchive,
+} from 'expo-file-system';
 import type { ZipEntry } from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
