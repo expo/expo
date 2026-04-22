@@ -563,19 +563,30 @@ module Expo
         prefix = "[Expo-precompiled] ".blue
         Pod::UI.info "#{prefix}Precompiled modules:"
         @linked_pods.sort_by { |name, _| name.downcase }.each do |pod_name, info|
+          version = installed_version_for(pod_name)
+          version_suffix = version ? " #{"(#{version})".dark}" : ""
           if info[:found]
-            Pod::UI.info "#{prefix}  📦 #{pod_name.green}"
+            Pod::UI.info "#{prefix}  📦 #{pod_name.green}#{version_suffix}"
           else
-            Pod::UI.info "#{prefix}  ⚠️  #{pod_name} #{"(Build from source: framework not found #{info[:path]})".yellow}"
+            Pod::UI.info "#{prefix}  ⚠️  #{pod_name}#{version_suffix} #{"(Build from source: framework not found #{info[:path]})".yellow}"
           end
+          spm_versions = pod_lookup_map.dig(pod_name, :spm_dependency_versions) || {}
           info[:spm_deps].each do |dep_name|
-            Pod::UI.info "#{prefix}      ∟ #{dep_name}.xcframework".green
+            dep_version = spm_versions[dep_name]
+            dep_suffix = dep_version ? " #{"(#{dep_version})".dark}" : ""
+            Pod::UI.info "#{prefix}      ∟ #{"#{dep_name}.xcframework".green}#{dep_suffix}"
           end
         end
 
         if @linked_pods.none? { |_, info| info[:found] }
           Pod::UI.warn "#{prefix}⚠️  Precompiled modules enabled but no xcframeworks found. All modules will build from source."
         end
+      end
+
+      # Returns the installed version for a pod by reading its package.json, or nil.
+      def installed_version_for(pod_name)
+        pkg_json = File.join(pod_lookup_map.dig(pod_name, :package_root) || '', 'package.json')
+        JSON.parse(File.read(pkg_json))['version'] rescue nil
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -1258,7 +1269,9 @@ module Expo
         external_configs_dir = File.join(__dir__, '..', '..', 'external-configs', 'ios')
         return unless File.directory?(external_configs_dir)
 
-        node_modules = File.join(effective_root, 'node_modules')
+        # Resolve from the same node_modules as react-native so per-package
+        # versions match the RN version used in the build path.
+        node_modules = find_node_modules_dir
 
         # Non-scoped: external-configs/ios/*/spm.config.json
         Dir.glob(File.join(external_configs_dir, '*', 'spm.config.json')).each do |config_path|
@@ -1331,6 +1344,7 @@ module Expo
             .map { |t| { name: t['name'], path: t['path'] } }
 
           spm_dependency_frameworks = (product['spmPackages'] || []).map { |pkg| pkg['productName'] }.compact
+          spm_dependency_versions = spm_package_versions(product['spmPackages'])
 
           @pod_lookup_map[pod_name] = {
             type: :external,
@@ -1342,11 +1356,20 @@ module Expo
             product_name: product_name,
             targets: targets,
             spm_dependency_frameworks: spm_dependency_frameworks,
+            spm_dependency_versions: spm_dependency_versions,
             autolink_when: product['autolinkWhen']
           }
         end
       rescue JSON::ParserError, StandardError => e
         Pod::UI.warn "[Expo-precompiled] Failed to read external config at #{config_path}: #{e.message}"
+      end
+
+      # Returns { productName => versionString } from a spm.config.json spmPackages array.
+      def spm_package_versions(spm_packages)
+        (spm_packages || []).each_with_object({}) do |pkg, h|
+          version = pkg['version'].is_a?(Hash) ? pkg['version']['exact'] : pkg['version']
+          h[pkg['productName']] = version if pkg['productName'] && version
+        end
       end
 
       # Processes a single spm.config.json file and adds entries to @pod_lookup_map.
@@ -1402,6 +1425,7 @@ module Expo
           .map { |t| { name: t['name'], path: t['path'] } }
 
         spm_dependency_frameworks = (product['spmPackages'] || []).map { |pkg| pkg['productName'] }.compact
+        spm_dependency_versions = spm_package_versions(product['spmPackages'])
 
         {
           type: type,
@@ -1413,6 +1437,7 @@ module Expo
           product_name: product_name,
           targets: targets,
           spm_dependency_frameworks: spm_dependency_frameworks,
+          spm_dependency_versions: spm_dependency_versions,
           autolink_when: product['autolinkWhen']
         }
       end
@@ -1530,7 +1555,13 @@ module Expo
         results = []
         pod_lookup_map.each do |pod_name, info|
           next unless info[:type] == :external
-          next unless has_prebuilt_xcframework?(pod_name)
+
+          unless has_prebuilt_xcframework?(pod_name)
+            product_name = info[:product_name] || pod_name
+            expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+            Pod::UI.warn "[Expo-precompiled] #{pod_name}: prebuilt xcframework not found. Expected tarball at #{expected}"
+            next
+          end
 
           podspec_file = File.join(info[:podspec_dir], "#{pod_name}.podspec")
           next unless File.exist?(podspec_file)
@@ -1605,15 +1636,26 @@ module Expo
         end
       end
 
-      # Returns the node_modules directory for the project.
+      # Returns the node_modules directory that Node would resolve `react-native` from,
+      # walking up from the project root. Correctly handles pnpm workspaces where each
+      # app's node_modules may symlink a different RN version than the repo root.
       def find_node_modules_dir
         @node_modules_dir ||= begin
-          repo_root = find_repo_root
-          if repo_root
-            File.join(repo_root, 'node_modules')
-          else
-            File.join(File.dirname(Dir.pwd), 'node_modules')
+          current = (Pod::Config.instance.installation_root || Dir.pwd).to_s
+          resolved = nil
+          loop do
+            candidate = File.join(current, 'node_modules')
+            if File.file?(File.join(candidate, 'react-native', 'package.json'))
+              resolved = candidate
+              break
+            end
+            parent = File.dirname(current)
+            break if parent == current
+            current = parent
           end
+          repo_root = find_repo_root
+          resolved || (repo_root && File.join(repo_root, 'node_modules')) ||
+            File.join(File.dirname(Dir.pwd), 'node_modules')
         end
       end
 
