@@ -1,0 +1,187 @@
+---
+title: SwipeToDismissBox
+description: A Jetpack Compose SwipeToDismissBox component for swipe-to-dismiss gestures.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI SwipeToDismissBox matches the official Jetpack Compose [`SwipeToDismissBox`](https://developer.android.com/develop/ui/compose/touch-input/user-interactions/swipe-to-dismiss) API. It wraps any content and provides swipe-to-dismiss gestures with customizable background content.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Swipe to delete
+
+Swipe right-to-left to delete an item. The background grows with the swipe gesture.
+
+```tsx SwipeToDelete.tsx
+import { useState } from 'react';
+import {
+  AnimatedVisibility,
+  ExitTransition,
+  Host,
+  LazyColumn,
+  ListItem,
+  Box,
+  Icon,
+  SwipeToDismissBox,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxSize,
+  fillMaxWidth,
+  clip,
+  background,
+  paddingAll,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+// Replace with your own vector drawable asset
+const deleteIcon = require('./assets/delete.xml');
+
+export default function SwipeToDelete() {
+  const [items, setItems] = useState([
+    { id: '1', title: 'First item', dismissed: false },
+    { id: '2', title: 'Second item', dismissed: false },
+    { id: '3', title: 'Third item', dismissed: false },
+  ]);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <LazyColumn modifiers={[fillMaxWidth()]}>
+        {items.map(item => (
+          <AnimatedVisibility
+            key={item.id}
+            visible={!item.dismissed}
+            exitTransition={ExitTransition.shrinkVertically()}>
+            <SwipeToDismissBox
+              enableDismissFromStartToEnd={false}
+              onEndToStart={() =>
+                setItems(prev => prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i)))
+              }>
+              <SwipeToDismissBox.BackgroundContent>
+                <Box
+                  contentAlignment="center"
+                  modifiers={[
+                    fillMaxSize(),
+                    clip(Shapes.RoundedCorner(24)),
+                    background('#EF5350'),
+                    paddingAll(16),
+                  ]}>
+                  <Icon source={deleteIcon} size={24} tint="#FFFFFF" />
+                </Box>
+              </SwipeToDismissBox.BackgroundContent>
+              <ListItem modifiers={[fillMaxWidth()]}>
+                <ListItem.HeadlineContent>
+                  <Text>{item.title}</Text>
+                </ListItem.HeadlineContent>
+              </ListItem>
+            </SwipeToDismissBox>
+          </AnimatedVisibility>
+        ))}
+      </LazyColumn>
+    </Host>
+  );
+}
+```
+
+### Different backgrounds per direction
+
+Use `BackgroundStartToEnd` and `BackgroundEndToStart` to show different backgrounds depending on the swipe direction.
+
+```tsx SwipeBothWays.tsx
+import { useState } from 'react';
+import {
+  AnimatedVisibility,
+  ExitTransition,
+  Host,
+  LazyColumn,
+  ListItem,
+  Box,
+  Icon,
+  SwipeToDismissBox,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxSize,
+  fillMaxWidth,
+  clip,
+  background,
+  paddingAll,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+// Replace with your own vector drawable asset
+const archiveIcon = require('./assets/archive.xml');
+const deleteIcon = require('./assets/delete.xml');
+
+export default function SwipeBothWays() {
+  const [items, setItems] = useState([{ id: '1', title: 'Swipe either way', dismissed: false }]);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <LazyColumn modifiers={[fillMaxWidth()]}>
+        {items.map(item => (
+          <AnimatedVisibility
+            key={item.id}
+            visible={!item.dismissed}
+            exitTransition={ExitTransition.shrinkVertically()}>
+            <SwipeToDismissBox
+              onStartToEnd={() =>
+                setItems(prev => prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i)))
+              }
+              onEndToStart={() =>
+                setItems(prev => prev.map(i => (i.id === item.id ? { ...i, dismissed: true } : i)))
+              }>
+              <SwipeToDismissBox.BackgroundStartToEnd>
+                <Box
+                  contentAlignment="center"
+                  modifiers={[
+                    fillMaxSize(),
+                    clip(Shapes.RoundedCorner(24)),
+                    background('#4CAF50'),
+                    paddingAll(16),
+                  ]}>
+                  <Icon source={archiveIcon} size={24} tint="#FFFFFF" />
+                </Box>
+              </SwipeToDismissBox.BackgroundStartToEnd>
+              <SwipeToDismissBox.BackgroundEndToStart>
+                <Box
+                  contentAlignment="center"
+                  modifiers={[
+                    fillMaxSize(),
+                    clip(Shapes.RoundedCorner(24)),
+                    background('#EF5350'),
+                    paddingAll(16),
+                  ]}>
+                  <Icon source={deleteIcon} size={24} tint="#FFFFFF" />
+                </Box>
+              </SwipeToDismissBox.BackgroundEndToStart>
+              <ListItem modifiers={[fillMaxWidth()]}>
+                <ListItem.HeadlineContent>
+                  <Text>{item.title}</Text>
+                </ListItem.HeadlineContent>
+              </ListItem>
+            </SwipeToDismissBox>
+          </AnimatedVisibility>
+        ))}
+      </LazyColumn>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { SwipeToDismissBox } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/swipetodismissbox" apiName="SwipeToDismissBox" />

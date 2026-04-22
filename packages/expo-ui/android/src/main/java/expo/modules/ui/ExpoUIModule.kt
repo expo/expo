@@ -505,6 +505,15 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<SwipeToDismissBoxProps>("SwipeToDismissBoxView") {
+      val onStartToEnd by Event<Unit>()
+      val onEndToStart by Event<Unit>()
+
+      Content { props ->
+        SwipeToDismissBoxContent(props, { onStartToEnd(Unit) }, { onEndToStart(Unit) })
+      }
+    }
+
     ExpoUIView<BadgeProps>("BadgeView") {
       Content { props ->
         BadgeContent(props)

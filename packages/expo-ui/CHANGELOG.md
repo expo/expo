@@ -28,6 +28,7 @@
 
 ### 🎉 New features
 
+- [android] Added `SwipeToDismissBox` component wrapping Jetpack Compose's `SwipeToDismissBox` for swipe-to-dismiss gestures. Supports direction-specific background slots (`BackgroundStartToEnd`, `BackgroundEndToStart`) and dynamically sized backgrounds that grow with the swipe. ([#44136](https://github.com/expo/expo/pull/44136) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44681](https://github.com/expo/expo/pull/44681) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `ObservableState` shared object and `useNativeState` hook for controlling native Compose state from JS. ([#44655](https://github.com/expo/expo/pull/44655) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))

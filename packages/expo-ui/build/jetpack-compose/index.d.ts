@@ -37,6 +37,7 @@ export * from './FloatingActionButton';
 export * from './PullToRefreshBox';
 export * from './RadioButton';
 export * from './Surface';
+export * from './SwipeToDismissBox';
 export { type TextProps, Text } from './Text';
 export * from './Tooltip';
 export * from './AnimatedVisibility';
