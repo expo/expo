@@ -64,6 +64,7 @@ public final class VideoModule: Module {
         view.playerViewController.fullscreenOrientation = options?.orientation.toUIInterfaceOrientationMask() ?? .all
         view.playerViewController.autoExitOnRotate = options?.autoExitOnRotate ?? false
         view.playerViewController.setValue(options?.enable ?? true, forKey: "allowsEnteringFullScreen")
+        view.playerViewController.keepFullscreenOnPiPStop = options?.keepFullscreenOnPiPStop ?? .never
         #endif
       }
 
