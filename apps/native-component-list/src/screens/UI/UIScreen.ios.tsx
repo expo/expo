@@ -251,6 +251,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Benchmark: ScrollView',
+    route: 'ui/benchmark-scroll',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BenchmarkScrollScreen'));
+    },
+  },
+  {
     name: 'Shapes',
     route: 'ui/shapes',
     options: {},
