@@ -282,7 +282,7 @@ async function mergeFileContents(absoluteFilePaths: string[]): Promise<string> {
   const filesContents = await taskAll(absoluteFilePaths, (filePath) =>
     fs.promises.readFile(filePath, 'utf-8')
   );
-  return filesContents.join();
+  return filesContents.join('');
 }
 
 /**

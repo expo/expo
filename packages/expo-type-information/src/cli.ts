@@ -19,7 +19,8 @@ import {
 } from './typescriptGeneration';
 
 export type TypeInformationCommandCommonArguments = {
-  inputPaths: string[];
+  inputPaths?: string[];
+  modulePath?: string;
   outputPath?: string;
   typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
   watcher?: boolean;
@@ -27,10 +28,11 @@ export type TypeInformationCommandCommonArguments = {
 
 function addCommonOptions(command: commander.Command): commander.Command {
   return command
-    .requiredOption(
+    .option(
       '-i, --input-paths <filePaths...>',
-      'Paths to Swift files. First file provided should be the file with the Native module'
+      'Paths to Swift files for some module, glob patterns are allowed.'
     )
+    .option('-m --module-path <modulePath>', 'Path to expo module root directory.')
     .option(
       '-o, --output-path <filePath>',
       'Path to save the generated output. If this option is not provided the generated output is printed to console.'
@@ -77,19 +79,19 @@ async function runCommandOnWatch(parsedArgs: ParsedArguments, command: () => Pro
   });
 }
 
-function sanitizeAndValidatePath(rawPath: string): string | null {
+function getFilesForGlobPattern(globPattern: string): string[] | null {
   try {
-    const resolvedPath = path.resolve(rawPath);
+    const normalizedPattern = globPattern.replace(/\\/g, '/');
 
-    if (!fs.existsSync(resolvedPath)) {
-      return null;
-    }
+    const matches = fs.globSync(normalizedPattern, {
+      withFileTypes: true,
+    });
 
-    if (!fs.statSync(resolvedPath).isFile()) {
-      return null;
-    }
+    const resolvedPaths = matches
+      .filter((entry) => entry.isFile())
+      .map((entry) => path.resolve(entry.parentPath, entry.name));
 
-    return fs.realpathSync(resolvedPath);
+    return resolvedPaths.length > 0 ? resolvedPaths : null;
   } catch (error) {
     return null;
   }
@@ -135,6 +137,35 @@ function parseInferenceOption(option?: string): TypeInferenceOption | null {
   return null;
 }
 
+function getModuleFilePathsFromPodspec(modulePath: string): string[] | null {
+  const normalizedModulePath = fs.realpathSync(modulePath).replace(/\\/g, '/');
+
+  const podspecFiles = [...fs.globSync(`${normalizedModulePath}/ios/*.podspec`)];
+  const podspecFile = podspecFiles[0];
+
+  if (!podspecFile) {
+    console.warn(`No .podspec found in ${modulePath}`);
+    return [];
+  }
+
+  const podspecPath = podspecFile.toString();
+  const podspecDir = path.dirname(podspecPath);
+  const podspecContent = fs.readFileSync(podspecPath, 'utf8');
+
+  const sourceFilesRegex = /\.source_files\s*=\s*(["'])(.*?)\1/;
+  const match = podspecContent.match(sourceFilesRegex);
+
+  if (!match || !match[2]) {
+    console.warn(`Could not extract source_files glob from ${podspecPath}`);
+    return [];
+  }
+
+  const extractedGlob = match[2];
+  const absoluteGlobPattern = path.posix.join(podspecDir.replace(/\\/g, '/'), extractedGlob);
+
+  return getFilesForGlobPattern(absoluteGlobPattern)?.filter((f) => f.endsWith('.swift')) ?? null;
+}
+
 interface ParsedArguments {
   realInputPaths: string[];
   realOutputPath?: string;
@@ -142,15 +173,26 @@ interface ParsedArguments {
   watcher: boolean;
 }
 
+function uniqueStrings(strings: string[]): string[] {
+  return [...new Set(strings)];
+}
+
 function parseCommandArguments(
   options: TypeInformationCommandCommonArguments,
   isOutputFile: boolean = true
 ): ParsedArguments | null {
-  const realInputPaths: string[] = options.inputPaths
-    .map(sanitizeAndValidatePath)
-    .filter((p) => p != null);
-  if (!realInputPaths || realInputPaths.length == 0) {
-    console.error(`Provide valid paths to existing files.`);
+  let realInputPaths: string[] =
+    options.inputPaths ?? [].flatMap(getFilesForGlobPattern).filter((p) => p != null);
+  if (options.modulePath) {
+    const modulePaths = getModuleFilePathsFromPodspec(options.modulePath) ?? [];
+    realInputPaths.push(...modulePaths);
+  }
+  realInputPaths = uniqueStrings(realInputPaths);
+
+  if (!realInputPaths || realInputPaths.length === 0) {
+    console.error(
+      `Provide valid globs to existing files or a path to a module with valid podspec.`
+    );
     return null;
   }
 

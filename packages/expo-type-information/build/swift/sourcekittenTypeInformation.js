@@ -183,7 +183,7 @@ function mapSwiftTypeToTsType(type) {
 function getStructureFromFile(file) {
     const command = 'sourcekitten structure --file ' + file.path;
     try {
-        const output = (0, child_process_1.execSync)(command);
+        const output = (0, child_process_1.execSync)(command, { maxBuffer: 10 * 1024 * 1024 });
         return JSON.parse(output.toString());
     }
     catch (error) {
@@ -485,6 +485,22 @@ function sortModuleClassDeclaration(moduleClassDeclaration) {
     moduleClassDeclaration.props.sort(cmp);
     moduleClassDeclaration.views.sort(cmp);
 }
+function parsePropertyString(property, definitionOffset) {
+    const propertyRegex = /Property\(\.\s*"([^"]*)"\s*\)/;
+    const matches = property.match(propertyRegex);
+    const propertyName = matches?.[1];
+    if (!matches || !propertyName) {
+        return null;
+    }
+    return {
+        name: propertyName,
+        type: {
+            kind: typeInformation_1.TypeKind.BASIC,
+            type: typeInformation_1.BasicType.UNRESOLVED,
+        },
+        definitionOffset,
+    };
+}
 async function parseModuleStructure(moduleStructure, file, name, definitionOffset, options) {
     const moduleClassDeclaration = {
         name,
@@ -499,7 +515,15 @@ async function parseModuleStructure(moduleStructure, file, name, definitionOffse
         events: [],
         definitionOffset,
     };
-    await (0, exports.taskAll)(moduleStructure, async (structure, index) => {
+    await (0, exports.taskAll)(moduleStructure, async (structure) => {
+        // TODO(@HubertBer): Some special cases when the sourcekitten parses the structure differently, for now only Property as it is common
+        if (structure['key.name'].startsWith('Property(')) {
+            const propertyDeclaration = parsePropertyString(structure['key.name'], structure['key.nameoffset']);
+            if (propertyDeclaration) {
+                moduleClassDeclaration.properties.push(propertyDeclaration);
+            }
+            return;
+        }
         switch (structure['key.name']) {
             case 'Name':
                 const nameSubstrucutre = structure['key.substructure']?.[0];
@@ -544,7 +568,7 @@ async function parseModuleStructure(moduleStructure, file, name, definitionOffse
                 parseModuleEventDeclaration(structure, file, moduleClassDeclaration.events);
                 break;
             default:
-                console.warn('Module substructure not supported');
+                console.warn(`Module substructure not supported. ${structure['key.name']}`);
         }
     });
     // As we parse the module structure concurrently the order of for example functions is nondeterministic.
@@ -558,6 +582,10 @@ async function parseModuleStructure(moduleStructure, file, name, definitionOffse
     return moduleClassDeclaration;
 }
 function parseStructure(structure, name, modulesStructures, recordsStructures, enumsStructures) {
+    // TODO(@HubertBer): Find out why sometimes the structure is undefined (for example when parsing expo-audio)
+    if (!structure || !structure['key.substructure']) {
+        return;
+    }
     const substructure = structure['key.substructure'];
     if (isModuleStructure(structure)) {
         modulesStructures.push({ structure, name });
@@ -778,6 +806,9 @@ function returnExpressionEnd(fileContent, returnIndex) {
 // Preprocessing to help sourcekitten functions
 // For now we create a new variable for each return statement,
 // we can find it's type easily with sourcekitten
+// TODO(@HubertBer): This has many problems which need fixing:
+// - return can be inside a string
+// - return Expression end parses incorrectly in case of some strings (check how it parses expo-video)
 function preprocessSwiftFile(originalFileContent) {
     const newFileContent = [];
     const fileContent = removeComments(originalFileContent);
@@ -797,7 +828,7 @@ function preprocessSwiftFile(originalFileContent) {
     let prevEnd = 0;
     for (const { start, end } of returnPositions) {
         newFileContent.push(fileContent.substring(prevEnd, start));
-        newFileContent.push(`let returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}\n`);
+        newFileContent.push(`\nlet returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}\n`);
         newFileContent.push(`return returnValueDeclaration_${start}_${end}\n`);
         prevEnd = end;
     }
