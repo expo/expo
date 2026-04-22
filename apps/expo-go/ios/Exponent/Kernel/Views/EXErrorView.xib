@@ -78,7 +78,7 @@
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                            <state key="normal" title="Try Again">
+                                            <state key="normal" title="Try again">
                                                 <color key="titleColor" name="buttonTertiaryText"/>
                                             </state>
                                         </button>
@@ -91,7 +91,7 @@
                                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                             <color key="tintColor" red="0.94117647059999998" green="0.94509803920000002" blue="0.94901960780000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                            <state key="normal" title="Go Home">
+                                            <state key="normal" title="Go home">
                                                 <color key="titleColor" name="buttonSecondaryText"/>
                                             </state>
                                         </button>
