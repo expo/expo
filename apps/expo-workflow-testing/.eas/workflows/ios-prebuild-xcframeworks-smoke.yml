@@ -34,9 +34,6 @@ jobs:
             "${{ github.event.pull_request.number }}" \
             "${{ github.event.inputs.packages }}"
       - if: ${{ steps.detect.outputs.packages != '' }}
-        name: Switch to Xcode 26.2
-        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
-      - if: ${{ steps.detect.outputs.packages != '' }}
         uses: eas/use_npm_token
       - if: ${{ steps.detect.outputs.packages != '' }}
         uses: eas/install_node_modules
