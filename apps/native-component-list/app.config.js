@@ -25,14 +25,6 @@ export default ({ config }) => {
       },
     ],
     [
-      'expo-splash-screen',
-      {
-        backgroundColor: '#ffffff',
-        image: './assets/icons/loadingIcon.png',
-        imageWidth: 100,
-      },
-    ],
-    [
       // expo-modules-test-core must be added manually.
       './plugins/withSettingsImport',
       {
