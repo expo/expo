@@ -1,6 +1,6 @@
 'use client';
 
-import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 

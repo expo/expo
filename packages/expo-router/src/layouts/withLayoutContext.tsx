@@ -6,7 +6,7 @@ import type {
   ReactNode,
   RefAttributes,
 } from 'react';
-import React, { Children, forwardRef, useMemo } from 'react';
+import { Children, forwardRef, useMemo } from 'react';
 
 import { useContextKey } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';

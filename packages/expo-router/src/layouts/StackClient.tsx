@@ -1,7 +1,7 @@
 'use client';
 import { nanoid } from 'nanoid/non-secure';
 import type { ComponentProps } from 'react';
-import React, { Children, useMemo } from 'react';
+import { Children, useMemo } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
@@ -26,16 +26,16 @@ import {
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
-import type {
-  CommonNavigationAction,
-  NavigationAction,
-  ParamListBase,
-  PartialRoute,
-  PartialState,
-  Route,
-  RouterConfigOptions,
-  StackActionType,
-  StackNavigationState,
+import {
+  type CommonNavigationAction,
+  type NavigationAction,
+  type ParamListBase,
+  type PartialRoute,
+  type PartialState,
+  type Route,
+  type RouterConfigOptions,
+  type StackActionType,
+  type StackNavigationState,
   StackRouter as RNStackRouter,
   type RouteProp,
 } from '../react-navigation/native';

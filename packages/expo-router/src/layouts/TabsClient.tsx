@@ -1,7 +1,6 @@
 'use client';
 
 import type { ComponentProps } from 'react';
-import React from 'react';
 import { Pressable, Platform } from 'react-native';
 
 import { withLayoutContext } from './withLayoutContext';

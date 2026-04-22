@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import nativeTabsStyles from '../../assets/native-tabs.module.css';

@@ -7,12 +7,12 @@ import {
   removeParams,
   type InternalExpoRouterParams,
 } from '../navigationParams';
-import type {
-  CommonNavigationAction,
-  ParamListBase,
-  Router,
-  TabActionType,
-  TabNavigationState,
+import {
+  type CommonNavigationAction,
+  type ParamListBase,
+  type Router,
+  type TabActionType,
+  type TabNavigationState,
   TabRouter,
   type TabRouterOptions,
 } from '../react-navigation/native';
