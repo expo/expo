@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-const withExpoVideo = (config, { supportsBackgroundPlayback, supportsPictureInPicture } = {}) => {
+const withIcons_1 = require("./withIcons");
+const withExpoVideo = (config, { supportsBackgroundPlayback, supportsPictureInPicture, icons } = {}) => {
     (0, config_plugins_1.withInfoPlist)(config, (config) => {
         const currentBackgroundModes = config.modResults.UIBackgroundModes ?? [];
         const shouldEnableBackgroundAudio = supportsBackgroundPlayback || supportsPictureInPicture;
@@ -68,6 +69,7 @@ const withExpoVideo = (config, { supportsBackgroundPlayback, supportsPictureInPi
         }
         return config;
     });
+    (0, withIcons_1.withIcons)(config, { icons });
     return config;
 };
 exports.default = withExpoVideo;

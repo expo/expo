@@ -20,6 +20,8 @@ import expo.modules.video.records.StatusChangedEventPayload
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.SubtitleTrackChangedEventPayload
 import expo.modules.video.records.AudioTrackChangedEventPayload
+import expo.modules.video.records.NowPlayingActionPressedEventPayload
+import expo.modules.video.records.PiPActionPressedEventPayload
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoEventPayload
 import expo.modules.video.records.VideoSource
@@ -87,6 +89,16 @@ sealed class PlayerEvent {
   data class VideoTrackChanged(val videoTrack: VideoTrack?, val oldVideoTrack: VideoTrack?) : PlayerEvent() {
     override val name = "videoTrackChange"
     override val jsEventPayload = VideoTrackChangedEventPayload(videoTrack, oldVideoTrack)
+  }
+
+  data class NowPlayingActionPressed(val action: String) : PlayerEvent() {
+    override val name = "nowPlayingActionPressed"
+    override val jsEventPayload = NowPlayingActionPressedEventPayload(action)
+  }
+
+  data class PiPActionPressed(val action: String) : PlayerEvent() {
+    override val name = "pictureInPictureActionPressed"
+    override val jsEventPayload = PiPActionPressedEventPayload(action)
   }
 
   class RenderedFirstFrame : PlayerEvent() {

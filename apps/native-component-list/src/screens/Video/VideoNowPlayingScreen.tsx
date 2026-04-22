@@ -1,5 +1,6 @@
-import { useVideoPlayer, VideoView } from 'expo-video';
-import React, { useCallback, useState } from 'react';
+import { useEvent } from 'expo';
+import { NowPlayingActionSlot, useVideoPlayer, VideoView } from 'expo-video';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
 import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
@@ -37,6 +38,31 @@ export default function VideoNowPlayingScreen() {
     }
   }, [player, currentSource]);
 
+  const nowPlayingActionPressed = useEvent(player, 'nowPlayingActionPressed');
+
+  useEffect(() => {
+    switch (nowPlayingActionPressed?.action) {
+      case 'FAVORITE_ACTION':
+        player.nowPlayingActions = [
+          {
+            action: 'UNFAVORITE_ACTION',
+            iconName: 'heart_full',
+            displayName: 'Favorite',
+          },
+        ];
+        break;
+      case 'UNFAVORITE_ACTION':
+        player.nowPlayingActions = [
+          {
+            action: 'FAVORITE_ACTION',
+            iconName: 'heart',
+            displayName: 'Unfavorite',
+          },
+        ];
+        break;
+    }
+  }, [nowPlayingActionPressed]);
+
   return (
     <View style={styles.contentContainer}>
       <VideoView player={player} style={styles.video} />
@@ -51,6 +77,118 @@ export default function VideoNowPlayingScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
+        <Text style={styles.centerText}>Media Session Custom Buttons: </Text>
+        <Button
+          title="Set Heart Button With Toggle"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = [
+              {
+                action: 'FAVORITE_ACTION',
+                iconName: 'heart',
+                displayName: 'Favorite',
+              },
+            ];
+          }}
+        />
+        <Button
+          title="Set Default Seek Buttons"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = null;
+          }}
+        />
+        <Button
+          title="Clear Buttons"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = [];
+          }}
+        />
+        <Button
+          title="Set Heart In Slot Back"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = [
+              {
+                action: 'FAVORITE_ACTION',
+                iconName: 'heart',
+                displayName: 'Favorite',
+                slots: [NowPlayingActionSlot.SLOT_BACK],
+              },
+            ];
+          }}
+        />
+        <Button
+          title="Set Heart In Slot Back Secondary"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = [
+              {
+                action: 'FAVORITE_ACTION',
+                iconName: 'heart',
+                displayName: 'Favorite',
+                slots: [NowPlayingActionSlot.SLOT_BACK_SECONDARY],
+              },
+            ];
+          }}
+        />
+        <Button
+          title="Set Heart In Slot Central"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = [
+              {
+                action: 'FAVORITE_ACTION',
+                iconName: 'heart',
+                displayName: 'Favorite',
+                slots: [NowPlayingActionSlot.SLOT_CENTRAL],
+              },
+            ];
+          }}
+        />
+        <Button
+          title="Set Heart In Slot Forward"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = [
+              {
+                action: 'FAVORITE_ACTION',
+                iconName: 'heart',
+                displayName: 'Favorite',
+                slots: [NowPlayingActionSlot.SLOT_FORWARD],
+              },
+            ];
+          }}
+        />
+        <Button
+          title="Set Heart In Slot Forward Secondary"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = [
+              {
+                action: 'FAVORITE_ACTION',
+                iconName: 'heart',
+                displayName: 'Favorite',
+                slots: [NowPlayingActionSlot.SLOT_FORWARD_SECONDARY],
+              },
+            ];
+          }}
+        />
+        <Button
+          title="Set Heart In Slot Overflow"
+          style={styles.button}
+          onPress={() => {
+            player.nowPlayingActions = [
+              {
+                action: 'FAVORITE_ACTION',
+                iconName: 'heart',
+                displayName: 'Favorite',
+                slots: [NowPlayingActionSlot.SLOT_OVERFLOW],
+              },
+            ];
+          }}
+        />
         {showNowPlaying && (
           <Text style={styles.centerText}>
             Go to the lockscreen or expand the notification center to see the expo-video

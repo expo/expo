@@ -1,12 +1,18 @@
 package expo.modules.video.managers
 
+import android.app.PendingIntent
 import android.app.PictureInPictureParams
+import android.app.RemoteAction
+import android.content.Context
+import android.content.Intent
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
@@ -15,11 +21,15 @@ import expo.modules.video.PictureInPictureFragmentListener
 import expo.modules.video.VideoView
 import expo.modules.video.listeners.VideoManagerListener
 import expo.modules.video.listeners.VideoViewListener
+import expo.modules.video.receivers.PiPActionReceiver
+import expo.modules.video.records.PiPAction
 import expo.modules.video.records.PiPParams
 import expo.modules.video.utils.applyPiPParams
+import expo.modules.video.utils.applyPiPActions
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculatePiPAspectRatio
 import expo.modules.video.utils.calculateRectHint
+import expo.modules.video.utils.getIconNameResId
 import expo.modules.video.utils.isVisibleOnScreen
 import expo.modules.video.utils.visiblePercentage
 import kotlinx.coroutines.launch
@@ -102,7 +112,23 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
     mainActivity.get()?.let {
       applyRectHint(it, calculateRectHint(view.playerView))
       applyPiPParams(it, autoEnterPiP, view.pipParams.aspectRatio)
+
     }
+
+    applyPiPActionsForView(view)
+  }
+
+  private fun applyPiPActionsForView(videoView: VideoView){
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+      return
+    }
+
+    val context = appContext.get()?.reactContext ?: return
+    val currentActivity = mainActivity.get() ?: return
+
+    val remoteActions = buildPiPRemoteActions(context, videoView)
+
+    applyPiPActions(currentActivity, remoteActions)
   }
 
   override fun onPiPParamsChanged(videoView: VideoView, oldPiPParams: PiPParams, newPiPParams: PiPParams) {
@@ -111,6 +137,12 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
       findAndSetupPipCandidate()
     } else if (videoView == currentPiPViewCandidate.get() && pipParamsInfluenceRectHint) {
       applyPipParamsForView(videoView)
+    }
+  }
+
+  override fun onPiPActionsChanged(videoView: VideoView, pipActions: List<PiPAction>?) {
+    if(videoView.videoViewId == currentPiPViewCandidate.get()?.videoViewId){
+      applyPiPActionsForView(videoView)
     }
   }
 
@@ -320,6 +352,53 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
     }
 
     return isHandledByPiPManager && !isCandidate
+  }
+
+  private fun buildPiPRemoteActionIntent(context: Context, action: String, videoViewId: String): PendingIntent {
+    val requestCode = "$videoViewId:$action".hashCode()
+    val intent = Intent(context, PiPActionReceiver::class.java).apply {
+      this.action = action
+      this.putExtra(VIDEO_VIEW_ID_KEY, videoViewId)
+    }
+    val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE)
+
+    return pendingIntent
+  }
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  private fun buildPiPRemoteActions(context: Context, videoView: VideoView): List<RemoteAction> {
+    val remoteActions = videoView.videoPlayer?.pictureInPictureActions?.mapNotNull {
+      val resId = getIconNameResId(context, it.iconName)
+
+      if(resId == null){
+        appContext.get()?.jsLogger?.error(
+          "expo-video: Custom icon '${it.iconName}' not found in native app. " +
+            "Make sure the icon file (e.g. 'custom_icon.png') is included in the expo-video config plugin icons array in app config."
+        )
+        return@mapNotNull null
+      }
+
+      val icon =  Icon.createWithResource(context, resId)
+
+      val intent = buildPiPRemoteActionIntent(context, it.action, videoView.videoViewId)
+      val remoteAction = RemoteAction(icon, it.title, it.description, intent)
+
+      return@mapNotNull remoteAction
+    }
+
+    return remoteActions ?: emptyList()
+  }
+
+  fun onPiPRemoteAction(videoViewId: String, action: String){
+    val videoView = currentPiPViewCandidate.get() ?: return
+
+    if(videoView.videoViewId == videoViewId){
+      videoView.videoPlayer?.onPiPRemoteAction(action)
+    }
+  }
+
+  companion object {
+    const val VIDEO_VIEW_ID_KEY = "view_view_id"
   }
 }
 

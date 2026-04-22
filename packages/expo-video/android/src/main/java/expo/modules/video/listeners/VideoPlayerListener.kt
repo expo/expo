@@ -9,6 +9,7 @@ import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.AudioTrack
+import expo.modules.video.records.PiPAction
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.TimeUpdate
@@ -32,4 +33,5 @@ interface VideoPlayerListener {
   fun onVideoSourceLoaded(player: VideoPlayer, videoSource: VideoSource?, duration: Double?, availableVideoTracks: List<VideoTrack>, availableSubtitleTracks: List<SubtitleTrack>, availableAudioTracks: List<AudioTrack>) {}
   fun onTargetViewChanged(player: VideoPlayer, newTargetView: VideoView?, oldTargetView: VideoView?) {}
   fun onRenderedFirstFrame(player: VideoPlayer) {}
+  fun onPiPActionsChanged(pipActions: List<PiPAction>?){}
 }

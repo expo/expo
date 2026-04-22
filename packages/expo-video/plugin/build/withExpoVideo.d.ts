@@ -4,6 +4,7 @@ export type WithExpoVideoOptions = {
     supportsBackgroundPlayback?: boolean;
     /** Whether to enable Picture-in-Picture on Android and iOS. */
     supportsPictureInPicture?: boolean;
+    icons?: string[];
 };
 declare const withExpoVideo: ConfigPlugin<WithExpoVideoOptions>;
 export default withExpoVideo;

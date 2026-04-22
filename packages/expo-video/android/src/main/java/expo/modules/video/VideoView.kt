@@ -35,6 +35,7 @@ import expo.modules.video.utils.SubtitleUtils
 import expo.modules.video.utils.dispatchMotionEvent
 import expo.modules.video.managers.VideoManager
 import expo.modules.video.managers.calculateCurrentPipAspectRatio
+import expo.modules.video.records.PiPAction
 import expo.modules.video.records.PiPParams
 import expo.modules.video.utils.calculateRectHint
 import java.lang.ref.WeakReference
@@ -329,6 +330,12 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
       shouldHideSurfaceView = false
       applySurfaceViewVisibility()
       onFirstFrameRender(Unit)
+    }
+  }
+
+  override fun onPiPActionsChanged(pipActions: List<PiPAction>?) {
+    listeners.forEach {
+      it.get()?.onPiPActionsChanged(this, pipActions)
     }
   }
 
