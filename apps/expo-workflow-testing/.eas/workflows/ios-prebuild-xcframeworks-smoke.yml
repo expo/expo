@@ -26,6 +26,7 @@ jobs:
     steps:
       - uses: eas/checkout
       - id: detect
+        name: Detect changed packages
         outputs: [packages]
         run: |
           bash scripts/detect-prebuild-packages.sh \
