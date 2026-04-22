@@ -506,6 +506,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)errorViewDidSelectRetry:(EXErrorView *)errorView
 {
+  // Dismiss the error view immediately so the user sees visible feedback
+  // (the loading overlay below it) while the retry runs. If the retry
+  // fails, _showErrorWithType: re-adds the same _errorView object.
+  [errorView removeFromSuperview];
   [self refresh];
 }
 
