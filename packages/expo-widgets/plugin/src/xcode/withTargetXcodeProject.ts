@@ -7,6 +7,7 @@ import { addTargetDependency } from './addTargetDependency';
 import { addToPbxNativeTargetSection } from './addToPbxNativeTargetSection';
 import { addToPbxProjectSection } from './addToPbxProjectSection';
 import { addXCConfigurationList } from './addXCConfigurationList';
+import * as path from 'path';
 
 type TargetXcodeProjectProps = {
   targetName: string;
@@ -50,7 +51,10 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
 
     addTargetDependency(xcodeProject, target);
 
-    const swiftWidgetFiles = getFileUris().filter((file) => file.endsWith('.swift'));
+    const projectRoot = config.modRequest.platformProjectRoot;
+    const targetDirectory = path.join(projectRoot, targetName);
+    const relativePaths = getFileUris().map((file) => path.relative(targetDirectory, file));
+    const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
 
     addBuildPhases(xcodeProject, {
       targetUuid,
@@ -61,7 +65,7 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
 
     addPbxGroup(xcodeProject, {
       targetName,
-      widgetFiles: getFileUris(),
+      widgetFiles: relativePaths,
     });
 
     return config;

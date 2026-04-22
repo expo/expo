@@ -24,9 +24,7 @@ const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
       if (fs.existsSync(targetDirectory)) {
         fs.rmSync(targetDirectory, { recursive: true, force: true });
       }
-      if (!fs.existsSync(targetDirectory)) {
-        fs.mkdirSync(targetDirectory, { recursive: true });
-      }
+      fs.mkdirSync(targetDirectory, { recursive: true });
       const entitlementsPath = path.join(targetDirectory, `${targetName}.entitlements`);
       const entitlementsContent = {
         'com.apple.security.application-groups': [groupIdentifier],
