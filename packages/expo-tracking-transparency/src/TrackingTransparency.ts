@@ -1,8 +1,8 @@
 import {
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
+  type PermissionExpiration,
+  type PermissionHookOptions,
   UnavailabilityError,
   createPermissionHook,
 } from 'expo-modules-core';
@@ -150,4 +150,10 @@ export function isAvailable(): boolean {
   return Boolean(ExpoTrackingTransparency);
 }
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+// TODO(@kitten): Remove re-exports from EMC
+export {
+  type PermissionResponse,
+  PermissionStatus,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+};

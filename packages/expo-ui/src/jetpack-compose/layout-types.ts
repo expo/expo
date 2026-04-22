@@ -1,4 +1,4 @@
-import { ExpoModifier } from '../types';
+import type { ExpoModifier } from '../types';
 import { createViewModifierEventListener } from './modifiers/utils';
 
 export type PrimitiveBaseProps = {

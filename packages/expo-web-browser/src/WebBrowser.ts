@@ -3,8 +3,23 @@ import type { AppStateStatus, EmitterSubscription } from 'react-native';
 import { AppState, Linking, Platform, processColor } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
-import type { RedirectEvent } from './WebBrowser.types';
-import {
+import type {
+  RedirectEvent,
+  type WebBrowserAuthSessionResult,
+  type WebBrowserCompleteAuthSessionOptions,
+  type WebBrowserCompleteAuthSessionResult,
+  type WebBrowserCoolDownResult,
+  type WebBrowserCustomTabsResults,
+  type WebBrowserMayInitWithUrlResult,
+  type WebBrowserOpenOptions,
+  type WebBrowserRedirectResult,
+  type WebBrowserResult,
+  WebBrowserResultType,
+  type WebBrowserWarmUpResult,
+  type AuthSessionOpenOptions,
+} from './WebBrowser.types';
+
+export type {
   WebBrowserAuthSessionResult,
   WebBrowserCompleteAuthSessionOptions,
   WebBrowserCompleteAuthSessionResult,
@@ -20,23 +35,6 @@ import {
   WebBrowserPresentationStyle,
   AuthSessionOpenOptions,
 } from './WebBrowser.types';
-
-export {
-  WebBrowserAuthSessionResult,
-  WebBrowserCompleteAuthSessionOptions,
-  WebBrowserCompleteAuthSessionResult,
-  WebBrowserCoolDownResult,
-  WebBrowserCustomTabsResults,
-  WebBrowserMayInitWithUrlResult,
-  WebBrowserOpenOptions,
-  WebBrowserRedirectResult,
-  WebBrowserResult,
-  WebBrowserResultType,
-  WebBrowserWarmUpResult,
-  WebBrowserWindowFeatures,
-  WebBrowserPresentationStyle,
-  AuthSessionOpenOptions,
-};
 
 const emptyCustomTabsPackages: WebBrowserCustomTabsResults = {
   defaultBrowserPackage: undefined,

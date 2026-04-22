@@ -2,8 +2,7 @@ import type { EventSubscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
-import type { NativeDatabase } from './NativeDatabase';
-import { flattenOpenOptions, SQLiteOpenOptions } from './NativeDatabase';
+import type { NativeDatabase, flattenOpenOptions, type SQLiteOpenOptions } from './NativeDatabase';
 import {
   registerDatabaseForDevToolsAsync,
   unregisterDatabaseForDevToolsAsync,
@@ -20,7 +19,7 @@ import { SQLiteStatement } from './SQLiteStatement';
 import { SQLiteTaggedQuery } from './SQLiteTaggedQuery';
 import { createDatabasePath } from './pathUtils';
 
-export { SQLiteOpenOptions };
+export type { SQLiteOpenOptions } from './NativeDatabase';
 
 /**
  * A SQLite database.

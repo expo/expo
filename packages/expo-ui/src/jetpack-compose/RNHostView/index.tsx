@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
-import React from 'react';
+import type { ReactElement, ComponentType } from 'react';
 
-import { type ModifierConfig } from '../../types';
-import { PrimitiveBaseProps } from '../layout';
+import type { ModifierConfig } from '../../types';
+import type { PrimitiveBaseProps } from '../layout';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export interface RNHostProps extends PrimitiveBaseProps {
@@ -16,7 +16,7 @@ export interface RNHostProps extends PrimitiveBaseProps {
   /**
    * The RN View to be hosted.
    */
-  children: React.ReactElement;
+  children: ReactElement;
   /**
    * Modifiers for the component.
    */
@@ -24,7 +24,7 @@ export interface RNHostProps extends PrimitiveBaseProps {
 }
 
 type NativeRNHostProps = RNHostProps;
-const NativeRNHostView: React.ComponentType<NativeRNHostProps> = requireNativeView(
+const NativeRNHostView: ComponentType<NativeRNHostProps> = requireNativeView(
   'ExpoUI',
   'RNHostView'
 );

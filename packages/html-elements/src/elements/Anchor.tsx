@@ -1,4 +1,3 @@
-import React from 'react';
 import { Linking, Platform } from 'react-native';
 
 import type { LinkProps } from './Text.types';

@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { Image } from './Image';

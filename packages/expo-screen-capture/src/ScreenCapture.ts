@@ -1,10 +1,10 @@
 import {
   UnavailabilityError,
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
   createPermissionHook,
-  PermissionHookOptions,
-  EventSubscription,
+  type PermissionHookOptions,
+  type EventSubscription,
 } from 'expo-modules-core';
 import { useEffect } from 'react';
 

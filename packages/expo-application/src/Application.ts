@@ -1,6 +1,9 @@
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 
-import { ApplicationReleaseType, PushNotificationServiceEnvironment } from './Application.types';
+import type {
+  ApplicationReleaseType,
+  PushNotificationServiceEnvironment,
+} from './Application.types';
 import ExpoApplication from './ExpoApplication';
 
 // @needsAudit
@@ -201,4 +204,7 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
   return new Date(lastUpdateTime);
 }
 
-export { ApplicationReleaseType, PushNotificationServiceEnvironment };
+export {
+  ApplicationReleaseType,
+  type PushNotificationServiceEnvironment,
+} from './Application.types';

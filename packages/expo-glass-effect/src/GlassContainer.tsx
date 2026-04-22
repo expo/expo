@@ -2,7 +2,6 @@
 
 'use client';
 
-import React from 'react';
 import { View } from 'react-native';
 
 import type { GlassContainerProps } from './GlassContainer.types';

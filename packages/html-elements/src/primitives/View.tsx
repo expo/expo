@@ -1,11 +1,11 @@
 import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import type {
-  StyleProp,
-  ViewStyle as NativeViewStyle,
-  BoxShadowValue,
-  FilterFunction,
-  View as NativeView,
+import {
+  type StyleProp,
+  type ViewStyle as NativeViewStyle,
+  type BoxShadowValue,
+  type FilterFunction,
   type ColorValue,
+  View as NativeView,
 } from 'react-native';
 
 import { createDevView } from './createDevView';

@@ -1,8 +1,6 @@
-import type { EventSubscription } from 'expo-modules-core';
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
+import type {
+  EventSubscription,
+  type PermissionResponse,
   UnavailabilityError,
   uuid,
 } from 'expo-modules-core';
@@ -583,7 +581,12 @@ export type Container = {
   type: ContainerType;
 };
 
-export { PermissionStatus, PermissionResponse, PermissionExpiration };
+// TODO(@kitten): Remove re-exports from EMC
+export {
+  PermissionStatus,
+  type PermissionResponse,
+  type PermissionExpiration,
+} from 'expo-modules-core';
 
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.

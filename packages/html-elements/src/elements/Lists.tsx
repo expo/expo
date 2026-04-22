@@ -1,5 +1,4 @@
 import type { ComponentType, PropsWithChildren } from 'react';
-import React from 'react';
 import { Platform } from 'react-native';
 
 import type { TextProps } from '../primitives/Text';

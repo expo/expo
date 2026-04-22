@@ -2,7 +2,15 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExponentPrint from './ExponentPrint';
-import {
+import type {
+  FilePrintOptions,
+  FilePrintResult,
+  OrientationType,
+  PrintOptions,
+  Printer,
+} from './Print.types';
+
+export type {
   FilePrintOptions,
   FilePrintResult,
   OrientationType,
@@ -10,8 +18,6 @@ import {
   PrintOptions,
   Printer,
 } from './Print.types';
-
-export { FilePrintOptions, FilePrintResult, OrientationType, PageMargins, PrintOptions, Printer };
 
 let isPrinting = false;
 // @needsAudit @docsMissing

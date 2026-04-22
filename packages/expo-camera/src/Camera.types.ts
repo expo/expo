@@ -1,9 +1,9 @@
 import {
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  EventSubscription,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+  type EventSubscription,
   NativeModule,
 } from 'expo-modules-core';
 import type { Ref } from 'react';
@@ -591,13 +591,14 @@ export type BarcodeType =
   | 'code128'
   | 'upc_a';
 
+// TODO(@kitten): Remove re-exports from EMC
 export {
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  EventSubscription as Subscription,
-};
+  type PermissionExpiration,
+  type PermissionHookOptions,
+  type EventSubscription as Subscription,
+} from 'expo-modules-core';
 
 export type PhotoResult = {
   /**

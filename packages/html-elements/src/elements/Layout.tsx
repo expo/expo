@@ -1,5 +1,4 @@
 import type { ComponentType } from 'react';
-import React from 'react';
 import { Platform } from 'react-native';
 
 import type { ViewProps } from '../primitives/View';

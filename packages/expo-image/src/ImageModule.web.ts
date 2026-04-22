@@ -1,11 +1,6 @@
 import { NativeModule, registerWebModule } from 'expo-modules-core';
 
-import type {
-  ImageCacheConfig,
-  ImageRef,
-  ImageSource,
-  type ImageNativeModule,
-} from './Image.types';
+import type { ImageCacheConfig, ImageRef, ImageSource, ImageNativeModule } from './Image.types';
 import ImageRefWeb from './web/ImageRef';
 
 class ImageModule extends NativeModule implements ImageNativeModule {

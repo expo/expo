@@ -4,8 +4,8 @@ import type { PackageRevision, SupportedPlatform } from '../types';
 import { scanDependenciesRecursively } from './resolution';
 import { scanDependenciesFromRNProjectConfig } from './rncliLocal';
 import { scanDependenciesInSearchPath } from './scanning';
-import type {
-  DependencyResolution,
+import {
+  type DependencyResolution,
   type ResolutionResult,
   DependencyResolutionSource,
 } from './types';

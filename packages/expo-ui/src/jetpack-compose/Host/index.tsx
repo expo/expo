@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
-import { type ColorSchemeName, I18nManager, StyleProp, ViewStyle } from 'react-native';
+import { type ColorSchemeName, I18nManager, type StyleProp, type ViewStyle } from 'react-native';
 
-import { PrimitiveBaseProps } from '../layout';
+import type { PrimitiveBaseProps } from '../layout';
 
 //#region Host Component
 export type HostProps = {

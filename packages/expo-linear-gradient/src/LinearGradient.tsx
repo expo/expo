@@ -7,7 +7,7 @@ import type { ColorValue, ViewProps } from 'react-native';
 import { Platform, processColor } from 'react-native';
 
 import NativeLinearGradient from './NativeLinearGradient';
-import { NativeLinearGradientPoint } from './NativeLinearGradient.types';
+import type { NativeLinearGradientPoint } from './NativeLinearGradient.types';
 
 // @needsAudit
 /**
@@ -118,4 +118,4 @@ function _normalizePoint(
   return Array.isArray(point) ? point : [point.x, point.y];
 }
 
-export { NativeLinearGradientPoint };
+export type { NativeLinearGradientPoint } from './NativeLinearGradient.types';

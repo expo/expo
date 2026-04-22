@@ -2,7 +2,7 @@ import type {
   PermissionResponse,
   PermissionExpiration,
   PermissionStatus,
-  type EventSubscription,
+  EventSubscription,
   Platform,
 } from 'expo-modules-core';
 

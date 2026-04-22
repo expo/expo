@@ -1,6 +1,6 @@
 import {
-  PermissionExpiration,
-  PermissionResponse,
+  type PermissionExpiration,
+  type PermissionResponse,
   PermissionStatus,
   type EventSubscription,
   UnavailabilityError,

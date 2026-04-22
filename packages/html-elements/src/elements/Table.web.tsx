@@ -1,5 +1,4 @@
 import type { ComponentType } from 'react';
-import React from 'react';
 
 import View from '../primitives/RNWView';
 import type { ViewProps } from '../primitives/View';

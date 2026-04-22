@@ -5,11 +5,10 @@ import {
   UnavailabilityError,
 } from 'expo-modules-core';
 
-import type { PermissionResponse } from './Cellular.types';
-import { CellularGeneration } from './Cellular.types';
+import type { PermissionResponse, CellularGeneration } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
 
-export { CellularGeneration };
+export { CellularGeneration } from './Cellular.types';
 
 // @needsAudit
 /**
