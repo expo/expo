@@ -48,8 +48,12 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
           imageViewContainer = container
           splashScreenView?.addSubview(container)
 
-          let imageView = createImageView(with: imageUrl) { [weak container] in
+          let imageView = createImageView(with: imageUrl) { [weak container] imageView, success in
             guard let container else { return }
+
+            if !success {
+              imageView.removeFromSuperview()
+            }
 
             UIView.animate(withDuration: 0.3) {
               container.alpha = 1
@@ -89,11 +93,11 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
     return container
   }
 
-  private func createImageView(with imageUrl: String, onLoad: @escaping () -> Void) -> UIImageView {
+  private func createImageView(with imageUrl: String, onLoad: @escaping (UIImageView, Bool) -> Void) -> UIImageView {
     let imageView = UIImageView()
 
     imageView.translatesAutoresizingMaskIntoConstraints = false
-    imageView.sd_setImage(with: URL(string: imageUrl)) { _, _, _, _ in onLoad() }
+    imageView.sd_setImage(with: URL(string: imageUrl)) { image, _, _, _ in onLoad(imageView, image != nil) }
     imageView.contentMode = .scaleAspectFit
     imageView.layer.cornerRadius = 30
     imageView.layer.masksToBounds = true
