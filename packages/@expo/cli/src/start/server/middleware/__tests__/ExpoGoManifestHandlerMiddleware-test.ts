@@ -198,7 +198,7 @@ describe('_getManifestResponseAsync', () => {
     middleware._resolveProjectSettingsAsync = jest.fn(
       async () =>
         ({
-          expoGoConfig: {},
+          expoGoConfig: { username: 'wat' },
           hostUri: 'https://localhost:8081',
           bundleUrl: 'https://localhost:8081/bundle.js',
           exp: {
@@ -264,7 +264,7 @@ describe('_getManifestResponseAsync', () => {
                 hostUri: 'https://localhost:8081',
                 slug: 'slug',
               },
-              expoGo: {},
+              expoGo: { username: 'wat' },
               scopeKey: expect.stringMatching(/@anonymous\/.*/),
             },
           });
@@ -324,7 +324,7 @@ describe('_getManifestResponseAsync', () => {
                 hostUri: 'https://localhost:8081',
                 slug: 'slug',
               },
-              expoGo: {},
+              expoGo: { username: 'wat' },
               scopeKey: expect.stringMatching(/@anonymous\/.*/),
             },
           });
@@ -391,7 +391,7 @@ describe('_getManifestResponseAsync', () => {
                 hostUri: 'https://localhost:8081',
                 slug: 'slug',
               },
-              expoGo: {},
+              expoGo: { username: 'wat' },
               scopeKey: expect.stringMatching(/@anonymous\/.*/),
             },
           });
@@ -457,7 +457,7 @@ describe('_getManifestResponseAsync', () => {
                 projectId: 'projectId',
               },
               expoClient: expect.anything(),
-              expoGo: {},
+              expoGo: { username: 'wat' },
               scopeKey: expect.stringMatching(/@anonymous\/.*/),
             },
           });
@@ -505,7 +505,7 @@ describe('_getManifestResponseAsync', () => {
                 projectId: 'projectId',
               },
               expoClient: expect.anything(),
-              expoGo: {},
+              expoGo: { username: 'wat' },
               scopeKey: 'scope-key',
             },
           });
@@ -574,7 +574,7 @@ describe('_getManifestResponseAsync', () => {
                 projectId: 'projectId',
               },
               expoClient: expect.anything(),
-              expoGo: {},
+              expoGo: { username: 'wat' },
               scopeKey: expect.stringMatching(/@anonymous\/.*/),
             },
           });
@@ -636,7 +636,7 @@ describe('_getManifestResponseAsync', () => {
                 projectId: 'projectId',
               },
               expoClient: expect.anything(),
-              expoGo: {},
+              expoGo: { username: 'wat' },
               scopeKey: 'scope-key',
             },
           });
@@ -679,7 +679,7 @@ describe('_getManifestResponseAsync', () => {
           projectId: 'projectId',
         },
         expoClient: expect.anything(),
-        expoGo: {},
+        expoGo: { username: 'wat' },
         scopeKey: expect.stringMatching(/@anonymous\/.*/),
       },
     });
@@ -719,7 +719,7 @@ describe('_getManifestResponseAsync', () => {
           projectId: 'projectId',
         },
         expoClient: expect.anything(),
-        expoGo: {},
+        expoGo: { username: 'wat' },
         scopeKey: expect.stringMatching(/@anonymous\/.*/),
       },
     });
