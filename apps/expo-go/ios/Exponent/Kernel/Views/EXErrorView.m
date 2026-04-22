@@ -45,8 +45,20 @@
     _txtFixDetail.textContainer.lineFragmentPadding = 0;
 
     for (UIButton *btnToStyle in @[ _btnRetry, _btnBack ]) {
-      btnToStyle.layer.cornerRadius = 4.0;
+      btnToStyle.layer.cornerRadius = 10.0;
       btnToStyle.layer.masksToBounds = YES;
+      btnToStyle.titleLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightSemibold];
+
+      // Touch feedback: slight alpha dip + scale on press
+      [btnToStyle addTarget:self
+                     action:@selector(_onButtonTouchDown:)
+           forControlEvents:UIControlEventTouchDown];
+      [btnToStyle addTarget:self
+                     action:@selector(_onButtonTouchUp:)
+           forControlEvents:UIControlEventTouchUpInside |
+                            UIControlEventTouchUpOutside |
+                            UIControlEventTouchCancel |
+                            UIControlEventTouchDragExit];
     }
   }
   return self;
@@ -190,6 +202,22 @@
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController moveHomeToVisible];
   }
+}
+
+- (void)_onButtonTouchDown:(UIButton *)button
+{
+  [UIView animateWithDuration:0.08 animations:^{
+    button.alpha = 0.55;
+    button.transform = CGAffineTransformMakeScale(0.98, 0.98);
+  }];
+}
+
+- (void)_onButtonTouchUp:(UIButton *)button
+{
+  [UIView animateWithDuration:0.15 animations:^{
+    button.alpha = 1.0;
+    button.transform = CGAffineTransformIdentity;
+  }];
 }
 
 - (BOOL)_urlLooksLikeLAN:(NSString *)url
