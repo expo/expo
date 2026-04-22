@@ -250,6 +250,12 @@ function validate(data: unknown): ReviewPayload {
     );
   }
 
+  if (obj.commit_id !== undefined) {
+    if (typeof obj.commit_id !== 'string' || !/^[0-9a-f]{7,64}$/i.test(obj.commit_id)) {
+      throw new Error(`Invalid commit_id: must be a hex SHA (7–64 chars)`);
+    }
+  }
+
   if (!Array.isArray(obj.comments)) {
     throw new Error('comments must be an array');
   }
