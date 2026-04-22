@@ -1,4 +1,3 @@
-import React from 'react';
 import type { NativeSyntheticEvent, StyleProp, ViewProps, ViewStyle } from 'react-native';
 
 import type {

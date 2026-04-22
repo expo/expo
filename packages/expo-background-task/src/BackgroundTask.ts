@@ -159,5 +159,5 @@ export function addExpirationListener(listener: () => void): { remove: () => voi
 export {
   BackgroundTaskStatus,
   BackgroundTaskResult,
-  BackgroundTaskOptions,
+  type BackgroundTaskOptions,
 } from './BackgroundTask.types';

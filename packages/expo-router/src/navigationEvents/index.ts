@@ -1,4 +1,4 @@
-import { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
+import type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
 
 export type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
 

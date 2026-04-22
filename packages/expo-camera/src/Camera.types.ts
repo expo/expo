@@ -1,11 +1,4 @@
-import {
-  type PermissionResponse,
-  PermissionStatus,
-  type PermissionExpiration,
-  type PermissionHookOptions,
-  type EventSubscription,
-  NativeModule,
-} from 'expo-modules-core';
+import { type PermissionResponse, NativeModule } from 'expo-modules-core';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 

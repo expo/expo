@@ -1,8 +1,5 @@
 import {
   type PermissionResponse as EXPermissionResponse,
-  PermissionStatus,
-  type PermissionExpiration,
-  type PermissionHookOptions,
   createPermissionHook,
   UnavailabilityError,
   type EventSubscription,

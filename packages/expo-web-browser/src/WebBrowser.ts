@@ -3,8 +3,8 @@ import type { AppStateStatus, EmitterSubscription } from 'react-native';
 import { AppState, Linking, Platform, processColor } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
-import type {
-  RedirectEvent,
+import {
+  type RedirectEvent,
   type WebBrowserAuthSessionResult,
   type WebBrowserCompleteAuthSessionOptions,
   type WebBrowserCompleteAuthSessionResult,

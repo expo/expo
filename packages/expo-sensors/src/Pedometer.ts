@@ -1,5 +1,4 @@
 import {
-  type PermissionExpiration,
   type PermissionResponse,
   PermissionStatus,
   type EventSubscription,
@@ -95,9 +94,10 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
+// TODO(@kitten): Remove re-exports from EMC
 export {
-  EventSubscription as Subscription,
-  PermissionResponse,
+  type EventSubscription as Subscription,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-};
+  type PermissionExpiration,
+} from 'expo-modules-core';

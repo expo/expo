@@ -1,5 +1,5 @@
-import type {
-  EventSubscription,
+import {
+  type EventSubscription,
   type PermissionResponse,
   UnavailabilityError,
   uuid,

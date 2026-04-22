@@ -1,12 +1,5 @@
 import isEqual from 'fast-deep-equal';
-import {
-  type RefObject,
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-  use,
-} from 'react';
+import { type RefObject, useEffect, useState, useCallback, useRef, use } from 'react';
 
 import { createMemoryHistory } from './createMemoryHistory';
 import { appendBaseUrl } from './getPathFromState';
