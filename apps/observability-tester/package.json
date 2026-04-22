@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "prebuild:ios": "expo prebuild --clean -p ios",
-    "prebuild:android": "expo prebuild --clean -p android",
+    "prebuild:android": "./scripts/prebuild-android.sh",
+    "prebuild:ios": "./scripts/prebuild-ios.sh",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
