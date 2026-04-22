@@ -1,7 +1,7 @@
 import { DeviceEventEmitter } from 'react-native';
 
 import ExpoDevMenu from './ExpoDevMenu';
-import { ExpoDevMenuItem } from './ExpoDevMenu.types';
+import type { ExpoDevMenuItem } from './ExpoDevMenu.types';
 
 /**
  * A method that opens development client menu when called.

@@ -4,22 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
-import { RouteNode } from 'expo-router/build/Route';
+import type { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
-import { type RoutesManifest } from 'expo-server/private';
+import type { RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
 
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
+import type { ExportAssetMap } from './saveAssets';
+import { getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
-import {
+import type {
   ExpoRouterRuntimeManifest,
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';

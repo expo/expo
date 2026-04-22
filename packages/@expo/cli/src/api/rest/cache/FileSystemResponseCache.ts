@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import stream, { Readable } from 'node:stream';
-import { ReadableStream } from 'node:stream/web';
+import type { ReadableStream } from 'node:stream/web';
 
 import type { ResponseCache, ResponseCacheEntry } from './ResponseCache';
 import { fileExistsAsync } from '../../../utils/dir';

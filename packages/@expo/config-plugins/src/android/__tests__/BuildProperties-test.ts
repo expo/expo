@@ -1,10 +1,10 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
 import {
   updateAndroidBuildPropertiesFromConfig,
   updateAndroidBuildProperty,
 } from '../BuildProperties';
-import { PropertiesItem } from '../Properties';
+import type { PropertiesItem } from '../Properties';
 
 jest.mock('../../plugins/android-plugins');
 

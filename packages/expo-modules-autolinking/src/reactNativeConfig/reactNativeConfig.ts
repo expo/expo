@@ -19,10 +19,11 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { discoverExpoModuleConfigAsync, ExpoModuleConfig } from '../ExpoModuleConfig';
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { DependencyResolution } from '../dependencies';
 import {
-  DependencyResolution,
   filterMapResolutionResult,
   mergeResolutionResults,
   scanDependenciesFromRNProjectConfig,

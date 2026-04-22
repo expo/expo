@@ -1,4 +1,4 @@
-import {
+import type {
   AttendeeRole,
   AttendeeStatus,
   AttendeeType,
@@ -21,7 +21,7 @@ import {
   OpenEventDialogResult,
   Attendee,
 } from '../Calendar';
-import { RecurrenceRule } from './types/RecurrenceRule';
+import type { RecurrenceRule } from './types/RecurrenceRule';
 
 export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 

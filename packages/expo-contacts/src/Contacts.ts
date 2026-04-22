@@ -1,10 +1,10 @@
+import type { EventSubscription } from 'expo-modules-core';
 import {
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
   UnavailabilityError,
   uuid,
-  EventSubscription,
 } from 'expo-modules-core';
 import { Platform, Share, type ShareOptions } from 'react-native';
 

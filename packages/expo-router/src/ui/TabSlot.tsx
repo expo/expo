@@ -1,9 +1,11 @@
-import { ComponentProps, ReactElement, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import { useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
-import { TabContext, TabsDescriptor } from './TabContext';
-import { TabListProps } from './TabList';
+import type { TabsDescriptor } from './TabContext';
+import { TabContext } from './TabContext';
+import type { TabListProps } from './TabList';
 import { useNavigatorContext } from '../views/Navigator';
 
 export type TabSlotProps = ComponentProps<typeof ScreenContainer> & {

@@ -5,7 +5,8 @@ import { resolve } from 'path';
 
 import * as Android from './Android';
 import * as Ios from './Ios';
-import { CommandError, Options } from './Options';
+import type { Options } from './Options';
+import { CommandError } from './Options';
 import * as URIScheme from './URIScheme';
 import shouldUpdate from './update';
 

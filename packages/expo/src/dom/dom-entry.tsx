@@ -3,7 +3,7 @@ import '@expo/metro-runtime';
 
 import React from 'react';
 
-import { JSONValue } from './dom.types';
+import type { JSONValue } from './dom.types';
 import { addEventListener, getActionsObject } from './marshal';
 import registerRootComponent from '../launch/registerRootComponent';
 

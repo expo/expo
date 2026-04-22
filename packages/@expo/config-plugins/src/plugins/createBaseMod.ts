@@ -1,7 +1,8 @@
 import Debug from 'debug';
 
-import { BaseModOptions, withBaseMod } from './withMod';
-import {
+import type { BaseModOptions } from './withMod';
+import { withBaseMod } from './withMod';
+import type {
   ConfigPlugin,
   ExportedConfig,
   ExportedConfigWithProps,

@@ -1,4 +1,4 @@
-import { readXMLAsync, XMLObject } from '../utils/XML';
+import { readXMLAsync, type XMLObject } from '../utils/XML';
 
 export type ResourceGroupXML = {
   $: {

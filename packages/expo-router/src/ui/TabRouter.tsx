@@ -1,12 +1,12 @@
-import { TriggerMap } from './common';
-import {
+import type { TriggerMap } from './common';
+import type {
   CommonNavigationAction,
   ParamListBase,
-  TabRouter as RNTabRouter,
   Router,
   TabActionType as RNTabActionType,
   TabNavigationState,
   TabRouterOptions as RNTabRouterOptions,
+  TabRouter as RNTabRouter,
   type StackActionType,
   type NavigationAction,
 } from '../react-navigation/native';

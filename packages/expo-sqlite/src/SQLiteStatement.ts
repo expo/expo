@@ -1,8 +1,8 @@
-import { NativeDatabase } from './NativeDatabase';
-import {
+import type { NativeDatabase } from './NativeDatabase';
+import type {
+  NativeStatement,
   SQLiteBindParams,
   SQLiteBindValue,
-  NativeStatement,
   SQLiteVariadicBindParams,
   type SQLiteAnyDatabase,
   type SQLiteColumnNames,

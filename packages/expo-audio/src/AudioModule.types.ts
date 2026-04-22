@@ -1,6 +1,7 @@
-import { NativeModule, PermissionResponse, SharedObject } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo-modules-core';
+import { NativeModule, SharedObject } from 'expo-modules-core';
 
-import {
+import type {
   AudioMetadata,
   AudioMode,
   AudioPlaylistLoopMode,
@@ -15,7 +16,7 @@ import {
   RecordingStartOptions,
   RecordingStatus,
 } from './Audio.types';
-import { AudioLockScreenOptions } from './AudioConstants';
+import type { AudioLockScreenOptions } from './AudioConstants';
 import type { AudioStream } from './AudioStream.types';
 
 /**

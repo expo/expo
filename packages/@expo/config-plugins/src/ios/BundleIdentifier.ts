@@ -1,18 +1,17 @@
-import { ExpoConfig } from '@expo/config-types';
-import plist, { PlistObject } from '@expo/plist';
+import type { ExpoConfig } from '@expo/config-types';
+import type { PlistObject } from '@expo/plist';
+import plist from '@expo/plist';
 import assert from 'assert';
 import fs from 'fs';
-import xcode, { XCBuildConfiguration } from 'xcode';
+import type { XCBuildConfiguration } from 'xcode';
+import xcode from 'xcode';
 
-import { InfoPlist } from './IosConfig.types';
+import type { InfoPlist } from './IosConfig.types';
 import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
-import { ConfigPlugin, XcodeProject } from '../Plugin.types';
-import {
-  ConfigurationSectionEntry,
-  getBuildConfigurationsForListId,
-  resolveXcodeBuildSetting,
-} from './utils/Xcodeproj';
+import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import type { ConfigurationSectionEntry } from './utils/Xcodeproj';
+import { getBuildConfigurationsForListId, resolveXcodeBuildSetting } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
 import { withXcodeProject } from '../plugins/ios-plugins';
 

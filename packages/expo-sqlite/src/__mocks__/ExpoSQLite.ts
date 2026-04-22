@@ -1,8 +1,8 @@
 import assert from 'assert';
 import sqlite3 from 'better-sqlite3';
 
-import { SQLiteOpenOptions } from '../NativeDatabase';
-import {
+import type { SQLiteOpenOptions } from '../NativeDatabase';
+import type {
   SQLiteBindBlobParams,
   SQLiteBindParams,
   SQLiteBindPrimitiveParams,

@@ -1,16 +1,10 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import {
-  AppState,
-  AppStateStatus,
-  Linking,
-  Platform,
-  EmitterSubscription,
-  processColor,
-} from 'react-native';
+import type { AppStateStatus, EmitterSubscription } from 'react-native';
+import { AppState, Linking, Platform, processColor } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
+import type { RedirectEvent } from './WebBrowser.types';
 import {
-  RedirectEvent,
   WebBrowserAuthSessionResult,
   WebBrowserCompleteAuthSessionOptions,
   WebBrowserCompleteAuthSessionResult,

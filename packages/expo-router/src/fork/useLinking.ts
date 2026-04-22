@@ -6,7 +6,7 @@ import { appendBaseUrl } from './getPathFromState';
 import { ServerContext } from '../global-state/serverLocationContext';
 import { useExpoRouterStore } from '../global-state/storeContext';
 import { getRootStackRouteNames } from '../global-state/utils';
-import {
+import type {
   LinkingOptions,
   findFocusedRoute,
   getActionFromState as getActionFromStateDefault,

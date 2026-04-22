@@ -1,10 +1,11 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import path from 'path';
 
 import { AndroidConfig, withDangerousMod } from '..';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { writeXMLAsync } from '../utils/XML';
-import { getResolvedLocalesAsync, LocaleJson } from '../utils/locales';
+import type { LocaleJson } from '../utils/locales';
+import { getResolvedLocalesAsync } from '../utils/locales';
 
 export const withLocales: ConfigPlugin = (config) => {
   return withDangerousMod(config, [

@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
+import type { ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
-import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { convertFontWeightToStringFontWeight } from '../../../utils/style';
 import { areAllChildrenPrimitiveValues, convertChildrenToString } from '../toolbar/shared';
 

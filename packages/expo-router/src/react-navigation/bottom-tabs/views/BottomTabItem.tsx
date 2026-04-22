@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import {
+import type {
   ColorValue,
   type GestureResponderEvent,
   Platform,

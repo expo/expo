@@ -1,15 +1,15 @@
 import { CodedError, EventSubscription, UnavailabilityError } from 'expo-modules-core';
 
-import {
+import type {
   AppleAuthenticationCredential,
   AppleAuthenticationCredentialState,
-  AppleAuthenticationOperation,
   AppleAuthenticationRefreshOptions,
   AppleAuthenticationSignInOptions,
   AppleAuthenticationSignOutOptions,
   AppleAuthenticationFullName,
   AppleAuthenticationFullNameFormatStyle,
 } from './AppleAuthentication.types';
+import { AppleAuthenticationOperation } from './AppleAuthentication.types';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
 // @needsAudit

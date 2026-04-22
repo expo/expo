@@ -3,7 +3,7 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { View } from 'react-native';
 
-import { BlurViewProps } from './BlurView.types';
+import type { BlurViewProps } from './BlurView.types';
 import getBackgroundColor from './getBackgroundColor';
 
 const BlurView = forwardRef<{ setNativeProps: (props: BlurViewProps) => void }, BlurViewProps>(

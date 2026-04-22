@@ -1,10 +1,10 @@
-import {
+import type {
   ContactField,
   ContactQueryOptions,
   FormOptions,
   PartialContactDetails,
 } from './Contact.props';
-import {
+import type {
   ExistingEmail,
   ExistingPhone,
   ExistingDate,

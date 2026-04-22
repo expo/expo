@@ -1,9 +1,9 @@
-import {
+import type {
   PermissionResponse,
+  PermissionExpiration,
   PermissionStatus,
   type EventSubscription,
   Platform,
-  PermissionExpiration,
 } from 'expo-modules-core';
 
 /**

@@ -6,8 +6,9 @@ import React from 'react';
 
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { ExpoRoot } from '../ExpoRoot';
-import { ExpoLinkingOptions } from '../getLinkingConfig';
-import { ReactNavigationState, store } from '../global-state/router-store';
+import type { ExpoLinkingOptions } from '../getLinkingConfig';
+import type { ReactNavigationState } from '../global-state/router-store';
+import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 
 const rnTestingLibrary = ((): typeof import('@testing-library/react-native') => {

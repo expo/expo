@@ -1,13 +1,13 @@
-import { ExpoConfig } from '@expo/config-types';
-import { JSONObject } from '@expo/json-file';
+import type { ExpoConfig } from '@expo/config-types';
+import type { JSONObject } from '@expo/json-file';
 import { XcodeProject } from 'xcode';
 
-import { Properties } from './android';
+import type { Properties } from './android';
 import { AndroidManifest } from './android/Manifest';
-import * as AndroidPaths from './android/Paths';
-import { ResourceXML } from './android/Resources';
+import type * as AndroidPaths from './android/Paths';
+import type { ResourceXML } from './android/Resources';
 import { ExpoPlist, InfoPlist } from './ios/IosConfig.types';
-import { AppDelegateProjectFile } from './ios/Paths';
+import type { AppDelegateProjectFile } from './ios/Paths';
 
 type OptionalPromise<T> = Promise<T> | T;
 

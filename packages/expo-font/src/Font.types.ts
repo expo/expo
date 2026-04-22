@@ -1,4 +1,4 @@
-import { Asset } from 'expo-asset';
+import type { Asset } from 'expo-asset';
 
 // @needsAudit
 /**

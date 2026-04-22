@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { loadAsync, isLoaded } from './Font';
-import { FontSource, UseFontHook } from './Font.types';
+import type { FontSource, UseFontHook } from './Font.types';
 
 function isMapLoaded(map: string | Record<string, FontSource>) {
   if (typeof map === 'string') {

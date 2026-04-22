@@ -2,12 +2,13 @@ import invariant from 'invariant';
 import { Platform } from 'react-native';
 
 import * as Base64 from './Base64';
-import * as ServiceConfig from './Discovery';
-import { ResponseErrorConfig, TokenError } from './Errors';
-import { Headers, requestAsync } from './Fetch';
-import {
+import type * as ServiceConfig from './Discovery';
+import type { ResponseErrorConfig } from './Errors';
+import { TokenError } from './Errors';
+import type { Headers } from './Fetch';
+import { requestAsync } from './Fetch';
+import type {
   AccessTokenRequestConfig,
-  GrantType,
   RefreshTokenRequestConfig,
   RevokeTokenRequestConfig,
   ServerTokenResponseConfig,
@@ -16,6 +17,7 @@ import {
   TokenType,
   TokenTypeHint,
 } from './TokenRequest.types';
+import { GrantType } from './TokenRequest.types';
 
 /**
  * Returns the current time in seconds.

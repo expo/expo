@@ -1,4 +1,4 @@
-import { ConfigPlugin } from 'expo/config-plugins';
+import type { ConfigPlugin } from 'expo/config-plugins';
 
 import {
   withAndroidBuildProperties,
@@ -10,7 +10,8 @@ import {
   withAndroidSettingsGradle,
 } from './android';
 import { withIosBuildProperties, withIosDeploymentTarget, withIosInfoPlist } from './ios';
-import { PluginConfigType, validateConfig } from './pluginConfig';
+import type { PluginConfigType } from './pluginConfig';
+import { validateConfig } from './pluginConfig';
 
 /**
  * Config plugin allowing customizing native Android and iOS build properties for managed apps.

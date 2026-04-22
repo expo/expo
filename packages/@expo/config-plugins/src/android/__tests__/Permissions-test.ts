@@ -1,7 +1,7 @@
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { format } from '../../utils/XML';
 import * as XML from '../../utils/XML';
-import { AndroidManifest } from '../Manifest';
+import type { AndroidManifest } from '../Manifest';
 import {
   addBlockedPermissions,
   ensurePermission,

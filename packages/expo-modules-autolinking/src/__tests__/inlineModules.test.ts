@@ -7,11 +7,11 @@ import {
   generateInlineModulesListFile,
   getClassName,
 } from '../inlineModules/androidInlineModules';
+import type { InlineModulesMirror } from '../inlineModules/inlineModules';
 import {
   getMirrorStateObject,
   getKotlinFileNameWithItsPackage,
   inlineModuleFileNameInformation,
-  InlineModulesMirror,
 } from '../inlineModules/inlineModules';
 
 jest.mock('fs', () => require('memfs').fs);

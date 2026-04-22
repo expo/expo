@@ -1,14 +1,15 @@
 import { isRunningInExpoGo } from 'expo';
-import { NativeModule, PermissionResponse, requireNativeModule } from 'expo-modules-core';
-import { ProcessedColorValue } from 'react-native';
+import type { PermissionResponse } from 'expo-modules-core';
+import { NativeModule, requireNativeModule } from 'expo-modules-core';
+import type { ProcessedColorValue } from 'react-native';
 
-import {
+import type {
   ExpoCalendar,
   ExpoCalendarAttendee,
   ExpoCalendarEvent,
   ExpoCalendarReminder,
 } from './ExpoCalendar.types';
-import { Calendar, EntityTypes, Source } from '../Calendar';
+import type { Calendar, EntityTypes, Source } from '../Calendar';
 import ExpoGoCalendarNextStub from './ExpoGoCalendarNextStub';
 
 declare class ExpoCalendarNextModule extends NativeModule {

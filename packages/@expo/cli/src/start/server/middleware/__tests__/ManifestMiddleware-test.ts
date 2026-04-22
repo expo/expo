@@ -7,8 +7,9 @@ import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
-import { ManifestMiddleware, ManifestRequestInfo } from '../ManifestMiddleware';
-import { ServerRequest, ServerResponse } from '../server.types';
+import type { ManifestRequestInfo } from '../ManifestMiddleware';
+import { ManifestMiddleware } from '../ManifestMiddleware';
+import type { ServerRequest, ServerResponse } from '../server.types';
 
 class MockServerResponse extends PassThrough {
   statusCode = 200;

@@ -4,7 +4,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { Image } from './Image';
-import { ImageBackgroundProps } from './Image.types';
+import type { ImageBackgroundProps } from './Image.types';
 
 export function ImageBackground({ style, imageStyle, children, ...props }: ImageBackgroundProps) {
   return (

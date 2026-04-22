@@ -4,9 +4,9 @@ import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 import { PreviewRouteContext } from './PreviewRouteContext';
-import { RouteNode } from '../../Route';
+import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
-import { type ResultState } from '../../exports';
+import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
 import { store } from '../../global-state/router-store';
 import { getRootStackRouteNames } from '../../global-state/utils';
@@ -16,7 +16,7 @@ import {
   type NavigationProp,
   type ParamListBase,
 } from '../../react-navigation/native';
-import { Href, UnknownOutputParams } from '../../types';
+import type { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
 import { getPathFromState } from '../linking';

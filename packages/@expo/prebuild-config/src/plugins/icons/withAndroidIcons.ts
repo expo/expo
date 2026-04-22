@@ -1,11 +1,7 @@
-import {
-  AndroidConfig,
-  ConfigPlugin,
-  withAndroidColors,
-  withDangerousMod,
-} from '@expo/config-plugins';
-import { ResourceXML } from '@expo/config-plugins/build/android/Resources';
-import { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { AndroidConfig, withAndroidColors, withDangerousMod } from '@expo/config-plugins';
+import type { ResourceXML } from '@expo/config-plugins/build/android/Resources';
+import type { ExpoConfig } from '@expo/config-types';
 import { compositeImagesAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
 import path from 'path';

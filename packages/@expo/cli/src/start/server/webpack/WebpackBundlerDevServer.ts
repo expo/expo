@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import type { Application } from 'express';
 import fs from 'node:fs';
-import http from 'node:http';
+import type http from 'node:http';
 import path from 'node:path';
 import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
@@ -21,7 +21,8 @@ import { setNodeEnv, loadEnvFiles } from '../../../utils/nodeEnv';
 import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
-import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { BundlerDevServer } from '../BundlerDevServer';
 
 const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
 

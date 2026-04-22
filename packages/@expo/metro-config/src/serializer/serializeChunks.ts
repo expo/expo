@@ -21,8 +21,8 @@ import { stringToUUID } from './debugId';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
-import { SerialAsset } from './serializerAssets';
-import { SerializerConfigOptions } from './withExpoSerializers';
+import type { SerialAsset } from './serializerAssets';
+import type { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
 

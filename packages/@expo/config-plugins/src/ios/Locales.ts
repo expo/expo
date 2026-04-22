@@ -1,12 +1,13 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import path from 'path';
-import { XcodeProject } from 'xcode';
+import type { XcodeProject } from 'xcode';
 
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
-import { getResolvedLocalesAsync, LocaleJson, ResolvedLocalesJson } from '../utils/locales';
+import type { LocaleJson, ResolvedLocalesJson } from '../utils/locales';
+import { getResolvedLocalesAsync } from '../utils/locales';
 
 export const withLocales: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {

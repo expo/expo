@@ -1,4 +1,4 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 
 import { env } from './env';
 import { gteSdkVersion } from './versions';

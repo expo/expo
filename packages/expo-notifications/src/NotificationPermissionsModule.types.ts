@@ -1,6 +1,6 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import type { ProxyNativeModule } from 'expo-modules-core';
 
-import {
+import type {
   NotificationPermissionsStatus,
   NativeNotificationPermissionsRequest,
 } from './NotificationPermissions.types';

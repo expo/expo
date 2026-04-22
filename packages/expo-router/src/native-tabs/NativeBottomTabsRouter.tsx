@@ -7,7 +7,7 @@ import {
   removeParams,
   type InternalExpoRouterParams,
 } from '../navigationParams';
-import {
+import type {
   CommonNavigationAction,
   ParamListBase,
   Router,

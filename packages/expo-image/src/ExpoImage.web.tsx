@@ -3,7 +3,8 @@ import React from 'react';
 import { View } from 'react-native-web';
 
 import type { ImageNativeProps, ImageSource, ImageLoadEventData, ImageRef } from './Image.types';
-import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
+import type { AnimationManagerNode } from './web/AnimationManager';
+import AnimationManager from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';

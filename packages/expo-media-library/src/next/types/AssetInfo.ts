@@ -1,4 +1,4 @@
-import { MediaType } from './MediaType';
+import type { MediaType } from './MediaType';
 
 export type AssetInfo = {
   id: string;

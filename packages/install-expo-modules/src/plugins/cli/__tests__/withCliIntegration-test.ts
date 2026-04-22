@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { ISA, PBXShellScriptBuildPhase, build as xcbuild, parse as xcparse } from 'xcparse';
+import type { PBXShellScriptBuildPhase } from 'xcparse';
+import { ISA, build as xcbuild, parse as xcparse } from 'xcparse';
 
 import {
   updateAndroidGradleFile,

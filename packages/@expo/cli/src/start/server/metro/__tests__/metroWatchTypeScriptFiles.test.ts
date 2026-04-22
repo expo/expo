@@ -1,6 +1,6 @@
 import type MetroServer from '@expo/metro/metro/Server';
 
-import { ServerLike } from '../../BundlerDevServer';
+import type { ServerLike } from '../../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metroWatchTypeScriptFiles';
 
 function createRunner() {

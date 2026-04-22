@@ -2,7 +2,7 @@ import { useFonts } from '@expo-google-fonts/material-symbols';
 import { useMemo, type JSX } from 'react';
 import { Platform, PlatformColor, Text, View } from 'react-native';
 
-import { SymbolViewProps } from './SymbolModule.types';
+import type { SymbolViewProps } from './SymbolModule.types';
 import { androidSymbolToString } from './android';
 import { getFont } from './utils';
 

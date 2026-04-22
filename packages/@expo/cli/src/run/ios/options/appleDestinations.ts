@@ -1,10 +1,9 @@
 import spawnAsync from '@expo/spawn-async';
 
 import { Log } from '../../../log';
-import { OSType } from '../../../start/platforms/ios/simctl';
-import * as SimControl from '../../../start/platforms/ios/simctl';
-import { BuildProps } from '../XcodeBuild.types';
-import * as AppleDevice from '../appleDevice/AppleDevice';
+import type { OSType, Device } from '../../../start/platforms/ios/simctl';
+import type { BuildProps } from '../XcodeBuild.types';
+import type { ConnectedDevice } from '../appleDevice/AppleDevice';
 
 const debug = require('debug')('expo:apple-destination') as typeof console.log;
 
@@ -85,7 +84,7 @@ function parseXcodeDestinationString(str: string): Destination[] {
 
 function coercePhysicalDevice(
   device: Destination
-): Pick<AppleDevice.ConnectedDevice, 'udid' | 'name' | 'osType' | 'deviceType' | 'osVersion'> {
+): Pick<ConnectedDevice, 'udid' | 'name' | 'osType' | 'deviceType' | 'osVersion'> {
   // physical device
   return {
     /** @example `00008101-001964A22629003A` */
@@ -105,7 +104,7 @@ function coercePhysicalDevice(
 function coerceSimulatorDevice(
   device: Destination
 ): Pick<
-  SimControl.Device,
+  Device,
   | 'udid'
   | 'name'
   | 'osType'

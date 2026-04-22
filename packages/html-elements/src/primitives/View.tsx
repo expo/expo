@@ -1,10 +1,10 @@
-import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
+import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import type {
   StyleProp,
-  View as NativeView,
   ViewStyle as NativeViewStyle,
   BoxShadowValue,
   FilterFunction,
+  View as NativeView,
   type ColorValue,
 } from 'react-native';
 

@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo-modules-core';
 
-import { UnloadFontOptions } from './Font.types';
+import type { UnloadFontOptions } from './Font.types';
 
 export type ServerFontResourceDescriptor =
   | {

@@ -1,4 +1,4 @@
-import { ConfigContext, ExpoConfig } from '@expo/config';
+import type { ConfigContext, ExpoConfig } from '@expo/config';
 
 // Added to test supported language features.
 export class Foo {

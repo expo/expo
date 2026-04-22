@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Animated, View, type ViewProps } from 'react-native';
+import type { Animated, View, type ViewProps } from 'react-native';
 
 let Screens: typeof import('react-native-screens') | undefined;
 

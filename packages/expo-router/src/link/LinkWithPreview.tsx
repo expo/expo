@@ -13,7 +13,7 @@ import type { Href } from '../types';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
-import { LinkProps } from './useLinkHooks';
+import type { LinkProps } from './useLinkHooks';
 import { getFirstChildOfType } from '../utils/children';
 import { shouldLinkExternally } from '../utils/url';
 

@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Appearance, useColorScheme } from 'react-native';
 

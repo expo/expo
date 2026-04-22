@@ -1,4 +1,4 @@
-import {
+import type {
   RecorderState,
   RecordingInput,
   RecordingOptions,
@@ -6,7 +6,7 @@ import {
   RecordingStartOptions,
 } from './Audio.types';
 import { RECORDING_STATUS_UPDATE } from './AudioEventKeys';
-import { AudioRecorder, RecordingEvents } from './AudioModule.types';
+import type { AudioRecorder, RecordingEvents } from './AudioModule.types';
 import { getAudioContext, getUserMedia, nextId } from './AudioUtils.web';
 import { RecordingPresets } from './RecordingConstants';
 

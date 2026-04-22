@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import webpack from 'webpack';
 
-import { BundlerStartOptions } from '../../BundlerDevServer';
+import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { WebpackBundlerDevServer } from '../WebpackBundlerDevServer';
 

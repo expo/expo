@@ -1,5 +1,5 @@
 import { type ServerFontResourceDescriptor } from './ExpoFontLoader';
-import { FontSource } from './Font.types';
+import type { FontSource } from './Font.types';
 /**
  * @returns the server resources that should be statically extracted.
  * @private

@@ -1,4 +1,4 @@
-import { ExpoDevMenu } from './ExpoDevMenu.types';
+import type { ExpoDevMenu } from './ExpoDevMenu.types';
 import WebUnsupportedError from './WebUnsupportedError';
 
 export default {

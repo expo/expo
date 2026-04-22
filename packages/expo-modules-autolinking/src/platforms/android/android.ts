@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { taskAll } from '../../concurrency';
 import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
 import { scanFilesRecursively } from '../../utils';

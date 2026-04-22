@@ -1,13 +1,12 @@
 import fs from 'fs';
 
 import { findFirstNativeTarget, findNativeTargetByName } from './Target';
+import type { ConfigurationSectionEntry, ProjectSectionEntry } from './utils/Xcodeproj';
 import {
-  ConfigurationSectionEntry,
   getBuildConfigurationsForListId,
   getPbxproj,
   getProjectSection,
   isNotComment,
-  ProjectSectionEntry,
 } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
 

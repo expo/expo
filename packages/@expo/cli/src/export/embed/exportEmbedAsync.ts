@@ -16,7 +16,8 @@ import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
-import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
+import type { Options } from './resolveOptions';
+import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
@@ -32,7 +33,8 @@ import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
-import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
+import type { BundleAssetWithFileHashes, ExportAssetMap } from '../saveAssets';
+import { persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 

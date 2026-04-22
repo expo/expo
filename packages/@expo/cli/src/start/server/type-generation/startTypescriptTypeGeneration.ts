@@ -8,7 +8,7 @@ import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 import { upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
-import { ServerLike } from '../BundlerDevServer';
+import type { ServerLike } from '../BundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 export interface TypeScriptTypeGenerationOptions {

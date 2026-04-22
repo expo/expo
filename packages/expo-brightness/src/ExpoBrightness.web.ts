@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo-modules-core';
+import { PermissionStatus } from 'expo-modules-core';
 
 const noPermissionResponse: PermissionResponse = {
   status: PermissionStatus.UNDETERMINED,

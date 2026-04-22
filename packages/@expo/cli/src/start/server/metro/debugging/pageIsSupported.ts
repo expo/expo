@@ -1,4 +1,4 @@
-import { Page } from './types';
+import type { Page } from './types';
 
 type DevicePageInternal = Pick<Page, 'title' | 'capabilities'>;
 type DevicePageResponse = {

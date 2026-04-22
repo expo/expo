@@ -1,7 +1,7 @@
 import { CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader, { type ServerFontResourceDescriptor } from './ExpoFontLoader';
-import { FontSource } from './Font.types';
+import type { FontSource } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 
 /**

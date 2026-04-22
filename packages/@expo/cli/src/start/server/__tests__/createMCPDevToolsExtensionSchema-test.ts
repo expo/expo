@@ -1,5 +1,5 @@
 import { DevToolsPlugin } from '../DevToolsPlugin';
-import { DevToolsPluginInfo } from '../DevToolsPlugin.schema';
+import type { DevToolsPluginInfo } from '../DevToolsPlugin.schema';
 import { createMCPDevToolsExtensionSchema } from '../createMCPDevToolsExtensionSchema';
 
 describe(createMCPDevToolsExtensionSchema, () => {

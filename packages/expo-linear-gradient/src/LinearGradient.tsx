@@ -3,7 +3,8 @@
 'use client';
 
 import { Component } from 'react';
-import { ColorValue, Platform, processColor, ViewProps } from 'react-native';
+import type { ColorValue, ViewProps } from 'react-native';
+import { Platform, processColor } from 'react-native';
 
 import NativeLinearGradient from './NativeLinearGradient';
 import { NativeLinearGradientPoint } from './NativeLinearGradient.types';

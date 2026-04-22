@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Platform, ScrollView, TextInput } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Pressable } from './Pressable';
-import { ErrorBoundaryProps } from './Try';
+import type { ErrorBoundaryProps } from './Try';
 import { Link } from '../link/Link';
 import { BottomTabBarHeightContext } from '../react-navigation/bottom-tabs';
 import { ReactServerError } from '../rsc/router/errors';

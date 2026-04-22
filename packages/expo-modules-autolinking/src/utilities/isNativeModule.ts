@@ -3,7 +3,7 @@ import {
   mockDependencyAtPath,
   isNativeModuleAsync as isDependencyNativeModuleAsync,
 } from '../dependencies';
-import { SupportedPlatform } from '../types';
+import type { SupportedPlatform } from '../types';
 
 /** Check if a path is potentially a native module */
 export async function isNativeModuleAsync(maybeModulePath: string) {

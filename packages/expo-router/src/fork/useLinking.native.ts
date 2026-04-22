@@ -3,8 +3,8 @@ import * as React from 'react';
 import { Linking, Platform } from 'react-native';
 
 import { extractExpoPathFromURL } from './extractPathFromURL';
-import { LinkingOptions } from '../react-navigation/native';
-import {
+import type {
+  LinkingOptions,
   getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,

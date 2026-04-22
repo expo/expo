@@ -1,6 +1,7 @@
 import { CommandError } from '../../../../utils/errors';
 import { AppleDeviceManager } from '../AppleDeviceManager';
-import { Device, getInfoPlistValueAsync, openAppIdAsync, openUrlAsync } from '../simctl';
+import type { Device } from '../simctl';
+import { getInfoPlistValueAsync, openAppIdAsync, openUrlAsync } from '../simctl';
 
 jest.mock('../simctl', () => ({
   openAppIdAsync: jest.fn(),
