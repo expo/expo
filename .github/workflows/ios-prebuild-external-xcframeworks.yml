@@ -121,7 +121,12 @@ jobs:
           rm -rf "$SYNC_ROOT"
           mkdir -p "$SYNC_ROOT"
 
-          rsync -avm --prune-empty-dirs \
+          # Stage only XCFramework tarballs into a clean tree that mirrors the
+          # package-relative output layout we want to publish to GCS.
+          rsync \
+            --archive \
+            --verbose \
+            --prune-empty-dirs \
             --include='*/' \
             --include='*/xcframeworks/*.tar.gz' \
             --exclude='*' \
@@ -133,6 +138,8 @@ jobs:
             exit 0
           fi
 
+          # Sync the staged tree as-is so objects land under:
+          #   gs://eas-build-precompiled-modules/<scope>/<pkg>/output/.../xcframeworks/*.tar.gz
           gcloud storage rsync \
             "$SYNC_ROOT" \
             "gs://eas-build-precompiled-modules/${{ github.event.inputs.scope }}" \
