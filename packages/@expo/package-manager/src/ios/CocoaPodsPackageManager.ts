@@ -366,21 +366,6 @@ export class CocoaPodsPackageManager {
     throw new Error('Unimplemented');
   }
 
-  // Private
-  private async podRepoUpdateAsync(): Promise<void> {
-    try {
-      await this._runAsync(['repo', 'update']);
-    } catch (error: any) {
-      error.message = error.message || (error.stderr ?? error.stdout);
-
-      throw new CocoaPodsError(
-        'The command `pod install --repo-update` failed',
-        'COMMAND_FAILED',
-        error
-      );
-    }
-  }
-
   // Exposed for testing
   async _runAsync(args: string[]): Promise<SpawnResult> {
     if (!this.silent) {
