@@ -228,18 +228,36 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
   NSString *manifestUsername = [update.manifest expoGoUsername];
   NSString *expoGoUsername = [[ExpoGoHomeBridge shared] authenticatedUsername];
   if (manifestUsername == nil || [manifestUsername length] == 0) {
+    NSString *message;
+    if (expoGoUsername != nil && [expoGoUsername length] > 0) {
+      message = [NSString stringWithFormat:
+        @"You're signed in to Expo Go as \"%@\", but not signed in to Expo CLI. Run \"npx expo login\" on your computer to sign in to Expo CLI as \"%@\" so you can open this project.",
+        expoGoUsername, expoGoUsername];
+    } else {
+      message = @"You need to be signed in to Expo Go and Expo CLI to open your project. Run \"npx expo login\" on your computer to sign in with Expo CLI.";
+    }
     _error = [NSError errorWithDomain:@"EXAppLoader"
                                  code:1026
-                             userInfo:@{NSLocalizedDescriptionKey:
-      @"Sign in to Expo to load your projects in development. Run `npx expo login` in your terminal."}];
+                             userInfo:@{NSLocalizedDescriptionKey: message,
+                                        EXShowTryAgainButtonKey: @YES}];
     if (self.delegate) { [self.delegate appLoader:self didFailWithError:_error]; }
     return;
   }
   if (expoGoUsername == nil || ![manifestUsername isEqualToString:expoGoUsername]) {
+    NSString *message;
+    if (expoGoUsername == nil || [expoGoUsername length] == 0) {
+      message = [NSString stringWithFormat:
+        @"You're signed in to Expo CLI as \"%@\", but not signed in to Expo Go. Sign in to Expo Go as \"%@\" to open this project.",
+        manifestUsername, manifestUsername];
+    } else {
+      message = [NSString stringWithFormat:
+        @"You're signed in to Expo CLI as \"%@\" and to Expo Go as \"%@\" — these accounts need to match to open this project.",
+        manifestUsername, expoGoUsername];
+    }
     _error = [NSError errorWithDomain:@"EXAppLoader"
                                  code:1027
-                             userInfo:@{NSLocalizedDescriptionKey:
-      @"Sign in to the same Expo account in Expo Go and Expo CLI to load your projects."}];
+                             userInfo:@{NSLocalizedDescriptionKey: message,
+                                        EXShowTryAgainButtonKey: @YES}];
     if (self.delegate) { [self.delegate appLoader:self didFailWithError:_error]; }
     return;
   }
