@@ -18,6 +18,33 @@ extension AVAssetTrack {
     }
   }
 
+  var avVideoRange: AVVideoRange {
+    get async {
+      guard let formatDescriptions = try? await self.load(.formatDescriptions) else {
+        return .sdr
+      }
+
+      for formatDesc in formatDescriptions {
+        guard let transferFunction = CMFormatDescriptionGetExtension(
+          formatDesc,
+          extensionKey: kCVImageBufferTransferFunctionKey
+        ) as? String else {
+          continue
+        }
+
+        if transferFunction == String(kCVImageBufferTransferFunction_ITU_R_2100_HLG) {
+          return .hlg
+        }
+
+        if transferFunction == String(kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ) {
+          return .pq
+        }
+      }
+
+      return .sdr
+    }
+  }
+
   // Decently reliable way to extract peak bitrate from MP4 containers
   // Unlike for average bitrate, we can't get this information from AVKit API
   func getPeakBitrate() async -> Int? {
