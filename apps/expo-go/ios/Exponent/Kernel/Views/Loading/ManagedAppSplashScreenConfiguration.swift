@@ -1,7 +1,6 @@
 import UIKit
 
 struct ManagedAppSplashScreenConfiguration {
-  let backgroundColor: String?
+  let appName: String?
   let imageUrl: String?
-  let imageWidth: Int?
 }

@@ -6,25 +6,33 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration
+import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 
 // this needs to stay for versioning to work
 
@@ -32,7 +40,8 @@ import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfigura
 class SplashScreenView(
   context: Context
 ) : RelativeLayout(context) {
-  var config: ManagedAppSplashScreenConfiguration? by mutableStateOf(null)
+  var imageUrl = ""
+  var appName = ""
 
   init {
     layoutParams = ViewGroup.LayoutParams(
@@ -47,9 +56,8 @@ class SplashScreenView(
         )
         setContent {
           SplashScreenView(
-            backgroundColor = config?.backgroundColor?.let { Color(it) } ?: Color.White,
-            imageUrl = config?.imageUrl ?: "",
-            imageWidth = config?.imageWidth ?: 100
+            imageUrl = imageUrl,
+            appName = appName
           )
         }
       }
@@ -60,31 +68,35 @@ class SplashScreenView(
 @Composable
 fun SplashScreenView(
   modifier: Modifier = Modifier,
-  backgroundColor: Color,
   imageUrl: String,
-  imageWidth: Int
+  appName: String
 ) {
-  Box(
-    modifier = modifier
-      .fillMaxSize()
-      .background(color = backgroundColor),
-    contentAlignment = Alignment.Center
-  ) {
-    SplashScreenImage(imageUrl, imageWidth)
-  }
-}
+  val painter = rememberAsyncImagePainter(imageUrl)
+  val state by painter.state.collectAsState()
 
-@Composable
-fun SplashScreenImage(
-  imageUrl: String? = null,
-  imageWidth: Int
-) {
-  AsyncImage(
-    model = ImageRequest.Builder(LocalContext.current)
-      .data(imageUrl)
-      .crossfade(false)
-      .build(),
-    contentDescription = "Splash Screen Image",
-    modifier = Modifier.width(imageWidth.dp)
+  val alpha by animateFloatAsState(
+    animationSpec = tween(300),
+    label = "splash-fade",
+    targetValue = if (state is AsyncImagePainter.State.Success) 1f else 0f,
   )
+
+  Box(
+    modifier = modifier.fillMaxSize().background(color = Color.White),
+    contentAlignment = Alignment.Center,
+  ) {
+    Column(
+      modifier = Modifier.alpha(alpha),
+      verticalArrangement = Arrangement.spacedBy(30.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Image(
+        painter = painter,
+        contentDescription = "Splash Screen Image",
+        contentScale = ContentScale.Fit,
+        modifier =
+          Modifier.size(200.dp).background(Color.White).shadow(4.dp, RoundedCornerShape(30.dp)),
+      )
+      Text(appName, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+    }
+  }
 }

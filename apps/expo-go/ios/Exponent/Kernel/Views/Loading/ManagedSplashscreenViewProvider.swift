@@ -5,7 +5,7 @@ import React
 class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
   var configuration: ManagedAppSplashScreenConfiguration?
   var splashScreenView: UIView?
-  var splashImageView: UIImageView?
+  var imageViewContainer: UIView?
 
   @objc init(with manifest: EXManifests.Manifest) {
     configuration = SplashScreenConfigurationBuilder.parse(manifest: manifest)
@@ -13,7 +13,7 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
 
   func createSplashScreenView() -> UIView {
     let view = UIView()
-    configureSplashScreenView(for: view, previousConfiguration: nil)
+    configureSplashScreenView(previousConfiguration: nil)
     splashScreenView = view
     return view
   }
@@ -21,58 +21,93 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
   @objc func updateSplashScreenView(with manifest: EXManifests.Manifest) {
     let previousConfiguration = self.configuration
     let newConfiguration = SplashScreenConfigurationBuilder.parse(manifest: manifest)
+
     configuration = newConfiguration
 
-    if let splashScreenView {
-      configureSplashScreenView(for: splashScreenView, previousConfiguration: previousConfiguration ?? newConfiguration)
+    if splashScreenView != nil {
+      configureSplashScreenView(previousConfiguration: previousConfiguration ?? newConfiguration)
     }
   }
 
-  func configureSplashScreenView(for view: UIView, previousConfiguration: ManagedAppSplashScreenConfiguration?) {
+  func configureSplashScreenView(previousConfiguration: ManagedAppSplashScreenConfiguration?) {
     DispatchQueue.main.async { [weak self] in
       guard let self else {
         return
       }
 
-      view.backgroundColor = EXUtil.color(withHexString: configuration?.backgroundColor) ?? .white
-      let imageWidth = configuration?.imageWidth ?? 100
+      splashScreenView?.backgroundColor = .white
 
       if let imageUrl = configuration?.imageUrl {
-        if splashImageView == nil
-            || previousConfiguration?.imageUrl != imageUrl
-            || previousConfiguration?.imageWidth != configuration?.imageWidth {
-          splashImageView?.removeFromSuperview()
+        if previousConfiguration?.imageUrl != imageUrl {
+          imageViewContainer?.removeFromSuperview()
+          let appName = createNameLabel()
+          let container = createStackView()
 
-          let imageView = createImageView(with: imageUrl)
-          splashImageView = imageView
-          view.addSubview(imageView)
+          container.alpha = 0
 
-          NSLayoutConstraint.activate([
-            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: CGFloat(imageWidth))
-          ])
+          imageViewContainer = container
+          splashScreenView?.addSubview(container)
+
+          let imageView = createImageView(with: imageUrl) { [weak container] in
+            guard let container else { return }
+
+            UIView.animate(withDuration: 0.3) {
+              container.alpha = 1
+            }
+          }
+
+          container.addArrangedSubview(imageView)
+          container.addArrangedSubview(appName)
+
+          if let splashScreenView {
+            NSLayoutConstraint.activate([
+              container.centerXAnchor.constraint(equalTo: splashScreenView.centerXAnchor),
+              container.centerYAnchor.constraint(equalTo: splashScreenView.centerYAnchor),
+              imageView.widthAnchor.constraint(equalToConstant: 200),
+              imageView.heightAnchor.constraint(equalToConstant: 200)
+            ])
+          }
         }
       }
     }
   }
 
-  private func createImageView(with imageUrl: String) -> UIImageView {
+  private func createStackView() -> UIStackView {
+    let container = UIStackView()
+
+    container.translatesAutoresizingMaskIntoConstraints = false
+    container.spacing = 30
+    container.axis = .vertical
+    container.alignment = .center
+    container.layer.shadowColor = UIColor.black.cgColor
+    container.layer.shadowOffset = CGSize.zero
+    container.layer.shadowOpacity = 0.2
+    container.layer.shadowRadius = 10
+    container.layer.masksToBounds = false
+    container.clipsToBounds = false
+
+    return container
+  }
+
+  private func createImageView(with imageUrl: String, onLoad: @escaping () -> Void) -> UIImageView {
     let imageView = UIImageView()
+
     imageView.translatesAutoresizingMaskIntoConstraints = false
+    imageView.sd_setImage(with: URL(string: imageUrl)) { _, _, _, _ in onLoad() }
     imageView.contentMode = .scaleAspectFit
-
-    imageView.sd_setImage(with: URL(string: imageUrl)) { [weak imageView] image, _, _, _ in
-      guard let imageView, let image, image.size.width > 0 else {
-        return
-      }
-
-      imageView.heightAnchor.constraint(
-        equalTo: imageView.widthAnchor,
-        multiplier: image.size.height / image.size.width
-      ).isActive = true
-    }
+    imageView.layer.cornerRadius = 30
+    imageView.layer.masksToBounds = true
 
     return imageView
+  }
+
+  private func createNameLabel() -> UILabel {
+    let appName = UILabel()
+
+    appName.translatesAutoresizingMaskIntoConstraints = false
+    appName.text = configuration?.appName
+    appName.font = .systemFont(ofSize: 20, weight: .semibold)
+
+    return appName
   }
 }

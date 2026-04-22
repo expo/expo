@@ -399,7 +399,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     hideLoadingView()
     if (managedAppSplashScreenViewProvider == null) {
       val config = ManagedAppSplashScreenConfiguration.parseManifest(
-        this,
         manifest!!
       )
       managedAppSplashScreenViewProvider = ManagedAppSplashScreenViewProvider(config)
@@ -412,7 +411,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       SplashScreen.show(this, managedAppSplashScreenViewController!!)
     } else {
       managedAppSplashScreenViewProvider?.updateSplashScreenViewWithManifest(
-        this,
         manifest!!
       )
     }

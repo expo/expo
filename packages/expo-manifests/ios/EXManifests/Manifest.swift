@@ -260,72 +260,9 @@ public class Manifest: NSObject {
     (expoClientConfigRootObject()?.optionalValue(forKey: "backgroundColor"))
   }
 
-  public func iosSplashBackgroundColor() -> String? {
-    let base = ["extra", "expo-splash-screen", "ios"]
-    var paths = [base + ["backgroundColor"]]
-#if os(iOS) || os(tvOS)
-    if UITraitCollection.current.userInterfaceStyle == .dark {
-      paths.insert(base + ["dark", "backgroundColor"], at: 0)
-    }
-#endif
-    let color = expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: paths)
-    }
-
-    guard let color = color else {
-      return nil
-    }
-
-    if color.range(of: "^#([0-9a-fA-F]{3})$", options: .regularExpression) != nil {
-      let r = color[color.index(color.startIndex, offsetBy: 1)]
-      let g = color[color.index(color.startIndex, offsetBy: 2)]
-      let b = color[color.index(color.startIndex, offsetBy: 3)]
-      return "#\(r)\(r)\(g)\(g)\(b)\(b)"
-    }
-
-    return color
-  }
-
   public func iosAppIconUrl() -> String? {
     return expoClientConfigRootObject().let { it in
       Manifest.string(fromManifest: it, atPath: ["iconUrl"])
-    }
-  }
-
-  public func iosSplashImageUrl() -> String? {
-    let base = ["extra", "expo-splash-screen", "ios"]
-    var paths = [base + ["image"]]
-#if os(iOS) || os(tvOS)
-    let isTablet = UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad
-
-    if isTablet {
-      paths.insert(base + ["tabletImage"], at: 0)
-    }
-    if UITraitCollection.current.userInterfaceStyle == .dark {
-      paths.insert(base + ["dark", "image"], at: 0)
-      if isTablet {
-        paths.insert(base + ["dark", "tabletImage"], at: 0)
-      }
-    }
-#endif
-    return expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: paths)
-    }
-  }
-
-  public func iosSplashImageWidth() -> Int? {
-    return expoClientConfigRootObject().let { it in
-      Manifest.int(fromManifest: it, atPaths: [
-        ["extra", "expo-splash-screen", "ios", "imageWidth"],
-      ])
-    }
-  }
-
-  public func iosSplashImageResizeMode() -> String? {
-    return expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: [
-        ["extra", "expo-splash-screen", "ios", "resizeMode"],
-      ])
     }
   }
 
@@ -437,33 +374,6 @@ public class Manifest: NSObject {
       let key = atPath[i]
       let value = json[key]
       if isLastKey, let value = value as? String {
-        return value
-      }
-      guard let newJson = value else {
-        return nil
-      }
-      // swiftlint:disable:next force_cast
-      json = newJson as! [String: Any]
-    }
-    return nil
-  }
-
-  private static func int(fromManifest: [String: Any], atPaths: [[String]]) -> Int? {
-    for path in atPaths {
-      if let result = int(fromManifest: fromManifest, atPath: path) {
-        return result
-      }
-    }
-    return nil
-  }
-
-  private static func int(fromManifest: [String: Any], atPath: [String]) -> Int? {
-    var json = fromManifest
-    for i in 0..<atPath.count {
-      let isLastKey = i == atPath.count - 1
-      let key = atPath[i]
-      let value = json[key]
-      if isLastKey, let value = value as? Int {
         return value
       }
       guard let newJson = value else {
