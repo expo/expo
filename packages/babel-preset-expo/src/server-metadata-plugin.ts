@@ -48,10 +48,12 @@ export function serverMetadataPlugin(api: ConfigAPI & typeof import('@babel/core
         }
 
         if (t.isVariableDeclaration(declaration)) {
-          const nextDeclarations = declaration.declarations.filter((declarator: t.VariableDeclarator) => {
-            const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
-            return !name || !isGenerateMetadataIdentifier(name);
-          });
+          const nextDeclarations = declaration.declarations.filter(
+            (declarator: t.VariableDeclarator) => {
+              const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
+              return !name || !isGenerateMetadataIdentifier(name);
+            }
+          );
 
           if (nextDeclarations.length !== declaration.declarations.length) {
             debug('Removing generateMetadata variable declaration from client bundle');
