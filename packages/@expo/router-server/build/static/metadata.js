@@ -42,6 +42,9 @@ async function resolveMetadata(options) {
         throw createAbortError(options.request.signal);
     }
     const routeModule = (await (0, _ctx_1.ctx)(options.route.file));
+    if (!routeModule) {
+        return null;
+    }
     const generateMetadata = getGenerateMetadata(routeModule);
     if (!generateMetadata) {
         return null;
