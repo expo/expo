@@ -1,5 +1,3 @@
-import z from 'zod';
-
 import type { DevToolsPluginOutput } from './DevToolsPlugin.schema';
 import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
 

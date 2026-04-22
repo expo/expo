@@ -9,7 +9,7 @@ import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import type { Question } from '../../utils/prompts';
-import promptAsync, { confirmAsync, selectAsync } from '../../utils/prompts';
+import promptAsync, { selectAsync } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
 
 /** Show login prompt while prompting for missing credentials. */

@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import type * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
-import resolveFrom from 'resolve-from';
 
 import { fixPackagesAsync } from './fixPackages';
 import type { Options } from './resolveOptions';
