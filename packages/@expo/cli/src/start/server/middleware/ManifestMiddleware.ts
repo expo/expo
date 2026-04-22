@@ -5,13 +5,15 @@ import {
   PackageJSONConfig,
   ProjectConfig,
 } from '@expo/config';
-import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { resolveEntryPoint, resolveRelativeEntryPoint } from '@expo/config/paths';
+import path from 'path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import {
+  convertPathToModuleSpecifier,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
@@ -30,6 +32,23 @@ import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
+
+const watchFoldersCache = new Map<string, string[]>();
+
+function getWatchFoldersForProject(projectRoot: string): string[] {
+  const cached = watchFoldersCache.get(projectRoot);
+  if (cached) return cached;
+
+  let watchFolders: string[] = [];
+  try {
+    const configPath = path.join(projectRoot, 'metro.config.js');
+    const config = require(configPath);
+    watchFolders = (config.watchFolders ?? []).map((f: string) => path.resolve(f));
+  } catch {}
+
+  watchFoldersCache.set(projectRoot, watchFolders);
+  return watchFolders;
+}
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -162,6 +181,21 @@ export abstract class ManifestMiddleware<
 
     const entry = resolveRelativeEntryPoint(this.projectRoot, props);
     debug(`Resolved entry point: ${entry} (project root: ${this.projectRoot})`);
+
+    if (!entry.startsWith('..')) {
+      return entry;
+    }
+
+    const entryPoint = resolveEntryPoint(this.projectRoot, props);
+    const watchFolders = getWatchFoldersForProject(this.projectRoot);
+    for (let i = 0; i < watchFolders.length; i++) {
+      const watchFolder = watchFolders[i];
+      if (entryPoint.startsWith(watchFolder + path.sep) || entryPoint === watchFolder) {
+        const relativeToWatch = entryPoint.slice(watchFolder.length + 1);
+        return convertPathToModuleSpecifier('[metro-watchFolders]/' + i + '/' + relativeToWatch);
+      }
+    }
+
     return entry;
   }
 

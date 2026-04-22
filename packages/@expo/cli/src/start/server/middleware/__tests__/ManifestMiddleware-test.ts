@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import { resolveEntryPoint, resolveRelativeEntryPoint } from '@expo/config/paths';
 import http from 'http';
 import { vol } from 'memfs';
 import { PassThrough } from 'stream';
@@ -34,7 +35,8 @@ jest.mock('../resolveAssets', () => ({
 }));
 jest.mock('@expo/config/paths', () => ({
   ...jest.requireActual('@expo/config/paths'),
-  resolveRelativeEntryPoint: () => 'index',
+  resolveRelativeEntryPoint: jest.fn(() => 'index'),
+  resolveEntryPoint: jest.fn(() => '/index.js'),
 }));
 jest.mock('@expo/config', () => ({
   getNameFromConfig: jest.fn(jest.requireActual('@expo/config').getNameFromConfig),
@@ -236,6 +238,25 @@ describe('_resolveProjectSettingsAsync', () => {
     // Limit this to a single call since it can get expensive.
     expect(getConfig).toHaveBeenCalledTimes(1);
   });
+  it(`passes through entry points outside the server root when no watchFolders match`, async () => {
+    jest.mocked(resolveRelativeEntryPoint).mockReturnValueOnce('../shared/index');
+    jest.mocked(resolveEntryPoint).mockReturnValueOnce('/shared/index.js');
+
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+      mode: 'development',
+    });
+
+    middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
+
+    const result = await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+    } as any);
+
+    expect(result.expoGoConfig.mainModuleName).toBe('../shared/index');
+  });
+
   it(`returns the project settings for Webpack dev servers`, async () => {
     const middleware = new MockManifestMiddleware('/', {
       isNativeWebpack: true,
