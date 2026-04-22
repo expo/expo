@@ -87,7 +87,7 @@
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
     "resolve-workspace-root": "^2.0.0",
-    "ts-jest": "~29.0.4",
+    "ts-jest": "~29.4.9",
     "typescript": "^5.9.2"
   },
   "devDependencies": {

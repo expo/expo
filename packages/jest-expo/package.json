@@ -48,7 +48,7 @@
     "jest-watch-select-projects": "^2.0.0",
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",
-    "lodash": "^4.17.19",
+    "lodash": "^4.18.1",
     "react-test-renderer": "19.2.3",
     "server-only": "^0.0.1",
     "stacktrace-js": "^2.0.2"
