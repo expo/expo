@@ -77,13 +77,11 @@ final class TypedArraysSpec: ExpoSpec {
       }
 
       it("returns itself") {
-        try JavaScriptActor.assumeIsolated {
-          let input = try runtime.eval("typedArray = new Float32Array([1.2, 3.4]); typedArray").asTypedArray()
-          let output = try runtime.eval("expo.modules.TypedArrays.return(typedArray)").asTypedArray()
+        try JavaScriptActor.assumeIsolated { () -> Void in
+          let input = TypedArray.create(from: try runtime.eval("typedArray = new Float32Array([1.2, 3.4]); typedArray").asTypedArray())
+          let output = TypedArray.create(from: try runtime.eval("expo.modules.TypedArrays.return(typedArray)").asTypedArray())
 
-          expect(input.getProperty("0").getDouble()) == output.getProperty("0").getDouble()
-          expect(input.getProperty("1").getDouble()) == output.getProperty("1").getDouble()
-          expect(input.getUnsafeMutableRawPointer()) == output.getUnsafeMutableRawPointer()
+          expect(input.rawPointer) == output.rawPointer
         }
       }
 
