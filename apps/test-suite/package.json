@@ -83,7 +83,7 @@
     "@types/getenv": "^1.0.0",
     "@types/jasmine": "^5.1.15",
     "@types/invariant": "^2.2.35",
-    "@types/react": "~19.1.0",
+    "@types/react": "~19.2.0",
     "@types/semver": "^7.7.1"
   },
   "browserslist": [
