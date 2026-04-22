@@ -162,7 +162,6 @@
     "expo-atlas": "^0.4.1",
     "expo-module-scripts": "workspace:*",
     "expo-modules-autolinking": "workspace:*",
-    "expo-splash-screen": "workspace:*",
     "find-process": "^1.4.7",
     "jest-matcher-utils": "^29.7.0",
     "jest-runner-tsd": "^6.0.0",
