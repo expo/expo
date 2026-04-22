@@ -146,7 +146,7 @@ if (oxfmtResult.status !== 0) {
   if (oxfmtResult.output) {
     const output = oxfmtResult.output.replace(
       /Run without `--check` to fix\./g,
-      'Run `yarn format` to fix.'
+      'Run `pnpm format` to fix.'
     );
     console.error(output);
   }

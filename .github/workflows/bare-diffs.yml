@@ -28,7 +28,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-docs: 'true'
+          pnpm-docs: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧐 Check diffs
