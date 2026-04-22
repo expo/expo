@@ -1,5 +1,5 @@
-import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle, BoxShadowValue, FilterFunction, type ColorValue } from 'react-native';
+import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import { type StyleProp, type ViewStyle as NativeViewStyle, type BoxShadowValue, type FilterFunction, type ColorValue, View as NativeView } from 'react-native';
 type NativeViewProps = ComponentProps<typeof NativeView> & ClassAttributes<typeof NativeView>;
 /**
  * https://baconbrix.gitbook.io/react-native-web/primitives/view

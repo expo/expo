@@ -1,7 +1,7 @@
-import { MouseEvent, type Ref } from 'react';
-import { TextProps, GestureResponderEvent, type Text } from 'react-native';
-import { Href } from '../types';
-import { SingularOptions } from '../useScreens';
+import { type Ref, type MouseEvent } from 'react';
+import { type TextProps, type GestureResponderEvent, type Text } from 'react-native';
+import type { Href } from '../types';
+import type { SingularOptions } from '../useScreens';
 /**
  * @platform web
  */

@@ -1,4 +1,4 @@
-import { DocumentPickerOptions, DocumentPickerResult } from './types';
+import type { DocumentPickerOptions, DocumentPickerResult } from './types';
 /**
  * Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](filesystem/#filesystemcachedirectory).
  * > **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press).

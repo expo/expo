@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { WebGLObject } from './GLView';
-import { GLViewProps, GLSnapshot, SnapshotOptions, ComponentOrHandle } from './GLView.types';
+import type { WebGLObject } from './GLView';
+import type { GLViewProps, GLSnapshot, SnapshotOptions, ComponentOrHandle } from './GLView.types';
 export type GLViewWebProps = GLViewProps & {
     onContextCreate: (gl: WebGLRenderingContext) => void;
     onContextRestored?: (gl?: WebGLRenderingContext) => void;
@@ -15,7 +15,7 @@ export declare class GLView extends React.Component<GLViewWebProps> {
     static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean>;
     static takeSnapshotAsync(gl: WebGLRenderingContext, options?: SnapshotOptions): Promise<GLSnapshot>;
     componentWillUnmount(): void;
-    render(): React.JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
     componentDidUpdate(prevProps: GLViewWebProps): void;
     private getGLContextOrReject;
     private onContextLost;

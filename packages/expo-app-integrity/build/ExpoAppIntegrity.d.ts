@@ -1,4 +1,4 @@
-import { ExpoAppIntegrityModule } from './ExpoAppIntegrity.types';
+import type { ExpoAppIntegrityModule } from './ExpoAppIntegrity.types';
 /**
  * @hidden
  */

@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
-import { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 export interface StackHeaderProps {
     /**
      * Child elements for custom header when `asChild` is true.

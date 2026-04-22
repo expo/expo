@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mapProtectedScreen = mapProtectedScreen;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
 const StackScreen_1 = require("./StackScreen");
@@ -50,10 +51,10 @@ function mapProtectedScreen(props) {
                 const options = typeof childOptions === 'function'
                     ? (...params) => (0, StackScreen_1.appendScreenStackPropsToOptions)(childOptions(...params), { children })
                     : (0, StackScreen_1.appendScreenStackPropsToOptions)(childOptions ?? {}, { children });
-                return <Screen_1.Screen key={rest.name} {...rest} options={options}/>;
+                return (0, jsx_runtime_1.jsx)(Screen_1.Screen, { ...rest, options: options }, rest.name);
             }
             else if ((0, children_1.isChildOfType)(child, Protected_1.Protected)) {
-                return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;
+                return (0, jsx_runtime_1.jsx)(Protected_1.Protected, { ...mapProtectedScreen(child.props) }, `${index}-${props.guard}`);
             }
             else if ((0, children_1.isChildOfType)(child, StackHeaderComponent_1.StackHeaderComponent)) {
                 // Ignore Stack.Header, because it can be used to set header options for Stack

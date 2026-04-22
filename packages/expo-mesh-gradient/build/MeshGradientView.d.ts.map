@@ -1,1 +1,1 @@
-{"version":3,"file":"MeshGradientView.d.ts","sourceRoot":"","sources":["../src/MeshGradientView.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAE,qBAAqB,EAAE,MAAM,sBAAsB,CAAC;AAQ7D,QAAA,MAAM,gBAAgB,GAAI,OAAO,qBAAqB,gCASrD,CAAC;AAEF,eAAe,gBAAgB,CAAC"}
+{"version":3,"file":"MeshGradientView.d.ts","sourceRoot":"","sources":["../src/MeshGradientView.tsx"],"names":[],"mappings":"AAIA,OAAO,KAAK,EAAE,qBAAqB,EAAE,MAAM,sBAAsB,CAAC;AAQlE,QAAA,MAAM,gBAAgB,GAAI,OAAO,qBAAqB,4CASrD,CAAC;AAEF,eAAe,gBAAgB,CAAC"}

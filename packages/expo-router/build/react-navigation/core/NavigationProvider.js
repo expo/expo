@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NamedRouteContextListContext = exports.NavigationRouteContext = void 0;
 exports.NavigationProvider = NavigationProvider;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const NavigationContext_1 = require("./NavigationContext");
@@ -55,10 +56,6 @@ function NavigationProvider({ route, navigation, children }) {
     // - It doesn't have a parent navigator
     // - Parent navigator is focused
     const isFocused = parentIsFocused == null || parentIsFocused ? focusedRouteKey === route.key : false;
-    return (<exports.NavigationRouteContext.Provider value={route}>
-      <NavigationContext_1.NavigationContext.Provider value={navigation}>
-        <useIsFocused_1.IsFocusedContext.Provider value={isFocused}>{children}</useIsFocused_1.IsFocusedContext.Provider>
-      </NavigationContext_1.NavigationContext.Provider>
-    </exports.NavigationRouteContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(exports.NavigationRouteContext.Provider, { value: route, children: (0, jsx_runtime_1.jsx)(NavigationContext_1.NavigationContext.Provider, { value: navigation, children: (0, jsx_runtime_1.jsx)(useIsFocused_1.IsFocusedContext.Provider, { value: isFocused, children: children }) }) }));
 }
 //# sourceMappingURL=NavigationProvider.js.map

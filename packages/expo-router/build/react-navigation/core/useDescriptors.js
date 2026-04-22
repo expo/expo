@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useDescriptors = useDescriptors;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const NavigationBuilderContext_1 = require("./NavigationBuilderContext");
@@ -124,7 +125,7 @@ function useDescriptors({ state, screens, navigation, screenOptions, screenLayou
             config.layout ??
             // The default `screenLayout` passed to the navigator
             screenLayout;
-        let element = (<SceneView_1.SceneView navigation={navigation} route={route} screen={screen} routeState={routeState} getState={getState} setState={setState} options={customOptions} clearOptions={clearOptions}/>);
+        let element = ((0, jsx_runtime_1.jsx)(SceneView_1.SceneView, { navigation: navigation, route: route, screen: screen, routeState: routeState, getState: getState, setState: setState, options: customOptions, clearOptions: clearOptions }));
         if (layout != null) {
             element = layout({
                 route,
@@ -135,11 +136,7 @@ function useDescriptors({ state, screens, navigation, screenOptions, screenLayou
                 children: element,
             });
         }
-        return (<NavigationBuilderContext_1.NavigationBuilderContext.Provider key={route.key} value={context}>
-        <NavigationProvider_1.NavigationProvider route={route} navigation={navigation}>
-          {element}
-        </NavigationProvider_1.NavigationProvider>
-      </NavigationBuilderContext_1.NavigationBuilderContext.Provider>);
+        return ((0, jsx_runtime_1.jsx)(NavigationBuilderContext_1.NavigationBuilderContext.Provider, { value: context, children: (0, jsx_runtime_1.jsx)(NavigationProvider_1.NavigationProvider, { route: route, navigation: navigation, children: element }) }, route.key));
     };
     const descriptors = routes.reduce((acc, route, i) => {
         const navigation = navigations[route.key];

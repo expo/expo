@@ -1,5 +1,6 @@
-import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { Pressable as NativePressable, StyleProp, ViewStyle, PressableStateCallbackType as NativePressableStateCallbackType } from 'react-native';
+import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import type { StyleProp, ViewStyle, PressableStateCallbackType as NativePressableStateCallbackType } from 'react-native';
+import { Pressable as NativePressable } from 'react-native';
 type NativePressableProps = ComponentProps<typeof NativePressable> & ClassAttributes<typeof NativePressable>;
 export type PressableStateCallbackType = NativePressableStateCallbackType & {
     readonly pressed: boolean;

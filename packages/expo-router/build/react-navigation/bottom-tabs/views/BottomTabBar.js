@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTabBarHeight = void 0;
 exports.BottomTabBar = BottomTabBar;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const elements_1 = require("../../elements");
@@ -195,7 +196,7 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
     const spacing = tabBarVariant === 'material' ? SPACING_MATERIAL : SPACING_UIKIT;
     const minSidebarWidth = (0, elements_1.useFrameSize)((size) => sidebar && hasHorizontalLabels ? (0, elements_1.getDefaultSidebarWidth)(size) : 0);
     const tabBarBackgroundElement = tabBarBackground?.();
-    return (<react_native_1.Animated.View style={[
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { style: [
             tabBarPosition === 'left'
                 ? styles.start
                 : tabBarPosition === 'right'
@@ -253,59 +254,50 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
                     },
                 ],
             tabBarStyle,
-        ]} pointerEvents={isTabBarHidden ? 'none' : 'auto'} onLayout={sidebar ? undefined : handleLayout}>
-      <react_native_1.View pointerEvents="none" style={react_native_1.StyleSheet.absoluteFill}>
-        {tabBarBackgroundElement}
-      </react_native_1.View>
-      <react_native_1.View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
-        {routes.map((route, index) => {
-            const focused = index === state.index;
-            const { options } = descriptors[route.key];
-            const onPress = () => {
-                const event = navigation.emit({
-                    type: 'tabPress',
-                    target: route.key,
-                    canPreventDefault: true,
-                });
-                if (!focused && !event.defaultPrevented) {
-                    navigation.dispatch({
-                        ...native_1.CommonActions.navigate(route),
-                        target: state.key,
-                    });
-                }
-            };
-            const onLongPress = () => {
-                navigation.emit({
-                    type: 'tabLongPress',
-                    target: route.key,
-                });
-            };
-            const label = typeof options.tabBarLabel === 'function'
-                ? options.tabBarLabel
-                : (0, elements_1.getLabel)({ label: options.tabBarLabel, title: options.title }, route.name);
-            const accessibilityLabel = options.tabBarAccessibilityLabel !== undefined
-                ? options.tabBarAccessibilityLabel
-                : typeof label === 'string' && react_native_1.Platform.OS === 'ios'
-                    ? `${label}, tab, ${index + 1} of ${routes.length}`
-                    : undefined;
-            return (<native_1.NavigationProvider key={route.key} route={route} navigation={descriptors[route.key].navigation}>
-              <BottomTabItem_1.BottomTabItem href={buildHref(route.name, route.params)} route={route} descriptor={descriptors[route.key]} focused={focused} horizontal={hasHorizontalLabels} compact={compact} sidebar={sidebar} variant={tabBarVariant} onPress={onPress} onLongPress={onLongPress} accessibilityLabel={accessibilityLabel} testID={options.tabBarButtonTestID} allowFontScaling={options.tabBarAllowFontScaling} activeTintColor={tabBarActiveTintColor} inactiveTintColor={tabBarInactiveTintColor} activeBackgroundColor={tabBarActiveBackgroundColor} inactiveBackgroundColor={tabBarInactiveBackgroundColor} button={options.tabBarButton} icon={options.tabBarIcon ??
-                    (({ color, size }) => <elements_1.MissingIcon color={color} size={size}/>)} badge={options.tabBarBadge} badgeStyle={options.tabBarBadgeStyle} label={label} showLabel={tabBarShowLabel} labelStyle={options.tabBarLabelStyle} iconStyle={options.tabBarIconStyle} style={[
-                    sidebar
-                        ? {
-                            marginVertical: hasHorizontalLabels
-                                ? tabBarVariant === 'material'
-                                    ? 0
-                                    : 1
-                                : spacing / 2,
+        ], pointerEvents: isTabBarHidden ? 'none' : 'auto', onLayout: sidebar ? undefined : handleLayout, children: [(0, jsx_runtime_1.jsx)(react_native_1.View, { pointerEvents: "none", style: react_native_1.StyleSheet.absoluteFill, children: tabBarBackgroundElement }), (0, jsx_runtime_1.jsx)(react_native_1.View, { role: "tablist", style: sidebar ? styles.sideContent : styles.bottomContent, children: routes.map((route, index) => {
+                    const focused = index === state.index;
+                    const { options } = descriptors[route.key];
+                    const onPress = () => {
+                        const event = navigation.emit({
+                            type: 'tabPress',
+                            target: route.key,
+                            canPreventDefault: true,
+                        });
+                        if (!focused && !event.defaultPrevented) {
+                            navigation.dispatch({
+                                ...native_1.CommonActions.navigate(route),
+                                target: state.key,
+                            });
                         }
-                        : styles.bottomItem,
-                    options.tabBarItemStyle,
-                ]}/>
-            </native_1.NavigationProvider>);
-        })}
-      </react_native_1.View>
-    </react_native_1.Animated.View>);
+                    };
+                    const onLongPress = () => {
+                        navigation.emit({
+                            type: 'tabLongPress',
+                            target: route.key,
+                        });
+                    };
+                    const label = typeof options.tabBarLabel === 'function'
+                        ? options.tabBarLabel
+                        : (0, elements_1.getLabel)({ label: options.tabBarLabel, title: options.title }, route.name);
+                    const accessibilityLabel = options.tabBarAccessibilityLabel !== undefined
+                        ? options.tabBarAccessibilityLabel
+                        : typeof label === 'string' && react_native_1.Platform.OS === 'ios'
+                            ? `${label}, tab, ${index + 1} of ${routes.length}`
+                            : undefined;
+                    return ((0, jsx_runtime_1.jsx)(native_1.NavigationProvider, { route: route, navigation: descriptors[route.key].navigation, children: (0, jsx_runtime_1.jsx)(BottomTabItem_1.BottomTabItem, { href: buildHref(route.name, route.params), route: route, descriptor: descriptors[route.key], focused: focused, horizontal: hasHorizontalLabels, compact: compact, sidebar: sidebar, variant: tabBarVariant, onPress: onPress, onLongPress: onLongPress, accessibilityLabel: accessibilityLabel, testID: options.tabBarButtonTestID, allowFontScaling: options.tabBarAllowFontScaling, activeTintColor: tabBarActiveTintColor, inactiveTintColor: tabBarInactiveTintColor, activeBackgroundColor: tabBarActiveBackgroundColor, inactiveBackgroundColor: tabBarInactiveBackgroundColor, button: options.tabBarButton, icon: options.tabBarIcon ??
+                                (({ color, size }) => (0, jsx_runtime_1.jsx)(elements_1.MissingIcon, { color: color, size: size })), badge: options.tabBarBadge, badgeStyle: options.tabBarBadgeStyle, label: label, showLabel: tabBarShowLabel, labelStyle: options.tabBarLabelStyle, iconStyle: options.tabBarIconStyle, style: [
+                                sidebar
+                                    ? {
+                                        marginVertical: hasHorizontalLabels
+                                            ? tabBarVariant === 'material'
+                                                ? 0
+                                                : 1
+                                            : spacing / 2,
+                                    }
+                                    : styles.bottomItem,
+                                options.tabBarItemStyle,
+                            ] }) }, route.key));
+                }) })] }));
 }
 const styles = react_native_1.StyleSheet.create({
     start: {

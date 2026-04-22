@@ -12,5 +12,5 @@ export type ScrollViewProps = {
      */
     showsIndicators?: boolean;
 } & CommonViewModifierProps;
-export declare function ScrollView(props: ScrollViewProps): import("react").JSX.Element;
+export declare function ScrollView(props: ScrollViewProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

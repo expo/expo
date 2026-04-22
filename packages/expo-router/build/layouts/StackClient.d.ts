@@ -1,7 +1,7 @@
-import React, { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { type StackScreenProps, StackSearchBar } from './stack-utils';
-import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState, type RouteProp } from '../react-navigation/native';
-import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '../react-navigation/native-stack';
+import { type ParamListBase, type StackNavigationState, StackRouter as RNStackRouter, type RouteProp } from '../react-navigation/native';
+import type { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { Protected } from '../views/Protected';
 /**
  * We extend NativeStackNavigationOptions with our custom props
@@ -46,7 +46,7 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
         shadow?: string;
     };
 };
-declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/native-stack").NativeStackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & {
+declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/native-stack").NativeStackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -136,7 +136,7 @@ declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("../reac
     UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & {
     id?: undefined;
-}, "children">> & React.RefAttributes<unknown>> & {
+}, "children">> & import("react").RefAttributes<unknown>> & {
     Screen: (props: import("../useScreens").ScreenProps<ExtendedStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
     Protected: typeof Protected;
 };
@@ -155,25 +155,25 @@ export declare const stackRouterOverride: NonNullable<ComponentProps<typeof RNSt
  *
  * @hideType
  */
-declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Element) & {
-    Screen: (({ children, options, ...rest }: StackScreenProps) => React.JSX.Element) & {
+declare const Stack: ((props: ComponentProps<typeof RNStack>) => import("react/jsx-runtime").JSX.Element) & {
+    Screen: (({ children, options, ...rest }: StackScreenProps) => import("react/jsx-runtime").JSX.Element) & {
         Title: typeof import("./stack-utils").StackScreenTitle;
         BackButton: typeof import("./stack-utils").StackScreenBackButton;
     };
-    Protected: React.FunctionComponent<import("../views/Protected").ProtectedProps>;
+    Protected: import("react").FunctionComponent<import("../views/Protected").ProtectedProps>;
     Header: typeof import("./stack-utils/StackHeaderComponent").StackHeaderComponent;
     SearchBar: typeof StackSearchBar;
     Toolbar: {
-        (props: import("./stack-utils").StackToolbarProps): React.JSX.Element;
-        Button: React.FC<import("./stack-utils").StackToolbarButtonProps>;
-        Menu: React.FC<import("./stack-utils").StackToolbarMenuProps>;
-        MenuAction: React.FC<import("./stack-utils").StackToolbarMenuActionProps>;
-        SearchBarSlot: React.FC<import("./stack-utils").StackToolbarSearchBarSlotProps>;
-        Spacer: React.FC<import("./stack-utils").StackToolbarSpacerProps>;
-        View: React.FC<import("./stack-utils").StackToolbarViewProps>;
-        Label: React.FC<import("./stack-utils").StackToolbarLabelProps>;
-        Icon: React.FC<import("./stack-utils").StackToolbarIconProps>;
-        Badge: React.FC<import("./stack-utils").StackToolbarBadgeProps>;
+        (props: import("./stack-utils").StackToolbarProps): import("react/jsx-runtime").JSX.Element;
+        Button: import("react").FC<import("./stack-utils").StackToolbarButtonProps>;
+        Menu: import("react").FC<import("./stack-utils").StackToolbarMenuProps>;
+        MenuAction: import("react").FC<import("./stack-utils").StackToolbarMenuActionProps>;
+        SearchBarSlot: import("react").FC<import("./stack-utils").StackToolbarSearchBarSlotProps>;
+        Spacer: import("react").FC<import("./stack-utils").StackToolbarSpacerProps>;
+        View: import("react").FC<import("./stack-utils").StackToolbarViewProps>;
+        Label: import("react").FC<import("./stack-utils").StackToolbarLabelProps>;
+        Icon: import("react").FC<import("./stack-utils").StackToolbarIconProps>;
+        Badge: import("react").FC<import("./stack-utils").StackToolbarBadgeProps>;
     };
 };
 export default Stack;

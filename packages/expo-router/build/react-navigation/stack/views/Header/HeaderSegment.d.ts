@@ -1,4 +1,3 @@
-import * as React from 'react';
 import type { Layout, SceneProgress, StackHeaderOptions, StackHeaderStyleInterpolator } from '../../types';
 type Props = Omit<StackHeaderOptions, 'headerStatusBarHeight'> & {
     headerStatusBarHeight: number;
@@ -10,6 +9,6 @@ type Props = Omit<StackHeaderOptions, 'headerStatusBarHeight'> & {
     progress: SceneProgress;
     styleInterpolator: StackHeaderStyleInterpolator;
 };
-export declare function HeaderSegment(props: Props): React.JSX.Element;
+export declare function HeaderSegment(props: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=HeaderSegment.d.ts.map

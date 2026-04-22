@@ -1,4 +1,4 @@
-import { type EventEmitter as EventEmitterType, type EventSubscription, EventsMap } from '../ts-declarations/EventEmitter';
+import type { EventsMap, EventEmitter as EventEmitterType, EventSubscription } from '../ts-declarations/EventEmitter';
 import type { NativeModule as NativeModuleType } from '../ts-declarations/NativeModule';
 import type { SharedObject as SharedObjectType } from '../ts-declarations/SharedObject';
 import type { SharedRef as SharedRefType } from '../ts-declarations/SharedRef';

@@ -1,6 +1,6 @@
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
 import { type DependencyResolution } from '../dependencies';
-import { PackageRevision, SearchResults, SupportedPlatform } from '../types';
+import type { PackageRevision, SearchResults, SupportedPlatform } from '../types';
 export declare function resolveExpoModule(resolution: DependencyResolution, platform: SupportedPlatform, excludeNames: Set<string>): Promise<PackageRevision | null>;
 interface FindModulesParams {
     appRoot: string;

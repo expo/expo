@@ -1,12 +1,12 @@
-import React from 'react';
-import { ColorValue, type StyleProp, type TextStyle } from 'react-native';
-import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
+import { type ReactNode } from 'react';
+import { type ColorValue, type StyleProp, type TextStyle } from 'react-native';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 export type StackScreenTitleProps = {
     /**
      * The title content. Pass a string for a plain text title,
      * or a custom component when `asChild` is enabled.
      */
-    children?: React.ReactNode;
+    children?: ReactNode;
     /**
      * Use this to render a custom component as the header title.
      *

@@ -1,11 +1,11 @@
-import React from 'react';
-import { ViewProps } from '../primitives/View';
-export declare const Table: React.ComponentType<ViewProps>;
-export declare const THead: React.ComponentType<ViewProps>;
-export declare const TBody: React.ComponentType<ViewProps>;
-export declare const TFoot: React.ComponentType<ViewProps>;
-export declare const TH: React.ComponentType<ViewProps>;
-export declare const TR: React.ComponentType<ViewProps>;
-export declare const TD: React.ComponentType<ViewProps>;
-export declare const Caption: React.ComponentType<ViewProps>;
+import type { ComponentType } from 'react';
+import type { ViewProps } from '../primitives/View';
+export declare const Table: ComponentType<ViewProps>;
+export declare const THead: ComponentType<ViewProps>;
+export declare const TBody: ComponentType<ViewProps>;
+export declare const TFoot: ComponentType<ViewProps>;
+export declare const TH: ComponentType<ViewProps>;
+export declare const TR: ComponentType<ViewProps>;
+export declare const TD: ComponentType<ViewProps>;
+export declare const Caption: ComponentType<ViewProps>;
 //# sourceMappingURL=Table.web.d.ts.map

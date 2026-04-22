@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet } from 'react-native';
 import { getSourceUri } from './VideoPlayer.web';
@@ -215,16 +216,16 @@ export const VideoView = forwardRef((props, ref) => {
             detachAudioNodes();
         };
     }, [props.player]);
-    return (<video controls={props.nativeControls ?? true} controlsList={props.fullscreenOptions?.enable ? undefined : 'nofullscreen'} crossOrigin={props.crossOrigin} style={{
+    return (_jsx("video", { controls: props.nativeControls ?? true, controlsList: props.fullscreenOptions?.enable ? undefined : 'nofullscreen', crossOrigin: props.crossOrigin, style: {
             ...mapStyles(props.style),
             objectFit: props.contentFit,
-        }} onPlay={() => {
+        }, onPlay: () => {
             maybeSetupAudioContext();
-        }} 
-    // The player can autoplay when muted, unmuting by a user should create the audio context
-    onVolumeChange={() => {
+        }, 
+        // The player can autoplay when muted, unmuting by a user should create the audio context
+        onVolumeChange: () => {
             maybeSetupAudioContext();
-        }} ref={(newRef) => {
+        }, ref: (newRef) => {
             // This is called with a null value before `player.unmountVideoView` is called,
             // we can't assign null to videoRef if we want to unmount it from the player.
             if (newRef && !newRef.isEqualNode(videoRef.current)) {
@@ -232,7 +233,7 @@ export const VideoView = forwardRef((props, ref) => {
                 hasToSetupAudioContext.current = props.useAudioNodePlayback ?? false;
                 maybeSetupAudioContext();
             }
-        }} disablePictureInPicture={!props.allowsPictureInPicture} playsInline={props.playsInline} src={getSourceUri(props.player?.src) ?? undefined}/>);
+        }, disablePictureInPicture: !props.allowsPictureInPicture, playsInline: props.playsInline, src: getSourceUri(props.player?.src) ?? undefined }));
 });
 export default VideoView;
 //# sourceMappingURL=VideoView.web.js.map

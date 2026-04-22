@@ -51,7 +51,7 @@ export declare function transformToggleButtonProps(props: Omit<ToggleButtonProps
  * A toggle button component that can be toggled on and off.
  */
 declare const ToggleButton: {
-    (props: ToggleButtonProps): import("react").JSX.Element;
+    (props: ToggleButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 } & {
     DefaultIconSpacing: number;
@@ -61,21 +61,21 @@ declare const ToggleButton: {
  * An icon toggle button with no background.
  */
 declare const IconToggleButton: {
-    (props: ToggleButtonProps): import("react").JSX.Element;
+    (props: ToggleButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * A filled icon toggle button with a solid background.
  */
 declare const FilledIconToggleButton: {
-    (props: ToggleButtonProps): import("react").JSX.Element;
+    (props: ToggleButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * An outlined icon toggle button with a border and no fill.
  */
 declare const OutlinedIconToggleButton: {
-    (props: ToggleButtonProps): import("react").JSX.Element;
+    (props: ToggleButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 export { ToggleButton, IconToggleButton, FilledIconToggleButton, OutlinedIconToggleButton };

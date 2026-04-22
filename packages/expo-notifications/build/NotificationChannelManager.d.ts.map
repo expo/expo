@@ -1,1 +1,1 @@
-{"version":3,"file":"NotificationChannelManager.d.ts","sourceRoot":"","sources":["../src/NotificationChannelManager.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,0BAA0B,EAAE,MAAM,oCAAoC,CAAC;wBAK3E,0BAA0B;AAH/B,wBAGgC"}
+{"version":3,"file":"NotificationChannelManager.d.ts","sourceRoot":"","sources":["../src/NotificationChannelManager.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,0BAA0B,EAAE,MAAM,oCAAoC,CAAC;wBAKhF,0BAA0B;AAH/B,wBAGgC"}

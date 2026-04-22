@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerContainer = ServerContainer;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const core_1 = require("../core");
 const ServerContext_1 = require("./ServerContext");
@@ -67,8 +68,6 @@ function ServerContainer({ ref, children, location, }) {
             ref.current = value;
         }
     }
-    return (<ServerContext_1.ServerContext.Provider value={{ location }}>
-      <core_1.CurrentRenderContext.Provider value={current}>{children}</core_1.CurrentRenderContext.Provider>
-    </ServerContext_1.ServerContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(ServerContext_1.ServerContext.Provider, { value: { location }, children: (0, jsx_runtime_1.jsx)(core_1.CurrentRenderContext.Provider, { value: current, children: children }) }));
 }
 //# sourceMappingURL=ServerContainer.js.map

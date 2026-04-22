@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo';
-import { SharedRef } from 'expo-modules-core/types';
+import type { SharedRef } from 'expo-modules-core/types';
 import ImageManipulatorContext from './web/ImageManipulatorContext.web';
 import ImageManipulatorImageRef from './web/ImageManipulatorImageRef.web';
 declare class ImageManipulator extends NativeModule {

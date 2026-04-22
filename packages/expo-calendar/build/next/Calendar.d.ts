@@ -1,6 +1,6 @@
-import { Calendar, Attendee, DialogEventResult, EntityTypes, Event, OpenEventDialogResult, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
+import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, OpenEventDialogResult, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
-import { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, CalendarDialogOpenParamsNext, CalendarDialogParamsNext, ModifiableAttendeeProperties } from './ExpoCalendar.types';
+import type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, CalendarDialogOpenParamsNext, CalendarDialogParamsNext, ModifiableAttendeeProperties } from './ExpoCalendar.types';
 /**
  * Represents a calendar attendee object.
  */

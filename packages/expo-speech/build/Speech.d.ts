@@ -1,5 +1,5 @@
-import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice } from './Speech.types';
-export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice };
+import type { SpeechOptions, Voice } from './Speech.types';
+export { type SpeechOptions, type SpeechEventCallback, VoiceQuality, type Voice, type WebVoice, } from './Speech.types';
 /**
  * Speak out loud the text given options. Calling this when another text is being spoken adds
  * an utterance to queue.

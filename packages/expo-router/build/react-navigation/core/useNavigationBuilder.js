@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigationBuilder = useNavigationBuilder;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
 const react_1 = require("react");
@@ -656,15 +657,7 @@ function useNavigationBuilder(createRouter, options) {
                 children,
             })
             : children;
-        return (<NavigationMetaContext_1.NavigationMetaContext.Provider value={undefined}>
-        <NavigationHelpersContext_1.NavigationHelpersContext.Provider value={navigation}>
-          <useNavigationState_1.NavigationStateListenerProvider state={state}>
-            <useIsFocused_1.FocusedRouteKeyContext.Provider value={state.routes[state.index].key}>
-              <PreventRemoveProvider_1.PreventRemoveProvider>{element}</PreventRemoveProvider_1.PreventRemoveProvider>
-            </useIsFocused_1.FocusedRouteKeyContext.Provider>
-          </useNavigationState_1.NavigationStateListenerProvider>
-        </NavigationHelpersContext_1.NavigationHelpersContext.Provider>
-      </NavigationMetaContext_1.NavigationMetaContext.Provider>);
+        return ((0, jsx_runtime_1.jsx)(NavigationMetaContext_1.NavigationMetaContext.Provider, { value: undefined, children: (0, jsx_runtime_1.jsx)(NavigationHelpersContext_1.NavigationHelpersContext.Provider, { value: navigation, children: (0, jsx_runtime_1.jsx)(useNavigationState_1.NavigationStateListenerProvider, { state: state, children: (0, jsx_runtime_1.jsx)(useIsFocused_1.FocusedRouteKeyContext.Provider, { value: state.routes[state.index].key, children: (0, jsx_runtime_1.jsx)(PreventRemoveProvider_1.PreventRemoveProvider, { children: element }) }) }) }) }));
     });
     return {
         state,

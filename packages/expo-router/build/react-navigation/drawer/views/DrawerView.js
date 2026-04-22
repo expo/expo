@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DrawerView = DrawerView;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_drawer_layout_1 = require("react-native-drawer-layout");
@@ -52,7 +53,7 @@ const DrawerStatusContext_1 = require("../utils/DrawerStatusContext");
 const addCancelListener_1 = require("../utils/addCancelListener");
 const getDrawerStatusFromState_1 = require("../utils/getDrawerStatusFromState");
 const DRAWER_BORDER_RADIUS = 16;
-const renderDrawerContentDefault = (props) => (<DrawerContent_1.DrawerContent {...props}/>);
+const renderDrawerContentDefault = (props) => ((0, jsx_runtime_1.jsx)(DrawerContent_1.DrawerContent, { ...props }));
 function DrawerViewBase({ state, navigation, descriptors, defaultStatus, drawerContent = renderDrawerContentDefault, detachInactiveScreens = react_native_1.Platform.OS === 'web' ||
     react_native_1.Platform.OS === 'android' ||
     react_native_1.Platform.OS === 'ios', }) {
@@ -149,17 +150,14 @@ function DrawerViewBase({ state, navigation, descriptors, defaultStatus, drawerC
         return (0, addCancelListener_1.addCancelListener)(handleHardwareBack);
     }, [defaultStatus, drawerStatus, drawerType, handleDrawerClose, handleDrawerOpen, navigation]);
     const renderDrawerContent = () => {
-        return (<DrawerPositionContext_1.DrawerPositionContext.Provider value={drawerPosition}>
-        {drawerContent({
+        return ((0, jsx_runtime_1.jsx)(DrawerPositionContext_1.DrawerPositionContext.Provider, { value: drawerPosition, children: drawerContent({
                 state,
                 navigation,
                 descriptors,
-            })}
-      </DrawerPositionContext_1.DrawerPositionContext.Provider>);
+            }) }));
     };
     const renderSceneContent = () => {
-        return (<ScreenFallback_1.MaybeScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.content}>
-        {state.routes.map((route, index) => {
+        return ((0, jsx_runtime_1.jsx)(ScreenFallback_1.MaybeScreenContainer, { enabled: detachInactiveScreens, hasTwoStates: true, style: styles.content, children: state.routes.map((route, index) => {
                 const descriptor = descriptors[route.key];
                 const { lazy = true } = descriptor.options;
                 const isFocused = state.index === index;
@@ -168,60 +166,49 @@ function DrawerViewBase({ state, navigation, descriptors, defaultStatus, drawerC
                     // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
                     return null;
                 }
-                const { freezeOnBlur, header = ({ layout, options }) => (<elements_1.Header {...options} layout={layout} title={(0, elements_1.getHeaderTitle)(options, route.name)} headerLeft={drawerPosition === 'left' && options.headerLeft == null
-                        ? (props) => <DrawerToggleButton_1.DrawerToggleButton {...props}/>
-                        : options.headerLeft} headerRight={drawerPosition === 'right' && options.headerRight == null
-                        ? (props) => <DrawerToggleButton_1.DrawerToggleButton {...props}/>
-                        : options.headerRight}/>), headerShown, headerStatusBarHeight, headerTransparent, sceneStyle, } = descriptor.options;
-                return (<ScreenFallback_1.MaybeScreen key={route.key} style={[react_native_1.StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]} visible={isFocused} enabled={detachInactiveScreens} freezeOnBlur={freezeOnBlur} shouldFreeze={!isFocused && !isPreloaded}>
-              <elements_1.Screen focused={isFocused} route={descriptor.route} navigation={descriptor.navigation} headerShown={headerShown} headerStatusBarHeight={headerStatusBarHeight} headerTransparent={headerTransparent} header={header({
-                        layout: dimensions,
-                        route: descriptor.route,
-                        navigation: descriptor.navigation,
-                        options: descriptor.options,
-                    })} style={sceneStyle}>
-                {descriptor.render()}
-              </elements_1.Screen>
-            </ScreenFallback_1.MaybeScreen>);
-            })}
-      </ScreenFallback_1.MaybeScreenContainer>);
+                const { freezeOnBlur, header = ({ layout, options }) => ((0, jsx_runtime_1.jsx)(elements_1.Header, { ...options, layout: layout, title: (0, elements_1.getHeaderTitle)(options, route.name), headerLeft: drawerPosition === 'left' && options.headerLeft == null
+                        ? (props) => (0, jsx_runtime_1.jsx)(DrawerToggleButton_1.DrawerToggleButton, { ...props })
+                        : options.headerLeft, headerRight: drawerPosition === 'right' && options.headerRight == null
+                        ? (props) => (0, jsx_runtime_1.jsx)(DrawerToggleButton_1.DrawerToggleButton, { ...props })
+                        : options.headerRight })), headerShown, headerStatusBarHeight, headerTransparent, sceneStyle, } = descriptor.options;
+                return ((0, jsx_runtime_1.jsx)(ScreenFallback_1.MaybeScreen, { style: [react_native_1.StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }], visible: isFocused, enabled: detachInactiveScreens, freezeOnBlur: freezeOnBlur, shouldFreeze: !isFocused && !isPreloaded, children: (0, jsx_runtime_1.jsx)(elements_1.Screen, { focused: isFocused, route: descriptor.route, navigation: descriptor.navigation, headerShown: headerShown, headerStatusBarHeight: headerStatusBarHeight, headerTransparent: headerTransparent, header: header({
+                            layout: dimensions,
+                            route: descriptor.route,
+                            navigation: descriptor.navigation,
+                            options: descriptor.options,
+                        }), style: sceneStyle, children: descriptor.render() }) }, route.key));
+            }) }));
     };
-    return (<DrawerStatusContext_1.DrawerStatusContext.Provider value={drawerStatus}>
-      <react_native_drawer_layout_1.Drawer open={drawerStatus !== 'closed'} onOpen={handleDrawerOpen} onClose={handleDrawerClose} onGestureStart={handleGestureStart} onGestureEnd={handleGestureEnd} onGestureCancel={handleGestureCancel} onTransitionStart={handleTransitionStart} onTransitionEnd={handleTransitionEnd} layout={dimensions} direction={direction} configureGestureHandler={configureGestureHandler} swipeEnabled={swipeEnabled} swipeEdgeWidth={swipeEdgeWidth} swipeMinDistance={swipeMinDistance} hideStatusBarOnOpen={drawerHideStatusBarOnOpen} statusBarAnimation={drawerStatusBarAnimation} keyboardDismissMode={keyboardDismissMode} drawerType={drawerType} overlayAccessibilityLabel={overlayAccessibilityLabel} drawerPosition={drawerPosition} drawerStyle={[
-            { backgroundColor: colors.card },
-            drawerType === 'permanent' &&
-                ((react_native_1.Platform.OS === 'web'
-                    ? drawerPosition === 'right'
-                    : (direction === 'rtl' && drawerPosition !== 'right') ||
-                        (direction !== 'rtl' && drawerPosition === 'right'))
-                    ? {
-                        borderLeftColor: colors.border,
-                        borderLeftWidth: react_native_1.StyleSheet.hairlineWidth,
-                    }
-                    : {
-                        borderRightColor: colors.border,
-                        borderRightWidth: react_native_1.StyleSheet.hairlineWidth,
-                    }),
-            drawerType === 'front' &&
-                (drawerPosition === 'left'
-                    ? {
-                        borderTopRightRadius: DRAWER_BORDER_RADIUS,
-                        borderBottomRightRadius: DRAWER_BORDER_RADIUS,
-                    }
-                    : {
-                        borderTopLeftRadius: DRAWER_BORDER_RADIUS,
-                        borderBottomLeftRadius: DRAWER_BORDER_RADIUS,
-                    }),
-            drawerStyle,
-        ]} overlayStyle={{ backgroundColor: overlayColor }} renderDrawerContent={renderDrawerContent}>
-        {renderSceneContent()}
-      </react_native_drawer_layout_1.Drawer>
-    </DrawerStatusContext_1.DrawerStatusContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(DrawerStatusContext_1.DrawerStatusContext.Provider, { value: drawerStatus, children: (0, jsx_runtime_1.jsx)(react_native_drawer_layout_1.Drawer, { open: drawerStatus !== 'closed', onOpen: handleDrawerOpen, onClose: handleDrawerClose, onGestureStart: handleGestureStart, onGestureEnd: handleGestureEnd, onGestureCancel: handleGestureCancel, onTransitionStart: handleTransitionStart, onTransitionEnd: handleTransitionEnd, layout: dimensions, direction: direction, configureGestureHandler: configureGestureHandler, swipeEnabled: swipeEnabled, swipeEdgeWidth: swipeEdgeWidth, swipeMinDistance: swipeMinDistance, hideStatusBarOnOpen: drawerHideStatusBarOnOpen, statusBarAnimation: drawerStatusBarAnimation, keyboardDismissMode: keyboardDismissMode, drawerType: drawerType, overlayAccessibilityLabel: overlayAccessibilityLabel, drawerPosition: drawerPosition, drawerStyle: [
+                { backgroundColor: colors.card },
+                drawerType === 'permanent' &&
+                    ((react_native_1.Platform.OS === 'web'
+                        ? drawerPosition === 'right'
+                        : (direction === 'rtl' && drawerPosition !== 'right') ||
+                            (direction !== 'rtl' && drawerPosition === 'right'))
+                        ? {
+                            borderLeftColor: colors.border,
+                            borderLeftWidth: react_native_1.StyleSheet.hairlineWidth,
+                        }
+                        : {
+                            borderRightColor: colors.border,
+                            borderRightWidth: react_native_1.StyleSheet.hairlineWidth,
+                        }),
+                drawerType === 'front' &&
+                    (drawerPosition === 'left'
+                        ? {
+                            borderTopRightRadius: DRAWER_BORDER_RADIUS,
+                            borderBottomRightRadius: DRAWER_BORDER_RADIUS,
+                        }
+                        : {
+                            borderTopLeftRadius: DRAWER_BORDER_RADIUS,
+                            borderBottomLeftRadius: DRAWER_BORDER_RADIUS,
+                        }),
+                drawerStyle,
+            ], overlayStyle: { backgroundColor: overlayColor }, renderDrawerContent: renderDrawerContent, children: renderSceneContent() }) }));
 }
 function DrawerView({ navigation, ...rest }) {
-    return (<elements_1.SafeAreaProviderCompat>
-      <DrawerViewBase navigation={navigation} {...rest}/>
-    </elements_1.SafeAreaProviderCompat>);
+    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(DrawerViewBase, { navigation: navigation, ...rest }) }));
 }
 const styles = react_native_1.StyleSheet.create({
     content: {

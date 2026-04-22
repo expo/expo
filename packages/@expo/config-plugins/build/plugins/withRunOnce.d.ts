@@ -1,5 +1,5 @@
-import { ConfigPlugin } from '../Plugin.types';
-import { PluginHistoryItem } from '../utils/history';
+import type { ConfigPlugin } from '../Plugin.types';
+import type { PluginHistoryItem } from '../utils/history';
 /**
  * Prevents the same plugin from being run twice.
  * Used for migrating from unversioned expo config plugins to versioned plugins.

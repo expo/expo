@@ -1,4 +1,4 @@
-import { CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 export type CornerStyleConfig = {
     type: 'concentric';
     minimumRadius?: number;
@@ -19,5 +19,5 @@ export declare const EdgeCornerStyle: {
     concentric: (minimumRadius?: number) => CornerStyleConfig;
     fixed: (radius: number) => CornerStyleConfig;
 };
-export declare function ConcentricRectangle(props: ConcentricRectangleProps): import("react").JSX.Element;
+export declare function ConcentricRectangle(props: ConcentricRectangleProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=ConcentricRectangle.d.ts.map

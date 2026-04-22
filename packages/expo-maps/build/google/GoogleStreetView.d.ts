@@ -1,7 +1,6 @@
-import * as React from 'react';
-import { GoogleStreetViewProps } from './GoogleMaps.types';
+import type { GoogleStreetViewProps } from './GoogleMaps.types';
 /**
  * @platform android
  */
-export declare function GoogleStreetView(props: GoogleStreetViewProps): React.JSX.Element | null;
+export declare function GoogleStreetView(props: GoogleStreetViewProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=GoogleStreetView.d.ts.map

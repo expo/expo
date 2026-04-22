@@ -1,41 +1,8 @@
 "use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeaderContainer = HeaderContainer;
-const React = __importStar(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const Header_1 = require("./Header");
@@ -46,11 +13,7 @@ function HeaderContainer({ mode, scenes, layout, getPreviousScene, getFocusedRou
     const focusedRoute = getFocusedRoute();
     const parentHeaderBack = (0, react_1.use)(elements_1.HeaderBackContext);
     const { buildHref } = (0, native_1.useLinkBuilder)();
-    return (<react_native_1.View pointerEvents="box-none" style={style}>
-      {/* We render header only on two top-most headers as
-           a workaround for https://github.com/react-navigation/react-navigation/issues/12456.
-           If the header is persisted, it might be placed incorrectly when navigating back. */}
-      {scenes.slice(-2).map((scene, i, self) => {
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { pointerEvents: "box-none", style: style, children: scenes.slice(-2).map((scene, i, self) => {
             if ((mode === 'screen' && i !== self.length - 1) || !scene) {
                 return null;
             }
@@ -107,24 +70,19 @@ function HeaderContainer({ mode, scenes, layout, getPreviousScene, getFocusedRou
                         : headerStyleInterpolator
                     : HeaderStyleInterpolators_1.forNoAnimation,
             };
-            return (<native_1.NavigationProvider key={scene.descriptor.route.key} route={scene.descriptor.route} navigation={scene.descriptor.navigation}>
-            <react_native_1.View onLayout={onContentHeightChange
-                    ? (e) => {
-                        const { height } = e.nativeEvent.layout;
-                        onContentHeightChange({
-                            route: scene.descriptor.route,
-                            height,
-                        });
-                    }
-                    : undefined} pointerEvents={isFocused ? 'box-none' : 'none'} aria-hidden={!isFocused} style={
-                // Avoid positioning the focused header absolutely
-                // Otherwise accessibility tools don't seem to be able to find it
-                (mode === 'float' && !isFocused) || headerTransparent ? styles.header : null}>
-              {header !== undefined ? header(props) : <Header_1.Header {...props}/>}
-            </react_native_1.View>
-          </native_1.NavigationProvider>);
-        })}
-    </react_native_1.View>);
+            return ((0, jsx_runtime_1.jsx)(native_1.NavigationProvider, { route: scene.descriptor.route, navigation: scene.descriptor.navigation, children: (0, jsx_runtime_1.jsx)(react_native_1.View, { onLayout: onContentHeightChange
+                        ? (e) => {
+                            const { height } = e.nativeEvent.layout;
+                            onContentHeightChange({
+                                route: scene.descriptor.route,
+                                height,
+                            });
+                        }
+                        : undefined, pointerEvents: isFocused ? 'box-none' : 'none', "aria-hidden": !isFocused, style: 
+                    // Avoid positioning the focused header absolutely
+                    // Otherwise accessibility tools don't seem to be able to find it
+                    (mode === 'float' && !isFocused) || headerTransparent ? styles.header : null, children: header !== undefined ? header(props) : (0, jsx_runtime_1.jsx)(Header_1.Header, { ...props }) }) }, scene.descriptor.route.key));
+        }) }));
 }
 const styles = react_native_1.StyleSheet.create({
     header: {

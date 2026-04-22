@@ -1,17 +1,14 @@
 "use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BottomTabItem = BottomTabItem;
-const react_1 = __importDefault(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_native_1 = require("react-native");
 const elements_1 = require("../../elements");
 const TabBarIcon_1 = require("./TabBarIcon");
 const color_1 = require("../../../utils/color");
 const native_1 = require("../../native");
-const renderButtonDefault = (props) => <elements_1.PlatformPressable {...props}/>;
+const renderButtonDefault = (props) => (0, jsx_runtime_1.jsx)(elements_1.PlatformPressable, { ...props });
 const SUPPORTS_LARGE_CONTENT_VIEWER = react_native_1.Platform.OS === 'ios' && parseInt(react_native_1.Platform.Version, 10) >= 13;
 function BottomTabItem({ route, href, focused, descriptor, label, icon, badge, badgeStyle, button = renderButtonDefault, accessibilityLabel, testID, onPress, onLongPress, horizontal, compact, sidebar, variant, activeTintColor: customActiveTintColor, inactiveTintColor: customInactiveTintColor, activeBackgroundColor: customActiveBackgroundColor, inactiveBackgroundColor = 'transparent', showLabel = true, 
 // On iOS 13+, we use `largeContentTitle` for accessibility
@@ -62,7 +59,7 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
                 children: labelString,
             });
         }
-        return (<elements_1.Label style={[
+        return ((0, jsx_runtime_1.jsx)(elements_1.Label, { style: [
                 horizontal
                     ? [
                         styles.labelBeside,
@@ -78,9 +75,7 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
                     : styles.labelBeneath,
                 compact || (variant === 'uikit' && sidebar && horizontal) ? fonts.regular : fonts.medium,
                 labelStyle,
-            ]} allowFontScaling={allowFontScaling} tintColor={color}>
-        {label}
-      </elements_1.Label>);
+            ], allowFontScaling: allowFontScaling, tintColor: color, children: label }));
     };
     const renderIcon = ({ focused }) => {
         if (icon === undefined) {
@@ -88,21 +83,20 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
         }
         const activeOpacity = focused ? 1 : 0;
         const inactiveOpacity = focused ? 0 : 1;
-        return (<TabBarIcon_1.TabBarIcon route={route} variant={variant} size={compact ? 'compact' : 'regular'} badge={badge} badgeStyle={badgeStyle} activeOpacity={activeOpacity} allowFontScaling={allowFontScaling} inactiveOpacity={inactiveOpacity} activeTintColor={activeTintColor} inactiveTintColor={iconInactiveTintColor} renderIcon={icon} style={iconStyle}/>);
+        return ((0, jsx_runtime_1.jsx)(TabBarIcon_1.TabBarIcon, { route: route, variant: variant, size: compact ? 'compact' : 'regular', badge: badge, badgeStyle: badgeStyle, activeOpacity: activeOpacity, allowFontScaling: allowFontScaling, inactiveOpacity: inactiveOpacity, activeTintColor: activeTintColor, inactiveTintColor: iconInactiveTintColor, renderIcon: icon, style: iconStyle }));
     };
     const scene = { route, focused };
     const backgroundColor = focused ? activeBackgroundColor : inactiveBackgroundColor;
     const { flex } = react_native_1.StyleSheet.flatten(style || {});
     const borderRadius = variant === 'material' ? (horizontal ? 56 : 16) : sidebar && horizontal ? 10 : 0;
-    return (<react_native_1.View style={[
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [
             // Clip ripple effect on Android
             {
                 borderRadius,
                 overflow: variant === 'material' ? 'hidden' : 'visible',
             },
             style,
-        ]}>
-      {button({
+        ], children: button({
             href,
             onPress,
             onLongPress,
@@ -133,12 +127,8 @@ allowFontScaling = SUPPORTS_LARGE_CONTENT_VIEWER ? false : undefined, labelStyle
                             ? styles.tabHorizontalUiKit
                             : styles.tabVerticalUiKit,
             ],
-            children: (<>
-            {renderIcon(scene)}
-            {renderLabel(scene)}
-          </>),
-        })}
-    </react_native_1.View>);
+            children: ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [renderIcon(scene), renderLabel(scene)] })),
+        }) }));
 }
 const styles = react_native_1.StyleSheet.create({
     tab: {

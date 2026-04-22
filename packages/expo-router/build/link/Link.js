@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Redirect = exports.Link = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const ExpoLink_1 = require("./ExpoLink");
 const elements_1 = require("./elements");
 const href_1 = require("./href");
@@ -35,7 +36,7 @@ exports.Link = Object.assign(
  */
 function Link(props) {
     // Re-exporting ExpoLink here so that Link.* can be used in server components.
-    return <ExpoLink_1.ExpoLink {...props}/>;
+    return (0, jsx_runtime_1.jsx)(ExpoLink_1.ExpoLink, { ...props });
 }, {
     resolveHref: href_1.resolveHref,
     Menu: elements_1.LinkMenu,

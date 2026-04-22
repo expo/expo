@@ -87,6 +87,6 @@ type Props = {
 /**
  * A component used to show an action item with an icon and a label in a navigation drawer.
  */
-export declare function DrawerItem(props: Props): React.JSX.Element;
+export declare function DrawerItem(props: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=DrawerItem.d.ts.map

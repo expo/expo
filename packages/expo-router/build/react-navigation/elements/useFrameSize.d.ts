@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { type LayoutChangeEvent, View } from 'react-native';
+import { View, type LayoutChangeEvent } from 'react-native';
 type Frame = {
     width: number;
     height: number;
@@ -12,6 +12,6 @@ type FrameSizeProviderProps = {
         onLayout: (event: LayoutChangeEvent) => void;
     }) => React.ReactNode;
 };
-export declare function FrameSizeProvider({ initialFrame, render }: FrameSizeProviderProps): React.JSX.Element;
+export declare function FrameSizeProvider({ initialFrame, render }: FrameSizeProviderProps): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=useFrameSize.d.ts.map

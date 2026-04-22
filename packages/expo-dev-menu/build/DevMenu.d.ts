@@ -1,4 +1,4 @@
-import { ExpoDevMenuItem } from './ExpoDevMenu.types';
+import type { ExpoDevMenuItem } from './ExpoDevMenu.types';
 /**
  * A method that opens development client menu when called.
  */
@@ -16,5 +16,5 @@ export declare function closeMenu(): void;
  * @param items
  */
 export declare function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void>;
-export { ExpoDevMenuItem } from './ExpoDevMenu.types';
+export type { ExpoDevMenuItem } from './ExpoDevMenu.types';
 //# sourceMappingURL=DevMenu.d.ts.map

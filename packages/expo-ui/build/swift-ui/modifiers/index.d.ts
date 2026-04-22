@@ -7,7 +7,7 @@ import { background } from './background';
 import { containerBackground } from './containerBackground';
 import { containerShape } from './containerShape';
 import { contentShape } from './contentShape';
-import { ModifierConfig } from './createModifier';
+import { type ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';

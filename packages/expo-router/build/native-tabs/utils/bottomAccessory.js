@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useBottomAccessoryFunctionFromBottomAccessories = useBottomAccessoryFunctionFromBottomAccessories;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const hooks_1 = require("../hooks");
 /**
@@ -9,9 +10,7 @@ const hooks_1 = require("../hooks");
  */
 function useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory) {
     return (0, react_1.useMemo)(() => bottomAccessory
-        ? (environment) => (<hooks_1.BottomAccessoryPlacementContext value={environment}>
-              {bottomAccessory.props.children}
-            </hooks_1.BottomAccessoryPlacementContext>)
+        ? (environment) => ((0, jsx_runtime_1.jsx)(hooks_1.BottomAccessoryPlacementContext, { value: environment, children: bottomAccessory.props.children }))
         : undefined, [bottomAccessory]);
 }
 //# sourceMappingURL=bottomAccessory.js.map

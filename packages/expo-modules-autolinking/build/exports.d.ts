@@ -1,5 +1,5 @@
-import { AutolinkingCommonArguments, AutolinkingOptions } from './commands/autolinkingOptions';
-import { ModuleDescriptor, SupportedPlatform } from './types';
+import type { AutolinkingCommonArguments, AutolinkingOptions } from './commands/autolinkingOptions';
+import type { ModuleDescriptor, SupportedPlatform } from './types';
 export * from './types';
 export * from './autolinking';
 export * from './platforms';

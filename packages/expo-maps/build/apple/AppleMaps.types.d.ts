@@ -1,7 +1,7 @@
 import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
 import type { ProcessedColorValue, StyleProp, ViewStyle } from 'react-native';
-import { CameraPosition, Coordinates } from '../shared.types';
+import type { CameraPosition, Coordinates } from '../shared.types';
 /**
  * @platform ios
  */

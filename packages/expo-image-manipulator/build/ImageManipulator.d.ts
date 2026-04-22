@@ -1,6 +1,6 @@
-import { SharedRef } from 'expo-modules-core/types';
-import { Action, ImageResult, SaveOptions } from './ImageManipulator.types';
-import { ImageManipulatorContext } from './ImageManipulatorContext';
+import type { SharedRef } from 'expo-modules-core/types';
+import type { Action, ImageResult, SaveOptions } from './ImageManipulator.types';
+import type { ImageManipulatorContext } from './ImageManipulatorContext';
 import ExpoImageManipulator from './NativeImageManipulatorModule';
 /**
  * Manipulate the image provided via `uri`. Available modifications are rotating, flipping (mirroring),

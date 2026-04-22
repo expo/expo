@@ -55,37 +55,37 @@ export type AlertDialogProps = {
  */
 declare function AlertDialogTitle(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 /**
  * The text (body) slot of the `AlertDialog`.
  */
 declare function AlertDialogText(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 /**
  * The confirm button slot of the `AlertDialog`.
  */
 declare function AlertDialogConfirmButton(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 /**
  * The dismiss button slot of the `AlertDialog`.
  */
 declare function AlertDialogDismissButton(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 /**
  * The icon slot of the `AlertDialog`.
  */
 declare function AlertDialogIcon(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 /**
  * Renders an `AlertDialog` component with slot-based content matching the Compose API.
  * Content is provided via slot sub-components: `AlertDialog.Title`, `AlertDialog.Text`,
  * `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, and `AlertDialog.Icon`.
  */
-declare function AlertDialogComponent(props: AlertDialogProps): import("react").JSX.Element;
+declare function AlertDialogComponent(props: AlertDialogProps): import("react/jsx-runtime").JSX.Element;
 declare namespace AlertDialogComponent {
     var Title: typeof AlertDialogTitle;
     var Text: typeof AlertDialogText;

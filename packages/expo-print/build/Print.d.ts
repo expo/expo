@@ -1,5 +1,5 @@
-import { FilePrintOptions, FilePrintResult, OrientationType, PageMargins, PrintOptions, Printer } from './Print.types';
-export { FilePrintOptions, FilePrintResult, OrientationType, PageMargins, PrintOptions, Printer };
+import type { FilePrintOptions, FilePrintResult, OrientationType, PrintOptions, Printer } from './Print.types';
+export type { FilePrintOptions, FilePrintResult, OrientationType, PageMargins, PrintOptions, Printer, } from './Print.types';
 /**
  * The orientation of the printed content.
  */

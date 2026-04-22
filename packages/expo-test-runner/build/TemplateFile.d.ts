@@ -1,5 +1,5 @@
 import { Platform } from './Platform';
-import TemplateEvaluator from './TemplateEvaluator';
+import type TemplateEvaluator from './TemplateEvaluator';
 export interface ProjectFile {
     platform: Platform;
     copy(projectPath: string, outputPath: string): Promise<void>;

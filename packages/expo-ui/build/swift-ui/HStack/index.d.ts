@@ -10,5 +10,5 @@ export type HStackProps = {
      */
     alignment?: 'top' | 'center' | 'bottom' | 'firstTextBaseline' | 'lastTextBaseline';
 } & CommonViewModifierProps;
-export declare function HStack(props: HStackProps): import("react").JSX.Element;
+export declare function HStack(props: HStackProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

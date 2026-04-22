@@ -37,5 +37,5 @@ export type SliderProps = {
      */
     onEditingChanged?: (isEditing: boolean) => void;
 } & CommonViewModifierProps;
-export declare function Slider(props: SliderProps): import("react").JSX.Element;
+export declare function Slider(props: SliderProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

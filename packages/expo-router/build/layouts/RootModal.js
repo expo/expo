@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RootModalContext = void 0;
 exports.RootModalProvider = RootModalProvider;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 exports.RootModalContext = (0, react_1.createContext)({
     root: true,
@@ -21,6 +22,6 @@ function RootModalProvider({ children }) {
             return parent.root ? setState((state) => ({ ...state })) : parent.addModal(name);
         },
     }));
-    return <exports.RootModalContext.Provider value={state}>{children}</exports.RootModalContext.Provider>;
+    return (0, jsx_runtime_1.jsx)(exports.RootModalContext.Provider, { value: state, children: children });
 }
 //# sourceMappingURL=RootModal.js.map
