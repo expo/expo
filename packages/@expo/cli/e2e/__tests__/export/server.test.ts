@@ -233,6 +233,23 @@ describe('server-output', () => {
       });
     });
 
+    // Skip for workerd until we can debug the workerd-specific issue
+    (server.isWorkerd ? it.skip : it)(
+      'supports static asset imports in API routes',
+      async () => {
+        const res = await server.fetchAsync('/api/static-asset');
+        const json = await res.json();
+        // Asset imports return an object that coerces to string when used in URL constructor
+        expect(['string', 'object']).toContain(json.assetType);
+        expect(json.hasAssetPath).toBe(true);
+        // The asset path should be a URL path like /assets/assets/icon.HASH.png
+        expect(json.assetValue).toMatch(/^\/assets\//);
+        // The fetch should succeed since the asset is exported to the client folder
+        expect(json.fetchStatus).toBe('success');
+        expect(json.fetchError).toBeNull();
+      }
+    );
+
     (server.isWorkerd ? it.skip : it)(
       'supports using Node.js externals to read local files',
       async () => {
@@ -400,6 +417,10 @@ describe('server-output', () => {
         expect(files).toContain('server/_expo/functions/api/externals+api.js');
         expect(files).toContain('server/_expo/functions/api/externals+api.js.map');
 
+        // API route with asset import
+        expect(files).toContain('server/_expo/functions/api/with-asset+api.js');
+        expect(files).toContain('server/_expo/functions/api/with-asset+api.js.map');
+
         // TODO: We shouldn't export this
         expect(files).toContain('server/_expo/functions/api/empty+api.js');
         expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
@@ -416,6 +437,20 @@ describe('server-output', () => {
         // Normal routes
         expect(files).toContain('server/index.html');
         expect(files).toContain('server/blog/[post].html');
+      });
+
+      it('exports assets referenced by API routes', async () => {
+        const files = findProjectFiles(server.outputDir);
+
+        // Assets from API routes should be exported to the client folder
+        // The icon.png asset is imported in api/with-asset+api.ts
+        // Asset format: client/assets/assets/<name>.<hash>.<ext>
+        const assetFiles = files.filter((f) => f.startsWith('client/assets/'));
+        expect(assetFiles.length).toBeGreaterThan(0);
+
+        // The icon.png from the API route should be exported with a hash-based filename
+        const hasIconAsset = assetFiles.some((f) => f.includes('icon.') && f.endsWith('.png'));
+        expect(hasIconAsset).toBe(true);
       });
 
       // Ensure the `/server/_expo/routes.json` contains the right file paths and named regexes.
