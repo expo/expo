@@ -123,9 +123,15 @@ jobs:
             exit 0
           fi
 
-          # Sync the staged tree as-is so objects land under:
+          # Sync each top-level package directory separately so objects still land under:
           #   gs://eas-build-precompiled-modules/<pkg>/output/.../xcframeworks/*.tar.gz
-          gcloud storage rsync \
-            "$SYNC_ROOT" \
-            "gs://eas-build-precompiled-modules" \
-            --recursive
+          # without requiring bucket-level metadata access for a root rsync target.
+          shopt -s nullglob
+          for package_dir in "$SYNC_ROOT"/*; do
+            [ -d "$package_dir" ] || continue
+            package_name="$(basename "$package_dir")"
+            gcloud storage rsync \
+              "$package_dir" \
+              "gs://eas-build-precompiled-modules/$package_name" \
+              --recursive
+          done
