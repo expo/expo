@@ -58,3 +58,17 @@ internal class ForegroundServiceStartNotAllowedException :
 
 internal class ForegroundServicePermissionsException :
   CodedException("Couldn't start the foreground service. Foreground service permissions were not found in the manifest")
+
+internal class MotionActivityUnauthorizedException :
+  CodedException(
+    "Activity recognition permission is required. " +
+      "On Android 10 and above, add android.permission.ACTIVITY_RECOGNITION to your AndroidManifest.xml " +
+      "and request it at runtime before calling this method"
+  )
+
+internal class MotionActivityUnavailableException(cause: Throwable? = null) :
+  CodedException(
+    message = "Activity recognition is not available on this device. " +
+      "Make sure Google Play Services is installed and up to date.",
+    cause = cause
+  )

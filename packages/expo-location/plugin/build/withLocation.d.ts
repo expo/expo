@@ -36,6 +36,14 @@ export type Props = {
      */
     locationWhenInUsePermission?: string | false;
     /**
+     * A string to set the `NSMotionUsageDescription` permission message shown when
+     * `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time.
+     * Set to `false` to omit the key (the app must then add it manually).
+     * @default "Allow $(PRODUCT_NAME) to detect your current motion activity"
+     * @platform ios
+     */
+    motionUsagePermission?: string | false;
+    /**
      * Whether to enable location in `UIBackgroundModes`.
      * @default false
      * @platform ios
