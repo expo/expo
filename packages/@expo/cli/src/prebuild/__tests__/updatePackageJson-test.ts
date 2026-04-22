@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 
 import * as Log from '../../log';
 import { isModuleSymlinked } from '../../utils/isModuleSymlinked';
+import { resolveInstalledVersion } from '../../utils/resolveInstalledVersion';
 import {
   hashForDependencyMap,
   updatePkgDependencies,
@@ -11,6 +12,7 @@ import {
 } from '../updatePackageJson';
 
 jest.mock('../../utils/isModuleSymlinked');
+jest.mock('../../utils/resolveInstalledVersion');
 jest.mock('../../log');
 
 describe(hashForDependencyMap, () => {
@@ -24,6 +26,19 @@ describe(hashForDependencyMap, () => {
 describe(updatePackageJSONAsync, () => {
   beforeAll(() => {
     (isModuleSymlinked as any).mockImplementation(() => false);
+    // Return the project's spec string so existing tests (which use matching versions
+    // between pkg and template) still resolve to "installed === recommended" and emit no warning.
+    (resolveInstalledVersion as any).mockImplementation(
+      (_projectRoot: string, packageName: string) => {
+        if (packageName === 'expo') {
+          return '1.0.0';
+        }
+        if (packageName === 'react-native') {
+          return '0.1.0';
+        }
+        return null;
+      }
+    );
   });
 
   it(`has no changes`, async () => {
@@ -147,6 +162,13 @@ describe(updatePackageJSONAsync, () => {
 describe(updatePkgDependencies, () => {
   beforeAll(() => {
     (isModuleSymlinked as any).mockImplementation(() => false);
+    // Return a non-null value so the version-check path runs. The existing tests
+    // use non-semver sentinel strings (e.g. 'version-from-project'), so
+    // `semver.satisfies` throws and the safe wrapper returns false — triggering the
+    // warning exactly as the previous `semver.intersects`-based logic did.
+    (resolveInstalledVersion as any).mockImplementation(
+      (_projectRoot: string, packageName: string) => `installed-${packageName}`
+    );
   });
   const requiredPackages = {
     react: 'version-from-template-required-1',
