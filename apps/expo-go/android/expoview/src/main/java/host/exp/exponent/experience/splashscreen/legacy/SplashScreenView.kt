@@ -77,25 +77,29 @@ fun SplashScreenView(
   val alpha by animateFloatAsState(
     animationSpec = tween(300),
     label = "splash-fade",
-    targetValue = if (state is AsyncImagePainter.State.Success) 1f else 0f,
+    targetValue =
+      if (state is AsyncImagePainter.State.Success || state is AsyncImagePainter.State.Error) 1f
+      else 0f
   )
 
   Box(
     modifier = modifier.fillMaxSize().background(color = Color.White),
-    contentAlignment = Alignment.Center,
+    contentAlignment = Alignment.Center
   ) {
     Column(
       modifier = Modifier.alpha(alpha),
       verticalArrangement = Arrangement.spacedBy(30.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = Alignment.CenterHorizontally
     ) {
-      Image(
-        painter = painter,
-        contentDescription = "Splash Screen Image",
-        contentScale = ContentScale.Fit,
-        modifier =
-          Modifier.size(200.dp).background(Color.White).shadow(4.dp, RoundedCornerShape(30.dp)),
-      )
+      if (state is AsyncImagePainter.State.Success) {
+        Image(
+          painter = painter,
+          contentDescription = "Splash Screen Image",
+          contentScale = ContentScale.Fit,
+          modifier =
+            Modifier.size(200.dp).background(Color.White).shadow(4.dp, RoundedCornerShape(30.dp))
+        )
+      }
       Text(appName, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
     }
   }
