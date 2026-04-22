@@ -124,7 +124,7 @@ jobs:
           # Stage only XCFramework tarballs into a clean tree that mirrors the
           # package-relative output layout we want to publish to GCS.
           rsync \
-            --archive \
+            --recursive \
             --verbose \
             --prune-empty-dirs \
             --include='*/' \
