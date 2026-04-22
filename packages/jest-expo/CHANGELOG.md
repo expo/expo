@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Fixed `expo/fetch` testing. ([#44987](https://github.com/expo/expo/pull/44987) by [@kudo](https://github.com/kudo))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
