@@ -259,8 +259,16 @@ function validate(data: unknown): ReviewPayload {
     if (!c.path || typeof c.path !== 'string') {
       throw new Error(`comments[${i}].path must be a non-empty string`);
     }
-    if (typeof c?.line !== 'number') {
-      throw new Error(`comments[${i}].line must be a number`);
+    if (c.path.startsWith('/') || c.path.split('/').includes('..')) {
+      throw new Error(
+        `comments[${i}].path must be a repo-relative path without '..' segments (got: ${c.path})`
+      );
+    }
+    if (typeof c?.line !== 'number' || !Number.isInteger(c.line) || c.line <= 0) {
+      throw new Error(`comments[${i}].line must be a positive integer`);
+    }
+    if (c.side !== undefined && c.side !== 'LEFT' && c.side !== 'RIGHT') {
+      throw new Error(`comments[${i}].side must be 'LEFT' or 'RIGHT' when provided`);
     }
     if (!c.body || typeof c.body !== 'string') {
       throw new Error(`comments[${i}].body must be a non-empty string`);

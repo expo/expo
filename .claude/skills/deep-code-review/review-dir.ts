@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { existsSync } from 'fs';
+import { mkdirSync } from 'fs';
 
 const dir = process.env.REVIEW_OUTPUT_DIR;
 if (!dir) {
@@ -12,8 +12,10 @@ if (!dir) {
   );
   process.exit(1);
 }
-if (!existsSync(dir)) {
-  console.error(`REVIEW_OUTPUT_DIR does not exist: ${dir}\nCreate it with: mkdir -p ${dir}`);
+try {
+  mkdirSync(dir, { recursive: true });
+} catch (err) {
+  console.error(`Could not create REVIEW_OUTPUT_DIR: ${dir}\n${(err as Error).message}`);
   process.exit(1);
 }
 console.log(dir);
