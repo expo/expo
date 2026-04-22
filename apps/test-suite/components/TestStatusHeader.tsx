@@ -59,6 +59,9 @@ export default function TestStatusHeader({
       )}
       {done && (
         <View testID="test_suite_text_results" style={styles.countsRow}>
+          {failedCount === 0 && (
+            <Text style={[styles.status, { color: theme.text.success }]}>Success!</Text>
+          )}
           <Text style={[styles.status, { color: theme.text.success }]}>
             {passedCount}/{totalCount} passed
           </Text>
