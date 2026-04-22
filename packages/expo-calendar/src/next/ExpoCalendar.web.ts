@@ -59,6 +59,10 @@ export default {
     throw new Error('Calendar API is not available on web');
   },
 
+  async presentPicker(): Promise<ExpoCalendar | null> {
+    throw new Error('Calendar API is not available on web');
+  },
+
   async getEventById(eventId: string): Promise<ExpoCalendarEvent> {
     throw new Error('Calendar API is not available on web');
   },
