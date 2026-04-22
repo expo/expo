@@ -32,7 +32,6 @@ class ObservabilityBackgroundWorker(
   private val observabilityManager: BaseObservabilityManager? = run {
     val projectId = inputData.getString("projectId")
     val baseUrl = inputData.getString("baseUrl")
-    val enableInDebug = inputData.getBoolean("enableInDebug", false)
     val useOpenTelemetry = inputData.getBoolean("useOpenTelemetry", false)
 
     if (projectId == null || baseUrl == null) {
@@ -51,7 +50,7 @@ class ObservabilityBackgroundWorker(
       sessionManager = sessionManager,
       pendingMetricsManager = pendingMetricsManager,
       baseUrl = baseUrl,
-      enableInDebug = enableInDebug,
+      isDebugBuild = BuildConfig.DEBUG,
       useOpenTelemetry = useOpenTelemetry
     )
   }
@@ -98,7 +97,6 @@ class ObservabilityBackgroundWorker(
       context: Context,
       projectId: String,
       baseUrl: String,
-      enableInDebug: Boolean = false,
       useOpenTelemetry: Boolean = false
     ) {
       val constraints = Constraints
@@ -109,7 +107,6 @@ class ObservabilityBackgroundWorker(
       val data = workDataOf(
         Pair("projectId", projectId),
         Pair("baseUrl", baseUrl),
-        Pair("enableInDebug", enableInDebug),
         Pair("useOpenTelemetry", useOpenTelemetry)
       )
 

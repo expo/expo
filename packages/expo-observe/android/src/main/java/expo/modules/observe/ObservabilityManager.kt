@@ -12,7 +12,6 @@ class ObservabilityManager(
   val sessionManager: SessionManager
 ) {
   private val baseManager: BaseObservabilityManager
-  private val enableInDebug: Boolean
   private val useOpenTelemetry: Boolean
 
   // TODO: Can this information change during expo module lifecycle?
@@ -27,7 +26,6 @@ class ObservabilityManager(
       "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
     }
     val baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL
-    enableInDebug = manifest.enableInDebug
     useOpenTelemetry = manifest.useOpenTelemetry
 
     val pendingMetricsManager = PendingMetricsManager(context)
@@ -38,7 +36,7 @@ class ObservabilityManager(
       pendingMetricsManager = pendingMetricsManager,
       projectId = projectId,
       baseUrl = baseUrl,
-      enableInDebug = enableInDebug,
+      isDebugBuild = BuildConfig.DEBUG,
       useOpenTelemetry = useOpenTelemetry
     )
 
@@ -56,7 +54,6 @@ class ObservabilityManager(
       context = context,
       projectId = baseManager.projectId,
       baseUrl = baseManager.baseUrl,
-      enableInDebug = enableInDebug,
       useOpenTelemetry = useOpenTelemetry
     )
   }
@@ -68,7 +65,7 @@ class BaseObservabilityManager(
   private val pendingMetricsManager: PendingMetricsManager,
   val projectId: String,
   val baseUrl: String,
-  private val enableInDebug: Boolean = false,
+  private val isDebugBuild: Boolean = false,
   private val useOpenTelemetry: Boolean = false
 ) {
   private val eventDispatcher = EventDispatcher(
@@ -84,8 +81,9 @@ class BaseObservabilityManager(
       return
     }
 
-    // When disabled, mark pending metrics as sent without dispatching
-    val dispatchingEnabled = ObservePreferences.getConfig(context)?.dispatchingEnabled ?: true
+    // Single dispatch gate. When unset, defaults to off in debug builds and on otherwise so
+    // dev metrics aren't shipped without explicit opt-in.
+    val dispatchingEnabled = ObservePreferences.getConfig(context)?.dispatchingEnabled ?: !isDebugBuild
     if (!dispatchingEnabled) {
       pendingMetricsManager.removePendingMetrics(pendingIds)
       return
@@ -104,22 +102,7 @@ class BaseObservabilityManager(
       return
     }
 
-    val (toDispatch, toSkip) = if (enableInDebug) {
-      Pair(sessionsWithPendingMetrics, emptyList())
-    } else {
-      sessionsWithPendingMetrics.partition { it.session.environment != "development" }
-    }
-
-    // Remove skipped (dev) metrics from pending table without dispatching
-    toSkip
-      .flatMap { it.metrics }
-      .map { it.metricId }
-      .takeIf { it.isNotEmpty() }
-      ?.let { pendingMetricsManager.removePendingMetrics(it) }
-
-    if (toDispatch.isEmpty()) return
-
-    val events = toDispatch.map { sessionWithMetrics ->
+    val events = sessionsWithPendingMetrics.map { sessionWithMetrics ->
       Event(
         metadata = Metadata.fromSessionMetadata(sessionWithMetrics.session),
         metrics = sessionWithMetrics.metrics.map { EASMetric.fromMetric(it) }
@@ -127,7 +110,7 @@ class BaseObservabilityManager(
     }
 
     if (eventDispatcher.dispatch(events)) {
-      val dispatchedMetricIds = toDispatch.flatMap { it.metrics }.map { it.metricId }
+      val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
     }
   }
