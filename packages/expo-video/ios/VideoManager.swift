@@ -44,6 +44,11 @@ class VideoManager {
     videoViews.remove(videoView)
   }
 
+  /// Returns all VideoViews currently displaying a given player.
+  func views(for player: VideoPlayer) -> [VideoView] {
+    return videoViews.allObjects.filter { $0.player === player }
+  }
+
   func onAppForegrounded() {}
 
   func onAppBackgrounded() {

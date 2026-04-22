@@ -3,16 +3,18 @@ import AVFoundation
 import CryptoKit
 import MobileCoreServices
 import ExpoModulesCore
-
 internal class VideoAsset: AVURLAsset, @unchecked Sendable {
   internal let videoSource: VideoSource
   private var resourceLoaderDelegate: ResourceLoaderDelegate?
+  internal var dashFileHelper: DASHToHLSFileHelper?
   private let initialScheme: String?
   private let saveFilePath: String?
   private var customFileExtension: String?
   private let useCaching: Bool
 
   var cachingError: Error?
+  /// True when this asset routes through the DASH-to-HLS file helper.
+  internal private(set) var isDASH: Bool = false
 
   internal var urlRequestHeaders: [String: String]?
 
@@ -24,6 +26,22 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
     self.saveFilePath = Self.pathForUrl(url: url, fileExtension: fileExtension)
     self.urlRequestHeaders = videoSource.headers
     self.initialScheme = URLComponents(url: url, resolvingAgainstBaseURL: false)?.scheme
+
+    // DASH path: serve m3u8 playlists via a local HTTP server so AVPlayer
+    // loads from http://127.0.0.1:<port>/, giving its native HLS parser full
+    // control over seekableTimeRanges, LIVE badge, and DVR scrub bar.
+    // CDN segment URLs are self-authenticating — no mTLS or cookies needed.
+    if Self.isDASH(url: url) {
+      useCaching = false
+      isDASH = true
+
+      let fileHelper = DASHToHLSFileHelper(mpdUrl: url)
+      self.dashFileHelper = fileHelper
+
+      log.debug("[expo-video][DASH] isDASH=true, using local HTTP proxy on port \(fileHelper.masterPlaylistUrl.port ?? 0)")
+      super.init(url: fileHelper.masterPlaylistUrl, options: nil)
+      return
+    }
 
     // Creates an URL that will delegate it's requests to ResourceLoaderDelegate
     let urlWithCustomScheme = url.withScheme(VideoCacheManager.expoVideoCacheScheme)
@@ -105,6 +123,10 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
       return false
     }
     return videoSource.drm == nil
+  }
+
+  private static func isDASH(url: URL) -> Bool {
+    return url.pathExtension.lowercased() == "mpd"
   }
 
   private static func createCacheDirectoryIfNeeded() {

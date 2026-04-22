@@ -3,6 +3,9 @@
 import AVFoundation
 import MediaPlayer
 import ExpoModulesCore
+import os.log
+
+private let dashDiagLog = os.Logger(subsystem: "expo.video.dash", category: "Diagnostics")
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
   let videoSourceLoader = VideoSourceLoader()
@@ -228,6 +231,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
       self.ref.replaceCurrentItem(with: playerItem)
+      if let videoItem = playerItem as? VideoPlayerItem, videoItem.urlAsset.isDASH {
+        self.ref.automaticallyWaitsToMinimizeStalling = false
+        self.scheduleDASHDisplayFix()
+      }
       self.dangerousPropertiesStore.ownerIsReplacing = false
       self.dangerousPropertiesStore.applyProperties(to: self)
     }
@@ -265,6 +272,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
       self.ref.replaceCurrentItem(with: playerItem)
+      if let videoItem = playerItem as? VideoPlayerItem, videoItem.urlAsset.isDASH {
+        self.ref.automaticallyWaitsToMinimizeStalling = false
+        self.scheduleDASHDisplayFix()
+      }
       dangerousPropertiesStore.ownerIsReplacing = false
       dangerousPropertiesStore.applyProperties(to: self)
     }
@@ -295,6 +306,44 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       }
     }
     return 0
+  }
+
+  // MARK: - DASH Display Fix
+
+  /// For DASH-to-HLS content, AVPlayerViewController's isReadyForDisplay can stay
+  /// false even while video plays, because the AVPlayerLayer doesn't receive frames
+  /// from the local HTTP proxy. This prevents native controls from appearing on tap.
+  /// Workaround: after a delay, if isReadyForDisplay is still false, re-assign the
+  /// player on the VC to force the AVPlayerLayer to reconnect.
+  private func scheduleDASHDisplayFix() {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+      guard let self, let item = self.ref.currentItem else { return }
+      let seekable = item.seekableTimeRanges.map {
+        let range = $0.timeRangeValue
+        return "[\(CMTimeGetSeconds(range.start))...\(CMTimeGetSeconds(CMTimeRangeGetEnd(range)))]"
+      }
+      let views = VideoManager.shared.views(for: self)
+      let readyStates = views.map { $0.playerViewController.isReadyForDisplay }
+      dashDiagLog.info("""
+        [DASH-diag] status=\(item.status.rawValue) \
+        seekable=\(seekable) \
+        duration=\(item.duration.seconds) \
+        autoWaits=\(self.ref.automaticallyWaitsToMinimizeStalling) \
+        configOffset=\(item.configuredTimeOffsetFromLive.seconds) \
+        canFastFwd=\(item.canPlayFastForward) \
+        canReverse=\(item.canPlayReverse) \
+        isReadyForDisplay=\(readyStates) \
+        viewCount=\(views.count)
+        """)
+
+      // Force-reconnect player on views where isReadyForDisplay is still false
+      for view in views where !view.playerViewController.isReadyForDisplay {
+        dashDiagLog.info("[DASH-diag] isReadyForDisplay=false, forcing player re-assign")
+        let avPlayer = self.ref
+        view.playerViewController.player = nil
+        view.playerViewController.player = avPlayer
+      }
+    }
   }
 
   // MARK: - VideoPlayerObserverDelegate
