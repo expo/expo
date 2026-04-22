@@ -28,11 +28,6 @@ export {
 
 export { ZipArchive } from './ZipArchive';
 
-export {
-  zip,
-  zipSync,
-  unzip,
-  unzipSync,
-} from './ZipOperations';
+export { zip, zipSync, unzip, unzipSync } from './ZipOperations';
 
 export * from './legacyWarnings';

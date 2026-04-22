@@ -712,18 +712,12 @@ export declare class ZipArchive {
    * @param entryName The path of the entry within the archive.
    * @param destination A `File` (exact path) or `Directory` (entry written inside with original name).
    */
-  extractEntry(
-    entryName: string,
-    destination: File | Directory
-  ): Promise<File>;
+  extractEntry(entryName: string, destination: File | Directory): Promise<File>;
 
   /**
    * Synchronous version of `extractEntry()`.
    */
-  extractEntrySync(
-    entryName: string,
-    destination: File | Directory
-  ): File;
+  extractEntrySync(entryName: string, destination: File | Directory): File;
 
   /**
    * Returns a `File` instance pointing to the underlying archive file.
