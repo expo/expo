@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
 import NotificationChannelGroupManager from './NotificationChannelGroupManager';
-import {
+import type {
   NotificationChannelGroup,
   NotificationChannelGroupInput,
 } from './NotificationChannelGroupManager.types';

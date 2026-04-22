@@ -1,6 +1,7 @@
-import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
-import { WebViewStyle } from './View';
+import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import type { StyleProp, TextStyle as NativeTextStyle } from 'react-native';
+import { Text as NativeText } from 'react-native';
+import type { WebViewStyle } from './View';
 type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
 export interface WebTextStyle {
     /** string is only available on web */

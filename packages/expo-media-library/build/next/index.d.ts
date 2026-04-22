@@ -1,7 +1,7 @@
-import { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
+import type { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
-import { GranularPermission } from './types/GranularPermission';
-import { MediaSubtype } from './types/MediaSubtype';
+import type { GranularPermission } from './types/GranularPermission';
+import type { MediaSubtype } from './types/MediaSubtype';
 export * from './MediaLibraryNext.types';
 export declare class Query extends ExpoMediaLibraryNext.Query {
 }

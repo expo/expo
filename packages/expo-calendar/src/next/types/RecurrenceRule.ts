@@ -1,4 +1,4 @@
-import { RecurrenceRule as ExpoCalendarRecurrenceRule } from '../Calendar';
+import type { RecurrenceRule as ExpoCalendarRecurrenceRule } from '../Calendar';
 
 export type RecurrenceRule = {
   /**

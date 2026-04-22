@@ -1,4 +1,5 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import bplistCreator from 'bplist-creator';
 import fs from 'fs';
 import os from 'os';

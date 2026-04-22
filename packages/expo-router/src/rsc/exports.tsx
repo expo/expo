@@ -83,7 +83,7 @@ export { useRouter_UNSTABLE as useRouter };
 
 // Expo Router Views
 export { Unmatched } from '../views/Unmatched';
-export { ErrorBoundaryProps } from '../views/Try';
+export type { ErrorBoundaryProps } from '../views/Try';
 export { ErrorBoundary } from '../views/ErrorBoundary';
 
 export const router = new Proxy(

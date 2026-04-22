@@ -6,6 +6,6 @@ type Props = {
     tintColor?: ColorValue;
     imageSource?: ImageSourcePropType;
 };
-export declare function DrawerToggleButton({ tintColor, accessibilityLabel, imageSource, ...rest }: Props): import("react").JSX.Element;
+export declare function DrawerToggleButton({ tintColor, accessibilityLabel, imageSource, ...rest }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=DrawerToggleButton.d.ts.map

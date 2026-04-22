@@ -1,4 +1,4 @@
-import { BridgeMessage, JSONValue } from './dom.types';
+import type { BridgeMessage, JSONValue } from './dom.types';
 import { DOM_EVENT, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
 
 const IS_DOM =

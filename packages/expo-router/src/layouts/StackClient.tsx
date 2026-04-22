@@ -1,6 +1,7 @@
 'use client';
 import { nanoid } from 'nanoid/non-secure';
-import React, { Children, ComponentProps, useMemo } from 'react';
+import type { ComponentProps } from 'react';
+import { Children, useMemo } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
@@ -13,7 +14,8 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
-import { SingularOptions, getSingularId } from '../useScreens';
+import type { SingularOptions } from '../useScreens';
+import { getSingularId } from '../useScreens';
 import {
   type StackScreenProps,
   StackHeader,
@@ -25,19 +27,19 @@ import {
   validateStackPresentation,
 } from './stack-utils';
 import {
-  CommonNavigationAction,
-  NavigationAction,
-  ParamListBase,
-  PartialRoute,
-  PartialState,
-  Route,
-  RouterConfigOptions,
+  type CommonNavigationAction,
+  type NavigationAction,
+  type ParamListBase,
+  type PartialRoute,
+  type PartialState,
+  type Route,
+  type RouterConfigOptions,
+  type StackActionType,
+  type StackNavigationState,
   StackRouter as RNStackRouter,
-  StackActionType,
-  StackNavigationState,
   type RouteProp,
 } from '../react-navigation/native';
-import {
+import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../react-navigation/native-stack';

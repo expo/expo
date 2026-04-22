@@ -1953,9 +1953,6 @@ importers:
       jest-matcher-utils:
         specifier: ^29.7.0
         version: 29.7.0
-      jest-runner-tsd:
-        specifier: ^6.0.0
-        version: 6.0.0(@jest/test-result@29.7.0)(@tsd/typescript@5.0.4)(jest-runner@29.7.0)
       klaw-sync:
         specifier: ^6.0.0
         version: 6.0.0
@@ -1977,9 +1974,6 @@ importers:
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
-      tsd:
-        specifier: ^0.28.1
-        version: 0.28.1
 
   packages/@expo/config:
     dependencies:
@@ -2732,6 +2726,9 @@ importers:
       '@expo/cli':
         specifier: workspace:*
         version: link:../cli
+      '@tsd/typescript':
+        specifier: ^6.0.3
+        version: 6.0.3
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
@@ -2747,15 +2744,18 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.2.3(@types/react@19.2.14)
+      jest-runner-tsd:
+        specifier: ^6.0.0
+        version: 6.0.0(@jest/test-result@29.7.0)(@tsd/typescript@6.0.3)(jest-runner@29.7.0)
       react-server-dom-webpack:
         specifier: ~19.0.1
         version: 19.0.4(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
       tsd:
-        specifier: ^0.28.1
-        version: 0.28.1
+        specifier: ^0.33.0
+        version: 0.33.0
       tsd-lite:
-        specifier: ^0.8.0
-        version: 0.8.2(@tsd/typescript@5.0.4)
+        specifier: ^0.9.0
+        version: 0.9.0(@tsd/typescript@6.0.3)
 
   packages/@expo/schema-utils:
     devDependencies:
@@ -3360,6 +3360,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
       react-native:
         specifier: 0.85.2
         version: 0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
@@ -3367,6 +3370,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -4936,6 +4942,9 @@ importers:
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@5.9.3)))(react-native@0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tsd/typescript':
+        specifier: ^5.9.3
+        version: 5.9.3
       '@types/color':
         specifier: ^4.2.0
         version: 4.2.1
@@ -4979,8 +4988,8 @@ importers:
         specifier: ~19.0.4
         version: 19.0.4(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
       tsd:
-        specifier: ^0.28.1
-        version: 0.28.1
+        specifier: ^0.33.0
+        version: 0.33.0
 
   packages/expo-screen-capture:
     dependencies:
@@ -8669,8 +8678,13 @@ packages:
   '@tsconfig/node22@22.0.5':
     resolution: {integrity: sha512-hLf2ld+sYN/BtOJjHUWOk568dvjFQkHnLNa6zce25GIH+vxKfvTgm3qpaH6ToF5tu/NN0IH66s+Bb5wElHrLcw==}
 
-  '@tsd/typescript@5.0.4':
-    resolution: {integrity: sha512-YQi2lvZSI+xidKeUjlbv6b6Zw7qB3aXHw5oGJLs5OOGAEqKIOvz5UIAkWyg0bJbkSUWPBEtaOHpVxU4EYBO1Jg==}
+  '@tsd/typescript@5.9.3':
+    resolution: {integrity: sha512-JSSdNiS0wgd8GHhBwnMAI18Y8XPhLVN+dNelPfZCXFhy9Lb3NbnFyp9JKxxr54jSUkEJPk3cidvCoHducSaRMQ==}
+    engines: {node: '>=14.17'}
+
+  '@tsd/typescript@6.0.3':
+    resolution: {integrity: sha512-/PrZSLnkoCYJ2upiMeCjkCnTSgCLAguM5mcZVa5UkWzX9eZS6EIT0I3+M8q1NkHEu/gxTPgiVwiAT5bS1GS4cQ==}
+    engines: {node: '>=14.17'}
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -14915,8 +14929,15 @@ packages:
     peerDependencies:
       '@tsd/typescript': 4.x || 5.x
 
-  tsd@0.28.1:
-    resolution: {integrity: sha512-FeYrfJ05QgEMW/qOukNCr4fAJHww4SaKnivAXRv4g5kj4FeLpNV7zH4dorzB9zAfVX4wmA7zWu/wQf7kkcvfbw==}
+  tsd-lite@0.9.0:
+    resolution: {integrity: sha512-djuH9e7NJHCH20Jw9/KzH+2P7c6Cc2Lee0wOu4xavU5G3NTYIIdk5L0KCOS+18PWx3SyOA/dOICAAatT2bfLmQ==}
+    engines: {node: '>=16'}
+    deprecated: '''tsd-lite'' is deprecated. For details, see the deprecation notice: https://github.com/mrazauskas/tsd-lite/issues/364'
+    peerDependencies:
+      '@tsd/typescript': 4.x || 5.x
+
+  tsd@0.33.0:
+    resolution: {integrity: sha512-/PQtykJFVw90QICG7zyPDMIyueOXKL7jOJVoX5pILnb3Ux+7QqynOxfVvarE+K+yi7BZyOSY4r+OZNWSWRiEwQ==}
     engines: {node: '>=14.16'}
     hasBin: true
 
@@ -18781,7 +18802,9 @@ snapshots:
 
   '@tsconfig/node22@22.0.5': {}
 
-  '@tsd/typescript@5.0.4': {}
+  '@tsd/typescript@5.9.3': {}
+
+  '@tsd/typescript@6.0.3': {}
 
   '@tybys/wasm-util@0.10.1':
     dependencies:
@@ -23130,13 +23153,13 @@ snapshots:
       resolve.exports: 2.0.3
       slash: 3.0.0
 
-  jest-runner-tsd@6.0.0(@jest/test-result@29.7.0)(@tsd/typescript@5.0.4)(jest-runner@29.7.0):
+  jest-runner-tsd@6.0.0(@jest/test-result@29.7.0)(@tsd/typescript@6.0.3)(jest-runner@29.7.0):
     dependencies:
       '@babel/code-frame': 7.29.0
-      '@tsd/typescript': 5.0.4
+      '@tsd/typescript': 6.0.3
       chalk: 4.1.2
       create-jest-runner: 0.12.3(@jest/test-result@29.7.0)(jest-runner@29.7.0)
-      tsd-lite: 0.8.2(@tsd/typescript@5.0.4)
+      tsd-lite: 0.8.2(@tsd/typescript@6.0.3)
     transitivePeerDependencies:
       - '@jest/test-result'
       - jest-runner
@@ -26386,13 +26409,17 @@ snapshots:
       minimist: 1.2.8
       strip-bom: 3.0.0
 
-  tsd-lite@0.8.2(@tsd/typescript@5.0.4):
+  tsd-lite@0.8.2(@tsd/typescript@6.0.3):
     dependencies:
-      '@tsd/typescript': 5.0.4
+      '@tsd/typescript': 6.0.3
 
-  tsd@0.28.1:
+  tsd-lite@0.9.0(@tsd/typescript@6.0.3):
     dependencies:
-      '@tsd/typescript': 5.0.4
+      '@tsd/typescript': 6.0.3
+
+  tsd@0.33.0:
+    dependencies:
+      '@tsd/typescript': 5.9.3
       eslint-formatter-pretty: 4.1.0
       globby: 11.1.0
       jest-diff: 29.7.0

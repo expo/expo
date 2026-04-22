@@ -6,8 +6,8 @@ import {
   serializeSplitAsync,
   serializeTo,
 } from '../fork/__tests__/serializer-test-utils';
+import type { SerialAsset } from '../withExpoSerializers';
 import {
-  SerialAsset,
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';

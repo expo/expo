@@ -1,13 +1,14 @@
 import spawnAsync from '@expo/spawn-async';
-import { Definitions } from 'dot';
+import type { Definitions } from 'dot';
 import fs from 'fs';
 import path from 'path';
 
 import BundlerController from './BundlerController';
-import { Application, DetoxTest } from './Config';
+import type { Application, DetoxTest } from './Config';
 import { Platform } from './Platform';
 import TemplateEvaluator from './TemplateEvaluator';
-import { ProjectFile, TemplateFilesFactory, UserFile } from './TemplateFile';
+import type { ProjectFile } from './TemplateFile';
+import { TemplateFilesFactory, UserFile } from './TemplateFile';
 import { killVirtualDevicesAsync } from './Utils';
 
 export default class TemplateProject {

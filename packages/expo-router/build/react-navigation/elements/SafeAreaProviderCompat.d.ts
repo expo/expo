@@ -4,7 +4,7 @@ type Props = {
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 };
-export declare function SafeAreaProviderCompat({ children, style }: Props): React.JSX.Element;
+export declare function SafeAreaProviderCompat({ children, style }: Props): import("react/jsx-runtime").JSX.Element;
 export declare namespace SafeAreaProviderCompat {
     var initialMetrics: import("react-native-safe-area-context").Metrics;
 }

@@ -1,5 +1,5 @@
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
-import { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 /**
  * A minimal subset of `ExtendedStackNavigationOptions` needed for the helper
  * @internal

@@ -1,6 +1,6 @@
-import { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
 
-import { PendingSpawnPromise } from './utils/spawn';
+import type { PendingSpawnPromise } from './utils/spawn';
 
 export interface PackageManagerOptions extends SpawnOptions {
   /**

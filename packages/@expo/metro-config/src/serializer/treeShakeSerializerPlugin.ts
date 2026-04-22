@@ -16,11 +16,11 @@ import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency
 import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 
-import { ExpoSerializerOptions } from './fork/baseJSBundle';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';
 import { sortDependencies } from './reconcileTransformSerializerPlugin';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import {
+import type {
   DependencyData,
   MutableInternalDependency,
 } from '../transform-worker/collect-dependencies';

@@ -1,10 +1,12 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { em } from '../css/units';
-import { TableText, TableTextProps } from '../primitives/Table';
-import Text, { TextProps } from '../primitives/Text';
-import View, { ViewProps } from '../primitives/View';
+import type { TableTextProps } from '../primitives/Table';
+import { TableText } from '../primitives/Table';
+import type { TextProps } from '../primitives/Text';
+import Text from '../primitives/Text';
+import type { ViewProps } from '../primitives/View';
+import View from '../primitives/View';
 
 export function Table(props: ViewProps) {
   return <View {...props} />;

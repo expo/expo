@@ -1,5 +1,5 @@
 import { withPlugins } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import { join } from 'path';
 
 import { withStaticPlugin } from '../withStaticPlugin';

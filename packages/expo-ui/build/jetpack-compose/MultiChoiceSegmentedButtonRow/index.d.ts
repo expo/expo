@@ -13,5 +13,5 @@ export type MultiChoiceSegmentedButtonRowProps = {
  * A row container for multi-choice `SegmentedButton` children.
  * Maps to Material 3 `MultiChoiceSegmentedButtonRow`.
  */
-export declare function MultiChoiceSegmentedButtonRow(props: MultiChoiceSegmentedButtonRowProps): import("react").JSX.Element;
+export declare function MultiChoiceSegmentedButtonRow(props: MultiChoiceSegmentedButtonRowProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

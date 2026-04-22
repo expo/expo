@@ -1,4 +1,4 @@
-import { FetchLike } from './client.types';
+import type { FetchLike } from './client.types';
 import * as Log from '../../log';
 
 const debug = require('debug')('expo:api:fetch:progress') as typeof console.log;

@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
-import { ReactNode } from 'react';
-import { StyleProp, ViewStyle, type ColorValue } from 'react-native';
+import type { ReactNode } from 'react';
+import type { StyleProp, ViewStyle, ColorValue } from 'react-native';
 
-import { ModifierConfig } from '../../types';
+import type { ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeView(

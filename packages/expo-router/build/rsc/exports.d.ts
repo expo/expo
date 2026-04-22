@@ -8,9 +8,9 @@ export declare function useLocalSearchParams(): {
 export declare function useGlobalSearchParams(): {
     [k: string]: string;
 };
-export declare function Slot(): import("react").JSX.Element;
-export declare function Stack(): import("react").JSX.Element;
-export declare function Tabs(): import("react").JSX.Element;
+export declare function Slot(): import("react/jsx-runtime").JSX.Element;
+export declare function Stack(): import("react/jsx-runtime").JSX.Element;
+export declare function Tabs(): import("react/jsx-runtime").JSX.Element;
 export declare function Navigator(): void;
 /**
  * Redirects to the `href` as soon as the component is mounted.
@@ -29,7 +29,7 @@ export declare function useRootNavigationState(): void;
 export declare function useUnstableGlobalHref(): void;
 export { useRouter_UNSTABLE as useRouter };
 export { Unmatched } from '../views/Unmatched';
-export { ErrorBoundaryProps } from '../views/Try';
+export type { ErrorBoundaryProps } from '../views/Try';
 export { ErrorBoundary } from '../views/ErrorBoundary';
 export declare const router: {};
 //# sourceMappingURL=exports.d.ts.map

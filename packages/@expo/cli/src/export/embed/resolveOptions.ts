@@ -1,13 +1,13 @@
 import { resolveEntryPoint } from '@expo/config/paths';
 import type { OutputOptions } from '@expo/metro/metro/shared/types';
 import canonicalize from '@expo/metro/metro-core/canonicalize';
-import arg from 'arg';
+import type arg from 'arg';
 import os from 'os';
 import path from 'path';
 
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
+import type { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
 import { isAndroidUsingHermes, isIosUsingHermes } from '../exportHermes';
 
 export interface Options {

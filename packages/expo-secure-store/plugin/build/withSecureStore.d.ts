@@ -1,4 +1,4 @@
-import { ConfigPlugin } from 'expo/config-plugins';
+import { type ConfigPlugin } from 'expo/config-plugins';
 export type Props = {
     /**
      * A string to set the `NSFaceIDUsageDescription` permission message.

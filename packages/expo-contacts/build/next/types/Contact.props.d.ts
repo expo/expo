@@ -1,4 +1,4 @@
-import { ContactDetails } from './Contact.types';
+import type { ContactDetails } from './Contact.types';
 /**
  * Enum representing the various fields of a contact. These fields can be used
  * to specify which details to retrieve from a contact.

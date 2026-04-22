@@ -1,5 +1,5 @@
-import { Contact } from './Contact';
-import { Group } from './Group';
+import type { Contact } from './Contact';
+import type { Group } from './Group';
 
 /**
  * Represents the account type of a container.

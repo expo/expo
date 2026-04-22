@@ -8,7 +8,8 @@ import { Screen } from './Screen';
 import { useContextKey } from '../Route';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
-import { RouterFactory, useNavigationBuilder } from '../react-navigation/native';
+import type { RouterFactory } from '../react-navigation/native';
+import { useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {

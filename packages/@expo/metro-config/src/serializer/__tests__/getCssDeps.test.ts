@@ -1,6 +1,7 @@
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 
-import { getCssSerialAssets, fileNameFromContents, JSModule } from '../getCssDeps';
+import type { JSModule } from '../getCssDeps';
+import { getCssSerialAssets, fileNameFromContents } from '../getCssDeps';
 
 describe(fileNameFromContents, () => {
   it('returns the filename from the filepath', () => {

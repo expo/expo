@@ -1,4 +1,4 @@
-import { Config } from './Config';
+import type { Config } from './Config';
 export default class ConfigReader {
     private path;
     constructor(path: string);

@@ -1,7 +1,7 @@
 import { sync as globSync } from 'glob';
 
 import { CommandError } from '../../../utils/errors';
-import { ProjectInfo } from '../XcodeBuild.types';
+import type { ProjectInfo } from '../XcodeBuild.types';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 

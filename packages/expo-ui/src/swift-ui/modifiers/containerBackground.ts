@@ -1,5 +1,5 @@
 import { createModifier } from './createModifier';
-import { Color } from './types';
+import type { Color } from './types';
 
 export type ContainerBackgroundPlacement = 'widget' | 'navigation' | 'navigationSplitView';
 

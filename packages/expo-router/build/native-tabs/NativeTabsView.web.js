@@ -1,44 +1,12 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_tabs_1 = require("@radix-ui/react-tabs");
-const react_1 = __importStar(require("react"));
+const react_1 = require("react");
 const native_tabs_module_css_1 = __importDefault(require("../../assets/native-tabs.module.css"));
 function NativeTabsView(props) {
     const { tabs, focusedIndex } = props;
@@ -47,30 +15,18 @@ function NativeTabsView(props) {
     // We don't specify currentTab here, as we don't want to change the default tab when focusedIndex changes
     []);
     const value = currentTab.routeKey;
-    const items = tabs.map((tab) => (<TabItem key={tab.routeKey} routeKey={tab.routeKey} title={tab.options.title ?? tab.name} badgeValue={tab.options.badgeValue}/>));
+    const items = tabs.map((tab) => ((0, jsx_runtime_1.jsx)(TabItem, { routeKey: tab.routeKey, title: tab.options.title ?? tab.name, badgeValue: tab.options.badgeValue }, tab.routeKey)));
     const children = tabs.map((tab) => {
-        return (<react_tabs_1.TabsContent key={tab.routeKey} value={tab.routeKey} className={native_tabs_module_css_1.default.tabContent} forceMount>
-        {tab.contentRenderer()}
-      </react_tabs_1.TabsContent>);
+        return ((0, jsx_runtime_1.jsx)(react_tabs_1.TabsContent, { value: tab.routeKey, className: native_tabs_module_css_1.default.tabContent, forceMount: true, children: tab.contentRenderer() }, tab.routeKey));
     });
-    return (<react_tabs_1.Tabs className={native_tabs_module_css_1.default.nativeTabsContainer} defaultValue={defaultTab.routeKey} value={value} onValueChange={(value) => {
+    return ((0, jsx_runtime_1.jsxs)(react_tabs_1.Tabs, { className: native_tabs_module_css_1.default.nativeTabsContainer, defaultValue: defaultTab.routeKey, value: value, onValueChange: (value) => {
             props.onTabChange(value);
-        }} style={convertNativeTabsPropsToStyleVars(props, currentTab.options)}>
-      <react_tabs_1.TabsList aria-label="Main" className={native_tabs_module_css_1.default.navigationMenuRoot}>
-        {items}
-      </react_tabs_1.TabsList>
-      {children}
-    </react_tabs_1.Tabs>);
+        }, style: convertNativeTabsPropsToStyleVars(props, currentTab.options), children: [(0, jsx_runtime_1.jsx)(react_tabs_1.TabsList, { "aria-label": "Main", className: native_tabs_module_css_1.default.navigationMenuRoot, children: items }), children] }));
 }
 function TabItem(props) {
     const { title, badgeValue, routeKey } = props;
     const isBadgeEmpty = badgeValue === ' ';
-    return (<react_tabs_1.TabsTrigger value={routeKey} className={native_tabs_module_css_1.default.navigationMenuTrigger}>
-      <span className={native_tabs_module_css_1.default.tabText}>{title}</span>
-      {badgeValue && (<div className={`${native_tabs_module_css_1.default.tabBadge} ${isBadgeEmpty ? native_tabs_module_css_1.default.emptyTabBadge : ''}`}>
-          {badgeValue}
-        </div>)}
-    </react_tabs_1.TabsTrigger>);
+    return ((0, jsx_runtime_1.jsxs)(react_tabs_1.TabsTrigger, { value: routeKey, className: native_tabs_module_css_1.default.navigationMenuTrigger, children: [(0, jsx_runtime_1.jsx)("span", { className: native_tabs_module_css_1.default.tabText, children: title }), badgeValue && ((0, jsx_runtime_1.jsx)("div", { className: `${native_tabs_module_css_1.default.tabBadge} ${isBadgeEmpty ? native_tabs_module_css_1.default.emptyTabBadge : ''}`, children: badgeValue }))] }));
 }
 function convertNativeTabsPropsToStyleVars(props, currentTabOptions) {
     const vars = {};

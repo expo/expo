@@ -1,4 +1,4 @@
-import { BlurTargetViewProps } from './BlurView.types';
+import type { BlurTargetViewProps } from './BlurView.types';
 import { NativeBlurTargetView } from './NativeBlurModule';
 
 export default function BlurTargetView(props: BlurTargetViewProps) {

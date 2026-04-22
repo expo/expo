@@ -2,7 +2,7 @@ import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useId } from 'react';
 
 import ExpoKeepAwake from './ExpoKeepAwake';
-import { KeepAwakeListener, KeepAwakeOptions } from './KeepAwake.types';
+import type { KeepAwakeListener, KeepAwakeOptions } from './KeepAwake.types';
 
 /** Default tag, used when no tag has been specified in keep awake method calls. */
 export const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';

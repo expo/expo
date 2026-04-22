@@ -1,5 +1,5 @@
 import { type NativeModule } from 'expo';
-import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
+import type { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
 type ExpoBackgroundTaskEvents = {
     onTasksExpired(): void;
 };

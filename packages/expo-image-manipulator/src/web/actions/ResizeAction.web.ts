@@ -1,4 +1,4 @@
-import { ActionResize } from '../../ImageManipulator.types';
+import type { ActionResize } from '../../ImageManipulator.types';
 import { getContext } from '../utils.web';
 
 /**

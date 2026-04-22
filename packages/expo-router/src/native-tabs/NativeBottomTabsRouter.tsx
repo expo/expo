@@ -8,11 +8,11 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import {
-  CommonNavigationAction,
-  ParamListBase,
-  Router,
-  TabActionType,
-  TabNavigationState,
+  type CommonNavigationAction,
+  type ParamListBase,
+  type Router,
+  type TabActionType,
+  type TabNavigationState,
   TabRouter,
   type TabRouterOptions,
 } from '../react-navigation/native';

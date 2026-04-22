@@ -1,4 +1,5 @@
-import { ConfigPlugin, IOSConfig, withDangerousMod } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { IOSConfig, withDangerousMod } from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';

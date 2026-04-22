@@ -16,7 +16,7 @@ import type { NativeTabsProps } from './types';
  * }
  * ```
  */
-export declare const NativeTabs: ((props: NativeTabsProps) => import("react").JSX.Element) & {
+export declare const NativeTabs: ((props: NativeTabsProps) => import("react/jsx-runtime").JSX.Element) & {
     Trigger: ((props: import("./types").NativeTabTriggerProps) => null) & {
         Label: import("react").FC<import("./common/elements").NativeTabsTriggerLabelProps>;
         Icon: import("react").FC<import("./common/elements").NativeTabsTriggerIconProps>;

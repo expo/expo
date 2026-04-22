@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
 import NotificationChannelGroupManager from './NotificationChannelGroupManager';
-import { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
+import type { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
 
 export async function getNotificationChannelGroupsAsync(): Promise<NotificationChannelGroup[]> {
   if (!NotificationChannelGroupManager.getNotificationChannelGroupsAsync) {

@@ -6,7 +6,7 @@ import {
   UnexpectedServerData,
   UnexpectedServerError,
 } from '../rest/client';
-import { FetchLike } from '../rest/client.types';
+import type { FetchLike } from '../rest/client.types';
 import { wrapFetchWithOffline } from '../rest/wrapFetchWithOffline';
 import { wrapFetchWithUserAgent } from '../rest/wrapFetchWithUserAgent';
 import { getAccessToken, getSession } from '../user/UserSettings';

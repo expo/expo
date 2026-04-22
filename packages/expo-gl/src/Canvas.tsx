@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
+import type { LayoutChangeEvent, ViewProps } from 'react-native';
+import { PixelRatio, StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
 interface Size {

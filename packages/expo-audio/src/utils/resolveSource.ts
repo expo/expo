@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 
-import { AudioSource } from '../Audio.types';
+import type { AudioSource } from '../Audio.types';
 
 type AudioSourceObject = Exclude<AudioSource, string | number | null>;
 

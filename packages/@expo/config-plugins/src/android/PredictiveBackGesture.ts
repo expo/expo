@@ -1,7 +1,8 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
-import { AndroidManifest, getMainApplicationOrThrow } from './Manifest';
-import { ConfigPlugin } from '../Plugin.types';
+import type { AndroidManifest } from './Manifest';
+import { getMainApplicationOrThrow } from './Manifest';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withAndroidManifest } from '../plugins/android-plugins';
 
 const ANDROID_ENABLE_ON_BACK_INVOKED_CALLBACK = 'android:enableOnBackInvokedCallback';

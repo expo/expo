@@ -1,5 +1,5 @@
 import React from 'react';
-import { ParamListBase } from '../../react-navigation/native';
+import type { ParamListBase } from '../../react-navigation/native';
 declare const RouterModal: React.ForwardRefExoticComponent<Omit<import("../..").PickPartial<any, "children">, "ref"> & React.RefAttributes<unknown>> & {
     Screen: (props: import("../..").ScreenProps<object, Readonly<{
         key: string;

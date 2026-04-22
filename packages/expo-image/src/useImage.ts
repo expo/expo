@@ -1,6 +1,7 @@
 'use client';
 
-import { DependencyList, useEffect, useRef, useState } from 'react';
+import type { DependencyList } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Image } from './Image';
 import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';

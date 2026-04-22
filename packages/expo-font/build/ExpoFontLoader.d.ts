@@ -1,4 +1,4 @@
-import { UnloadFontOptions } from './Font.types';
+import type { UnloadFontOptions } from './Font.types';
 export type ServerFontResourceDescriptor = {
     type: 'style';
     css: string;

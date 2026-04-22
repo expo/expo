@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-import { GoogleStreetViewProps } from './GoogleMaps.types';
+import type { GoogleStreetViewProps } from './GoogleMaps.types';
 
 let NativeView: React.ComponentType<GoogleStreetViewProps> | null = null;
 

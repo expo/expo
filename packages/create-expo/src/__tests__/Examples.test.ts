@@ -2,10 +2,10 @@ import { vol } from 'memfs';
 import nock from 'nock';
 import prompts from 'prompts';
 
+import type { GithubContent } from '../Examples';
 import {
   ensureExampleExists,
   fetchMetadataAsync,
-  GithubContent,
   promptExamplesAsync,
   sanitizeScriptsAsync,
 } from '../Examples';

@@ -1,5 +1,5 @@
-import { PermissionResponse } from 'expo-modules-core';
-import { EntityTypes, Source } from '../Calendar';
+import type { PermissionResponse } from 'expo-modules-core';
+import type { EntityTypes, Source } from '../Calendar';
 declare class ExpoCalendar {
     constructor(id: string);
 }

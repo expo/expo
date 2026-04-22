@@ -1,4 +1,4 @@
-import { ContentAlignment, FloatingToolbarExitAlwaysScrollBehavior, PrimitiveBaseProps } from '../layout-types';
+import { type ContentAlignment, type FloatingToolbarExitAlwaysScrollBehavior, type PrimitiveBaseProps } from '../layout-types';
 export type BoxProps = {
     children?: React.ReactNode;
     /**
@@ -10,5 +10,5 @@ export type BoxProps = {
      */
     floatingToolbarExitAlwaysScrollBehavior?: FloatingToolbarExitAlwaysScrollBehavior;
 } & PrimitiveBaseProps;
-export declare function Box(props: BoxProps): import("react").JSX.Element;
+export declare function Box(props: BoxProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

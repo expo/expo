@@ -1,5 +1,5 @@
 import { type ColorValue, type ImageSourcePropType, type ImageResolvedAssetSource } from 'react-native';
-import { ModifierConfig } from '../../types';
+import type { ModifierConfig } from '../../types';
 export type IconProps = {
     /**
      * The source of the icon. Can be a URI string or the result of `require()`.
@@ -108,5 +108,5 @@ export type NativeIconProps = Omit<IconProps, 'source'> & {
  * />
  * ```
  */
-export declare function Icon(props: IconProps): import("react").JSX.Element;
+export declare function Icon(props: IconProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

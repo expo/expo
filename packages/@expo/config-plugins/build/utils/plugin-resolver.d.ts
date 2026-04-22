@@ -1,4 +1,4 @@
-import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
+import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 export declare const pluginFileName = "app.plugin.js";
 /**
  * Resolve the config plugin from a node module or package.

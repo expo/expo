@@ -33,10 +33,12 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/apple-authentication/",
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "workspace:*",
+    "react": "*",
     "react-native": "*"
   }
 }

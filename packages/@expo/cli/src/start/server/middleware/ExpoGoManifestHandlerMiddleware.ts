@@ -1,27 +1,21 @@
-import { ExpoUpdatesManifest } from '@expo/config';
+import type { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import crypto from 'crypto';
-import {
-  iterableToStream,
-  streamMultipart,
-  multipartContentType,
-  FormEntry,
-  MultipartPart,
-} from 'multitars';
-import { serializeDictionary, Dictionary } from 'structured-headers';
+import type { FormEntry } from 'multitars';
+import { iterableToStream, streamMultipart, multipartContentType, MultipartPart } from 'multitars';
+import type { Dictionary } from 'structured-headers';
+import { serializeDictionary } from 'structured-headers';
 
-import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
+import type { ManifestRequestInfo } from './ManifestMiddleware';
+import { ManifestMiddleware } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
-import { ServerRequest } from './server.types';
+import type { ServerRequest } from './server.types';
 import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
-import {
-  CodeSigningInfo,
-  getCodeSigningInfoAsync,
-  signManifestString,
-} from '../../../utils/codesigning';
+import type { CodeSigningInfo } from '../../../utils/codesigning';
+import { getCodeSigningInfoAsync, signManifestString } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
 

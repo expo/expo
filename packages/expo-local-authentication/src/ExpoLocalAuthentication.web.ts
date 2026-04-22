@@ -1,4 +1,5 @@
-import { AuthenticationType, SecurityLevel } from './LocalAuthentication.types';
+import type { AuthenticationType } from './LocalAuthentication.types';
+import { SecurityLevel } from './LocalAuthentication.types';
 
 export default {
   async hasHardwareAsync(): Promise<boolean> {

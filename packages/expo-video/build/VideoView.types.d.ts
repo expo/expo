@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 import type { VideoPlayer } from './VideoPlayer.types';
 /**
  * Describes how a video should be scaled to fit in a container.

@@ -8,7 +8,7 @@ import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 
 import { configureLogging } from './GLUtils';
-import {
+import type {
   ComponentOrHandle,
   SurfaceCreateEvent,
   GLSnapshot,

@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BottomTabView = BottomTabView;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -69,7 +70,7 @@ const hasAnimation = (options) => {
     }
     return Boolean(transitionSpec);
 };
-const renderTabBarDefault = (props) => <BottomTabBar_1.BottomTabBar {...props}/>;
+const renderTabBarDefault = (props) => (0, jsx_runtime_1.jsx)(BottomTabBar_1.BottomTabBar, { ...props });
 function BottomTabView(props) {
     const { tabBar = renderTabBarDefault, state, navigation, descriptors, safeAreaInsets, detachInactiveScreens = react_native_1.Platform.OS === 'web' ||
         react_native_1.Platform.OS === 'android' ||
@@ -150,8 +151,7 @@ function BottomTabView(props) {
         style: descriptors[state.routes[state.index].key].options.tabBarStyle,
     }));
     const renderTabBar = () => {
-        return (<react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer>
-        {(insets) => tabBar({
+        return ((0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer, { children: (insets) => tabBar({
                 state,
                 descriptors,
                 navigation,
@@ -161,66 +161,51 @@ function BottomTabView(props) {
                     bottom: safeAreaInsets?.bottom ?? insets?.bottom ?? 0,
                     left: safeAreaInsets?.left ?? insets?.left ?? 0,
                 },
-            })}
-      </react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer>);
+            }) }));
     };
     const { routes } = state;
     // If there is no animation, we only have 2 states: visible and invisible
     const hasTwoStates = !routes.some((route) => hasAnimation(descriptors[route.key].options));
     const { tabBarPosition = 'bottom' } = descriptors[focusedRouteKey].options;
-    const tabBarElement = (<BottomTabBarHeightCallbackContext_1.BottomTabBarHeightCallbackContext.Provider key="tabbar" value={setTabBarHeight}>
-      {renderTabBar()}
-    </BottomTabBarHeightCallbackContext_1.BottomTabBarHeightCallbackContext.Provider>);
-    return (<elements_1.SafeAreaProviderCompat style={{
+    const tabBarElement = ((0, jsx_runtime_1.jsx)(BottomTabBarHeightCallbackContext_1.BottomTabBarHeightCallbackContext.Provider, { value: setTabBarHeight, children: renderTabBar() }, "tabbar"));
+    return ((0, jsx_runtime_1.jsxs)(elements_1.SafeAreaProviderCompat, { style: {
             flexDirection: tabBarPosition === 'left' || tabBarPosition === 'right' ? 'row' : 'column',
-        }}>
-      {tabBarPosition === 'top' || tabBarPosition === 'left' ? tabBarElement : null}
-      <ScreenFallback_1.MaybeScreenContainer key="screens" enabled={detachInactiveScreens} hasTwoStates={hasTwoStates} style={styles.screens}>
-        {routes.map((route, index) => {
-            const descriptor = descriptors[route.key];
-            const { lazy = true, animation = 'none', sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation].sceneStyleInterpolator, } = descriptor.options;
-            const isFocused = state.index === index;
-            const isPreloaded = state.preloadedRouteKeys.includes(route.key);
-            if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
-                // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
-                return null;
-            }
-            const { freezeOnBlur, header = ({ layout, options }) => (<elements_1.Header {...options} layout={layout} title={(0, elements_1.getHeaderTitle)(options, route.name)}/>), headerShown, headerStatusBarHeight, headerTransparent, sceneStyle: customSceneStyle, } = descriptor.options;
-            const { sceneStyle } = sceneStyleInterpolator?.({
-                current: {
-                    progress: tabAnims[route.key],
-                },
-            }) ?? {};
-            const animationEnabled = hasAnimation(descriptor.options);
-            const activityState = isFocused
-                ? STATE_ON_TOP // the screen is on top after the transition
-                : animationEnabled // is animation is not enabled, immediately move to inactive state
-                    ? tabAnims[route.key].interpolate({
-                        inputRange: [0, 1 - EPSILON, 1],
-                        outputRange: [
-                            STATE_TRANSITIONING_OR_BELOW_TOP, // screen visible during transition
-                            STATE_TRANSITIONING_OR_BELOW_TOP,
-                            STATE_INACTIVE, // the screen is detached after transition
-                        ],
-                        extrapolate: 'extend',
-                    })
-                    : STATE_INACTIVE;
-            return (<ScreenFallback_1.MaybeScreen key={route.key} style={[react_native_1.StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]} active={activityState} enabled={detachInactiveScreens} freezeOnBlur={freezeOnBlur} shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}>
-              <BottomTabBarHeightContext_1.BottomTabBarHeightContext.Provider value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
-                <elements_1.Screen focused={isFocused} route={descriptor.route} navigation={descriptor.navigation} headerShown={headerShown} headerStatusBarHeight={headerStatusBarHeight} headerTransparent={headerTransparent} header={header({
-                    layout: dimensions,
-                    route: descriptor.route,
-                    navigation: descriptor.navigation,
-                    options: descriptor.options,
-                })} style={[customSceneStyle, animationEnabled && sceneStyle]}>
-                  {descriptor.render()}
-                </elements_1.Screen>
-              </BottomTabBarHeightContext_1.BottomTabBarHeightContext.Provider>
-            </ScreenFallback_1.MaybeScreen>);
-        })}
-      </ScreenFallback_1.MaybeScreenContainer>
-      {tabBarPosition === 'bottom' || tabBarPosition === 'right' ? tabBarElement : null}
-    </elements_1.SafeAreaProviderCompat>);
+        }, children: [tabBarPosition === 'top' || tabBarPosition === 'left' ? tabBarElement : null, (0, jsx_runtime_1.jsx)(ScreenFallback_1.MaybeScreenContainer, { enabled: detachInactiveScreens, hasTwoStates: hasTwoStates, style: styles.screens, children: routes.map((route, index) => {
+                    const descriptor = descriptors[route.key];
+                    const { lazy = true, animation = 'none', sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation].sceneStyleInterpolator, } = descriptor.options;
+                    const isFocused = state.index === index;
+                    const isPreloaded = state.preloadedRouteKeys.includes(route.key);
+                    if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
+                        // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
+                        return null;
+                    }
+                    const { freezeOnBlur, header = ({ layout, options }) => ((0, jsx_runtime_1.jsx)(elements_1.Header, { ...options, layout: layout, title: (0, elements_1.getHeaderTitle)(options, route.name) })), headerShown, headerStatusBarHeight, headerTransparent, sceneStyle: customSceneStyle, } = descriptor.options;
+                    const { sceneStyle } = sceneStyleInterpolator?.({
+                        current: {
+                            progress: tabAnims[route.key],
+                        },
+                    }) ?? {};
+                    const animationEnabled = hasAnimation(descriptor.options);
+                    const activityState = isFocused
+                        ? STATE_ON_TOP // the screen is on top after the transition
+                        : animationEnabled // is animation is not enabled, immediately move to inactive state
+                            ? tabAnims[route.key].interpolate({
+                                inputRange: [0, 1 - EPSILON, 1],
+                                outputRange: [
+                                    STATE_TRANSITIONING_OR_BELOW_TOP, // screen visible during transition
+                                    STATE_TRANSITIONING_OR_BELOW_TOP,
+                                    STATE_INACTIVE, // the screen is detached after transition
+                                ],
+                                extrapolate: 'extend',
+                            })
+                            : STATE_INACTIVE;
+                    return ((0, jsx_runtime_1.jsx)(ScreenFallback_1.MaybeScreen, { style: [react_native_1.StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }], active: activityState, enabled: detachInactiveScreens, freezeOnBlur: freezeOnBlur, shouldFreeze: activityState === STATE_INACTIVE && !isPreloaded, children: (0, jsx_runtime_1.jsx)(BottomTabBarHeightContext_1.BottomTabBarHeightContext.Provider, { value: tabBarPosition === 'bottom' ? tabBarHeight : 0, children: (0, jsx_runtime_1.jsx)(elements_1.Screen, { focused: isFocused, route: descriptor.route, navigation: descriptor.navigation, headerShown: headerShown, headerStatusBarHeight: headerStatusBarHeight, headerTransparent: headerTransparent, header: header({
+                                    layout: dimensions,
+                                    route: descriptor.route,
+                                    navigation: descriptor.navigation,
+                                    options: descriptor.options,
+                                }), style: [customSceneStyle, animationEnabled && sceneStyle], children: descriptor.render() }) }) }, route.key));
+                }) }, "screens"), tabBarPosition === 'bottom' || tabBarPosition === 'right' ? tabBarElement : null] }));
 }
 const styles = react_native_1.StyleSheet.create({
     screens: {

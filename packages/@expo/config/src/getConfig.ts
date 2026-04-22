@@ -1,9 +1,10 @@
 import JsonFile from '@expo/json-file';
 import { existsSync } from 'fs';
 
-import { AppJSONConfig, ConfigContext, ExpoConfig } from './Config.types';
+import type { AppJSONConfig, ConfigContext, ExpoConfig } from './Config.types';
 import { ConfigError } from './Errors';
-import { DynamicConfigResults, evalConfig } from './evalConfig';
+import type { DynamicConfigResults } from './evalConfig';
+import { evalConfig } from './evalConfig';
 
 // We cannot use async config resolution right now because Next.js doesn't support async configs.
 // If they don't add support for async Webpack configs then we may need to pull support for Next.js.

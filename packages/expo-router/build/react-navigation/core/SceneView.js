@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SceneView = SceneView;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const EnsureSingleNavigator_1 = require("./EnsureSingleNavigator");
@@ -130,14 +131,6 @@ function SceneView({ screen, route, navigation, routeState, getState, setState, 
         addOptionsGetter,
     }), [routeState, getCurrentState, setCurrentState, getKey, setKey, getIsInitial, addOptionsGetter]);
     const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;
-    return (<NavigationStateContext_1.NavigationStateContext.Provider value={context}>
-      <NavigationFocusedRouteStateContext_1.NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
-        <EnsureSingleNavigator_1.EnsureSingleNavigator>
-          <StaticContainer_1.StaticContainer name={screen.name} render={ScreenComponent || screen.children} navigation={navigation} route={route}>
-            {ScreenComponent !== undefined ? (<ScreenComponent navigation={navigation} route={route}/>) : screen.children !== undefined ? (screen.children({ navigation, route })) : null}
-          </StaticContainer_1.StaticContainer>
-        </EnsureSingleNavigator_1.EnsureSingleNavigator>
-      </NavigationFocusedRouteStateContext_1.NavigationFocusedRouteStateContext.Provider>
-    </NavigationStateContext_1.NavigationStateContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(NavigationStateContext_1.NavigationStateContext.Provider, { value: context, children: (0, jsx_runtime_1.jsx)(NavigationFocusedRouteStateContext_1.NavigationFocusedRouteStateContext.Provider, { value: focusedRouteState, children: (0, jsx_runtime_1.jsx)(EnsureSingleNavigator_1.EnsureSingleNavigator, { children: (0, jsx_runtime_1.jsx)(StaticContainer_1.StaticContainer, { name: screen.name, render: ScreenComponent || screen.children, navigation: navigation, route: route, children: ScreenComponent !== undefined ? ((0, jsx_runtime_1.jsx)(ScreenComponent, { navigation: navigation, route: route })) : screen.children !== undefined ? (screen.children({ navigation, route })) : null }) }) }) }));
 }
 //# sourceMappingURL=SceneView.js.map

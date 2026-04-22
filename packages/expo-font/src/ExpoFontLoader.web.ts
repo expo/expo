@@ -2,8 +2,8 @@ import { CodedError, registerWebModule } from 'expo-modules-core';
 import FontObserver from 'fontfaceobserver';
 
 import type { ExpoFontLoaderModule, ServerFontResourceDescriptor } from './ExpoFontLoader';
-import { UnloadFontOptions } from './Font';
-import { FontDisplay, FontResource } from './Font.types';
+import type { UnloadFontOptions } from './Font';
+import { FontDisplay, type FontResource } from './Font.types';
 
 function getFontFaceStyleSheet(): CSSStyleSheet | null {
   if (typeof window === 'undefined') {

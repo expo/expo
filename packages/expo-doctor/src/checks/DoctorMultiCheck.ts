@@ -1,6 +1,6 @@
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export interface DoctorMultiCheckItemBase {
   getMessage: ((packageName: string) => string) | (() => string);

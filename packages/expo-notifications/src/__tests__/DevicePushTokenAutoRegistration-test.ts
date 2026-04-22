@@ -1,5 +1,5 @@
 import * as DevicePushTokenAutoRegistration from '../DevicePushTokenAutoRegistration.fx';
-import { DevicePushToken } from '../Tokens.types';
+import type { DevicePushToken } from '../Tokens.types';
 import { getDevicePushTokenAsync } from '../getDevicePushTokenAsync';
 import { updateDevicePushTokenAsync } from '../utils/updateDevicePushTokenAsync';
 

@@ -1,4 +1,4 @@
-import { AudioQuality, IOSOutputFormat } from './RecordingConstants';
+import type { AudioQuality, IOSOutputFormat } from './RecordingConstants';
 /**
  * Represents audio source information returned from native.
  * This is the object returned when reading sources from a queue.

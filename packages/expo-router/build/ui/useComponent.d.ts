@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import type { JSX } from 'react';
 /**
  * Copied from @react-navigation/core
  */

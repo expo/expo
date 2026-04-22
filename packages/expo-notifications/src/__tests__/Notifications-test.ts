@@ -1,7 +1,8 @@
 import { fail } from 'node:assert';
 
 import NotificationScheduler from '../NotificationScheduler';
-import { SchedulableTriggerInputTypes, NotificationTriggerInput } from '../Notifications.types';
+import type { NotificationTriggerInput } from '../Notifications.types';
+import { SchedulableTriggerInputTypes } from '../Notifications.types';
 import { scheduleNotificationAsync } from '../scheduleNotificationAsync';
 
 const notificationTriggerInputTest = {

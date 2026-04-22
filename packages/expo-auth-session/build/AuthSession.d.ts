@@ -1,8 +1,8 @@
 import * as Linking from 'expo-linking';
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig } from './AuthRequest.types';
-import { AuthSessionRedirectUriOptions } from './AuthSession.types';
-import { IssuerOrDiscovery } from './Discovery';
+import type { AuthRequestConfig } from './AuthRequest.types';
+import type { AuthSessionRedirectUriOptions } from './AuthSession.types';
+import type { IssuerOrDiscovery } from './Discovery';
 /**
  * Cancels an active `AuthSession` if there is one.
  */

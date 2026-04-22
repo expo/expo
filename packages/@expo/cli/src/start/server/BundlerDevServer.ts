@@ -6,8 +6,9 @@ import { AsyncWsTunnel } from './AsyncWsTunnel';
 import { Bonjour } from './Bonjour';
 import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
-import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { PlatformBundlers } from './platformBundlers';
+import type { CreateURLOptions } from './UrlCreator';
+import { UrlCreator } from './UrlCreator';
+import type { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -15,7 +16,7 @@ import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { isInteractive } from '../../utils/interactive';
 import { openBrowserAsync } from '../../utils/open';
-import { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
+import type { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 

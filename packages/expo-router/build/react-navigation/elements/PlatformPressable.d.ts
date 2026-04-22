@@ -19,7 +19,7 @@ declare const AnimatedPressable: Animated.AnimatedComponent<React.ForwardRefExot
 /**
  * PlatformPressable provides an abstraction on top of Pressable to handle platform differences.
  */
-declare function PlatformPressableInternal({ ref, disabled, onPress, onPressIn, onPressOut, android_ripple, pressColor, pressOpacity, hoverEffect, style, children, ...rest }: Props): React.JSX.Element;
+declare function PlatformPressableInternal({ ref, disabled, onPress, onPressIn, onPressOut, android_ripple, pressColor, pressOpacity, hoverEffect, style, children, ...rest }: Props): import("react/jsx-runtime").JSX.Element;
 export declare const PlatformPressable: typeof PlatformPressableInternal;
 export {};
 //# sourceMappingURL=PlatformPressable.d.ts.map

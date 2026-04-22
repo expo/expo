@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { resolveInstallApkNameAsync } from './resolveInstallApkName';
-import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions';
+import type { Options, ResolvedOptions } from './resolveOptions';
+import { resolveOptionsAsync } from './resolveOptions';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
 import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';

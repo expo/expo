@@ -1,14 +1,14 @@
 'use client';
 import React from 'react';
 import {
-  ColorValue,
+  type ColorValue,
   type GestureResponderEvent,
-  Platform,
   type StyleProp,
-  StyleSheet,
   type TextStyle,
-  View,
   type ViewStyle,
+  Platform,
+  StyleSheet,
+  View,
 } from 'react-native';
 
 import { getLabel, Label, PlatformPressable } from '../../elements';

@@ -1,14 +1,10 @@
-import {
-  createPermissionHook,
-  PermissionHookOptions,
-  PermissionResponse,
-  UnavailabilityError,
-} from 'expo-modules-core';
+import type { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
-import { GranularPermission } from './types/GranularPermission';
-import { MediaSubtype } from './types/MediaSubtype';
+import type { GranularPermission } from './types/GranularPermission';
+import type { MediaSubtype } from './types/MediaSubtype';
 
 export * from './MediaLibraryNext.types';
 

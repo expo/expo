@@ -7,7 +7,7 @@ import { TextDecoder, TextEncoder } from 'node:util';
 import RNFormData from 'react-native/Libraries/Network/FormData';
 import { ReadableStream as WebReadableStream } from 'web-streams-polyfill';
 
-import { type NativeHeadersType } from '../NativeRequest';
+import type { NativeHeadersType } from '../NativeRequest';
 import {
   convertReadableStreamToUint8ArrayAsync,
   normalizeBodyInitAsync,

@@ -1,6 +1,6 @@
 import { CodedError, uuid } from 'expo-modules-core';
 
-import { ServerRegistrationModule } from './ServerRegistrationModule.types';
+import type { ServerRegistrationModule } from './ServerRegistrationModule.types';
 
 const INSTALLATION_ID_KEY = 'EXPO_NOTIFICATIONS_INSTALLATION_ID';
 const REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_REGISTRATION_INFO';

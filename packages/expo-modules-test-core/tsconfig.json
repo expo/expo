@@ -5,7 +5,8 @@
     "strict": true,
     "outDir": "./build",
     "types": ["node"],
-    "module": "commonjs"
+    "module": "commonjs",
+    "verbatimModuleSyntax": false
   },
   "include": ["./src"]
 }

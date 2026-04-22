@@ -1,9 +1,9 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import fs from 'fs/promises';
 import path from 'path';
 
 import { getAssetSchemasAsync } from '../../../api/getExpoSchema';
-import { BundleAssetWithFileHashes } from '../../../export/saveAssets';
+import type { BundleAssetWithFileHashes } from '../../../export/saveAssets';
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';

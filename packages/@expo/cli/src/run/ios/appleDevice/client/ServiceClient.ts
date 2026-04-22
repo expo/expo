@@ -5,10 +5,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Socket } from 'net';
+import type { Socket } from 'net';
 
 import { CommandError } from '../../../../utils/errors';
-import { ProtocolClient } from '../protocol/AbstractProtocol';
+import type { ProtocolClient } from '../protocol/AbstractProtocol';
 
 export abstract class ServiceClient<T extends ProtocolClient> {
   constructor(

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class LockfileCheck implements DoctorCheck {
   description = 'Check for lock file';

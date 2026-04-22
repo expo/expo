@@ -16,5 +16,5 @@ export type RadioButtonProps = {
 /**
  * A Material Design radio button.
  */
-export declare function RadioButton(props: RadioButtonProps): import("react").JSX.Element;
+export declare function RadioButton(props: RadioButtonProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

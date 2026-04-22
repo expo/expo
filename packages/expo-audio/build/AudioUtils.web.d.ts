@@ -1,4 +1,4 @@
-import { AudioSource, AudioStatus } from './Audio.types';
+import type { AudioSource, AudioStatus } from './Audio.types';
 export declare const nextId: () => string;
 export declare function getAudioContext(): AudioContext;
 export declare function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>;

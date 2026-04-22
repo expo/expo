@@ -1,15 +1,15 @@
-import { TabPath } from './native';
+import type { TabPath } from './native';
 import { store, type ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
-import {
+import type {
   ParamListBase,
   StackNavigationState,
-  type NavigationRoute,
-  type NavigationState,
-  type TabNavigationState,
+  NavigationRoute,
+  NavigationState,
+  TabNavigationState,
 } from '../../react-navigation/native';
-import { Href } from '../../types';
+import type { Href } from '../../types';
 import { resolveHref } from '../href';
 
 export function getTabPathFromRootStateByHref(

@@ -25,6 +25,6 @@ export type BottomSheetProps = {
 /**
  * `BottomSheet` presents content from the bottom of the screen.
  */
-declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
+declare function BottomSheet(props: BottomSheetProps): import("react/jsx-runtime").JSX.Element;
 export { BottomSheet };
 //# sourceMappingURL=index.d.ts.map

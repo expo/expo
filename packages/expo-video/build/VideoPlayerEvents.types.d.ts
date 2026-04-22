@@ -1,4 +1,4 @@
-import { PlayerError, SubtitleTrack, VideoPlayerStatus, VideoSource, VideoTrack, AudioTrack } from './VideoPlayer.types';
+import type { PlayerError, SubtitleTrack, VideoPlayerStatus, VideoSource, VideoTrack, AudioTrack } from './VideoPlayer.types';
 /**
  * Handlers for events which can be emitted by the player.
  */

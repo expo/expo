@@ -3,7 +3,8 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { Navigator, Slot } from '../index';
-import { TabRouter, TabRouterOptions } from '../react-navigation/native';
+import type { TabRouterOptions } from '../react-navigation/native';
+import { TabRouter } from '../react-navigation/native';
 import { renderRouter } from '../testing-library';
 
 it('can render a custom navigator', () => {

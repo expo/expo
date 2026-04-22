@@ -2,7 +2,8 @@ import { screen } from '@testing-library/react-native';
 import React, { use } from 'react';
 import { Text, View } from 'react-native';
 
-import { Slot, SuspenseFallbackProps } from '../exports';
+import type { SuspenseFallbackProps } from '../exports';
+import { Slot } from '../exports';
 import { renderRouter } from '../testing-library';
 
 const renderFallback = (route: string, testID = 'custom-fallback') => (

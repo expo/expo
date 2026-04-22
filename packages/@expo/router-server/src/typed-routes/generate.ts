@@ -1,4 +1,4 @@
-import { type RequireContext } from 'expo-router';
+import type { RequireContext } from 'expo-router';
 import { getRoutes, removeSupportedExtensions, type RouteNode } from 'expo-router/internal/routing';
 
 // /[...param1]/ - Match [...param1]

@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 
-import { NotificationsEmitterModule } from './NotificationsEmitterModule.types';
+import type { NotificationsEmitterModule } from './NotificationsEmitterModule.types';
 
 let warningHasBeenShown = false;
 

@@ -1,7 +1,7 @@
-import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecordingOptions, RecordingStatus } from './Audio.types';
+import type { PermissionResponse } from 'expo-modules-core';
+import type { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
+import type { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
 /**
  * Creates an `AudioPlayer` instance that automatically releases when the component unmounts.
  *

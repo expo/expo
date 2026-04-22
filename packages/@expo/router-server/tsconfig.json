@@ -5,6 +5,7 @@
     "rootDir": "./src",
     "module": "commonjs",
     "moduleResolution": "node10",
+    "verbatimModuleSyntax": false,
     "noEmit": false,
     "resolveJsonModule": true,
     "types": [

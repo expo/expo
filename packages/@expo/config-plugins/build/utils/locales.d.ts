@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 /**
  * on iOS only, we support a special case where
  * StringsMap contains a 'Localizable.strings'?: StringsMap; entry

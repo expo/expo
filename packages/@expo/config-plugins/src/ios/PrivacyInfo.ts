@@ -1,10 +1,10 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import plist from '@expo/plist';
 import fs from 'fs';
 import path from 'path';
 import type { XcodeProject } from 'xcode';
 
-import { ExportedConfigWithProps } from '../Plugin.types';
+import type { ExportedConfigWithProps } from '../Plugin.types';
 import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 

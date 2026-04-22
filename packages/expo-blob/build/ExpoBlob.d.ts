@@ -1,4 +1,4 @@
-import { BlobPart, ExpoBlobModule } from './ExpoBlob.types';
+import type { BlobPart, ExpoBlobModule } from './ExpoBlob.types';
 declare const NativeBlobModule: ExpoBlobModule;
 export declare class Blob extends NativeBlobModule.Blob {
     constructor(blobParts?: BlobPart[] | Iterable<BlobPart>, options?: BlobPropertyBag);

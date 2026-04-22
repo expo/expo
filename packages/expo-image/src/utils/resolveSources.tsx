@@ -2,7 +2,7 @@ import { Platform } from 'expo-modules-core';
 
 import resolveAssetSource from './resolveAssetSource';
 import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
-import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
+import type { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 import { isImageRef } from '../utils';
 
 export function isBlurhashString(str: string): boolean {

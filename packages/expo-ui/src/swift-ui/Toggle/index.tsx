@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
-import { NativeSyntheticEvent } from 'react-native';
-import { type SFSymbol } from 'sf-symbols-typescript';
+import type { NativeSyntheticEvent } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';

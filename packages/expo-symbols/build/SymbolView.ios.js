@@ -1,15 +1,16 @@
+import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
 import { requireNativeViewManager } from 'expo-modules-core';
 import { processColor } from 'react-native';
 const NativeView = requireNativeViewManager('SymbolModule');
 export function SymbolView(props) {
     if (!NativeView) {
-        return <>{props.fallback}</>;
+        return _jsx(_Fragment, { children: props.fallback });
     }
     const nativeProps = getNativeProps(props);
     if (!nativeProps.name) {
-        return <>{props.fallback}</>;
+        return _jsx(_Fragment, { children: props.fallback });
     }
-    return <NativeView {...nativeProps}/>;
+    return _jsx(NativeView, { ...nativeProps });
 }
 function getNativeProps(props) {
     const colors = Array.isArray(props.colors) ? props.colors : props.colors ? [props.colors] : [];

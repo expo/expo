@@ -1,4 +1,4 @@
-import { CameraNativeProps, CameraType, FlashMode, CameraViewProps } from '../Camera.types';
+import type { CameraNativeProps, CameraType, FlashMode, CameraViewProps } from '../Camera.types';
 export declare const ConversionTables: {
     type: Record<keyof CameraType, CameraNativeProps['facing']>;
     flash: Record<keyof FlashMode, CameraNativeProps['flashMode']>;

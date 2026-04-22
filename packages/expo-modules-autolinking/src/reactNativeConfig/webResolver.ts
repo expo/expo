@@ -1,5 +1,5 @@
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import {
+import type {
   RNConfigReactNativePlatformsConfig,
   RNConfigDependencyWeb,
 } from './reactNativeConfig.types';

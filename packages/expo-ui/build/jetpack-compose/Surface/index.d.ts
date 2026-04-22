@@ -1,7 +1,7 @@
 import React from 'react';
 import { type ColorValue } from 'react-native';
-import { type ModifierConfig } from '../../types';
-import { ShapeJSXElement } from '../Shape';
+import type { ModifierConfig } from '../../types';
+import { type ShapeJSXElement } from '../Shape';
 /**
  * Border stroke configuration.
  */
@@ -90,5 +90,5 @@ export type SurfaceProps = {
  * - Applying background color based on tonal elevation
  * - Providing content color to its children
  */
-export declare function Surface(props: SurfaceProps): React.JSX.Element;
+export declare function Surface(props: SurfaceProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -6,7 +6,7 @@
  */
 
 import { codeFrameColumns } from '@babel/code-frame';
-import { types as t } from '@babel/core';
+import type { types as t } from '@babel/core';
 import type { Dependency } from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
 import collectDependencies from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
 

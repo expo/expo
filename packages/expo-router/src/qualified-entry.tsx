@@ -8,7 +8,7 @@
 //
 // @ts-ignore: Will not self-resolve without package.json:exports
 import { ctx } from 'expo-router/_ctx';
-import React from 'react';
+import 'react';
 
 import { ExpoRoot } from './ExpoRoot';
 import { Head } from './head';

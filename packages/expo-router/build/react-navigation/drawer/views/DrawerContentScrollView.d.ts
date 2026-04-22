@@ -4,7 +4,7 @@ type Props = ScrollViewProps & {
     ref?: React.Ref<ScrollView>;
     children: React.ReactNode;
 };
-declare function DrawerContentScrollViewInner({ ref, contentContainerStyle, style, children, ...rest }: Props): React.JSX.Element;
+declare function DrawerContentScrollViewInner({ ref, contentContainerStyle, style, children, ...rest }: Props): import("react/jsx-runtime").JSX.Element;
 export declare const DrawerContentScrollView: typeof DrawerContentScrollViewInner;
 export {};
 //# sourceMappingURL=DrawerContentScrollView.d.ts.map

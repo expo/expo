@@ -1,4 +1,5 @@
-import { getPackageJson, PackageJSONConfig } from '@expo/config';
+import type { PackageJSONConfig } from '@expo/config';
+import { getPackageJson } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';

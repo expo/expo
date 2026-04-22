@@ -1,6 +1,6 @@
-import React, { type PropsWithChildren, type ComponentType } from 'react';
-import { ExpoLinkingOptions } from './getLinkingConfig';
-import { RequireContext } from './types';
+import { type PropsWithChildren, type ComponentType } from 'react';
+import type { ExpoLinkingOptions } from './getLinkingConfig';
+import type { RequireContext } from './types';
 export type ExpoRootProps = {
     context: RequireContext;
     location?: URL | string;
@@ -16,5 +16,5 @@ export type NativeIntent = {
 /**
  * @hidden
  */
-export declare function ExpoRoot({ wrapper: ParentWrapper, ...props }: ExpoRootProps): React.JSX.Element;
+export declare function ExpoRoot({ wrapper: ParentWrapper, ...props }: ExpoRootProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=ExpoRoot.d.ts.map
