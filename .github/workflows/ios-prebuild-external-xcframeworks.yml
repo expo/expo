@@ -16,11 +16,6 @@ on:
         required: false
         type: boolean
         default: false
-      scope:
-        description: 'Top-level GCS prefix, e.g. sdk-55'
-        required: false
-        default: ''
-        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -42,16 +37,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-
-      - name: Validate inputs
-        env:
-          INPUT_PUBLISH: ${{ github.event.inputs.publish }}
-          INPUT_SCOPE: ${{ github.event.inputs.scope }}
-        run: |
-          if [[ "$INPUT_PUBLISH" == "true" ]] && [[ -z "$INPUT_SCOPE" ]]; then
-            echo "scope input must be set when publish=true"
-            exit 1
-          fi
 
       - name: Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
@@ -139,8 +124,8 @@ jobs:
           fi
 
           # Sync the staged tree as-is so objects land under:
-          #   gs://eas-build-precompiled-modules/<scope>/<pkg>/output/.../xcframeworks/*.tar.gz
+          #   gs://eas-build-precompiled-modules/<pkg>/output/.../xcframeworks/*.tar.gz
           gcloud storage rsync \
             "$SYNC_ROOT" \
-            "gs://eas-build-precompiled-modules/${{ github.event.inputs.scope }}" \
+            "gs://eas-build-precompiled-modules" \
             --recursive
