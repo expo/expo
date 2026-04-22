@@ -34,11 +34,11 @@ jobs:
             "${{ github.event.repository.full_name }}" \
             "${{ github.event.pull_request.number }}" \
             "${{ github.event.inputs.packages }}"
-      - if: ${{ steps.detect.outputs.packages != '' }}
+      - if: ${{ steps.detect.outputs.packages != 'none' }}
         uses: eas/use_npm_token
-      - if: ${{ steps.detect.outputs.packages != '' }}
+      - if: ${{ steps.detect.outputs.packages != 'none' }}
         uses: eas/install_node_modules
-      - if: ${{ steps.detect.outputs.packages != '' }}
+      - if: ${{ steps.detect.outputs.packages != 'none' }}
         name: Prebuild XCFrameworks
         working_directory: ../..
         run: |

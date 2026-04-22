@@ -98,4 +98,6 @@ else
 fi
 
 echo "Resolved packages: ${PKGS:-<none — skipping smoke test>}"
-set-output packages "$PKGS"
+# set-output rejects an empty VALUE (exit 2), so emit a sentinel the
+# workflow can compare against in its `if:` conditions.
+set-output packages "${PKGS:-none}"
