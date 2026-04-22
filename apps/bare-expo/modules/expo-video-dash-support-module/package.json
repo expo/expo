@@ -1,0 +1,19 @@
+{
+  "name": "dash-video-loader-test",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Registers a SegmentBase DASH-to-HLS transport provider for expo-video in bare-expo",
+  "main": "index.ts",
+  "types": "index.ts",
+  "homepage": "https://expo.dev",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {
+    "expo": "workspace:*",
+    "react": "*",
+    "react-native": "*",
+    "expo-video": "workspace:*"
+  }
+}

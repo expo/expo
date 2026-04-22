@@ -7,6 +7,10 @@ public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoVideo")
 
+    OnCreate {
+      VideoAssetTransportRegistry.registerDefaultProviders()
+    }
+
     Function("isPictureInPictureSupported") { () -> Bool in
       return AVPictureInPictureController.isPictureInPictureSupported()
     }
