@@ -32,6 +32,9 @@
     "watch": "yarn run build -w",
     "prepublishOnly": "expo-module prepublishOnly"
   },
+  "engines": {
+    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0"
+  },
   "devDependencies": {
     "@expo/config": "~55.0.15",
     "@expo/env": "~2.1.1",

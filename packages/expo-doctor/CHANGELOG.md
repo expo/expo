@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add explicit Node.js version requirement and make `@expo/env` fault tolerant ([#44985](https://github.com/expo/expo/pull/44985) by [@kitten](https://github.com/kitten))
+
 ## 1.18.19 — 2026-04-21
 
 ### 🎉 New features
