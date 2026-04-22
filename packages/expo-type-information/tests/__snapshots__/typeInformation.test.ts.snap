@@ -10,12 +10,10 @@ exports[`Same generated concise ts interface 1`] = `
 
 import { NativeModule } from 'expo';
 
-export type URL =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
-export type BarcodeType =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
-export type SomeParametrizedType<T0, T1> =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
+// These types haven't been defined in provided file(s).
+export type URL = unknown;
+export type BarcodeType = unknown;
+export type SomeParametrizedType<T0, T1> = unknown;
 
 export type TestRecord = {
   basicString: string;
@@ -72,7 +70,7 @@ export type ExpoWebViewProps = {
 export declare class TestModuleNativeModuleType extends NativeModule {
   readonly StringConstant: number;
   readonly IntConstant: number;
-  readonly UntypedConstant: unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
+  readonly UntypedConstant: unknown /*The type couldn't be resolved automatically.*/;
   SimpleFunction(a: number, b: number): number;
   TestUntypedFunction(): string;
   TestUntypedFunction2(): TestEnum;
@@ -103,7 +101,7 @@ export declare class TestModuleNativeModuleType extends NativeModule {
   TestUnderscore(
     url: URL,
     _4: BarcodeType[]
-  ): Promise<unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/>;
+  ): Promise<unknown /*The type couldn't be resolved automatically.*/>;
   TestClassWithConstructor: typeof TestClassWithConstructor;
   TestBasicClass: typeof TestBasicClass;
   TestEmptyClass: typeof TestEmptyClass;
@@ -131,11 +129,11 @@ import { requireNativeModule, requireNativeView } from 'expo';
 const TestModule: TestModuleNativeModuleType =
   requireNativeModule<TestModuleNativeModuleType>('TestModule');
 
-const ExpoWebView = requireNativeView<ExpoWebViewProps>('TestModule');
+const ExpoWebView = requireNativeView<ExpoWebViewProps>('TestModule', 'ExpoWebView');
 
 export const StringConstant: number = TestModule.StringConstant;
 export const IntConstant: number = TestModule.IntConstant;
-export const UntypedConstant: unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ =
+export const UntypedConstant: unknown /*The type couldn't be resolved automatically.*/ =
   TestModule.UntypedConstant;
 
 export function SimpleFunction(a: number, b: number) {
@@ -205,9 +203,9 @@ exports[`Same generated full ts interface 1`] = `
 
 export type * from './TestModule.types';
 
-export { default as TestModule } from './ExpoTestModule';
+export { default as TestModule } from './TestModuleModule';
 
-export { default as ExpoWebView } from './TestModuleView';
+export { default as ExpoWebView } from './ExpoWebViewView';
 ",
     "name": "index.ts",
   },
@@ -219,7 +217,7 @@ export { default as ExpoWebView } from './TestModuleView';
  * and works out of the box with inline modules.
  *  */
 
-import { requireNativeModule, NativeModule } from 'expo-modules-core';
+import { requireNativeModule, NativeModule } from 'expo';
 
 import {
   TestEnum,
@@ -237,7 +235,7 @@ import {
 export declare class TestModule extends NativeModule {
   readonly StringConstant: number;
   readonly IntConstant: number;
-  readonly UntypedConstant: unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
+  readonly UntypedConstant: unknown /*The type couldn't be resolved automatically.*/;
   SimpleFunction(a: number, b: number): number;
   TestUntypedFunction(): string;
   TestUntypedFunction2(): TestEnum;
@@ -268,7 +266,7 @@ export declare class TestModule extends NativeModule {
   TestUnderscore(
     url: URL,
     _6: BarcodeType[]
-  ): Promise<unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/>;
+  ): Promise<unknown /*The type couldn't be resolved automatically.*/>;
   TestClassWithConstructor: typeof TestClassWithConstructor;
   TestBasicClass: typeof TestBasicClass;
   TestEmptyClass: typeof TestEmptyClass;
@@ -277,7 +275,7 @@ export declare class TestModule extends NativeModule {
 const _default: TestModule = requireNativeModule<TestModule>('TestModule');
 export default _default;
 ",
-    "name": "ExpoTestModule.ts",
+    "name": "TestModuleModule.ts",
   },
   "moduleTypesFile": {
     "content": "/**
@@ -289,12 +287,10 @@ export default _default;
 
 import { NativeModule } from 'expo';
 
-export type URL =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
-export type BarcodeType =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
-export type SomeParametrizedType<T0, T1> =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
+// These types haven't been defined in provided file(s).
+export type URL = unknown;
+export type BarcodeType = unknown;
+export type SomeParametrizedType<T0, T1> = unknown;
 
 export type TestRecord = {
   basicString: string;
@@ -350,8 +346,9 @@ export type ExpoWebViewProps = {
 ",
     "name": "TestModule.types.ts",
   },
-  "moduleViewFile": {
-    "content": "/**
+  "moduleViewsFiles": [
+    {
+      "content": "/**
  * Automatically generated by expo-type-information.
  *
  * This autogenerated file provides TS types for native Expo module or view,
@@ -362,14 +359,15 @@ import { requireNativeView } from 'expo';
 
 import { ExpoWebViewProps } from './TestModule.types';
 
-const ExpoWebView = requireNativeView<ExpoWebViewProps>('TestModule');
+const ExpoWebView = requireNativeView<ExpoWebViewProps>('TestModule', 'ExpoWebView');
 
 export default function ExpoWebViewComponent(props: ExpoWebViewProps) {
   return <ExpoWebView {...props} />;
 }
 ",
-    "name": "TestModuleView.tsx",
-  },
+      "name": "ExpoWebViewView.tsx",
+    },
+  ],
 }
 `;
 
@@ -382,9 +380,9 @@ exports[`Same generated mock file 1`] = `
  *  */
 
 
-export type URL = unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
-export type BarcodeType = unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
-export type SomeParametrizedType<T0, T1> = unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
+export type URL = unknown;
+export type BarcodeType = unknown;
+export type SomeParametrizedType<T0, T1> = unknown;
 
 
 export type TestRecord = {
@@ -439,7 +437,7 @@ export function TestFunctionReturningEnum(): TestEnum { return TestEnum.simpleCa
 
 
 export async function TestSimpleAsyncFunction(a: string, b: string): Promise<string> { return ""; }
-export async function TestUnderscore(url: URL, _2: BarcodeType[]): Promise<unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/> { return; }
+export async function TestUnderscore(url: URL, _2: BarcodeType[]): Promise<unknown /*The type couldn't be resolved automatically.*/> { return; }
 
 
 export class TestClassWithConstructor {
@@ -518,12 +516,10 @@ exports[`Same generated module file 1`] = `
 
 import { NativeModule } from 'expo';
 
-export type URL =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
-export type BarcodeType =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
-export type SomeParametrizedType<T0, T1> =
-  unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
+// These types haven't been defined in provided file(s).
+export type URL = unknown;
+export type BarcodeType = unknown;
+export type SomeParametrizedType<T0, T1> = unknown;
 
 export type TestRecord = {
   basicString: string;
@@ -570,7 +566,7 @@ export declare class TestEmptyClass {}
 export declare class TestModuleNativeModuleType extends NativeModule {
   readonly StringConstant: number;
   readonly IntConstant: number;
-  readonly UntypedConstant: unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/;
+  readonly UntypedConstant: unknown /*The type couldn't be resolved automatically.*/;
   SimpleFunction(a: number, b: number): number;
   TestUntypedFunction(): string;
   TestUntypedFunction2(): TestEnum;
@@ -601,7 +597,7 @@ export declare class TestModuleNativeModuleType extends NativeModule {
   TestUnderscore(
     url: URL,
     _1: BarcodeType[]
-  ): Promise<unknown /*The type couldn't be resolved automatically.*/ /*The type couldn't be resolved automatically.*/>;
+  ): Promise<unknown /*The type couldn't be resolved automatically.*/>;
   TestClassWithConstructor: typeof TestClassWithConstructor;
   TestBasicClass: typeof TestBasicClass;
   TestEmptyClass: typeof TestEmptyClass;
@@ -620,6 +616,7 @@ exports[`Same generated view file 1`] = `
  * and works out of the box with inline modules.
  *  */
 
+// These types haven't been defined in provided file(s).
 export type URL = unknown;
 export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;

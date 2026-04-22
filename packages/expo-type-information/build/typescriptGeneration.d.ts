@@ -52,7 +52,7 @@ export declare function generateConciseTsInterface(fileTypeInformation: FileType
 }>;
 export declare function generateFullTsInterface(fileTypeInformation: FileTypeInformation): Promise<{
     moduleTypesFile: OutputFile;
-    moduleViewFile: OutputFile;
+    moduleViewsFiles: OutputFile[];
     moduleNativeFile: OutputFile;
     indexFile: OutputFile;
 } | null>;

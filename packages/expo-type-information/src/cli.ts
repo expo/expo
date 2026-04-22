@@ -95,19 +95,25 @@ function sanitizeAndValidatePath(rawPath: string): string | null {
   }
 }
 
-function sanitizeAndValidateOutputPath(rawPath: string): string | null {
+function sanitizeAndValidateOutputPath(rawPath: string, isFilePath: boolean = true): string | null {
   try {
     const resolvedPath = path.resolve(rawPath);
 
     if (fs.existsSync(resolvedPath)) {
-      if (!fs.statSync(resolvedPath).isFile()) {
+      const pathStat = fs.statSync(resolvedPath);
+      if (isFilePath && !pathStat.isFile()) {
         return null;
       }
-    } else {
+      if (!isFilePath && !pathStat.isDirectory()) {
+        return null;
+      }
+    } else if (isFilePath) {
       const parentDir = path.dirname(resolvedPath);
       if (!fs.existsSync(parentDir)) {
         return null;
       }
+    } else {
+      return null;
     }
 
     return resolvedPath;
@@ -137,7 +143,8 @@ interface ParsedArguments {
 }
 
 function parseCommandArguments(
-  options: TypeInformationCommandCommonArguments
+  options: TypeInformationCommandCommonArguments,
+  isOutputFile: boolean = true
 ): ParsedArguments | null {
   const realInputPaths: string[] = options.inputPaths
     .map(sanitizeAndValidatePath)
@@ -149,10 +156,10 @@ function parseCommandArguments(
 
   let realOutputPath: string | undefined = undefined;
   if (options.outputPath) {
-    const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath);
+    const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath, isOutputFile);
     if (!validatedOutPath) {
       console.error(
-        `Output path ${options.outputPath} is not valid, is a directory, or its parent directory does not exist.`
+        `Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a path to an existing directory.'}`
       );
       return null;
     }
@@ -307,7 +314,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
         'Creates concise ts interface for an expo module. Overrites `ModuleName.generated.ts` and creates `ModuleName.ts` if not present. Can be used with inline-modules.'
       )
   ).action(async (options: TypeInformationCommandCommonArguments) => {
-    const parsedArgs = await parseCommandArguments(options);
+    const parsedArgs = await parseCommandArguments(options, false);
     if (!parsedArgs) return;
     const { realInputPaths, realOutputPath } = parsedArgs;
 
@@ -350,7 +357,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
 function generateTypeFiles(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-type-files')).action(
     async (options: TypeInformationCommandCommonArguments) => {
-      const parsedArgs = await parseCommandArguments(options);
+      const parsedArgs = await parseCommandArguments(options, false);
       if (!parsedArgs) return;
       const { realInputPaths, realOutputPath } = parsedArgs;
 
@@ -359,11 +366,16 @@ function generateTypeFiles(cli: commander.Command) {
         if (!typeInfo) return;
         const generatedFiles = await generateFullTsInterface(typeInfo);
         if (!generatedFiles) return;
-        const { moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile } = generatedFiles;
+        const { moduleTypesFile, moduleViewsFiles, moduleNativeFile, indexFile } = generatedFiles;
 
         const dirName = realOutputPath ?? path.dirname(realInputPaths[0] as string);
         const writeFilePromises = [];
-        for (const outputFile of [moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile]) {
+        for (const outputFile of [
+          moduleTypesFile,
+          ...moduleViewsFiles,
+          moduleNativeFile,
+          indexFile,
+        ]) {
           if (!outputFile) {
             continue;
           }
