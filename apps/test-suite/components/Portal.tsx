@@ -1,9 +1,14 @@
-import React from 'react';
+import { type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../common/ThemeProvider';
 
-export default function Portal({ isVisible, children }) {
+type PortalProps = {
+  isVisible: boolean;
+  children: ReactNode;
+};
+
+export default function Portal({ isVisible, children }: PortalProps) {
   const { theme } = useTheme();
 
   if (!children) {

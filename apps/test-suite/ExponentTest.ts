@@ -1,8 +1,14 @@
 import getenv from 'getenv';
 import { NativeModules } from 'react-native';
 
-// Used for bare android device farm builds
-let ExponentTest;
+type ExponentTestType = {
+  isInCI: boolean;
+  log: (...args: unknown[]) => void;
+  completed: (results: string) => void;
+  action: (action: object) => void;
+};
+
+let ExponentTest: ExponentTestType | undefined;
 
 try {
   if (NativeModules) {
@@ -16,13 +22,9 @@ if (!ExponentTest) {
       return getenv.boolish('CI', false);
     },
     log: console.log,
-    completed() {
-      // noop
-    },
-    action() {
-      // noop
-    },
+    completed() {},
+    action() {},
   };
 }
 
-export default ExponentTest;
+export default ExponentTest as ExponentTestType;
