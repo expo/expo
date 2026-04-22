@@ -132,11 +132,7 @@ export default function TextFieldScreen() {
 
         {/* Multiline Variants */}
         <Section title="Multiline">
-          <TextField
-            axis="vertical"
-            placeholder="Grows up to 5 lines"
-            modifiers={[lineLimit(5)]}
-          />
+          <TextField axis="vertical" placeholder="Grows up to 5 lines" modifiers={[lineLimit(5)]} />
           <TextField
             axis="vertical"
             placeholder="Fixed 3-line height"
