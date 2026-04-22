@@ -6,7 +6,7 @@
 
 - Pass environment to Widgets and Live Activities. ([#43681](https://github.com/expo/expo/pull/43681) by [@jakex7](https://github.com/jakex7))
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
-- Remove hardcoded `containerBackground` in favor of `@expo/ui` modifier.
+- Remove hardcoded `containerBackground` in favor of `@expo/ui` modifier. ([#44192](https://github.com/expo/expo/pull/44192) by [@jakex7](https://github.com/jakex7))
 
 ### 🎉 New features
 
