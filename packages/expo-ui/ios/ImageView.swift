@@ -6,6 +6,8 @@ import ExpoModulesCore
 public final class ImageViewProps: UIBaseViewProps {
   @Field var uiImage: String?
   @Field var systemName: String?
+  @Field var assetName: String?
+  @Field var base64: String?
   @Field var size: Double?
   @Field var color: Color?
   @Field var variableValue: Double?
@@ -31,7 +33,23 @@ public struct ImageView: ExpoSwiftUI.View {
       }()
 
       image
+        .applyImageModifiers(props.modifiers, appContext: props.appContext)
         .font(.system(size: CGFloat(props.size ?? 24)))
+        .foregroundColor(props.color)
+        .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+    } else if let assetName = props.assetName {
+      Image(assetName)
+        .renderingMode(props.color != nil ? .template : .original)
+        .resizable()
+        .applyImageModifiers(props.modifiers, appContext: props.appContext)
+        .aspectRatio(contentMode: .fit)
+        .foregroundColor(props.color)
+        .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+    } else if let base64String = props.base64,
+              let data = Data(base64Encoded: base64String),
+              let uiImage = UIImage(data: data) {
+      Image(uiImage: uiImage)
+        .applyImageModifiers(props.modifiers, appContext: props.appContext)
         .foregroundColor(props.color)
         .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
     } else if let url = props.uiImage,

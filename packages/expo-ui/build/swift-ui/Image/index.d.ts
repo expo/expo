@@ -14,6 +14,19 @@ export interface ImageProps extends CommonViewModifierProps {
      */
     uiImage?: string;
     /**
+     * The name of an image in the app's asset catalog.
+     * Use this for images bundled with the app, especially in widgets and live activities
+     * where network requests and file I/O are not available.
+     * For example: 'AppIcon', 'logo', 'banner'
+     */
+    assetName?: string;
+    /**
+     * A base64-encoded image string to display.
+     * Use this for images passed through live activity content state or widget timeline entries
+     * where you need to transfer image data without file system access.
+     */
+    base64?: string;
+    /**
      * The size of the system image.
      */
     size?: number;

@@ -1906,6 +1906,22 @@ extension ViewModifierRegistry {
       return try WidgetURLModifier(from: params, appContext: appContext)
     }
 
+    register("containerBackground") { params, appContext, _ in
+      return try ContainerBackgroundModifier(from: params, appContext: appContext)
+    }
+
+    register("invalidatableContent") { params, appContext, _ in
+      return try InvalidatableContentModifier(from: params, appContext: appContext)
+    }
+
+    register("contentMarginsDisabled") { params, appContext, _ in
+      return try ContentMarginsDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("unredacted") { params, appContext, _ in
+      return try UnredactedModifier(from: params, appContext: appContext)
+    }
+
     register("keyboardType") { params, appContext, _ in
       return try KeyboardTypeModifier(from: params, appContext: appContext)
     }
