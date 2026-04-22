@@ -59,4 +59,4 @@ export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<vo
   return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);
 }
 
-export { ExpoDevMenuItem } from './ExpoDevMenu.types';
+export type { ExpoDevMenuItem } from './ExpoDevMenu.types';
