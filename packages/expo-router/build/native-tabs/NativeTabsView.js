@@ -104,7 +104,10 @@ function Screen(props) {
             return content;
         }
     }, [content, options.disableAutomaticContentInsets]);
-    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...options, overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets, tabBarItemBadgeBackgroundColor: standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor, tabBarItemBadgeTextColor: badgeTextColor, standardAppearance: standardAppearance, scrollEdgeAppearance: scrollEdgeAppearance, icon: (0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon, standardAppearance?.stacked?.normal?.tabBarItemIconColor), selectedIcon: (0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon, standardAppearance?.stacked?.selected?.tabBarItemIconColor), title: title, freezeContents: false, systemItem: options.role, ...options.nativeProps, tabKey: routeKey, isFocused: isFocused, children: wrappedContent }));
+    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...options, 
+        // TODO(@ubax): https://linear.app/expo/issue/ENG-20736/remove-pointerevents-from-nativetabsview
+        // @ts-expect-error pointerEvents are not exposed by react-native-screens, but still are passed down to native component
+        pointerEvents: isFocused ? 'box-none' : 'none', overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets, tabBarItemBadgeBackgroundColor: standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor, tabBarItemBadgeTextColor: badgeTextColor, standardAppearance: standardAppearance, scrollEdgeAppearance: scrollEdgeAppearance, icon: (0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon, standardAppearance?.stacked?.normal?.tabBarItemIconColor), selectedIcon: (0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon, standardAppearance?.stacked?.selected?.tabBarItemIconColor), title: title, freezeContents: false, systemItem: options.role, ...options.nativeProps, tabKey: routeKey, isFocused: isFocused, children: wrappedContent }));
 }
 const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
 const supportedTabBarItemLabelVisibilityModesSet = new Set(types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES);
