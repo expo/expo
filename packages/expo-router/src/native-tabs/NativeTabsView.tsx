@@ -208,6 +208,8 @@ function Screen(props: {
   return (
     <Tabs.Screen
       {...options}
+      // TODO(@ubax): https://linear.app/expo/issue/ENG-20736/remove-pointerevents-from-nativetabsview
+      // @ts-expect-error pointerEvents are not exposed by react-native-screens, but still are passed down to native component
       pointerEvents={isFocused ? 'box-none' : 'none'}
       overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets}
       tabBarItemBadgeBackgroundColor={
