@@ -1,6 +1,6 @@
 import { JSONSchema } from './JSONSchema';
 import { BaseValidationError, ValidationError as ValidationResult } from './validate';
-export { JSONSchema } from './JSONSchema';
+export type { JSONSchema } from './JSONSchema';
 export declare class ValidationError<T> extends Error {
     schema: JSONSchema<T>;
     errors: BaseValidationError[];
