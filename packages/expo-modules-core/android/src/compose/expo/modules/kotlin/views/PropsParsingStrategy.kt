@@ -1,5 +1,6 @@
 package expo.modules.kotlin.views
 
+import android.util.Log
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.descriptors.toRawTypeDescriptor
@@ -16,6 +17,7 @@ internal inline fun <reified Props : ComposeProps> toPropsParsingStrategy(): Pro
   return if (isIntrospectable<Props>()) {
     PropsParsingStrategy.Introspection(introspectionOf<Props>())
   } else {
+    Log.w("ExpoModulesCore", "Props class ${Props::class.java} is not introspectable. Falling back to reflection-based props parsing, which may have performance implications. To fix this, annotate the props class with @OptimizedComposeProps.")
     PropsParsingStrategy.Reflection(Props::class)
   }
 }
