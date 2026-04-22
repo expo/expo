@@ -1,11 +1,11 @@
 ---
-title: Error handling
-description: Learn how to handle unmatched routes and errors in your app when using Expo Router.
+title: Error handling and loading states
+description: Learn how to handle unmatched routes, errors, and loading states in your app when using Expo Router.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-This guide specifies how to handle unmatched routes and errors in your app when using Expo Router.
+This guide specifies how to handle unmatched routes, errors, and loading states in your app when using Expo Router.
 
 ## Unmatched routes
 
@@ -81,3 +81,52 @@ When `ErrorBoundary` is not present, the error will be thrown to the nearest par
 ### Work in progress
 
 React Native LogBox needs to be presented less aggressively to develop with errors. Currently, it shows for `console.error` and `console.warn`. However, it should ideally only show for uncaught errors.
+
+## Loading states with Suspense fallback
+
+Expo Router wraps each route in a [React Suspense](https://react.dev/reference/react/Suspense) boundary. You can export a [`SuspenseFallback`](/versions/unversioned/sdk/router/#suspensefallback) component from a layout file to customize the loading UI shown while any child route is suspended:
+
+```tsx src/app/_layout.tsx
+import { ActivityIndicator, View } from 'react-native';
+import { Stack } from 'expo-router';
+
+export function SuspenseFallback() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
+}
+
+export default function RootLayout() {
+  return <Stack />;
+}
+```
+
+> When multiple parent layouts define a fallback, the nearest parent takes precedence.
+
+### Accessing route parameters
+
+The [`SuspenseFallback`](/versions/unversioned/sdk/router/#suspensefallback) component receives `route` and `params` props. You can use `params` to display context-specific loading states for dynamic routes, for example:
+
+```tsx src/app/(app)/_layout.tsx
+import { ActivityIndicator, Text, View } from 'react-native';
+import { Stack, type SuspenseFallbackProps } from 'expo-router';
+
+export function SuspenseFallback({ params }: SuspenseFallbackProps) {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Loading profile {params.id}...</Text>
+      <ActivityIndicator size="large" />
+    </View>
+  );
+}
+
+export default function AppLayout() {
+  return <Stack />;
+}
+```
+
+### Limitations
+
+- [Async routes](/router/web/async-routes) do not support custom Suspense fallbacks.
