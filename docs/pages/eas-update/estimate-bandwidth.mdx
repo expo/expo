@@ -31,7 +31,15 @@ Given a bandwidth allocation, we estimate how many updates can be downloaded in 
 
 ## Measuring your actual update size
 
-To determine the actual compressed size of your Hermes bundle, run the following commands:
+Start by generating your uncompressed production bundle with the following command:
+
+<Terminal cmd={['$ npx expo export']} />
+
+Then, look inside the **dist/\_expo/static/js** directory. There will be **android** and **ios** directories with a **.hbc** file in each. The size of the **.hbc** file is the uncompressed size of your Hermes bundle. Note that Android and iOS bundles may differ in size, especially if you make use of platform-specific code files.
+
+These files have long names that include a hash. For this example, rename the file you would like to analyze to **bundle.hbc**.
+
+To determine the actual compressed size of your Hermes bundle, which is how large it will be when downloaded by app users, run the following commands:
 
 <Terminal
   cmd={[
