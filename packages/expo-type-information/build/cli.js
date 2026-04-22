@@ -61,19 +61,26 @@ function sanitizeAndValidatePath(rawPath) {
         return null;
     }
 }
-function sanitizeAndValidateOutputPath(rawPath) {
+function sanitizeAndValidateOutputPath(rawPath, isFilePath = true) {
     try {
         const resolvedPath = path_1.default.resolve(rawPath);
         if (fs_1.default.existsSync(resolvedPath)) {
-            if (!fs_1.default.statSync(resolvedPath).isFile()) {
+            const pathStat = fs_1.default.statSync(resolvedPath);
+            if (isFilePath && !pathStat.isFile()) {
+                return null;
+            }
+            if (!isFilePath && !pathStat.isDirectory()) {
                 return null;
             }
         }
-        else {
+        else if (isFilePath) {
             const parentDir = path_1.default.dirname(resolvedPath);
             if (!fs_1.default.existsSync(parentDir)) {
                 return null;
             }
+        }
+        else {
+            return null;
         }
         return resolvedPath;
     }
@@ -94,7 +101,7 @@ function parseInferenceOption(option) {
     }
     return null;
 }
-function parseCommandArguments(options) {
+function parseCommandArguments(options, isOutputFile = true) {
     const realInputPaths = options.inputPaths
         .map(sanitizeAndValidatePath)
         .filter((p) => p != null);
@@ -104,9 +111,9 @@ function parseCommandArguments(options) {
     }
     let realOutputPath = undefined;
     if (options.outputPath) {
-        const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath);
+        const validatedOutPath = sanitizeAndValidateOutputPath(options.outputPath, isOutputFile);
         if (!validatedOutPath) {
-            console.error(`Output path ${options.outputPath} is not valid, is a directory, or its parent directory does not exist.`);
+            console.error(`Output path ${options.outputPath} is not valid. ${isOutputFile ? 'Provide a path to an existing file, or to a file in an existing parent directory.' : 'Provide a path to an existing directory.'}`);
             return null;
         }
         realOutputPath = validatedOutPath;
@@ -230,7 +237,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli) {
         .command('generate-concise-ts')
         .summary('Creates concise ts interface, great with inline-modules.')
         .description('Creates concise ts interface for an expo module. Overrites `ModuleName.generated.ts` and creates `ModuleName.ts` if not present. Can be used with inline-modules.')).action(async (options) => {
-        const parsedArgs = await parseCommandArguments(options);
+        const parsedArgs = await parseCommandArguments(options, false);
         if (!parsedArgs)
             return;
         const { realInputPaths, realOutputPath } = parsedArgs;
@@ -260,7 +267,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli) {
 }
 function generateTypeFiles(cli) {
     return addCommonOptions(cli.command('generate-type-files')).action(async (options) => {
-        const parsedArgs = await parseCommandArguments(options);
+        const parsedArgs = await parseCommandArguments(options, false);
         if (!parsedArgs)
             return;
         const { realInputPaths, realOutputPath } = parsedArgs;
@@ -271,10 +278,15 @@ function generateTypeFiles(cli) {
             const generatedFiles = await (0, typescriptGeneration_1.generateFullTsInterface)(typeInfo);
             if (!generatedFiles)
                 return;
-            const { moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile } = generatedFiles;
+            const { moduleTypesFile, moduleViewsFiles, moduleNativeFile, indexFile } = generatedFiles;
             const dirName = realOutputPath ?? path_1.default.dirname(realInputPaths[0]);
             const writeFilePromises = [];
-            for (const outputFile of [moduleTypesFile, moduleViewFile, moduleNativeFile, indexFile]) {
+            for (const outputFile of [
+                moduleTypesFile,
+                ...moduleViewsFiles,
+                moduleNativeFile,
+                indexFile,
+            ]) {
                 if (!outputFile) {
                     continue;
                 }
