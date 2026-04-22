@@ -21,6 +21,7 @@ import {
   ModuleClassDeclaration,
   ParametrizedType,
   PropDeclaration,
+  PropertyDeclaration,
   RecordType,
   SumType,
   Type,
@@ -224,7 +225,7 @@ function getStructureFromFile(file: FileType) {
   const command = 'sourcekitten structure --file ' + file.path;
 
   try {
-    const output = execSync(command);
+    const output = execSync(command, { maxBuffer: 10 * 1024 * 1024 });
     return JSON.parse(output.toString());
   } catch (error) {
     console.error('An error occurred while executing the command:', error);
@@ -634,6 +635,26 @@ function sortModuleClassDeclaration(moduleClassDeclaration: ModuleClassDeclarati
   moduleClassDeclaration.views.sort(cmp);
 }
 
+function parsePropertyString(
+  property: string,
+  definitionOffset: number
+): PropertyDeclaration | null {
+  const propertyRegex = /Property\(\.\s*"([^"]*)"\s*\)/;
+  const matches = property.match(propertyRegex);
+  const propertyName = matches?.[1];
+  if (!matches || !propertyName) {
+    return null;
+  }
+  return {
+    name: propertyName,
+    type: {
+      kind: TypeKind.BASIC,
+      type: BasicType.UNRESOLVED,
+    },
+    definitionOffset,
+  };
+}
+
 async function parseModuleStructure(
   moduleStructure: Structure[],
   file: FileType,
@@ -655,7 +676,19 @@ async function parseModuleStructure(
     definitionOffset,
   };
 
-  await taskAll(moduleStructure, async (structure, index) => {
+  await taskAll(moduleStructure, async (structure) => {
+    // TODO(@HubertBer): Some special cases when the sourcekitten parses the structure differently, for now only Property as it is common
+    if (structure['key.name'].startsWith('Property(')) {
+      const propertyDeclaration = parsePropertyString(
+        structure['key.name'],
+        structure['key.nameoffset']
+      );
+      if (propertyDeclaration) {
+        moduleClassDeclaration.properties.push(propertyDeclaration);
+      }
+      return;
+    }
+
     switch (structure['key.name']) {
       case 'Name':
         const nameSubstrucutre = structure['key.substructure']?.[0];
@@ -712,7 +745,7 @@ async function parseModuleStructure(
         parseModuleEventDeclaration(structure, file, moduleClassDeclaration.events);
         break;
       default:
-        console.warn('Module substructure not supported');
+        console.warn(`Module substructure not supported. ${structure['key.name']}`);
     }
   });
 
@@ -734,6 +767,10 @@ function parseStructure(
   recordsStructures: Structure[],
   enumsStructures: Structure[]
 ) {
+  // TODO(@HubertBer): Find out why sometimes the structure is undefined (for example when parsing expo-audio)
+  if (!structure || !structure['key.substructure']) {
+    return;
+  }
   const substructure = structure['key.substructure'];
 
   if (isModuleStructure(structure)) {
@@ -1040,6 +1077,9 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): number {
 // Preprocessing to help sourcekitten functions
 // For now we create a new variable for each return statement,
 // we can find it's type easily with sourcekitten
+// TODO(@HubertBer): This has many problems which need fixing:
+// - return can be inside a string
+// - return Expression end parses incorrectly in case of some strings (check how it parses expo-video)
 export function preprocessSwiftFile(originalFileContent: string): string {
   const newFileContent: string[] = [];
   const fileContent = removeComments(originalFileContent);
@@ -1062,7 +1102,7 @@ export function preprocessSwiftFile(originalFileContent: string): string {
   for (const { start, end } of returnPositions) {
     newFileContent.push(fileContent.substring(prevEnd, start));
     newFileContent.push(
-      `let returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}\n`
+      `\nlet returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}\n`
     );
     newFileContent.push(`return returnValueDeclaration_${start}_${end}\n`);
     prevEnd = end;

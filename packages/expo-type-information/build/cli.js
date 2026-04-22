@@ -12,7 +12,8 @@ const typeInformation_1 = require("./typeInformation");
 const typescriptGeneration_1 = require("./typescriptGeneration");
 function addCommonOptions(command) {
     return command
-        .requiredOption('-i, --input-paths <filePaths...>', 'Paths to Swift files. First file provided should be the file with the Native module')
+        .option('-i, --input-paths <filePaths...>', 'Paths to Swift files for some module, glob patterns are allowed.')
+        .option('-m --module-path <modulePath>', 'Path to expo module root directory.')
         .option('-o, --output-path <filePath>', 'Path to save the generated output. If this option is not provided the generated output is printed to console.')
         .option('-t, --type-inference <typeInference>', 'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE', 'PREPROCESS_AND_INFERENCE')
         .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
@@ -46,16 +47,16 @@ async function runCommandOnWatch(parsedArgs, command) {
         }
     });
 }
-function sanitizeAndValidatePath(rawPath) {
+function getFilesForGlobPattern(globPattern) {
     try {
-        const resolvedPath = path_1.default.resolve(rawPath);
-        if (!fs_1.default.existsSync(resolvedPath)) {
-            return null;
-        }
-        if (!fs_1.default.statSync(resolvedPath).isFile()) {
-            return null;
-        }
-        return fs_1.default.realpathSync(resolvedPath);
+        const normalizedPattern = globPattern.replace(/\\/g, '/');
+        const matches = fs_1.default.globSync(normalizedPattern, {
+            withFileTypes: true,
+        });
+        const resolvedPaths = matches
+            .filter((entry) => entry.isFile())
+            .map((entry) => path_1.default.resolve(entry.parentPath, entry.name));
+        return resolvedPaths.length > 0 ? resolvedPaths : null;
     }
     catch (error) {
         return null;
@@ -101,12 +102,39 @@ function parseInferenceOption(option) {
     }
     return null;
 }
+function getModuleFilePathsFromPodspec(modulePath) {
+    const normalizedModulePath = fs_1.default.realpathSync(modulePath).replace(/\\/g, '/');
+    const podspecFiles = [...fs_1.default.globSync(`${normalizedModulePath}/ios/*.podspec`)];
+    const podspecFile = podspecFiles[0];
+    if (!podspecFile) {
+        console.warn(`No .podspec found in ${modulePath}`);
+        return [];
+    }
+    const podspecPath = podspecFile.toString();
+    const podspecDir = path_1.default.dirname(podspecPath);
+    const podspecContent = fs_1.default.readFileSync(podspecPath, 'utf8');
+    const sourceFilesRegex = /\.source_files\s*=\s*(["'])(.*?)\1/;
+    const match = podspecContent.match(sourceFilesRegex);
+    if (!match || !match[2]) {
+        console.warn(`Could not extract source_files glob from ${podspecPath}`);
+        return [];
+    }
+    const extractedGlob = match[2];
+    const absoluteGlobPattern = path_1.default.posix.join(podspecDir.replace(/\\/g, '/'), extractedGlob);
+    return getFilesForGlobPattern(absoluteGlobPattern)?.filter((f) => f.endsWith('.swift')) ?? null;
+}
+function uniqueStrings(strings) {
+    return [...new Set(strings)];
+}
 function parseCommandArguments(options, isOutputFile = true) {
-    const realInputPaths = options.inputPaths
-        .map(sanitizeAndValidatePath)
-        .filter((p) => p != null);
-    if (!realInputPaths || realInputPaths.length == 0) {
-        console.error(`Provide valid paths to existing files.`);
+    let realInputPaths = options.inputPaths ?? [].flatMap(getFilesForGlobPattern).filter((p) => p != null);
+    if (options.modulePath) {
+        const modulePaths = getModuleFilePathsFromPodspec(options.modulePath) ?? [];
+        realInputPaths.push(...modulePaths);
+    }
+    realInputPaths = uniqueStrings(realInputPaths);
+    if (!realInputPaths || realInputPaths.length === 0) {
+        console.error(`Provide valid globs to existing files or a path to a module with valid podspec.`);
         return null;
     }
     let realOutputPath = undefined;

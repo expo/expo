@@ -694,7 +694,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 2226,
+          "definitionOffset": 2238,
           "name": "TestSimpleAsyncFunction",
           "parameters": [],
           "returnType": {
@@ -722,7 +722,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 2416,
+          "definitionOffset": 2429,
           "name": "TestUnderscore",
           "parameters": [],
           "returnType": {
@@ -744,9 +744,9 @@ exports[`Same type information 1`] = `
                 },
               },
             ],
-            "definitionOffset": 2540,
+            "definitionOffset": 2553,
           },
-          "definitionOffset": 2494,
+          "definitionOffset": 2507,
           "methods": [],
           "name": "TestClassWithConstructor",
           "properties": [],
@@ -763,7 +763,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3082,
+              "definitionOffset": 3095,
               "name": "TestAsyncFunction",
               "parameters": [],
               "returnType": {
@@ -808,14 +808,14 @@ exports[`Same type information 1`] = `
                 },
               },
             ],
-            "definitionOffset": 2642,
+            "definitionOffset": 2655,
           },
-          "definitionOffset": 2606,
+          "definitionOffset": 2619,
           "methods": [],
           "name": "TestBasicClass",
           "properties": [
             {
-              "definitionOffset": 2746,
+              "definitionOffset": 2759,
               "name": "TestIntProperty",
               "type": {
                 "kind": 0,
@@ -823,7 +823,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 2814,
+              "definitionOffset": 2827,
               "name": "TestEitherProperty",
               "type": {
                 "kind": 2,
@@ -843,7 +843,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 2901,
+              "definitionOffset": 2914,
               "name": "TestEnumProperty",
               "type": {
                 "kind": 1,
@@ -851,7 +851,7 @@ exports[`Same type information 1`] = `
               },
             },
             {
-              "definitionOffset": 2985,
+              "definitionOffset": 2998,
               "name": "TestRecordProperty",
               "type": {
                 "kind": 1,
@@ -863,7 +863,7 @@ exports[`Same type information 1`] = `
         {
           "asyncMethods": [],
           "constructor": null,
-          "definitionOffset": 3184,
+          "definitionOffset": 3197,
           "methods": [],
           "name": "TestEmptyClass",
           "properties": [],
@@ -879,7 +879,7 @@ exports[`Same type information 1`] = `
           },
         },
         {
-          "definitionOffset": 287,
+          "definitionOffset": 288,
           "name": "IntConstant",
           "type": {
             "kind": 0,
@@ -887,7 +887,7 @@ exports[`Same type information 1`] = `
           },
         },
         {
-          "definitionOffset": 424,
+          "definitionOffset": 426,
           "name": "UntypedConstant",
           "type": {
             "kind": 0,
@@ -916,7 +916,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 469,
+          "definitionOffset": 471,
           "name": "SimpleFunction",
           "parameters": [],
           "returnType": {
@@ -926,7 +926,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 631,
+          "definitionOffset": 634,
           "name": "TestUntypedFunction",
           "parameters": [],
           "returnType": {
@@ -936,7 +936,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 774,
+          "definitionOffset": 778,
           "name": "TestUntypedFunction2",
           "parameters": [],
           "returnType": {
@@ -946,7 +946,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 933,
+          "definitionOffset": 938,
           "name": "TestUntypedFunction3",
           "parameters": [],
           "returnType": {
@@ -967,7 +967,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1096,
+          "definitionOffset": 1102,
           "name": "TestArrays",
           "parameters": [],
           "returnType": {
@@ -1025,7 +1025,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1253,
+          "definitionOffset": 1260,
           "name": "TestDictionaries",
           "parameters": [],
           "returnType": {
@@ -1115,7 +1115,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1444,
+          "definitionOffset": 1452,
           "name": "TestParametrizedTypes",
           "parameters": [],
           "returnType": {
@@ -1142,7 +1142,7 @@ exports[`Same type information 1`] = `
               },
             },
           ],
-          "definitionOffset": 1687,
+          "definitionOffset": 1696,
           "name": "TestTypeCombinations",
           "parameters": [],
           "returnType": {
@@ -1179,7 +1179,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 1887,
+          "definitionOffset": 1897,
           "name": "TestFunctionReturningRecord",
           "parameters": [],
           "returnType": {
@@ -1189,7 +1189,7 @@ exports[`Same type information 1`] = `
         },
         {
           "arguments": [],
-          "definitionOffset": 2050,
+          "definitionOffset": 2061,
           "name": "TestFunctionReturningEnum",
           "parameters": [],
           "returnType": {
@@ -1207,7 +1207,7 @@ exports[`Same type information 1`] = `
           "classes": [],
           "constants": [],
           "constructor": null,
-          "definitionOffset": 3247,
+          "definitionOffset": 3260,
           "events": [
             "onEvent1",
             "onEvent2",
@@ -1233,7 +1233,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3293,
+              "definitionOffset": 3306,
               "name": "url",
             },
             {
@@ -1253,7 +1253,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3477,
+              "definitionOffset": 3490,
               "name": "testRecord",
             },
             {
@@ -1273,7 +1273,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3548,
+              "definitionOffset": 3561,
               "name": "testRecord2",
             },
             {
@@ -1293,7 +1293,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3622,
+              "definitionOffset": 3635,
               "name": "testRecordClass",
             },
             {
@@ -1313,7 +1313,7 @@ exports[`Same type information 1`] = `
                   },
                 },
               ],
-              "definitionOffset": 3708,
+              "definitionOffset": 3721,
               "name": "testEnum",
             },
           ],

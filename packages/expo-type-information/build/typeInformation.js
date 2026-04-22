@@ -119,7 +119,7 @@ const taskAll = (inputs, map) => {
 };
 async function mergeFileContents(absoluteFilePaths) {
     const filesContents = await taskAll(absoluteFilePaths, (filePath) => fs.promises.readFile(filePath, 'utf-8'));
-    return filesContents.join();
+    return filesContents.join('');
 }
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
