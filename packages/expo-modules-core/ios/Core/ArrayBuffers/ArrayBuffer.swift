@@ -46,21 +46,3 @@ public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
     return try body(UnsafeRawBufferPointer(start: rawPointer, count: byteLength))
   }
 }
-
-extension ArrayBuffer: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> ArrayBuffer {
-    if value.isObject() {
-      let object = value.getObject()
-
-      if object.isArrayBuffer() {
-        let backingBuffer = object.getArrayBuffer()
-        return ArrayBuffer(backingBuffer)
-      }
-    }
-    fatalError("Creating ArrayBuffer from a JavaScriptValue failed")
-  }
-
-  public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    return backingBuffer.asValue()
-  }
-}

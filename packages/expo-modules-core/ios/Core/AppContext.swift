@@ -667,12 +667,6 @@ internal final class SharedObjectClassNotRegisteredException: GenericException<S
   }
 }
 
-internal final class SharedObjectPrototypeCreationException: GenericException<String>, @unchecked Sendable {
-  override var reason: String {
-    "Failed to create JS prototype for SharedObject type '\(param)'"
-  }
-}
-
 // Deprecated since v1.0.0
 @available(*, deprecated, renamed: "Exceptions.AppContextLost")
 public typealias AppContextLostException = Exceptions.AppContextLost

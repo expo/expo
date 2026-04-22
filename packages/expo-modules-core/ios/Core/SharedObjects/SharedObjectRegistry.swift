@@ -13,14 +13,23 @@ public typealias SharedObjectId = Int
 let sharedObjectIdPropertyName = "__expo_shared_object_id__"
 
 /**
- The registry of all shared objects used in the entire app.
- It's been made static for simplicity.
+ A pair of matching native and JS objects. Uses a weak reference to the JS object
+ so that the registry doesn't prevent JS garbage collection. The C++ NativeState
+ deallocator removes the pair from the registry when the JS object is collected.
  */
-/**
- A tuple containing a pair of matching native and JS objects.
- */
-internal typealias SharedObjectPair = (native: SharedObject, javaScript: JavaScriptValue)
+internal final class SharedObjectPair {
+  let native: SharedObject
+  let javaScript: JavaScriptWeakObject
 
+  init(native: SharedObject, javaScript: consuming JavaScriptWeakObject) {
+    self.native = native
+    self.javaScript = javaScript
+  }
+}
+
+/**
+ The registry of shared objects.
+ */
 public final class SharedObjectRegistry {
   /**
    Weak reference to the app context for the registry.
@@ -120,9 +129,9 @@ public final class SharedObjectRegistry {
       jsObject.setExternalMemoryPressure(memoryPressure)
     }
 
-    // Save the pair in the dictionary.
+    // Save the pair in the dictionary with a weak reference to the JS object.
     state.withLock { state in
-      state.pairs[id] = (native: nativeObject, javaScript: jsObject.asValue())
+      state.pairs[id] = SharedObjectPair(native: nativeObject, javaScript: jsObject.createWeak())
     }
 
     // Attach the C++ shared-object native state. Because `expo::SharedObject::NativeState`
@@ -176,17 +185,17 @@ public final class SharedObjectRegistry {
    Gets the JS value of the shared object that is paired with a given native object.
    */
   internal func toJavaScriptValue(_ nativeObject: SharedObject) -> JavaScriptValue? {
-    let objectId = nativeObject.sharedObjectId
-    return state.withLock { state in
-      return state.pairs[objectId]?.javaScript
-    }
+    return toJavaScriptObject(nativeObject)?.asValue()
   }
 
   /**
    Gets the JS shared object that is paired with a given native object.
    */
   internal func toJavaScriptObject(_ nativeObject: SharedObject) -> JavaScriptObject? {
-    return toJavaScriptValue(nativeObject)?.getObject()
+    let pair = state.withLock { state in
+      return state.pairs[nativeObject.sharedObjectId]
+    }
+    return pair?.javaScript.lock()
   }
 
   /**

@@ -24,10 +24,13 @@ internal struct DynamicArrayType: AnyDynamicType {
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    // `getArray().map { $0 }` materializes the non-copyable `JavaScriptArray` into a
-    // copyable `[JavaScriptValue]` so we can iterate it again below.
-    let value = jsValue.isArray() ? jsValue.getArray().map { $0 } : [jsValue]
-    return try value.map { try elementType.cast(jsValue: $0, appContext: appContext) }
+    if jsValue.isArray() {
+      return try jsValue.getArray().map { value in
+        return try elementType.cast(jsValue: value, appContext: appContext)
+      }
+    }
+    // "Arrayize" the value if it's not an array.
+    return [try elementType.cast(jsValue: jsValue, appContext: appContext)]
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
