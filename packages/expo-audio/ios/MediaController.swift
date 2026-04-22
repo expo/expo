@@ -275,7 +275,8 @@ class MediaController {
       return .success
     }
 
-    remoteCommandCenter.skipForwardCommand.preferredIntervals = [10.0]
+    let forwardInterval = options?.seekForwardIntervalSeconds ?? 10.0
+    remoteCommandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: max(forwardInterval, 0.1))]
     remoteCommandCenter.skipForwardCommand.addTarget { [weak self] event in
       guard let player = self?.activePlayer,
       let event = event as? MPSkipIntervalCommandEvent else {
@@ -289,7 +290,8 @@ class MediaController {
       return .success
     }
 
-    remoteCommandCenter.skipBackwardCommand.preferredIntervals = [10.0]
+    let backwardInterval = options?.seekBackwardIntervalSeconds ?? 10.0
+    remoteCommandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: max(backwardInterval, 0.1))]
     remoteCommandCenter.skipBackwardCommand.addTarget { [weak self] event in
       guard let player = self?.activePlayer,
       let event = event as? MPSkipIntervalCommandEvent else {
