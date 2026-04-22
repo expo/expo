@@ -178,7 +178,8 @@ internal class FileSystemWatcher(
       } ?: isWatchingDirectory
 
       if ((changedPath != null && pairedMoveSources.contains(changedPath)) ||
-        (changedPath != null && pairedMoveDestinations.contains(changedPath))) {
+        (changedPath != null && pairedMoveDestinations.contains(changedPath))
+      ) {
         continue
       }
 

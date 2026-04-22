@@ -175,10 +175,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
    * subscription.remove();
    * ```
    */
-  watch(
-    callback: (event: WatchEvent<File>) => void,
-    options?: WatchOptions
-  ): WatchSubscription {
+  watch(callback: (event: WatchEvent<File>) => void, options?: WatchOptions): WatchSubscription {
     return new FileSystemWatcher<File>(this.uri, callback, options, (uri) => new File(uri));
   }
 }

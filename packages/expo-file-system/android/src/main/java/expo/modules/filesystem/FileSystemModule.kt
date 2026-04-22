@@ -121,8 +121,6 @@ class FileSystemModule : Module() {
         FileSystemFile(uri)
       }
 
-      OnStartObserving {  }
-
       Function("delete") { file: FileSystemFile ->
         file.delete()
       }
