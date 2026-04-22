@@ -1,4 +1,4 @@
-import { Color } from './types';
+import type { Color } from './types';
 export type ContainerBackgroundPlacement = 'widget' | 'navigation' | 'navigationSplitView';
 /**
  * Sets the container background of the enclosing container using a view.
