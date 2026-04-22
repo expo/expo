@@ -23,9 +23,11 @@ import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.FunctionalComposableScope
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 // --- PlainTooltipView ---
 
+@OptimizedComposeProps
 data class PlainTooltipViewProps(
   val containerColor: MutableState<Color?> = mutableStateOf(null),
   val contentColor: MutableState<Color?> = mutableStateOf(null),
@@ -45,6 +47,7 @@ class PlainTooltipView(context: Context, appContext: AppContext) :
 
 // --- RichTooltipView ---
 
+@OptimizedComposeProps
 data class RichTooltipViewProps(
   val containerColor: MutableState<Color?> = mutableStateOf(null),
   val contentColor: MutableState<Color?> = mutableStateOf(null),
@@ -66,6 +69,7 @@ class RichTooltipView(context: Context, appContext: AppContext) :
 
 // --- TooltipBoxView ---
 
+@OptimizedComposeProps
 data class TooltipBoxViewProps(
   val isPersistent: Boolean = false,
   val hasAction: Boolean? = null,

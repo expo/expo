@@ -33,7 +33,9 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.RNHostViewInterface
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 internal data class RNHostViewProps(
   val matchContents: MutableState<Boolean?> = mutableStateOf(null)
 ) : ComposeProps

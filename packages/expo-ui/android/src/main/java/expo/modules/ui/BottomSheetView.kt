@@ -11,14 +11,15 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import kotlin.coroutines.cancellation.CancellationException
-import kotlinx.coroutines.withContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.AsyncFunctionHandle
-import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.AsyncFunctionHandle
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptimizedRecord
 data class ModalBottomSheetPropertiesRecord(
@@ -26,6 +27,7 @@ data class ModalBottomSheetPropertiesRecord(
   @Field val shouldDismissOnClickOutside: Boolean = true
 ) : Record
 
+@OptimizedComposeProps
 data class ModalBottomSheetViewProps(
   val skipPartiallyExpanded: Boolean = false,
   val containerColor: Color? = null,

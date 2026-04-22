@@ -43,6 +43,8 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
+import io.github.lukmccall.pika.Introspectable
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -56,6 +58,7 @@ internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   }
 }
 
+@OptimizedComposeProps
 internal data class HostProps(
   val colorScheme: MutableState<ExpoColorScheme?> = mutableStateOf(null),
   val layoutDirection: MutableState<ExpoLayoutDirection> = mutableStateOf(ExpoLayoutDirection.LeftToRight),
