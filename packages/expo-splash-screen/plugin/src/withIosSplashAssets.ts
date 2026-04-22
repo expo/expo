@@ -1,12 +1,9 @@
 import { generateImageAsync, ImageOptions } from '@expo/image-utils';
-import Debug from 'debug';
 import { ConfigPlugin, IOSConfig, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
 import { IOSSplashConfig } from './types';
-
-const debug = Debug('expo:expo-splash-screen:ios:assets');
 
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreenLogo.imageset';
@@ -291,9 +288,6 @@ async function writeContentsJsonAsync({
   darkTabletImage: string | undefined;
 }) {
   const images = buildContentsJsonImages({ image, darkImage, tabletImage, darkTabletImage });
-
-  debug(`create contents.json:`, assetPath);
-  debug(`use images:`, images);
 
   await fs.promises.mkdir(assetPath, { recursive: true });
   await fs.promises.writeFile(
