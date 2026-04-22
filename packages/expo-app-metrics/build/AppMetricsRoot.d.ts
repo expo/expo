@@ -8,6 +8,6 @@ export declare function AppMetricsRoot({ children }: {
     children: React.ReactNode;
 }): React.JSX.Element;
 export declare namespace AppMetricsRoot {
-    var wrap: <P extends object>(Component: React.ComponentType<P>) => React.ComponentType<P>;
+    var wrap: <P extends Record<string, unknown>>(Component: React.ComponentType<P>) => React.ComponentType<P>;
 }
 //# sourceMappingURL=AppMetricsRoot.d.ts.map
