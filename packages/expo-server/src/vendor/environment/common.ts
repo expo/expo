@@ -1,11 +1,6 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
 import type { AssetInfo, Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
-import type {
-  LoaderModule,
-  RenderOptions,
-  ServerRenderModule,
-  SsrRenderFn,
-} from '../../rendering';
+import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
 import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/matchers';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {

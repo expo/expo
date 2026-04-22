@@ -1,11 +1,11 @@
-jest.mock('expo-router/_ctx', () => ({
-  ctx: jest.fn(),
-}));
-
+import { ctx } from 'expo-router/_ctx';
 import { ImmutableRequest } from 'expo-server/private';
 
 import { resolveMetadata } from '../metadata';
-import { ctx } from 'expo-router/_ctx';
+
+jest.mock('expo-router/_ctx', () => ({
+  ctx: jest.fn(),
+}));
 
 const mockedCtx = jest.mocked(ctx);
 
