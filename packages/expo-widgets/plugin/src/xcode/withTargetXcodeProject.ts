@@ -1,4 +1,5 @@
 import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+import * as path from 'path';
 
 import { addBuildPhases } from './addBuildPhases';
 import { addPbxGroup } from './addPbxGroup';
@@ -7,7 +8,6 @@ import { addTargetDependency } from './addTargetDependency';
 import { addToPbxNativeTargetSection } from './addToPbxNativeTargetSection';
 import { addToPbxProjectSection } from './addToPbxProjectSection';
 import { addXCConfigurationList } from './addXCConfigurationList';
-import * as path from 'path';
 
 type TargetXcodeProjectProps = {
   targetName: string;

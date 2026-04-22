@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
+const path = __importStar(require("path"));
 const addBuildPhases_1 = require("./addBuildPhases");
 const addPbxGroup_1 = require("./addPbxGroup");
 const addProductFile_1 = require("./addProductFile");
@@ -41,7 +42,6 @@ const addTargetDependency_1 = require("./addTargetDependency");
 const addToPbxNativeTargetSection_1 = require("./addToPbxNativeTargetSection");
 const addToPbxProjectSection_1 = require("./addToPbxProjectSection");
 const addXCConfigurationList_1 = require("./addXCConfigurationList");
-const path = __importStar(require("path"));
 const withTargetXcodeProject = (config, { targetName, bundleIdentifier, deploymentTarget, appleTeamId, getFileUris }) => (0, config_plugins_1.withXcodeProject)(config, (config) => {
     const xcodeProject = config.modResults;
     const targetUuid = xcodeProject.generateUuid();
