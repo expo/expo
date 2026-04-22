@@ -89,6 +89,13 @@
             "Tests/**",
             "Worklets/**"
           ],
+          "fileMapping": [
+            {
+              "from": "Core/Views/SwiftUI/SwiftUIVirtualViewSharedImpl+Private.h",
+              "to": "Core/Views/SwiftUI/{filename}",
+              "type": "source"
+            }
+          ],
           "dependencies": [
             "Hermes",
             "React",
