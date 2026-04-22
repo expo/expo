@@ -1,6 +1,7 @@
 package expo.modules.observe
 
 import android.content.Context
+import expo.modules.easclient.EASClientID
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -66,7 +67,10 @@ class BaseObservabilityManager(
   val projectId: String,
   val baseUrl: String,
   private val isDebugBuild: Boolean = false,
-  private val useOpenTelemetry: Boolean = false
+  private val useOpenTelemetry: Boolean = false,
+  private val deterministicUniformValueProvider: () -> Double = {
+    EASClientID.deterministicUniformValue(EASClientID(context).uuid)
+  }
 ) {
   private val eventDispatcher = EventDispatcher(
     context = context,
@@ -81,10 +85,9 @@ class BaseObservabilityManager(
       return
     }
 
-    // Single dispatch gate. When unset, defaults to off in debug builds and on otherwise so
-    // dev metrics aren't shipped without explicit opt-in.
     val dispatchingEnabled = ObservePreferences.getConfig(context)?.dispatchingEnabled ?: !isDebugBuild
-    if (!dispatchingEnabled) {
+    val shouldDispatch = dispatchingEnabled && isInSample()
+    if (!shouldDispatch) {
       pendingMetricsManager.removePendingMetrics(pendingIds)
       return
     }
@@ -113,6 +116,12 @@ class BaseObservabilityManager(
       val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
     }
+  }
+
+  private fun isInSample(): Boolean {
+    val rate = ObservePreferences.getConfig(context)?.sampleRate ?: return true
+    val clamped = rate.coerceIn(0.0, 1.0)
+    return deterministicUniformValueProvider() < clamped
   }
 
   suspend fun cleanup() {

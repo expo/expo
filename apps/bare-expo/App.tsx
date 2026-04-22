@@ -68,6 +68,7 @@ function useLoaded() {
 
 ExpoObserve.configure({
   dispatchingEnabled: true,
+  sampleRate: 0.9,
 });
 
 export default function Main() {

@@ -44,10 +44,11 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      // Single dispatch gate. When unset, defaults to off in debug builds and on otherwise so
-      // dev metrics aren't shipped without explicit opt-in.
-      let dispatchingEnabled = ObserveUserDefaults.config?.dispatchingEnabled ?? !isDebugBuild
-      if !dispatchingEnabled {
+      // All entries were filtered out, dispatching is disabled, or this device is out-of-sample —
+      // mark as dispatched so they don't accumulate.
+      let dispatchingEnabled = ObserveUserDefaults.config?.dispatchingEnabled ?? true
+      let shouldDispatch = dispatchingEnabled && isInSample()
+      if !shouldDispatch {
         // Mark all pending entries as dispatched without sending them
         ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
         return
@@ -115,5 +116,13 @@ internal struct ObservabilityManager {
     AppMetricsActor.isolated {
       self.useOpenTelemetry = enabled
     }
+  }
+
+  private static func isInSample() -> Bool {
+    guard let rate = ObserveUserDefaults.config?.sampleRate else {
+      return true
+    }
+    let clamped = min(max(rate, 0.0), 1.0)
+    return EASClientID.deterministicUniformValue(EASClientID.uuid()) < clamped
   }
 }
