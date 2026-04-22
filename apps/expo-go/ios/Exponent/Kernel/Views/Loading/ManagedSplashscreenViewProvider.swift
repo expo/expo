@@ -37,17 +37,26 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
 
       splashScreenView?.backgroundColor = .white
 
-      if let imageUrl = configuration?.imageUrl {
-        if previousConfiguration?.imageUrl != imageUrl {
-          imageViewContainer?.removeFromSuperview()
-          let appName = createNameLabel()
-          let container = createStackView()
+      if imageViewContainer == nil || previousConfiguration?.imageUrl != configuration?.imageUrl {
+        imageViewContainer?.removeFromSuperview()
 
-          container.alpha = 0
+        let appName = createNameLabel()
+        let container = createStackView()
 
-          imageViewContainer = container
-          splashScreenView?.addSubview(container)
+        imageViewContainer = container
+        splashScreenView?.addSubview(container)
 
+        container.alpha = 0
+        container.addArrangedSubview(appName)
+
+        if let splashScreenView {
+          NSLayoutConstraint.activate([
+            container.centerXAnchor.constraint(equalTo: splashScreenView.centerXAnchor),
+            container.centerYAnchor.constraint(equalTo: splashScreenView.centerYAnchor)
+          ])
+        }
+
+        if let imageUrl = configuration?.imageUrl {
           let imageView = createImageView(with: imageUrl) { [weak container] imageView, success in
             guard let container else { return }
 
@@ -60,16 +69,15 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
             }
           }
 
-          container.addArrangedSubview(imageView)
-          container.addArrangedSubview(appName)
+          container.insertArrangedSubview(imageView, at: 0)
 
-          if let splashScreenView {
-            NSLayoutConstraint.activate([
-              container.centerXAnchor.constraint(equalTo: splashScreenView.centerXAnchor),
-              container.centerYAnchor.constraint(equalTo: splashScreenView.centerYAnchor),
-              imageView.widthAnchor.constraint(equalToConstant: 200),
-              imageView.heightAnchor.constraint(equalToConstant: 200)
-            ])
+          NSLayoutConstraint.activate([
+            imageView.widthAnchor.constraint(equalToConstant: 200),
+            imageView.heightAnchor.constraint(equalToConstant: 200)
+          ])
+        } else {
+          UIView.animate(withDuration: 0.3) {
+            container.alpha = 1
           }
         }
       }
