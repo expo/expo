@@ -37,7 +37,6 @@
     "preset": "jest-expo/universal"
   },
   "dependencies": {
-    "@expo/config": "workspace:~55.0.8",
     "@expo/json-file": "workspace:^10.0.12",
     "@jest/create-cache-key-function": "^29.2.1",
     "@jest/globals": "^29.2.1",

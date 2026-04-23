@@ -5699,9 +5699,6 @@ importers:
 
   packages/jest-expo:
     dependencies:
-      '@expo/config':
-        specifier: workspace:~55.0.8
-        version: link:../@expo/config
       '@expo/json-file':
         specifier: workspace:^10.0.12
         version: link:../@expo/json-file
