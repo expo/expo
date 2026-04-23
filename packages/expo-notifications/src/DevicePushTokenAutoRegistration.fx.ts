@@ -5,10 +5,18 @@ import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import { DevicePushToken } from './Tokens.types';
 import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
-import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal } from './utils/updateDevicePushTokenAsync';
+import {
+  updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal,
+  hasDeviceTokenChangedAsync,
+} from './utils/updateDevicePushTokenAsync';
 
 let lastAbortController: AbortController | null = null;
 async function updatePushTokenAsync(token: DevicePushToken) {
+  const changed = await hasDeviceTokenChangedAsync(token);
+  if (!changed) {
+    return;
+  }
+
   // Abort current update process
   lastAbortController?.abort();
   lastAbortController = new AbortController();
@@ -38,9 +46,19 @@ export async function setAutoServerRegistrationEnabledAsync(enabled: boolean) {
     throw new UnavailabilityError('ServerRegistrationModule', 'setRegistrationInfoAsync');
   }
 
-  await ServerRegistrationModule.setRegistrationInfoAsync(
-    enabled ? JSON.stringify({ isEnabled: enabled }) : null
-  );
+  if (!enabled) {
+    await ServerRegistrationModule.setRegistrationInfoAsync(null);
+  } else {
+    let existing: Record<string, unknown> = {};
+    try {
+      const info = await ServerRegistrationModule.getRegistrationInfoAsync?.();
+      if (info) {
+        existing = JSON.parse(info);
+      }
+    } catch {}
+    existing.isEnabled = true;
+    await ServerRegistrationModule.setRegistrationInfoAsync(JSON.stringify(existing));
+  }
 }
 
 // note(Chmiela): This function is exported only for testing purposes.

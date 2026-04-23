@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Skip redundant device push token registration when token and metadata are unchanged since last successful registration. ([#44836](https://github.com/expo/expo/pull/44836) by [@stephanepham](https://github.com/stephanepham))
+
 ## 55.0.20 — 2026-04-21
 
 _This version does not introduce any user-facing changes._
