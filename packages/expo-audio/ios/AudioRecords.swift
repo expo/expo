@@ -64,6 +64,7 @@ struct LockScreenOptions: Record {
   @Field var showSeekForward: Bool = false
   @Field var showSeekBackward: Bool = false
   @Field var isLiveStream: Bool? = false
+  @Field var allowScrubbing: Bool? = true
 }
 
 enum BitRateStrategy: String, Enumerable {

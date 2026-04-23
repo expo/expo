@@ -282,7 +282,9 @@ class AudioControlsService : MediaSessionService() {
 
   private fun resolveSessionPlayer(player: AudioPlayer, options: AudioLockScreenOptions?): Player {
     val isLive = options?.isLiveStream ?: player.isLive
-    if (!isLive) {
+    val scrubEnabled = options?.allowScrubbing ?: true
+
+    if (!isLive && scrubEnabled) {
       return player.ref
     }
 
