@@ -6,7 +6,7 @@ import {
   ValidationError as ValidationResult,
 } from './validate';
 
-export { JSONSchema } from './JSONSchema';
+export type { JSONSchema } from './JSONSchema';
 
 const CACHE_SYMBOL = Symbol('@expo/schema-utils');
 

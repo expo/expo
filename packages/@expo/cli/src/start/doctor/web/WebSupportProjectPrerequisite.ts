@@ -1,7 +1,6 @@
 import type { AppJSONConfig, ExpoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
 import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
 import chalk from 'chalk';
-import resolveFrom from 'resolve-from';
 
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';

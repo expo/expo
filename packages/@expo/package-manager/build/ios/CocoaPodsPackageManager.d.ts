@@ -53,7 +53,6 @@ export declare class CocoaPodsPackageManager {
     configAsync(key: string): Promise<string>;
     removeLockfileAsync(): Promise<void>;
     uninstallAsync(): Promise<void>;
-    private podRepoUpdateAsync;
     _runAsync(args: string[]): Promise<SpawnResult>;
 }
 export declare function getPodUpdateMessage(output: string): {

@@ -2,7 +2,6 @@ import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { PluginSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import { DevToolsPluginEndpoint } from './DevToolsPluginManager';
-import { Log } from '../../log';
 
 /**
  * Class that represents a DevTools plugin with CLI and/or web extensions

@@ -15,12 +15,12 @@ export * from './autolinking';
 export * from './platforms';
 
 export {
-  ResolutionResult,
-  BaseDependencyResolution,
-  DependencyResolution,
-  DependencyResolutionSource,
-  CachedDependenciesLinker,
-  CachedDependenciesSearchOptions,
+  type ResolutionResult,
+  type BaseDependencyResolution,
+  type DependencyResolution,
+  type DependencyResolutionSource,
+  type CachedDependenciesLinker,
+  type CachedDependenciesSearchOptions,
   makeCachedDependenciesLinker,
   scanDependencyResolutionsForPlatform,
   scanExpoModuleResolutionsForPlatform,
