@@ -1,0 +1,12 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "outputs": ["build/**"],
+      "dependsOn": [
+        "expo-modules-core#build"
+      ]
+    }
+  }
+}
