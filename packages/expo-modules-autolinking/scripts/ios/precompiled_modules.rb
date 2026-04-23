@@ -104,6 +104,19 @@ module Expo
         }
       end
 
+      # @react-native-community/cli autolinking output (same shape as RN CLI's `config`).
+      # Used to locate 3rd-party packages via real node resolution so non-flat node_modules
+      # layouts (pnpm non-hoisted, yarn PnP, aliased specifiers) resolve correctly.
+      def react_native_config
+        @react_native_config ||= invoke_autolinking('react-native-config', platform: 'ios')
+      end
+
+      # The resolved Expo modules list. Used by scan_node_modules_configs to locate
+      # each internal package's spm.config.json via its resolved podspec dir.
+      def resolved_modules
+        @resolved_modules ||= invoke_autolinking('resolve', platform: 'apple').fetch('modules', [])
+      end
+
       # ──────────────────────────────────────────────────────────────────────
       # Facade methods — called from installer.rb / autolinking_manager.rb
       # ──────────────────────────────────────────────────────────────────────
@@ -585,8 +598,15 @@ module Expo
 
       # Returns the installed version for a pod by reading its package.json, or nil.
       def installed_version_for(pod_name)
-        pkg_json = File.join(pod_lookup_map.dig(pod_name, :package_root) || '', 'package.json')
-        JSON.parse(File.read(pkg_json))['version'] rescue nil
+        package_root = pod_lookup_map.dig(pod_name, :package_root)
+        return nil unless package_root
+
+        pkg_json = File.join(package_root, 'package.json')
+        return nil unless File.exist?(pkg_json)
+
+        JSON.parse(File.read(pkg_json))['version']
+      rescue JSON::ParserError, Errno::ENOENT
+        nil
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -1240,23 +1260,18 @@ module Expo
         scan_external_configs(repo_root)
       end
 
-      # Scans node_modules for spm.config.json files in standalone projects.
-      # Used when EXPO_PRECOMPILED_MODULES_PATH is set but no monorepo root is found.
+      # Locates spm.config.json for internal Expo modules in standalone projects
+      # (no monorepo root). Uses resolved podspec dirs so non-flat layouts work.
       def scan_node_modules_configs(project_root)
-        node_modules = File.join(project_root, 'node_modules')
-        return unless File.directory?(node_modules)
-
-        # Internal Expo packages: node_modules/*/spm.config.json
-        Dir.glob(File.join(node_modules, '*', 'spm.config.json')).each do |config_path|
-          process_spm_config(config_path, :internal, project_root)
+        resolved_modules.each do |mod|
+          (mod['pods'] || []).each do |pod|
+            next unless pod['podspecDir']
+            # Convention: podspecDir is `<package>/ios`; spm.config.json lives at `<package>/`.
+            config_path = File.join(File.dirname(pod['podspecDir']), 'spm.config.json')
+            process_spm_config(config_path, :internal, project_root) if File.exist?(config_path)
+          end
         end
 
-        # Internal Expo scoped packages: node_modules/@scope/*/spm.config.json
-        Dir.glob(File.join(node_modules, '@*', '*', 'spm.config.json')).each do |config_path|
-          process_spm_config(config_path, :internal, project_root)
-        end
-
-        # External 3rd-party packages: bundled in external-configs/ios/
         scan_external_configs(project_root)
       end
 
@@ -1264,46 +1279,45 @@ module Expo
       # (e.g. react-native-screens, react-native-svg) that don't ship their own spm.config.json.
       # Shared by both monorepo and standalone project paths.
       #
-      # @param effective_root [String] The project or repo root used to locate node_modules
+      # @param effective_root [String] The project or repo root (used to compute the default build output dir)
       def scan_external_configs(effective_root)
         external_configs_dir = File.join(__dir__, '..', '..', 'external-configs', 'ios')
         return unless File.directory?(external_configs_dir)
 
-        # Resolve from the same node_modules as react-native so per-package
-        # versions match the RN version used in the build path.
-        node_modules = find_node_modules_dir
-
         # Non-scoped: external-configs/ios/*/spm.config.json
         Dir.glob(File.join(external_configs_dir, '*', 'spm.config.json')).each do |config_path|
           npm_package = File.basename(File.dirname(config_path))
-          process_external_config(config_path, npm_package, node_modules, effective_root)
+          process_external_config(config_path, npm_package, effective_root)
         end
 
         # Scoped: external-configs/ios/@scope/*/spm.config.json
         Dir.glob(File.join(external_configs_dir, '@*', '*', 'spm.config.json')).each do |config_path|
           rel = config_path.sub("#{external_configs_dir}/", '')
           npm_package = File.dirname(rel) # e.g. "@shopify/react-native-skia"
-          process_external_config(config_path, npm_package, node_modules, effective_root)
+          process_external_config(config_path, npm_package, effective_root)
         end
       end
 
       # Processes a single external spm.config.json for a 3rd-party package.
-      def process_external_config(config_path, npm_package, node_modules, effective_root)
+      def process_external_config(config_path, npm_package, effective_root)
         config = JSON.parse(File.read(config_path))
         products = config['products'] || []
-        package_root = File.join(node_modules, npm_package)
 
-        # Only process if the package is actually installed
-        return unless File.directory?(package_root)
+        # Resolve via rncli autolinking so we use real node resolution (handles pnpm,
+        # yarn resolutions/PnP, aliased specifiers). Skip if the package isn't installed.
+        dep = react_native_config.dig('dependencies', npm_package)
+        return unless dep
 
-        # Prefer codegenConfig.name from the installed package.json
+        package_root = dep['root']
+        pkg_version = dep.dig('platforms', 'ios', 'version')
+
+        # codegenConfig.name isn't surfaced by rncli; read it from package.json.
         installed_codegen_name = nil
-        pkg_version = nil
         pkg_json_path = File.join(package_root, 'package.json')
         if File.exist?(pkg_json_path)
           pkg_json = JSON.parse(File.read(pkg_json_path))
           installed_codegen_name = pkg_json.dig('codegenConfig', 'name')
-          pkg_version = pkg_json['version']
+          pkg_version ||= pkg_json['version']
         end
 
         base_dir = custom_modules_path || File.join(effective_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR)
@@ -1520,6 +1534,16 @@ module Expo
         nil
       end
 
+      # Invokes `expo-modules-autolinking <subcommand> --json` and parses the output.
+      # Used by `react_native_config` and `resolved_modules` above.
+      def invoke_autolinking(subcommand, platform:)
+        args = ['node', '--no-warnings', '--eval', "require('expo/bin/autolinking')",
+                'expo-modules-autolinking', subcommand, '--platform', platform, '--json']
+        JSON.parse(IO.popen(args, &:read))
+      rescue => error
+        raise "Failed to invoke `expo-modules-autolinking #{subcommand}`: #{error}"
+      end
+
       # ──────────────────────────────────────────────────────────────────────
       # Helpers: bundled frameworks
       # ──────────────────────────────────────────────────────────────────────
@@ -1601,11 +1625,15 @@ module Expo
       # Helpers: version resolution for 3rd-party prebuild versioning
       # ──────────────────────────────────────────────────────────────────────
 
-      # Returns the installed React Native version from node_modules.
+      # RN package path, as resolved by rncli (handles pnpm workspaces correctly).
+      def react_native_path
+        react_native_config['reactNativePath']
+      end
+
       def react_native_version
         @react_native_version ||= begin
-          rn_pkg = File.join(find_node_modules_dir, 'react-native', 'package.json')
-          File.exist?(rn_pkg) ? JSON.parse(File.read(rn_pkg))['version'] : nil
+          rn_pkg = react_native_path && File.join(react_native_path, 'package.json')
+          rn_pkg && File.exist?(rn_pkg) ? JSON.parse(File.read(rn_pkg))['version'] : nil
         end
       end
 
@@ -1613,49 +1641,22 @@ module Expo
       # Mirrors the TypeScript resolution logic in tools/src/prebuilds/Utils.ts.
       def hermes_version
         @hermes_version ||= begin
-          rn_path = File.join(find_node_modules_dir, 'react-native')
-          is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
-          version = nil
+          rn_path = react_native_path
+          if rn_path
+            is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
+            props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
+            version = File.exist?(props_path) ?
+              parse_version_properties(props_path)[is_v1 ? 'HERMES_V1_VERSION_NAME' : 'HERMES_VERSION_NAME'] : nil
 
-          # Read from version.properties (primary source)
-          props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
-          if File.exist?(props_path)
-            props = parse_version_properties(props_path)
-            version = is_v1 ? props['HERMES_V1_VERSION_NAME'] : props['HERMES_VERSION_NAME']
-          end
-
-          # Fallback to tag files
-          unless version
-            tag_file = is_v1 ? '.hermesv1version' : '.hermesversion'
-            tag_path = File.join(rn_path, 'sdks', tag_file)
-            version = File.read(tag_path).strip if File.exist?(tag_path)
-          end
-
-          # Normalize: strip "hermes-" prefix and "v" prefix
-          version&.gsub(/^hermes-?/i, '')&.gsub(/^v/i, '')&.strip
-        end
-      end
-
-      # Returns the node_modules directory that Node would resolve `react-native` from,
-      # walking up from the project root. Correctly handles pnpm workspaces where each
-      # app's node_modules may symlink a different RN version than the repo root.
-      def find_node_modules_dir
-        @node_modules_dir ||= begin
-          current = (Pod::Config.instance.installation_root || Dir.pwd).to_s
-          resolved = nil
-          loop do
-            candidate = File.join(current, 'node_modules')
-            if File.file?(File.join(candidate, 'react-native', 'package.json'))
-              resolved = candidate
-              break
+            # Fallback to tag files
+            unless version
+              tag_path = File.join(rn_path, 'sdks', is_v1 ? '.hermesv1version' : '.hermesversion')
+              version = File.read(tag_path).strip if File.exist?(tag_path)
             end
-            parent = File.dirname(current)
-            break if parent == current
-            current = parent
+
+            # Normalize: strip "hermes-" prefix and "v" prefix
+            version&.gsub(/^hermes-?/i, '')&.gsub(/^v/i, '')&.strip
           end
-          repo_root = find_repo_root
-          resolved || (repo_root && File.join(repo_root, 'node_modules')) ||
-            File.join(File.dirname(Dir.pwd), 'node_modules')
         end
       end
 
