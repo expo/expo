@@ -473,7 +473,7 @@ describe('getHtml', () => {
         file: './posts/[id].tsx',
         page: '/posts/[id]',
       },
-      request,
+      request: new ImmutableRequest(request),
       params: { id: '123' },
     });
     expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
