@@ -17,7 +17,7 @@ let sharedObjectIdPropertyName = "__expo_shared_object_id__"
  so that the registry doesn't prevent JS garbage collection. The C++ NativeState
  deallocator removes the pair from the registry when the JS object is collected.
  */
-internal final class SharedObjectPair {
+internal final class SharedObjectPair: @unchecked Sendable {
   let native: SharedObject
   let javaScript: JavaScriptWeakObject
 
@@ -30,13 +30,13 @@ internal final class SharedObjectPair {
 /**
  The registry of shared objects.
  */
-public final class SharedObjectRegistry {
+public final class SharedObjectRegistry: Sendable {
   /**
    Weak reference to the app context for the registry.
    */
-  private weak var appContext: AppContext?
+  private weak let appContext: AppContext?
 
-  internal struct State {
+  internal struct State: Sendable {
     /**
      A dictionary of shared object pairs.
      */
@@ -67,13 +67,6 @@ public final class SharedObjectRegistry {
     return state.withLock {
       return $0.pairs.count
     }
-  }
-
-  /**
-   Shared object releaser that is common to all instances.
-   */
-  private lazy var objectReleaser: ObjectReleaser = { [weak self] objectId in
-    self?.delete(objectId)
   }
 
   /**
@@ -143,7 +136,7 @@ public final class SharedObjectRegistry {
           runtimePointer: runtimePointer,
           valuePointer: UnsafeMutableRawPointer(mutating: valuePointer),
           objectId: id,
-          releaser: objectReleaser
+          releaser: delete(_:)
         )
       }
     }
