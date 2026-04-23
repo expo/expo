@@ -37,9 +37,11 @@ private class MockTabScreenWithReactVC: UIView {
 // MARK: - Unit tests
 
 @Suite("RNScreensTabCompat unit tests")
+@MainActor
 struct RNScreensTabCompatUnitTests {
 
   @Suite("isTabScreen")
+  @MainActor
   struct IsTabScreen {
     @Test
     func `detects mock tab screen`() {
@@ -61,6 +63,7 @@ struct RNScreensTabCompatUnitTests {
   }
 
   @Suite("tabKey")
+  @MainActor
   struct TabKey {
     @Test
     func `reads value`() {
@@ -84,6 +87,7 @@ struct RNScreensTabCompatUnitTests {
   }
 
   @Suite("tabBarController(fromTabHost:)")
+  @MainActor
   struct TabBarControllerFromTabHost {
     @Test
     func `returns tab bar controller`() {
@@ -121,6 +125,7 @@ struct RNScreensTabCompatUnitTests {
   }
 
   @Suite("tabBarController(fromTabScreen:)")
+  @MainActor
   struct TabBarControllerFromTabScreen {
     @Test
     func `returns tab bar controller via reactViewController`() {
@@ -178,6 +183,7 @@ struct RNScreensTabCompatUnitTests {
 // MARK: - Integration tests (RNScreens API contract)
 
 @Suite("RNScreens API contract")
+@MainActor
 struct RNScreensAPIContractTests {
 
   @Test
