@@ -229,6 +229,7 @@ function attemptLookup(moduleName) {
   }
 }
 
+// TODO(@kitten): This is an invalid dependency chain
 jest.doMock('expo-modules-core', () => {
   const ExpoModulesCore = jest.requireActual('expo-modules-core');
 
