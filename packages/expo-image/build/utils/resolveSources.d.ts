@@ -1,4 +1,4 @@
-import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
+import type { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 export declare function isBlurhashString(str: string): boolean;
 export declare function isThumbhashString(str: string): boolean;
 export declare function isSFSymbolString(str: string): boolean;

@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
 
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
-import { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { isModalPresentation } from '../../utils/stackPresentation';
 
 /**

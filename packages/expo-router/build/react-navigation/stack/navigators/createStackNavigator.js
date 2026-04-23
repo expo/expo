@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createStackNavigator = createStackNavigator;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const native_1 = require("../../native");
 const StackView_1 = require("../views/Stack/StackView");
@@ -70,9 +71,7 @@ function StackNavigator({ id, initialRouteName, UNSTABLE_routeNamesChangeBehavio
             }
         });
     }), [navigation, state.index, state.key]);
-    return (<NavigationContent>
-      <StackView_1.StackView {...rest} direction={direction} state={state} describe={describe} descriptors={descriptors} navigation={navigation}/>
-    </NavigationContent>);
+    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(StackView_1.StackView, { ...rest, direction: direction, state: state, describe: describe, descriptors: descriptors, navigation: navigation }) }));
 }
 function createStackNavigator(config) {
     return (0, native_1.createNavigatorFactory)(StackNavigator)(config);

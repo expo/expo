@@ -9,6 +9,6 @@ export declare const SingleNavigatorContext: React.Context<{
 /**
  * Component which ensures that there's only one navigator nested under it.
  */
-export declare function EnsureSingleNavigator({ children }: Props): React.JSX.Element;
+export declare function EnsureSingleNavigator({ children }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=EnsureSingleNavigator.d.ts.map

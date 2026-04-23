@@ -19,13 +19,13 @@ git clone https://github.com/expo/expo.git
 2. Then `cd` into the `docs` directory and install dependencies with:
 
 ```sh
-yarn
+pnpm install
 ```
 
 3. Then you can run the app with (make sure you have no server running on port `3002`):
 
 ```sh
-yarn run dev
+pnpm dev
 ```
 
 4. Now the documentation is running at `http://localhost:3002`, and any changes you make to markdown or JavaScript files will automatically trigger reloads.
@@ -33,8 +33,8 @@ yarn run dev
 ### To run locally in production mode
 
 ```sh
-yarn run export
-yarn run export-server
+pnpm export
+pnpm export-server
 ```
 
 ## Edit Docs Content
@@ -77,22 +77,21 @@ These metadata items include:
 - `searchRank`: A number between 0 and 100 that represents the relevance of a page. This value is mapped to Algolia's `record.weight.pageRank` property. Higher values indicate higher priority. We set this value to `5` by default, otherwise specified in the frontmatter.
 - `searchPosition`: The position of a page in the search results. This value is mapped to Algolia's `record.weight.position` property. Algolia sets this value to `0` by default. Pages with lower values appear higher in the results. We set this value to `50` by default, otherwise specified in the frontmatter.
 - `hasVideoLink`: To display a video link icon in the sidebar for the page that has a video tutorial link. Defaults to `false`.
-- `cliVersion`: The CLI version to display for pages that include the CLI badge. Currently, this field is used for EAS CLI reference page and is populated automatically by `yarn run eas-cli-sync`.
+- `cliVersion`: The CLI version to display for pages that include the CLI badge. Currently, this field is used for EAS CLI reference page and is populated automatically by `pnpm eas-cli-sync`.
 
 ### Edit Code
 
 The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [To run locally in development mode](#to-run-locally-in-development-mode) section, then open a separate terminal and run the TypeScript compiler in watch mode &mdash; it will watch your code changes and notify you about errors.
 
 ```sh
-yarn watch
+pnpm watch
 ```
 
-When you are done, you should run `prettier` to format your code. Also, don't forget to run tests and linter before committing your changes.
+Don't forget to run tests and linter before committing your changes.
 
 ```sh
-yarn prettier
-yarn test
-yarn lint
+pnpm test
+pnpm lint
 ```
 
 ### Prose linter
@@ -100,10 +99,10 @@ yarn lint
 When you are done writing or editing docs, run the following script to lint your docs for style and grammar based on [Expo's writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md):
 
 ```sh
-yarn run lint-prose
+pnpm lint-prose
 ```
 
-We use [Vale](https://vale.sh/) to lint our docs. The Vale binary is auto-installed during `yarn install` via the `postinstall` script. To install or update it manually, run `yarn install-vale`.
+We use [Vale](https://vale.sh/) to lint our docs. The Vale binary is auto-installed during `pnpm install` via the `postinstall` script. To install or update it manually, run `pnpm install-vale`.
 
 #### Switch off Prose linter
 
@@ -183,7 +182,7 @@ If you need to link from one MDX file to another, use the static/full path to th
 - From: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
 - From: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-Validate all current links by running `yarn lint-links` script.
+Validate all current links by running `pnpm lint-links` script.
 
 ### Update latest version of API reference docs
 
@@ -225,7 +224,7 @@ cd expo/packages/expo-constants
 ```
 
 - Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
-- Start the TypeScript build compilation in watch mode using `yarn build` in the terminal window.
+- Start the TypeScript build compilation in watch mode using `pnpm build` in the terminal window.
 - Make the update. For example, we want to update the TypeDoc description of [`expoConfig` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
   - Inside the **src/** directory, open **Constants.types.ts** file.
   - Search for `expoConfig` property. It has a current description as shown below:
@@ -274,7 +273,7 @@ et gdad -p expo-constants --sdk 54
 
 #### Step 3: See the changes in the docs repo
 
-Now, in the terminal window, navigate to **expo/docs** repo and run the command `yarn run dev` to see the changes applied
+Now, in the terminal window, navigate to **expo/docs** repo and run the command `pnpm dev` to see the changes applied
 
 - Open [http://localhost:3002/](http://localhost:3002/) in the browser and go to the API doc to see the changes you have made. Make sure to select the right SDK version to see the changes in the left sidebar.
 
@@ -319,7 +318,7 @@ Some of the packages have documentation spread over multiple pages. For example,
 
 To render the [app config](https://docs.expo.dev/versions/latest/config/app/) properties table, we currently store a local copy of the appropriate version of the schema.
 
-If the schema is updated, to sync and rewrite our local copy, run `yarn run schema-sync <SDK version integer>` or `yarn run schema-sync unversioned`.
+If the schema is updated, to sync and rewrite our local copy, run `pnpm schema-sync <SDK version integer>` or `pnpm schema-sync unversioned`.
 
 ### Add images and assets
 
@@ -588,7 +587,7 @@ This pattern is used for some of the pages where we manually update the modifica
 
 ### Lint pipeline
 
-The lint pipeline runs four tools via **scripts/lint.js** (`yarn run lint`) script:
+The lint pipeline runs four tools via **scripts/lint.js** (`pnpm lint`) script:
 
 - `oxfmt` for code formatting
 - `oxlint` for code linting

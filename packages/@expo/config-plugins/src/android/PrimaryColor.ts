@@ -1,8 +1,8 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
 import { assignColorValue } from './Colors';
 import { assignStylesValue, getAppThemeGroup } from './Styles';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withAndroidColors, withAndroidStyles } from '../plugins/android-plugins';
 
 const COLOR_PRIMARY_KEY = 'colorPrimary';

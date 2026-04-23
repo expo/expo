@@ -1,4 +1,4 @@
-import { NativeModule } from 'expo-modules-core/types';
+import type { NativeModule } from 'expo-modules-core/types';
 export type SplashScreenOptions = {
     /**
      * The duration of the fade out animation in milliseconds.

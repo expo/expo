@@ -3,32 +3,34 @@ import React, { useCallback, useEffect } from 'react';
 
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
 import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
-import { ModalStackNavigatorProps, ModalStackViewProps } from './types';
+import type { ModalStackNavigatorProps, ModalStackViewProps } from './types';
 import {
   convertStackStateToNonModalState,
   findLastNonModalIndex,
   isTransparentModalPresentation,
 } from './utils';
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 import { withLayoutContext } from '../../layouts/withLayoutContext';
-import {
-  createNavigatorFactory,
+import type {
   EventArg,
   ParamListBase,
   StackActionHelpers,
-  StackActions,
   StackNavigationState,
-  StackRouter,
   StackRouterOptions,
+} from '../../react-navigation/native';
+import {
+  createNavigatorFactory,
+  StackActions,
+  StackRouter,
   useNavigationBuilder,
   usePreventRemoveContext,
   useTheme,
 } from '../../react-navigation/native';
-import {
+import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
-  NativeStackView,
 } from '../../react-navigation/native-stack';
+import { NativeStackView } from '../../react-navigation/native-stack';
 
 function ModalStackNavigator({
   initialRouteName,

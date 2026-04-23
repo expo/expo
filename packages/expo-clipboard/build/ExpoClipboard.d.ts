@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo-modules-core';
-import { ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import type { ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
 export declare const clipboardEventName = "onClipboardChanged";
 type ExpoClipboardEvents = {
     [clipboardEventName]: (event: ClipboardEvent) => void;

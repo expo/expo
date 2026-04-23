@@ -1,6 +1,6 @@
 import { NativeModule, requireNativeModule } from 'expo-modules-core';
 
-import {
+import type {
   ClipboardImage,
   ClipboardEvent,
   GetImageOptions,

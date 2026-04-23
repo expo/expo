@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 
 import {
-  ContentAlignment,
-  FloatingToolbarExitAlwaysScrollBehavior,
-  PrimitiveBaseProps,
+  type ContentAlignment,
+  type FloatingToolbarExitAlwaysScrollBehavior,
+  type PrimitiveBaseProps,
   transformProps,
 } from '../layout-types';
 

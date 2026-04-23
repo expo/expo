@@ -1,7 +1,8 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
 

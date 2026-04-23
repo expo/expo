@@ -9,7 +9,7 @@ import {
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
-import { SingularOptions } from '../useScreens';
+import type { SingularOptions } from '../useScreens';
 
 export function getNavigateAction(
   baseHref: string,

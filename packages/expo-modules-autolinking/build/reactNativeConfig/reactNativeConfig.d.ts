@@ -1,7 +1,7 @@
 import type { SupportedPlatform } from '../types';
 import type { RNConfigDependency, RNConfigReactNativeAppProjectConfig, RNConfigReactNativeProjectConfig, RNConfigResult } from './reactNativeConfig.types';
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
-import { DependencyResolution } from '../dependencies';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { DependencyResolution } from '../dependencies';
 export declare function resolveReactNativeModule(resolution: DependencyResolution, projectConfig: RNConfigReactNativeProjectConfig | null, platform: SupportedPlatform, excludeNames: Set<string>): Promise<RNConfigDependency | null>;
 interface CreateRNConfigParams {
     appRoot: string;

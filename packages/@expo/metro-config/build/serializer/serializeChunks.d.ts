@@ -8,8 +8,8 @@ import type { MetroConfig, AssetData } from '@expo/metro/metro';
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
-import { SerialAsset } from './serializerAssets';
-import { SerializerConfigOptions } from './withExpoSerializers';
+import type { SerialAsset } from './serializerAssets';
+import type { SerializerConfigOptions } from './withExpoSerializers';
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 export type SerializeChunkOptions = {

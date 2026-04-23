@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Card = Card;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const useLatestCallback_1 = __importDefault(require("../../../../utils/useLatestCallback"));
@@ -66,7 +67,7 @@ const getAnimateToValue = ({ closing: isClosing, layout: currentLayout, gestureD
     }
     return (0, getDistanceForDirection_1.getDistanceForDirection)(currentLayout, currentGestureDirection, currentDirection === 'rtl');
 };
-const defaultOverlay = ({ style }) => style ? <react_native_1.Animated.View pointerEvents="none" style={[styles.overlay, style]}/> : null;
+const defaultOverlay = ({ style }) => style ? (0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "none", style: [styles.overlay, style] }) : null;
 function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImpact = GESTURE_VELOCITY_IMPACT, overlay = defaultOverlay, animated, interpolationIndex, opening, closing, next, current, gesture, layout, insets, direction, pageOverflowEnabled, gestureDirection, onOpen, onClose, onTransition, onGestureBegin, onGestureCanceled, onGestureEnd, children, overlayEnabled, gestureResponseDistance, transitionSpec, preloaded, styleInterpolator, containerStyle: customContainerStyle, contentStyle, }) {
     const didInitiallyAnimate = React.useRef(false);
     const lastToValueRef = React.useRef(undefined);
@@ -341,46 +342,31 @@ function Card({ shadowEnabled = false, gestureEnabled = true, gestureVelocityImp
         : undefined, [gesture, gestureDirection, gestureEnabled]);
     const { backgroundColor } = react_native_1.StyleSheet.flatten(contentStyle || {});
     const isTransparent = typeof backgroundColor === 'string' ? (0, color_1.Color)(backgroundColor)?.alpha() === 0 : false;
-    return (<CardAnimationContext_1.CardAnimationContext.Provider value={interpolationProps}>
-      {react_native_1.Platform.OS !== 'web' ? (<react_native_1.Animated.View style={{
-                // This is a dummy style that doesn't actually change anything visually.
-                // Animated needs the animated value to be used somewhere, otherwise things don't update properly.
-                // If we disable animations and hide header, it could end up making the value unused.
-                // So we have this dummy style that will always be used regardless of what else changed.
-                opacity: current,
-            }} 
-        // Make sure that this view isn't removed. If this view is removed, our style with animated value won't apply
-        collapsable={false}/>) : null}
-      {overlayEnabled ? (<react_native_1.View pointerEvents="box-none" style={react_native_1.StyleSheet.absoluteFill}>
-          {overlay({ style: overlayStyle })}
-        </react_native_1.View>) : null}
-      <react_native_1.Animated.View pointerEvents="box-none" style={[styles.container, containerStyle, customContainerStyle]}>
-        <GestureHandler_1.PanGestureHandler enabled={layout.width !== 0 && gestureEnabled} onGestureEvent={onGestureEvent} onHandlerStateChange={onGestureStateChange} {...(0, gestureActivationCriteria_1.gestureActivationCriteria)({
-        layout,
-        direction,
-        gestureDirection,
-        gestureResponseDistance,
-    })}>
-          <react_native_1.Animated.View pointerEvents="box-none" needsOffscreenAlphaCompositing={hasOpacityStyle(cardStyle)} style={[styles.container, cardStyle]}>
-            {shadowEnabled && shadowStyle && !isTransparent ? (<react_native_1.Animated.View pointerEvents="none" style={[
-                styles.shadow,
-                gestureDirection === 'horizontal'
-                    ? [styles.shadowHorizontal, styles.shadowStart]
-                    : gestureDirection === 'horizontal-inverted'
-                        ? [styles.shadowHorizontal, styles.shadowEnd]
-                        : gestureDirection === 'vertical'
-                            ? [styles.shadowVertical, styles.shadowTop]
-                            : [styles.shadowVertical, styles.shadowBottom],
-                { backgroundColor },
-                shadowStyle,
-            ]}/>) : null}
-            <CardContent_1.CardContent enabled={pageOverflowEnabled} layout={layout} style={contentStyle}>
-              {children}
-            </CardContent_1.CardContent>
-          </react_native_1.Animated.View>
-        </GestureHandler_1.PanGestureHandler>
-      </react_native_1.Animated.View>
-    </CardAnimationContext_1.CardAnimationContext.Provider>);
+    return ((0, jsx_runtime_1.jsxs)(CardAnimationContext_1.CardAnimationContext.Provider, { value: interpolationProps, children: [react_native_1.Platform.OS !== 'web' ? ((0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { style: {
+                    // This is a dummy style that doesn't actually change anything visually.
+                    // Animated needs the animated value to be used somewhere, otherwise things don't update properly.
+                    // If we disable animations and hide header, it could end up making the value unused.
+                    // So we have this dummy style that will always be used regardless of what else changed.
+                    opacity: current,
+                }, 
+                // Make sure that this view isn't removed. If this view is removed, our style with animated value won't apply
+                collapsable: false })) : null, overlayEnabled ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { pointerEvents: "box-none", style: react_native_1.StyleSheet.absoluteFill, children: overlay({ style: overlayStyle }) })) : null, (0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [styles.container, containerStyle, customContainerStyle], children: (0, jsx_runtime_1.jsx)(GestureHandler_1.PanGestureHandler, { enabled: layout.width !== 0 && gestureEnabled, onGestureEvent: onGestureEvent, onHandlerStateChange: onGestureStateChange, ...(0, gestureActivationCriteria_1.gestureActivationCriteria)({
+                        layout,
+                        direction,
+                        gestureDirection,
+                        gestureResponseDistance,
+                    }), children: (0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { pointerEvents: "box-none", needsOffscreenAlphaCompositing: hasOpacityStyle(cardStyle), style: [styles.container, cardStyle], children: [shadowEnabled && shadowStyle && !isTransparent ? ((0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "none", style: [
+                                    styles.shadow,
+                                    gestureDirection === 'horizontal'
+                                        ? [styles.shadowHorizontal, styles.shadowStart]
+                                        : gestureDirection === 'horizontal-inverted'
+                                            ? [styles.shadowHorizontal, styles.shadowEnd]
+                                            : gestureDirection === 'vertical'
+                                                ? [styles.shadowVertical, styles.shadowTop]
+                                                : [styles.shadowVertical, styles.shadowBottom],
+                                    { backgroundColor },
+                                    shadowStyle,
+                                ] })) : null, (0, jsx_runtime_1.jsx)(CardContent_1.CardContent, { enabled: pageOverflowEnabled, layout: layout, style: contentStyle, children: children })] }) }) })] }));
 }
 const styles = react_native_1.StyleSheet.create({
     container: {

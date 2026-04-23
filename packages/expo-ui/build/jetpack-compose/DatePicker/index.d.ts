@@ -153,7 +153,7 @@ export type DateTimePickerProps = {
 /**
  * Renders an inline `DateTimePicker` component.
  */
-export declare function DateTimePicker(props: DateTimePickerProps): import("react").JSX.Element;
+export declare function DateTimePicker(props: DateTimePickerProps): import("react/jsx-runtime").JSX.Element;
 export type DatePickerDialogProps = {
     initialDate?: string | null;
     variant?: AndroidVariant;
@@ -169,7 +169,7 @@ export type DatePickerDialogProps = {
     onDateSelected?: (date: Date) => void;
     onDismissRequest: () => void;
 };
-export declare function DatePickerDialog(props: DatePickerDialogProps): import("react").JSX.Element;
+export declare function DatePickerDialog(props: DatePickerDialogProps): import("react/jsx-runtime").JSX.Element;
 export type TimePickerDialogProps = {
     initialDate?: string | null;
     is24Hour?: boolean;
@@ -180,5 +180,5 @@ export type TimePickerDialogProps = {
     onDateSelected?: (date: Date) => void;
     onDismissRequest: () => void;
 };
-export declare function TimePickerDialog(props: TimePickerDialogProps): import("react").JSX.Element;
+export declare function TimePickerDialog(props: TimePickerDialogProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -1,4 +1,5 @@
-import { ConfigPlugin, IOSConfig, withAppDelegate, withDangerousMod } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { IOSConfig, withAppDelegate, withDangerousMod } from '@expo/config-plugins';
 import {
   addObjcImports,
   addSwiftImports,

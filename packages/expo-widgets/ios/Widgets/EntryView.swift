@@ -29,12 +29,7 @@ public struct WidgetsEntryView: View {
     let node = evaluateLayout(layout: layout, props: entry.props ?? [:], environment: widgetEnvironment)
 
     if let node {
-      if #available(iOS 17.0, *) {
-        WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
-          .containerBackground(.clear, for: .widget)
-      } else {
-        WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
-      }
+      WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
     } else {
       EmptyView()
     }

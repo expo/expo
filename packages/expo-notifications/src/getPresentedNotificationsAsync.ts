@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
 import NotificationPresenter from './NotificationPresenterModule';
-import { Notification } from './Notifications.types';
+import type { Notification } from './Notifications.types';
 import { mapNotification } from './utils/mapNotificationResponse';
 
 /**

@@ -14,6 +14,6 @@ type Props = {
  * Component to provide the navigation and route contexts to its children.
  */
 export declare const NamedRouteContextListContext: React.Context<Record<string, React.Context<Route<string>>> | undefined>;
-export declare function NavigationProvider({ route, navigation, children }: Props): React.JSX.Element;
+export declare function NavigationProvider({ route, navigation, children }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=NavigationProvider.d.ts.map

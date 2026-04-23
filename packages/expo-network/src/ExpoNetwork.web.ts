@@ -1,6 +1,7 @@
 import { NativeModule, registerWebModule } from 'expo-modules-core';
 
-import { NetworkEvents, NetworkState, NetworkStateType } from './Network.types';
+import type { NetworkEvents, NetworkState } from './Network.types';
+import { NetworkStateType } from './Network.types';
 
 const onNetworkStateEventName = 'onNetworkStateChanged';
 

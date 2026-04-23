@@ -30,5 +30,5 @@ export type NamespaceProps = {
  * );
  * ```
  */
-export declare function Namespace(props: NamespaceProps): import("react").JSX.Element;
+export declare function Namespace(props: NamespaceProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Namespace.d.ts.map

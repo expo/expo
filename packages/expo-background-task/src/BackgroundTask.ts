@@ -2,7 +2,8 @@ import { isRunningInExpoGo } from 'expo';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 
-import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
+import type { BackgroundTaskOptions } from './BackgroundTask.types';
+import { BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 
 // Flag to warn about running on Apple simulator
@@ -158,5 +159,5 @@ export function addExpirationListener(listener: () => void): { remove: () => voi
 export {
   BackgroundTaskStatus,
   BackgroundTaskResult,
-  BackgroundTaskOptions,
+  type BackgroundTaskOptions,
 } from './BackgroundTask.types';

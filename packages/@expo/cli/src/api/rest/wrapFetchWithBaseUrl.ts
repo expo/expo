@@ -1,6 +1,6 @@
 import { URL } from 'url';
 
-import { FetchLike } from './client.types';
+import type { FetchLike } from './client.types';
 
 // const debug = require('debug')('expo:api:fetch:base') as typeof console.log;
 

@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- Add structured server resource descriptors for streaming SSR ([#44927](https://github.com/expo/expo/pull/44927) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 

@@ -1,4 +1,4 @@
-import { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
+import type { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
 declare const _default: {
     getClients(): MailClient[];
     composeAsync(options: MailComposerOptions): Promise<MailComposerResult>;

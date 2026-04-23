@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import { withStaticPlugin } from './withStaticPlugin';
-import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
+import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 
 /**
  * Resolves a list of plugins.

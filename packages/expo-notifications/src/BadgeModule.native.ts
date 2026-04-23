@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo-modules-core';
 
-import { BadgeModule } from './BadgeModule.types';
+import type { BadgeModule } from './BadgeModule.types';
 
 const nativeModule = requireNativeModule('ExpoBadgeModule');
 

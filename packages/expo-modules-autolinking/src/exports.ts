@@ -3,13 +3,12 @@ import path from 'path';
 
 import { findModulesAsync } from './autolinking/findModules';
 import { resolveModulesAsync } from './autolinking/resolveModules';
+import type { AutolinkingCommonArguments, AutolinkingOptions } from './commands/autolinkingOptions';
 import {
-  AutolinkingCommonArguments,
-  AutolinkingOptions,
   createAutolinkingOptionsLoader,
   filterMapSearchPaths,
 } from './commands/autolinkingOptions';
-import { ModuleDescriptor, SupportedPlatform } from './types';
+import type { ModuleDescriptor, SupportedPlatform } from './types';
 
 export * from './types';
 export * from './autolinking';

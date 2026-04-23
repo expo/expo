@@ -1,4 +1,5 @@
-import { ExecutionEnvironment, NativeConstants, WebManifest } from './Constants.types';
+import type { NativeConstants, WebManifest } from './Constants.types';
+import { ExecutionEnvironment } from './Constants.types';
 
 declare let __DEV__: boolean;
 declare let process: { env: any };

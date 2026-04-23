@@ -1,6 +1,7 @@
 import sha1 from './lib/sha1';
 import v35 from './lib/v35';
-import { UUID, Uuidv5Namespace } from './uuid.types';
+import type { UUID } from './uuid.types';
+import { Uuidv5Namespace } from './uuid.types';
 
 function uuidv4(): string {
   if (

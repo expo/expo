@@ -1,7 +1,7 @@
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig, AuthRequestPromptOptions } from './AuthRequest.types';
-import { AuthSessionResult } from './AuthSession.types';
-import { DiscoveryDocument, IssuerOrDiscovery } from './Discovery';
+import type { AuthRequestConfig, AuthRequestPromptOptions } from './AuthRequest.types';
+import type { AuthSessionResult } from './AuthSession.types';
+import type { DiscoveryDocument, IssuerOrDiscovery } from './Discovery';
 /**
  * Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDocument`](#discoverydocument)
  * (a collection of URLs) from the resource provider.

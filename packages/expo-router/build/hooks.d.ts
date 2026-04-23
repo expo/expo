@@ -1,8 +1,8 @@
 import type { LoaderFunction } from 'expo-server';
 import { useRouteInfo } from './global-state/router-store';
-import { Router } from './imperative-api';
-import { NavigationState } from './react-navigation/native';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import type { Router } from './imperative-api';
+import type { NavigationState } from './react-navigation/native';
+import type { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 export { useRouteInfo };
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)

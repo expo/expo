@@ -1,10 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TabBarIcon = TabBarIcon;
-const react_1 = __importDefault(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_native_1 = require("react-native");
 const elements_1 = require("../../elements");
 /**
@@ -26,39 +23,29 @@ function TabBarIcon({ route: _, variant, size, badge, badgeStyle, activeOpacity,
             : ICON_SIZE_ROUND;
     // We render the icon twice at the same position on top of each other:
     // active and inactive one, so we can fade between them.
-    return (<react_native_1.View style={[
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.View, { style: [
             variant === 'material'
                 ? styles.wrapperMaterial
                 : size === 'compact'
                     ? styles.wrapperUikitCompact
                     : styles.wrapperUikit,
             style,
-        ]}>
-      <react_native_1.View style={[
-            styles.icon,
-            {
-                opacity: activeOpacity,
-                // Workaround for react-native >= 0.54 layout bug
-                minWidth: iconSize,
-            },
-        ]}>
-        {renderIcon({
-            focused: true,
-            size: iconSize,
-            color: activeTintColor,
-        })}
-      </react_native_1.View>
-      <react_native_1.View style={[styles.icon, { opacity: inactiveOpacity }]}>
-        {renderIcon({
-            focused: false,
-            size: iconSize,
-            color: inactiveTintColor,
-        })}
-      </react_native_1.View>
-      <elements_1.Badge visible={badge != null} size={iconSize * 0.75} allowFontScaling={allowFontScaling} style={[styles.badge, badgeStyle]}>
-        {badge}
-      </elements_1.Badge>
-    </react_native_1.View>);
+        ], children: [(0, jsx_runtime_1.jsx)(react_native_1.View, { style: [
+                    styles.icon,
+                    {
+                        opacity: activeOpacity,
+                        // Workaround for react-native >= 0.54 layout bug
+                        minWidth: iconSize,
+                    },
+                ], children: renderIcon({
+                    focused: true,
+                    size: iconSize,
+                    color: activeTintColor,
+                }) }), (0, jsx_runtime_1.jsx)(react_native_1.View, { style: [styles.icon, { opacity: inactiveOpacity }], children: renderIcon({
+                    focused: false,
+                    size: iconSize,
+                    color: inactiveTintColor,
+                }) }), (0, jsx_runtime_1.jsx)(elements_1.Badge, { visible: badge != null, size: iconSize * 0.75, allowFontScaling: allowFontScaling, style: [styles.badge, badgeStyle], children: badge })] }));
 }
 const styles = react_native_1.StyleSheet.create({
     icon: {

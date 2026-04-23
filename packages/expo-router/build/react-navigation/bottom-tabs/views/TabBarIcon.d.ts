@@ -19,6 +19,6 @@ type Props = {
     allowFontScaling?: boolean;
     style: StyleProp<ViewStyle>;
 };
-export declare function TabBarIcon({ route: _, variant, size, badge, badgeStyle, activeOpacity, inactiveOpacity, activeTintColor, inactiveTintColor, renderIcon, allowFontScaling, style, }: Props): React.JSX.Element;
+export declare function TabBarIcon({ route: _, variant, size, badge, badgeStyle, activeOpacity, inactiveOpacity, activeTintColor, inactiveTintColor, renderIcon, allowFontScaling, style, }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=TabBarIcon.d.ts.map

@@ -1,4 +1,4 @@
-import { PluginConfigTypeAndroidQueriesIntent } from './pluginConfig';
+import type { PluginConfigTypeAndroidQueriesIntent } from './pluginConfig';
 
 export function renderQueryProviders(data?: string | string[]) {
   return (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({

@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { type ColorValue, type TextStyle, type ViewProps } from 'react-native';
+import type { ColorValue, TextStyle, ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';

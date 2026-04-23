@@ -1,7 +1,7 @@
 import { load as loadEnv } from '@expo/env';
 import chalk from 'chalk';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
 import { resolveChecksInScope } from './utils/checkResolver';
 import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';

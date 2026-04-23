@@ -8,7 +8,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
-import { ServerRequest, ServerResponse } from './server.types';
+import type { ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:createFile') as typeof console.log;
 

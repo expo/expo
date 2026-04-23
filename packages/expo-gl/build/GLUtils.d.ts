@@ -1,4 +1,4 @@
-import { ExpoWebGLRenderingContext } from './GLView.types';
+import type { ExpoWebGLRenderingContext } from './GLView.types';
 /**
  * Sets up `__expoSetLogging` method providing some logging options useful when debugging GL calls.
  */

@@ -6,15 +6,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 import Debug from 'debug';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 
-import {
-  ProtocolClient,
-  ProtocolReader,
-  ProtocolReaderCallback,
-  ProtocolReaderFactory,
-  ProtocolWriter,
-} from './AbstractProtocol';
+import type { ProtocolReaderCallback, ProtocolWriter } from './AbstractProtocol';
+import { ProtocolClient, ProtocolReader, ProtocolReaderFactory } from './AbstractProtocol';
 import { CommandError } from '../../../../utils/errors';
 
 const debug = Debug('expo:apple-device:protocol:gdb');

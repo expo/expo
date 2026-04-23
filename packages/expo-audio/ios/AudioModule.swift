@@ -501,6 +501,37 @@ public class AudioModule: Module {
         try RecordingUtils.setInput(input)
       }
     }
+
+    Class(AudioStream.self) {
+      Constructor { (options: AudioStreamOptions) -> AudioStream in
+        return AudioStream(options: options)
+      }
+
+      Property("id") { (stream: AudioStream) in
+        stream.id
+      }
+
+      Property("sampleRate") { (stream: AudioStream) in
+        stream.sampleRate
+      }
+
+      Property("channels") { (stream: AudioStream) in
+        stream.channels
+      }
+
+      Property("isStreaming") { (stream: AudioStream) in
+        stream.isStreaming
+      }
+
+      AsyncFunction("start") { (stream: AudioStream) in
+        try checkPermissions()
+        try stream.start()
+      }
+
+      Function("stop") { (stream: AudioStream) in
+        stream.stop()
+      }
+    }
     #endif
   }
 

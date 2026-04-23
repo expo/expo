@@ -1,4 +1,4 @@
-import { Asset } from 'expo-asset';
+import type { Asset } from 'expo-asset';
 /**
  * The different types of assets you can provide to the [`loadAsync()`](#loadasyncfontfamilyorfontmap-source) function.
  * A font source can be a URI, a module ID, or an Expo Asset.

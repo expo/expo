@@ -1,4 +1,4 @@
-import { ModuleIosConfig } from '../types';
+import type { ModuleIosConfig } from '../types';
 import { getMirrorStateObject } from './inlineModules';
 
 export async function getIosInlineModulesClassNames(

@@ -1,4 +1,5 @@
-import { ExpoConfig, getConfig, ProjectConfig } from '@expo/config';
+import type { ExpoConfig, ProjectConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import util from 'util';
 

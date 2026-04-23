@@ -1,17 +1,20 @@
-import { NativeDatabase } from './NativeDatabase';
-import {
-  SQLiteBindParams,
-  SQLiteBindValue,
+import type { NativeDatabase } from './NativeDatabase';
+import type {
   NativeStatement,
+  SQLiteBindParams,
   SQLiteVariadicBindParams,
-  type SQLiteAnyDatabase,
-  type SQLiteColumnNames,
-  type SQLiteColumnValues,
-  type SQLiteRunResult,
+  SQLiteAnyDatabase,
+  SQLiteColumnNames,
+  SQLiteColumnValues,
 } from './NativeStatement';
 import { composeRow, composeRows, normalizeParams } from './paramUtils';
 
-export { SQLiteBindParams, SQLiteBindValue, SQLiteRunResult, SQLiteVariadicBindParams };
+export type {
+  SQLiteBindParams,
+  SQLiteBindValue,
+  SQLiteRunResult,
+  SQLiteVariadicBindParams,
+} from './NativeStatement';
 
 type ValuesOf<T extends object> = T[keyof T][];
 

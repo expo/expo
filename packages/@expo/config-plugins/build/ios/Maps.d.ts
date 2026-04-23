@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
-import { ConfigPlugin, InfoPlist } from '../Plugin.types';
-import { MergeResults } from '../utils/generateCode';
+import type { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin, InfoPlist } from '../Plugin.types';
+import type { MergeResults } from '../utils/generateCode';
 export declare const MATCH_INIT: RegExp;
 export declare const withMaps: ConfigPlugin;
 export declare function getGoogleMapsApiKey(config: Pick<ExpoConfig, 'ios'>): string | null;

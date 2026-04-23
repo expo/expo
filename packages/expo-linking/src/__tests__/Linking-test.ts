@@ -2,7 +2,7 @@ import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import * as Linking from '../Linking';
-import { QueryParams } from '../Linking.types';
+import type { QueryParams } from '../Linking.types';
 
 describe('parse', () => {
   beforeAll(() => {

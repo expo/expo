@@ -4,7 +4,7 @@ import path from 'path';
 
 import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
-import { ServerLike } from '../BundlerDevServer';
+import type { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]

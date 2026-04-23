@@ -1,5 +1,6 @@
-import { ConfigPlugin } from '../Plugin.types';
-import { addHistoryItem, getHistoryItem, PluginHistoryItem } from '../utils/history';
+import type { ConfigPlugin } from '../Plugin.types';
+import type { PluginHistoryItem } from '../utils/history';
+import { addHistoryItem, getHistoryItem } from '../utils/history';
 
 /**
  * Prevents the same plugin from being run twice.

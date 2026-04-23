@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
@@ -58,6 +59,6 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} polygons={parsedPolygons} circles={parsedCircles} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick} onPolygonClick={onNativePolygonClick} onCircleClick={onNativeCircleClick}/>);
+    return (_jsx(NativeView, { ...props, ref: nativeRef, markers: parsedMarkers, polylines: parsedPolylines, polygons: parsedPolygons, circles: parsedCircles, onMapLoaded: onNativeMapLoaded, onMapClick: onNativeMapClick, onMapLongClick: onNativeMapLongClick, onPOIClick: onNativePOIClick, onMarkerClick: onNativeMarkerClick, onCameraMove: onNativeCameraMove, onPolylineClick: onNativePolylineClick, onPolygonClick: onNativePolygonClick, onCircleClick: onNativeCircleClick }));
 });
 //# sourceMappingURL=GoogleMapsView.js.map

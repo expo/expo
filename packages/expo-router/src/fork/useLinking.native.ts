@@ -1,10 +1,10 @@
 import * as ExpoLinking from 'expo-linking';
-import * as React from 'react';
+import { type RefObject, useEffect, useCallback, useRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
 import { extractExpoPathFromURL } from './extractPathFromURL';
-import { LinkingOptions } from '../react-navigation/native';
 import {
+  type LinkingOptions,
   getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
@@ -19,7 +19,7 @@ type Options = LinkingOptions<ParamListBase>;
 const linkingHandlers: symbol[] = [];
 
 export function useLinking(
-  ref: React.RefObject<NavigationContainerRef<ParamListBase>>,
+  ref: RefObject<NavigationContainerRef<ParamListBase>>,
   {
     enabled = true,
     prefixes,
@@ -53,7 +53,7 @@ export function useLinking(
 ) {
   const independent = useNavigationIndependentTree();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       return undefined;
     }
@@ -95,15 +95,15 @@ export function useLinking(
   // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
   // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
   // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-  const enabledRef = React.useRef(enabled);
-  const prefixesRef = React.useRef(prefixes);
-  const filterRef = React.useRef(filter);
-  const configRef = React.useRef(config);
-  const getInitialURLRef = React.useRef(getInitialURL);
-  const getStateFromPathRef = React.useRef(getStateFromPath);
-  const getActionFromStateRef = React.useRef(getActionFromState);
+  const enabledRef = useRef(enabled);
+  const prefixesRef = useRef(prefixes);
+  const filterRef = useRef(filter);
+  const configRef = useRef(config);
+  const getInitialURLRef = useRef(getInitialURL);
+  const getStateFromPathRef = useRef(getStateFromPath);
+  const getActionFromStateRef = useRef(getActionFromState);
 
-  React.useEffect(() => {
+  useEffect(() => {
     enabledRef.current = enabled;
     prefixesRef.current = prefixes;
     filterRef.current = filter;
@@ -113,7 +113,7 @@ export function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const getStateFromURL = React.useCallback(
+  const getStateFromURL = useCallback(
     (url: string | null | undefined) => {
       if (!url || (filterRef.current && !filterRef.current(url))) {
         return undefined;
@@ -127,7 +127,7 @@ export function useLinking(
     []
   );
 
-  const getInitialState = React.useCallback(() => {
+  const getInitialState = useCallback(() => {
     let state: ResultState | undefined;
 
     if (enabledRef.current) {
@@ -165,7 +165,7 @@ export function useLinking(
     return thenable as PromiseLike<ResultState | undefined>;
   }, [getStateFromURL, onUnhandledLinking, prefixes]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const listener = (url: string) => {
       if (!enabled) {
         return;

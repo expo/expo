@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SingleNavigatorContext = void 0;
 exports.EnsureSingleNavigator = EnsureSingleNavigator;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const MULTIPLE_NAVIGATOR_ERROR = `Another navigator is already registered for this container. You likely have multiple navigators under a single "NavigationContainer" or "Screen". Make sure each navigator is under a separate "Screen" container. See https://reactnavigation.org/docs/nesting-navigators for a guide on nesting.`;
 exports.SingleNavigatorContext = React.createContext(undefined);
@@ -60,6 +61,6 @@ function EnsureSingleNavigator({ children }) {
             navigatorKeyRef.current = undefined;
         },
     }), []);
-    return (<exports.SingleNavigatorContext.Provider value={value}>{children}</exports.SingleNavigatorContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(exports.SingleNavigatorContext.Provider, { value: value, children: children }));
 }
 //# sourceMappingURL=EnsureSingleNavigator.js.map

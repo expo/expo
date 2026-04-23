@@ -1,4 +1,4 @@
-import { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
+import type { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
 /**
  * A React hook which returns the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).

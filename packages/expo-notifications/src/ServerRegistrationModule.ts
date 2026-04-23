@@ -1,4 +1,4 @@
-import { ServerRegistrationModule } from './ServerRegistrationModule.types';
+import type { ServerRegistrationModule } from './ServerRegistrationModule.types';
 
 export default {
   addListener: () => {},

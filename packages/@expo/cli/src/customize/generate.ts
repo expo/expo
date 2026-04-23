@@ -1,7 +1,8 @@
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { DestinationResolutionProps, selectTemplatesAsync, TEMPLATES } from './templates';
+import type { DestinationResolutionProps } from './templates';
+import { selectTemplatesAsync, TEMPLATES } from './templates';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { copyAsync } from '../utils/dir';

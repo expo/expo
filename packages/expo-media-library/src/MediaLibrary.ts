@@ -1,11 +1,8 @@
 import {
-  PermissionResponse as EXPermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
+  type PermissionResponse as EXPermissionResponse,
   createPermissionHook,
   UnavailabilityError,
-  EventSubscription,
+  type EventSubscription,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
@@ -362,13 +359,14 @@ export type AssetRef = Asset | string;
 // @docsMissing
 export type AlbumRef = Album | string;
 
+// TODO(@kitten): Remove re-exports from EMC
 export {
   PermissionStatus,
-  PermissionExpiration,
-  EXPermissionResponse,
-  PermissionHookOptions,
-  EventSubscription as Subscription,
-};
+  type PermissionExpiration,
+  type PermissionResponse as EXPermissionResponse,
+  type PermissionHookOptions,
+  type EventSubscription as Subscription,
+} from 'expo-modules-core';
 
 function arrayize<T>(item: T | T[]): T[] {
   if (Array.isArray(item)) {

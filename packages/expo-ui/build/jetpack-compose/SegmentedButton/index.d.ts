@@ -57,12 +57,12 @@ export type SegmentedButtonProps = {
  */
 declare function SegmentedButtonLabel(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 /**
  * A Material 3 segmented button. Must be used inside a `SingleChoiceSegmentedButtonRow`
  * or `MultiChoiceSegmentedButtonRow`.
  */
-declare function SegmentedButtonComponent(props: SegmentedButtonProps): import("react").JSX.Element;
+declare function SegmentedButtonComponent(props: SegmentedButtonProps): import("react/jsx-runtime").JSX.Element;
 declare namespace SegmentedButtonComponent {
     var Label: typeof SegmentedButtonLabel;
 }

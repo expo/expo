@@ -1,5 +1,6 @@
 import { NativeModule } from 'expo';
-import { AESDecryptOptions, AESEncryptOptions, AESKeySize, AESSealedDataConfig, BinaryInput, GCMTagByteLength } from './aes.types';
+import type { AESDecryptOptions, AESEncryptOptions, AESSealedDataConfig, BinaryInput, GCMTagByteLength } from './aes.types';
+import { AESKeySize } from './aes.types';
 declare class EncryptionKey {
     key: CryptoKey;
     keySize: AESKeySize;

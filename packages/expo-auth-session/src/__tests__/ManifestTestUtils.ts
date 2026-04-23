@@ -1,4 +1,4 @@
-import Constants from 'expo-constants';
+import type Constants from 'expo-constants';
 
 export type ConstantsType = typeof Constants;
 export type ConstantsWithoutManifests = Omit<ConstantsType, 'manifest' | 'manifest2'>;

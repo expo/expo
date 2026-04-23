@@ -4,7 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import {
@@ -26,7 +27,7 @@ import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -74,7 +75,8 @@ import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
 import { getFreePortAsync } from '../../../utils/port';
-import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { BundlerDevServer } from '../BundlerDevServer';
 import {
   cachedSourceMaps,
   evalMetroAndWrapFunctions,
@@ -94,17 +96,17 @@ import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddlewa
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import type { ExpoMetroOptions } from '../middleware/metroOptions';
 import {
   convertPathToModuleSpecifier,
   createBundleUrlPath,
-  ExpoMetroOptions,
   createBundleOsPath,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import type { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
 export type ExpoRouterRuntimeManifest = Awaited<

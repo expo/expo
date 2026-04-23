@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import * as XcodeBuild from './XcodeBuild';
-import { Options } from './XcodeBuild.types';
+import type { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';

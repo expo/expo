@@ -1,7 +1,7 @@
 import * as osascript from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 
-import { Device } from './simctl';
+import type { Device } from './simctl';
 import * as Log from '../../../log';
 import { waitForActionAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';

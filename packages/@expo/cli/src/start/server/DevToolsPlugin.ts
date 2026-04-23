@@ -1,4 +1,5 @@
-import { DevToolsPluginInfo, PluginSchema } from './DevToolsPlugin.schema';
+import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
+import { PluginSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import { DevToolsPluginEndpoint } from './DevToolsPluginManager';
 import { Log } from '../../log';

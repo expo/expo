@@ -1,11 +1,11 @@
 import { requireNativeView } from 'expo';
 
 import {
-  HorizontalAlignment,
-  HorizontalArrangement,
-  PrimitiveBaseProps,
-  VerticalAlignment,
-  VerticalArrangement,
+  type HorizontalAlignment,
+  type HorizontalArrangement,
+  type PrimitiveBaseProps,
+  type VerticalAlignment,
+  type VerticalArrangement,
   transformProps,
 } from '../layout-types';
 

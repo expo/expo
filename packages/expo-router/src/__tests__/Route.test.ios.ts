@@ -1,4 +1,5 @@
-import { RouteNode, sortRoutes } from '../Route';
+import type { RouteNode } from '../Route';
+import { sortRoutes } from '../Route';
 import { generateDynamic } from '../getRoutes';
 
 const asRouteNode = (route: string): RouteNode => {

@@ -1,7 +1,6 @@
 import { createPermissionHook, PermissionStatus, Platform, UnavailabilityError, } from 'expo-modules-core';
-import { CellularGeneration } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
-export { CellularGeneration };
+export { CellularGeneration } from './Cellular.types';
 // @needsAudit
 /**
  * @return Returns a promise which fulfils with a [`Cellular.CellularGeneration`](#cellulargeneration)

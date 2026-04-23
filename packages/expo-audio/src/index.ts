@@ -1,8 +1,14 @@
-export { PermissionResponse, PermissionExpiration, PermissionStatus } from 'expo-modules-core';
+// TODO(@kitten): Remove re-exports from EMC
+export {
+  type PermissionResponse,
+  type PermissionExpiration,
+  PermissionStatus,
+} from 'expo-modules-core';
 
 export * from './ExpoAudio';
 
 export type * from './Audio.types';
 export type * from './AudioModule.types';
+export type * from './AudioStream.types';
 export * from './AudioConstants';
 export * from './RecordingConstants';

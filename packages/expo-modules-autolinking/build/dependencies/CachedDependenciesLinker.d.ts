@@ -1,7 +1,7 @@
-import { PackageRevision, SupportedPlatform } from '../types';
-import { type ResolutionResult, DependencyResolution } from './types';
+import type { PackageRevision, SupportedPlatform } from '../types';
+import { type DependencyResolution, type ResolutionResult } from './types';
 import { type Memoizer } from '../memoize';
-import { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
+import type { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
 export interface CachedDependenciesSearchOptions {
     includeNames: Set<string>;
     excludeNames: Set<string>;

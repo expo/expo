@@ -2,7 +2,7 @@ import type { RequestInit } from 'fetch-nodeshim';
 import { Buffer } from 'node:buffer';
 
 import { fetch } from '../../fetch';
-import { TelemetryClient, TelemetryClientStrategy, TelemetryRecordInternal } from '../types';
+import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecordInternal } from '../types';
 import { TELEMETRY_ENDPOINT, TELEMETRY_TARGET } from '../utils/constants';
 
 type Fetch = typeof fetch;

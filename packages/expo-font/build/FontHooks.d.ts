@@ -1,4 +1,4 @@
-import { UseFontHook } from './Font.types';
+import type { UseFontHook } from './Font.types';
 /**
  * Load a map of fonts at runtime with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns `true` if the fonts are
  * loaded and ready to use. It also returns an error if something went wrong, to use in development.

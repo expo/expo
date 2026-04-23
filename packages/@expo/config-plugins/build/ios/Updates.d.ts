@@ -1,6 +1,6 @@
-import { ExpoPlist } from './IosConfig.types';
-import { ConfigPlugin } from '../Plugin.types';
-import { ExpoConfigUpdates } from '../utils/Updates';
+import type { ExpoPlist } from './IosConfig.types';
+import type { ConfigPlugin } from '../Plugin.types';
+import type { ExpoConfigUpdates } from '../utils/Updates';
 export declare enum Config {
     ENABLED = "EXUpdatesEnabled",
     CHECK_ON_LAUNCH = "EXUpdatesCheckOnLaunch",

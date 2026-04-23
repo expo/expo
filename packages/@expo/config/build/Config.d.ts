@@ -1,4 +1,4 @@
-import { ConfigFilePaths, ExpoConfig, GetConfigOptions, PackageJSONConfig, ProjectConfig, ProjectTarget, WriteConfigOptions } from './Config.types';
+import type { ConfigFilePaths, ExpoConfig, GetConfigOptions, PackageJSONConfig, ProjectConfig, ProjectTarget, WriteConfigOptions } from './Config.types';
 /**
  * Evaluate the config for an Expo project.
  * If a function is exported from the `app.config.js` then a partial config will be passed as an argument.

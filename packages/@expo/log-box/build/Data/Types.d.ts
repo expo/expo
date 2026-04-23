@@ -1,4 +1,4 @@
-import { type StackFrame as UpstreamStackFrame } from 'stacktrace-parser';
+import type { StackFrame as UpstreamStackFrame } from 'stacktrace-parser';
 export type Message = {
     content: string;
     substitutions: {

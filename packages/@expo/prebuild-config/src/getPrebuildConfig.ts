@@ -1,5 +1,5 @@
 import { getConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
+import type { ModPlatform } from '@expo/config-plugins';
 
 import { getAutolinkedPackagesAsync } from './getAutolinkedPackages';
 import {

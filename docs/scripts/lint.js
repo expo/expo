@@ -98,24 +98,30 @@ if (isCI) {
   oxlintArgs.push('--format=github');
 }
 
-const lintableExts = ['js', 'cjs', 'ts', 'jsx', 'tsx', 'md', 'mdx'];
-const changedFiles = getChangedFiles(lintableExts);
+// oxfmt formats JS/TS and markdown; oxlint only lints JS/TS (md/mdx are in its ignorePatterns).
+// Keeping these separate avoids passing markdown-only changesets to oxlint, which then errors with
+// "No files found to lint" because every input is ignored.
+const oxfmtExts = ['js', 'cjs', 'ts', 'jsx', 'tsx', 'md', 'mdx'];
+const oxlintExts = ['js', 'cjs', 'ts', 'jsx', 'tsx'];
+
+const oxfmtChangedFiles = getChangedFiles(oxfmtExts);
+const oxlintChangedFiles = getChangedFiles(oxlintExts);
 
 let oxfmtPromise;
-if (changedFiles !== null && changedFiles.length === 0) {
+if (oxfmtChangedFiles !== null && oxfmtChangedFiles.length === 0) {
   oxfmtPromise = Promise.resolve({ status: 0, output: 'No formattable files changed.' });
-} else if (changedFiles !== null) {
-  oxfmtPromise = runAsync('oxfmt', ['--check', ...changedFiles]);
+} else if (oxfmtChangedFiles !== null) {
+  oxfmtPromise = runAsync('oxfmt', ['--check', ...oxfmtChangedFiles]);
 } else {
   oxfmtPromise = runAsync('oxfmt', ['--check', process.cwd(), '**/*.mdx']);
 }
 
 let oxlintPromise;
-if (changedFiles !== null && changedFiles.length === 0) {
+if (oxlintChangedFiles !== null && oxlintChangedFiles.length === 0) {
   oxlintPromise = Promise.resolve({ status: 0, output: 'No lintable files changed.' });
-} else if (changedFiles !== null) {
+} else if (oxlintChangedFiles !== null) {
   oxlintPromise = runAsync('oxlint', [
-    ...changedFiles,
+    ...oxlintChangedFiles,
     '--type-aware',
     ...(isCI ? ['--format=github'] : []),
   ]);
@@ -146,7 +152,7 @@ if (oxfmtResult.status !== 0) {
   if (oxfmtResult.output) {
     const output = oxfmtResult.output.replace(
       /Run without `--check` to fix\./g,
-      'Run `yarn format` to fix.'
+      'Run `pnpm format` to fix.'
     );
     console.error(output);
   }

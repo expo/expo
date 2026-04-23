@@ -1,8 +1,9 @@
-import React, { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import { em } from '../css/units';
-import Text, { TextProps } from '../primitives/Text';
+import type { TextProps } from '../primitives/Text';
+import Text from '../primitives/Text';
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 

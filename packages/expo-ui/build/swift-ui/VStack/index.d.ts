@@ -10,5 +10,5 @@ export type VStackProps = {
      */
     spacing?: number;
 } & CommonViewModifierProps;
-export declare function VStack(props: VStackProps): import("react").JSX.Element;
+export declare function VStack(props: VStackProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

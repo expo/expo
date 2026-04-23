@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Animated, View, type ViewProps } from 'react-native';
+import type { ReactNode } from 'react';
+import { type Animated, View, type ViewProps } from 'react-native';
 
 let Screens: typeof import('react-native-screens') | undefined;
 
@@ -14,7 +14,7 @@ export const MaybeScreenContainer = ({
   ...rest
 }: ViewProps & {
   enabled: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   if (Screens != null) {
     return <Screens.ScreenContainer enabled={enabled} {...rest} />;
@@ -30,7 +30,7 @@ export const MaybeScreen = ({
 }: ViewProps & {
   enabled: boolean;
   active: 0 | 1 | Animated.AnimatedInterpolation<0 | 1>;
-  children: React.ReactNode;
+  children: ReactNode;
   freezeOnBlur?: boolean;
   shouldFreeze: boolean;
   homeIndicatorHidden?: boolean;

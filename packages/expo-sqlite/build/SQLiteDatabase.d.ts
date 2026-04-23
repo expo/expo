@@ -1,9 +1,10 @@
-import { type EventSubscription } from 'expo-modules-core';
-import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import type { EventSubscription } from 'expo-modules-core';
+import { type NativeDatabase, type SQLiteOpenOptions } from './NativeDatabase';
 import { SQLiteSession } from './SQLiteSession';
-import { SQLiteBindParams, SQLiteRunResult, SQLiteStatement, SQLiteVariadicBindParams } from './SQLiteStatement';
+import type { SQLiteBindParams, SQLiteRunResult, SQLiteVariadicBindParams } from './SQLiteStatement';
+import { SQLiteStatement } from './SQLiteStatement';
 import { SQLiteTaggedQuery } from './SQLiteTaggedQuery';
-export { SQLiteOpenOptions };
+export type { SQLiteOpenOptions } from './NativeDatabase';
 /**
  * A SQLite database.
  */

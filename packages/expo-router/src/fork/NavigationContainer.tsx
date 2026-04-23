@@ -6,18 +6,20 @@ import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
 import { useThenable } from './useThenable';
 import { useImperativeApiEmitter } from '../imperative-api';
-import {
-  BaseNavigationContainer,
-  DefaultTheme,
+import type {
   DocumentTitleOptions,
-  LinkingContext,
   LinkingOptions,
-  LocaleDirContext,
   LocaleDirection,
   NavigationContainerProps,
   NavigationContainerRef,
   NavigationState,
   ParamListBase,
+} from '../react-navigation/native';
+import {
+  BaseNavigationContainer,
+  DefaultTheme,
+  LinkingContext,
+  LocaleDirContext,
   ThemeProvider,
   UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
   getActionFromState,

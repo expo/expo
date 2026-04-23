@@ -1,6 +1,6 @@
 import * as Log from '../../../../log';
 import { hasDirectDevClientDependency } from '../../../detectDevClient';
-import { AndroidAppIdResolver } from '../AndroidAppIdResolver';
+import type { AndroidAppIdResolver } from '../AndroidAppIdResolver';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import { AndroidPlatformManager } from '../AndroidPlatformManager';
 import { startAdbReverseAsync } from '../adbReverse';

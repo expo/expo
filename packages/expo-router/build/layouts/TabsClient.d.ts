@@ -1,9 +1,9 @@
-import React, { ComponentProps } from 'react';
-import { BottomTabNavigationEventMap, BottomTabNavigationOptions } from '../react-navigation/bottom-tabs';
-import { ParamListBase, TabNavigationState } from '../react-navigation/native';
-import { Href } from '../types';
+import type { ComponentProps } from 'react';
+import type { BottomTabNavigationEventMap, BottomTabNavigationOptions } from '../react-navigation/bottom-tabs';
+import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
+import type { Href } from '../types';
 import { Protected } from '../views/Protected';
-declare const BottomTabNavigator: React.ComponentType<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
+declare const BottomTabNavigator: import("react").ComponentType<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -55,7 +55,7 @@ export type BottomTabNavigator = typeof BottomTabNavigator;
 type TabsProps = BottomTabNavigationOptions & {
     href?: Href | null;
 };
-declare const ExpoTabs: React.ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
+declare const ExpoTabs: import("react").ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -149,7 +149,7 @@ declare const ExpoTabs: React.ForwardRefExoticComponent<Omit<Omit<import("../rea
     id?: undefined;
 } | {
     id: string;
-})), "children">> & React.RefAttributes<unknown>> & {
+})), "children">> & import("react").RefAttributes<unknown>> & {
     Screen: (props: import("..").ScreenProps<TabsProps, TabNavigationState<ParamListBase>, BottomTabNavigationEventMap>) => null;
     Protected: typeof Protected;
 };
@@ -158,9 +158,9 @@ declare const ExpoTabs: React.ForwardRefExoticComponent<Omit<Omit<import("../rea
  *
  * @hideType
  */
-declare const Tabs: ((props: ComponentProps<typeof ExpoTabs>) => React.JSX.Element) & {
+declare const Tabs: ((props: ComponentProps<typeof ExpoTabs>) => import("react/jsx-runtime").JSX.Element) & {
     Screen: (props: import("..").ScreenProps<TabsProps, TabNavigationState<ParamListBase>, BottomTabNavigationEventMap>) => null;
-    Protected: React.FunctionComponent<import("../views/Protected").ProtectedProps>;
+    Protected: import("react").FunctionComponent<import("../views/Protected").ProtectedProps>;
 };
 export default Tabs;
 //# sourceMappingURL=TabsClient.d.ts.map

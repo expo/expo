@@ -1,4 +1,4 @@
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 export type PopoverViewProps = {
     children: React.ReactNode;
     /**
@@ -21,11 +21,11 @@ export type PopoverViewProps = {
 } & CommonViewModifierProps;
 declare function PopoverTrigger(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 declare function PopoverContent(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
-export declare function Popover(props: PopoverViewProps): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
+export declare function Popover(props: PopoverViewProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace Popover {
     var Trigger: typeof PopoverTrigger;
     var Content: typeof PopoverContent;

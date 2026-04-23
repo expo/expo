@@ -1,6 +1,5 @@
-import React from 'react';
-import { StyleProp, ViewProps, ViewStyle } from 'react-native';
-import { AcceptedContentType, CornerStyleType, DisplayModeType, GetImageOptions, PasteEventPayload } from './Clipboard.types';
+import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
+import type { AcceptedContentType, CornerStyleType, DisplayModeType, GetImageOptions, PasteEventPayload } from './Clipboard.types';
 export type ClipboardPasteButtonProps = {
     /**
      * A callback that is called with the result of the paste action.
@@ -77,5 +76,5 @@ export type ClipboardPasteButtonProps = {
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/uikit/uipastecontrol) for more details.
  */
-export declare function ClipboardPasteButton({ onPress, ...restProps }: ClipboardPasteButtonProps): React.JSX.Element | null;
+export declare function ClipboardPasteButton({ onPress, ...restProps }: ClipboardPasteButtonProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=ClipboardPasteButton.d.ts.map

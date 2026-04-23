@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HrefPreview = HrefPreview;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const PreviewRouteContext_1 = require("./PreviewRouteContext");
@@ -37,18 +38,16 @@ function HrefPreview({ href }) {
             rnState = rnState.routes[rnIndex]?.state;
         }
         if (!isProtected) {
-            return <PreviewForRootHrefState hrefState={hrefState} href={href}/>;
+            return (0, jsx_runtime_1.jsx)(PreviewForRootHrefState, { hrefState: hrefState, href: href });
         }
     }
     const pathname = href.toString();
     const segments = pathname.split('/').filter(Boolean);
-    return (<PreviewRouteContext_1.PreviewRouteContext.Provider value={{
+    return ((0, jsx_runtime_1.jsx)(PreviewRouteContext_1.PreviewRouteContext.Provider, { value: {
             params: {},
             pathname,
             segments,
-        }}>
-      <PreviewForInternalRoutes />
-    </PreviewRouteContext_1.PreviewRouteContext.Provider>);
+        }, children: (0, jsx_runtime_1.jsx)(PreviewForInternalRoutes, {}) }));
 }
 function PreviewForRootHrefState({ hrefState, href }) {
     const navigation = (0, useNavigation_1.useNavigation)();
@@ -65,27 +64,17 @@ function PreviewForRootHrefState({ hrefState, href }) {
         return null;
     }
     const Component = (0, useScreens_1.getQualifiedRouteComponent)(routeNode);
-    return (<PreviewRouteContext_1.PreviewRouteContext value={value}>
-      <composition_options_1.CompositionContext value={{ set: () => { }, unset: () => { } }}>
-        {/* Using NavigationContext to override useNavigation */}
-        <native_1.NavigationContext value={navigationPropWithWarnings}>
-          <Component navigation={navigation}/>
-        </native_1.NavigationContext>
-      </composition_options_1.CompositionContext>
-    </PreviewRouteContext_1.PreviewRouteContext>);
+    return ((0, jsx_runtime_1.jsx)(PreviewRouteContext_1.PreviewRouteContext, { value: value, children: (0, jsx_runtime_1.jsx)(composition_options_1.CompositionContext, { value: { set: () => { }, unset: () => { } }, children: (0, jsx_runtime_1.jsx)(native_1.NavigationContext, { value: navigationPropWithWarnings, children: (0, jsx_runtime_1.jsx)(Component, { navigation: navigation }) }) }) }));
 }
 function PreviewForInternalRoutes() {
     const pathname = (0, hooks_1.usePathname)();
-    return (<react_native_1.View style={{
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.View, { style: {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
             gap: 8,
             backgroundColor: 'white',
-        }}>
-      <react_native_1.Text style={{ fontWeight: '600', fontSize: 24 }}>Invalid preview</react_native_1.Text>
-      <react_native_1.Text style={{ fontWeight: '200', fontSize: 14 }}>{pathname}</react_native_1.Text>
-    </react_native_1.View>);
+        }, children: [(0, jsx_runtime_1.jsx)(react_native_1.Text, { style: { fontWeight: '600', fontSize: 24 }, children: "Invalid preview" }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { style: { fontWeight: '200', fontSize: 14 }, children: pathname })] }));
 }
 function getHrefState(href) {
     const hrefState = router_store_1.store.getStateForHref(href);

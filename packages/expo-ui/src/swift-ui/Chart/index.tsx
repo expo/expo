@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 /**
  * The type of chart to display.

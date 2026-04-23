@@ -5,7 +5,7 @@ import spawnAsync from '@expo/spawn-async';
 import { execSync } from 'child_process';
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 const MIN_NPM_VERSION = '3.0.0';
 const CORRECT_NPM_VERSION = 'latest';

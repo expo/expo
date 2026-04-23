@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
  * Copyright © 2024 650 Industries.
  * Copyright (c) Nicolas Gallagher.
@@ -18,14 +19,14 @@ const ExpoCheckbox = React.forwardRef(({ color, disabled, onChange, onValueChang
         onChange?.(event);
         onValueChange?.(value);
     };
-    const fakeControl = (<View style={[
+    const fakeControl = (_jsx(View, { style: [
             styles.fakeControl,
             value && styles.fakeControlChecked,
             // custom color
             !!color && { backgroundColor: value ? color : undefined, borderColor: color },
             disabled && styles.fakeControlDisabled,
             value && disabled && styles.fakeControlCheckedAndDisabled,
-        ]}/>);
+        ] }));
     const nativeControl = createElement('input', {
         'aria-checked': value,
         'aria-disabled': disabled,
@@ -35,10 +36,7 @@ const ExpoCheckbox = React.forwardRef(({ color, disabled, onChange, onValueChang
         style: [styles.nativeControl, styles.cursorInherit],
         type: 'checkbox',
     });
-    return (<View ref={ref} {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
-        {nativeControl}
-        {fakeControl}
-      </View>);
+    return (_jsxs(View, { ref: ref, ...other, style: [styles.root, style, disabled && styles.cursorDefault], children: [nativeControl, fakeControl] }));
 });
 export default ExpoCheckbox;
 const styles = StyleSheet.create({

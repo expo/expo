@@ -1,6 +1,6 @@
 import { WarningAggregator } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
-import * as fs from 'fs';
+import type { ExpoConfig } from '@expo/config-types';
+import type * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 

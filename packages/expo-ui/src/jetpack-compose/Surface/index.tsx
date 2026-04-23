@@ -2,8 +2,8 @@ import { requireNativeView } from 'expo';
 import React from 'react';
 import { type ColorValue } from 'react-native';
 
-import { type ViewEvent, type ModifierConfig } from '../../types';
-import { parseJSXShape, ShapeJSXElement, type ShapeRecordProps } from '../Shape';
+import type { ViewEvent, ModifierConfig } from '../../types';
+import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**

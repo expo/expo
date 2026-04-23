@@ -18,10 +18,10 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import type { AutolinkingModuleResolverInput } from './createExpoAutolinkingResolver';
 import {
   createAutolinkingModuleResolverInput,
   createAutolinkingModuleResolver,
-  AutolinkingModuleResolverInput,
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
@@ -37,10 +37,11 @@ import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { resolveWatchFolders } from '../../../utils/resolveWatchFolders';
-import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
+import type { TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
+import { loadTsConfigPathsAsync } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
-import { PlatformBundlers } from '../platformBundlers';
+import type { PlatformBundlers } from '../platformBundlers';
 
 export type StrictResolver = (moduleName: string) => Resolution;
 export type StrictResolverFactory = (

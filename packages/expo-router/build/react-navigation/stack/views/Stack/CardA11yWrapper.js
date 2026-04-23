@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CardA11yWrapper = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const CardA11yWrapper = ({ ref, focused, active, animated, isNextScreenTransparent, detachCurrentScreen, children, }) => {
@@ -43,7 +44,7 @@ const CardA11yWrapper = ({ ref, focused, active, animated, isNextScreenTranspare
     const [inert, setInert] = React.useState(false);
     React.useImperativeHandle(ref, () => ({ setInert }), []);
     const isHidden = !animated && isNextScreenTransparent === false && detachCurrentScreen !== false && !focused;
-    return (<react_native_1.View aria-hidden={!focused} pointerEvents={(animated ? inert : !focused) ? 'none' : 'box-none'} style={[
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { "aria-hidden": !focused, pointerEvents: (animated ? inert : !focused) ? 'none' : 'box-none', style: [
             react_native_1.StyleSheet.absoluteFill,
             {
                 // This is necessary to avoid unfocused larger pages increasing scroll area
@@ -55,12 +56,10 @@ const CardA11yWrapper = ({ ref, focused, active, animated, isNextScreenTranspare
                 // This is also necessary for a11y on web
                 visibility: isHidden ? 'hidden' : 'visible',
             },
-        ]} 
-    // Make sure this view is not removed on the new architecture, as it causes focus loss during navigation on Android.
-    // This can happen when the view flattening results in different trees - due to `overflow` style changing in a parent.
-    collapsable={false}>
-      {children}
-    </react_native_1.View>);
+        ], 
+        // Make sure this view is not removed on the new architecture, as it causes focus loss during navigation on Android.
+        // This can happen when the view flattening results in different trees - due to `overflow` style changing in a parent.
+        collapsable: false, children: children }));
 };
 exports.CardA11yWrapper = CardA11yWrapper;
 //# sourceMappingURL=CardA11yWrapper.js.map

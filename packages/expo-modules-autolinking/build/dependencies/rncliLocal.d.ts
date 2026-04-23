@@ -1,5 +1,5 @@
 import { type ResolutionResult } from './types';
-import { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
+import type { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
 interface ResolutionOptions {
     shouldIncludeDependency?(name: string): boolean;
 }

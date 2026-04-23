@@ -34,5 +34,5 @@ export type GaugeProps = {
 /**
  * Renders a SwiftUI `Gauge` component.
  */
-export declare function Gauge(props: GaugeProps): import("react").JSX.Element;
+export declare function Gauge(props: GaugeProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

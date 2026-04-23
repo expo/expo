@@ -4,9 +4,10 @@ import { Platform } from 'expo-modules-core';
 import { dismissAuthSession } from 'expo-web-browser';
 
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig } from './AuthRequest.types';
-import { AuthSessionRedirectUriOptions } from './AuthSession.types';
-import { IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
+import type { AuthRequestConfig } from './AuthRequest.types';
+import type { AuthSessionRedirectUriOptions } from './AuthSession.types';
+import type { IssuerOrDiscovery } from './Discovery';
+import { resolveDiscoveryAsync } from './Discovery';
 import sessionUrlProvider from './SessionUrlProvider';
 
 // @needsAudit

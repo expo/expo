@@ -7,6 +7,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNavOptions = getNavOptions;
 exports.Sitemap = Sitemap;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
@@ -36,63 +37,39 @@ function getNavOptions() {
         },
         header: () => {
             const WrapperElement = react_native_1.Platform.OS === 'android' ? react_native_safe_area_context_1.SafeAreaView : react_native_1.View;
-            return (<WrapperElement style={styles.header}>
-          <react_native_1.View style={styles.headerContent}>
-            <react_native_1.View style={styles.headerIcon}>
-              <SitemapIcon />
-            </react_native_1.View>
-            <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
-              Sitemap
-            </react_native_1.Text>
-          </react_native_1.View>
-        </WrapperElement>);
+            return ((0, jsx_runtime_1.jsx)(WrapperElement, { style: styles.header, children: (0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.headerContent, children: [(0, jsx_runtime_1.jsx)(react_native_1.View, { style: styles.headerIcon, children: (0, jsx_runtime_1.jsx)(SitemapIcon, {}) }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { role: "heading", "aria-level": 1, style: styles.title, children: "Sitemap" })] }) }));
         },
     };
 }
 function Sitemap() {
     // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
     // we need to ensure that the Sitemap component is not rendered on the server.
-    return (<NoSSR_1.NoSSR>
-      <SitemapInner />
-    </NoSSR_1.NoSSR>);
+    return ((0, jsx_runtime_1.jsx)(NoSSR_1.NoSSR, { children: (0, jsx_runtime_1.jsx)(SitemapInner, {}) }));
 }
 function SitemapInner() {
     const sitemap = (0, useSitemap_1.useSitemap)();
     const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
     const Wrapper = react_native_1.Platform.OS === 'android' ? react_native_safe_area_context_1.SafeAreaView : react_native_1.View;
-    return (<Wrapper style={styles.container} testID="expo-router-sitemap">
-      <react_native_1.ScrollView contentContainerStyle={styles.scroll} automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
-        {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
-            <SitemapItem node={child}/>
-          </react_native_1.View>))}
-        <SystemInfo />
-      </react_native_1.ScrollView>
-    </Wrapper>);
+    return ((0, jsx_runtime_1.jsx)(Wrapper, { style: styles.container, testID: "expo-router-sitemap", children: (0, jsx_runtime_1.jsxs)(react_native_1.ScrollView, { contentContainerStyle: styles.scroll, automaticallyAdjustContentInsets: true, contentInsetAdjustmentBehavior: "automatic", children: [children.map((child) => ((0, jsx_runtime_1.jsx)(react_native_1.View, { testID: "sitemap-item-container", style: styles.itemContainer, children: (0, jsx_runtime_1.jsx)(SitemapItem, { node: child }) }, child.contextKey))), (0, jsx_runtime_1.jsx)(SystemInfo, {})] }) }));
 }
 function SitemapItem({ node, level = 0 }) {
     const isLayout = react_1.default.useMemo(() => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/), [node]);
     const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
     if (isLayout) {
-        return <LayoutSitemapItem node={node} level={level} info={info}/>;
+        return (0, jsx_runtime_1.jsx)(LayoutSitemapItem, { node: node, level: level, info: info });
     }
-    return <StandardSitemapItem node={node} level={level} info={info}/>;
+    return (0, jsx_runtime_1.jsx)(StandardSitemapItem, { node: node, level: level, info: info });
 }
 function LayoutSitemapItem({ node, level, info }) {
     const [isCollapsed, setIsCollapsed] = react_1.default.useState(true);
-    return (<react_native_1.View style={styles.itemInnerContainer}>
-      <SitemapItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} rightIcon={<ArrowIcon rotation={isCollapsed ? 0 : 180}/>} filename={node.filename} level={level} info={info} onPress={() => setIsCollapsed((prev) => !prev)}/>
-      {!isCollapsed &&
-            node.children.map((child) => (<SitemapItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
-    </react_native_1.View>);
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.itemInnerContainer, children: [(0, jsx_runtime_1.jsx)(SitemapItemPressable, { style: { opacity: 0.4 }, leftIcon: (0, jsx_runtime_1.jsx)(PkgIcon, {}), rightIcon: (0, jsx_runtime_1.jsx)(ArrowIcon, { rotation: isCollapsed ? 0 : 180 }), filename: node.filename, level: level, info: info, onPress: () => setIsCollapsed((prev) => !prev) }), !isCollapsed &&
+                node.children.map((child) => ((0, jsx_runtime_1.jsx)(SitemapItem, { node: child, level: level + (node.isGenerated ? 0 : 1) }, child.contextKey)))] }));
 }
 function StandardSitemapItem({ node, info, level }) {
-    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} asChild replace>
-      <SitemapItemPressable leftIcon={<FileIcon />} rightIcon={<ForwardIcon />} filename={node.filename} level={level} info={info}/>
-    </Link_1.Link>);
+    return ((0, jsx_runtime_1.jsx)(Link_1.Link, { accessibilityLabel: node.contextKey, href: node.href, asChild: true, replace: true, children: (0, jsx_runtime_1.jsx)(SitemapItemPressable, { leftIcon: (0, jsx_runtime_1.jsx)(FileIcon, {}), rightIcon: (0, jsx_runtime_1.jsx)(ForwardIcon, {}), filename: node.filename, level: level, info: info }) }));
 }
 function SitemapItemPressable({ style, leftIcon, rightIcon, filename, level, info, ...pressableProps }) {
-    return (<Pressable_1.Pressable {...pressableProps}>
-      {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
+    return ((0, jsx_runtime_1.jsx)(Pressable_1.Pressable, { ...pressableProps, children: ({ pressed, hovered }) => ((0, jsx_runtime_1.jsxs)(react_native_1.View, { testID: "sitemap-item", style: [
                 styles.itemInnerContainer,
                 styles.itemPressable,
                 {
@@ -101,38 +78,27 @@ function SitemapItemPressable({ style, leftIcon, rightIcon, filename, level, inf
                 },
                 pressed && { backgroundColor: '#26292b' },
                 style,
-            ]}>
-          <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {leftIcon}
-            <react_native_1.Text style={styles.filename}>{filename}</react_native_1.Text>
-          </react_native_1.View>
-
-          <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {!!info && <react_native_1.Text style={[styles.virtual, { marginRight: 8 }]}>{info}</react_native_1.Text>}
-            {rightIcon}
-          </react_native_1.View>
-        </react_native_1.View>)}
-    </Pressable_1.Pressable>);
+            ], children: [(0, jsx_runtime_1.jsxs)(react_native_1.View, { style: { flexDirection: 'row', alignItems: 'center' }, children: [leftIcon, (0, jsx_runtime_1.jsx)(react_native_1.Text, { style: styles.filename, children: filename })] }), (0, jsx_runtime_1.jsxs)(react_native_1.View, { style: { flexDirection: 'row', alignItems: 'center' }, children: [!!info && (0, jsx_runtime_1.jsx)(react_native_1.Text, { style: [styles.virtual, { marginRight: 8 }], children: info }), rightIcon] })] })) }));
 }
 function FileIcon() {
-    return <react_native_1.Image style={styles.image} source={require('expo-router/assets/file.png')}/>;
+    return (0, jsx_runtime_1.jsx)(react_native_1.Image, { style: styles.image, source: require('expo-router/assets/file.png') });
 }
 function PkgIcon() {
-    return <react_native_1.Image style={styles.image} source={require('expo-router/assets/pkg.png')}/>;
+    return (0, jsx_runtime_1.jsx)(react_native_1.Image, { style: styles.image, source: require('expo-router/assets/pkg.png') });
 }
 function ForwardIcon() {
-    return <react_native_1.Image style={styles.image} source={require('expo-router/assets/forward.png')}/>;
+    return (0, jsx_runtime_1.jsx)(react_native_1.Image, { style: styles.image, source: require('expo-router/assets/forward.png') });
 }
 function SitemapIcon() {
-    return <react_native_1.Image style={styles.image} source={require('expo-router/assets/sitemap.png')}/>;
+    return (0, jsx_runtime_1.jsx)(react_native_1.Image, { style: styles.image, source: require('expo-router/assets/sitemap.png') });
 }
 function ArrowIcon({ rotation = 0 }) {
-    return (<react_native_1.Image style={[
+    return ((0, jsx_runtime_1.jsx)(react_native_1.Image, { style: [
             styles.image,
             {
                 transform: [{ rotate: `${rotation}deg` }],
             },
-        ]} source={require('expo-router/assets/arrow_down.png')}/>);
+        ], source: require('expo-router/assets/arrow_down.png') }));
 }
 function SystemInfo() {
     const getHermesVersion = () => {
@@ -153,30 +119,13 @@ function SystemInfo() {
     const locationOrigin = window.location.origin;
     const expoSdkVersion = expo_constants_1.default.expoConfig?.sdkVersion || 'Unknown';
     const hermesVersion = getHermesVersion();
-    return (<react_native_1.View testID="sitemap-system-info" style={{
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.View, { testID: "sitemap-system-info", style: {
             gap: 8,
             marginTop: 16,
-        }}>
-      <react_native_1.Text style={styles.systemInfoTitle}>System Information</react_native_1.Text>
-      <react_native_1.View style={styles.systemInfoContainer}>
-        <FormText right={process.env.NODE_ENV}>Mode</FormText>
-        <FormText right={expoSdkVersion}>Expo SDK</FormText>
-        {hermesVersion && <FormText right={hermesVersion}>Hermes version</FormText>}
-        {locationOrigin && <FormText right={locationOrigin}>Location origin</FormText>}
-      </react_native_1.View>
-    </react_native_1.View>);
+        }, children: [(0, jsx_runtime_1.jsx)(react_native_1.Text, { style: styles.systemInfoTitle, children: "System Information" }), (0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.systemInfoContainer, children: [(0, jsx_runtime_1.jsx)(FormText, { right: process.env.NODE_ENV, children: "Mode" }), (0, jsx_runtime_1.jsx)(FormText, { right: expoSdkVersion, children: "Expo SDK" }), hermesVersion && (0, jsx_runtime_1.jsx)(FormText, { right: hermesVersion, children: "Hermes version" }), locationOrigin && (0, jsx_runtime_1.jsx)(FormText, { right: locationOrigin, children: "Location origin" })] })] }));
 }
 function FormText({ children, right }) {
-    return (<react_native_1.View style={styles.systemInfoItem}>
-      <react_native_1.Text style={styles.systemInfoLabel} numberOfLines={1} ellipsizeMode="tail">
-        {children}
-      </react_native_1.Text>
-      <react_native_1.View style={{ flex: 1 }}/>
-
-      <react_native_1.Text selectable style={[styles.systemInfoValue, styles.code]} numberOfLines={1} ellipsizeMode="tail">
-        {right}
-      </react_native_1.Text>
-    </react_native_1.View>);
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.systemInfoItem, children: [(0, jsx_runtime_1.jsx)(react_native_1.Text, { style: styles.systemInfoLabel, numberOfLines: 1, ellipsizeMode: "tail", children: children }), (0, jsx_runtime_1.jsx)(react_native_1.View, { style: { flex: 1 } }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { selectable: true, style: [styles.systemInfoValue, styles.code], numberOfLines: 1, ellipsizeMode: "tail", children: right })] }));
 }
 const styles = react_native_1.StyleSheet.create({
     container: {

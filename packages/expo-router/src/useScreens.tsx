@@ -2,14 +2,8 @@
 
 import React, { use, useEffect, useMemo } from 'react';
 
-import {
-  SuspenseFallbackContext,
-  LoadedRoute,
-  Route,
-  RouteNode,
-  sortRoutesWithInitial,
-  useRouteNode,
-} from './Route';
+import type { LoadedRoute, RouteNode } from './Route';
+import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
@@ -35,7 +29,7 @@ import {
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
-import { UnknownOutputParams } from './types';
+import type { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import {
   SuspenseFallback as DefaultSuspenseFallback,

@@ -27,7 +27,7 @@ import { parseEnvFile } from './dot-env-development';
 import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
-import { ExpoJsOutput } from '../serializer/jsOutput';
+import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
 
 export interface TransformResponse {

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ScrollViewStyleReset } from 'expo-router/html';
-import React, { type PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { escapeUnsafeCharacters } from '../utils/html';
 

@@ -1,6 +1,6 @@
+import type { ConfigPlugin } from '@expo/config-plugins';
 import {
   AndroidConfig,
-  ConfigPlugin,
   createRunOncePlugin,
   IOSConfig,
   withStaticPlugin,

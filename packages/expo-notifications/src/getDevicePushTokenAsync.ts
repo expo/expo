@@ -1,7 +1,7 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import PushTokenManager from './PushTokenManager';
-import { DevicePushToken } from './Tokens.types';
+import type { DevicePushToken } from './Tokens.types';
 import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
 
 let nativeTokenPromise: Promise<string> | null = null;

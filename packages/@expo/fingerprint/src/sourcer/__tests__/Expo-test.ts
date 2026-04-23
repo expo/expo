@@ -6,7 +6,7 @@ import path from 'path';
 import requireString from 'require-from-string';
 
 import { getExpoConfigAsync } from '../../ExpoConfig';
-import { HashSource, HashSourceContents } from '../../Fingerprint.types';
+import type { HashSource, HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
 import { SourceSkips } from '../../sourcer/SourceSkips';
 import { spawnWithIpcAsync } from '../../utils/SpawnIPC';

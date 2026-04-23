@@ -13,7 +13,7 @@ import {
   emitDomSetParams,
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
-import { Href, Route, RouteInputParams } from '../types';
+import type { Href, Route, RouteInputParams } from '../types';
 import { shouldLinkExternally } from '../utils/url';
 
 export function navigate(url: Href, options?: NavigationOptions) {

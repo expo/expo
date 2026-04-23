@@ -1,5 +1,6 @@
 // Copyright © 2024 650 Industries.
 'use client';
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import { View, StyleSheet, findNodeHandle, Platform } from 'react-native';
 import { NativeBlurView } from './NativeBlurModule';
@@ -54,10 +55,7 @@ export default class BlurView extends React.Component {
     }
     render() {
         const { tint = 'default', intensity = 50, blurReductionFactor = 4, style, children, ...props } = this.props;
-        return (<View {...props} style={[styles.container, style]}>
-        <NativeBlurView blurTargetId={this.state.blurTargetId} ref={this.blurViewRef} tint={tint} intensity={intensity} blurReductionFactor={blurReductionFactor} blurMethod={this._getBlurMethod()} style={StyleSheet.absoluteFill}/>
-        {children}
-      </View>);
+        return (_jsxs(View, { ...props, style: [styles.container, style], children: [_jsx(NativeBlurView, { blurTargetId: this.state.blurTargetId, ref: this.blurViewRef, tint: tint, intensity: intensity, blurReductionFactor: blurReductionFactor, blurMethod: this._getBlurMethod(), style: StyleSheet.absoluteFill }), children] }));
     }
 }
 const styles = StyleSheet.create({

@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -12,6 +13,6 @@ export function GoogleStreetView(props) {
     if (!NativeView) {
         return null;
     }
-    return <NativeView {...props}/>;
+    return _jsx(NativeView, { ...props });
 }
 //# sourceMappingURL=GoogleStreetView.js.map

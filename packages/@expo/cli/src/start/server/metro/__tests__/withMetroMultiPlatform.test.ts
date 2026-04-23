@@ -6,7 +6,7 @@ import { vol } from 'memfs';
 import assert from 'node:assert';
 import resolveFrom from 'resolve-from';
 
-import { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver';
+import type { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver';
 import { shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
 

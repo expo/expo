@@ -1,11 +1,7 @@
 import ExpoUpdates from '../ExpoUpdates';
 import * as Updates from '../Updates';
-import {
-  Manifest,
-  UpdateCheckResultAvailable,
-  UpdatesLogEntryCode,
-  UpdatesLogEntryLevel,
-} from '../Updates.types';
+import type { Manifest, UpdateCheckResultAvailable } from '../Updates.types';
+import { UpdatesLogEntryCode, UpdatesLogEntryLevel } from '../Updates.types';
 
 const fakeManifest = {
   id: '@jester/test-app',

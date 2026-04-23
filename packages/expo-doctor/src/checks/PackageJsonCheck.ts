@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class PackageJsonCheck implements DoctorCheck {
   description = 'Check package.json for common issues';

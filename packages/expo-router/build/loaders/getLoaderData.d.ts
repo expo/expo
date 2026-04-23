@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import { LoaderCache } from './LoaderCache';
+import type { LoaderCache } from './LoaderCache';
 type LoaderFetcher<T> = (path: string) => Promise<T>;
 export declare function getLoaderData<T>({ resolvedPath, cache, fetcher, }: {
     resolvedPath: string;

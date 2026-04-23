@@ -1,4 +1,4 @@
-import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 declare function osascriptSpawnAsync(script: string | string[], opts?: SpawnOptions): Promise<SpawnResult>;
 declare function isAppRunningAsync(appName: string): Promise<boolean>;
 declare function safeIdOfAppAsync(appName: string): Promise<string | null>;
