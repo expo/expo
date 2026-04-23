@@ -25,7 +25,7 @@ import {
 } from '@expo/ui/jetpack-compose/modifiers';
 import { useMemo, useState } from 'react';
 
-type SchemeOption = 'auto' | 'light' | 'dark';
+type ColorSchemeOption = 'auto' | 'light' | 'dark';
 
 type SeedPreset = {
   name: string;
@@ -45,21 +45,21 @@ const SEED_PRESETS: SeedPreset[] = [
   { name: 'Pink', value: '#D81B60' },
 ];
 
-const SCHEMES: SchemeOption[] = ['auto', 'light', 'dark'];
+const COLOR_SCHEMES: ColorSchemeOption[] = ['auto', 'light', 'dark'];
 
 export default function MaterialColorsScreen() {
-  const [scheme, setScheme] = useState<SchemeOption>('auto');
+  const [colorScheme, setColorScheme] = useState<ColorSchemeOption>('auto');
   const [seedColor, setSeedColor] = useState<string | undefined>(undefined);
 
   return (
     <Host
       style={{ flex: 1 }}
-      colorScheme={scheme === 'auto' ? undefined : scheme}
+      colorScheme={colorScheme === 'auto' ? undefined : colorScheme}
       seedColor={seedColor}>
       <Content
-        scheme={scheme}
+        colorScheme={colorScheme}
         seedColor={seedColor}
-        setScheme={setScheme}
+        setColorScheme={setColorScheme}
         setSeedColor={setSeedColor}
       />
     </Host>
@@ -67,14 +67,14 @@ export default function MaterialColorsScreen() {
 }
 
 function Content({
-  scheme,
+  colorScheme,
   seedColor,
-  setScheme,
+  setColorScheme,
   setSeedColor,
 }: {
-  scheme: SchemeOption;
+  colorScheme: ColorSchemeOption;
   seedColor: string | undefined;
-  setScheme: (s: SchemeOption) => void;
+  setColorScheme: (s: ColorSchemeOption) => void;
   setSeedColor: (s: string | undefined) => void;
 }) {
   const colors = useMaterialColors();
@@ -95,11 +95,11 @@ function Content({
 
       <Text style={{ fontSize: 16, fontWeight: '600' }}>Appearance</Text>
       <SingleChoiceSegmentedButtonRow>
-        {SCHEMES.map((option) => (
+        {COLOR_SCHEMES.map((option) => (
           <SegmentedButton
             key={option}
-            selected={scheme === option}
-            onClick={() => setScheme(option)}>
+            selected={colorScheme === option}
+            onClick={() => setColorScheme(option)}>
             <SegmentedButton.Label>
               <Text>{option}</Text>
             </SegmentedButton.Label>

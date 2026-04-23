@@ -166,7 +166,7 @@ export type UseMaterialColorsOptions = Omit<MaterialColorsOptions, 'scheme'> & {
    * `'light'` or `'dark'` force a specific palette. `'unspecified'`, `null`,
    * or omitted follows the system appearance.
    */
-  scheme?: ColorSchemeName;
+  colorScheme?: ColorSchemeName;
 };
 
 /**
@@ -203,8 +203,12 @@ export function useMaterialColors(options?: UseMaterialColorsOptions): MaterialC
     return hostPalette;
   }
   // If options are provided, resolve the colors from the native module.
-  const { scheme, seedColor } = options ?? {};
+  const { colorScheme, seedColor } = options ?? {};
   const resolvedScheme: 'light' | 'dark' =
-    scheme === 'light' || scheme === 'dark' ? scheme : systemScheme === 'dark' ? 'dark' : 'light';
+    colorScheme === 'light' || colorScheme === 'dark'
+      ? colorScheme
+      : systemScheme === 'dark'
+        ? 'dark'
+        : 'light';
   return getMaterialColors({ scheme: resolvedScheme, seedColor });
 }

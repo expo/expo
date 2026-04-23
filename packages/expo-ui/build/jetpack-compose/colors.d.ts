@@ -144,7 +144,7 @@ export type UseMaterialColorsOptions = Omit<MaterialColorsOptions, 'scheme'> & {
      * `'light'` or `'dark'` force a specific palette. `'unspecified'`, `null`,
      * or omitted follows the system appearance.
      */
-    scheme?: ColorSchemeName;
+    colorScheme?: ColorSchemeName;
 };
 /**
  * Whether the current device supports Material You dynamic colors (Android
