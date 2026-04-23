@@ -8,12 +8,16 @@ import androidx.core.net.toUri
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import java.io.File
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
-private const val DEFAULT_DEBOUNCE_MS = 100L
-private const val MOVE_SELF = 0x00000800
+private val DEFAULT_DEBOUNCE = 100.milliseconds
+
+// Android's FileObserver does not expose the inotify IN_ISDIR bit.
 private const val IN_ISDIR = 0x40000000
 private const val WATCH_MASK = FileObserver.CREATE or
   FileObserver.MODIFY or
@@ -21,12 +25,29 @@ private const val WATCH_MASK = FileObserver.CREATE or
   FileObserver.DELETE_SELF or
   FileObserver.MOVED_FROM or
   FileObserver.MOVED_TO or
-  MOVE_SELF
+  FileObserver.MOVE_SELF
+
+internal enum class WatchEventType(val value: String) : Enumerable {
+  CREATED("created"),
+  MODIFIED("modified"),
+  DELETED("deleted"),
+  RENAMED("renamed")
+}
 
 @OptimizedRecord
 internal data class WatchOptions(
-  @Field val debounce: Long = DEFAULT_DEBOUNCE_MS,
+  @Field val debounce: Long = DEFAULT_DEBOUNCE.inWholeMilliseconds,
   @Field val events: List<String>? = null
+) : Record
+
+@OptimizedRecord
+internal data class WatchEventPayload(
+  @Field val type: WatchEventType,
+  @Field val path: String,
+  @Field val isDirectory: Boolean,
+  @Field val nativeEventFlags: Int,
+  @Field val newPath: String? = null,
+  @Field val newPathIsDirectory: Boolean? = null
 ) : Record
 
 internal class FileSystemWatcher(
@@ -37,7 +58,7 @@ internal class FileSystemWatcher(
   private val handler = Handler(Looper.getMainLooper())
   private val watchedFile: File
   private val watchedUri: Uri
-  private val debounceMs = options?.debounce ?: DEFAULT_DEBOUNCE_MS
+  private val debounceDuration: Duration = (options?.debounce ?: DEFAULT_DEBOUNCE.inWholeMilliseconds).milliseconds
   private val isWatchingDirectory: Boolean
 
   private val lock = Any()
@@ -95,8 +116,8 @@ internal class FileSystemWatcher(
       return
     }
 
-    if (event and (FileObserver.DELETE_SELF or MOVE_SELF) != 0) {
-      val eventType = if (event and FileObserver.DELETE_SELF != 0) "deleted" else "renamed"
+    if (event and (FileObserver.DELETE_SELF or FileObserver.MOVE_SELF) != 0) {
+      val eventType = if (event and FileObserver.DELETE_SELF != 0) WatchEventType.DELETED else WatchEventType.RENAMED
       emitEvent(
         type = eventType,
         path = watchedUri.toString(),
@@ -122,7 +143,7 @@ internal class FileSystemWatcher(
 
       debounceRunnable?.let(handler::removeCallbacks)
       debounceRunnable = Runnable { flushPendingEvents() }
-      handler.postDelayed(debounceRunnable!!, debounceMs)
+      handler.postDelayed(debounceRunnable!!, debounceDuration.inWholeMilliseconds)
     }
   }
 
@@ -160,7 +181,7 @@ internal class FileSystemWatcher(
       val oldPath = childUri(moveFrom.first)
       val newPath = childUri(movedToInfo.first)
       emitEvent(
-        type = "renamed",
+        type = WatchEventType.RENAMED,
         path = oldPath,
         isDirectory = moveFrom.second,
         flags = moveFlags,
@@ -195,26 +216,24 @@ internal class FileSystemWatcher(
   }
 
   private fun emitEvent(
-    type: String,
+    type: WatchEventType,
     path: String,
     isDirectory: Boolean,
     flags: Int,
     newPath: String? = null,
     newPathIsDirectory: Boolean? = null
   ) {
-    val payload = mutableMapOf<String, Any?>(
-      "type" to type,
-      "path" to path,
-      "isDirectory" to isDirectory,
-      "nativeEventFlags" to flags
+    emit(
+      "change",
+      WatchEventPayload(
+        type = type,
+        path = path,
+        isDirectory = isDirectory,
+        nativeEventFlags = flags,
+        newPath = newPath,
+        newPathIsDirectory = if (newPath != null) newPathIsDirectory ?: isDirectory else null
+      )
     )
-
-    if (newPath != null) {
-      payload["newPath"] = newPath
-      payload["newPathIsDirectory"] = newPathIsDirectory ?: isDirectory
-    }
-
-    emit("change", payload)
   }
 
   private fun childUri(changedPath: String?): String {
@@ -224,23 +243,23 @@ internal class FileSystemWatcher(
     return File(watchedFile, changedPath).toUri().toString()
   }
 
-  private fun mapToUnifiedTypes(event: Int): List<String> {
-    val types = mutableListOf<String>()
+  private fun mapToUnifiedTypes(event: Int): List<WatchEventType> {
+    val types = mutableListOf<WatchEventType>()
 
     if (event and FileObserver.CREATE != 0) {
-      types.add("created")
+      types.add(WatchEventType.CREATED)
     }
     if (event and FileObserver.MODIFY != 0) {
-      types.add("modified")
+      types.add(WatchEventType.MODIFIED)
     }
     if (event and FileObserver.DELETE != 0) {
-      types.add("deleted")
+      types.add(WatchEventType.DELETED)
     }
     if (event and (FileObserver.MOVED_FROM or FileObserver.MOVED_TO) != 0) {
-      types.add("renamed")
+      types.add(WatchEventType.RENAMED)
     }
 
-    return types.ifEmpty { listOf("modified") }
+    return types.ifEmpty { listOf(WatchEventType.MODIFIED) }
   }
 
   private data class PendingEvent(val flags: Int, val isDirectory: Boolean)

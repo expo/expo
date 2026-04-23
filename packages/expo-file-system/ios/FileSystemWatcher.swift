@@ -9,6 +9,15 @@ internal struct WatchOptions: Record {
   @Field var events: [String]?
 }
 
+internal struct WatchEventPayload: Record {
+  @Field var type: String = "modified"
+  @Field var path: String = ""
+  @Field var isDirectory: Bool = false
+  @Field var nativeEventFlags: Int = 0
+  @Field var newPath: String?
+  @Field var newPathIsDirectory: Bool?
+}
+
 internal final class FileSystemWatcher: SharedObject {
   private static let eventQueueKey = DispatchSpecificKey<Void>()
 
@@ -133,12 +142,12 @@ internal final class FileSystemWatcher: SharedObject {
     for eventType in mapToUnifiedTypes(flags) {
       emit(
         event: "change",
-        arguments: [
-          "type": eventType,
-          "path": path.absoluteString,
-          "isDirectory": isWatchingDirectory,
-          "nativeEventFlags": flags.rawValue,
-        ]
+        arguments: WatchEventPayload(
+          type: eventType,
+          path: path.absoluteString,
+          isDirectory: isWatchingDirectory,
+          nativeEventFlags: Int(flags.rawValue)
+        )
       )
     }
   }

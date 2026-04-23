@@ -131,7 +131,9 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
      * Watches this directory for changes to its contents or the directory itself.
      *
      * Events are emitted when files or subdirectories are created, modified, deleted, or renamed
-     * within this directory. The watcher automatically stops when the directory is deleted or renamed.
+     * within this directory. On iOS, child changes are surfaced as a coarse-grained `modified` event
+     * on the directory itself, so filtering for child-level `created`, `deleted`, or `renamed` events
+     * is not reliable. The watcher automatically stops when the directory is deleted or renamed.
      * To stop watching manually, call `remove()` on the returned subscription.
      *
      * @param callback Invoked when a change is detected. Receives a `WatchEvent` describing what changed.
