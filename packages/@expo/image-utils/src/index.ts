@@ -37,13 +37,6 @@ export {
   getPngInfo,
 };
 
-export type {
-  SharpGlobalOptions,
-  SharpCommandOptions,
-} from './sharp.types';
+export type { SharpGlobalOptions, SharpCommandOptions } from './sharp.types';
 
-export type {
-  ResizeMode,
-  ImageFormat,
-  ImageOptions
-} from './Image.types';
+export type { ResizeMode, ImageFormat, ImageOptions } from './Image.types';
