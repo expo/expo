@@ -2,10 +2,7 @@ import ExpoFileSystem from './ExpoFileSystem';
 import type { ZipEntry } from './ExpoFileSystem.types';
 import { File } from './FileSystem';
 
-// The native ZipArchive SharedObject class
-const NativeZipArchive = ExpoFileSystem.ZipArchive;
-
-export class ZipArchive extends NativeZipArchive {
+export class ZipArchive extends ExpoFileSystem.ZipArchive {
   list(): ZipEntry[] {
     const rawEntries = super.list();
     // Convert lastModified timestamps to Date objects

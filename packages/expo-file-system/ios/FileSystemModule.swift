@@ -365,7 +365,7 @@ public final class FileSystemModule: Module {
       }
     }
 
-    Class(ZipArchiveObject.self) {
+    Class("ZipArchive", ZipArchiveObject.self) {
       Constructor { (source: FileSystemFile) in
         guard source.exists else {
           throw ZipSourceNotFoundException(source.url.absoluteString)

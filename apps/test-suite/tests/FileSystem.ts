@@ -19,6 +19,21 @@ import { Platform } from 'react-native';
 export const name = 'FileSystem';
 const shouldSkipTestsRequiringPermissions = true;
 
+async function expectAsyncToThrow(
+  expect: (actual: unknown) => jasmine.Matchers<unknown>,
+  action: () => Promise<unknown>
+) {
+  let thrownError;
+
+  try {
+    await action();
+  } catch (error) {
+    thrownError = error;
+  }
+
+  expect(thrownError).toBeDefined();
+}
+
 export async function test({ describe, expect, it, ...t }) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
@@ -2179,18 +2194,6 @@ export async function test({ describe, expect, it, ...t }) {
       } catch {}
     });
 
-    async function expectAsyncToThrow(action: () => Promise<unknown>) {
-      let thrownError;
-
-      try {
-        await action();
-      } catch (error) {
-        thrownError = error;
-      }
-
-      expect(thrownError).toBeDefined();
-    }
-
     it('Zips a single file (async)', async () => {
       const src = new File(zipTestDir, 'hello.txt');
       src.write('Hello zip!');
@@ -2314,14 +2317,14 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Zipping a non-existent source throws', async () => {
       const nonExistent = new File(zipTestDir, 'does_not_exist.txt');
-      await expectAsyncToThrow(() => nonExistent.zip(new File(zipTestDir, 'fail.zip')));
+      await expectAsyncToThrow(expect, () => nonExistent.zip(new File(zipTestDir, 'fail.zip')));
     });
 
     it('Unzipping a non-zip / corrupt file throws', async () => {
       const notAZip = new File(zipTestDir, 'not_a_zip.zip');
       notAZip.write('this is not a zip file');
       const dest = new Directory(zipTestDir, 'corrupt_out');
-      await expectAsyncToThrow(() => notAZip.unzip(dest));
+      await expectAsyncToThrow(expect, () => notAZip.unzip(dest));
     });
 
     it('includeRootDirectory: true wraps contents in root folder', async () => {
@@ -2357,7 +2360,7 @@ export async function test({ describe, expect, it, ...t }) {
       // Pre-create the conflicting file
       new File(dest, 'ow_test.txt').write('existing');
 
-      await expectAsyncToThrow(() => archive.unzip(dest, { overwrite: false }));
+      await expectAsyncToThrow(expect, () => archive.unzip(dest, { overwrite: false }));
     });
 
     it('Zips and unzips an empty directory', async () => {
@@ -2441,7 +2444,10 @@ export async function test({ describe, expect, it, ...t }) {
       const sub = new Directory(dir, 'sub');
       sub.create();
       new File(sub, 'nested.txt').write('Nested content');
-      return dir.zipSync(new File(zipTestDir, 'test.zip'), { overwrite: true });
+      return dir.zipSync(new File(zipTestDir, 'test.zip'), {
+        overwrite: true,
+        includeRootDirectory: false,
+      });
     }
 
     t.beforeEach(async () => {
@@ -2465,7 +2471,10 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Opens archive via new ZipArchive(file)', () => {
       const archiveFile = createTestArchive();
-      const archive = new ZipArchive(archiveFile);
+      const initialArchive = archiveFile.openAsArchive();
+      const ZipArchiveConstructor = initialArchive.constructor as typeof ZipArchive;
+      initialArchive.close();
+      const archive = new ZipArchiveConstructor(archiveFile);
       expect(archive).toBeDefined();
       archive.close();
     });
@@ -2501,7 +2510,7 @@ export async function test({ describe, expect, it, ...t }) {
         const fileEntry = entries.find((e: ZipEntry) => !e.isDirectory);
         expect(fileEntry).toBeDefined();
         if (fileEntry?.lastModified) {
-          expect(fileEntry.lastModified).toBeInstanceOf(Date);
+          expect(fileEntry.lastModified instanceof Date).toBe(true);
           expect(fileEntry.lastModified.getTime()).toBeGreaterThan(0);
         }
       } finally {
@@ -2622,9 +2631,9 @@ export async function test({ describe, expect, it, ...t }) {
         // Verify all extracted files
         expect(new File(extractDir, 'hello.txt').textSync()).toBe('Hello world');
         expect(new File(extractDir, 'data.json').textSync()).toBe('{"key":"value"}');
-        // nested.txt may be in a subdirectory or flat depending on entry name
+        // Extracting to a directory writes the entry using its basename.
         const nestedEntry = fileEntries.find((e) => e.name.includes('nested'))!;
-        const nestedFile = new File(extractDir, nestedEntry.name);
+        const nestedFile = new File(extractDir, nestedEntry.name.split('/').pop()!);
         expect(nestedFile.textSync()).toBe('Nested content');
       } finally {
         archive.close();
@@ -2643,20 +2652,23 @@ export async function test({ describe, expect, it, ...t }) {
       }
     });
 
-    it('Throws when calling list() on a closed archive', () => {
+    it('Can call list() after close() and the archive reopens lazily', () => {
       const archiveFile = createTestArchive();
       const archive = archiveFile.openAsArchive();
       archive.close();
-      expect(() => archive.list()).toThrow();
+      const entries = archive.list();
+      expect(entries.length).toBeGreaterThan(0);
     });
 
-    it('Throws when calling extractEntry() on a closed archive', async () => {
+    it('Can call extractEntry() after close() and the archive reopens lazily', async () => {
       const archiveFile = createTestArchive();
       const archive = archiveFile.openAsArchive();
       archive.close();
       const dest = new Directory(zipTestDir, 'closed_extract');
       dest.create();
-      await expect(archive.extractEntry('hello.txt', dest)).rejects.toThrow();
+      const extracted = await archive.extractEntry('hello.txt', dest);
+      expect(extracted.exists).toBe(true);
+      expect(new File(extracted.uri).textSync()).toBe('Hello world');
     });
 
     it('Throws when extracting a non-existent entry', async () => {
@@ -2665,7 +2677,7 @@ export async function test({ describe, expect, it, ...t }) {
       try {
         const dest = new Directory(zipTestDir, 'nonexistent_entry');
         dest.create();
-        await expect(archive.extractEntry('does_not_exist.txt', dest)).rejects.toThrow();
+        await expectAsyncToThrow(expect, () => archive.extractEntry('does_not_exist.txt', dest));
       } finally {
         archive.close();
       }

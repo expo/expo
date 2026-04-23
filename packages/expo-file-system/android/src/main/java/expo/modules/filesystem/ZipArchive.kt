@@ -101,16 +101,16 @@ internal class ZipArchive(private val sourceFile: FileSystemFile) : SharedObject
             throw UnableToUnzipException("failed to overwrite destination '${existing.uri}'")
           }
           if (!existing.isDirectory()) {
-            return FileSystemFile(existing.uri)
+            return FileSystemFile(existing.uri).withRuntimeContextFrom(destination)
           }
         }
         val created = destination.file.createFile("application/octet-stream", fileName)
           ?: throw UnableToUnzipException("failed to create destination '$fileName'")
-        FileSystemFile(created.uri)
+        FileSystemFile(created.uri).withRuntimeContextFrom(destination)
       } else {
         val localFile = File(destination.file.uri.path!!, fileName)
         localFile.parentFile?.mkdirs()
-        FileSystemFile(Uri.fromFile(localFile))
+        FileSystemFile(Uri.fromFile(localFile)).withRuntimeContextFrom(destination)
       }
     } else {
       if (!destination.uri.isContentUri) {
