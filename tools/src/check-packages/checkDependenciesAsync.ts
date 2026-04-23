@@ -67,6 +67,7 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'jest-expo': {
     'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
+    expo: 'ignore-dev', // NOTE: Not resolvable without introducing a circular dependency
   },
 
   '@expo/metro-runtime': {
