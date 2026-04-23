@@ -70,3 +70,4 @@ function parseWebBuildErrors({ error, projectRoot, parseErrorStack, }) {
 function isTransformError(error) {
     return error.type === 'TransformError';
 }
+//# sourceMappingURL=parseWebBuildErrors.js.map
