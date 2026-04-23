@@ -20,7 +20,7 @@
 ### 💡 Others
 
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
-- [Android] Improved application startup performance by reducing reflection.
+- [Android] Improved application startup performance by reducing reflection. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.9 — 2026-02-25
 
