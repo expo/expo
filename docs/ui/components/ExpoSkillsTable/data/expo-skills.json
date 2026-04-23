@@ -2,7 +2,7 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-04-23T15:32:02.799Z"
+    "fetchedAt": "2026-04-23T16:26:03.579Z"
   },
   "totalSkills": 13,
   "skills": [
@@ -13,7 +13,7 @@
     },
     {
       "name": "eas-update-insights",
-      "description": "\"Check the health of published EAS Updates: crash rates, install/launch counts, unique users, payload size, and the split between embedded and OTA users per channel. Use when the user asks how an update is performing, whether a rollout is healthy, how many users are on the embedded build vs OTA, or wants to gate CI on update health.\".",
+      "description": "Check the health of published EAS Updates: crash rates, install/launch counts, unique users, payload size, and the split between embedded and OTA users per channel. Use when the user asks how an update is performing, whether a rollout is healthy, how many users are on the embedded build vs OTA, or wants to gate CI on update health.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-update-insights/SKILL.md"
     },
     {
@@ -48,12 +48,12 @@
     },
     {
       "name": "expo-ui-jetpack-compose",
-      "description": "\"`@expo/ui/jetpack-compose` package lets you use Jetpack Compose Views and modifiers in your app.\".",
+      "description": "`@expo/ui/jetpack-compose` package lets you use Jetpack Compose Views and modifiers in your app.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui-jetpack-compose/SKILL.md"
     },
     {
       "name": "expo-ui-swift-ui",
-      "description": "\"`@expo/ui/swift-ui` package lets you use SwiftUI Views and modifiers in your app.\".",
+      "description": "`@expo/ui/swift-ui` package lets you use SwiftUI Views and modifiers in your app.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui-swift-ui/SKILL.md"
     },
     {
