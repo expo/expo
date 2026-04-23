@@ -223,11 +223,14 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
     }
   }
 
-  // Require the CLI user to be signed in and match the Expo Go user (physical devices only)
+  // Require the CLI user to be signed in and match the Expo Go user (physical devices only).
+  // Only enforced for dev-server manifests — published updates don't include
+  // expoGo.username and are validated server-side.
 #if !TARGET_OS_SIMULATOR
+  BOOL isDevServer = update.manifest.isUsingDeveloperTool;
   NSString *manifestUsername = [update.manifest expoGoUsername];
   NSString *expoGoUsername = [[ExpoGoHomeBridge shared] authenticatedUsername];
-  if (manifestUsername == nil || [manifestUsername length] == 0) {
+  if (isDevServer && (manifestUsername == nil || [manifestUsername length] == 0)) {
     NSString *message;
     if (expoGoUsername != nil && [expoGoUsername length] > 0) {
       message = [NSString stringWithFormat:
@@ -243,7 +246,7 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
     if (self.delegate) { [self.delegate appLoader:self didFailWithError:_error]; }
     return;
   }
-  if (expoGoUsername == nil || ![manifestUsername isEqualToString:expoGoUsername]) {
+  if (isDevServer && (expoGoUsername == nil || ![manifestUsername isEqualToString:expoGoUsername])) {
     NSString *message;
     if (expoGoUsername == nil || [expoGoUsername length] == 0) {
       message = [NSString stringWithFormat:
