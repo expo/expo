@@ -1,7 +1,7 @@
 /**
  * Shape builders for modifiers that accept shapes, such as `background` and `containerShape`.
  *
- * Shapes: `roundedRectangle`, `capsule`, `rectangle`, `ellipse`, `circle`.
+ * Shapes: `roundedRectangle`, `capsule`, `rectangle`, `ellipse`, `circle`, `containerRelativeShape`.
  *
  * @example
  * ```tsx
@@ -48,6 +48,9 @@ export const shapes = {
   circle: () => ({
     shape: 'circle',
   }),
+  containerRelativeShape: () => ({
+    shape: 'containerRelativeShape',
+  }),
 };
 
 export type Shape =
@@ -55,4 +58,5 @@ export type Shape =
   | ReturnType<typeof shapes.capsule>
   | ReturnType<typeof shapes.rectangle>
   | ReturnType<typeof shapes.ellipse>
-  | ReturnType<typeof shapes.circle>;
+  | ReturnType<typeof shapes.circle>
+  | ReturnType<typeof shapes.containerRelativeShape>;

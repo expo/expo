@@ -16,6 +16,8 @@ internal struct ContentShapeModifier: ViewModifier, Record {
       content.contentShape(makeCapsule(style: roundedCornerStyle))
     case .circle:
       content.contentShape(Circle())
+    case .containerRelativeShape:
+      content.contentShape(ContainerRelativeShape())
     case .ellipse:
       content.contentShape(Ellipse())
     case .rectangle:
