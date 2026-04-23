@@ -1,7 +1,7 @@
 import type { ModPlatform } from '@expo/config-plugins';
 import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
+import { resolveFrom } from '@expo/require-utils';
 import chalk from 'chalk';
-import { isNativeModuleAsync } from 'expo/internal/unstable-autolinking-exports';
 import fs from 'fs';
 import path from 'path';
 
@@ -12,6 +12,18 @@ import { logNewSection } from '../utils/ora';
 import { confirmAsync } from '../utils/prompts';
 
 type ArbitraryPlatform = ModPlatform | string;
+
+let _autolinking: typeof import('expo/internal/unstable-autolinking-exports') | undefined;
+
+export function loadAutolinking(projectRoot: string) {
+  if (_autolinking == null) {
+    const autolinkingPath =
+      resolveFrom(projectRoot, 'expo/internal/unstable-autolinking-exports') ??
+      require.resolve('expo/internal/unstable-autolinking-exports');
+    _autolinking = require(autolinkingPath);
+  }
+  return _autolinking!;
+}
 
 /** Delete the input native folders and print a loading step. */
 export async function clearNativeFolder(projectRoot: string, folders: string[]) {
@@ -158,7 +170,7 @@ export async function promptToClearMalformedNativeProjectsAsync(
 export async function maybeBailOnNativeModuleAsync(projectRoot: string) {
   let isNativeModule = false;
   try {
-    isNativeModule = await isNativeModuleAsync(projectRoot);
+    isNativeModule = await loadAutolinking(projectRoot).isNativeModuleAsync(projectRoot);
   } catch {
     // We don't care too much about a failure here
     // TODO(@kitten): Remove try/catch; this is only to protect against version misalignment

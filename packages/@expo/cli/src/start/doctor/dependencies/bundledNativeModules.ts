@@ -1,6 +1,6 @@
 import JsonFile from '@expo/json-file';
+import { resolveFrom } from '@expo/require-utils';
 import chalk from 'chalk';
-import resolveFrom from 'resolve-from';
 
 import { getNativeModuleVersionsAsync } from '../../../api/getNativeModuleVersions';
 import * as Log from '../../../log';
@@ -51,11 +51,10 @@ export async function getVersionedNativeModulesAsync(
  * that's shipped with the version of `expo` that the project has installed.
  */
 async function getBundledNativeModulesAsync(projectRoot: string): Promise<BundledNativeModules> {
-  // TODO: Revisit now that this code is in the `expo` package.
-  const bundledNativeModulesPath = resolveFrom.silent(
-    projectRoot,
-    'expo/bundledNativeModules.json'
-  );
+  const bundledNativeModulesPath =
+    resolveFrom(projectRoot, 'expo/bundledNativeModules.json') ??
+    require.resolve('expo/bundledNativeModules.json');
+
   if (!bundledNativeModulesPath) {
     Log.log();
     throw new CommandError(

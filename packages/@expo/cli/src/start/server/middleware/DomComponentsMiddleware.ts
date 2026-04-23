@@ -1,6 +1,6 @@
 import { convertEntryPointToRelative } from '@expo/config/paths';
+import { resolveFrom } from '@expo/require-utils';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import type { ExpoMetroOptions } from './metroOptions';
 import { createBundleUrlPath } from './metroOptions';
@@ -15,8 +15,8 @@ export const DOM_COMPONENTS_BUNDLE_DIR = 'www.bundle';
 
 const checkWebViewInstalled = memoize((projectRoot: string) => {
   const webViewInstalled =
-    resolveFrom.silent(projectRoot, 'react-native-webview') ||
-    resolveFrom.silent(projectRoot, '@expo/dom-webview');
+    resolveFrom(projectRoot, 'react-native-webview') ||
+    resolveFrom(projectRoot, '@expo/dom-webview');
   if (!webViewInstalled) {
     throw new Error(
       `To use DOM Components, you must install the 'react-native-webview' package. Run 'npx expo install react-native-webview' to install it.`
@@ -57,6 +57,10 @@ export function createDomComponentsMiddleware(
     // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
     // Generate a unique entry file for the webview.
     const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+    if (!virtualEntry) {
+      throw Object.assign(new Error(`Cannot find module 'expo'`), { code: 'MODULE_NOT_FOUND' });
+    }
+
     const generatedEntryPath = path.resolve(
       file.startsWith('file://') ? fileURLToFilePath(file) : file
     );

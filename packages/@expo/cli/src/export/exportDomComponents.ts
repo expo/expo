@@ -1,9 +1,9 @@
 import type { ExpoConfig } from '@expo/config';
 import { convertEntryPointToRelative } from '@expo/config/paths';
+import { resolveFrom } from '@expo/require-utils';
 import assert from 'assert';
 import crypto from 'crypto';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 import url from 'url';
 
 import type { PlatformMetadata } from './createMetadataJson';
@@ -44,7 +44,12 @@ export async function exportDomComponentAsync({
   bundle: BundleOutput;
   htmlOutputName: string;
 }> {
+  // NOTE(@kitten): Keep in sync with `src/start/server/middleware/DomComponentsMiddleware.ts`
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+  if (!virtualEntry) {
+    throw Object.assign(new Error(`Cannot find module 'expo'`), { code: 'MODULE_NOT_FOUND' });
+  }
+
   debug('Bundle DOM Component:', filePath);
   // MUST MATCH THE BABEL PLUGIN!
   const hash = crypto.createHash('md5').update(filePath).digest('hex');

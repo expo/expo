@@ -1,11 +1,11 @@
 import { getMetroServerRoot } from '@expo/config/paths';
+import { resolveFrom } from '@expo/require-utils';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { createDomComponentsMiddleware } from '../DomComponentsMiddleware';
 import type { ServerNext, ServerRequest, ServerResponse } from '../server.types';
 
-jest.mock('resolve-from');
+jest.mock('@expo/require-utils');
 
 const asRequest = (req: Partial<ServerRequest>) => req as ServerRequest;
 
@@ -30,9 +30,8 @@ describe('Check webview package installation', () => {
     if (moduleId === 'expo/dom/entry.js') {
       return path.join(fromDirectory, 'node_modules/expo/dom/entry.js');
     }
-    throw new Error(`Cannot resolve module '${moduleId}' from '${fromDirectory}'`);
+    return null;
   });
-  const mockResolveSilent = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
   const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   let req: ServerRequest;
@@ -59,7 +58,7 @@ describe('Check webview package installation', () => {
   });
 
   afterEach(() => {
-    mockResolveSilent.mockReset();
+    mockResolveFrom.mockReset();
   });
 
   afterAll(() => {
@@ -67,19 +66,19 @@ describe('Check webview package installation', () => {
   });
 
   it('should show an error message if the webview package is not installed', () => {
-    mockResolveSilent.mockReturnValue(undefined);
+    mockResolveFrom.mockReturnValue(null);
     expect(() => middleware(req, res, next)).toThrow(
       /To use DOM Components, you must install the 'react-native-webview' package. Run 'npx expo install react-native-webview' to install it./
     );
   });
 
   it('should not show error messages if react-native-webview is installed', () => {
-    mockResolveSilent.mockReturnValue('/project/node_modules/react-native-webview');
+    mockResolveFrom.mockReturnValue('/project/node_modules/react-native-webview');
     expect(() => middleware(req, res, next)).not.toThrow();
   });
 
   it('should not show error messages if @expo/dom-webview is installed', () => {
-    mockResolveSilent.mockReturnValue('/project/node_modules/@expo/dom-webview');
+    mockResolveFrom.mockReturnValue('/project/node_modules/@expo/dom-webview');
     expect(() => middleware(req, res, next)).not.toThrow();
   });
 });

@@ -1,4 +1,5 @@
 import type { ResolutionContext } from '@expo/metro/metro-resolver';
+import { resolveFrom } from '@expo/require-utils';
 import type { ResolutionResult as AutolinkingResolutionResult } from 'expo-modules-autolinking/exports';
 
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
@@ -48,8 +49,19 @@ const escapeDependencyName = (dependency: string) =>
 export const _dependenciesToRegex = (dependencies: string[]) =>
   new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
 
-const getAutolinkingExports = (): typeof import('expo/internal/unstable-autolinking-exports') =>
-  require('expo/internal/unstable-autolinking-exports');
+let _autolinking: typeof import('expo/internal/unstable-autolinking-exports') | undefined;
+
+const getAutolinkingExports = (
+  projectRoot: string
+): typeof import('expo/internal/unstable-autolinking-exports') => {
+  if (_autolinking == null) {
+    const autolinkingPath =
+      resolveFrom(projectRoot, 'expo/internal/unstable-autolinking-exports') ??
+      require.resolve('expo/internal/unstable-autolinking-exports');
+    _autolinking = require(autolinkingPath);
+  }
+  return _autolinking!;
+};
 
 interface PlatformModuleDescription {
   platform: AutolinkingPlatform;
@@ -92,7 +104,7 @@ export async function createAutolinkingModuleResolverInput({
   projectRoot: string;
   platforms: string[];
 }): Promise<AutolinkingModuleResolverInput> {
-  const autolinking = getAutolinkingExports();
+  const autolinking = getAutolinkingExports(projectRoot);
   const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
 
   return Object.fromEntries(

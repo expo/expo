@@ -1,3 +1,4 @@
+import { resolveFrom } from '@expo/require-utils';
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
 import { DevToolsPlugin } from './DevToolsPlugin';
@@ -26,7 +27,13 @@ export default class DevToolsPluginManager {
   }
 
   private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<DevToolsPlugin[]> {
-    const autolinking: typeof import('expo/internal/unstable-autolinking-exports') = require('expo/internal/unstable-autolinking-exports');
+    const autolinkingPath =
+      resolveFrom(projectRoot, 'expo/internal/unstable-autolinking-exports') ??
+      require.resolve('expo/internal/unstable-autolinking-exports');
+    const autolinking: typeof import('expo/internal/unstable-autolinking-exports') = require(
+      autolinkingPath
+    );
+
     const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
     const revisions = await autolinking.scanExpoModuleResolutionsForPlatform(linker, 'devtools');
     const { resolveModuleAsync } = autolinking.getLinkingImplementationForPlatform('devtools');

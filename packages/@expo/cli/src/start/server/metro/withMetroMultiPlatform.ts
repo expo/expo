@@ -130,7 +130,8 @@ function withWebPolyfills(
       ...polyfills,
       ...virtualModulesPolyfills,
       // Removed on server platforms during the transform.
-      require.resolve('expo/virtual/streams.js'),
+      resolveFrom.silent(config.projectRoot, 'expo/virtual/streams.js') ??
+        require.resolve('expo/virtual/streams.js'),
     ];
   };
 
