@@ -104,7 +104,7 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 | `enablePanDownToClose` | Yes | iOS: enables swipe + backdrop tap. Android: swipe + back button + scrim tap. |
 | `enableDynamicSizing` | Yes | Fit-to-content when no `snapPoints`. Cannot combine with explicit snap points. |
 | `handleComponent` | Partial | `null` hides handle, non-null shows native/vaul handle. Custom components not rendered. |
-| `backgroundStyle` | Partial | `backgroundColor` extracted for Android `containerColor`. |
+| `backgroundStyle` | Partial | Android: `backgroundColor` extracted for `containerColor`. iOS: not applied (SwiftUI sheet uses system background). Web: full style is applied. |
 | `style` | Partial | Passed through where possible |
 | `children` | Yes | |
 | `animateOnMount` | No | Accepted, no effect. |

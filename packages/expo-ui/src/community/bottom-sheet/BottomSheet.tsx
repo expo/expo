@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 import { Drawer } from 'vaul';
 
 import { BottomSheetContext, BottomSheetInternalContext } from './context';
@@ -30,7 +30,7 @@ const overlayStyle: React.CSSProperties = {
   zIndex: 999,
 };
 
-const contentStyle: React.CSSProperties = {
+const defaultContentStyle: React.CSSProperties = {
   position: 'fixed',
   bottom: 0,
   left: 0,
@@ -55,6 +55,7 @@ export function BottomSheet(props: BottomSheetProps) {
     onDismiss,
     enablePanDownToClose = false,
     handleComponent,
+    backgroundStyle,
     children,
   } = props;
 
@@ -155,6 +156,13 @@ export function BottomSheet(props: BottomSheetProps) {
       ? { overflowY: 'auto', height: currentHeight, transition: 'height 0.3s ease' }
       : undefined;
 
+  const mergedContentStyle = useMemo<React.CSSProperties>(() => {
+    const flat = StyleSheet.flatten(backgroundStyle);
+    return flat
+      ? { ...defaultContentStyle, ...(flat as React.CSSProperties) }
+      : defaultContentStyle;
+  }, [backgroundStyle]);
+
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
@@ -164,7 +172,7 @@ export function BottomSheet(props: BottomSheetProps) {
           dismissible={enablePanDownToClose}>
           <Drawer.Overlay style={overlayStyle} />
           <Drawer.Portal>
-            <Drawer.Content style={contentStyle}>
+            <Drawer.Content style={mergedContentStyle}>
               {handleComponent !== null && <Drawer.Handle />}
               <div style={innerStyle}>{children}</div>
             </Drawer.Content>
