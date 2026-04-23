@@ -18,7 +18,7 @@ internal final class WorkletCallback: SharedObject {
       #endif
       return
     }
-    guard let runtime = appContext?._uiRuntime as? WorkletRuntime else {
+    guard let runtime = (appContext as? any EXAppContextProtocol)?._uiRuntime as? WorkletRuntime else {
       #if DEBUG
       log.warn("WorkletCallback.invoke: UI worklet runtime is not available, the callback will not run.")
       #endif

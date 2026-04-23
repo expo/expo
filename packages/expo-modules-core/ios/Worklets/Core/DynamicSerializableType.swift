@@ -20,7 +20,7 @@ internal struct DynamicSerializableType: AnyDynamicType {
     guard let runtime = appContext._runtime else {
       throw Exceptions.RuntimeLost()
     }
-    guard let jsSerializable = SerializableExtractor.extractSerializable(jsValue, runtime: runtime) else {
+    guard let jsSerializable = ExpoWorkletsDiscovery.sharedProvider?.extractSerializable(from: jsValue, runtime: runtime) else {
       throw NotSerializableException(innerType)
     }
     return Serializable(jsSerializable)
