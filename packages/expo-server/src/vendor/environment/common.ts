@@ -147,7 +147,7 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
                 file: route.file,
                 page: route.page,
               },
-              request,
+              request: new ImmutableRequest(request),
               params,
             });
           }
