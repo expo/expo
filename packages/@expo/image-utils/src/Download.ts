@@ -5,7 +5,6 @@ import Jimp from 'jimp-compact';
 import os from 'os';
 import path from 'path';
 import stream from 'stream';
-import type { ReadableStream } from 'stream/web';
 import util from 'util';
 
 // cache downloaded images into memory
