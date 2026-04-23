@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionButton } from '@/components';
 
-type Screen = 'communication' | 'dev-menu' | 'navigation' | 'state';
+type Screen = 'communication' | 'dev-menu' | 'native-modules' | 'navigation' | 'state';
 
 const Index = () => {
   const router = useRouter();
@@ -38,6 +38,14 @@ const Index = () => {
         description="State API"
         onPress={() => navigateToScreen('state')}
         testID="apis-state"
+      />
+      <ActionButton
+        type="link"
+        icon="cpu"
+        title="Native Modules"
+        description="Custom native modules from the hosting app"
+        onPress={() => navigateToScreen('native-modules')}
+        testID="apis-native-modules"
       />
       <ActionButton
         type="link"
