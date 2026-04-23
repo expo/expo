@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Fixed JS timers hanging during background task execution on Android by registering with `HeadlessJsTaskContext`. ([#43821](https://github.com/expo/expo/pull/43821) by [@janicduplessis](https://github.com/janicduplessis))
+- [Android] Prevent background task hang when JS has no `AppRegistry` handler for `expo-task-manager` (e.g. the module is only imported from a lazy-loaded route). Bound the backing `HeadlessJsTask` to 2 minutes and flush any undelivered `TaskExecutionCallback`s on task finish, so native awaiters unblock instead of hanging until the OS kills the worker. ([#45029](https://github.com/expo/expo/pull/45029) by [@chocky335](https://github.com/chocky335))
 
 ### 💡 Others
 
