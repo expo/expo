@@ -1,12 +1,13 @@
-import { PBXNativeTarget, PBXTargetDependency, XCBuildConfiguration, XcodeProject } from 'xcode';
+import type {
+  PBXNativeTarget,
+  PBXTargetDependency,
+  XCBuildConfiguration,
+  XcodeProject,
+} from 'xcode';
 
 import { getApplicationTargetNameForSchemeAsync } from './BuildScheme';
-import {
-  getBuildConfigurationForListIdAndName,
-  getPbxproj,
-  isNotComment,
-  NativeTargetSectionEntry,
-} from './utils/Xcodeproj';
+import type { NativeTargetSectionEntry } from './utils/Xcodeproj';
+import { getBuildConfigurationForListIdAndName, getPbxproj, isNotComment } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
 
 export enum TargetType {

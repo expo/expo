@@ -1,7 +1,7 @@
 'use client';
 import { use } from 'react';
 
-import { type NavigationState } from '../routers';
+import type { NavigationState } from '../routers';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
 import { NavigationContext } from './NavigationContext';
 import type { NavigationProp } from './types';

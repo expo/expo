@@ -1,8 +1,9 @@
 import fs from 'fs';
-import { glob, GlobOptions } from 'glob';
+import type { GlobOptions } from 'glob';
+import { glob } from 'glob';
 import path from 'path';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { existsAndIsNotIgnoredAsync, isFileIgnoredAsync } from '../utils/files';
 
 export class ProjectSetupCheck implements DoctorCheck {

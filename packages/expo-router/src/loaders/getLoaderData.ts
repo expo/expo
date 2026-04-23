@@ -6,7 +6,7 @@
  *
  */
 
-import { LoaderCache } from './LoaderCache';
+import type { LoaderCache } from './LoaderCache';
 
 type LoaderFetcher<T> = (path: string) => Promise<T>;
 

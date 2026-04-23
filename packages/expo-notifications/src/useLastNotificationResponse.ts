@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from 'react';
 
-import { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
+import type { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
 import {
   addNotificationResponseReceivedListener,
   addNotificationResponseClearedListener,

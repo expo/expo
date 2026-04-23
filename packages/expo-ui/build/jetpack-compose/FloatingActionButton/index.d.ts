@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { ModifierConfig } from '../../types';
+import type { ModifierConfig } from '../../types';
 type SlotChildProps = {
     children: React.ReactNode;
 };
@@ -49,8 +49,8 @@ export type ExtendedFloatingActionButtonProps = FloatingActionButtonProps & {
      */
     expanded?: boolean;
 };
-declare function FABIcon(props: SlotChildProps): import("react").JSX.Element;
-declare function FABText(props: SlotChildProps): import("react").JSX.Element;
+declare function FABIcon(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
+declare function FABText(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Renders a Material Design 3 small `FloatingActionButton`.
  *
@@ -69,7 +69,7 @@ declare function FABText(props: SlotChildProps): import("react").JSX.Element;
  * </Host>
  * ```
  */
-declare function SmallFloatingActionButtonComponent(props: SmallFloatingActionButtonProps): import("react").JSX.Element;
+declare function SmallFloatingActionButtonComponent(props: SmallFloatingActionButtonProps): import("react/jsx-runtime").JSX.Element;
 declare namespace SmallFloatingActionButtonComponent {
     var Icon: typeof FABIcon;
 }
@@ -92,7 +92,7 @@ export { SmallFloatingActionButtonComponent as SmallFloatingActionButton };
  * </Host>
  * ```
  */
-declare function FloatingActionButtonComponent(props: FloatingActionButtonProps): import("react").JSX.Element;
+declare function FloatingActionButtonComponent(props: FloatingActionButtonProps): import("react/jsx-runtime").JSX.Element;
 declare namespace FloatingActionButtonComponent {
     var Icon: typeof FABIcon;
 }
@@ -115,7 +115,7 @@ export { FloatingActionButtonComponent as FloatingActionButton };
  * </Host>
  * ```
  */
-declare function LargeFloatingActionButtonComponent(props: LargeFloatingActionButtonProps): import("react").JSX.Element;
+declare function LargeFloatingActionButtonComponent(props: LargeFloatingActionButtonProps): import("react/jsx-runtime").JSX.Element;
 declare namespace LargeFloatingActionButtonComponent {
     var Icon: typeof FABIcon;
 }
@@ -141,7 +141,7 @@ export { LargeFloatingActionButtonComponent as LargeFloatingActionButton };
  * </Host>
  * ```
  */
-declare function ExtendedFloatingActionButtonComponent(props: ExtendedFloatingActionButtonProps): import("react").JSX.Element;
+declare function ExtendedFloatingActionButtonComponent(props: ExtendedFloatingActionButtonProps): import("react/jsx-runtime").JSX.Element;
 declare namespace ExtendedFloatingActionButtonComponent {
     var Icon: typeof FABIcon;
     var Text: typeof FABText;

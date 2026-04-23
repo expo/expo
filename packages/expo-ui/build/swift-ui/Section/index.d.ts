@@ -34,5 +34,5 @@ export type SectionProps = {
 /**
  * Section component uses the native [Section](https://developer.apple.com/documentation/swiftui/section) component.
  */
-export declare function Section(props: SectionProps): import("react").JSX.Element;
+export declare function Section(props: SectionProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

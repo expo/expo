@@ -6,7 +6,8 @@ import { runCommand } from './commands';
 import { XCFramework } from './constants';
 import CLIError from './error';
 import { withSpinner } from './spinner';
-import { IosConfig, XCFrameworkSpec } from './types';
+import type { IosConfig } from './types';
+import { XCFrameworkSpec } from './types';
 
 export const cleanUpArtifacts = async (config: IosConfig) => {
   if (config.dryRun) {

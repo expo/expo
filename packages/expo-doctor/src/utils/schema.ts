@@ -1,8 +1,9 @@
 // copied from https://github.com/expo/expo-cli/blob/d00319aae4fdcacf1a335af5a8428c45b62fc4d7/packages/xdl/src/project/Doctor.ts
 // minor naming changes only
 
-import { ExpoConfig } from '@expo/config';
-import Schemer, { SchemerError, ValidationError } from '@expo/schemer';
+import type { ExpoConfig } from '@expo/config';
+import type { ValidationError } from '@expo/schemer';
+import Schemer, { SchemerError } from '@expo/schemer';
 
 function formatValidationError(validationError: ValidationError) {
   return `\n ${validationError.fieldPath ? 'Field: ' + validationError.fieldPath + ' - ' : ''}${

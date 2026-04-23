@@ -3,7 +3,7 @@ import fs from 'fs';
 import { globSync } from 'glob';
 import * as path from 'path';
 
-import { ResourceKind } from './Resources';
+import type { ResourceKind } from './Resources';
 import { UnexpectedError } from '../utils/errors';
 import { directoryExistsAsync } from '../utils/modules';
 

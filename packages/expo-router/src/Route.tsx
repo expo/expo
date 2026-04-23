@@ -5,8 +5,8 @@ import { createContext, use, type ComponentType, type PropsWithChildren } from '
 
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { type SuspenseFallbackProps } from './views/SuspenseFallback';
-import { type ErrorBoundaryProps } from './views/Try';
+import type { SuspenseFallbackProps } from './views/SuspenseFallback';
+import type { ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 

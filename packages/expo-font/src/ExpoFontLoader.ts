@@ -1,6 +1,20 @@
 import { requireNativeModule } from 'expo-modules-core';
 
-import { UnloadFontOptions } from './Font.types';
+import type { UnloadFontOptions } from './Font.types';
+
+export type ServerFontResourceDescriptor =
+  | {
+      type: 'style';
+      css: string;
+      id: string;
+    }
+  | {
+      type: 'link';
+      as: 'font';
+      crossOrigin?: string;
+      href: string;
+      rel: 'preload';
+    };
 
 export type ExpoFontLoaderModule = {
   getLoadedFonts: () => string[];
@@ -10,6 +24,7 @@ export type ExpoFontLoaderModule = {
   unloadAsync?: (fontFamilyName: string, options?: UnloadFontOptions) => Promise<void>;
   isLoaded?: (fontFamilyName: string, options?: UnloadFontOptions) => boolean;
   getServerResources?: () => string[];
+  getServerResourceDescriptors?: () => ServerFontResourceDescriptor[];
   resetServerContext?: () => void;
 };
 

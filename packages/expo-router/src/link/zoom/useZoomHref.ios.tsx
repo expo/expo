@@ -4,7 +4,7 @@ import { use, useMemo } from 'react';
 
 import { INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME } from '../../navigationParams';
 import { parseUrlUsingCustomBase } from '../../utils/url';
-import { LinkProps } from '../useLinkHooks';
+import type { LinkProps } from '../useLinkHooks';
 import { ZoomTransitionSourceContext } from './zoom-transition-context';
 
 export function useZoomHref({ href }: LinkProps) {

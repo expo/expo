@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import { ProviderAuthRequestConfig } from './Provider.types';
+import type { ProviderAuthRequestConfig } from './Provider.types';
 import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 import { AuthRequest } from '../AuthRequest';
-import { AuthRequestConfig, AuthRequestPromptOptions, ResponseType } from '../AuthRequest.types';
+import type { AuthRequestConfig, AuthRequestPromptOptions } from '../AuthRequest.types';
+import { ResponseType } from '../AuthRequest.types';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { makeRedirectUri } from '../AuthSession';
-import { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
-import { DiscoveryDocument } from '../Discovery';
+import type { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
+import type { DiscoveryDocument } from '../Discovery';
 import { generateHexStringAsync } from '../PKCE';
 
 const settings = {

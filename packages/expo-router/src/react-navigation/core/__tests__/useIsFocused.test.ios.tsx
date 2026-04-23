@@ -1,7 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { type ParamListBase } from '../../routers';
+import type { ParamListBase } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';

@@ -1,5 +1,6 @@
 import { codeFrameColumns } from '@babel/code-frame';
-import { transformSync, types as t } from '@babel/core';
+import type { types as t } from '@babel/core';
+import { transformSync } from '@babel/core';
 
 import plugin from '../babel-plugin-transform-export-namespace-from';
 

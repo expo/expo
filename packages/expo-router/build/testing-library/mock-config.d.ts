@@ -1,4 +1,4 @@
-import { MemoryContext } from './context-stubs';
+import type { MemoryContext } from './context-stubs';
 export type MockContextConfig = string | string[] | MemoryContext | {
     appDir: string;
     overrides: MemoryContext;

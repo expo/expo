@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions } from 'expo-modules-core';
 /**
  * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
  * frequency capping, attribution, conversion events, estimating the number of unique users,
@@ -98,5 +98,5 @@ export declare const useTrackingPermissions: (options?: PermissionHookOptions<ob
  * the get and request permissions methods will always resolve to `granted`.
  */
 export declare function isAvailable(): boolean;
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+export { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions, };
 //# sourceMappingURL=TrackingTransparency.d.ts.map

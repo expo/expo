@@ -36,8 +36,7 @@ import type {
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
-import collectDependencies, {
-  InvalidRequireCallError as InternalInvalidRequireCallError,
+import type {
   Dependency,
   DependencyTransformer,
   DynamicRequiresBehavior,
@@ -45,9 +44,12 @@ import collectDependencies, {
   Options as CollectDependenciesOptions,
   State,
 } from './collect-dependencies';
+import collectDependencies, {
+  InvalidRequireCallError as InternalInvalidRequireCallError,
+} from './collect-dependencies';
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
-import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
+import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 

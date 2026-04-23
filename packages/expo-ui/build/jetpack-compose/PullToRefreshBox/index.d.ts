@@ -52,5 +52,5 @@ export type PullToRefreshBoxProps = {
  * A pull-to-refresh container that wraps scrollable content and shows a refresh indicator when pulled,
  * matching Compose's `PullToRefreshBox`.
  */
-export declare function PullToRefreshBox(props: PullToRefreshBoxProps): import("react").JSX.Element;
+export declare function PullToRefreshBox(props: PullToRefreshBoxProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

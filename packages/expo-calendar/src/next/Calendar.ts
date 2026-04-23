@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
-import {
+import type {
   Calendar,
   Attendee,
   DialogEventResult,
@@ -14,7 +14,7 @@ import {
 } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
-import {
+import type {
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,

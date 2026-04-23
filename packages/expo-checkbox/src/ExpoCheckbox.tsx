@@ -1,6 +1,5 @@
 // Copyright © 2024 650 Industries.
 
-import React from 'react';
 import { StyleSheet, Image, Pressable, Platform } from 'react-native';
 
 import type { CheckboxProps } from './Checkbox.types';

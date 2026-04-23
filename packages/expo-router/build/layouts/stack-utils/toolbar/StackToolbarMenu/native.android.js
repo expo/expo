@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeToolbarMenuAction = exports.NativeToolbarMenu = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
 const modifiers_1 = require("@expo/ui/jetpack-compose/modifiers");
 const react_1 = require("react");
@@ -38,40 +39,18 @@ const NativeToolbarMenu = (props) => {
     }, [parentClose]);
     // Inline nested: render children directly with a divider separator
     if (isNested && props.inline) {
-        return (<>
-        <jetpack_compose_1.HorizontalDivider />
-        {props.children}
-      </>);
+        return ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.HorizontalDivider, {}), props.children] }));
     }
     // Non-inline nested: DropdownMenu with DropdownMenuItem trigger
     if (isNested) {
-        const trailingIcon = (<jetpack_compose_1.DropdownMenuItem.TrailingIcon>
-        <jetpack_compose_1.Icon source={arrowRightIcon} tint={tintColor} size={24}/>
-      </jetpack_compose_1.DropdownMenuItem.TrailingIcon>);
-        const leadingIcon = props.source ? (<jetpack_compose_1.DropdownMenuItem.LeadingIcon>
-        <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
-      </jetpack_compose_1.DropdownMenuItem.LeadingIcon>) : null;
-        return (<jetpack_compose_1.DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
-        <jetpack_compose_1.DropdownMenu.Trigger>
-          <jetpack_compose_1.DropdownMenuItem onClick={() => {
-                if (!props.disabled)
-                    setExpanded(true);
-            }} modifiers={[(0, modifiers_1.background)(backgroundColor)]} enabled={!props.disabled}>
-            {leadingIcon}
-            <jetpack_compose_1.DropdownMenuItem.Text>
-              <jetpack_compose_1.Text color={typeof props.tintColor === 'string'
-                ? props.tintColor
-                : (toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)())}>
-                {props.label}
-              </jetpack_compose_1.Text>
-            </jetpack_compose_1.DropdownMenuItem.Text>
-            {trailingIcon}
-          </jetpack_compose_1.DropdownMenuItem>
-        </jetpack_compose_1.DropdownMenu.Trigger>
-        <jetpack_compose_1.DropdownMenu.Items>
-          <ToolbarMenuCloseContext value={closeMenu}>{props.children}</ToolbarMenuCloseContext>
-        </jetpack_compose_1.DropdownMenu.Items>
-      </jetpack_compose_1.DropdownMenu>);
+        const trailingIcon = ((0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.TrailingIcon, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: arrowRightIcon, tint: tintColor, size: 24 }) }));
+        const leadingIcon = props.source ? ((0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.LeadingIcon, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24 }) })) : null;
+        return ((0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenu, { expanded: expanded, onDismissRequest: () => setExpanded(false), color: backgroundColor, children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Trigger, { children: (0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenuItem, { onClick: () => {
+                            if (!props.disabled)
+                                setExpanded(true);
+                        }, modifiers: [(0, modifiers_1.background)(backgroundColor)], enabled: !props.disabled, children: [leadingIcon, (0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.Text, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Text, { color: typeof props.tintColor === 'string'
+                                        ? props.tintColor
+                                        : (toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)()), children: props.label }) }), trailingIcon] }) }), (0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Items, { children: (0, jsx_runtime_1.jsx)(ToolbarMenuCloseContext, { value: closeMenu, children: props.children }) })] }));
     }
     // Root: AnimatedItemContainer + IconButton trigger + DropdownMenu
     if (!props.source) {
@@ -80,18 +59,7 @@ const NativeToolbarMenu = (props) => {
         }
         return null;
     }
-    return (<AnimatedItemContainer_1.AnimatedItemContainer visible={!props.hidden}>
-      <jetpack_compose_1.DropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)} color={backgroundColor}>
-        <jetpack_compose_1.DropdownMenu.Trigger>
-          <jetpack_compose_1.IconButton onClick={() => setExpanded(true)} enabled={!props.disabled} modifiers={[(0, modifiers_1.background)(backgroundColor)]}>
-            <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
-          </jetpack_compose_1.IconButton>
-        </jetpack_compose_1.DropdownMenu.Trigger>
-        <jetpack_compose_1.DropdownMenu.Items>
-          <ToolbarMenuCloseContext value={closeMenu}>{props.children}</ToolbarMenuCloseContext>
-        </jetpack_compose_1.DropdownMenu.Items>
-      </jetpack_compose_1.DropdownMenu>
-    </AnimatedItemContainer_1.AnimatedItemContainer>);
+    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenu, { expanded: expanded, onDismissRequest: () => setExpanded(false), color: backgroundColor, children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Trigger, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: () => setExpanded(true), enabled: !props.disabled, modifiers: [(0, modifiers_1.background)(backgroundColor)], children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24 }) }) }), (0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenu.Items, { children: (0, jsx_runtime_1.jsx)(ToolbarMenuCloseContext, { value: closeMenu, children: props.children }) })] }) }));
 };
 exports.NativeToolbarMenu = NativeToolbarMenu;
 /**
@@ -118,17 +86,7 @@ const NativeToolbarMenuAction = (props) => {
         : ((0, children_1.getFirstChildOfType)(props.children, primitives_1.Label)?.props.children ?? '');
     if (props.hidden)
         return null;
-    return (<jetpack_compose_1.DropdownMenuItem onClick={handleClick} modifiers={[(0, modifiers_1.background)(backgroundColor)]} enabled={!props.disabled}>
-      <jetpack_compose_1.DropdownMenuItem.Text>
-        <jetpack_compose_1.Text color={tintColor}>{label}</jetpack_compose_1.Text>
-      </jetpack_compose_1.DropdownMenuItem.Text>
-      {props.source && (<jetpack_compose_1.DropdownMenuItem.LeadingIcon>
-          <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
-        </jetpack_compose_1.DropdownMenuItem.LeadingIcon>)}
-      {props.isOn && (<jetpack_compose_1.DropdownMenuItem.TrailingIcon>
-          <jetpack_compose_1.Icon source={checkmarkIcon} tint={tintColor} size={24}/>
-        </jetpack_compose_1.DropdownMenuItem.TrailingIcon>)}
-    </jetpack_compose_1.DropdownMenuItem>);
+    return ((0, jsx_runtime_1.jsxs)(jetpack_compose_1.DropdownMenuItem, { onClick: handleClick, modifiers: [(0, modifiers_1.background)(backgroundColor)], enabled: !props.disabled, children: [(0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.Text, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Text, { color: tintColor, children: label }) }), props.source && ((0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.LeadingIcon, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24 }) })), props.isOn && ((0, jsx_runtime_1.jsx)(jetpack_compose_1.DropdownMenuItem.TrailingIcon, { children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: checkmarkIcon, tint: tintColor, size: 24 }) }))] }));
 };
 exports.NativeToolbarMenuAction = NativeToolbarMenuAction;
 //# sourceMappingURL=native.android.js.map

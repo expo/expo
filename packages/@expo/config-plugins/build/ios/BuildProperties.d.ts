@@ -1,6 +1,6 @@
 import type { ExpoConfig } from '@expo/config-types';
 import type { ConfigPlugin } from '../Plugin.types';
-import { BuildPropertiesConfig, ConfigToPropertyRuleType } from '../utils/BuildProperties.types';
+import type { BuildPropertiesConfig, ConfigToPropertyRuleType } from '../utils/BuildProperties.types';
 /**
  * Creates a `withPodfileProperties` config-plugin based on given config to property mapping rules.
  *

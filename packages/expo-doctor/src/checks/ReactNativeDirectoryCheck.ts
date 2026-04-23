@@ -1,19 +1,15 @@
 import chalk from 'chalk';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import {
-  AutolinkingResolutionsCache,
-  scanNativeModuleResolutions,
-} from '../utils/autolinkingResolutions';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { AutolinkingResolutionsCache } from '../utils/autolinkingResolutions';
+import { scanNativeModuleResolutions } from '../utils/autolinkingResolutions';
 import {
   getReactNativeDirectoryCheckExcludes,
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
 } from '../utils/doctorConfig';
 import { checkLibraries } from '../utils/reactNativeDirectoryApi';
-import {
-  getVersionedNativeModuleNamesAsync,
-  VersionedNativeModuleNamesCache,
-} from '../utils/versionedNativeModules';
+import type { VersionedNativeModuleNamesCache } from '../utils/versionedNativeModules';
+import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
 
 // Filter out common packages that don't make sense for us to validate on the directory.
 export const DEFAULT_PACKAGES_TO_IGNORE = [

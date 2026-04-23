@@ -1,12 +1,13 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import { glob } from 'glob';
-import createIgnore, { Ignore as SingleFileIgnore } from 'ignore';
-import { type Minimatch } from 'minimatch';
+import type { Ignore as SingleFileIgnore } from 'ignore';
+import createIgnore from 'ignore';
+import type { Minimatch } from 'minimatch';
 import path from 'path';
 
 import { resolveExpoConfigPluginsPackagePath } from './ExpoResolver';
-import { type Platform, type ProjectWorkflow } from './Fingerprint.types';
+import type { Platform, ProjectWorkflow } from './Fingerprint.types';
 import { isIgnoredPathWithMatchObjects, pathExistsAsync } from './utils/Path';
 
 /**

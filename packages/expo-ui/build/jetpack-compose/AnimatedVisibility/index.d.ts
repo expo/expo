@@ -1,4 +1,4 @@
-import { PrimitiveBaseProps } from '../layout-types';
+import { type PrimitiveBaseProps } from '../layout-types';
 import { ENTER_TRANSITION_SYMBOL, EXIT_TRANSITION_SYMBOL } from './symbols';
 type EnterTransitionRecord = {
     type: 'fadeIn' | 'slideInHorizontally' | 'slideInVertically' | 'expandIn' | 'expandHorizontally' | 'expandVertically' | 'scaleIn';
@@ -129,6 +129,6 @@ export type AnimatedVisibilityProps = {
      */
     exitTransition?: ExitTransitionType;
 } & PrimitiveBaseProps;
-export declare function AnimatedVisibility(props: AnimatedVisibilityProps): import("react").JSX.Element;
+export declare function AnimatedVisibility(props: AnimatedVisibilityProps): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

@@ -1,6 +1,8 @@
-import { ExpoConfig, getConfig, Platform } from '@expo/config';
+import type { ExpoConfig, Platform } from '@expo/config';
+import { getConfig } from '@expo/config';
 
-import { getPlatformBundlers, PlatformBundlers } from '../start/server/platformBundlers';
+import type { PlatformBundlers } from '../start/server/platformBundlers';
+import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { CommandError } from '../utils/errors';
 
 export type Options = {

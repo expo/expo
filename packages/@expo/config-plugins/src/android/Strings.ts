@@ -1,5 +1,5 @@
 import { getResourceXMLPathAsync } from './Paths';
-import { ResourceItemXML, ResourceKind, ResourceXML } from './Resources';
+import type { ResourceItemXML, ResourceKind, ResourceXML } from './Resources';
 
 export async function getProjectStringsXMLPathAsync(
   projectRoot: string,

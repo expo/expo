@@ -1,5 +1,5 @@
 import { NativeModule, registerWebModule } from 'expo-modules-core';
-import { UpdateCheckResultNotAvailableReason, } from './Updates.types';
+import { UpdateCheckResultNotAvailableReason } from './Updates.types';
 class ExpoUpdatesModule extends NativeModule {
     isEmergencyLaunch = false;
     emergencyLaunchReason = null;

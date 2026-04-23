@@ -1,4 +1,4 @@
-import { AnimationObject, ChainableAnimationType, InterpolatingSpringAnimationParams, SpringAnimationParams, TimingAnimationParams } from './types';
+import type { AnimationObject, ChainableAnimationType, InterpolatingSpringAnimationParams, SpringAnimationParams, TimingAnimationParams } from './types';
 /**
  * Built-in animation presets for the `animation` modifier.
  * Presets:

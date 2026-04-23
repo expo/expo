@@ -1,5 +1,5 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-import { Ora } from 'ora';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { Ora } from 'ora';
 export type CocoaPodsErrorCode = 'NON_INTERACTIVE' | 'NO_CLI' | 'COMMAND_FAILED';
 export declare class CocoaPodsError extends Error {
     code: CocoaPodsErrorCode;
@@ -39,7 +39,7 @@ export declare class CocoaPodsPackageManager {
         spinner?: Ora;
         shouldUpdate?: boolean;
         updatedPackages?: string[];
-    }): Promise<spawnAsync.SpawnResult>;
+    }): Promise<SpawnResult>;
     private _installAsync;
     private runInstallTypeCommandAsync;
     addWithParametersAsync(names: string[], parameters: string[]): Promise<void>;

@@ -4,9 +4,11 @@ import React from 'react';
 
 import { ActionsContext } from './ContextActions';
 import * as LogBoxData from './Data/LogBoxData';
-import { LogBoxLog, LogContext } from './Data/LogBoxLog';
+import type { LogBoxLog } from './Data/LogBoxLog';
+import { LogContext } from './Data/LogBoxLog';
 import { useEnvironmentVariablesPolyfill } from './environmentHelper';
-import { FetchTextAsync, setFetchText } from './fetchHelper';
+import type { FetchTextAsync } from './fetchHelper';
+import { setFetchText } from './fetchHelper';
 import { LogBoxInspectorContainer } from './overlay/Overlay';
 import { convertNativeToExpoLogBoxLog, convertToExpoLogBoxLog } from './utils/convertLogBoxLog';
 

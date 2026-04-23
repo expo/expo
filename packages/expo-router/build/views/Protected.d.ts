@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactElement, ReactNode } from 'react';
+import type { FunctionComponent, ReactElement, ReactNode } from 'react';
 export type ProtectedProps = {
     guard: boolean;
     children?: ReactNode;

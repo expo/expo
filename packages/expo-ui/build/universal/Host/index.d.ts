@@ -7,5 +7,5 @@ export declare function Host({ children, style, ...rest }: ViewProps & {
         vertical?: boolean;
         horizontal?: boolean;
     };
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

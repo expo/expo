@@ -1,5 +1,5 @@
-import commander from 'commander';
-import { SupportedPlatform } from '../types';
+import type commander from 'commander';
+import type { SupportedPlatform } from '../types';
 export interface AutolinkingOptions {
     /** Only scan direct "dependencies" of a project for React Native modules, rather than including transitive dependencies.
      * @remarks

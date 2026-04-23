@@ -1,4 +1,5 @@
-import Ajv, { ErrorObject, Options } from 'ajv';
+import type { ErrorObject, Options } from 'ajv';
+import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import fs from 'fs';
 import traverse from 'json-schema-traverse';

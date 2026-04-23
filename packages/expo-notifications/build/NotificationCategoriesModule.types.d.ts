@@ -1,5 +1,5 @@
-import { ProxyNativeModule } from 'expo-modules-core';
-import { NotificationCategory, NotificationAction } from './Notifications.types';
+import type { ProxyNativeModule } from 'expo-modules-core';
+import type { NotificationCategory, NotificationAction } from './Notifications.types';
 export interface NotificationCategoriesModule extends ProxyNativeModule {
     getNotificationCategoriesAsync: () => Promise<NotificationCategory[]>;
     setNotificationCategoryAsync: (identifier: string, actions: NotificationAction[], options?: {

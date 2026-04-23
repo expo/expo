@@ -1,21 +1,20 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
 import { createBuildGradlePropsConfigPlugin } from './BuildProperties';
+import type { AndroidManifest } from './Manifest';
 import {
   addMetaDataItemToMainApplication,
-  AndroidManifest,
   findMetaDataItem,
   getMainApplicationOrThrow,
   removeMetaDataItemFromMainApplication,
 } from './Manifest';
-import { buildResourceItem, ResourceXML } from './Resources';
-import * as Resources from './Resources';
+import { buildResourceItem, type ResourceXML } from './Resources';
 import { removeStringItem, setStringItem } from './Strings';
-import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
+import type { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
 import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
 import { withPlugins } from '../plugins/withPlugins';
+import type { ExpoConfigUpdates } from '../utils/Updates';
 import {
-  ExpoConfigUpdates,
   getDisableAntiBrickingMeasures,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,
@@ -89,7 +88,7 @@ const withRuntimeVersionResource = createStringsXmlPlugin(
 );
 
 export async function applyRuntimeVersionFromConfigAsync(
-  config: ExportedConfigWithProps<Resources.ResourceXML>,
+  config: ExportedConfigWithProps<ResourceXML>,
   stringsJSON: ResourceXML
 ): Promise<ResourceXML> {
   const projectRoot = config.modRequest.projectRoot;

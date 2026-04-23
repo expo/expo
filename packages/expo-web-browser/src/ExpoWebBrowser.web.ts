@@ -2,13 +2,13 @@ import { CodedError } from 'expo-modules-core';
 import { AppState } from 'react-native';
 import type { AppStateStatus, NativeEventSubscription } from 'react-native';
 
-import {
+import type {
   WebBrowserAuthSessionResult,
   WebBrowserOpenOptions,
   WebBrowserResult,
-  WebBrowserResultType,
   WebBrowserWindowFeatures,
 } from './WebBrowser.types';
+import { WebBrowserResultType } from './WebBrowser.types';
 
 const POPUP_WIDTH = 500;
 const POPUP_HEIGHT = 650;

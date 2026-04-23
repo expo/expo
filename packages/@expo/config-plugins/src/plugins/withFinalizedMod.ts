@@ -1,5 +1,5 @@
 import { withMod } from './withMod';
-import { ConfigPlugin, Mod, ModPlatform } from '../Plugin.types';
+import type { ConfigPlugin, Mod, ModPlatform } from '../Plugin.types';
 
 /**
  * Mods that don't modify any data, all unresolved functionality is performed inside a finalized mod.

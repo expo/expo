@@ -7,10 +7,11 @@ import {
   type ComponentProps,
   type Ref,
 } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
-import {
+import type {
   CameraNativeProps,
   CameraCapturedPicture,
   CameraPictureOptions,

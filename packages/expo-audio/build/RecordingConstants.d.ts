@@ -1,4 +1,4 @@
-import { type RecordingOptions } from './Audio.types';
+import type { RecordingOptions } from './Audio.types';
 /**
  * Audio output format options for iOS recording.
  *

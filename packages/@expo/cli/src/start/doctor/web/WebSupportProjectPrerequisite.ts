@@ -1,11 +1,5 @@
-import {
-  AppJSONConfig,
-  ExpoConfig,
-  getConfig,
-  getProjectConfigDescriptionWithPaths,
-  PackageJSONConfig,
-  ProjectConfig,
-} from '@expo/config';
+import type { AppJSONConfig, ExpoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
+import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
 import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
@@ -14,7 +8,7 @@ import { env } from '../../../utils/env';
 import { getPlatformBundlers } from '../../server/platformBundlers';
 import { PrerequisiteCommandError, ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
-import { ResolvedPackage } from '../dependencies/getMissingPackages';
+import type { ResolvedPackage } from '../dependencies/getMissingPackages';
 
 const debug = require('debug')('expo:doctor:webSupport') as typeof console.log;
 

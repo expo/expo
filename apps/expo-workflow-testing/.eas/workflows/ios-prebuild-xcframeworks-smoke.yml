@@ -1,0 +1,46 @@
+name: Smoke Test Precompiled iOS XCFrameworks
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: "Space-separated package names (default: expo-modules-core expo-media-library)"
+        required: false
+        default: ""
+  pull_request:
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/ios-prebuild-xcframeworks-smoke.yml
+      - apps/expo-workflow-testing/scripts/detect-prebuild-packages.sh
+      - tools/src/prebuilds/**
+      - packages/**
+
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
+jobs:
+  smoke_test:
+    name: Prebuild XCFrameworks (Debug)
+    runs_on: macos-large
+    image: latest
+    steps:
+      - uses: eas/checkout
+      - id: detect
+        name: Detect changed packages
+        outputs: [packages]
+        run: |
+          bash scripts/detect-prebuild-packages.sh \
+            "${{ github.event_name }}" \
+            "${{ github.event.repository.full_name }}" \
+            "${{ github.event.pull_request.number }}" \
+            "${{ github.event.inputs.packages }}"
+      - if: ${{ steps.detect.outputs.packages != 'none' }}
+        uses: eas/use_npm_token
+      - if: ${{ steps.detect.outputs.packages != 'none' }}
+        uses: eas/install_node_modules
+      - if: ${{ steps.detect.outputs.packages != 'none' }}
+        name: Prebuild XCFrameworks
+        working_directory: ../..
+        run: |
+          echo "Packages: ${{ steps.detect.outputs.packages }}"
+          bin/et prebuild -f Debug -v ${{ steps.detect.outputs.packages }}

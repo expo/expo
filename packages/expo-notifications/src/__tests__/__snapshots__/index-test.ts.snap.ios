@@ -90,7 +90,6 @@ exports[`Notifications exports 1`] = `
     "NoData": 1,
   },
   "DEFAULT_ACTION_IDENTIFIER": "expo.modules.notifications.actions.DEFAULT",
-  "EventSubscription": undefined,
   "IosAlertStyle": {
     "0": "NONE",
     "1": "BANNER",
@@ -120,8 +119,6 @@ exports[`Notifications exports 1`] = `
     "PROVISIONAL": 3,
   },
   "NotificationTimeoutError": [Function],
-  "PermissionExpiration": undefined,
-  "PermissionResponse": undefined,
   "PermissionStatus": {
     "DENIED": "denied",
     "GRANTED": "granted",

@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackView = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -228,7 +229,7 @@ class StackView extends React.Component {
         return routes[index - 1];
     };
     renderHeader = (props) => {
-        return <HeaderContainer_1.HeaderContainer {...props}/>;
+        return (0, jsx_runtime_1.jsx)(HeaderContainer_1.HeaderContainer, { ...props });
     };
     handleOpenRoute = ({ route }) => {
         const { state, navigation } = this.props;
@@ -325,17 +326,7 @@ class StackView extends React.Component {
             acc[route.key] = acc[route.key] || this.props.describe(route, true);
             return acc;
         }, {});
-        return (<GestureHandlerWrapper style={styles.container}>
-        <elements_1.SafeAreaProviderCompat>
-          <react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer>
-            {(insets) => (<ModalPresentationContext_1.ModalPresentationContext.Consumer>
-                {(isParentModal) => (<elements_1.HeaderShownContext.Consumer>
-                    {(isParentHeaderShown) => (<CardStack_1.CardStack insets={insets} isParentHeaderShown={isParentHeaderShown} isParentModal={isParentModal} getPreviousRoute={this.getPreviousRoute} routes={routes} openingRouteKeys={openingRouteKeys} closingRouteKeys={closingRouteKeys} onOpenRoute={this.handleOpenRoute} onCloseRoute={this.handleCloseRoute} onTransitionStart={this.handleTransitionStart} onTransitionEnd={this.handleTransitionEnd} renderHeader={this.renderHeader} state={state} descriptors={descriptors} onGestureStart={this.handleGestureStart} onGestureEnd={this.handleGestureEnd} onGestureCancel={this.handleGestureCancel} preloadedDescriptors={preloadedDescriptors} {...rest}/>)}
-                  </elements_1.HeaderShownContext.Consumer>)}
-              </ModalPresentationContext_1.ModalPresentationContext.Consumer>)}
-          </react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer>
-        </elements_1.SafeAreaProviderCompat>
-      </GestureHandlerWrapper>);
+        return ((0, jsx_runtime_1.jsx)(GestureHandlerWrapper, { style: styles.container, children: (0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaInsetsContext.Consumer, { children: (insets) => ((0, jsx_runtime_1.jsx)(ModalPresentationContext_1.ModalPresentationContext.Consumer, { children: (isParentModal) => ((0, jsx_runtime_1.jsx)(elements_1.HeaderShownContext.Consumer, { children: (isParentHeaderShown) => ((0, jsx_runtime_1.jsx)(CardStack_1.CardStack, { insets: insets, isParentHeaderShown: isParentHeaderShown, isParentModal: isParentModal, getPreviousRoute: this.getPreviousRoute, routes: routes, openingRouteKeys: openingRouteKeys, closingRouteKeys: closingRouteKeys, onOpenRoute: this.handleOpenRoute, onCloseRoute: this.handleCloseRoute, onTransitionStart: this.handleTransitionStart, onTransitionEnd: this.handleTransitionEnd, renderHeader: this.renderHeader, state: state, descriptors: descriptors, onGestureStart: this.handleGestureStart, onGestureEnd: this.handleGestureEnd, onGestureCancel: this.handleGestureCancel, preloadedDescriptors: preloadedDescriptors, ...rest })) })) })) }) }) }));
     }
 }
 exports.StackView = StackView;

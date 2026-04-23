@@ -3,7 +3,7 @@ import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
 import { useCompositionOption } from '../../fork/native-stack/composition-options';
-import { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 
 export interface StackHeaderProps {
   /**

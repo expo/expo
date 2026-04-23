@@ -1,10 +1,10 @@
 import { requireNativeView } from 'expo';
-import { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 
-import { type MenuProps } from './types';
+import type { MenuProps } from './types';
 import { Slot } from '../SlotView';
 
-export { type MenuProps } from './types';
+export type { MenuProps } from './types';
 
 type NativeMenuProps = Omit<MenuProps, 'label' | 'onPrimaryAction'> & {
   label?: string;

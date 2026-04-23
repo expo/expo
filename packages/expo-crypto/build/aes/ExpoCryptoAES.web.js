@@ -1,5 +1,5 @@
 import { registerWebModule, NativeModule } from 'expo';
-import { AESKeySize, } from './aes.types';
+import { AESKeySize } from './aes.types';
 import { base64ToUintArray, binaryInputBytes, bytesToHex, hexToUintArray, uint8ArrayToBase64, } from './web-utils';
 const DEFAULT_IV_LENGTH = 12;
 const DEFAULT_TAG_LENGTH = 16;

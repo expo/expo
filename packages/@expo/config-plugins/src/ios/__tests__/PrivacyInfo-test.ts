@@ -1,7 +1,8 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import { setPrivacyInfo, PrivacyInfo } from '../PrivacyInfo';
+import type { PrivacyInfo } from '../PrivacyInfo';
+import { setPrivacyInfo } from '../PrivacyInfo';
 jest.mock('fs');
 
 jest.mock('../utils/Xcodeproj', () => ({

@@ -1,7 +1,7 @@
 import Debug from 'debug';
 
-import { InfoPlist } from './IosConfig.types';
-import { ConfigPlugin } from '../Plugin.types';
+import type { InfoPlist } from './IosConfig.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withInfoPlist } from '../plugins/ios-plugins';
 
 const debug = Debug('expo:config-plugins:ios:permissions');

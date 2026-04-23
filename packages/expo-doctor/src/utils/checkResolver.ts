@@ -1,4 +1,4 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import semver from 'semver';
 
 import {
@@ -26,7 +26,7 @@ import { ProjectSetupCheck } from '../checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
-import { DoctorCheck } from '../checks/checks.types';
+import type { DoctorCheck } from '../checks/checks.types';
 
 /**
  * Resolves the checks that should be run for a given project.

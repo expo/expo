@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig } from '@expo/config-types';
-import xcode, { PBXFile, PBXGroup, PBXNativeTarget, PBXProject, UUID, XCBuildConfiguration, XCConfigurationList, XcodeProject } from 'xcode';
+import type { ExpoConfig } from '@expo/config-types';
+import type { PBXFile, PBXGroup, PBXNativeTarget, PBXProject, UUID, XCBuildConfiguration, XCConfigurationList, XcodeProject } from 'xcode';
 export type ProjectSectionEntry = [string, PBXProject];
 export type NativeTargetSection = Record<string, PBXNativeTarget>;
 export type NativeTargetSectionEntry = [string, PBXNativeTarget];
@@ -79,7 +79,7 @@ export declare function getPbxproj(projectRoot: string): XcodeProject;
  * @param project
  */
 export declare function getProductName(project: XcodeProject): string;
-export declare function getProjectSection(project: XcodeProject): Record<string, xcode.PBXProject> & Record<string, string>;
+export declare function getProjectSection(project: XcodeProject): Record<string, PBXProject> & Record<string, string>;
 export declare function getXCConfigurationListEntries(project: XcodeProject): ConfigurationListEntry[];
 export declare function getBuildConfigurationsForListId(project: XcodeProject, configurationListId: string): ConfigurationSectionEntry[];
 export declare function getBuildConfigurationForListIdAndName(project: XcodeProject, { configurationListId, buildConfiguration, }: {

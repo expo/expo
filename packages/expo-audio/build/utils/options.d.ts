@@ -1,4 +1,4 @@
-import { RecordingOptions, RecordingOptionsAndroid, RecordingOptionsIos, RecordingOptionsWeb } from '../Audio.types';
+import type { RecordingOptions, RecordingOptionsAndroid, RecordingOptionsIos, RecordingOptionsWeb } from '../Audio.types';
 type CommonRecordingOptions = {
     extension: string;
     sampleRate: number;

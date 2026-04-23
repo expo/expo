@@ -1,5 +1,6 @@
 // Copyright © 2024 650 Industries.
 'use client';
+import { jsx as _jsx } from "react/jsx-runtime";
 import { Component } from 'react';
 import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
@@ -14,10 +15,10 @@ export class LinearGradient extends Component {
             console.warn('LinearGradient colors and locations props should be arrays of the same length');
             resolvedLocations = locations.slice(0, colors.length);
         }
-        return (<NativeLinearGradient {...props} colors={Platform.select({
+        return (_jsx(NativeLinearGradient, { ...props, colors: Platform.select({
                 web: colors,
                 default: colors.map(processColor),
-            })} dither={Platform.select({ android: dither })} locations={resolvedLocations} startPoint={_normalizePoint(start)} endPoint={_normalizePoint(end)}/>);
+            }), dither: Platform.select({ android: dither }), locations: resolvedLocations, startPoint: _normalizePoint(start), endPoint: _normalizePoint(end) }));
     }
 }
 function _normalizePoint(point) {

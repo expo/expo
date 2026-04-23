@@ -1,7 +1,6 @@
-import * as React from 'react';
 import { type NavigatorTypeBagBase, type ParamListBase, type StackNavigationState, type StaticConfig, type TypedNavigator } from '../../native';
 import type { StackNavigationEventMap, StackNavigationOptions, StackNavigationProp, StackNavigatorProps } from '../types';
-declare function StackNavigator({ id, initialRouteName, UNSTABLE_routeNamesChangeBehavior, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }: StackNavigatorProps): React.JSX.Element;
+declare function StackNavigator({ id, initialRouteName, UNSTABLE_routeNamesChangeBehavior, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }: StackNavigatorProps): import("react/jsx-runtime").JSX.Element;
 export declare function createStackNavigator<const ParamList extends ParamListBase, const NavigatorID extends string | undefined = string | undefined, const TypeBag extends NavigatorTypeBagBase = {
     ParamList: ParamList;
     NavigatorID: NavigatorID;

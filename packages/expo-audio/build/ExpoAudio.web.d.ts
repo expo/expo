@@ -1,6 +1,6 @@
-import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecordingOptions, RecordingStatus } from './Audio.types';
-import { AudioPlayer, AudioSample } from './AudioModule.types';
+import type { PermissionResponse } from 'expo-modules-core';
+import type { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecordingOptions, RecordingStatus } from './Audio.types';
+import type { AudioPlayer, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 export declare function createAudioPlayer(source?: AudioSource | string | number | null, options?: AudioPlayerOptions): AudioPlayer;
 export declare function useAudioPlayer(source?: AudioSource | string | number | null, options?: AudioPlayerOptions): AudioModule.AudioPlayerWeb;
@@ -19,5 +19,6 @@ export declare function preload(source: AudioSource, _options?: PreloadOptions):
 export declare function clearPreloadedSource(source: AudioSource): void;
 export declare function clearAllPreloadedSources(): void;
 export declare function getPreloadedSources(): string[];
+export { useAudioStream } from './AudioStream.web';
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.web.d.ts.map

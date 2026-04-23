@@ -1,4 +1,4 @@
-import { ExpoModifier } from '../../types';
+import type { ExpoModifier } from '../../types';
 export type SpacerProps = {
     /**
      * Modifiers for the component. Use `weight()` modifier to make the spacer flexible.
@@ -18,5 +18,5 @@ export type SpacerProps = {
  * </Row>
  * ```
  */
-export declare function Spacer(props: SpacerProps): import("react").JSX.Element;
+export declare function Spacer(props: SpacerProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

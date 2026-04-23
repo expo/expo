@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoLink = ExpoLink;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const LinkWithPreview_1 = require("./LinkWithPreview");
@@ -44,23 +45,21 @@ const useZoomHref_1 = require("./zoom/useZoomHref");
 const url_1 = require("../utils/url");
 const zoom_transition_context_providers_1 = require("./zoom/zoom-transition-context-providers");
 function ExpoLink(props) {
-    return (<zoom_transition_context_providers_1.ZoomTransitionSourceContextProvider linkProps={props}>
-      <ExpoLinkImpl {...props}/>
-    </zoom_transition_context_providers_1.ZoomTransitionSourceContextProvider>);
+    return ((0, jsx_runtime_1.jsx)(zoom_transition_context_providers_1.ZoomTransitionSourceContextProvider, { linkProps: props, children: (0, jsx_runtime_1.jsx)(ExpoLinkImpl, { ...props }) }));
 }
 function ExpoLinkImpl(props) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
     const href = (0, useZoomHref_1.useZoomHref)(props);
     const shouldUseLinkWithPreview = process.env.EXPO_OS === 'ios' && isLinkWithPreview(props) && !isPreview;
     if (shouldUseLinkWithPreview) {
-        return <LinkWithPreview_1.LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href}/>;
+        return (0, jsx_runtime_1.jsx)(LinkWithPreview_1.LinkWithPreview, { ...props, href: href, hrefForPreviewNavigation: props.href });
     }
     let children = props.children;
     if (react_1.default.Children.count(props.children) > 1) {
         const arrayChildren = react_1.default.Children.toArray(props.children).filter((child) => !(0, react_1.isValidElement)(child) || (child.type !== elements_1.LinkPreview && child.type !== elements_1.LinkMenu));
         children = arrayChildren.length === 1 ? arrayChildren[0] : props.children;
     }
-    return <BaseExpoRouterLink_1.BaseExpoRouterLink {...props} href={href} children={children}/>;
+    return (0, jsx_runtime_1.jsx)(BaseExpoRouterLink_1.BaseExpoRouterLink, { ...props, href: href, children: children });
 }
 function isLinkWithPreview(props) {
     const isExternal = (0, url_1.shouldLinkExternally)(String(props.href));

@@ -1,11 +1,11 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 import fs from 'fs';
 import { globSync } from 'glob';
 import path from 'path';
 
 import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withAppBuildGradle } from '../plugins/android-plugins';
 import { withDangerousMod } from '../plugins/withDangerousMod';
 import { directoryExistsAsync } from '../utils/modules';

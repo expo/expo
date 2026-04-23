@@ -1,4 +1,4 @@
-import { AndroidGradleAarProjectDescriptor, AndroidGradlePluginDescriptor, AndroidPublication, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
+import type { AndroidGradleAarProjectDescriptor, AndroidGradlePluginDescriptor, AndroidPublication, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
 export declare class ExpoAndroidModuleConfig {
     classifier: string;
     name: string | null;

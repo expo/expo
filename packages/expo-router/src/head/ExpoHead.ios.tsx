@@ -1,7 +1,9 @@
-import React, { JSX } from 'react';
+import type { JSX } from 'react';
+import React from 'react';
 
 import { useIsFocused } from '../useIsFocused';
-import { ExpoHead, UserActivity } from './ExpoHeadModule';
+import type { UserActivity } from './ExpoHeadModule';
+import { ExpoHead } from './ExpoHeadModule';
 import { getStaticUrlFromExpoRouter } from './url';
 import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments } from '../hooks';
 

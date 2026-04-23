@@ -1,9 +1,9 @@
-import React, { ComponentProps } from 'react';
-import { MaterialTopTabNavigationEventMap, MaterialTopTabNavigationOptions } from '../react-navigation/material-top-tabs';
-import { ParamListBase, TabNavigationState } from '../react-navigation/native';
+import type { ComponentProps } from 'react';
+import type { MaterialTopTabNavigationEventMap, MaterialTopTabNavigationOptions } from '../react-navigation/material-top-tabs';
+import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-declare const MaterialTopTabs: React.ForwardRefExoticComponent<Omit<import("..").PickPartial<Omit<import("../react-navigation/material-top-tabs").MaterialTopTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
+declare const MaterialTopTabs: import("react").ForwardRefExoticComponent<Omit<import("..").PickPartial<Omit<import("../react-navigation/material-top-tabs").MaterialTopTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -50,7 +50,7 @@ declare const MaterialTopTabs: React.ForwardRefExoticComponent<Omit<import("..")
     id?: undefined;
 } | {
     id: string;
-})), "children">, "ref"> & React.RefAttributes<unknown>> & {
+})), "children">, "ref"> & import("react").RefAttributes<unknown>> & {
     Screen: (props: import("..").ScreenProps<MaterialTopTabNavigationOptions, TabNavigationState<ParamListBase>, MaterialTopTabNavigationEventMap>) => null;
     Protected: typeof Protected;
 };
@@ -59,9 +59,9 @@ declare const MaterialTopTabs: React.ForwardRefExoticComponent<Omit<import("..")
  *
  * @hideType
  */
-declare const TopTabs: ((props: ComponentProps<typeof MaterialTopTabs>) => React.JSX.Element) & {
+declare const TopTabs: ((props: ComponentProps<typeof MaterialTopTabs>) => import("react/jsx-runtime").JSX.Element) & {
     Screen: typeof Screen;
-    Protected: React.FunctionComponent<import("../views/Protected").ProtectedProps>;
+    Protected: import("react").FunctionComponent<import("../views/Protected").ProtectedProps>;
 };
 export { TopTabs };
 export default TopTabs;

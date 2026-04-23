@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
+import type { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
 export type WebGLObject = {
     id: number;
 };
@@ -43,7 +43,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined;
     nativeRef: ComponentOrHandle;
     exglCtxId?: number;
-    render(): React.JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
     _setNativeRef: (nativeRef: ComponentOrHandle) => void;
     _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
     componentWillUnmount(): void;

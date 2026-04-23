@@ -1,4 +1,4 @@
-import { ExpoModifier } from '../../types';
+import type { ExpoModifier } from '../../types';
 import { type ContentPadding } from '../LazyColumn';
 export type LazyRowProps = {
     /**
@@ -28,5 +28,5 @@ export type LazyRowProps = {
 /**
  * A lazy row component that efficiently displays a horizontally scrolling list.
  */
-export declare function LazyRow(props: LazyRowProps): import("react").JSX.Element;
+export declare function LazyRow(props: LazyRowProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

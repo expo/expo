@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Slot = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_slot_1 = require("@radix-ui/react-slot");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
@@ -63,7 +64,7 @@ function ShimSlotForReactNative(Component) {
                 }
             }
         }
-        return <Component ref={ref} {...props} style={style}/>;
+        return (0, jsx_runtime_1.jsx)(Component, { ref: ref, ...props, style: style });
     });
 }
 exports.Slot = ShimSlotForReactNative(react_slot_1.Slot);

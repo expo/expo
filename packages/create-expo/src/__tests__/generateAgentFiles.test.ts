@@ -59,7 +59,7 @@ describe(generateAgentFiles, () => {
     const content = JSON.parse(
       fs.readFileSync(path.join(tmpDir, '.claude', 'settings.json'), 'utf-8')
     );
-    expect(content).toEqual({ plugins: ['expo'] });
+    expect(content).toEqual({ enabledPlugins: { 'expo@claude-plugins-official': true } });
   });
 
   it('skips files that already exist', () => {

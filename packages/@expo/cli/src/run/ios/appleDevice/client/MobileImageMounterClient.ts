@@ -7,7 +7,7 @@
  */
 import Debug from 'debug';
 import * as fs from 'fs';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 
 import { ResponseError, ServiceClient } from './ServiceClient';
 import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';

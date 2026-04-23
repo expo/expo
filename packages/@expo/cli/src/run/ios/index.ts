@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import arg from 'arg';
+import type arg from 'arg';
 import chalk from 'chalk';
 import path from 'path';
 
-import { XcodeConfiguration } from './XcodeBuild.types';
-import { Command } from '../../../bin/cli';
+import type { XcodeConfiguration } from './XcodeBuild.types';
+import type { Command } from '../../../bin/cli';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
 

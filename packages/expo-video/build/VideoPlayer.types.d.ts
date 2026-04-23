@@ -1,6 +1,6 @@
 import { SharedObject } from 'expo';
-import { VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import type { VideoThumbnail } from './VideoThumbnail';
 /**
  * A class that represents an instance of the video player.
  */
@@ -574,6 +574,10 @@ export type VideoTrack = {
      * Specifies the frame rate of the video track in frames per second.
      */
     frameRate: number | null;
+    /**
+     * Specifies the video range of the video track.
+     */
+    videoRange: VideoRange;
 };
 /**
  * Specifies the size of a video track.
@@ -715,4 +719,11 @@ export type PlayerBuilderOptions = {
      */
     seekForwardIncrement?: number;
 };
+/**
+ * Specifies the dynamic range of the video content.
+ * - `sdr`: Standard Dynamic Range video.
+ * - `hlg`: Hybrid Log-Gamma - HDR backward-compatible with SDR displays
+ * - `pq`: Perceptual Quantizer - Formats like HDR10 and Dolby Vision
+ */
+export type VideoRange = 'sdr' | 'hlg' | 'pq';
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

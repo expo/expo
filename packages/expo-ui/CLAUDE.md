@@ -12,8 +12,10 @@ Prefer controlled components: state lives in JS and is passed as props, not mana
 
 - The JavaScript API must mirror the native APIs closely.
 - Exported components must have the same name as the underlying native component (e.g. SwiftUI `TabView` -> export `TabView`, Jetpack Compose `HorizontalPager` -> export `HorizontalPager`).
+- Don't turn native-layer modifiers into props in the JS layer — modifiers stay as modifiers.
 - Use `export function ComponentName` (the dominant pattern in this codebase). Use `export const` only for non-component values like modifiers or constants. Avoid the `export { LocalName as ExportName }` rename pattern unless the local name must differ.
 - Props, constants, and enum values must use the same names as the native API. If SwiftUI calls it `scrollEnabled`, the JS prop is `scrollEnabled`. If Compose calls it `userScrollEnabled`, the JS prop is `userScrollEnabled`.
+- Ensure components have the correct display name in React DevTools. Either name the function directly (e.g. `function TabView`) or set `.displayName`.
 
 ## Props and events
 
@@ -41,6 +43,7 @@ For every component added, create example screens in NCL (native-component-list)
 - `apps/native-component-list/src/screens/UI/<ComponentName>Screen.ios.tsx` — imports from `@expo/ui/swift-ui`
 - `apps/native-component-list/src/screens/UI/<ComponentName>Screen.android.tsx` — imports from `@expo/ui/jetpack-compose`
 - Register in both `UIScreen.ios.tsx` and `UIScreen.android.tsx`
+- Keep the minimum set of examples needed to cover available features.
 
 ## Before committing
 

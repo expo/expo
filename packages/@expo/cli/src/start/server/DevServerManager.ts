@@ -1,14 +1,15 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import type { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import DevToolsPluginManager from './DevToolsPluginManager';
 import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
-import { ProjectPrerequisite } from '../doctor/Prerequisite';
+import type { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import { printItem } from '../interface/commandsTable';
 import * as AndroidDebugBridge from '../platforms/android/adb';

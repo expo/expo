@@ -1,4 +1,4 @@
-import { ExportedConfig, Mod, ModPlatform } from '../Plugin.types';
+import type { ExportedConfig, Mod, ModPlatform } from '../Plugin.types';
 export type BaseModOptions = {
     /** Officially supports `'ios' | 'android'` (`ModPlatform`). Arbitrary strings are supported for adding out-of-tree platforms. */
     platform: ModPlatform & string;

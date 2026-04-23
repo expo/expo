@@ -1,7 +1,7 @@
-import { ExpoConfig } from '@expo/config-types';
-import { XcodeProject } from 'xcode';
+import type { ExpoConfig } from '@expo/config-types';
+import type { XcodeProject } from 'xcode';
 
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import { addWarningIOS } from '../utils/warnings';
 

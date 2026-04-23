@@ -1,6 +1,6 @@
 import type { EventSubscription } from 'expo-modules-core';
 import type { Listener, MessageEvent } from './ExpoBrownfieldModule.types';
-export { EventSubscription };
+export type { EventSubscription } from 'expo-modules-core';
 export type { MessageEvent };
 /**
  * Navigates back to the native part of the app, dismissing the React Native view.

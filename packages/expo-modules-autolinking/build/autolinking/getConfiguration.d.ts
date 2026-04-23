@@ -1,4 +1,4 @@
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
 import type { SupportedPlatform } from '../types';
 interface GetConfigurationParams {
     autolinkingOptions: AutolinkingOptions & {

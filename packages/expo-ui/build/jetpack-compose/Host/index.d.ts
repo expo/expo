@@ -1,5 +1,5 @@
-import { type ColorSchemeName, StyleProp, ViewStyle } from 'react-native';
-import { PrimitiveBaseProps } from '../layout';
+import { type ColorSchemeName, type StyleProp, type ViewStyle } from 'react-native';
+import type { PrimitiveBaseProps } from '../layout';
 export type HostProps = {
     /**
      * When true, the host view will update its size in the React Native view tree to match the content's layout from Jetpack Compose.
@@ -44,5 +44,5 @@ export type HostProps = {
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 } & PrimitiveBaseProps;
-export declare function Host(props: HostProps): import("react").JSX.Element;
+export declare function Host(props: HostProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

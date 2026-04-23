@@ -1,4 +1,4 @@
-import { ConfigErrorCode } from './Config.types';
+import type { ConfigErrorCode } from './Config.types';
 
 /**
  * Based on `JsonFileError` from `@expo/json-file`

@@ -1,6 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
-export { NetworkState, NetworkStateEvent, NetworkStateType };
+import type { NetworkState, NetworkStateEvent } from './Network.types';
+export { type NetworkState, type NetworkStateEvent, NetworkStateType } from './Network.types';
 /**
  * Gets the device's current network connection state.
  *

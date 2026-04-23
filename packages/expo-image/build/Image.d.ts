@@ -1,7 +1,7 @@
 import React from 'react';
 import { type View } from 'react-native';
 import ExpoImage from './ExpoImage';
-import { ImageCacheConfig, ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
+import type { ImageCacheConfig, ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: React.RefObject<ExpoImage | null>;
     containerViewRef: React.RefObject<View | null>;
@@ -129,6 +129,6 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * @platform web
      */
     static loadAsync(source: ImageSource | string | number, options?: ImageLoadOptions): Promise<ImageRef>;
-    render(): React.JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map

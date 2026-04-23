@@ -1,4 +1,4 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 
 export interface DoctorCheck<CacheType extends { [prop: string]: any } = { [prop: string]: any }> {
   // description that will appear as each check is run

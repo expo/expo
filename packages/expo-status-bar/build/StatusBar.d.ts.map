@@ -1,1 +1,1 @@
-{"version":3,"file":"StatusBar.d.ts","sourceRoot":"","sources":["../src/StatusBar.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,iBAAiB,EAAE,kBAAkB,EAAE,MAAM,0BAA0B,CAAC;AAE5F,OAAO,EAAE,cAAc,EAAE,kBAAkB,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC"}
+{"version":3,"file":"StatusBar.d.ts","sourceRoot":"","sources":["../src/StatusBar.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,iBAAiB,EAAE,kBAAkB,EAAE,MAAM,0BAA0B,CAAC;AAE5F,YAAY,EAAE,cAAc,EAAE,kBAAkB,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC"}

@@ -1,4 +1,4 @@
-import { BinaryInput } from './aes.types';
+import type { BinaryInput } from './aes.types';
 export declare function hexToUintArray(hexString: string): Uint8Array;
 export declare function bytesToHex(bytes: Uint8Array): string;
 export declare function base64ToUintArray(base64String: string): Uint8Array;

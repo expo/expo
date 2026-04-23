@@ -2,11 +2,12 @@
 // adapted to return warnings instead of displaying, with some modest renaming to match,
 // but otherwise logic is unchanged.
 
-import spawnAsync, { SpawnResult } from '@expo/spawn-async';
+import type { SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import semver from 'semver';
 
-import { RootNodePackage, VersionSpec } from './explainDependencies.types';
+import type { RootNodePackage, VersionSpec } from './explainDependencies.types';
 import { Log } from './log';
 
 type TargetPackage = { name: string; version?: VersionSpec };

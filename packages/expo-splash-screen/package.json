@@ -41,12 +41,10 @@
   "dependencies": {
     "@expo/config-plugins": "workspace:~55.0.6",
     "@expo/image-utils": "workspace:^0.8.12",
-    "debug": "^4.3.2",
     "xml2js": "0.6.0"
   },
   "devDependencies": {
     "@expo/plist": "workspace:*",
-    "@types/debug": "^4.1.8",
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
     "expo-module-scripts": "workspace:*",

@@ -1,4 +1,5 @@
-import { FunctionComponent, isValidElement, ReactElement, ReactNode } from 'react';
+import type { FunctionComponent, ReactElement, ReactNode } from 'react';
+import { isValidElement } from 'react';
 
 import { Group } from '../primitives';
 

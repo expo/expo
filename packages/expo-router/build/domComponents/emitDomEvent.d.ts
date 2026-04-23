@@ -1,4 +1,4 @@
-import { LinkToOptions } from '../global-state/routing';
+import type { LinkToOptions } from '../global-state/routing';
 export declare function emitDomSetParams(params?: Record<string, undefined | string | number | (string | number)[]>): boolean;
 export declare function emitDomDismiss(count?: number): boolean;
 export declare function emitDomGoBack(): boolean;

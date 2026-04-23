@@ -1,7 +1,7 @@
-import { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { ScreenContainer } from 'react-native-screens';
-import { TabsDescriptor } from './TabContext';
-import { TabListProps } from './TabList';
+import type { TabsDescriptor } from './TabContext';
+import type { TabListProps } from './TabList';
 export type TabSlotProps = ComponentProps<typeof ScreenContainer> & {
     /**
      * Remove inactive screens.
@@ -45,7 +45,7 @@ export type TabsSlotRenderOptions = {
  * }
  * ```
  */
-export declare function useTabSlot({ detachInactiveScreens, style, renderFn, }?: TabSlotProps): import("react").JSX.Element;
+export declare function useTabSlot({ detachInactiveScreens, style, renderFn, }?: TabSlotProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Renders the current tab.
  *
@@ -61,11 +61,11 @@ export declare function useTabSlot({ detachInactiveScreens, style, renderFn, }?:
  * </Tabs>
  * ```
  */
-export declare function TabSlot(props: TabSlotProps): import("react").JSX.Element;
+export declare function TabSlot(props: TabSlotProps): import("react/jsx-runtime").JSX.Element;
 /**
  * @hidden
  */
-export declare function defaultTabsSlotRender(descriptor: TabsDescriptor, { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions): import("react").JSX.Element | null;
+export declare function defaultTabsSlotRender(descriptor: TabsDescriptor, { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions): import("react/jsx-runtime").JSX.Element | null;
 /**
  * @hidden
  */

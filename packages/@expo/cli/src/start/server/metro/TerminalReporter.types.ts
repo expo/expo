@@ -3,7 +3,7 @@ import type { TerminalReportableEvent } from '@expo/metro/metro/lib/TerminalRepo
 import type { Terminal } from '@expo/metro/metro-core';
 import type { WatcherStatus } from '@expo/metro/metro-file-map';
 
-import { MetroEnvironment } from '../middleware/metroOptions';
+import type { MetroEnvironment } from '../middleware/metroOptions';
 
 export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
 

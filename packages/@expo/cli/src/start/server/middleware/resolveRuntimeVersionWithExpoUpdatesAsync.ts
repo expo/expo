@@ -1,4 +1,4 @@
-import { RuntimePlatform } from './resolvePlatform';
+import type { RuntimePlatform } from './resolvePlatform';
 import { env } from '../../../utils/env';
 import {
   ExpoUpdatesCLIModuleNotFoundError,

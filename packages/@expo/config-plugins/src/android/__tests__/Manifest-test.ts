@@ -2,10 +2,10 @@ import { resolve } from 'path';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
+import type { AndroidManifest } from '../Manifest';
 import {
   addMetaDataItemToMainApplication,
   addUsesLibraryItemToMainApplication,
-  AndroidManifest,
   ensureToolsAvailable,
   findMetaDataItem,
   findUsesLibraryItem,

@@ -18,6 +18,7 @@ exports.useSegments = useSegments;
 exports.useRootNavigation = useRootNavigation;
 exports.useRootNavigationState = useRootNavigationState;
 exports.useUnstableGlobalHref = useUnstableGlobalHref;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const client_1 = require("./router/client");
 Object.defineProperty(exports, "useRouter", { enumerable: true, get: function () { return client_1.useRouter_UNSTABLE; } });
 const host_1 = require("./router/host");
@@ -37,15 +38,15 @@ function useGlobalSearchParams() {
     return Object.fromEntries([...new URLSearchParams(router.query).entries()]);
 }
 function Slot() {
-    return <host_1.Children />;
+    return (0, jsx_runtime_1.jsx)(host_1.Children, {});
 }
 function Stack() {
     console.warn('Stack is not implemented in React Server Components yet');
-    return <host_1.Children />;
+    return (0, jsx_runtime_1.jsx)(host_1.Children, {});
 }
 function Tabs() {
     console.warn('Tabs is not implemented in React Server Components yet');
-    return <host_1.Children />;
+    return (0, jsx_runtime_1.jsx)(host_1.Children, {});
 }
 function Navigator() {
     throw new Error('Navigator is not implemented in React Server Components yet');
@@ -95,6 +96,4 @@ exports.router = new Proxy({}, {
         throw new Error(`The router object is not available in React Server Components. Use the useRouter hook instead.`);
     },
 });
-// TODO:
-// export { Redirect } from './link/Link';
 //# sourceMappingURL=exports.js.map

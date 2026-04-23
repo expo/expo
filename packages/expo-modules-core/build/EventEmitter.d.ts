@@ -1,4 +1,4 @@
-import { EventsMap } from './ts-declarations/EventEmitter';
+import type { EventsMap } from './ts-declarations/EventEmitter';
 import type { ExpoGlobal } from './ts-declarations/global';
 /**
  * A subscription object that allows to conveniently remove an event listener from the emitter.

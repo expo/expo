@@ -40,7 +40,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-docs: 'true'
+          pnpm-docs: 'true'
           docs-api-data: 'true'
       - name: 📦 Install workspace deps
         run: pnpm install --ignore-scripts --frozen-lockfile
@@ -52,21 +52,21 @@ jobs:
       - name: 📝 Regenerate `unversioned` data for Docs
         if: steps.expo-caches.outputs.docs-api-data-hit != 'true'
         run: expotools generate-docs-api-data
-      - name: 🧶 Yarn install
+      - name: 📦 Install docs deps
         working-directory: docs
-        if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
-        run: yarn install --immutable
+        if: steps.expo-caches.outputs.pnpm-docs-hit != 'true'
+        run: pnpm install --frozen-lockfile
       - name: 🧪 Run Docs tests
         working-directory: docs
-        run: yarn test
+        run: pnpm test
       - name: 🧪 Test Cloudflare worker and routes
         working-directory: docs
-        run: yarn test:worker
+        run: pnpm test:worker
       - name: 🚨 Lint Docs website code
         working-directory: docs
         env:
           NODE_ENV: production
-        run: yarn lint --max-warnings 0
+        run: pnpm lint --max-warnings 0
       - name: 📦 Read Vale version
         id: vale-version
         working-directory: docs
@@ -83,14 +83,14 @@ jobs:
           reviewdog_url: https://github.com/reviewdog/reviewdog/releases/download/v0.21.0/reviewdog_0.21.0_Linux_x86_64.tar.gz
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
-        run: yarn export
+        run: pnpm export
         timeout-minutes: 20
         env:
           # NOTE(@krystofwoldrich): Missing token won't fail the build
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: 🔗 Lint pages links
         working-directory: docs
-        run: yarn lint-links --quiet
+        run: pnpm lint-links --quiet
       - name: 🚀 Deploy Docs website
         if: github.ref == 'refs/heads/main'
         id: deploy

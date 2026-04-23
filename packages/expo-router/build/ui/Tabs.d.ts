@@ -1,8 +1,8 @@
-import { PropsWithChildren } from 'react';
-import { ViewProps } from 'react-native';
-import { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
-import { ScreenTrigger } from './common';
-import { DefaultNavigatorOptions, ParamListBase, TabActionHelpers, TabNavigationState, TabRouterOptions } from '../react-navigation/native';
+import type { PropsWithChildren } from 'react';
+import type { ViewProps } from 'react-native';
+import type { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
+import type { ScreenTrigger } from './common';
+import type { DefaultNavigatorOptions, ParamListBase, TabActionHelpers, TabNavigationState, TabRouterOptions } from '../react-navigation/native';
 export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
@@ -32,7 +32,7 @@ export type TabsProps = ViewProps & {
  * </Tabs>
  * ```
  */
-export declare function Tabs(props: TabsProps): import("react").JSX.Element;
+export declare function Tabs(props: TabsProps): import("react/jsx-runtime").JSX.Element;
 export type UseTabsWithChildrenOptions = PropsWithChildren<UseTabsOptions>;
 export type UseTabsWithTriggersOptions = UseTabsOptions & {
     triggers: ScreenTrigger[];
@@ -235,7 +235,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
     } & import("../react-navigation/native").EventConsumer<TabNavigationEventMap & import("../react-navigation/native").EventMapCore<TabNavigationState<any>>> & import("../react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("../react-navigation/native").RouteProp<ParamListBase>>>;
     NavigationContent: ({ children }: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 };
 /**
  * Alternative hook version of `Tabs` that uses explicit triggers

@@ -1,4 +1,4 @@
-import { MediaType } from './MediaType';
+import type { MediaType } from './MediaType';
 
 export enum AssetField {
   CREATION_TIME = 'creationTime',

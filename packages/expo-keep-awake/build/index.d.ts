@@ -1,5 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { KeepAwakeListener, KeepAwakeOptions } from './KeepAwake.types';
+import type { KeepAwakeListener, KeepAwakeOptions } from './KeepAwake.types';
 /** Default tag, used when no tag has been specified in keep awake method calls. */
 export declare const ExpoKeepAwakeTag = "ExpoKeepAwakeDefaultTag";
 /** @returns `true` on all platforms except [unsupported web browsers](https://caniuse.com/wake-lock). */

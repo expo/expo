@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getManifest = exports.getBuildTimeServerManifestAsync = void 0;
 exports.getStaticContent = getStaticContent;
+const jsx_runtime_1 = require("react/jsx-runtime");
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -50,7 +51,6 @@ const expo_router_1 = require("expo-router");
 const _ctx_1 = require("expo-router/_ctx");
 const head_1 = __importDefault(require("expo-router/head"));
 const static_1 = require("expo-router/internal/static");
-const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
 const getRootComponent_1 = require("./getRootComponent");
 const html_1 = require("./html");
@@ -74,9 +74,7 @@ async function getStaticContent(location, options) {
     element, getStyleElement, } = (0, static_1.registerStaticRootComponent)(expo_router_1.ExpoRoot, {
         location,
         context: _ctx_1.ctx,
-        wrapper: ({ children }) => (<Root>
-        <div id="root">{children}</div>
-      </Root>),
+        wrapper: ({ children }) => ((0, jsx_runtime_1.jsx)(Root, { children: (0, jsx_runtime_1.jsx)("div", { id: "root", children: children }) })),
     });
     // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
     // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
@@ -90,9 +88,7 @@ async function getStaticContent(location, options) {
             [loaderKey]: options?.loader?.data ?? null,
         }
         : null;
-    const html = server_node_1.default.renderToString(<head_1.default.Provider context={headContext}>
-      <static_1.InnerRoot loadedData={loadedData}>{element}</static_1.InnerRoot>
-    </head_1.default.Provider>);
+    const html = server_node_1.default.renderToString((0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }));
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
     const css = server_node_1.default.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
@@ -103,7 +99,7 @@ async function getStaticContent(location, options) {
     // Inject static fonts loaded with expo-font
     output = output.replace('</head>', `${fonts.join('')}</head>`);
     if (loadedData) {
-        const loaderDataScript = server_node_1.default.renderToStaticMarkup(<html_1.PreloadedDataScript data={loadedData}/>);
+        const loaderDataScript = server_node_1.default.renderToStaticMarkup((0, jsx_runtime_1.jsx)(html_1.PreloadedDataScript, { data: loadedData }));
         output = output.replace('</head>', `${loaderDataScript}</head>`);
     }
     // Inject hydration assets (JS/CSS bundles). Used in SSR mode

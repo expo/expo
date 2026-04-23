@@ -189,6 +189,6 @@ export declare function useNavigationBuilder<State extends NavigationState, Rout
     } & import("./types").EventConsumer<EventMap & EventMapCore<State>> & PrivateValueStore<[ParamListBase, string, EventMap]> & ActionHelpers, import("./types").RouteProp<ParamListBase>>>;
     NavigationContent: ({ children }: {
         children: React.ReactNode;
-    }) => React.JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 };
 //# sourceMappingURL=useNavigationBuilder.d.ts.map

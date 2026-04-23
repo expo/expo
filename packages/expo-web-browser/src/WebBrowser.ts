@@ -1,48 +1,40 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import {
-  AppState,
-  AppStateStatus,
-  Linking,
-  Platform,
-  EmitterSubscription,
-  processColor,
-} from 'react-native';
+import type { AppStateStatus, EmitterSubscription } from 'react-native';
+import { AppState, Linking, Platform, processColor } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
 import {
-  RedirectEvent,
-  WebBrowserAuthSessionResult,
-  WebBrowserCompleteAuthSessionOptions,
-  WebBrowserCompleteAuthSessionResult,
-  WebBrowserCoolDownResult,
-  WebBrowserCustomTabsResults,
-  WebBrowserMayInitWithUrlResult,
-  WebBrowserOpenOptions,
-  WebBrowserRedirectResult,
-  WebBrowserResult,
+  type RedirectEvent,
+  type WebBrowserAuthSessionResult,
+  type WebBrowserCompleteAuthSessionOptions,
+  type WebBrowserCompleteAuthSessionResult,
+  type WebBrowserCoolDownResult,
+  type WebBrowserCustomTabsResults,
+  type WebBrowserMayInitWithUrlResult,
+  type WebBrowserOpenOptions,
+  type WebBrowserRedirectResult,
+  type WebBrowserResult,
   WebBrowserResultType,
-  WebBrowserWarmUpResult,
-  WebBrowserWindowFeatures,
-  WebBrowserPresentationStyle,
-  AuthSessionOpenOptions,
+  type WebBrowserWarmUpResult,
+  type AuthSessionOpenOptions,
 } from './WebBrowser.types';
 
 export {
-  WebBrowserAuthSessionResult,
-  WebBrowserCompleteAuthSessionOptions,
-  WebBrowserCompleteAuthSessionResult,
-  WebBrowserCoolDownResult,
-  WebBrowserCustomTabsResults,
-  WebBrowserMayInitWithUrlResult,
-  WebBrowserOpenOptions,
-  WebBrowserRedirectResult,
-  WebBrowserResult,
+  type WebBrowserAuthSessionResult,
+  type WebBrowserCompleteAuthSessionOptions,
+  type WebBrowserCompleteAuthSessionResult,
+  type WebBrowserCoolDownResult,
+  type WebBrowserCustomTabsResults,
+  type WebBrowserMayInitWithUrlResult,
+  type WebBrowserOpenOptions,
+  type WebBrowserRedirectResult,
+  type WebBrowserResult,
   WebBrowserResultType,
-  WebBrowserWarmUpResult,
-  WebBrowserWindowFeatures,
+  type WebBrowserWarmUpResult,
+  type WebBrowserWindowFeatures,
   WebBrowserPresentationStyle,
-  AuthSessionOpenOptions,
-};
+  type AuthSessionOpenOptions,
+} from './WebBrowser.types';
 
 const emptyCustomTabsPackages: WebBrowserCustomTabsResults = {
   defaultBrowserPackage: undefined,

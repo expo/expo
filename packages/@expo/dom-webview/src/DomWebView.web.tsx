@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View } from 'react-native';
 
-import { DomWebViewProps } from './DomWebView.types';
+import type { DomWebViewProps } from './DomWebView.types';
 import { webviewStyles } from './styles';
 
 const WebView = React.forwardRef<object, DomWebViewProps>(

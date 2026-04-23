@@ -1,8 +1,9 @@
-import { NativeModule, PermissionResponse } from 'expo-modules-core';
-import { GranularPermission } from './MediaLibraryNext.types';
-import { Album } from './types/Album';
-import { Asset } from './types/Asset';
-import { Query } from './types/Query';
+import type { PermissionResponse } from 'expo-modules-core';
+import { NativeModule } from 'expo-modules-core';
+import type { GranularPermission } from './MediaLibraryNext.types';
+import type { Album } from './types/Album';
+import type { Asset } from './types/Asset';
+import type { Query } from './types/Query';
 declare class ExpoMediaLibraryNextModule extends NativeModule {
     Asset: typeof Asset;
     Album: typeof Album;

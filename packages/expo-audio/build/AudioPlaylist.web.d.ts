@@ -1,5 +1,5 @@
-import { AudioPlaylistLoopMode, AudioPlaylistStatus, AudioSource, AudioSourceInfo } from './Audio.types';
-import { AudioPlaylist, AudioPlaylistEvents } from './AudioModule.types';
+import type { AudioPlaylistLoopMode, AudioPlaylistStatus, AudioSource, AudioSourceInfo } from './Audio.types';
+import type { AudioPlaylist, AudioPlaylistEvents } from './AudioModule.types';
 export declare class AudioPlaylistWeb extends globalThis.expo.SharedObject<AudioPlaylistEvents> implements AudioPlaylist {
     constructor(initialSources?: AudioSource[], updateInterval?: number, loopMode?: AudioPlaylistLoopMode, crossOrigin?: 'anonymous' | 'use-credentials');
     id: string;

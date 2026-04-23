@@ -1,6 +1,6 @@
 import 'abort-controller/polyfill';
 
-import { DevicePushToken } from '../../Tokens.types';
+import type { DevicePushToken } from '../../Tokens.types';
 import { updateDevicePushTokenAsync } from '../updateDevicePushTokenAsync';
 
 const TOKEN: DevicePushToken = { type: 'ios', data: 'i-am-token' };

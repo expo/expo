@@ -1,5 +1,5 @@
-import { CommanderStatic } from 'commander';
-import { Config } from './Config';
+import type { CommanderStatic } from 'commander';
+import type { Config } from './Config';
 import { Platform } from './Platform';
 export interface DefaultOptions {
     configFile: string;

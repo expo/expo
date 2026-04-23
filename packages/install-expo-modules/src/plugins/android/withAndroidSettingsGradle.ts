@@ -1,4 +1,5 @@
-import { ConfigPlugin, withSettingsGradle } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { withSettingsGradle } from '@expo/config-plugins';
 import { appendContentsInsideGradlePluginBlock } from '@expo/config-plugins/build/android/codeMod';
 import semver from 'semver';
 

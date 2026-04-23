@@ -3,7 +3,7 @@ import type { Server as ConnectServer } from 'connect';
 
 import { AtlasPrerequisite } from './AtlasPrerequisite';
 import { env } from '../../../../utils/env';
-import { type EnsureDependenciesOptions } from '../../../doctor/dependencies/ensureDependenciesAsync';
+import type { EnsureDependenciesOptions } from '../../../doctor/dependencies/ensureDependenciesAsync';
 
 const debug = require('debug')('expo:metro:debugging:attachAtlas') as typeof console.log;
 

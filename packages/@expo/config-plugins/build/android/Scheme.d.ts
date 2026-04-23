@@ -1,5 +1,5 @@
-import { ExpoConfig } from '@expo/config-types';
-import { AndroidManifest } from './Manifest';
+import type { ExpoConfig } from '@expo/config-types';
+import type { AndroidManifest } from './Manifest';
 export type IntentFilterProps = {
     actions: string[];
     categories: string[];

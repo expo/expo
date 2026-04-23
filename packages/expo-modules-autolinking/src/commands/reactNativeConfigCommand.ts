@@ -1,10 +1,7 @@
-import commander from 'commander';
+import type commander from 'commander';
 
-import {
-  AutolinkingCommonArguments,
-  createAutolinkingOptionsLoader,
-  registerAutolinkingArguments,
-} from './autolinkingOptions';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import { createReactNativeConfigAsync } from '../reactNativeConfig';
 
 interface ReactNativeConfigArguments extends AutolinkingCommonArguments {

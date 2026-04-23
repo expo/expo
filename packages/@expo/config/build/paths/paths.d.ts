@@ -1,4 +1,4 @@
-import { PackageJSONConfig } from '../Config.types';
+import type { PackageJSONConfig } from '../Config.types';
 export declare function ensureSlash(inputPath: string, needsSlash: boolean): string;
 export declare function getPossibleProjectRoot(): string;
 /** @returns the absolute entry file for an Expo project. */

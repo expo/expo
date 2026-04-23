@@ -5,11 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withIosSplashXcodeProject = void 0;
 exports.setSplashStoryboardAsync = setSplashStoryboardAsync;
-const debug_1 = __importDefault(require("debug"));
 const config_plugins_1 = require("expo/config-plugins");
 const path_1 = __importDefault(require("path"));
 const withIosSplashScreenStoryboard_1 = require("./withIosSplashScreenStoryboard");
-const debug = (0, debug_1.default)('expo:expo-splash-screen:ios:xcodeproj');
 const withIosSplashXcodeProject = (config) => {
     return (0, config_plugins_1.withXcodeProject)(config, async (config) => {
         config.modResults = await setSplashStoryboardAsync({
@@ -29,7 +27,6 @@ async function setSplashStoryboardAsync({ projectName, project, }) {
     // Path relative to `ios` directory
     const storyboardFilePath = path_1.default.join(projectName, withIosSplashScreenStoryboard_1.STORYBOARD_FILE_PATH);
     if (!project.hasFile(storyboardFilePath)) {
-        debug(`Adding ${storyboardFilePath} to Xcode project`);
         config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
             filepath: storyboardFilePath,
             groupName: projectName,

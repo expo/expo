@@ -174,12 +174,6 @@ class ExponentManifest @Inject constructor(
     const val MANIFEST_DEBUGGER_HOST_KEY = "debuggerHost"
     const val MANIFEST_MAIN_MODULE_NAME_KEY = "mainModuleName"
 
-    // Splash
-    const val MANIFEST_SPLASH_INFO_KEY = "splash"
-    const val MANIFEST_SPLASH_IMAGE_URL_KEY = "imageUrl"
-    const val MANIFEST_SPLASH_RESIZE_MODE_KEY = "resizeMode"
-    const val MANIFEST_SPLASH_BACKGROUND_COLOR_KEY = "backgroundColor"
-
     // Updates
     const val MANIFEST_UPDATES_INFO_KEY = "updates"
     const val MANIFEST_UPDATES_TIMEOUT_KEY = "fallbackToCacheTimeout"

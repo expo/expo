@@ -2,7 +2,7 @@ import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
 import { INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME, INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME } from '../../navigationParams';
 export declare function disableZoomTransition(): void;
 export declare function isZoomTransitionEnabled(): boolean;
-export declare function ZoomTransitionEnabler({ route }: ZoomTransitionEnablerProps): import("react").JSX.Element | null;
+export declare function ZoomTransitionEnabler({ route }: ZoomTransitionEnablerProps): import("react/jsx-runtime").JSX.Element | null;
 /**
  * @internal
  */

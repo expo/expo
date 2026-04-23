@@ -22,6 +22,6 @@ export type BasicAlertDialogProps = {
  * A basic alert dialog that provides a blank container for custom content.
  * Unlike `AlertDialog`, this component does not have structured title/text/buttons slots.
  */
-export declare function BasicAlertDialog(props: BasicAlertDialogProps): import("react").JSX.Element;
+export declare function BasicAlertDialog(props: BasicAlertDialogProps): import("react/jsx-runtime").JSX.Element;
 export type { DialogProperties };
 //# sourceMappingURL=index.d.ts.map

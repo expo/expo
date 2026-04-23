@@ -1,4 +1,4 @@
-import { type RequestInfo, type RequestInit } from 'fetch-nodeshim';
+import type { RequestInfo, RequestInit } from 'fetch-nodeshim';
 import type { URLSearchParams } from 'url';
 
 export type ProgressCallback = (props: {

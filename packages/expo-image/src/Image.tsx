@@ -5,7 +5,7 @@ import React from 'react';
 import { StyleSheet, type ImageStyle, type TextStyle, type View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
-import {
+import type {
   ImageCacheConfig,
   ImageLoadOptions,
   ImagePrefetchOptions,

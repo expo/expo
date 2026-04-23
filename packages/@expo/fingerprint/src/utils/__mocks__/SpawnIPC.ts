@@ -1,4 +1,4 @@
-import { type SpawnOptions } from '@expo/spawn-async';
+import type { SpawnOptions } from '@expo/spawn-async';
 import { getConfig } from 'expo/config';
 import path from 'node:path';
 

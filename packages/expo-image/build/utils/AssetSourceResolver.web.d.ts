@@ -1,4 +1,4 @@
-import { PackagerAsset } from '@react-native/assets-registry/registry';
+import type { PackagerAsset } from '@react-native/assets-registry/registry';
 export type ResolvedAssetSource = {
     __packager_asset: boolean;
     width?: number;

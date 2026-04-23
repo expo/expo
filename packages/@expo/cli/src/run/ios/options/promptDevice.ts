@@ -1,9 +1,8 @@
 import chalk from 'chalk';
 
-import { OSType } from '../../../start/platforms/ios/simctl';
-import * as SimControl from '../../../start/platforms/ios/simctl';
+import type { OSType, Device } from '../../../start/platforms/ios/simctl';
 import prompt from '../../../utils/prompts';
-import { ConnectedDevice } from '../appleDevice/AppleDevice';
+import type { ConnectedDevice } from '../appleDevice/AppleDevice';
 
 interface AnyDevice {
   name: string;
@@ -17,7 +16,7 @@ function isConnectedDevice(item: AnyDevice): item is ConnectedDevice {
   return 'deviceType' in item;
 }
 
-function isSimControlDevice(item: AnyDevice): item is SimControl.Device {
+function isSimControlDevice(item: AnyDevice): item is Device {
   return 'state' in item;
 }
 

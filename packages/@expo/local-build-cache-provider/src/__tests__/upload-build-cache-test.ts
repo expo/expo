@@ -1,4 +1,4 @@
-import { BuildCacheProviderPlugin } from '@expo/config';
+import type { BuildCacheProviderPlugin } from '@expo/config';
 import assert from 'assert';
 import { vol } from 'memfs';
 import * as path from 'path';

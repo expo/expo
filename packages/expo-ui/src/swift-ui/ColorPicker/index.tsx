@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import { useCallback } from 'react';
-import { NativeSyntheticEvent, processColor } from 'react-native';
+import { type NativeSyntheticEvent, processColor } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';

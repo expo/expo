@@ -1,4 +1,4 @@
-import { BackgroundFetchOptions, BackgroundFetchResult, BackgroundFetchStatus } from './BackgroundFetch.types';
+import { type BackgroundFetchOptions, BackgroundFetchStatus } from './BackgroundFetch.types';
 /**
  * Gets a status of background fetch.
  * @return Returns a promise which fulfils with one of `BackgroundFetchStatus` enum values.
@@ -53,5 +53,5 @@ export declare function registerTaskAsync(taskName: string, options?: Background
  * instead. The `expo-background-fetch` package has been deprecated.
  */
 export declare function unregisterTaskAsync(taskName: string): Promise<void>;
-export { BackgroundFetchResult, BackgroundFetchStatus, BackgroundFetchOptions };
+export { BackgroundFetchResult, BackgroundFetchStatus, type BackgroundFetchOptions, } from './BackgroundFetch.types';
 //# sourceMappingURL=BackgroundFetch.d.ts.map

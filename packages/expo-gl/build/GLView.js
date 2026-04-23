@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { UnavailabilityError, requireNativeModule, requireNativeViewManager, CodedError, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
@@ -62,16 +63,14 @@ export class GLView extends React.Component {
     exglCtxId;
     render() {
         const { onContextCreate, msaaSamples, enableExperimentalWorkletSupport, ...viewProps } = this.props;
-        return (<View {...viewProps}>
-        <NativeView ref={this._setNativeRef} style={{
-                flex: 1,
-                ...(Platform.OS === 'ios'
-                    ? {
-                        backgroundColor: 'transparent',
-                    }
-                    : {}),
-            }} onSurfaceCreate={this._onSurfaceCreate} enableExperimentalWorkletSupport={enableExperimentalWorkletSupport} msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}/>
-      </View>);
+        return (_jsx(View, { ...viewProps, children: _jsx(NativeView, { ref: this._setNativeRef, style: {
+                    flex: 1,
+                    ...(Platform.OS === 'ios'
+                        ? {
+                            backgroundColor: 'transparent',
+                        }
+                        : {}),
+                }, onSurfaceCreate: this._onSurfaceCreate, enableExperimentalWorkletSupport: enableExperimentalWorkletSupport, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined }) }));
     }
     _setNativeRef = (nativeRef) => {
         if (this.props.nativeRef_EXPERIMENTAL) {

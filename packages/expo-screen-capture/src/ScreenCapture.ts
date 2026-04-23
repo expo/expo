@@ -1,10 +1,9 @@
 import {
   UnavailabilityError,
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
   createPermissionHook,
-  PermissionHookOptions,
-  EventSubscription,
+  type EventSubscription,
 } from 'expo-modules-core';
 import { useEffect } from 'react';
 
@@ -224,9 +223,10 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
+// TODO(@kitten): Remove re-exports from EMC
 export {
-  EventSubscription as Subscription,
-  PermissionResponse,
+  type EventSubscription as Subscription,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionHookOptions,
-};
+  type PermissionHookOptions,
+} from 'expo-modules-core';

@@ -1,4 +1,4 @@
-import { HorizontalAlignment, HorizontalArrangement, PrimitiveBaseProps, VerticalAlignment, VerticalArrangement } from '../layout-types';
+import { type HorizontalAlignment, type HorizontalArrangement, type PrimitiveBaseProps, type VerticalAlignment, type VerticalArrangement } from '../layout-types';
 export type RowProps = {
     children?: React.ReactNode;
     /**
@@ -18,5 +18,5 @@ export type RowProps = {
      */
     verticalAlignment?: VerticalAlignment;
 } & PrimitiveBaseProps;
-export declare function Row(props: RowProps): import("react").JSX.Element;
+export declare function Row(props: RowProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
