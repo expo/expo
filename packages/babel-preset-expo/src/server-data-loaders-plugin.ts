@@ -6,11 +6,7 @@
  */
 import type { ConfigAPI, types as t, PluginObj, PluginPass } from '@babel/core';
 
-import {
-  getExpoRouterAbsoluteAppRoot,
-  getIsLoaderBundle,
-  toPosixPath,
-} from './common';
+import { getExpoRouterAbsoluteAppRoot, getIsLoaderBundle, toPosixPath } from './common';
 
 const debug = require('debug')('expo:babel:server-data-loaders');
 
