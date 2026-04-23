@@ -92,11 +92,14 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     }
   }
 
-  /** 
-   Hook for ExpoModulesWorklets to register the UI runtime installer.
-   When set, the `installOnUIRuntime` function in CoreModule will use this to create the worklet runtime.
+  /**
+   Hook for registering a UI-runtime factory (typically provided by
+   `ExpoModulesWorklets` when `react-native-worklets` is installed).
+   When set, `installOnUIRuntime` in `CoreModule` uses it to create
+   the worklet runtime. See `EXWorkletsUIRuntimeFactory.h` for why the
+   hook is an ObjC protocol existential instead of a Swift closure.
   */
-  nonisolated(unsafe) public static var uiRuntimeFactory: ((_ appContext: AppContext, _ pointerValue: JavaScriptValue, _ runtime: JavaScriptRuntime) throws -> JavaScriptRuntime)?
+  nonisolated(unsafe) public static var uiRuntimeFactory: (any WorkletsUIRuntimeFactory)?
 
   @objc
   public var _uiRuntime: JavaScriptRuntime? {

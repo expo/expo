@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 
 @class EXJavaScriptObject;
+@class EXJavaScriptRuntime;
 @class EXModuleRegistry;
 @class EXModulesProxyConfig;
 @class EXRuntime;
@@ -29,6 +30,15 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
  Underlying JSI runtime of the running app.
  */
 @property(nonatomic, strong, nullable) EXRuntime *_runtime;
+
+/**
+ Secondary JavaScript runtime (typically the Worklets UI runtime) installed
+ via `AppContext.uiRuntimeFactory`. Exposed on the ObjC protocol so
+ precompiled-xcframework consumers can reach it — see
+ `EXWorkletsUIRuntimeFactory.h`. `readonly` because writes must go through
+ the Swift setter to fire its `didSet` hook.
+ */
+@property(nonatomic, strong, readonly, nullable) EXJavaScriptRuntime *_uiRuntime;
 
 /**
  The application identifier used to distinguish between different RCTHost.

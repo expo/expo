@@ -7,12 +7,19 @@ import ExpoModulesCore
 @objc(EXWorkletIntegration)
 public final class WorkletIntegration: NSObject {
   @objc public static func register() {
-    AppContext.uiRuntimeFactory = { _, pointerValue, runtime in
-      guard let pointer = WorkletRuntimeFactory.extractRuntimePointer(pointerValue, runtime: runtime) else {
-        throw WorkletRuntimePointerExtractionException()
-      }
-      return WorkletRuntimeFactory.createWorkletRuntime(fromPointer: pointer)
+    AppContext.uiRuntimeFactory = DefaultWorkletsUIRuntimeFactory()
+  }
+}
+
+internal final class DefaultWorkletsUIRuntimeFactory: NSObject, WorkletsUIRuntimeFactory {
+  func createUIRuntime(
+    pointerValue: JavaScriptValue,
+    runtime: JavaScriptRuntime
+  ) throws -> JavaScriptRuntime {
+    guard let pointer = WorkletRuntimeFactory.extractRuntimePointer(pointerValue, runtime: runtime) else {
+      throw WorkletRuntimePointerExtractionException()
     }
+    return WorkletRuntimeFactory.createWorkletRuntime(fromPointer: pointer)
   }
 }
 

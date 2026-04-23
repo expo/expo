@@ -13,6 +13,7 @@
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXReactDelegateProtocol.h>
+#import <ExpoModulesCore/EXWorkletsUIRuntimeFactory.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
 #import <ExpoModulesCore/EXConstantsInterface.h>
 #import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>
