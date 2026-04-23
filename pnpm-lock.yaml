@@ -5708,12 +5708,6 @@ importers:
 
   packages/jest-expo:
     dependencies:
-      '@expo/config':
-        specifier: workspace:~55.0.8
-        version: link:../@expo/config
-      '@expo/json-file':
-        specifier: workspace:^10.0.12
-        version: link:../@expo/json-file
       '@jest/create-cache-key-function':
         specifier: ^29.2.1
         version: 29.7.0
@@ -5726,9 +5720,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
-      expo-modules-core:
-        specifier: workspace:~55.0.12
-        version: link:../expo-modules-core
       jest-environment-jsdom:
         specifier: ^29.2.1
         version: 29.7.0

@@ -1,5 +1,5 @@
 'use strict';
-const { getBareExtensions } = require('@expo/config/paths');
+const { getBareExtensions } = require('./extensions');
 
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');

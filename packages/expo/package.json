@@ -50,15 +50,14 @@
     "template.tgz"
   ],
   "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "build": "tsc",
+    "clean": "rimraf build",
+    "lint": "eslint src",
+    "test": "jest",
+    "prepublishOnly": "run-s clean build"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "../expo-module-scripts/jest-preset.cjs"
   },
   "repository": {
     "type": "git",
@@ -106,9 +105,11 @@
     "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*",
     "expo-updates": "workspace:*",
+    "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.2",
+    "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {
