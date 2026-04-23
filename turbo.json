@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "dangerouslyDisablePackageManagerCheck": true,
+  "tasks": {
+    "build": {
+      "outputs": [
+        "build/**",
+        "plugin/build/**",
+        "cli/build/**",
+        "utils/build/**"
+      ],
+      "outputLogs": "new-only",
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "cache": false
+    },
+    "test": {
+      "cache": false
+    }
+  }
+}
