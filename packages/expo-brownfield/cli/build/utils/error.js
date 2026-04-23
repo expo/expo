@@ -32,3 +32,4 @@ class CLIError {
     }
 }
 exports.default = CLIError;
+//# sourceMappingURL=error.js.map

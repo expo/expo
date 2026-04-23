@@ -161,6 +161,7 @@ const findScheme = () => {
         const errorMessage = error instanceof Error ? error.message : '';
         error_1.default.handle('ios-directory-unknown-error', errorMessage);
     }
+    return;
 };
 exports.findScheme = findScheme;
 const findWorkspace = (dryRun) => {
@@ -185,6 +186,7 @@ const findWorkspace = (dryRun) => {
         const errorMessage = error instanceof Error ? error.message : '';
         error_1.default.handle('ios-workspace-unknown-error', errorMessage);
     }
+    return;
 };
 exports.findWorkspace = findWorkspace;
 // TODO(pmleczek): Add support for prebuilt RN frameworks in future PR
@@ -296,3 +298,4 @@ const shipSwiftPackage = async (config) => {
     await (0, exports.copyXCFrameworks)(config, xcframeworksPath);
 };
 exports.shipSwiftPackage = shipSwiftPackage;
+//# sourceMappingURL=ios.js.map

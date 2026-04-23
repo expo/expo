@@ -16,3 +16,4 @@ const buildIos = async (command) => {
     }
 };
 exports.default = buildIos;
+//# sourceMappingURL=build-ios.js.map

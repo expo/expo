@@ -39,8 +39,6 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     `${buildConfiguration.toLowerCase()}-iphonesimulator`
   );
 
-  const hermesFrameworkPath =
-    'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework';
   const packageName =
     options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
   const output = options.package

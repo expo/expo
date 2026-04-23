@@ -78,3 +78,4 @@ const runCommand = (command, args = [], options) => {
     });
 };
 exports.runCommand = runCommand;
+//# sourceMappingURL=commands.js.map

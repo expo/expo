@@ -38,6 +38,7 @@ const findBrownfieldLibrary = () => {
         const errorMessage = error instanceof Error ? error.message : '';
         error_1.default.handle('android-library-unknown-error', errorMessage);
     }
+    return;
 };
 exports.findBrownfieldLibrary = findBrownfieldLibrary;
 const printAndroidConfig = (config) => {
@@ -89,3 +90,4 @@ const runTask = async (task, verbose, dryRun) => {
     });
 };
 exports.runTask = runTask;
+//# sourceMappingURL=android.js.map

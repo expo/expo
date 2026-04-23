@@ -10,3 +10,4 @@ var build_ios_1 = require("./build-ios");
 Object.defineProperty(exports, "buildIos", { enumerable: true, get: function () { return __importDefault(build_ios_1).default; } });
 var tasks_android_1 = require("./tasks-android");
 Object.defineProperty(exports, "tasksAndroid", { enumerable: true, get: function () { return __importDefault(tasks_android_1).default; } });
+//# sourceMappingURL=index.js.map
