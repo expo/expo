@@ -1,6 +1,6 @@
 package expo.modules.securestore.encryptors
 
-import android.annotation.TargetApi
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
@@ -8,6 +8,7 @@ import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
 import expo.modules.securestore.SecureStoreOptions
+import expo.modules.securestore.UnsupportedDeviceCredentialsException
 import org.json.JSONException
 import org.json.JSONObject
 import java.nio.charset.StandardCharsets
@@ -32,36 +33,53 @@ import javax.crypto.spec.GCMParameterSpec
  */
 class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
   override fun getKeyStoreAlias(options: SecureStoreOptions): String {
-    val baseAlias = options.keychainService
-    return "$AES_CIPHER:$baseAlias"
+    return "$AES_CIPHER:${options.keychainService}"
   }
 
   /**
-   * Two key store entries exist for every `keychainService` passed from the JS side. This is
-   * because it's not possible to store unauthenticated data in authenticated key stores.
+   * Separate key store entries exist per keychainService and auth type: unauthenticated,
+   * biometric-only, or user presence (device credential). Biometric and user-presence keys use
+   * different KeyGenParameterSpec (AUTH_BIOMETRIC_STRONG vs AUTH_DEVICE_CREDENTIAL) and are not
+   * interchangeable.
    */
-  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean): String {
-    // We aren't using requiresAuthentication from the options, because it's not a necessary option for read requests
-    val suffix = if (requireAuthentication) {
-      SecureStoreModule.AUTHENTICATED_KEYSTORE_SUFFIX
-    } else {
-      SecureStoreModule.UNAUTHENTICATED_KEYSTORE_SUFFIX
+  override fun getExtendedKeyStoreAlias(options: SecureStoreOptions, requireAuthentication: Boolean, isDeviceCredentialsRequired: Boolean): String {
+    val suffix = when {
+      !requireAuthentication -> SecureStoreModule.UNAUTHENTICATED_KEYSTORE_SUFFIX
+      isDeviceCredentialsRequired -> SecureStoreModule.DEVICE_CREDENTIALS_KEYSTORE_SUFFIX
+      else -> SecureStoreModule.AUTHENTICATED_KEYSTORE_SUFFIX
     }
     return "${getKeyStoreAlias(options)}:$suffix"
   }
 
-  @TargetApi(23)
   @Throws(GeneralSecurityException::class)
   override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.SecretKeyEntry {
-    val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, options.requireAuthentication)
+    val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isDeviceCredentialsRequired)
     val keyPurposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
 
-    val algorithmSpec: AlgorithmParameterSpec = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
+    val builder = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
       .setKeySize(AES_KEY_SIZE_BITS)
       .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
       .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-      .setUserAuthenticationRequired(options.requireAuthentication)
-      .build()
+      .setUserAuthenticationRequired(options.isAuthenticationRequired)
+
+    if (options.isAuthenticationRequired) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val authType =
+          if (options.isDeviceCredentialsRequired) {
+            KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
+          } else {
+            KeyProperties.AUTH_BIOMETRIC_STRONG
+          }
+        builder.setUserAuthenticationParameters(0, authType)
+      } else {
+        if (options.isDeviceCredentialsRequired) {
+          throw UnsupportedDeviceCredentialsException()
+        }
+        builder.setUserAuthenticationValidityDurationSeconds(-1)
+      }
+    }
+
+    val algorithmSpec: AlgorithmParameterSpec = builder.build()
 
     val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, keyStore.provider)
     keyGenerator.init(algorithmSpec)
@@ -78,14 +96,20 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     keyStoreEntry: KeyStore.SecretKeyEntry,
     requireAuthentication: Boolean,
     authenticationPrompt: String,
-    authenticationHelper: AuthenticationHelper
+    authenticationHelper: AuthenticationHelper,
+    isDeviceCredentialsRequired: Boolean
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
     val cipher = Cipher.getInstance(AES_CIPHER)
     cipher.init(Cipher.ENCRYPT_MODE, secretKey)
 
     val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
-    val authenticatedCipher = authenticationHelper.authenticateCipher(cipher, requireAuthentication, authenticationPrompt)
+    val requireAuthenticationString = if (requireAuthentication) {
+      if (isDeviceCredentialsRequired) "deviceCredentials" else "biometry"
+    } else {
+      null
+    }
+    val authenticatedCipher = authenticationHelper.authenticateCipher(cipher, requireAuthenticationString, authenticationPrompt)
 
     return createEncryptedItemWithCipher(plaintextValue, authenticatedCipher, gcmSpec)
   }
@@ -122,7 +146,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     val ivBytes = Base64.decode(ivString, Base64.DEFAULT)
     val gcmSpec = GCMParameterSpec(authenticationTagLength, ivBytes)
     val cipher = Cipher.getInstance(AES_CIPHER)
-    val requiresAuthentication = encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
+    val requiresAuthentication = encryptedItem.optString(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, null)
 
     if (authenticationTagLength < MIN_GCM_AUTHENTICATION_TAG_LENGTH) {
       throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH bits long", key, options.keychainService)

@@ -45,11 +45,16 @@ export type SecureStoreOptions = {
      */
     keychainService?: string;
     /**
-     * Option responsible for enabling the usage of the user authentication methods available on the device while
-     * accessing data stored in SecureStore.
+     * Determines the authentication method for this entry. Specify `false` for no authentication, `'biometry'` for biometric authentication only,
+     * or `'deviceCredentials'` for biometric with fallback to device credentials (PIN, pattern, or password).
+     * Use `canUseDeviceCredentialsAuthentication()` to check if device credentials are available.
+     *
+     * For backward compatibility, passing `true` is still accepted and treated as `'biometry'`.
+     *
      * - Android: Equivalent to [`setUserAuthenticationRequired(true)`](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder#setUserAuthenticationRequired(boolean))
-     *   (requires API 23).
-     * - iOS: Equivalent to [`biometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/2937192-biometrycurrentset).
+     *   (requires API 23). `'deviceCredentials'` requires API 30+.
+     * - iOS: Equivalent to [`biometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/2937192-biometrycurrentset) or [`userPresence`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags).
+     *
      * Complete functionality is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
      * value used for the others non-authenticated operations.
      *
@@ -59,11 +64,11 @@ export type SecureStoreOptions = {
      * Warning: This option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.
      * In release builds or when using continuous native generation, make sure to use the `expo-secure-store` config plugin.
      *
-     * > **Note:** This library requires a real device for testing since emulators/simulators do not require biometric authentication when retrieving secrets, unlike real iOS devices.
+     * @default false
      */
-    requireAuthentication?: boolean;
+    requireAuthentication?: boolean | 'biometry' | 'deviceCredentials';
     /**
-     * Custom message displayed to the user while `requireAuthentication` option is turned on.
+     * Custom message displayed to the user during authentication.
      */
     authenticationPrompt?: string;
     /**
@@ -108,7 +113,7 @@ export declare function deleteItemAsync(key: string, options?: SecureStoreOption
  *
  * > Keys are invalidated by the system when biometrics change, such as adding a new fingerprint or changing the face profile used for face recognition.
  * > After a key has been invalidated, it becomes impossible to read its value.
- * > This only applies to values stored with `requireAuthentication` set to `true`.
+ * > This only applies to values stored with `requireAuthentication` not set to `false`.
  */
 export declare function getItemAsync(key: string, options?: SecureStoreOptions): Promise<string | null>;
 /**
@@ -123,7 +128,7 @@ export declare function getItemAsync(key: string, options?: SecureStoreOptions):
 export declare function setItemAsync(key: string, value: string, options?: SecureStoreOptions): Promise<void>;
 /**
  * Stores a key–value pair synchronously.
- * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
+ * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is not set to `false` until the user authenticates.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
  * @param value The value to store.
@@ -134,7 +139,7 @@ export declare function setItem(key: string, value: string, options?: SecureStor
 /**
  * Synchronously reads the stored value associated with the provided key.
  * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when reading a value with `requireAuthentication`
- * > option set to `true` until the user authenticates.
+ * > option not set to `false` until the user authenticates.
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
@@ -149,4 +154,19 @@ export declare function getItem(key: string, options?: SecureStoreOptions): stri
  * @platform ios
  */
 export declare function canUseBiometricAuthentication(): boolean;
+/**
+ * Checks whether the device is secured with a PIN, pattern, or password.
+ *
+ * Use this to determine if the user can authenticate with `requireAuthentication: 'deviceCredentials'`
+ * (biometric with fallback to device credentials).
+ *
+ * > On Android, `requireAuthentication: 'deviceCredentials'` requires API 30+. On devices running
+ * > API 23-29 this method returns `false` because device credential authentication is not
+ * > supported there.
+ *
+ * @return `true` if the device has a secure lock screen configured. Otherwise, returns `false`.
+ * @platform android
+ * @platform ios
+ */
+export declare function canUseDeviceCredentialsAuthentication(): boolean;
 //# sourceMappingURL=SecureStore.d.ts.map
