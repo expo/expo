@@ -2668,7 +2668,7 @@ importers:
         specifier: ^7.24.8
         version: 7.28.6(@babel/core@7.29.0)
       typescript:
-        specifier: ^5.0.0 || ^5.0.0-0
+        specifier: ^5.0.0 || ^5.0.0-0 || ^6.0.0
         version: 5.9.3
     devDependencies:
       '@babel/cli':
