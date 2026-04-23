@@ -15,7 +15,6 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.OptimizedComposeProps
 
-
 @OptimizedRecord
 data class SurfaceBorder(
   @Field val width: Float = 1f,
