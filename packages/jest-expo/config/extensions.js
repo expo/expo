@@ -1,6 +1,6 @@
 // NOTE(@kitten): Keep in sync with `@expo/config/src/paths/extensions.ts`
 
-import assert from 'assert';
+const assert = require('assert');
 
 function getExtensions(
   platforms,
