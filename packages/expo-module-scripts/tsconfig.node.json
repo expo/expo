@@ -5,6 +5,7 @@
     "target": "es2022",
     "declarationMap": false,
     "inlineSources": false,
+    "resolveJsonModule": true,
 
     // TODO: Update accordingly when tsc isn't used to build outputs anymore at all
     "module": "nodenext",
