@@ -21,6 +21,7 @@ export const generateMetadata: GenerateMetadataFunction = async () => {
 export default function MetadataPage() {
   return (
     <>
+      {/* The <Head> component is here to check that the app doesn't crash when using it with `generateMetadata()` */}
       <Head>
         <meta name="expo-e2e-metadata-head" content="head" />
       </Head>
