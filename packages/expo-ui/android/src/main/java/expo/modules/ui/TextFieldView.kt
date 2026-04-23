@@ -16,9 +16,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -26,6 +28,8 @@ import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.ui.state.ObservableState
+import expo.modules.ui.state.WorkletCallback
 
 // region Records
 
@@ -104,6 +108,16 @@ data class KeyboardActionEvent(
   @Field val value: String,
 ) : Record
 
+data class TextFieldSelectionPayload(
+  @Field val start: Int,
+  @Field val end: Int,
+) : Record
+
+data class TextFieldValuePayload(
+  @Field val text: String,
+  @Field val selection: TextFieldSelectionPayload,
+) : Record
+
 // endregion Records
 
 // region Color builder
@@ -163,7 +177,7 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
 // region Props
 
 data class TextFieldProps(
-  val defaultValue: String = "",
+  val value: ObservableState? = null,
   val autoFocus: Boolean = false,
   val variant: TextFieldVariant = TextFieldVariant.FILLED,
   val enabled: Boolean = true,
@@ -175,6 +189,7 @@ data class TextFieldProps(
   val keyboardOptions: TextFieldKeyboardOptionsRecord? = null,
   val shape: ShapeRecord? = null,
   val colors: TextFieldColorsRecord? = null,
+  val onValueChangeSync: WorkletCallback? = null,
   val modifiers: ModifierList = emptyList(),
 ) : ComposeProps
 
@@ -225,28 +240,32 @@ fun FunctionalComposableScope.TextFieldContent(
   setText: AsyncFunctionHandle<String>,
   focus: AsyncFunctionHandle<Unit>,
   blur: AsyncFunctionHandle<Unit>,
-  onValueChanged: (GenericEventPayload1<String>) -> Unit,
+  onValueChanged: (TextFieldValuePayload) -> Unit,
   onFocusChange: (GenericEventPayload1<Boolean>) -> Unit,
   onKeyboardActionTriggered: (KeyboardActionEvent) -> Unit
 ) {
   val focusManager = LocalFocusManager.current
   val focusRequester = remember { FocusRequester() }
-  val textState = remember { mutableStateOf<String?>(null) }
+  val state = props.value ?: return
 
+  val isStringMode = state.value is String
   setText.handle { text ->
-    textState.value = text
+    state.value = if (isStringMode) {
+      text
+    } else {
+      mapOf(
+        "text" to text,
+        // on setting text, we set the selection to the end
+        // TODO: add a setValue function to allow setting selection and text
+        "selection" to mapOf("start" to text.length, "end" to text.length)
+      )
+    }
   }
   focus.handle {
     focusRequester.requestFocus()
   }
   blur.handle {
     focusManager.clearFocus()
-  }
-
-  val value = textState.value ?: props.defaultValue
-  val onValueChange: (String) -> Unit = {
-    textState.value = it
-    onValueChanged(GenericEventPayload1(it))
   }
 
   // Slots
@@ -266,7 +285,13 @@ fun FunctionalComposableScope.TextFieldContent(
     capitalization = kbOpts?.capitalization.toCapitalization(),
     imeAction = kbOpts?.imeAction.toImeAction()
   )
-  val currentText = { textState.value ?: "" }
+  val currentText = {
+    when (val v = state.value) {
+      is String -> v
+      is Map<*, *> -> (v["text"] as? String) ?: ""
+      else -> ""
+    }
+  }
   val keyboardActions = KeyboardActions(
     onDone = { defaultKeyboardAction(ImeAction.Done); onKeyboardActionTriggered(KeyboardActionEvent("done", currentText())) },
     onGo = { defaultKeyboardAction(ImeAction.Go); onKeyboardActionTriggered(KeyboardActionEvent("go", currentText())) },
@@ -297,6 +322,47 @@ fun FunctionalComposableScope.TextFieldContent(
     ?: if (isOutlined) OutlinedTextFieldDefaults.shape else TextFieldDefaults.shape
   val colors = props.colors?.toColors(isOutlined)
     ?: if (isOutlined) OutlinedTextFieldDefaults.colors() else TextFieldDefaults.colors()
+
+  val localSelection = remember { mutableStateOf(TextRange.Zero) }
+  val raw = state.value
+  val text = when (raw) {
+    is String -> raw
+    is Map<*, *> -> (raw["text"] as? String) ?: ""
+    else -> ""
+  }
+  val selection: TextRange = if (isStringMode) {
+    TextRange(
+      localSelection.value.start.coerceIn(0, text.length),
+      localSelection.value.end.coerceIn(0, text.length)
+    )
+  } else {
+    val selMap = (raw as? Map<*, *>)?.get("selection") as? Map<*, *>
+    val s = (selMap?.get("start") as? Number)?.toInt()?.coerceIn(0, text.length) ?: text.length
+    val e = (selMap?.get("end") as? Number)?.toInt()?.coerceIn(0, text.length) ?: text.length
+    TextRange(s, e)
+  }
+  val value = TextFieldValue(text, selection)
+  val onValueChange: (TextFieldValue) -> Unit = { new ->
+    if (new.text != value.text || new.selection != value.selection) {
+      val payload = TextFieldValuePayload(
+        text = new.text,
+        selection = TextFieldSelectionPayload(new.selection.start, new.selection.end)
+      )
+      if (isStringMode) {
+        state.value = new.text
+        localSelection.value = new.selection
+        onValueChanged(payload)
+        props.onValueChangeSync?.invoke(new.text)
+      } else {
+        state.value = mapOf(
+          "text" to new.text,
+          "selection" to mapOf("start" to new.selection.start, "end" to new.selection.end)
+        )
+        onValueChanged(payload)
+        props.onValueChangeSync?.invoke(payload)
+      }
+    }
+  }
 
   if (isOutlined) {
     OutlinedTextField(
