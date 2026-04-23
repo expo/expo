@@ -129,6 +129,28 @@ describe(SQLiteStatement, () => {
     await statement.finalizeAsync();
   });
 
+  it('prepareAsync should allow whitespace-only statements as no-ops', async () => {
+    const statement = await db.prepareAsync('\n');
+    const result = await statement.executeAsync<TestEntity>();
+    expect(result.lastInsertRowId).toBe(0);
+    expect(result.changes).toBe(0);
+    expect(await result.getFirstAsync()).toBeNull();
+    await result.resetAsync();
+    expect(await result.getAllAsync()).toEqual([]);
+    expect(await statement.getColumnNamesAsync()).toEqual([]);
+    await expect(result.resetAsync()).resolves.toBeUndefined();
+    await expect(statement.finalizeAsync()).resolves.toBeUndefined();
+  });
+
+  it('prepareAsync should allow comment-only statements as no-ops', async () => {
+    const statement = await db.prepareAsync('-- comment only');
+    const result = await statement.executeAsync<TestEntity>();
+    expect(result.lastInsertRowId).toBe(0);
+    expect(result.changes).toBe(0);
+    expect(await result.getFirstAsync()).toBeNull();
+    await statement.finalizeAsync();
+  });
+
   it('getColumnNamesAsync should return column names', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test');
     const columnNames = await statement.getColumnNamesAsync();
@@ -156,5 +178,18 @@ describe(SQLiteStatement, () => {
     row = (await result.next()).value;
     expect(row?.intValue).toBe(123);
     await statement.finalizeAsync();
+  });
+
+  it('prepareSync should allow whitespace-only statements as no-ops', () => {
+    const statement = db.prepareSync('\n');
+    const result = statement.executeSync<TestEntity>();
+    expect(result.lastInsertRowId).toBe(0);
+    expect(result.changes).toBe(0);
+    expect(result.getFirstSync()).toBeNull();
+    result.resetSync();
+    expect(result.getAllSync()).toEqual([]);
+    expect(statement.getColumnNamesSync()).toEqual([]);
+    expect(() => result.resetSync()).not.toThrow();
+    expect(() => statement.finalizeSync()).not.toThrow();
   });
 });

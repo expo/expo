@@ -62,6 +62,13 @@ describe('Database', () => {
     expect(result.changes).toBe(1);
   });
 
+  it('runAsync should no-op for whitespace-only statements', async () => {
+    db = await openDatabaseAsync(':memory:');
+    const result = await db.runAsync('\n');
+    expect(result.lastInsertRowId).toBe(0);
+    expect(result.changes).toBe(0);
+  });
+
   it('getFirstAsync should return a row', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(
@@ -274,6 +281,13 @@ describe('Database - Synchronous calls', () => {
     const result = db.getFirstSync<TestEntity>('SELECT * FROM test');
     expect(result?.value).toBe('test');
     expect(result?.intValue).toBe(123);
+  });
+
+  it('runSync should no-op for whitespace-only statements', () => {
+    db = openDatabaseSync(':memory:');
+    const result = db.runSync('\n');
+    expect(result.lastInsertRowId).toBe(0);
+    expect(result.changes).toBe(0);
   });
 
   it('getEachSync should return iterable', () => {

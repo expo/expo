@@ -64,6 +64,10 @@ class NativeDatabase {
   prepareAsync = jest
     .fn()
     .mockImplementation(async (nativeStatement: NativeStatement, source: string) => {
+      if (isNoopStatementSql(source)) {
+        nativeStatement.sqlite3Stmt = null;
+        return;
+      }
       nativeStatement.sqlite3Stmt = this.sqlite3Db.prepare(source);
     });
 
@@ -79,6 +83,10 @@ class NativeDatabase {
     return this.sqlite3Db.serialize({ attached: databaseName });
   });
   prepareSync = jest.fn().mockImplementation((nativeStatement: NativeStatement, source: string) => {
+    if (isNoopStatementSql(source)) {
+      nativeStatement.sqlite3Stmt = null;
+      return;
+    }
     nativeStatement.sqlite3Stmt = this.sqlite3Db.prepare(source);
   });
 
@@ -108,6 +116,9 @@ class NativeStatement {
         )
     );
   public stepAsync = jest.fn().mockImplementation((database: NativeDatabase): Promise<any> => {
+    if (this.sqlite3Stmt == null) {
+      return Promise.resolve(null);
+    }
     assert(this.sqlite3Stmt);
     if (this.iterator == null) {
       this.iterator = this.sqlite3Stmt.iterate();
@@ -123,6 +134,9 @@ class NativeStatement {
     .fn()
     .mockImplementation((database: NativeDatabase) => Promise.resolve(this._allValues()));
   public getColumnNamesAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
+    if (this.sqlite3Stmt == null) {
+      return [];
+    }
     assert(this.sqlite3Stmt);
     return this.sqlite3Stmt.columns().map((column) => column.name);
   });
@@ -149,6 +163,9 @@ class NativeStatement {
         this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
     );
   public stepSync = jest.fn().mockImplementation((database: NativeDatabase): any => {
+    if (this.sqlite3Stmt == null) {
+      return null;
+    }
     assert(this.sqlite3Stmt);
     if (this.iterator == null) {
       this.iterator = this.sqlite3Stmt.iterate();
@@ -163,6 +180,9 @@ class NativeStatement {
   });
   public getAllSync = jest.fn().mockImplementation((database: NativeDatabase) => this._allValues());
   public getColumnNamesSync = jest.fn().mockImplementation((database: NativeDatabase) => {
+    if (this.sqlite3Stmt == null) {
+      return [];
+    }
     assert(this.sqlite3Stmt);
     return this.sqlite3Stmt.columns().map((column) => column.name);
   });
@@ -176,6 +196,13 @@ class NativeStatement {
   //#endregion
 
   private _run = (...params: any[]): SQLiteRunResult & { firstRowValues: SQLiteColumnValues } => {
+    if (this.sqlite3Stmt == null) {
+      return {
+        lastInsertRowId: 0,
+        changes: 0,
+        firstRowValues: [],
+      };
+    }
     assert(this.sqlite3Stmt);
     this.sqlite3Stmt.bind(...params);
     const result = this.sqlite3Stmt.run();
@@ -196,6 +223,9 @@ class NativeStatement {
   };
 
   private _allValues = (): SQLiteColumnNames[] => {
+    if (this.sqlite3Stmt == null) {
+      return [];
+    }
     assert(this.sqlite3Stmt);
     const sqlite3Stmt = this.sqlite3Stmt as any;
     // Since the first row is retrieved by `_run()`, we need to skip the first row here.
@@ -206,6 +236,10 @@ class NativeStatement {
   };
 
   private _reset = () => {
+    if (this.sqlite3Stmt == null) {
+      this.iterator = null;
+      return;
+    }
     assert(this.sqlite3Stmt);
     this.iterator?.return?.();
     this.iterator = this.sqlite3Stmt.iterate();
@@ -218,6 +252,15 @@ class NativeStatement {
 }
 
 //#endregion
+
+function isNoopStatementSql(source: string): boolean {
+  const normalizedSource = source
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/--[^\n\r]*/g, '')
+    .replace(/;/g, '')
+    .trim();
+  return normalizedSource.length === 0;
+}
 
 function normalizeSQLite3Args(
   bindParams: SQLiteBindPrimitiveParams,

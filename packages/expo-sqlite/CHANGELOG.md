@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Add explicit secure context error for `web/wa-sqlite/AccessHandlePoolVFS.js` ([#40605](https://github.com/expo/expo/pull/40605) by [@BDav24](https://github.com/BDav24))
+- Fix crashes on comment-only or empty SQL statements. ([#44623](https://github.com/expo/expo/pull/44623) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
