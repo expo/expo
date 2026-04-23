@@ -7,7 +7,7 @@
     "inlineSources": false,
     "resolveJsonModule": true,
 
-    // TODO: Update accordingly when tsc isn't used to build outputs anymore at all
+    // TODO(@kitten): Update accordingly when tsc isn't used to build outputs anymore at all
     "module": "nodenext",
     "moduleResolution": "node16",
     "verbatimModuleSyntax": false
