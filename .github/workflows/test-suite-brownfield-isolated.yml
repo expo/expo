@@ -167,7 +167,7 @@ jobs:
       - name: 🚇 Start Metro server
         run: |
           pnpm start --clear &
-          npx wait-on http://localhost:8081 --timeout 60000
+          npx wait-on http://localhost:8081/status --timeout 60000
         working-directory: apps/brownfield-tester/expo-app
       - name: 🧪 Run e2e tests (Debug)
         uses: ./.github/actions/use-android-emulator
