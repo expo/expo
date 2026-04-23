@@ -229,6 +229,11 @@ public final class ImageModule: Module {
       }
     }
 
+    AsyncFunction("cancelPendingDownloads") {
+      SDWebImageDownloader.shared.cancelAllDownloads()
+      SDWebImagePrefetcher.shared.cancelPrefetching()
+    }
+
     AsyncFunction("getCachePathAsync") { (cacheKey: String, promise: Promise) in
       /*
        We need to check if the image exists in the cache first since `cachePath` will

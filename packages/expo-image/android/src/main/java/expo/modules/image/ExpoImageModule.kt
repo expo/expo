@@ -193,6 +193,11 @@ class ExpoImageModule : Module() {
       return@AsyncFunction true
     }
 
+    AsyncFunction("cancelPendingDownloads") {
+      val activity = appContext.currentActivity ?: return@AsyncFunction
+      Glide.get(activity).clearMemory()
+    }.runOnQueue(Queues.MAIN)
+
     AsyncFunction("getCachePathAsync") { cacheKey: String ->
       val context = appContext.reactContext ?: return@AsyncFunction null
 
