@@ -1,5 +1,5 @@
 /**
- * Bitmask of values that can be used to skip certain parts of the sourcers when generating a fingerprint.
+ * Bitmask of values that can be used to skip certain parts of the sources when generating a fingerprint.
  */
 export enum SourceSkips {
   /** Skip nothing. */
@@ -13,7 +13,7 @@ export enum SourceSkips {
   /** `runtimeVersion` in app.json if it is a string. */
   ExpoConfigRuntimeVersionIfString = 1 << 1,
 
-  /** App names in app.json, including shortName and description. */
+  /** App names in app.json, including `name`, `description`, `web.name`, `web.shortName`, and `web.description`. */
   ExpoConfigNames = 1 << 2,
 
   /** Android package name in app.json. */
