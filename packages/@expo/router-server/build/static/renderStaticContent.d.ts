@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
-import { resolveMetadata } from './metadata';
+import { resolveMetadata } from '../server/metadata';
 export type GetStaticContentOptions = {
     loader?: {
         data?: any;
