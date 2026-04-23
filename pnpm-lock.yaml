@@ -2723,9 +2723,6 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
     devDependencies:
-      '@expo/cli':
-        specifier: workspace:*
-        version: link:../cli
       '@tsd/typescript':
         specifier: ^6.0.3
         version: 6.0.3
@@ -4927,9 +4924,6 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
     devDependencies:
-      '@expo/cli':
-        specifier: workspace:*
-        version: link:../@expo/cli
       '@testing-library/dom':
         specifier: ^10.4.0
         version: 10.4.1

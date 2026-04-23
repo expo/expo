@@ -123,7 +123,6 @@
     }
   },
   "devDependencies": {
-    "@expo/cli": "workspace:*",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.3.0",
