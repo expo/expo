@@ -204,3 +204,12 @@ fun FileSystemPath.asCopyOrMoveDestination(overwrite: Boolean = false) = Destina
   overwrite = overwrite,
   isDirectory = this is FileSystemDirectory
 )
+
+// Zip/unzip sometimes returns freshly-created shared objects from native code.
+// They need to inherit the caller's runtime context so later file access doesn't fail with
+// "The react context has been lost" before JS re-wraps them.
+internal fun <T : FileSystemPath> T.withRuntimeContextFrom(reference: FileSystemPath): T = apply {
+  if (runtimeContextHolder.get() == null) {
+    runtimeContextHolder = reference.runtimeContextHolder
+  }
+}

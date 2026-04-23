@@ -105,7 +105,7 @@ internal struct ZipOperations {
 
       if FileManager.default.fileExists(atPath: entryDestURL.path) {
         if !options.overwrite {
-          continue
+          throw UnableToUnzipException("entry path '\(entry.path)' conflicts with an existing file")
         }
         try FileManager.default.removeItem(at: entryDestURL)
       }

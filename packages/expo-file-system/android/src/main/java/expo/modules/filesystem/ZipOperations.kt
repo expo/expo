@@ -4,10 +4,12 @@ import android.net.Uri
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
+import java.io.EOFException
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
+import java.util.zip.ZipException
 
 private const val BUFFER_SIZE = 64 * 1024
 
@@ -59,43 +61,60 @@ internal object ZipOperations {
     }
 
     val destDir = resolveUnzipDestination(destination, source, options)
+    extractZipEntries(source.file, destDir.file, options)
 
-    // Use ZipInputStream for universal compatibility (works with SAF URIs too)
-    source.file.inputStream().use { rawInput ->
-      ZipInputStream(BufferedInputStream(rawInput, BUFFER_SIZE)).use { zis ->
-        var entry = zis.nextEntry
-        while (entry != null) {
-          val pathSegments = normalizeEntryPath(entry.name)
+    return destDir
+  }
 
-          if (pathSegments.isNotEmpty()) {
-            if (entry.isDirectory) {
-              ensureDirectoryAtPath(destDir.file, pathSegments, options.overwrite)
-            } else {
-              val parentDirectory = ensureDirectoryAtPath(
-                destDir.file,
-                pathSegments.dropLast(1),
-                options.overwrite
-              )
-              val targetFile = resolveFileTarget(
-                parentDirectory,
-                pathSegments.last(),
-                options.overwrite
-              )
+  internal fun extractZipEntries(
+    source: UnifiedFileInterface,
+    destination: UnifiedFileInterface,
+    options: UnzipOptions
+  ) {
+    try {
+      source.inputStream().use { rawInput ->
+        val bufferedInput = BufferedInputStream(rawInput, BUFFER_SIZE)
+        validateZipSignature(bufferedInput, source)
 
-              if (targetFile.shouldWrite) {
-                targetFile.file.outputStream(append = false).use { output ->
+        ZipInputStream(bufferedInput).use { zis ->
+          var entry = zis.nextEntry
+          while (entry != null) {
+            val pathSegments = normalizeEntryPath(entry.name)
+
+            if (pathSegments.isNotEmpty()) {
+              if (entry.isDirectory) {
+                ensureDirectoryAtPath(destination, pathSegments, options.overwrite)
+              } else {
+                val parentDirectory = ensureDirectoryAtPath(
+                  destination,
+                  pathSegments.dropLast(1),
+                  options.overwrite
+                )
+                val targetFile = resolveFileTarget(
+                  parentDirectory,
+                  pathSegments.last(),
+                  options.overwrite
+                )
+
+                targetFile.outputStream(append = false).use { output ->
                   zis.copyTo(output, BUFFER_SIZE)
                 }
               }
             }
+            zis.closeEntry()
+            entry = zis.nextEntry
           }
-          zis.closeEntry()
-          entry = zis.nextEntry
         }
       }
+    } catch (error: Throwable) {
+      when (error) {
+        is UnableToUnzipException -> throw error
+        is ZipException, is EOFException -> {
+          throw UnableToUnzipException(error.message ?: "failed to read zip archive")
+        }
+        else -> throw error
+      }
     }
-
-    return destDir
   }
 
   private fun resolveZipDestination(
@@ -132,13 +151,13 @@ internal object ZipOperations {
     return if (destinationDir.uri.isContentUri) {
       val created = destinationDir.createFile("application/zip", zipName)
         ?: throw UnableToZipException("failed to create destination '$zipName'")
-      FileSystemFile(created.uri)
+      FileSystemFile(created.uri).withRuntimeContextFrom(destination)
     } else {
       val directoryFile = File(destinationDir.uri.path!!)
       if (!directoryFile.exists()) {
         directoryFile.mkdirs()
       }
-      FileSystemFile(Uri.fromFile(File(directoryFile, zipName)))
+      FileSystemFile(Uri.fromFile(File(directoryFile, zipName))).withRuntimeContextFrom(destination)
     }
   }
 
@@ -186,7 +205,7 @@ internal object ZipOperations {
         destDir.mkdirs()
       }
 
-      return FileSystemDirectory(Uri.fromFile(destDir))
+      return FileSystemDirectory(Uri.fromFile(destDir)).withRuntimeContextFrom(destination)
     }
 
     if (!destination.file.exists()) {
@@ -198,7 +217,7 @@ internal object ZipOperations {
 
     val archiveName = source.file.fileName?.removeSuffix(".zip") ?: "archive"
     val containingDirectory = ensureDirectory(destination.file, archiveName, options.overwrite)
-    return FileSystemDirectory(containingDirectory.uri)
+    return FileSystemDirectory(containingDirectory.uri).withRuntimeContextFrom(destination)
   }
 
   private fun addDirectoryToZip(
@@ -304,7 +323,7 @@ internal object ZipOperations {
     parent: UnifiedFileInterface,
     name: String,
     overwrite: Boolean
-  ): ResolvedFileTarget {
+  ): UnifiedFileInterface {
     val existing = findChild(parent, name)
     if (existing != null) {
       if (existing.isDirectory()) {
@@ -315,21 +334,30 @@ internal object ZipOperations {
           throw UnableToUnzipException("failed to overwrite existing directory at '${existing.uri}'")
         }
       } else {
-        return ResolvedFileTarget(existing, shouldWrite = overwrite)
+        if (!overwrite) {
+          throw UnableToUnzipException("entry path '$name' conflicts with an existing file")
+        }
+        return existing
       }
     }
 
     val created = parent.createFile("application/octet-stream", name)
       ?: throw UnableToUnzipException("failed to create file '$name'")
-    return ResolvedFileTarget(created, shouldWrite = true)
+    return created
   }
 
   private fun findChild(parent: UnifiedFileInterface, name: String): UnifiedFileInterface? {
     return parent.listFilesAsUnified().firstOrNull { it.fileName == name }
   }
 
-  private data class ResolvedFileTarget(
-    val file: UnifiedFileInterface,
-    val shouldWrite: Boolean
-  )
+  private fun validateZipSignature(input: BufferedInputStream, source: UnifiedFileInterface) {
+    input.mark(4)
+    val signature = ByteArray(4)
+    val bytesRead = input.read(signature)
+    input.reset()
+
+    if (bytesRead < 4 || signature[0] != 'P'.code.toByte() || signature[1] != 'K'.code.toByte()) {
+      throw UnableToUnzipException("failed to open archive at ${source.uri.path ?: source.uri}")
+    }
+  }
 }
