@@ -1,6 +1,6 @@
-import { useRoute } from '@react-navigation/native';
+import { NavigationRouteContext } from '@react-navigation/native';
 import { unstable_navigationEvents } from 'expo-router';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useContext, useMemo, useRef } from 'react';
 import AppMetrics from 'expo-app-metrics';
 
 interface EventPayload {
@@ -86,8 +86,8 @@ export function startLoggingRouterMetrics() {
 }
 
 export function useRouterMetricsHelpers() {
-  const route = useRoute();
-  const screenId = useMemo(() => route.key, [route]);
+  const route = useContext(NavigationRouteContext);
+  const screenId = route?.key;
   const prevScreenId = useRef(screenId);
   if (prevScreenId.current !== screenId) {
     console.warn('[expo-app-metrics] Screen ID changed between renders. This should not happen.');
