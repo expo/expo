@@ -415,9 +415,13 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   // MARK: - Runtime
 
+  /**
+   Sets the JavaScript runtime from a raw pointer to a `facebook::jsi::Runtime` instance.
+   Called from ObjC++ (e.g. `ExpoReactNativeFactory`) when React Native initializes the runtime.
+   */
   @objc
-  public func setRuntime(_ provider: JavaScriptRuntimeProvider) {
-    _runtime = ExpoRuntime(provider: provider)
+  public func setRuntime(_ runtimePointer: UnsafeMutableRawPointer) {
+    _runtime = ExpoRuntime(unsafePointer: runtimePointer)
   }
 
   @JavaScriptActor

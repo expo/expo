@@ -37,11 +37,6 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    */
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
 
-  public init(provider: JavaScriptRuntimeProvider) {
-    self.pointee = provider.consume()
-    self.scheduler = expo.RuntimeScheduler(pointee)
-  }
-
   /**
    Creates a runtime from the JSI runtime.
    */

@@ -12,7 +12,6 @@
 #import "ExpoModulesCore-Swift.h"
 #endif
 
-#import <ExpoModulesJSI/JavaScriptRuntimeProvider.h>
 
 #if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
 #import <ExpoModulesCore/ExpoModulesCore-Swift.h>
@@ -33,7 +32,7 @@
   _appContext = [[EXAppContext alloc] init];
 
   // Inject and decorate the `global.expo` object
-  [_appContext setRuntime:[[JavaScriptRuntimeProvider alloc] init:runtime]];
+  [_appContext setRuntime:&runtime];
   [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   

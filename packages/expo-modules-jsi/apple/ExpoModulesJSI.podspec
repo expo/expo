@@ -57,9 +57,6 @@ Pod::Spec.new do |s|
   # "[CP] Copy XCFrameworks" and "[CP] Embed Pods Frameworks" build phases.
   s.prepare_command = './scripts/create-stub-xcframework.sh'
 
-  s.source_files = [
-    "Sources/ExpoModulesJSI-RuntimeProvider/**/*.{h,mm}"
-  ]
   s.vendored_frameworks = ["Products/#{s.name}.xcframework"]
 
   s.script_phase = {
