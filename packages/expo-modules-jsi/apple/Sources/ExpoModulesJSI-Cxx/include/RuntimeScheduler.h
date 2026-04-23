@@ -21,26 +21,33 @@ std::shared_ptr<react::RuntimeScheduler> runtimeSchedulerForRuntime(jsi::Runtime
   if (auto binding = react::RuntimeSchedulerBinding::getBinding(runtime)) {
     return binding->getRuntimeScheduler();
   }
-  // If no binding is found (can happen when the runtime is not initialized by React Native),
-  // create a simple RuntimeExecutor that just invokes the callback immediately.
-  // It's not great that we capture the runtime by reference, but the runtime scheduler
-  // will never call it when the runtime is already destroyed so in theory it's safe.
+  // No binding found (e.g. runtime not initialized by React Native).
+  // Execute the callback synchronously — this only happens in test environments
+  // where the runtime is not managed by React Native, so there is no dedicated
+  // JS thread to dispatch to.
   react::RuntimeExecutor runtimeExecutor = [&runtime](std::function<void(jsi::Runtime&)>&& callback) {
     callback(runtime);
   };
-  // Create the RuntimeScheduler
   return std::make_shared<react::RuntimeScheduler>(runtimeExecutor);
 }
 
 /**
  Wrapper for RuntimeScheduler from React which for some reason cannot be constructed from Swift.
+ Imported as a shared reference type so Swift manages its lifetime via retain/release.
  */
 class RuntimeScheduler {
 private:
   std::shared_ptr<react::RuntimeScheduler> reactRuntimeScheduler;
 
+  /**
+   Reference count managed by Swift's ARC via SWIFT_SHARED_REFERENCE.
+   Prevents premature deallocation when C++ shared_ptr and Swift references coexist.
+   */
+  std::atomic<int> refCount{1};
+
 public:
   RuntimeScheduler(jsi::Runtime &runtime) : reactRuntimeScheduler(runtimeSchedulerForRuntime(runtime)) {}
+  RuntimeScheduler(const RuntimeScheduler &) = delete; // non-copyable
 
   using ScheduleTaskCallback = void(^)();
 
@@ -49,8 +56,28 @@ public:
       callback();
     });
   }
-} SWIFT_UNSAFE_REFERENCE; // class RuntimeScheduler
+
+  void retain() {
+    refCount.fetch_add(1, std::memory_order_relaxed);
+  }
+
+  void release() {
+    if (refCount.fetch_sub(1, std::memory_order_acq_rel) == 1) {
+      delete this;
+    }
+  }
+} SWIFT_SHARED_REFERENCE(retainRuntimeScheduler, releaseRuntimeScheduler);
 
 } // namespace expo
+
+/** Retains the RuntimeScheduler, called by Swift's ARC. */
+inline void retainRuntimeScheduler(expo::RuntimeScheduler *scheduler) {
+  scheduler->retain();
+}
+
+/** Releases the RuntimeScheduler, called by Swift's ARC. Deallocates when the ref count reaches zero. */
+inline void releaseRuntimeScheduler(expo::RuntimeScheduler *scheduler) {
+  scheduler->release();
+}
 
 #endif // __cplusplus
