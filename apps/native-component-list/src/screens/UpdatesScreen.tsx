@@ -48,7 +48,7 @@ export default function UpdatesScreen() {
       setTimeout(async () => {
         await Updates.hideReloadScreen();
       }, 3000);
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Error', `Failed to show reload screen: ${error.message}`);
     }
   };

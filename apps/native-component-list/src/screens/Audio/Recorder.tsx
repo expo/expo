@@ -89,7 +89,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       }
 
       audioRecorder.record(Object.keys(options).length > 0 ? options : undefined);
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Error', error.message);
     }
   };
@@ -110,7 +110,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       } else {
         audioRecorder.record();
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Error', error.message);
     }
   };
