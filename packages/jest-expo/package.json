@@ -52,7 +52,6 @@
     "stacktrace-js": "^2.0.2"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
     "react-native": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },

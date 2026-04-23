@@ -5708,9 +5708,6 @@ importers:
       babel-jest:
         specifier: ^29.2.1
         version: 29.7.0(@babel/core@7.29.0)
-      expo:
-        specifier: workspace:*
-        version: link:../expo
       expo-modules-core:
         specifier: workspace:~55.0.12
         version: link:../expo-modules-core
@@ -18367,9 +18364,7 @@ snapshots:
       metro-runtime: 0.84.2
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
