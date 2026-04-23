@@ -1,4 +1,4 @@
-import { CodeBlock } from '../utils/commonCodeMod';
+import type { CodeBlock } from '../utils/commonCodeMod';
 /**
  * Find java or kotlin new class instance code block
  *

@@ -1,6 +1,7 @@
 import { SharedRef } from 'expo';
 
-import { ImageResult, SaveFormat, SaveOptions } from '../ImageManipulator.types';
+import type { ImageResult, SaveOptions } from '../ImageManipulator.types';
+import { SaveFormat } from '../ImageManipulator.types';
 import { blobToBase64String } from './utils.web';
 
 export default class ImageManipulatorImageRef extends SharedRef<'image'> {

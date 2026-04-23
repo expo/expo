@@ -1,10 +1,6 @@
-import {
-  ConfigPlugin,
-  ExportedConfigWithProps,
-  WarningAggregator,
-  AndroidConfig,
-} from '@expo/config-plugins';
-import { type ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin, ExportedConfigWithProps, AndroidConfig } from '@expo/config-plugins';
+import { WarningAggregator } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 
 import { withRestoreDefaultTheme } from './withRestoreDefaultTheme';
 

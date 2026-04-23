@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { type ModifierConfig } from '../../types';
 export type ExposedDropdownMenuBoxProps = {
     /**
@@ -37,6 +37,6 @@ export type ExposedDropdownMenuBoxProps = {
  * </ExposedDropdownMenuBox>
  * ```
  */
-export declare function ExposedDropdownMenuBox(props: ExposedDropdownMenuBoxProps): import("react").JSX.Element;
+export declare function ExposedDropdownMenuBox(props: ExposedDropdownMenuBoxProps): import("react/jsx-runtime").JSX.Element;
 export { ExposedDropdownMenu, type ExposedDropdownMenuProps } from './ExposedDropdownMenu';
 //# sourceMappingURL=index.d.ts.map

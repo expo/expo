@@ -1,5 +1,5 @@
-import { Android, ExpoConfig } from '@expo/config-types';
-import { AndroidManifest, ManifestIntentFilter } from './Manifest';
+import type { Android, ExpoConfig } from '@expo/config-types';
+import type { AndroidManifest, ManifestIntentFilter } from './Manifest';
 type AndroidIntentFilters = NonNullable<Android['intentFilters']>;
 export declare const withAndroidIntentFilters: import("..").ConfigPlugin;
 export declare function getIntentFilters(config: Pick<ExpoConfig, 'android'>): AndroidIntentFilters;

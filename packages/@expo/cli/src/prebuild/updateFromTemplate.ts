@@ -1,12 +1,13 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
 import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
-import { type ResolvedTemplateOption } from './resolveOptions';
+import type { ResolvedTemplateOption } from './resolveOptions';
 import { cloneTemplateAsync } from './resolveTemplate';
-import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
+import type { DependenciesModificationResults } from './updatePackageJson';
+import { updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 import * as Log from '../log';
 import { createTempDirectoryPath } from '../utils/createTempPath';

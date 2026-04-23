@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
 
-import { CameraPosition, Coordinates } from '../shared.types';
+import type { CameraPosition, Coordinates } from '../shared.types';
 import type { AppleMapsViewProps, AppleMapsViewType } from './AppleMaps.types';
 
 let NativeView: React.ComponentType<AppleMapsViewProps> | null;

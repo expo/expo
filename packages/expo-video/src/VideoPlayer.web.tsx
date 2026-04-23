@@ -14,7 +14,7 @@ import type {
   SeekTolerance,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoThumbnail } from './VideoThumbnail';
 import resolveAssetSource from './resolveAssetSource';
 
 export function useVideoPlayer(

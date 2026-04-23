@@ -1,4 +1,4 @@
-import { NotificationRequest } from './Notifications.types';
+import type { NotificationRequest } from './Notifications.types';
 /**
  * Fetches information about all scheduled notifications.
  * @return Returns a Promise resolving to an array of objects conforming to the [`Notification`](#notification) interface.

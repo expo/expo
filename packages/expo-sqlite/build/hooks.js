@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { Asset } from 'expo-asset';
 import React, { createContext, memo, useContext, useEffect, useRef, useState } from 'react';
 import ExpoSQLite from './ExpoSQLite';
@@ -16,11 +17,9 @@ export const SQLiteProvider = memo(function SQLiteProvider({ children, onError, 
         throw new Error('Cannot use `onError` with `useSuspense`, use error boundaries instead.');
     }
     if (useSuspense) {
-        return <SQLiteProviderSuspense {...props}>{children}</SQLiteProviderSuspense>;
+        return _jsx(SQLiteProviderSuspense, { ...props, children: children });
     }
-    return (<SQLiteProviderNonSuspense {...props} onError={onError}>
-        {children}
-      </SQLiteProviderNonSuspense>);
+    return (_jsx(SQLiteProviderNonSuspense, { ...props, onError: onError, children: children }));
 }, (prevProps, nextProps) => prevProps.databaseName === nextProps.databaseName &&
     deepEqual(prevProps.options, nextProps.options) &&
     deepEqual(prevProps.assetSource, nextProps.assetSource) &&
@@ -66,7 +65,7 @@ function SQLiteProviderSuspense({ databaseName, directory, options, assetSource,
         onInit,
     });
     const database = use(databasePromise);
-    return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
+    return _jsx(SQLiteContext.Provider, { value: database, children: children });
 }
 function SQLiteProviderNonSuspense({ databaseName, directory, options, assetSource, children, onInit, onError, }) {
     const databaseRef = useRef(null);
@@ -115,7 +114,7 @@ function SQLiteProviderNonSuspense({ databaseName, directory, options, assetSour
     if (loading || !databaseRef.current) {
         return null;
     }
-    return <SQLiteContext.Provider value={databaseRef.current}>{children}</SQLiteContext.Provider>;
+    return _jsx(SQLiteContext.Provider, { value: databaseRef.current, children: children });
 }
 function getDatabaseAsync({ databaseName, directory, options, assetSource, onInit, }) {
     if (databaseInstance?.promise != null &&
@@ -227,5 +226,4 @@ function use(promise) {
 function isReactUsePromise(promise) {
     return typeof promise === 'object' && promise !== null && 'status' in promise;
 }
-//#endregion
 //# sourceMappingURL=hooks.js.map

@@ -5,5 +5,5 @@ export interface FormProps extends CommonViewModifierProps {
      */
     children: React.ReactNode;
 }
-export declare function Form(props: FormProps): import("react").JSX.Element;
+export declare function Form(props: FormProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

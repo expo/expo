@@ -1,5 +1,5 @@
-import { AudioMetadata } from './Audio.types';
-import { AudioLockScreenOptions } from './AudioConstants';
+import type { AudioMetadata } from './Audio.types';
+import type { AudioLockScreenOptions } from './AudioConstants';
 interface MediaSessionPlayer {
     play(): void;
     pause(): void;

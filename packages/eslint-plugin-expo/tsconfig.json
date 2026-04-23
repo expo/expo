@@ -4,8 +4,6 @@
   "exclude": ["**/__tests__/*"],
   "compilerOptions": {
     "outDir": "build",
-    "resolveJsonModule": true,
-    "declaration": false,
-    "composite": false
+    "declaration": false
   }
 }

@@ -1,5 +1,5 @@
-import { Href } from '../../types';
+import type { Href } from '../../types';
 export declare function HrefPreview({ href }: {
     href: Href;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=HrefPreview.d.ts.map

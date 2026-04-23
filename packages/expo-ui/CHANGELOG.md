@@ -34,6 +34,8 @@
 - add ExposedDropdownMenuBox ([#44201](https://github.com/expo/expo/pull/44201) by [@vonovak](https://github.com/vonovak))
 - Added `@expo/ui/community/segmented-control` — a drop-in replacement for `@react-native-segmented-control/segmented-control`. ([#44611](https://github.com/expo/expo/pull/44611) by [@vonovak](https://github.com/vonovak))
 - Added `@expo/ui/community/picker` — Android, iOS and web `Picker` drop-in replacement for `@react-native-picker/picker`. ([#44058](https://github.com/expo/expo/pull/44058) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `TabView` and `TabView.Tab` components wrapping SwiftUI's `TabView`, with `tabViewStyle` and `indexViewStyle` modifiers for the page (swipeable) and bottom-tab styles. ([#44780](https://github.com/expo/expo/pull/44780) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `containerRelativeShape` to shape types for `clipShape`, `mask`, `background`, `containerShape`, `contentShape`, and `glassEffect` modifiers. Enables proper shape adaptation in widgets and container-relative contexts using SwiftUI's `ContainerRelativeShape`. ([#44704](https://github.com/expo/expo/pull/44704) by [@hypnokermit](https://github.com/hypnokermit))
 - [iOS] Add `ObservableState` shared object and `useNativeState` hook for controlling native SwiftUI state from JS. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add shared object worklet support with `.value` property API for `ObservableState`. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44216](https://github.com/expo/expo/pull/44216) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -70,6 +72,7 @@
 - [swift-ui] Added `LazyHStack` and `LazyVStack`. ([#44612](https://github.com/expo/expo/pull/44612) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Added `LazyRow` component and `onVisibilityChanged` modifier. ([#44615](https://github.com/expo/expo/pull/44615) by [@kudo](https://github.com/kudo))
 - Added universal components. ([#44601](https://github.com/expo/expo/pull/44601) by [@kudo](https://github.com/kudo))
+- [iOS] Add `containerBackground` modifier. ([#44192](https://github.com/expo/expo/pull/44192) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
@@ -96,6 +99,8 @@
 - [jetpack-compose] Reuse `HorizontalAlignment` converter in `LazyColumn`. ([#44755](https://github.com/expo/expo/pull/44755) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Added `horizontalScroll` and `verticalScroll` modifiers. ([#44464](https://github.com/expo/expo/pull/44464) by [@kudo](https://github.com/kudo))
 - [Android] Added AsyncFunction support to the functional `ExpoUIView` DSL. ([#44081](https://github.com/expo/expo/pull/44081) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed build error when using precompiled `ExpoModulesCore.xcframework`. ([#45016](https://github.com/expo/expo/pull/45016) by [@kudo](https://github.com/kudo))
+- [Android] Improved application startup performance by reducing reflection. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.1 — 2026-02-25
 

@@ -1,4 +1,3 @@
-import React from 'react';
 /**
  * Props passed to a route's `SuspenseFallback` export.
  */
@@ -22,5 +21,5 @@ export type SuspenseFallbackProps = {
      */
     params: Record<string, string | string[]>;
 };
-export declare function SuspenseFallback({ route }: SuspenseFallbackProps): React.JSX.Element | null;
+export declare function SuspenseFallback({ route }: SuspenseFallbackProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=SuspenseFallback.d.ts.map

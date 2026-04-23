@@ -42,5 +42,5 @@ export interface TextProps extends CommonViewModifierProps {
      */
     pauseTime?: Date;
 }
-export declare function Text(props: TextProps): React.JSX.Element | null;
+export declare function Text(props: TextProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=index.d.ts.map

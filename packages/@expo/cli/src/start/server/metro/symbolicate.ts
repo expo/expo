@@ -1,4 +1,4 @@
-import { StackFrame } from 'stacktrace-parser';
+import type { StackFrame } from 'stacktrace-parser';
 
 export type CodeFrame = {
   content: string;

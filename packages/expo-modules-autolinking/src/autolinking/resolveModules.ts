@@ -1,4 +1,4 @@
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
 import { taskAll } from '../concurrency';
 import { getLinkingImplementationForPlatform } from '../platforms';
 import type {

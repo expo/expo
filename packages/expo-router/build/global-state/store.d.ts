@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import { type UrlObject } from './getRouteInfoFromState';
 import type { FocusedRouteState, LinkToOptions, ReactNavigationState, StoreRedirects } from './types';
-import { RouteNode } from '../Route';
+import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
 import type { RequireContext, Href } from '../types';

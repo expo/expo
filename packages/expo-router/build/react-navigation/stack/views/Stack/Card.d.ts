@@ -43,6 +43,6 @@ type Props = {
     containerStyle?: StyleProp<ViewStyle>;
     contentStyle?: StyleProp<ViewStyle>;
 };
-declare function Card({ shadowEnabled, gestureEnabled, gestureVelocityImpact, overlay, animated, interpolationIndex, opening, closing, next, current, gesture, layout, insets, direction, pageOverflowEnabled, gestureDirection, onOpen, onClose, onTransition, onGestureBegin, onGestureCanceled, onGestureEnd, children, overlayEnabled, gestureResponseDistance, transitionSpec, preloaded, styleInterpolator, containerStyle: customContainerStyle, contentStyle, }: Props): React.JSX.Element;
+declare function Card({ shadowEnabled, gestureEnabled, gestureVelocityImpact, overlay, animated, interpolationIndex, opening, closing, next, current, gesture, layout, insets, direction, pageOverflowEnabled, gestureDirection, onOpen, onClose, onTransition, onGestureBegin, onGestureCanceled, onGestureEnd, children, overlayEnabled, gestureResponseDistance, transitionSpec, preloaded, styleInterpolator, containerStyle: customContainerStyle, contentStyle, }: Props): import("react/jsx-runtime").JSX.Element;
 export { Card };
 //# sourceMappingURL=Card.d.ts.map

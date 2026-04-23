@@ -1,6 +1,6 @@
 import { setTimeout } from 'node:timers/promises';
 
-import { fetch } from '../../../../utils/fetch';
+import type { fetch } from '../../../../utils/fetch';
 import { commandEvent } from '../../events';
 import type { TelemetryRecordInternal } from '../../types';
 import { FetchClient } from '../FetchClient';

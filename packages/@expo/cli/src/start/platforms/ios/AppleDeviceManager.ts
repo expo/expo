@@ -20,7 +20,7 @@ import { parsePlistAsync } from '../../../utils/plist';
 import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
-import { BaseResolveDeviceProps } from '../PlatformManager';
+import type { BaseResolveDeviceProps } from '../PlatformManager';
 
 const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as typeof console.log;
 

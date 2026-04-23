@@ -1,4 +1,4 @@
-import { ExpoModifier } from '../types';
+import type { ExpoModifier } from '../types';
 export type PrimitiveBaseProps = {
     /**
      * Modifiers for the component.

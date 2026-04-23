@@ -1,12 +1,13 @@
 import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
 
-import { BundlerStartOptions } from '../../BundlerDevServer';
+import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
 import { warnInvalidWebOutput } from '../router';
-import { FileChangeEvent, observeAnyFileChanges } from '../waitForMetroToObserveTypeScriptFile';
+import type { FileChangeEvent } from '../waitForMetroToObserveTypeScriptFile';
+import { observeAnyFileChanges } from '../waitForMetroToObserveTypeScriptFile';
 
 jest.mock('../waitForMetroToObserveTypeScriptFile', () => ({
   observeAnyFileChanges: jest.fn(),

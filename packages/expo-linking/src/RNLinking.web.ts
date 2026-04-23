@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 
-import { NativeURLListener, URLListener } from './Linking.types';
+import type { NativeURLListener, URLListener } from './Linking.types';
 
 const listeners: { listener: URLListener; nativeListener: NativeURLListener }[] = [];
 

@@ -1,4 +1,4 @@
-import { ResolvedSharePayload, SharePayload, SharingOptions } from './Sharing.types';
+import type { ResolvedSharePayload, SharePayload, SharingOptions } from './Sharing.types';
 /**
  * Determine if the sharing API can be used in this app.
  * @return A promise that fulfills with `true` if the sharing API can be used, and `false` otherwise.

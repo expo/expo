@@ -21,6 +21,7 @@ import expo.modules.ui.compose
 import expo.modules.ui.shapeFromShapeRecord
 import java.io.Serializable
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 open class ButtonPressedEvent() : Record, Serializable
@@ -49,6 +50,7 @@ fun ContentPaddingRecord.toPaddingValues(): PaddingValues =
     bottom = bottom?.dp ?: ButtonDefaults.ContentPadding.calculateBottomPadding()
   )
 
+@OptimizedComposeProps
 data class ButtonProps(
   val colors: ButtonColors = ButtonColors(),
   val enabled: Boolean = true,

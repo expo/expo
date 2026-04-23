@@ -7,6 +7,6 @@ type RootModalContextValue = {
 export declare const RootModalContext: import("react").Context<RootModalContextValue>;
 export declare function RootModalProvider({ children }: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=RootModal.d.ts.map

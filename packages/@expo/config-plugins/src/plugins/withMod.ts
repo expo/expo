@@ -1,9 +1,9 @@
-import { ExpoConfig } from '@expo/config-types';
-import { JSONObject } from '@expo/json-file';
+import type { ExpoConfig } from '@expo/config-types';
+import type { JSONObject } from '@expo/json-file';
 import chalk from 'chalk';
 import { boolish } from 'getenv';
 
-import { ExportedConfig, ExportedConfigWithProps, Mod, ModPlatform } from '../Plugin.types';
+import type { ExportedConfig, ExportedConfigWithProps, Mod, ModPlatform } from '../Plugin.types';
 import { PluginError } from '../utils/errors';
 
 const EXPO_DEBUG = boolish('EXPO_DEBUG', false);

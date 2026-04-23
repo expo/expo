@@ -1,12 +1,11 @@
 import { screen } from '@testing-library/react-native';
-import React from 'react';
 import { View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import { type NativeTabsTriggerIconProps } from '../common/elements';
+import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {

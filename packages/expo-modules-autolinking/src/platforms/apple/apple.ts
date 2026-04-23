@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { getIosInlineModulesClassNames } from '../../inlineModules/iosInlineModules';
 import type {
   AppleCodeSignEntitlements,
@@ -135,11 +135,6 @@ export async function generateModulesProviderAsync(
 
   await fs.promises.mkdir(parentPath, { recursive: true });
   await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
-}
-
-interface GeneratePackageListFileContentParams {
-  watchedDirectories: string[];
-  appRoot: string;
 }
 
 /**

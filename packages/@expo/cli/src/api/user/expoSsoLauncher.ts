@@ -1,7 +1,7 @@
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
 import http from 'http';
-import { Socket } from 'node:net';
+import type { Socket } from 'node:net';
 import querystring from 'querystring';
 
 import * as Log from '../../log';

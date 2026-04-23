@@ -1,15 +1,9 @@
 /**
  * These are the versioned first-party plugins with some of the future third-party plugins mixed in for legacy support.
  */
-import {
-  AndroidConfig,
-  ConfigPlugin,
-  IOSConfig,
-  StaticPlugin,
-  withPlugins,
-  withStaticPlugin,
-} from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin, StaticPlugin } from '@expo/config-plugins';
+import { AndroidConfig, IOSConfig, withPlugins, withStaticPlugin } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 
 import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';

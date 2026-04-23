@@ -1,9 +1,9 @@
-import React, { ComponentProps } from 'react';
-import { ParamListBase, StackNavigationState } from '../react-navigation/native';
-import { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
+import type { ComponentProps } from 'react';
+import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
+import type { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-declare const JSStack: React.ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/stack").StackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
+declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/stack").StackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -101,7 +101,7 @@ declare const JSStack: React.ForwardRefExoticComponent<Omit<Omit<import("../reac
     id?: undefined;
 } | {
     id: string;
-})), "children">> & React.RefAttributes<unknown>> & {
+})), "children">> & import("react").RefAttributes<unknown>> & {
     Screen: (props: import("..").ScreenProps<StackNavigationOptions, StackNavigationState<ParamListBase>, StackNavigationEventMap>) => null;
     Protected: typeof Protected;
 };
@@ -110,9 +110,9 @@ declare const JSStack: React.ForwardRefExoticComponent<Omit<Omit<import("../reac
  *
  * @hideType
  */
-declare const Stack: ((props: ComponentProps<typeof JSStack>) => React.JSX.Element) & {
+declare const Stack: ((props: ComponentProps<typeof JSStack>) => import("react/jsx-runtime").JSX.Element) & {
     Screen: typeof Screen;
-    Protected: React.FunctionComponent<import("../views/Protected").ProtectedProps>;
+    Protected: import("react").FunctionComponent<import("../views/Protected").ProtectedProps>;
 };
 export { Stack };
 export default Stack;

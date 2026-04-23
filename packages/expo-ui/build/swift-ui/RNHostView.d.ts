@@ -11,5 +11,5 @@ export type RNHostViewProps = {
      */
     children: React.ReactElement;
 };
-export declare function RNHostView(props: RNHostViewProps): import("react").JSX.Element;
+export declare function RNHostView(props: RNHostViewProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=RNHostView.d.ts.map

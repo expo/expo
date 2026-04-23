@@ -7,7 +7,7 @@
  */
 import plist from '@expo/plist';
 import Debug from 'debug';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 
 import { CommandError } from '../../../../utils/errors';
 import { parsePlistBuffer } from '../../../../utils/plist';

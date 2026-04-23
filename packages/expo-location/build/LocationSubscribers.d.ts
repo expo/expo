@@ -1,4 +1,4 @@
-import { LocationCallback, LocationErrorCallback, LocationHeadingCallback } from './Location.types';
+import type { LocationCallback, LocationErrorCallback, LocationHeadingCallback } from './Location.types';
 type EventObject = {
     watchId: number;
     [key: string]: any;

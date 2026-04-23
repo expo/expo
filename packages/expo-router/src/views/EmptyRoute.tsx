@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 import { Toast, ToastWrapper } from './Toast';
 import { useRouteNode } from '../Route';
 

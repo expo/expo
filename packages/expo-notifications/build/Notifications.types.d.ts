@@ -738,7 +738,7 @@ export type MaybeNotificationResponse = NotificationResponse | null | undefined;
  * @deprecated use the [`EventSubscription`](#eventsubscription) type instead
  * */
 export type Subscription = EventSubscription;
-export { PermissionExpiration, PermissionResponse, EventSubscription, PermissionStatus, } from 'expo-modules-core';
+export { type PermissionExpiration, type PermissionResponse, type EventSubscription, PermissionStatus, } from 'expo-modules-core';
 /**
  * Payload for the background notification handler task.
  * [Read more](#run-javascript-in-response-to-incoming-notifications).

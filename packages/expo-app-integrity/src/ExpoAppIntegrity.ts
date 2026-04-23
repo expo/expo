@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo-modules-core';
 
-import { ExpoAppIntegrityModule } from './ExpoAppIntegrity.types';
+import type { ExpoAppIntegrityModule } from './ExpoAppIntegrity.types';
 
 /**
  * @hidden

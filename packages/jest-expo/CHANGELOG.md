@@ -13,6 +13,7 @@
 
 ### 💡 Others
 
+- Drop expo dependencies from `jest-expo` to prevent cycles ([#45048](https://github.com/expo/expo/pull/45048) by [@kitten](https://github.com/kitten))
 - Fixed `expo/fetch` testing. ([#44987](https://github.com/expo/expo/pull/44987) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices

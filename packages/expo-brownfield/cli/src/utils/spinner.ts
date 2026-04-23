@@ -1,6 +1,6 @@
 import ora, { type Ora } from 'ora';
 
-import { WithSpinnerParams } from './types';
+import type { WithSpinnerParams } from './types';
 
 export const withSpinner = async <T>({
   operation,

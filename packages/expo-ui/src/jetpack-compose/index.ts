@@ -47,4 +47,4 @@ export * from './Row';
 export * from './Column';
 export * from './FlowRow';
 export { useNativeState } from '../State/useNativeState';
-export { ViewEvent } from '../types';
+export type { ViewEvent } from '../types';

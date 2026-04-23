@@ -1,4 +1,4 @@
-import { AssetField } from './AssetField';
+import type { AssetField } from './AssetField';
 
 export type SortDescriptor = {
   key: AssetField;

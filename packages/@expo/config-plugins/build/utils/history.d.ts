@@ -1,5 +1,5 @@
-import { ExpoConfig } from '@expo/config-types';
-import { ModPlatform } from '../Plugin.types';
+import type { ExpoConfig } from '@expo/config-types';
+import type { ModPlatform } from '../Plugin.types';
 export type PluginHistoryItem = {
     name: string;
     version: string;

@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useHeaderConfigProps = useHeaderConfigProps;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const elements_1 = require("../../elements");
@@ -220,49 +221,21 @@ function useHeaderConfigProps({ headerBackIcon, headerBackImageSource, headerBac
         // So we need to reverse them here to match the order
         rightItems = [...rightItems].reverse();
     }
-    const children = (<>
-      {react_native_1.Platform.OS === 'ios' ? (<>
-          {leftItems ? (leftItems.map((item, index) => {
+    const children = ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [react_native_1.Platform.OS === 'ios' ? ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [leftItems ? (leftItems.map((item, index) => {
+                        if (item.type === 'custom') {
+                            return ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackHeaderLeftView, { hidesSharedBackground: item.hidesSharedBackground, children: item.element }, index));
+                        }
+                        return null;
+                    })) : headerLeftElement != null ? ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackHeaderLeftView, { children: headerLeftElement })) : null, headerTitleElement != null ? ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackHeaderCenterView, { children: headerTitleElement })) : null] })) : ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [headerLeftElement != null || typeof headerTitle === 'function' ? (
+                    // The style passed to header left, together with title element being wrapped
+                    // in flex view is reqruied for proper header layout, in particular,
+                    // for the text truncation to work.
+                    (0, jsx_runtime_1.jsxs)(react_native_screens_1.ScreenStackHeaderLeftView, { style: !isCenterViewRenderedAndroid ? { flex: 1 } : null, children: [headerLeftElement, headerTitleAlign !== 'center' ? (typeof headerTitle === 'function' ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: { flex: 1 }, children: headerTitleElement })) : ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: { flex: 1 }, children: (0, jsx_runtime_1.jsx)(elements_1.HeaderTitle, { tintColor: tintColor, style: headerTitleStyleSupported, children: titleText }) }))) : null] })) : null, isCenterViewRenderedAndroid ? ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackHeaderCenterView, { children: typeof headerTitle === 'function' ? (headerTitleElement) : ((0, jsx_runtime_1.jsx)(elements_1.HeaderTitle, { tintColor: tintColor, style: headerTitleStyleSupported, children: titleText })) })) : null] })), headerBackIcon !== undefined || headerBackImageSource !== undefined ? ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackHeaderBackButtonImage, { source: headerBackIcon?.source ?? headerBackImageSource })) : null, react_native_1.Platform.OS === 'ios' && rightItems ? (rightItems.map((item, index) => {
                 if (item.type === 'custom') {
-                    return (<react_native_screens_1.ScreenStackHeaderLeftView key={index} hidesSharedBackground={item.hidesSharedBackground}>
-                    {item.element}
-                  </react_native_screens_1.ScreenStackHeaderLeftView>);
+                    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackHeaderRightView, { hidesSharedBackground: item.hidesSharedBackground, children: item.element }, index));
                 }
                 return null;
-            })) : headerLeftElement != null ? (<react_native_screens_1.ScreenStackHeaderLeftView>{headerLeftElement}</react_native_screens_1.ScreenStackHeaderLeftView>) : null}
-          {headerTitleElement != null ? (<react_native_screens_1.ScreenStackHeaderCenterView>{headerTitleElement}</react_native_screens_1.ScreenStackHeaderCenterView>) : null}
-        </>) : (<>
-          {headerLeftElement != null || typeof headerTitle === 'function' ? (
-            // The style passed to header left, together with title element being wrapped
-            // in flex view is reqruied for proper header layout, in particular,
-            // for the text truncation to work.
-            <react_native_screens_1.ScreenStackHeaderLeftView style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}>
-              {headerLeftElement}
-              {headerTitleAlign !== 'center' ? (typeof headerTitle === 'function' ? (<react_native_1.View style={{ flex: 1 }}>{headerTitleElement}</react_native_1.View>) : (<react_native_1.View style={{ flex: 1 }}>
-                    <elements_1.HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
-                      {titleText}
-                    </elements_1.HeaderTitle>
-                  </react_native_1.View>)) : null}
-            </react_native_screens_1.ScreenStackHeaderLeftView>) : null}
-          {isCenterViewRenderedAndroid ? (<react_native_screens_1.ScreenStackHeaderCenterView>
-              {typeof headerTitle === 'function' ? (headerTitleElement) : (<elements_1.HeaderTitle tintColor={tintColor} style={headerTitleStyleSupported}>
-                  {titleText}
-                </elements_1.HeaderTitle>)}
-            </react_native_screens_1.ScreenStackHeaderCenterView>) : null}
-        </>)}
-      {headerBackIcon !== undefined || headerBackImageSource !== undefined ? (<react_native_screens_1.ScreenStackHeaderBackButtonImage source={headerBackIcon?.source ?? headerBackImageSource}/>) : null}
-      {react_native_1.Platform.OS === 'ios' && rightItems ? (rightItems.map((item, index) => {
-            if (item.type === 'custom') {
-                return (<react_native_screens_1.ScreenStackHeaderRightView key={index} hidesSharedBackground={item.hidesSharedBackground}>
-                {item.element}
-              </react_native_screens_1.ScreenStackHeaderRightView>);
-            }
-            return null;
-        })) : headerRightElement != null ? (<react_native_screens_1.ScreenStackHeaderRightView>{headerRightElement}</react_native_screens_1.ScreenStackHeaderRightView>) : null}
-      {hasHeaderSearchBar ? (<react_native_screens_1.ScreenStackHeaderSearchBarView>
-          <react_native_screens_1.SearchBar {...headerSearchBarOptions}/>
-        </react_native_screens_1.ScreenStackHeaderSearchBarView>) : null}
-    </>);
+            })) : headerRightElement != null ? ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackHeaderRightView, { children: headerRightElement })) : null, hasHeaderSearchBar ? ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStackHeaderSearchBarView, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.SearchBar, { ...headerSearchBarOptions }) })) : null] }));
     return {
         backButtonInCustomView,
         backgroundColor: headerBackgroundColor,

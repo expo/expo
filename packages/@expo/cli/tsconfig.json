@@ -4,6 +4,7 @@
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"],
   "compilerOptions": {
     "lib": ["dom", "esnext"],
-    "outDir": "./build"
+    "outDir": "./build",
+    "verbatimModuleSyntax": false
   }
 }

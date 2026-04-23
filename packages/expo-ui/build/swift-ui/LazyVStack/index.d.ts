@@ -10,5 +10,5 @@ export type LazyVStackProps = {
      */
     spacing?: number;
 } & CommonViewModifierProps;
-export declare function LazyVStack(props: LazyVStackProps): import("react").JSX.Element;
+export declare function LazyVStack(props: LazyVStackProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

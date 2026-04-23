@@ -1,12 +1,12 @@
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
-import {
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type {
   ParamListBase,
   StackActionHelpers,
   StackNavigationState,
   StackRouterOptions,
   useNavigationBuilder,
 } from '../../react-navigation/native';
-import {
+import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../../react-navigation/native-stack';

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { type ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 
-import { type DOMProps, type WebViewProps } from '../dom.types';
+import type { DOMProps, WebViewProps } from '../dom.types';
 
 type UseDebugZeroHeightType = (dom?: DOMProps) => {
   debugZeroHeightStyle: WebViewProps['containerStyle'] | undefined;

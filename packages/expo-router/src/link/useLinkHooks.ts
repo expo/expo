@@ -1,11 +1,11 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { useMemo, MouseEvent, type Ref } from 'react';
-import { TextProps, GestureResponderEvent, Platform, type Text } from 'react-native';
+import { useMemo, type Ref, type MouseEvent } from 'react';
+import { type TextProps, type GestureResponderEvent, Platform, type Text } from 'react-native';
 
-import { Href } from '../types';
-import { SingularOptions } from '../useScreens';
+import type { Href } from '../types';
+import type { SingularOptions } from '../useScreens';
 
 // docsMissing
 /**

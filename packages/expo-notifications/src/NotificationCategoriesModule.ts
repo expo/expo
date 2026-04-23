@@ -1,6 +1,6 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
-import { NotificationCategoriesModule } from './NotificationCategoriesModule.types';
+import type { NotificationCategoriesModule } from './NotificationCategoriesModule.types';
 
 const notificationCategoriesModule: NotificationCategoriesModule = {
   async getNotificationCategoriesAsync() {

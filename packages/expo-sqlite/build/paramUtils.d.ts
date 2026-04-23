@@ -1,4 +1,4 @@
-import { SQLiteBindBlobParams, SQLiteBindPrimitiveParams, type SQLiteColumnNames, type SQLiteColumnValues } from './NativeStatement';
+import type { SQLiteBindBlobParams, SQLiteBindPrimitiveParams, SQLiteColumnNames, SQLiteColumnValues } from './NativeStatement';
 /**
  * Normalize the bind params to data structure that can be passed to native module.
  * The data structure is a tuple of [primitiveParams, blobParams, shouldPassAsArray].

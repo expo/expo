@@ -1,4 +1,4 @@
-import { type NavigationState } from '../routers';
+import type { NavigationState } from '../routers';
 import type { NavigationProp } from './types';
 /**
  * Hook to access the navigation prop of the parent screen anywhere.

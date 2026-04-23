@@ -1,7 +1,7 @@
-import { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 import type { ReactNavigationState, StoreRedirects } from './types';
-import { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
-import { RequireContext } from '../types';
+import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
+import type { RequireContext } from '../types';
 export declare function useStore(context: RequireContext, linkingConfigOptions: LinkingConfigOptions, serverUrl?: string): {
     shouldShowTutorial(): boolean;
     readonly state: ReactNavigationState | undefined;

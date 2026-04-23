@@ -7,31 +7,21 @@ import type {
 } from 'expo-manifests';
 import type { Manifest as UpdatesManifest } from 'expo-updates';
 
-import {
-  AndroidManifest,
-  AppOwnership,
-  Constants,
-  ExecutionEnvironment,
-  IOSManifest,
-  NativeConstants,
-  PlatformManifest,
-  UserInterfaceIdiom,
-  WebManifest,
-} from './Constants.types';
+import type { Constants } from './Constants.types';
 import ExponentConstants from './ExponentConstants.web.js';
 type DevLauncherManifest = ExpoUpdatesManifest;
 
 export {
-  AndroidManifest,
+  type AndroidManifest,
   AppOwnership,
-  Constants,
+  type Constants,
   ExecutionEnvironment,
-  IOSManifest,
-  NativeConstants,
-  PlatformManifest,
+  type IOSManifest,
+  type NativeConstants,
+  type PlatformManifest,
   UserInterfaceIdiom,
-  WebManifest,
-};
+  type WebManifest,
+} from './Constants.types';
 
 type RawManifest = UpdatesManifest | DevLauncherManifest | ExpoConfig;
 

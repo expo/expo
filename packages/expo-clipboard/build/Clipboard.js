@@ -1,5 +1,4 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
-import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -185,5 +184,5 @@ export function removeClipboardListener(subscription) {
  */
 export const isPasteButtonAvailable = Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 export * from './Clipboard.types';
-export { ClipboardPasteButton };
+export { ClipboardPasteButton } from './ClipboardPasteButton';
 //# sourceMappingURL=Clipboard.js.map

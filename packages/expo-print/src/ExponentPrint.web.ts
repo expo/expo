@@ -1,4 +1,4 @@
-import { OrientationType } from './Print.types';
+import type { OrientationType } from './Print.types';
 
 export default {
   get Orientation(): OrientationType {

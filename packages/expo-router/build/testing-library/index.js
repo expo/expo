@@ -1,19 +1,17 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.testRouter = exports.getMockContext = exports.getMockConfig = void 0;
 exports.renderRouter = renderRouter;
+const jsx_runtime_1 = require("react/jsx-runtime");
 require("./expect");
 require("./mocks");
-const react_1 = __importDefault(require("react"));
 const mock_config_1 = require("./mock-config");
-Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
-Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
 const ExpoRoot_1 = require("../ExpoRoot");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
+var mock_config_2 = require("./mock-config");
+Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_2.getMockConfig; } });
+Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_2.getMockContext; } });
 const rnTestingLibrary = (() => {
     try {
         return require('@testing-library/react-native');
@@ -39,7 +37,7 @@ function renderRouter(context = './app', { initialUrl = '/', linking, ...options
     const mockContext = (0, mock_config_1.getMockContext)(context);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-    const result = rnTestingLibrary.render(<ExpoRoot_1.ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
+    const result = rnTestingLibrary.render((0, jsx_runtime_1.jsx)(ExpoRoot_1.ExpoRoot, { context: mockContext, location: initialUrl, linking: linking }), options);
     /**
      * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
      * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.

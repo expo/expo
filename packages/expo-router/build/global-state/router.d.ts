@@ -1,5 +1,5 @@
 import type { LinkToOptions, NavigationOptions } from './types';
-import { Href, Route, RouteInputParams } from '../types';
+import type { Href, Route, RouteInputParams } from '../types';
 export declare function navigate(url: Href, options?: NavigationOptions): void;
 export declare function reload(): void;
 export declare function prefetch(href: Href, options?: NavigationOptions): void;

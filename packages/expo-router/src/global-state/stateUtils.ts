@@ -1,6 +1,6 @@
-import { ResultState } from '../fork/getStateFromPath';
+import type { ResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
-import { type NavigationState, PartialRoute, type PartialState } from '../react-navigation/native';
+import type { PartialRoute, NavigationState, PartialState } from '../react-navigation/native';
 
 /**
  * React Navigation uses params to store information about the screens, rather then create new state for each level.

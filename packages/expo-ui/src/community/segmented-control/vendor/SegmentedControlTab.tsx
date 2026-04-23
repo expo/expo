@@ -3,7 +3,6 @@
  * https://github.com/react-native-segmented-control/segmented-control
  */
 
-import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, useColorScheme } from 'react-native';
 
 export function SegmentedControlTab({

@@ -1,10 +1,10 @@
 import { isRunningInExpoGo } from 'expo';
-import { PermissionResponse, createPermissionHook, Platform } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo-modules-core';
+import { createPermissionHook, Platform } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
-import {
+import type {
   LocationErrorCallback,
-  LocationAccuracy,
   LocationCallback,
   LocationGeocodedAddress,
   LocationGeocodedLocation,
@@ -19,6 +19,7 @@ import {
   LocationSubscription,
   LocationTaskOptions,
 } from './Location.types';
+import { LocationAccuracy } from './Location.types';
 import {
   LocationSubscriber,
   HeadingSubscriber,

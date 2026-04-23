@@ -1,5 +1,5 @@
 import AesCryptoModule from './ExpoCryptoAES';
-import {
+import type {
   ArrayBufferDecryptOptions,
   Base64DecryptOptions,
   AESDecryptOptions,

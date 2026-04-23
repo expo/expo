@@ -1,4 +1,4 @@
-import { ExportedConfig, Mod } from '../../Plugin.types';
+import type { ExportedConfig, Mod } from '../../Plugin.types';
 import { evalModsAsync } from '../mod-compiler';
 import { withBaseMod, withMod } from '../withMod';
 

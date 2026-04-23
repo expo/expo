@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { type Ref, type ReactNode, type ReactElement } from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 export type PickerItemValue = string | number | null;
 /**
  * Props for the `Picker.Item` component.
@@ -38,7 +38,7 @@ export type PickerItemProps<T extends PickerItemValue> = {
  * Data-only component used to define options within a `Picker`.
  * Does not render anything — the parent `Picker` extracts props from these children.
  */
-export declare function PickerItem<T extends PickerItemValue>(_props: PickerItemProps<T>): React.ReactElement | null;
+export declare function PickerItem<T extends PickerItemValue>(_props: PickerItemProps<T>): ReactElement | null;
 /**
  * Props for the `Picker` component.
  * Compatible with `@react-native-picker/picker`.
@@ -47,7 +47,7 @@ export type PickerProps<T extends PickerItemValue = PickerItemValue> = {
     /**
      * Ref handle exposing `focus()` and `blur()` methods.
      */
-    ref?: React.Ref<PickerRef>;
+    ref?: Ref<PickerRef>;
     /**
      * The currently selected value. Must match the `value` of one of the `Picker.Item` children.
      */
@@ -71,7 +71,7 @@ export type PickerProps<T extends PickerItemValue = PickerItemValue> = {
     /**
      * `Picker.Item` children that define the available options.
      */
-    children?: React.ReactNode;
+    children?: ReactNode;
 };
 /**
  * Ref handle for the `Picker` component.
@@ -90,7 +90,7 @@ export type PickerRef = {
     blur: () => void;
 };
 export type PickerWithItems = {
-    <T extends PickerItemValue>(props: PickerProps<T>): React.ReactElement | null;
+    <T extends PickerItemValue>(props: PickerProps<T>): ReactElement | null;
     Item: typeof PickerItem;
 };
 export type ExtractedPickerItem<T extends PickerItemValue = PickerItemValue> = {
@@ -103,5 +103,5 @@ export type ExtractedPickerItem<T extends PickerItemValue = PickerItemValue> = {
 /**
  * Extracts `Picker.Item` children props into an array of item entries.
  */
-export declare function extractPickerItems<T extends PickerItemValue>(children: React.ReactNode): ExtractedPickerItem<T>[];
+export declare function extractPickerItems<T extends PickerItemValue>(children: ReactNode): ExtractedPickerItem<T>[];
 //# sourceMappingURL=types.d.ts.map

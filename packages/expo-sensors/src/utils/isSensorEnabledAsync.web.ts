@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo-modules-core';
+import { PermissionStatus, Platform } from 'expo-modules-core';
 
 type SensorEventName = 'deviceorientation' | 'devicemotion';
 

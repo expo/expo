@@ -1,10 +1,8 @@
 import type Server from '@expo/metro/metro/Server';
-import fs from 'fs/promises';
 import path from 'path';
 
-import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
-import { ServerLike } from '../BundlerDevServer';
+import type { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
@@ -79,36 +77,6 @@ async function typedRoutes(
     typedRoutesModule.regenerateDeclarations(typesDirectory);
   }
 }
-
-function debounce<U, T extends (this: U, ...args: any[]) => void>(fn: T, delay: number): T {
-  let timeoutId: NodeJS.Timeout | undefined;
-  return function (this: U, ...args: any[]) {
-    clearTimeout(timeoutId);
-    // NOTE(@hassankhan): The cast to `NodeJS.Timeout` below is a hack to work around an issue
-    // with TypeScript where React Native's types are being imported before Node types
-    timeoutId = setTimeout(() => fn.apply(this, args), delay) as unknown as NodeJS.Timeout;
-  } as T;
-}
-
-/**
- * Generate a router.d.ts file that contains all of the routes in the project.
- * Should be debounced as its very common for developers to make changes to multiple files at once (eg Save All)
- */
-const regenerateRouterDotTS = debounce(
-  async (
-    typesDir: string,
-    staticRoutes: Set<string>,
-    dynamicRoutes: Set<string>,
-    dynamicRouteTemplates: Set<string>
-  ) => {
-    await fs.mkdir(typesDir, { recursive: true });
-    await fs.writeFile(
-      path.resolve(typesDir, './router.d.ts'),
-      getTemplateString(staticRoutes, dynamicRoutes, dynamicRouteTemplates)
-    );
-  },
-  100
-);
 
 /*
  * This is exported for testing purposes
@@ -248,23 +216,6 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
 export const setToUnionType = <T>(set: Set<T>) => {
   return set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
 };
-
-/**
- * Recursively walk a directory and call the callback with the file path.
- */
-async function walk(directory: string, callback: (filePath: string) => void) {
-  const files = await fs.readdir(directory);
-  for (const file of files) {
-    const p = path.join(directory, file);
-    if ((await fs.stat(p)).isDirectory()) {
-      await walk(p, callback);
-    } else {
-      // Normalise the paths so they are easier to convert to URLs
-      const normalizedPath = p.replaceAll(path.sep, '/');
-      callback(normalizedPath);
-    }
-  }
-}
 
 /**
  * Given a route, return all possible routes that could be generated from it.

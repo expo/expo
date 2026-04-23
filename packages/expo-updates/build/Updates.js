@@ -1,7 +1,7 @@
 import { CodedError } from 'expo-modules-core';
 import { Image } from 'react-native';
 import ExpoUpdates from './ExpoUpdates';
-import { UpdatesCheckAutomaticallyValue, } from './Updates.types';
+import { UpdatesCheckAutomaticallyValue } from './Updates.types';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
  * - enabled set to false in configuration

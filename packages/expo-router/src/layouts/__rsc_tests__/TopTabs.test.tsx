@@ -1,7 +1,5 @@
 /// <reference types="jest-expo/rsc/expect" />
 
-import React from 'react';
-
 import TopTabs from '../TopTabs';
 
 it(`renders to RSC`, async () => {

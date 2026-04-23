@@ -1,4 +1,5 @@
-import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
+import type { ExpoConfig, Platform } from '@expo/config';
+import { getConfigFilePaths } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import fs from 'fs';
 import path from 'path';

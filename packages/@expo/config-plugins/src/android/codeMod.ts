@@ -1,4 +1,5 @@
-import { CodeBlock, insertContentsAtOffset } from '../utils/commonCodeMod';
+import type { CodeBlock } from '../utils/commonCodeMod';
+import { insertContentsAtOffset } from '../utils/commonCodeMod';
 import { findMatchingBracketPosition } from '../utils/matchBrackets';
 
 /**

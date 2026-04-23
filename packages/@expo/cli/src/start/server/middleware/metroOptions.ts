@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import Server from '@expo/metro/metro/Server';
 import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types';
 

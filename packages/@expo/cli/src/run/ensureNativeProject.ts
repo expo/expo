@@ -1,4 +1,4 @@
-import { ModPlatform } from '@expo/config-plugins';
+import type { ModPlatform } from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 

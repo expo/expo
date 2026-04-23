@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ZoomTransitionSourceContextProvider = ZoomTransitionSourceContextProvider;
 exports.ZoomTransitionTargetContextProvider = ZoomTransitionTargetContextProvider;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const ZoomTransitionEnabler_1 = require("./ZoomTransitionEnabler");
 const zoom_transition_context_1 = require("./zoom-transition-context");
@@ -43,7 +44,7 @@ function ZoomTransitionSourceContextProvider({ children, linkProps, }) {
         addSource,
         removeSource,
     }), [zoomTransitionId, hasZoomSource, addSource, removeSource]);
-    return <zoom_transition_context_1.ZoomTransitionSourceContext value={value}>{children}</zoom_transition_context_1.ZoomTransitionSourceContext>;
+    return (0, jsx_runtime_1.jsx)(zoom_transition_context_1.ZoomTransitionSourceContext, { value: value, children: children });
 }
 function ZoomTransitionTargetContextProvider({ route, children, }) {
     const [dismissalBoundsRect, setDismissalBoundsRect] = (0, react_1.useState)(null);
@@ -72,16 +73,14 @@ function ZoomTransitionTargetContextProvider({ route, children, }) {
         const zoomTransitionScreenId = internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME];
         const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key;
         if (hasZoomTransition && typeof zoomTransitionId === 'string') {
-            return (<zoom_transition_context_1.ZoomTransitionTargetContext value={{
+            return ((0, jsx_runtime_1.jsx)(zoom_transition_context_1.ZoomTransitionTargetContext, { value: {
                     identifier: zoomTransitionId,
                     dismissalBoundsRect,
                     setDismissalBoundsRect,
                     addEnabler,
                     removeEnabler,
                     hasEnabler,
-                }}>
-          {children}
-        </zoom_transition_context_1.ZoomTransitionTargetContext>);
+                }, children: children }));
         }
     }
     return children;

@@ -5,7 +5,7 @@
 'use client';
 
 import { type Component, type ComponentType, createRef, PureComponent } from 'react';
-import { findNodeHandle, type HostComponent, ReactNativeElement } from 'react-native';
+import { type ReactNativeElement, findNodeHandle, type HostComponent } from 'react-native';
 import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
 import { requireNativeModule } from './requireNativeModule';

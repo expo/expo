@@ -1,5 +1,5 @@
-import { Ref } from 'react';
-import { type CommonViewModifierProps } from '../types';
+import type { Ref } from 'react';
+import type { CommonViewModifierProps } from '../types';
 /**
  * Can be used for imperatively setting text and focus on the `SecureField` component.
  */
@@ -30,5 +30,5 @@ export type SecureFieldProps = {
 /**
  * Renders a SwiftUI `SecureField` for password input.
  */
-export declare function SecureField(props: SecureFieldProps): import("react").JSX.Element;
+export declare function SecureField(props: SecureFieldProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

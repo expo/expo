@@ -4,7 +4,7 @@
 
 import { requireNativeViewManager } from 'expo-modules-core';
 
-import { GlassContainerProps } from './GlassContainer.types';
+import type { GlassContainerProps } from './GlassContainer.types';
 
 const NativeGlassContainer = requireNativeViewManager<GlassContainerProps>(
   'ExpoGlassEffect',

@@ -6,6 +6,7 @@ import SwiftUI
 internal enum GlassEffectShape: String, Enumerable {
   case capsule
   case circle
+  case containerRelativeShape
   case ellipse
   case rectangle
   case roundedRectangle
@@ -40,6 +41,8 @@ internal struct GlassEffectModifier: ViewModifier, Record {
         content.glassEffect(glass.interactive(interactive).tint(tint), in: Capsule())
       case .circle:
         content.glassEffect(glass.interactive(interactive).tint(tint), in: Circle())
+      case .containerRelativeShape:
+        content.glassEffect(glass.interactive(interactive).tint(tint), in: ContainerRelativeShape())
       case .ellipse:
         content.glassEffect(glass.interactive(interactive).tint(tint), in: Ellipse())
       case .rectangle:

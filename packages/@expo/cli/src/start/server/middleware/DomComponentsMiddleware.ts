@@ -2,7 +2,8 @@ import { convertEntryPointToRelative } from '@expo/config/paths';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
+import type { ExpoMetroOptions } from './metroOptions';
+import { createBundleUrlPath } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
 import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';

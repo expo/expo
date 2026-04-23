@@ -1,6 +1,6 @@
 import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
 import type { SerializerConfigT } from '@expo/metro/metro-config';
-import { Dependency } from '../transform-worker/collect-dependencies';
+import type { Dependency } from '../transform-worker/collect-dependencies';
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 export declare function sortDependencies(dependencies: readonly Dependency[], accordingTo: Module['dependencies']): Map<string, Dependency>;

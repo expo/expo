@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
 
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { findModulesAsync } from '../findModules';
 
 const projectRoot = '/fake/project';

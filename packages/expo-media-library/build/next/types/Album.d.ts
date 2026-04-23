@@ -1,4 +1,4 @@
-import { Asset } from './Asset';
+import type { Asset } from './Asset';
 /**
  * Represents a media album (collection of assets) on the device.
  *

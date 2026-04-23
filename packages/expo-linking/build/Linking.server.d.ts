@@ -1,4 +1,4 @@
-import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
+import type { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
 export declare function addEventListener(type: 'url', handler: URLListener): {
     remove(): void;
 };

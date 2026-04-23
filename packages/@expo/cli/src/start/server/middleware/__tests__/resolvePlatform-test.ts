@@ -4,7 +4,7 @@ import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
 } from '../resolvePlatform';
-import { ServerRequest } from '../server.types';
+import type { ServerRequest } from '../server.types';
 
 const asRequest = (req: Partial<ServerRequest>) => req as ServerRequest;
 

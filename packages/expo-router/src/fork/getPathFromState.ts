@@ -3,7 +3,7 @@ import * as queryString from 'query-string';
 import * as expo from './getPathFromState-forks';
 import type { ExpoConfigItem, ExpoOptions } from './getPathFromState-forks';
 import { removeInternalExpoRouterParams } from '../navigationParams';
-import { PathConfig, PathConfigMap } from '../react-navigation/native';
+import type { PathConfig, PathConfigMap } from '../react-navigation/native';
 import type { NavigationState, PartialState, Route } from '../react-navigation/routers';
 
 // START FORK

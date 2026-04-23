@@ -1,7 +1,7 @@
 'use client';
 
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
-import { EventsMap } from './ts-declarations/EventEmitter';
+import type { EventsMap } from './ts-declarations/EventEmitter';
 import type { ExpoGlobal } from './ts-declarations/global';
 
 ensureNativeModulesAreInstalled();

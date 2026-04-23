@@ -2,7 +2,7 @@ import { error } from 'console';
 import fs from 'fs';
 import path from 'path';
 
-import { InlineModulesMirror } from './inlineModules';
+import type { InlineModulesMirror } from './inlineModules';
 import { taskAll } from '../concurrency';
 
 export async function createSymlinksToKotlinFiles(

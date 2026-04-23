@@ -1,40 +1,8 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
-const react_1 = __importStar(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const react_native_screens_1 = require("react-native-screens");
@@ -64,7 +32,7 @@ function NativeTabsView(props) {
     const bottomAccessoryFn = (0, bottomAccessory_1.useBottomAccessoryFunctionFromBottomAccessories)(bottomAccessory);
     const children = tabs.map((tab, index) => {
         const isFocused = index === inBoundsDeferredFocusedIndex;
-        return (<Screen key={tab.routeKey} routeKey={tab.routeKey} name={tab.name} options={tab.options} isFocused={isFocused} standardAppearance={appearances[index].standardAppearance} scrollEdgeAppearance={appearances[index].scrollEdgeAppearance} badgeTextColor={tab.options.badgeTextColor} contentRenderer={tab.contentRenderer}/>);
+        return ((0, jsx_runtime_1.jsx)(Screen, { routeKey: tab.routeKey, name: tab.name, options: tab.options, isFocused: isFocused, standardAppearance: appearances[index].standardAppearance, scrollEdgeAppearance: appearances[index].scrollEdgeAppearance, badgeTextColor: tab.options.badgeTextColor, contentRenderer: tab.contentRenderer }, tab.routeKey));
     });
     const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
     const tabBarControllerMode = sidebarAdaptable
@@ -83,27 +51,27 @@ function NativeTabsView(props) {
             indicatorColor: color_1.Color.android.dynamic.secondaryContainer,
         }
         : undefined;
-    return (<TabsHostWrapper 
+    return ((0, jsx_runtime_1.jsx)(TabsHostWrapper
     // #region android props
-    tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor ??
-            androidMaterialDefaults?.inactiveColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor ??
-            androidMaterialDefaults?.inactiveColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor ?? androidMaterialDefaults?.backgroundColor} tabBarItemRippleColor={props.rippleColor ?? androidMaterialDefaults?.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ??
+    , { 
+        // #region android props
+        tabBarItemTitleFontColor: currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor ??
+            androidMaterialDefaults?.inactiveColor, tabBarItemTitleFontFamily: currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily, tabBarItemTitleFontSize: currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize, tabBarItemTitleFontSizeActive: currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize, tabBarItemTitleFontWeight: currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight, tabBarItemTitleFontStyle: currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle, tabBarItemIconColor: currentTabAppearance?.stacked?.normal?.tabBarItemIconColor ??
+            androidMaterialDefaults?.inactiveColor, tabBarBackgroundColor: currentTabAppearance?.tabBarBackgroundColor ?? androidMaterialDefaults?.backgroundColor, tabBarItemRippleColor: props.rippleColor ?? androidMaterialDefaults?.rippleColor, tabBarItemLabelVisibilityMode: props.labelVisibilityMode, tabBarItemIconColorActive: currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ??
             props?.tintColor ??
-            androidMaterialDefaults?.activeIconColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ??
+            androidMaterialDefaults?.activeIconColor, tabBarItemTitleFontColorActive: currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ??
             props?.tintColor ??
-            androidMaterialDefaults?.activeLabelColor} 
-    // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
-    tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor ??
-            androidMaterialDefaults?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
-    // #endregion
-    // #region iOS props
-    tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} bottomAccessory={bottomAccessoryFn} tabBarHidden={props.hidden} 
-    // #endregion
-    onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
+            androidMaterialDefaults?.activeLabelColor, 
+        // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
+        tabBarItemActiveIndicatorColor: options[inBoundsDeferredFocusedIndex]?.indicatorColor ??
+            androidMaterialDefaults?.indicatorColor, tabBarItemActiveIndicatorEnabled: !disableIndicator, 
+        // #endregion
+        // #region iOS props
+        tabBarTintColor: props?.tintColor, tabBarMinimizeBehavior: minimizeBehavior, tabBarControllerMode: tabBarControllerMode, bottomAccessory: bottomAccessoryFn, tabBarHidden: props.hidden, 
+        // #endregion
+        onNativeFocusChange: ({ nativeEvent: { tabKey } }) => {
             props.onTabChange(tabKey);
-        }}>
-      {children}
-    </TabsHostWrapper>);
+        }, children: children }));
 }
 function Screen(props) {
     const { routeKey, name, options, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, contentRenderer, } = props;
@@ -112,33 +80,34 @@ function Screen(props) {
     const icon = (0, icon_1.useAwaitedScreensIcon)(options.icon);
     const selectedIcon = (0, icon_1.useAwaitedScreensIcon)(options.selectedIcon);
     const { colors } = (0, native_1.useTheme)();
-    const content = (<react_native_1.View 
+    const content = ((0, jsx_runtime_1.jsx)(react_native_1.View
     // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
-    collapsable={false} style={[
+    , { 
+        // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+        collapsable: false, style: [
             { backgroundColor: colors.background },
             options.contentStyle,
             { flex: 1, position: 'relative', overflow: 'hidden' },
-        ]}>
-      {contentRenderer()}
-    </react_native_1.View>);
+        ], children: contentRenderer() }));
     const wrappedContent = (0, react_1.useMemo)(() => {
         if (process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets) {
-            return (<experimental_1.SafeAreaView 
+            return ((0, jsx_runtime_1.jsx)(experimental_1.SafeAreaView
             // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
-            collapsable={false} style={{ flex: 1 }} edges={{ bottom: true }}>
-          {content}
-        </experimental_1.SafeAreaView>);
+            , { 
+                // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+                collapsable: false, style: { flex: 1 }, edges: { bottom: true }, children: content }));
         }
         else if (process.env.EXPO_OS === 'ios') {
-            return <react_native_safe_area_context_1.SafeAreaProvider>{content}</react_native_safe_area_context_1.SafeAreaProvider>;
+            return (0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaProvider, { children: content });
         }
         else {
             return content;
         }
     }, [content, options.disableAutomaticContentInsets]);
-    return (<react_native_screens_1.Tabs.Screen {...options} overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon, standardAppearance?.stacked?.normal?.tabBarItemIconColor)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon, standardAppearance?.stacked?.selected?.tabBarItemIconColor)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
-      {wrappedContent}
-    </react_native_screens_1.Tabs.Screen>);
+    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Screen, { ...options, 
+        // TODO(@ubax): https://linear.app/expo/issue/ENG-20736/remove-pointerevents-from-nativetabsview
+        // @ts-expect-error pointerEvents are not exposed by react-native-screens, but still are passed down to native component
+        pointerEvents: isFocused ? 'box-none' : 'none', overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets, tabBarItemBadgeBackgroundColor: standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor, tabBarItemBadgeTextColor: badgeTextColor, standardAppearance: standardAppearance, scrollEdgeAppearance: scrollEdgeAppearance, icon: (0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon, standardAppearance?.stacked?.normal?.tabBarItemIconColor), selectedIcon: (0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon, standardAppearance?.stacked?.selected?.tabBarItemIconColor), title: title, freezeContents: false, systemItem: options.role, ...options.nativeProps, tabKey: routeKey, isFocused: isFocused, children: wrappedContent }));
 }
 const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
 const supportedTabBarItemLabelVisibilityModesSet = new Set(types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES);
@@ -153,6 +122,6 @@ function TabsHostWrapper(props) {
         console.warn(`Unsupported labelVisibilityMode: ${tabBarItemLabelVisibilityMode}. Supported values are: ${types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`);
         tabBarItemLabelVisibilityMode = undefined;
     }
-    return (<react_native_screens_1.Tabs.Host tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode} tabBarMinimizeBehavior={tabBarMinimizeBehavior} {...rest}/>);
+    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Host, { tabBarItemLabelVisibilityMode: tabBarItemLabelVisibilityMode, tabBarMinimizeBehavior: tabBarMinimizeBehavior, ...rest }));
 }
 //# sourceMappingURL=NativeTabsView.js.map

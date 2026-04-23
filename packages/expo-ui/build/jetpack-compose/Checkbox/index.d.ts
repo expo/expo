@@ -1,5 +1,5 @@
-import { type ColorValue } from 'react-native';
-import { type ModifierConfig } from '../../types';
+import type { ColorValue } from 'react-native';
+import type { ModifierConfig } from '../../types';
 /**
  * Colors for checkbox core elements.
  */
@@ -37,7 +37,7 @@ export type CheckboxProps = {
 /**
  * A checkbox component.
  */
-export declare function Checkbox(props: CheckboxProps): import("react").JSX.Element;
+export declare function Checkbox(props: CheckboxProps): import("react/jsx-runtime").JSX.Element;
 /**
  * The toggleable state of a tri-state checkbox.
  */
@@ -69,5 +69,5 @@ export type TriStateCheckboxProps = {
  * A tri-state checkbox component that supports `'on'`, `'off'`, and `'indeterminate'` states.
  * Useful for "select all" patterns where the parent checkbox reflects the state of its children.
  */
-export declare function TriStateCheckbox(props: TriStateCheckboxProps): import("react").JSX.Element;
+export declare function TriStateCheckbox(props: TriStateCheckboxProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

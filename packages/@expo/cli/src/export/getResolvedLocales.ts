@@ -1,5 +1,6 @@
-import { ExpoConfig } from '@expo/config';
-import JsonFile, { JSONObject } from '@expo/json-file';
+import type { ExpoConfig } from '@expo/config';
+import type { JSONObject } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
 import path from 'path';
 
 import { CommandError } from '../utils/errors';

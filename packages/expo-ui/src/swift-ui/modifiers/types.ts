@@ -1,4 +1,4 @@
-import { ColorValue } from 'react-native';
+import type { ColorValue } from 'react-native';
 
 type NamedColor =
   | 'primary'

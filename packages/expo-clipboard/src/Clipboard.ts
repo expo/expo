@@ -7,10 +7,10 @@ import type {
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
-import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 
-export { EventSubscription as Subscription };
+// TODO(@kitten): Remove re-export from EMC
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -212,6 +212,5 @@ export const isPasteButtonAvailable: boolean =
   Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 
 export * from './Clipboard.types';
-export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
 
-export { ClipboardPasteButton };
+export { ClipboardPasteButton, type ClipboardPasteButtonProps } from './ClipboardPasteButton';

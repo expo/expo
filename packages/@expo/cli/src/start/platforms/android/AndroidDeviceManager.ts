@@ -11,7 +11,7 @@ import { AbortCommandError, CommandError } from '../../../utils/errors';
 import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
-import { BaseResolveDeviceProps } from '../PlatformManager';
+import type { BaseResolveDeviceProps } from '../PlatformManager';
 
 const EXPO_GO_APPLICATION_IDENTIFIER = 'host.exp.exponent';
 

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import { type ColorSchemeName } from 'react-native';
+import type { ColorSchemeName } from 'react-native';
 import * as ReactNative from 'react-native';
 
 export function mockProperty(obj, propertyName, mock, fn: any) {

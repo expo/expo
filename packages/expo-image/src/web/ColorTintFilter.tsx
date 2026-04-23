@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 
 export function getTintColorStyle(tintId: string, tintColor?: string | null) {

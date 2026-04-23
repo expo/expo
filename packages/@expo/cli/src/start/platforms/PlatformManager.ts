@@ -2,8 +2,8 @@ import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { AppIdResolver } from './AppIdResolver';
-import { DeviceManager } from './DeviceManager';
+import type { AppIdResolver } from './AppIdResolver';
+import type { DeviceManager } from './DeviceManager';
 import { Log } from '../../log';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';

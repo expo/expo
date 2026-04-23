@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { View } from 'react-native';
 /**
  * A view displaying the [`AVRoutePickerView`](https://developer.apple.com/documentation/avkit/avroutepickerview). Shows a button, when pressed, an AirPlay device picker shows up, allowing users to stream the currently playing video
@@ -7,6 +8,6 @@ import { View } from 'react-native';
  * @platform ios
  */
 export default function VideoAirPlayButton(props) {
-    return <View {...props} style={[{ minWidth: 30, minHeight: 30 }, props.style]}/>;
+    return _jsx(View, { ...props, style: [{ minWidth: 30, minHeight: 30 }, props.style] });
 }
 //# sourceMappingURL=VideoAirPlayButton.js.map

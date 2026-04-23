@@ -22,6 +22,7 @@
 
 - Remove pin on `arg` dependency ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
 - Fixed Updates E2E tests. ([#43995](https://github.com/expo/expo/pull/43995) by [@kudo](https://github.com/kudo))
+- [Android] Improved application startup performance by reducing reflection usage. ([#45023](https://github.com/expo/expo/pull/45023) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.11 — 2026-02-25
 

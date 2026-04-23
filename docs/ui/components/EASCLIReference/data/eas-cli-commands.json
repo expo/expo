@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-04-17T20:40:01.287Z",
-    "cliVersion": "18.7.0"
+    "fetchedAt": "2026-04-22T18:11:39.049Z",
+    "cliVersion": "18.8.0"
   },
-  "totalCommands": 102,
+  "totalCommands": 104,
   "commands": [
     {
       "command": "eas account:login",
@@ -150,6 +150,11 @@
       "command": "eas channel:edit [NAME]",
       "description": "point a channel at a new branch",
       "usage": "USAGE\n  $ eas channel:edit [NAME] [--branch <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [NAME]  Name of the channel to edit\n\nFLAGS\n  --branch=<value>   Name of the branch to point to\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  point a channel at a new branch"
+    },
+    {
+      "command": "eas channel:insights",
+      "description": "display adoption, crash, and unique-user insights for a channel + runtime version",
+      "usage": "USAGE\n  $ eas channel:insights --channel <value> --runtime-version <value> [--days <value> | --start <value> | --end\n    <value>] [--json] [--non-interactive]\n\nFLAGS\n  --channel=<value>          (required) Name of the channel.\n  --days=<value>             Show insights from the last N days (default 7, mutually exclusive with --start/--end).\n  --end=<value>              End of insights time range (ISO date).\n  --json                     Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive          Run the command in non-interactive mode.\n  --runtime-version=<value>  (required) Runtime version to query insights for.\n  --start=<value>            Start of insights time range (ISO date).\n\nDESCRIPTION\n  display adoption, crash, and unique-user insights for a channel + runtime version"
     },
     {
       "command": "eas channel:list",
@@ -397,6 +402,11 @@
       "usage": "USAGE\n  $ eas update:edit [GROUPID] [--rollout-percentage <value>] [--branch <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [GROUPID]  The ID of an update group to edit.\n\nFLAGS\n  --branch=<value>              Branch for which to list updates to select from\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                --non-interactive.\n  --non-interactive             Run the command in non-interactive mode.\n  --rollout-percentage=<value>  Rollout percentage to set for a rollout update. The specified number must be an integer\n                                between 1 and 100.\n\nDESCRIPTION\n  edit all the updates in an update group"
     },
     {
+      "command": "eas update:insights GROUPID",
+      "description": "display launch, crash, unique-user, and size insights for an update group",
+      "usage": "USAGE\n  $ eas update:insights GROUPID [--platform ios|android] [--days <value> | --start <value> | --end <value>] [--json]\n    [--non-interactive]\n\nARGUMENTS\n  GROUPID  The ID of an update group.\n\nFLAGS\n  --days=<value>       Show insights from the last N days (default 7, mutually exclusive with --start/--end).\n  --end=<value>        End of insights time range (ISO date).\n  --json               Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive    Run the command in non-interactive mode.\n  --platform=<option>  Filter to a single platform.\n                       <options: ios|android>\n  --start=<value>      Start of insights time range (ISO date).\n\nDESCRIPTION\n  display launch, crash, unique-user, and size insights for an update group"
+    },
+    {
       "command": "eas update:list",
       "description": "view the recent updates",
       "usage": "USAGE\n  $ eas update:list [--branch <value> | --all] [-p android|ios|all] [--runtime-version <value>] [--offset\n    <value>] [--limit <value>] [--json] [--non-interactive]\n\nFLAGS\n  -p, --platform=<option>        Filter updates by platform\n                                 <options: android|ios|all>\n      --all                      List updates on all branches\n      --branch=<value>           List updates only on this branch\n      --json                     Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                 --non-interactive.\n      --limit=<value>            The number of items to fetch each query. Defaults to 25 and is capped at 50.\n      --non-interactive          Run the command in non-interactive mode.\n      --offset=<value>           Start queries from specified index. Use for paginating results. Defaults to 0.\n      --runtime-version=<value>  Filter updates by runtime version\n\nDESCRIPTION\n  view the recent updates"
@@ -424,7 +434,7 @@
     {
       "command": "eas update:view GROUPID",
       "description": "update group details",
-      "usage": "USAGE\n  $ eas update:view GROUPID [--json]\n\nARGUMENTS\n  GROUPID  The ID of an update group.\n\nFLAGS\n  --json  Enable JSON output, non-JSON messages will be printed to stderr.\n\nDESCRIPTION\n  update group details"
+      "usage": "USAGE\n  $ eas update:view GROUPID [--insights] [--days <value> | --start <value> | --end <value>] [--json]\n\nARGUMENTS\n  GROUPID  The ID of an update group.\n\nFLAGS\n  --days=<value>   Show insights from the last N days (default 7). Only used with --insights.\n  --end=<value>    End of insights time range (ISO date). Only used with --insights.\n  --insights       Also show insights (launches, crash rate, unique users, payload size) for the update group.\n  --json           Enable JSON output, non-JSON messages will be printed to stderr.\n  --start=<value>  Start of insights time range (ISO date). Only used with --insights.\n\nDESCRIPTION\n  update group details"
     },
     {
       "command": "eas upload",

@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { Platform, requireOptionalNativeModule } from 'expo-modules-core';
 import React from 'react';
-import { ColorValue, ViewProps } from 'react-native';
+import type { ColorValue, ViewProps } from 'react-native';
 
 export type ContactAccessButtonProps = ViewProps & {
   /**

@@ -1,15 +1,8 @@
 {
-  "extends": "../../expo-module-scripts/tsconfig.node.json",
+  "extends": "expo-module-scripts/tsconfig.node",
   "include": ["./__tests__"],
   "compilerOptions": {
     "outDir": "./build",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "types": ["node", "jest"],
-    "sourceMap": true,
-    "strictNullChecks": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "types": ["node", "jest"]
   }
 }
