@@ -1,5 +1,4 @@
 import { act, screen } from '@testing-library/react-native';
-import React from 'react';
 import { Text, View } from 'react-native';
 
 import { store } from '../global-state/router-store';

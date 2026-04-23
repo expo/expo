@@ -1,5 +1,4 @@
 import { screen, act } from '@testing-library/react-native';
-import React from 'react';
 import { View } from 'react-native';
 
 import { renderRouter } from '../testing-library';

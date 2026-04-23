@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react-native';
-import React, { use } from 'react';
+import { use } from 'react';
 import { Text, View } from 'react-native';
 
 import type { SuspenseFallbackProps } from '../exports';

@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react-native';
-import React, { useEffect, type PropsWithChildren } from 'react';
+import { useEffect, type PropsWithChildren } from 'react';
 import { View, Text } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 

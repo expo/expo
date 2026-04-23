@@ -1,5 +1,4 @@
 /// <reference types="jest-expo/rsc/expect" />
-import * as React from 'react';
 
 import { EmptyRoute } from '../EmptyRoute';
 import { ErrorBoundary } from '../ErrorBoundary';

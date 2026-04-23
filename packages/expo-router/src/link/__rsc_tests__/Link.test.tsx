@@ -1,5 +1,4 @@
 /// <reference types="jest-expo/rsc/expect" />
-import * as React from 'react';
 
 import { Link } from '../Link';
 
