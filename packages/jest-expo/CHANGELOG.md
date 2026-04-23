@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Drop expo dependencies from `jest-expo` to prevent cycles ([#45048](https://github.com/expo/expo/pull/45048) by [@kitten](https://github.com/kitten))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
