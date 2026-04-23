@@ -1,15 +1,18 @@
 import type { BridgeMessage, JSONValue } from './dom.types';
 import { DOM_EVENT, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
 
-const IS_DOM =
-  typeof window !== 'undefined' &&
-  // @ts-expect-error: Added via expo/dom
-  typeof window.$$EXPO_INITIAL_PROPS !== 'undefined' &&
-  // @ts-expect-error: Added via react-native-webview
-  typeof window.ReactNativeWebView !== 'undefined';
+function isDom(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    // @ts-expect-error: Added via expo/dom
+    typeof window.$$EXPO_INITIAL_PROPS !== 'undefined' &&
+    // @ts-expect-error: Added via react-native-webview
+    typeof window.ReactNativeWebView !== 'undefined'
+  );
+}
 
 const emit = <TData extends JSONValue>(message: BridgeMessage<TData>) => {
-  if (!IS_DOM) {
+  if (!isDom()) {
     return;
   }
   (window as any).ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -18,7 +21,7 @@ const emit = <TData extends JSONValue>(message: BridgeMessage<TData>) => {
 export const addEventListener = <TData extends JSONValue>(
   onSubscribe: (message: BridgeMessage<TData>) => void
 ): (() => void) => {
-  if (!IS_DOM) {
+  if (!isDom()) {
     return () => {};
   }
   const listener = ({ detail }: any) => {
@@ -33,7 +36,7 @@ export const addEventListener = <TData extends JSONValue>(
 };
 
 function invokeNativeAction(actionId: string, args: any[]): Promise<any> {
-  if (!IS_DOM) {
+  if (!isDom()) {
     throw new Error('Cannot invoke native actions outside of a webview');
   }
   return new Promise((res, rej) => {
