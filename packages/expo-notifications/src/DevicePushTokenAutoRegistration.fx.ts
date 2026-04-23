@@ -12,6 +12,11 @@ import {
 
 let lastAbortController: AbortController | null = null;
 async function updatePushTokenAsync(token: DevicePushToken) {
+  const changed = await hasDeviceTokenChangedAsync(token);
+  if (!changed) {
+    return;
+  }
+
   // Abort current update process
   lastAbortController?.abort();
   lastAbortController = new AbortController();
@@ -84,12 +89,6 @@ export async function __handlePersistedRegistrationInfoAsync(
     // Since the registration is enabled, fetching a "new" device token
     // shouldn't be a problem.
     const latestDevicePushToken = await getDevicePushTokenAsync();
-
-    const changed = await hasDeviceTokenChangedAsync(latestDevicePushToken);
-    if (!changed) {
-      return;
-    }
-
     await updatePushTokenAsync(latestDevicePushToken);
   } catch (e) {
     console.warn(

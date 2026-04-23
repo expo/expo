@@ -6,6 +6,10 @@ import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal, hasDeviceTokenChangedAsync, } from './utils/updateDevicePushTokenAsync';
 let lastAbortController = null;
 async function updatePushTokenAsync(token) {
+    const changed = await hasDeviceTokenChangedAsync(token);
+    if (!changed) {
+        return;
+    }
     // Abort current update process
     lastAbortController?.abort();
     lastAbortController = new AbortController();
@@ -62,10 +66,6 @@ export async function __handlePersistedRegistrationInfoAsync(registrationInfo) {
         // Since the registration is enabled, fetching a "new" device token
         // shouldn't be a problem.
         const latestDevicePushToken = await getDevicePushTokenAsync();
-        const changed = await hasDeviceTokenChangedAsync(latestDevicePushToken);
-        if (!changed) {
-            return;
-        }
         await updatePushTokenAsync(latestDevicePushToken);
     }
     catch (e) {
