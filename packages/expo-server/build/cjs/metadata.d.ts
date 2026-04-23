@@ -1,4 +1,4 @@
-import type { ImmutableRequest } from './ImmutableRequest';
+import type { ImmutableRequest } from './types';
 export type MetadataValue = string | number | boolean;
 export type MetadataValueArray = MetadataValue[];
 export type MetadataGoogleBot = string | {
@@ -204,4 +204,4 @@ export type Metadata = {
     manifest?: string;
     other?: Record<string, MetadataValue | MetadataValueArray | null | undefined>;
 };
-export type GenerateMetadataFunction = (request: ImmutableRequest | undefined, params: Record<string, string | string[]>) => Metadata | null | undefined | Promise<Metadata | null | undefined>;
+export type GenerateMetadataFunction = (request: ImmutableRequest, params: Record<string, string | string[]>) => Metadata | null | undefined | Promise<Metadata | null | undefined>;

@@ -100,7 +100,7 @@ export function createEnvironment(input) {
                                 file: route.file,
                                 page: route.page,
                             },
-                            request,
+                            request: new ImmutableRequest(request),
                             params,
                         });
                     }

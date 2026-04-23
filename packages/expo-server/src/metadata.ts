@@ -1,4 +1,4 @@
-import type { ImmutableRequest } from './ImmutableRequest';
+import type { ImmutableRequest } from './types';
 
 export type MetadataValue = string | number | boolean;
 export type MetadataValueArray = MetadataValue[];
@@ -258,6 +258,6 @@ export type Metadata = {
 };
 
 export type GenerateMetadataFunction = (
-  request: ImmutableRequest | undefined,
+  request: ImmutableRequest,
   params: Record<string, string | string[]>
 ) => Metadata | null | undefined | Promise<Metadata | null | undefined>;
