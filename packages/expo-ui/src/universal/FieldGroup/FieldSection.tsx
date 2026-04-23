@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Text, View, type TextStyle, type ViewStyle } from 'react-native';
+import { Text, useColorScheme, View, type TextStyle, type ViewStyle } from 'react-native';
 
 import { extractFieldSectionSlots } from './FieldSectionSlots';
 import type { FieldSectionProps } from './types';
@@ -23,6 +23,8 @@ export function FieldSection({
 }: FieldSectionProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
+  const isDarkScheme = useColorScheme() === 'dark';
+
   const { header, footer, rows } = extractFieldSectionSlots(children);
 
   const containerStyle: ViewStyle = {
@@ -33,7 +35,12 @@ export function FieldSection({
   const headerNode =
     header ??
     (title ? (
-      <Text style={[headerTextStyle, titleUppercase ? headerTextUppercaseStyle : null]}>
+      <Text
+        style={[
+          headerTextStyle,
+          isDarkScheme ? headerTextDarkStyle : headerTextLightStyle,
+          titleUppercase ? headerTextUppercaseStyle : null,
+        ]}>
         {title}
       </Text>
     ) : null);
@@ -42,11 +49,13 @@ export function FieldSection({
     <View style={containerStyle} testID={testID}>
       {headerNode ? <View style={headerContainerStyle}>{headerNode}</View> : null}
       {rows.length > 0 ? (
-        <View style={cardBaseStyle}>
+        <View style={[cardBaseStyle, isDarkScheme ? cardDarkStyle : cardLightStyle]}>
           {rows.map((child, index) => (
             <Fragment key={index}>
               <View style={rowWrapperStyle}>{child}</View>
-              {index < rows.length - 1 ? <View style={dividerStyle} /> : null}
+              {index < rows.length - 1 ? (
+                <View style={[dividerStyle, isDarkScheme ? dividerDarkStyle : dividerLightStyle]} />
+              ) : null}
             </Fragment>
           ))}
         </View>
@@ -64,7 +73,14 @@ const headerContainerStyle: ViewStyle = {
 const headerTextStyle: TextStyle = {
   fontSize: 14,
   fontWeight: '500',
+};
+
+const headerTextLightStyle: TextStyle = {
   color: '#6c6c70',
+};
+
+const headerTextDarkStyle: TextStyle = {
+  color: '#98989e',
 };
 
 const headerTextUppercaseStyle: TextStyle = {
@@ -76,7 +92,14 @@ const headerTextUppercaseStyle: TextStyle = {
 const cardBaseStyle: ViewStyle = {
   borderRadius: 12,
   overflow: 'hidden',
-  backgroundColor: '#FFFFFF',
+};
+
+const cardLightStyle: ViewStyle = {
+  backgroundColor: '#ffffff',
+};
+
+const cardDarkStyle: ViewStyle = {
+  backgroundColor: '#1c1c1e',
 };
 
 // Gives each row the same minimum height SwiftUI `Form` uses for single-line
@@ -92,7 +115,14 @@ const rowWrapperStyle: ViewStyle = {
 const dividerStyle: ViewStyle = {
   height: 1,
   marginLeft: 16,
+};
+
+const dividerLightStyle: ViewStyle = {
   backgroundColor: '#e5e5ea',
+};
+
+const dividerDarkStyle: ViewStyle = {
+  backgroundColor: '#38383a',
 };
 
 const footerContainerStyle: ViewStyle = {

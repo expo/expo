@@ -1,4 +1,4 @@
-import { ScrollView, type ViewStyle } from 'react-native';
+import { ScrollView, useColorScheme, type ViewStyle } from 'react-native';
 
 import { groupFieldGroupChildren } from './groupChildren';
 import type { FieldGroupProps } from './types';
@@ -21,22 +21,38 @@ export function FieldGroup({
 }: FieldGroupProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
-  const containerStyle: ViewStyle = {
-    flex: 1,
-    backgroundColor: '#f2f2f7',
-    ...style,
-    ...(hidden ? { display: 'none' } : undefined),
-  };
+  const isDarkScheme = useColorScheme() === 'dark';
 
   return (
     <ScrollView
-      style={containerStyle}
+      style={[
+        containerBaseStyle,
+        isDarkScheme ? containerDarkStyle : containerLightStyle,
+        style,
+        hidden ? hiddenStyle : null,
+      ]}
       contentContainerStyle={contentContainerStyle}
       testID={testID}>
       {groupFieldGroupChildren(children)}
     </ScrollView>
   );
 }
+
+const containerBaseStyle: ViewStyle = {
+  flex: 1,
+};
+
+const containerLightStyle: ViewStyle = {
+  backgroundColor: '#f2f2f7',
+};
+
+const containerDarkStyle: ViewStyle = {
+  backgroundColor: '#000000',
+};
+
+const hiddenStyle: ViewStyle = {
+  display: 'none',
+};
 
 const contentContainerStyle: ViewStyle = {
   paddingHorizontal: 16,
