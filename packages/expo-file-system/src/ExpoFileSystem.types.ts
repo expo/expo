@@ -411,6 +411,18 @@ export declare class File {
   ): Promise<File>;
 
   /**
+   * Uploads this file to the network.
+   *
+   * The promise resolves with the HTTP response metadata and body for any completed response,
+   * including non-2xx status codes. It rejects only for local file errors, transport failures,
+   * or cancellation.
+   *
+   * @param url The URL to upload the file to.
+   * @param options Upload options.
+   */
+  upload(url: string, options?: UploadOptions): Promise<UploadResult>;
+
+  /**
    * An overload of the `pickFileAsync` method, which picks and returns a single `File`.
    * This overload requires options to have `multipleFiles` flag be `undefined` or `false`.
    * @param options options
