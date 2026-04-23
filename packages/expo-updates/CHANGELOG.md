@@ -17,7 +17,7 @@
 
 - Pass absolute path to CLI helpers when creating build manifest, since the underlying functions now handle entry file inputs properly, instead of applying `mainModuleName` semantics to them ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
 - [ios] Fix loading assets in brownfield ([#44724](https://github.com/expo/expo/pull/44724) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Improve the error message thrown by `setUpdateRequestHeadersOverride` when an override key is not in `updates.requestHeaders`.  ([#45044](https://github.com/expo/expo/pull/45044) by [@alanjhughes](https://github.com/alanjhughes)) 
+- Improve the error message thrown by `setUpdateRequestHeadersOverride` when an override key is not in `updates.requestHeaders`. ([#45044](https://github.com/expo/expo/pull/45044) by [@alanjhughes](https://github.com/alanjhughes)) 
 
 ### 💡 Others
 
