@@ -1,11 +1,8 @@
 import { ctx } from 'expo-router/_ctx';
+import type { LoadedRoute } from 'expo-router/build/Route';
 import type { GenerateMetadataFunction, ImmutableRequest, Metadata } from 'expo-server';
 
 import { serializeMetadataToHtml } from '../utils/metadata/serialize';
-
-type RouteModuleExports = {
-  generateMetadata?: GenerateMetadataFunction;
-};
 
 type ResolveMetadataOptions = {
   route: {
@@ -21,7 +18,7 @@ type ResolvedMetadata = {
   headTags: string;
 };
 
-function getGenerateMetadata(moduleExports: RouteModuleExports): GenerateMetadataFunction | null {
+function getGenerateMetadata(moduleExports: LoadedRoute): GenerateMetadataFunction | null {
   return typeof moduleExports.generateMetadata === 'function'
     ? moduleExports.generateMetadata
     : null;
@@ -30,7 +27,7 @@ function getGenerateMetadata(moduleExports: RouteModuleExports): GenerateMetadat
 export async function resolveMetadata(
   options: ResolveMetadataOptions
 ): Promise<ResolvedMetadata | null> {
-  const routeModule = (await ctx(options.route.file)) as RouteModuleExports | undefined;
+  const routeModule = (await ctx(options.route.file)) as LoadedRoute | undefined;
   if (!routeModule) {
     return null;
   }
