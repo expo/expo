@@ -87,6 +87,9 @@ export type WatchOptions = {
     debounce?: number;
     /**
      * Limits which event types trigger the callback. If omitted, all event types are observed.
+     *
+     * On iOS, directory watchers only provide coarse-grained notifications that the directory itself
+     * changed, so filtering for child-level `created`, `deleted`, or `renamed` events is not reliable.
      */
     events?: WatchEventType[];
 };
@@ -198,7 +201,8 @@ export declare class Directory {
      *
      * On iOS, DispatchSource can only detect that the directory changed,
      * not which specific child was affected. The `target` will always be
-     * the directory itself. Call `directory.list()` to determine what changed.
+     * the directory itself, and content changes are reported as `modified`.
+     * Call `directory.list()` to determine what changed.
      *
      * On Android, FileObserver provides granular child-level events.
      */
