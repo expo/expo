@@ -8,3 +8,4 @@ const plugin = {
     rules: rules_1.rules,
 };
 module.exports = plugin;
+//# sourceMappingURL=index.js.map
