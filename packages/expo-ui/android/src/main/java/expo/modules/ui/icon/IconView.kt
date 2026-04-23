@@ -36,6 +36,7 @@ import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 data class Source(
@@ -45,6 +46,7 @@ data class Source(
   @Field val scale: Double = 1.0
 ) : Record
 
+@OptimizedComposeProps
 data class IconProps(
   val source: MutableState<Source?> = mutableStateOf(null),
   val tint: MutableState<Color?> = mutableStateOf(null),

@@ -10,6 +10,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 data class ListItemColors(
@@ -21,6 +22,7 @@ data class ListItemColors(
   @Field val overlineContentColor: Color? = null
 ) : Record
 
+@OptimizedComposeProps
 data class ListItemProps(
   val tonalElevation: Float? = null,
   val shadowElevation: Float? = null,
