@@ -26,6 +26,7 @@ function resolveProps(props) {
     if (Object.keys(resolvedProps).length > 0) {
         return resolvedProps;
     }
+    return;
 }
 const withNavigationBar = (config, _props) => {
     const props = resolveProps(_props);
