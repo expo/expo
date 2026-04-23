@@ -1,4 +1,4 @@
-import { type ReactNode, forwardRef, useContext, useImperativeHandle, useRef } from 'react';
+import { type ReactNode, useContext, useImperativeHandle, useRef } from 'react';
 import { FlatList, ScrollView, SectionList, StyleSheet, TextInput, View } from 'react-native';
 
 import { BottomSheet as BottomSheetComponent } from './BottomSheet';
@@ -27,29 +27,27 @@ type BottomSheet = BottomSheetMethods;
  * @remarks In `@gorhom/bottom-sheet`, `BottomSheetModal` ignores `index` for initial
  * visibility and is always opened via `present()`. This matches that behavior.
  */
-const BottomSheetModal = forwardRef<BottomSheetMethods, BottomSheetProps>(
-  function BottomSheetModal(props, ref) {
-    const { index: presentIndex = 0, ...rest } = props;
-    const sheetRef = useRef<BottomSheetMethods>(null);
+function BottomSheetModal(props: BottomSheetProps) {
+  const { ref, index: presentIndex = 0, ...rest } = props;
+  const sheetRef = useRef<BottomSheetMethods>(null);
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        snapToIndex: (i: number) => sheetRef.current?.snapToIndex(i),
-        snapToPosition: (p: string | number) => sheetRef.current?.snapToPosition(p),
-        expand: () => sheetRef.current?.expand(),
-        collapse: () => sheetRef.current?.collapse(),
-        close: () => sheetRef.current?.close(),
-        forceClose: () => sheetRef.current?.forceClose(),
-        present: () => sheetRef.current?.snapToIndex(presentIndex),
-        dismiss: () => sheetRef.current?.close(),
-      }),
-      [presentIndex]
-    );
+  useImperativeHandle(
+    ref,
+    () => ({
+      snapToIndex: (i: number) => sheetRef.current?.snapToIndex(i),
+      snapToPosition: (p: string | number) => sheetRef.current?.snapToPosition(p),
+      expand: () => sheetRef.current?.expand(),
+      collapse: () => sheetRef.current?.collapse(),
+      close: () => sheetRef.current?.close(),
+      forceClose: () => sheetRef.current?.forceClose(),
+      present: () => sheetRef.current?.snapToIndex(presentIndex),
+      dismiss: () => sheetRef.current?.close(),
+    }),
+    [presentIndex]
+  );
 
-    return <BottomSheetComponent ref={sheetRef} {...rest} index={-1} />;
-  }
-);
+  return <BottomSheetComponent ref={sheetRef} {...rest} index={-1} />;
+}
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- declaration merging so useRef<BottomSheetModal> resolves to BottomSheetMethods
 type BottomSheetModal = BottomSheetMethods;
 

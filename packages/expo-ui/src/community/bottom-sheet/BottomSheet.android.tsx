@@ -1,12 +1,4 @@
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { BottomSheetContext, BottomSheetInternalContext } from './context';
@@ -59,162 +51,161 @@ function findNearestSnapPointIndex(
  * @remarks Supports two snap states: partially expanded (~50%) and fully expanded.
  * `snapToIndex(0)` maps to partial, `snapToIndex(lastIndex)` maps to expanded.
  */
-export const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
-  function BottomSheet(props, ref) {
-    const {
-      snapPoints: snapPointsProp,
-      index: indexProp = 0,
-      onChange,
-      onClose,
-      onDismiss,
-      enablePanDownToClose = false,
-      enableDynamicSizing = true,
-      handleComponent,
-      backgroundStyle,
-      children,
-    } = props;
+export function BottomSheet(props: BottomSheetProps) {
+  const {
+    ref,
+    snapPoints: snapPointsProp,
+    index: indexProp = 0,
+    onChange,
+    onClose,
+    onDismiss,
+    enablePanDownToClose = false,
+    enableDynamicSizing = true,
+    handleComponent,
+    backgroundStyle,
+    children,
+  } = props;
 
-    const hasMultipleSnapPoints = snapPointsProp != null && snapPointsProp.length > 1;
-    const fitToContents = enableDynamicSizing && (!snapPointsProp || snapPointsProp.length === 0);
-    const skipPartially = fitToContents || !hasMultipleSnapPoints;
-    const maxIndex = snapPointsProp ? snapPointsProp.length - 1 : 0;
-    const containerColor = extractBackgroundColor(backgroundStyle);
-    const internalContextValue = useMemo(() => ({ fitToContents }), [fitToContents]);
-    const clampIndex = useCallback(
-      (index: number) => Math.min(Math.max(index, 0), maxIndex),
-      [maxIndex]
-    );
+  const hasMultipleSnapPoints = snapPointsProp != null && snapPointsProp.length > 1;
+  const fitToContents = enableDynamicSizing && (!snapPointsProp || snapPointsProp.length === 0);
+  const skipPartially = fitToContents || !hasMultipleSnapPoints;
+  const maxIndex = snapPointsProp ? snapPointsProp.length - 1 : 0;
+  const containerColor = extractBackgroundColor(backgroundStyle);
+  const internalContextValue = useMemo(() => ({ fitToContents }), [fitToContents]);
+  const clampIndex = useCallback(
+    (index: number) => Math.min(Math.max(index, 0), maxIndex),
+    [maxIndex]
+  );
 
-    const [isOpen, setIsOpen] = useState(indexProp >= 0);
-    // Ref mirrors isOpen for use in snapToIndex without adding it as a useMemo dep
-    // (adding isOpen to deps would recreate methods on every open/close, destabilizing context)
-    const isOpenRef = useRef(isOpen);
-    isOpenRef.current = isOpen;
-    const pendingIndexRef = useRef(indexProp >= 0 ? clampIndex(indexProp) : null);
-    const sheetRef = useRef<ModalBottomSheetRef>(null);
+  const [isOpen, setIsOpen] = useState(indexProp >= 0);
+  // Ref mirrors isOpen for use in snapToIndex without adding it as a useMemo dep
+  // (adding isOpen to deps would recreate methods on every open/close, destabilizing context)
+  const isOpenRef = useRef(isOpen);
+  isOpenRef.current = isOpen;
+  const pendingIndexRef = useRef(indexProp >= 0 ? clampIndex(indexProp) : null);
+  const sheetRef = useRef<ModalBottomSheetRef>(null);
 
-    // Stable callback refs
-    const onChangeRef = useRef(onChange);
-    onChangeRef.current = onChange;
-    const onCloseRef = useRef(onClose);
-    onCloseRef.current = onClose;
-    const onDismissRef = useRef(onDismiss);
-    onDismissRef.current = onDismiss;
+  // Stable callback refs
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
 
-    const fireCloseCallbacks = useCallback(() => {
-      onCloseRef.current?.();
-      onDismissRef.current?.();
-      onChangeRef.current?.(-1);
-    }, []);
+  const fireCloseCallbacks = useCallback(() => {
+    onCloseRef.current?.();
+    onDismissRef.current?.();
+    onChangeRef.current?.(-1);
+  }, []);
 
-    // Sync with external index prop changes
-    useEffect(() => {
-      if (indexProp === -1) {
-        pendingIndexRef.current = null;
-        setIsOpen(false);
-      } else if (indexProp >= 0) {
-        pendingIndexRef.current = clampIndex(indexProp);
-        setIsOpen(true);
-      }
-    }, [clampIndex, indexProp]);
-
-    useEffect(() => {
-      if (!isOpen) return;
-
-      const targetIndex = pendingIndexRef.current ?? 0;
-      if (hasMultipleSnapPoints && targetIndex === maxIndex) {
-        sheetRef.current?.expand();
-      } else if (hasMultipleSnapPoints) {
-        sheetRef.current?.partialExpand();
-      }
+  // Sync with external index prop changes
+  useEffect(() => {
+    if (indexProp === -1) {
       pendingIndexRef.current = null;
-    }, [hasMultipleSnapPoints, isOpen, maxIndex]);
-
-    const handleDismiss = useCallback(() => {
       setIsOpen(false);
-      fireCloseCallbacks();
-    }, [fireCloseCallbacks]);
+    } else if (indexProp >= 0) {
+      pendingIndexRef.current = clampIndex(indexProp);
+      setIsOpen(true);
+    }
+  }, [clampIndex, indexProp]);
 
-    const methods: BottomSheetMethods = useMemo(() => {
-      const snapToIndex = (index: number) => {
-        if (index === -1) {
-          sheetRef.current?.hide().then(() => {
-            setIsOpen(false);
-            pendingIndexRef.current = null;
-            fireCloseCallbacks();
-          });
-          return;
-        }
-        const clampedIndex = clampIndex(index);
-        pendingIndexRef.current = clampedIndex;
-        if (!isOpenRef.current) {
-          setIsOpen(true);
-        } else if (hasMultipleSnapPoints) {
-          // Native ModalBottomSheet has two states: partial (~50%) and expanded (full).
-          // Map index 0 → partialExpand(), last index → expand().
-          if (clampedIndex === maxIndex) {
-            sheetRef.current?.expand();
-          } else {
-            sheetRef.current?.partialExpand();
-          }
-          pendingIndexRef.current = null;
-        }
-        onChangeRef.current?.(clampedIndex);
-      };
+  useEffect(() => {
+    if (!isOpen) return;
 
-      const close = () => {
+    const targetIndex = pendingIndexRef.current ?? 0;
+    if (hasMultipleSnapPoints && targetIndex === maxIndex) {
+      sheetRef.current?.expand();
+    } else if (hasMultipleSnapPoints) {
+      sheetRef.current?.partialExpand();
+    }
+    pendingIndexRef.current = null;
+  }, [hasMultipleSnapPoints, isOpen, maxIndex]);
+
+  const handleDismiss = useCallback(() => {
+    setIsOpen(false);
+    fireCloseCallbacks();
+  }, [fireCloseCallbacks]);
+
+  const methods: BottomSheetMethods = useMemo(() => {
+    const snapToIndex = (index: number) => {
+      if (index === -1) {
         sheetRef.current?.hide().then(() => {
           setIsOpen(false);
           pendingIndexRef.current = null;
           fireCloseCallbacks();
         });
-      };
+        return;
+      }
+      const clampedIndex = clampIndex(index);
+      pendingIndexRef.current = clampedIndex;
+      if (!isOpenRef.current) {
+        setIsOpen(true);
+      } else if (hasMultipleSnapPoints) {
+        // Native ModalBottomSheet has two states: partial (~50%) and expanded (full).
+        // Map index 0 → partialExpand(), last index → expand().
+        if (clampedIndex === maxIndex) {
+          sheetRef.current?.expand();
+        } else {
+          sheetRef.current?.partialExpand();
+        }
+        pendingIndexRef.current = null;
+      }
+      onChangeRef.current?.(clampedIndex);
+    };
 
-      return {
-        snapToIndex,
-        snapToPosition: (position: string | number) =>
-          snapToIndex(findNearestSnapPointIndex(snapPointsProp, position)),
-        expand: () => snapToIndex(maxIndex),
-        collapse: () => snapToIndex(0),
-        close,
-        forceClose: close,
-        present: () => snapToIndex(0),
-        dismiss: close,
-      };
-    }, [clampIndex, maxIndex, hasMultipleSnapPoints, fireCloseCallbacks, snapPointsProp]);
+    const close = () => {
+      sheetRef.current?.hide().then(() => {
+        setIsOpen(false);
+        pendingIndexRef.current = null;
+        fireCloseCallbacks();
+      });
+    };
 
-    useImperativeHandle(ref, () => methods, [methods]);
+    return {
+      snapToIndex,
+      snapToPosition: (position: string | number) =>
+        snapToIndex(findNearestSnapPointIndex(snapPointsProp, position)),
+      expand: () => snapToIndex(maxIndex),
+      collapse: () => snapToIndex(0),
+      close,
+      forceClose: close,
+      present: () => snapToIndex(0),
+      dismiss: close,
+    };
+  }, [clampIndex, maxIndex, hasMultipleSnapPoints, fireCloseCallbacks, snapPointsProp]);
 
-    if (!isOpen) {
-      return (
-        <BottomSheetInternalContext.Provider value={internalContextValue}>
-          <BottomSheetContext.Provider value={methods}>{null}</BottomSheetContext.Provider>
-        </BottomSheetInternalContext.Provider>
-      );
-    }
+  useImperativeHandle(ref, () => methods, [methods]);
 
+  if (!isOpen) {
     return (
       <BottomSheetInternalContext.Provider value={internalContextValue}>
-        <BottomSheetContext.Provider value={methods}>
-          <Host matchContents>
-            <ModalBottomSheet
-              ref={sheetRef}
-              onDismissRequest={handleDismiss}
-              skipPartiallyExpanded={skipPartially}
-              showDragHandle={handleComponent !== null}
-              sheetGesturesEnabled={enablePanDownToClose}
-              containerColor={containerColor}
-              properties={{
-                shouldDismissOnBackPress: enablePanDownToClose,
-                shouldDismissOnClickOutside: enablePanDownToClose,
-              }}>
-              <RNHostView matchContents={fitToContents}>
-                <View style={fitToContents ? undefined : { flex: 1 }}>{children}</View>
-              </RNHostView>
-            </ModalBottomSheet>
-          </Host>
-        </BottomSheetContext.Provider>
+        <BottomSheetContext.Provider value={methods}>{null}</BottomSheetContext.Provider>
       </BottomSheetInternalContext.Provider>
     );
   }
-);
+
+  return (
+    <BottomSheetInternalContext.Provider value={internalContextValue}>
+      <BottomSheetContext.Provider value={methods}>
+        <Host matchContents>
+          <ModalBottomSheet
+            ref={sheetRef}
+            onDismissRequest={handleDismiss}
+            skipPartiallyExpanded={skipPartially}
+            showDragHandle={handleComponent !== null}
+            sheetGesturesEnabled={enablePanDownToClose}
+            containerColor={containerColor}
+            properties={{
+              shouldDismissOnBackPress: enablePanDownToClose,
+              shouldDismissOnClickOutside: enablePanDownToClose,
+            }}>
+            <RNHostView matchContents={fitToContents}>
+              <View style={fitToContents ? undefined : { flex: 1 }}>{children}</View>
+            </RNHostView>
+          </ModalBottomSheet>
+        </Host>
+      </BottomSheetContext.Provider>
+    </BottomSheetInternalContext.Provider>
+  );
+}

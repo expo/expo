@@ -1,5 +1,4 @@
 import React, {
-  forwardRef,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -46,133 +45,132 @@ const contentStyle: React.CSSProperties = {
 /**
  * Web implementation of `BottomSheet` using vaul.
  */
-export const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
-  function BottomSheet(props, ref) {
-    const {
-      snapPoints: snapPointsProp,
-      index: indexProp = 0,
-      onChange,
-      onClose,
-      onDismiss,
-      enablePanDownToClose = false,
-      handleComponent,
-      children,
-    } = props;
+export function BottomSheet(props: BottomSheetProps) {
+  const {
+    ref,
+    snapPoints: snapPointsProp,
+    index: indexProp = 0,
+    onChange,
+    onClose,
+    onDismiss,
+    enablePanDownToClose = false,
+    handleComponent,
+    children,
+  } = props;
 
-    const { height: windowHeight } = useWindowDimensions();
+  const { height: windowHeight } = useWindowDimensions();
 
-    const hasSnapPoints = snapPointsProp != null && snapPointsProp.length > 0;
-    const snapHeights = useMemo(() => {
-      if (!hasSnapPoints) return [];
-      return snapPointsProp!.map((p) => resolveSnapPointPx(p, windowHeight));
-    }, [snapPointsProp, hasSnapPoints, windowHeight]);
+  const hasSnapPoints = snapPointsProp != null && snapPointsProp.length > 0;
+  const snapHeights = useMemo(() => {
+    if (!hasSnapPoints) return [];
+    return snapPointsProp!.map((p) => resolveSnapPointPx(p, windowHeight));
+  }, [snapPointsProp, hasSnapPoints, windowHeight]);
 
-    const [isOpen, setIsOpen] = useState(indexProp >= 0);
-    // Drives currentHeight for snap-point sheets. Vaul doesn't use snap points —
-    // we control the content div height ourselves with CSS transition.
-    const [snapIndex, setSnapIndex] = useState(() => {
-      const maxIndex = hasSnapPoints ? snapHeights.length - 1 : 0;
-      return indexProp >= 0 ? Math.min(Math.max(indexProp, 0), maxIndex) : 0;
-    });
+  const [isOpen, setIsOpen] = useState(indexProp >= 0);
+  // Drives currentHeight for snap-point sheets. Vaul doesn't use snap points —
+  // we control the content div height ourselves with CSS transition.
+  const [snapIndex, setSnapIndex] = useState(() => {
+    const maxIndex = hasSnapPoints ? snapHeights.length - 1 : 0;
+    return indexProp >= 0 ? Math.min(Math.max(indexProp, 0), maxIndex) : 0;
+  });
 
-    // Stable callback refs
-    const onChangeRef = useRef(onChange);
-    onChangeRef.current = onChange;
-    const onCloseRef = useRef(onClose);
-    onCloseRef.current = onClose;
-    const onDismissRef = useRef(onDismiss);
-    onDismissRef.current = onDismiss;
+  // Stable callback refs
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
 
-    const fireCloseCallbacks = useCallback(() => {
-      onCloseRef.current?.();
-      onDismissRef.current?.();
-      onChangeRef.current?.(-1);
-    }, []);
+  const fireCloseCallbacks = useCallback(() => {
+    onCloseRef.current?.();
+    onDismissRef.current?.();
+    onChangeRef.current?.(-1);
+  }, []);
 
-    useEffect(() => {
-      if (indexProp === -1) {
+  useEffect(() => {
+    if (indexProp === -1) {
+      setIsOpen(false);
+      return;
+    }
+
+    const maxIndex = hasSnapPoints ? snapHeights.length - 1 : 0;
+    setSnapIndex(Math.min(Math.max(indexProp, 0), maxIndex));
+    setIsOpen(true);
+  }, [hasSnapPoints, indexProp, snapHeights.length]);
+
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      if (!open) fireCloseCallbacks();
+    },
+    [fireCloseCallbacks]
+  );
+
+  const methods: BottomSheetMethods = useMemo(() => {
+    const snapToIndex = (index: number) => {
+      if (index === -1) {
         setIsOpen(false);
         return;
       }
-
       const maxIndex = hasSnapPoints ? snapHeights.length - 1 : 0;
-      setSnapIndex(Math.min(Math.max(indexProp, 0), maxIndex));
+      const clampedIndex = Math.min(Math.max(index, 0), maxIndex);
+      setSnapIndex(clampedIndex);
       setIsOpen(true);
-    }, [hasSnapPoints, indexProp, snapHeights.length]);
+      onChangeRef.current?.(clampedIndex);
+    };
 
-    const handleOpenChange = useCallback(
-      (open: boolean) => {
-        setIsOpen(open);
-        if (!open) fireCloseCallbacks();
+    const close = () => setIsOpen(false);
+
+    return {
+      snapToIndex,
+      snapToPosition(position: string | number) {
+        if (!hasSnapPoints) return;
+        const targetHeight = resolveSnapPointPx(position, windowHeight);
+        let nearestIndex = 0;
+        let nearestDist = Infinity;
+        snapHeights.forEach((h, i) => {
+          const dist = Math.abs(h - targetHeight);
+          if (dist < nearestDist) {
+            nearestDist = dist;
+            nearestIndex = i;
+          }
+        });
+        snapToIndex(nearestIndex);
       },
-      [fireCloseCallbacks]
-    );
+      expand: () => snapToIndex(hasSnapPoints ? snapHeights.length - 1 : 0),
+      collapse: () => snapToIndex(0),
+      close,
+      forceClose: close,
+      present: () => snapToIndex(0),
+      dismiss: close,
+    };
+  }, [hasSnapPoints, snapHeights, windowHeight]);
 
-    const methods: BottomSheetMethods = useMemo(() => {
-      const snapToIndex = (index: number) => {
-        if (index === -1) {
-          setIsOpen(false);
-          return;
-        }
-        const maxIndex = hasSnapPoints ? snapHeights.length - 1 : 0;
-        const clampedIndex = Math.min(Math.max(index, 0), maxIndex);
-        setSnapIndex(clampedIndex);
-        setIsOpen(true);
-        onChangeRef.current?.(clampedIndex);
-      };
+  useImperativeHandle(ref, () => methods);
 
-      const close = () => setIsOpen(false);
+  const currentHeight = hasSnapPoints ? snapHeights[snapIndex] : undefined;
+  const innerStyle: React.CSSProperties | undefined =
+    currentHeight != null
+      ? { overflowY: 'auto', height: currentHeight, transition: 'height 0.3s ease' }
+      : undefined;
 
-      return {
-        snapToIndex,
-        snapToPosition(position: string | number) {
-          if (!hasSnapPoints) return;
-          const targetHeight = resolveSnapPointPx(position, windowHeight);
-          let nearestIndex = 0;
-          let nearestDist = Infinity;
-          snapHeights.forEach((h, i) => {
-            const dist = Math.abs(h - targetHeight);
-            if (dist < nearestDist) {
-              nearestDist = dist;
-              nearestIndex = i;
-            }
-          });
-          snapToIndex(nearestIndex);
-        },
-        expand: () => snapToIndex(hasSnapPoints ? snapHeights.length - 1 : 0),
-        collapse: () => snapToIndex(0),
-        close,
-        forceClose: close,
-        present: () => snapToIndex(0),
-        dismiss: close,
-      };
-    }, [hasSnapPoints, snapHeights, windowHeight]);
-
-    useImperativeHandle(ref, () => methods);
-
-    const currentHeight = hasSnapPoints ? snapHeights[snapIndex] : undefined;
-    const innerStyle: React.CSSProperties | undefined =
-      currentHeight != null
-        ? { overflowY: 'auto', height: currentHeight, transition: 'height 0.3s ease' }
-        : undefined;
-
-    return (
-      <BottomSheetInternalContext.Provider value={internalContextValue}>
-        <BottomSheetContext.Provider value={methods}>
-          <Drawer.Root
-            open={isOpen}
-            onOpenChange={handleOpenChange}
-            dismissible={enablePanDownToClose}>
-            <Drawer.Overlay style={overlayStyle} />
-            <Drawer.Portal>
-              <Drawer.Content style={contentStyle}>
-                {handleComponent !== null && <Drawer.Handle />}
-                <div style={innerStyle}>{children}</div>
-              </Drawer.Content>
-            </Drawer.Portal>
-          </Drawer.Root>
-        </BottomSheetContext.Provider>
-      </BottomSheetInternalContext.Provider>
-    );
-  }
-);
+  return (
+    <BottomSheetInternalContext.Provider value={internalContextValue}>
+      <BottomSheetContext.Provider value={methods}>
+        <Drawer.Root
+          open={isOpen}
+          onOpenChange={handleOpenChange}
+          dismissible={enablePanDownToClose}>
+          <Drawer.Overlay style={overlayStyle} />
+          <Drawer.Portal>
+            <Drawer.Content style={contentStyle}>
+              {handleComponent !== null && <Drawer.Handle />}
+              <div style={innerStyle}>{children}</div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
+      </BottomSheetContext.Provider>
+    </BottomSheetInternalContext.Provider>
+  );
+}

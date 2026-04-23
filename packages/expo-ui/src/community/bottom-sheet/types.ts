@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentType, ReactNode, Ref } from 'react';
 import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
 
 // #region BottomSheetMethods
@@ -121,6 +121,12 @@ export interface BottomSheetFooterProps {
  * a modal sheet overlay on iOS and Android. On web, it renders inline.
  */
 export interface BottomSheetProps {
+  /**
+   * Ref to the bottom sheet component. Exposes imperative methods (`snapToIndex`,
+   * `expand`, `collapse`, `close`, `present`, `dismiss`, etc.).
+   */
+  ref?: Ref<BottomSheetMethods>;
+
   // --- Snap points ---
 
   /**
