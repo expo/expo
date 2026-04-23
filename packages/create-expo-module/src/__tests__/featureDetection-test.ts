@@ -187,4 +187,16 @@ describe('findModuleDefinitionFile', () => {
     const result = await findModuleDefinitionFile(tmpDir, 'apple');
     expect(result).toBeNull();
   });
+
+  it('skips generated directories when searching for module definitions', async () => {
+    const iosDir = path.join(tmpDir, 'ios');
+    await fs.promises.mkdir(path.join(iosDir, 'build'), { recursive: true });
+    await fs.promises.writeFile(
+      path.join(iosDir, 'build', 'StaleModule.swift'),
+      'public func definition() -> ModuleDefinition { Name("StaleModule") }'
+    );
+
+    const result = await findModuleDefinitionFile(tmpDir, 'apple');
+    expect(result).toBeNull();
+  });
 });

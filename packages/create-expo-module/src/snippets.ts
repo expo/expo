@@ -217,11 +217,26 @@ async function copySnippetsInternal(
   }
 }
 
-export const copyFileSnippets = (s: string, f: string[], d: AnySubstitutionData, t: string) =>
-  copySnippetsInternal(s, f, d, t, () => true);
+export const copyFileSnippets = (
+  snippetsDir: string,
+  features: string[],
+  data: AnySubstitutionData,
+  targetDir: string
+) => copySnippetsInternal(snippetsDir, features, data, targetDir, () => true);
 
-export const copyNativeFileSnippets = (s: string, f: string[], d: AnySubstitutionData, t: string) =>
-  copySnippetsInternal(s, f, d, t, (spec) => !!spec.platform);
+export const copyNativeFileSnippets = (
+  snippetsDir: string,
+  features: string[],
+  data: AnySubstitutionData,
+  targetDir: string
+) => copySnippetsInternal(snippetsDir, features, data, targetDir, (spec) => !!spec.platform);
 
-export const copyWebFileSnippets = (s: string, f: string[], d: AnySubstitutionData, t: string) =>
-  copySnippetsInternal(s, f, d, t, (spec) => spec.source.includes('.web.'));
+export const copyWebFileSnippets = (
+  snippetsDir: string,
+  features: string[],
+  data: AnySubstitutionData,
+  targetDir: string
+) =>
+  copySnippetsInternal(snippetsDir, features, data, targetDir, (spec) =>
+    spec.source.includes('.web.')
+  );

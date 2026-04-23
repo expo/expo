@@ -56,6 +56,10 @@ export const TEMPLATE_DIR_TO_PLATFORM: Record<string, Platform> = {
   android: 'android',
 };
 
+export function getGeneratedWebStubSentinel(moduleName: string): string {
+  return `${moduleName} is not available on the web platform`;
+}
+
 export function handleSuffix(name: string, suffix: string): string {
   if (name.endsWith(suffix)) {
     return name;
@@ -350,6 +354,17 @@ export async function updateWebStub(
 
   const fromPath = path.join(templatePath, templateRelFile);
   const toPath = path.join(targetDir, renderedFileName);
+  if (fs.existsSync(toPath)) {
+    const currentContent = await fs.promises.readFile(toPath, 'utf8');
+    const sentinel = getGeneratedWebStubSentinel(data.project.moduleName);
+    if (!currentContent.includes(sentinel)) {
+      throw new Error(
+        `Refusing to overwrite ${toPath} because it does not look like the generated web stub.\n` +
+          `Move your custom web implementation or restore the generated "${sentinel}" stub before running this command.`
+      );
+    }
+  }
+
   const template = await fs.promises.readFile(fromPath, 'utf8');
   const renderedContent = ejs.render(template, augmentedData);
 

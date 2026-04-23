@@ -8,6 +8,7 @@ const functionPattern = /(?:^|\s)Function\s*\(/;
 const eventsPattern = /(?:^|\s)Events\s*\(/;
 const classPattern = /(?:^|\s)Class\s*\(/;
 const classNamePattern = /Class\s*\((\w+)(?:\.self|::class)/;
+const IGNORED_SEARCH_DIRS = new Set(['build', 'Pods', '.gradle', 'node_modules', 'DerivedData']);
 
 export type DetectedFeatures = {
   features: Feature[];
@@ -133,6 +134,9 @@ async function findFileWithContent(
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
+      if (IGNORED_SEARCH_DIRS.has(entry.name)) {
+        continue;
+      }
       const result = await findFileWithContent(fullPath, ext, needle);
       if (result) return result;
     } else if (entry.name.endsWith(ext)) {

@@ -18,17 +18,10 @@ import {
   updateWebStub,
 } from './templateUtils';
 import type { LocalSubstitutionData, SubstitutionData } from './types';
+import { isInteractive } from './utils/env';
 import { newStep } from './utils/ora';
 
 const CWD = process.env.INIT_CWD || process.cwd();
-
-function isInteractive(): boolean {
-  const ci = process.env.CI;
-  if (ci === '1' || ci?.toLowerCase() === 'true') return false;
-  if (process.env.EXPO_NONINTERACTIVE) return false;
-  if (!process.stdin.isTTY) return false;
-  return true;
-}
 
 type ExistingModuleInfo = {
   slug: string;
@@ -281,147 +274,166 @@ export type AddPlatformSupportOptions = {
   source?: string;
 };
 
-export async function addPlatformSupport(
-  modulePathArg: string | undefined,
-  options: AddPlatformSupportOptions
-): Promise<void> {
-  const moduleRoot = modulePathArg ? path.resolve(CWD, modulePathArg) : CWD;
-  const configPath = path.join(moduleRoot, 'expo-module.config.json');
+type TemplatePathInfo = {
+  templatePath: string;
+  templateTempDir: string | null;
+};
 
+function exitWithError(message: string): never {
+  console.error(chalk.red(message));
+  process.exit(1);
+}
+
+async function readModuleInfoOrExit(
+  moduleRoot: string,
+  configPath: string
+): Promise<ExistingModuleInfo> {
   if (!fs.existsSync(configPath)) {
-    console.error(
-      chalk.red(
-        `❌ Could not find expo-module.config.json in ${moduleRoot}.\n` +
-          `   Run this command from the module's root directory, or pass the path as an argument:\n` +
-          `   npx create-expo-module add-platform-support <path-to-module>`
-      )
+    exitWithError(
+      `❌ Could not find expo-module.config.json in ${moduleRoot}.\n` +
+        `   Run this command from the module's root directory, or pass the path as an argument:\n` +
+        `   npx create-expo-module add-platform-support <path-to-module>`
     );
-    process.exit(1);
   }
 
-  let moduleInfo: ExistingModuleInfo;
   try {
-    moduleInfo = await readExistingModuleInfo(moduleRoot);
+    return await readExistingModuleInfo(moduleRoot);
   } catch (e: any) {
-    console.error(chalk.red(`❌ Failed to read module configuration: ${e.message}`));
-    process.exit(1);
+    exitWithError(`❌ Failed to read module configuration: ${e.message}`);
   }
+}
 
+async function findExistingModuleDefinitionFile(
+  moduleRoot: string,
+  moduleInfo: ExistingModuleInfo
+): Promise<string | null> {
   const existingNativePlatform = moduleInfo.platforms.find(
     (p): p is 'apple' | 'android' => p === 'apple' || p === 'android'
   );
-  let moduleDefinitionFile: string | null = null;
 
   if (existingNativePlatform) {
-    moduleDefinitionFile = await findModuleDefinitionFile(moduleRoot, existingNativePlatform);
+    const moduleDefinitionFile = await findModuleDefinitionFile(moduleRoot, existingNativePlatform);
     if (!moduleDefinitionFile) {
-      console.error(
-        chalk.red(
-          `❌ Could not find a module definition file in ` +
-            `${existingNativePlatform === 'apple' ? 'ios/' : 'android/src/'}.\n` +
-            `   This command only works with modules using the Expo Modules API DSL.\n` +
-            `   Older module formats are not supported.`
-        )
+      exitWithError(
+        `❌ Could not find a module definition file in ` +
+          `${existingNativePlatform === 'apple' ? 'ios/' : 'android/src/'}.\n` +
+          `   This command only works with modules using the Expo Modules API DSL.\n` +
+          `   Older module formats are not supported.`
       );
-      process.exit(1);
     }
+    return moduleDefinitionFile;
   }
 
+  return null;
+}
+
+async function resolvePlatformsToAdd(
+  moduleInfo: ExistingModuleInfo,
+  options: AddPlatformSupportOptions
+): Promise<Platform[] | null> {
   const availablePlatforms = ALL_PLATFORMS.filter((p) => !moduleInfo.platforms.includes(p));
 
   if (availablePlatforms.length === 0) {
     console.log(chalk.yellow('ℹ️  All platforms are already supported by this module.'));
-    return;
+    return null;
   }
-
-  let platformsToAdd: Platform[];
-  const interactive = isInteractive();
 
   if (options.platform && options.platform.length > 0) {
     const invalid = options.platform.filter(
       (p) => !(ALL_PLATFORMS as readonly string[]).includes(p)
     );
     if (invalid.length > 0) {
-      console.error(
-        chalk.red(
-          `❌ Invalid platform(s): ${invalid.join(', ')}. Valid values: ${ALL_PLATFORMS.join(', ')}.`
-        )
+      exitWithError(
+        `❌ Invalid platform(s): ${invalid.join(', ')}. Valid values: ${ALL_PLATFORMS.join(', ')}.`
       );
-      process.exit(1);
     }
     const conflicts = options.platform.filter((p) => moduleInfo.platforms.includes(p as Platform));
     if (conflicts.length > 0) {
-      console.error(
-        chalk.red(
-          `❌ The following platform(s) are already supported: ${conflicts.join(', ')}.\n` +
-            `   No changes were made.`
-        )
+      exitWithError(
+        `❌ The following platform(s) are already supported: ${conflicts.join(', ')}.\n` +
+          `   No changes were made.`
       );
-      process.exit(1);
     }
-    platformsToAdd = options.platform as Platform[];
-  } else if (!interactive) {
-    console.error(
-      chalk.red(
-        `❌ --platform is required in non-interactive mode.\n` +
-          `   Available: ${availablePlatforms.join(', ')}\n` +
-          `   Example: npx create-expo-module add-platform-support --platform ${availablePlatforms[0]}`
-      )
-    );
-    process.exit(1);
-  } else {
-    const result = await prompts(
-      {
-        type: 'multiselect',
-        name: 'platforms',
-        message: 'Which platforms would you like to add?',
-        choices: availablePlatforms.map((p) => ({ title: p, value: p, selected: false })),
-        min: 1,
-        hint: '- Space to select. Enter to confirm.',
-      },
-      { onCancel: () => process.exit(0) }
-    );
-    platformsToAdd = result.platforms;
+    return options.platform as Platform[];
   }
 
+  if (!isInteractive()) {
+    exitWithError(
+      `❌ --platform is required in non-interactive mode.\n` +
+        `   Available: ${availablePlatforms.join(', ')}\n` +
+        `   Example: npx create-expo-module add-platform-support --platform ${availablePlatforms[0]}`
+    );
+  }
+
+  const result = await prompts(
+    {
+      type: 'multiselect',
+      name: 'platforms',
+      message: 'Which platforms would you like to add?',
+      choices: availablePlatforms.map((p) => ({ title: p, value: p, selected: false })),
+      min: 1,
+      hint: '- Space to select. Enter to confirm.',
+    },
+    { onCancel: () => process.exit(0) }
+  );
+  return result.platforms;
+}
+
+function ensureNativePlatformTargetsAvailable(
+  moduleRoot: string,
+  platformsToAdd: Platform[]
+): void {
   for (const platform of platformsToAdd) {
     if (platform === 'web') continue;
     const dir = path.join(moduleRoot, platform === 'apple' ? 'ios' : 'android');
     if (fs.existsSync(dir)) {
       const stat = fs.statSync(dir);
-      console.error(
-        chalk.red(
-          `❌ ${dir} already exists as a ${stat.isDirectory() ? 'directory' : 'file'}.\n` +
-            `   Cannot add ${platform === 'apple' ? 'Apple' : 'Android'} platform support without overwriting existing files.\n` +
-            `   No changes were made.`
-        )
+      exitWithError(
+        `❌ ${dir} already exists as a ${stat.isDirectory() ? 'directory' : 'file'}.\n` +
+          `   Cannot add ${platform === 'apple' ? 'Apple' : 'Android'} platform support without overwriting existing files.\n` +
+          `   No changes were made.`
       );
-      process.exit(1);
     }
   }
+}
 
-  let detectedFeatures: Feature[];
-  let sharedObjectName: string | null = null;
-
+async function resolveDetectedFeatures(
+  moduleDefinitionFile: string | null,
+  options: AddPlatformSupportOptions
+): Promise<{ detectedFeatures: Feature[]; sharedObjectName: string | null }> {
   if (options.features && options.features.length > 0) {
-    detectedFeatures = resolveFeatures(options.features);
-  } else if (moduleDefinitionFile) {
-    const detected = await detectFeaturesFromFile(moduleDefinitionFile!);
-    detectedFeatures = detected.features;
-    sharedObjectName = detected.sharedObjectName;
-    if (detectedFeatures.length === 0) {
+    return { detectedFeatures: resolveFeatures(options.features), sharedObjectName: null };
+  }
+
+  if (moduleDefinitionFile) {
+    const { features, sharedObjectName } = await detectFeaturesFromFile(moduleDefinitionFile);
+    if (features.length === 0) {
       console.warn(
         chalk.yellow(
           '⚠️  No features detected in the module definition. Generating a minimal scaffold.'
         )
       );
+    } else {
+      console.log(
+        chalk.dim(
+          `Detected features from ${path.relative(CWD, moduleDefinitionFile)} (best effort). ` +
+            'Use --features to override.'
+        )
+      );
     }
-  } else {
-    // Web-only module adding a native platform: no ModuleDefinition to scan.
-    detectedFeatures = [];
-    console.log(chalk.dim('No native module definition found. Generating minimal scaffold.'));
+    return { detectedFeatures: features, sharedObjectName };
   }
 
+  // Web-only module adding a native platform: no ModuleDefinition to scan.
+  console.log(chalk.dim('No native module definition found. Generating minimal scaffold.'));
+  return { detectedFeatures: [], sharedObjectName: null };
+}
+
+async function updatePublicModuleNameFromSources(
+  moduleInfo: ExistingModuleInfo,
+  moduleRoot: string,
+  moduleDefinitionFile: string | null
+): Promise<void> {
   const detectedPublicModuleName =
     (moduleDefinitionFile
       ? detectPublicModuleNameFromNativeContent(
@@ -432,6 +444,125 @@ export async function addPlatformSupport(
   if (detectedPublicModuleName) {
     moduleInfo.name = detectedPublicModuleName;
   }
+}
+
+async function resolveTemplatePath(
+  options: AddPlatformSupportOptions,
+  moduleInfo: ExistingModuleInfo
+): Promise<TemplatePathInfo> {
+  if (options.source) {
+    const templatePath = path.resolve(CWD, options.source);
+    if (!fs.existsSync(templatePath)) {
+      exitWithError(
+        `❌ Template source directory does not exist: ${templatePath}.\n` +
+          `   Check the --source path and try again.`
+      );
+    }
+    if (!fs.statSync(templatePath).isDirectory()) {
+      exitWithError(
+        `❌ Template source is not a directory: ${templatePath}.\n` +
+          `   Pass the root directory of an expo-module-template package.`
+      );
+    }
+    return { templatePath, templateTempDir: null };
+  }
+
+  const templateTempDir = await fs.promises.mkdtemp(
+    path.join(os.tmpdir(), 'add-platform-support-')
+  );
+  const templatePath = await downloadPackageAsync(templateTempDir, moduleInfo.isLocal);
+  return { templatePath, templateTempDir };
+}
+
+async function addNativePlatformFiles(
+  templatePath: string,
+  moduleRoot: string,
+  moduleInfo: ExistingModuleInfo,
+  platformsToAdd: Platform[],
+  detectedFeatures: Feature[],
+  data: SubstitutionData | LocalSubstitutionData
+): Promise<void> {
+  const nativePlatforms = platformsToAdd.filter(
+    (p): p is 'apple' | 'android' => p === 'apple' || p === 'android'
+  );
+  if (nativePlatforms.length === 0) {
+    return;
+  }
+
+  const snippetsDir = path.join(templatePath, 'snippets');
+  const augmentedData = await buildAugmentedData(snippetsDir, data);
+  await newStep('Adding platform files', async (step) => {
+    await copyTemplateFiles(templatePath, moduleRoot, augmentedData, {
+      platforms: nativePlatforms,
+      platformsOnly: true,
+      moduleType: moduleInfo.isLocal ? 'local' : 'standalone',
+    });
+    const dataForNewPlatforms = {
+      ...data,
+      project: { ...data.project, platforms: nativePlatforms },
+    } as SubstitutionData | LocalSubstitutionData;
+    await copyNativeFileSnippets(snippetsDir, detectedFeatures, dataForNewPlatforms, moduleRoot);
+    step.succeed('Added platform files');
+  });
+}
+
+async function addWebPlatformFiles(
+  templatePath: string,
+  moduleRoot: string,
+  platformsToAdd: Platform[],
+  detectedFeatures: Feature[],
+  data: SubstitutionData | LocalSubstitutionData
+): Promise<void> {
+  if (!platformsToAdd.includes('web')) {
+    return;
+  }
+
+  const snippetsDir = path.join(templatePath, 'snippets');
+  await newStep('Updating web implementation', async (step) => {
+    await updateWebStub(templatePath, moduleRoot, data);
+    const dataWithWeb = {
+      ...data,
+      project: { ...data.project, platforms: ['web'] as Platform[] },
+    } as SubstitutionData | LocalSubstitutionData;
+    await copyWebFileSnippets(snippetsDir, detectedFeatures, dataWithWeb, moduleRoot);
+    step.succeed('Updated web implementation');
+  });
+}
+
+function getNativeOpenCommands(platformsToAdd: Platform[]): string[] {
+  const packageManager = resolvePackageManager();
+  return platformsToAdd
+    .filter(
+      (platform): platform is 'apple' | 'android' => platform === 'apple' || platform === 'android'
+    )
+    .map((platform) =>
+      platform === 'apple'
+        ? formatRunCommand(packageManager, 'open:ios')
+        : formatRunCommand(packageManager, 'open:android')
+    );
+}
+
+export async function addPlatformSupport(
+  modulePathArg: string | undefined,
+  options: AddPlatformSupportOptions
+): Promise<void> {
+  const moduleRoot = modulePathArg ? path.resolve(CWD, modulePathArg) : CWD;
+  const configPath = path.join(moduleRoot, 'expo-module.config.json');
+  const moduleInfo = await readModuleInfoOrExit(moduleRoot, configPath);
+  const moduleDefinitionFile = await findExistingModuleDefinitionFile(moduleRoot, moduleInfo);
+  const platformsToAdd = await resolvePlatformsToAdd(moduleInfo, options);
+  if (!platformsToAdd) {
+    return;
+  }
+
+  ensureNativePlatformTargetsAvailable(moduleRoot, platformsToAdd);
+
+  const { detectedFeatures, sharedObjectName } = await resolveDetectedFeatures(
+    moduleDefinitionFile,
+    options
+  );
+
+  await updatePublicModuleNameFromSources(moduleInfo, moduleRoot, moduleDefinitionFile);
 
   const data = buildSubstitutionData(
     moduleInfo,
@@ -439,57 +570,18 @@ export async function addPlatformSupport(
     detectedFeatures,
     sharedObjectName
   );
-
-  let templatePath: string;
-  let templateTempDir: string | null = null;
-
-  if (options.source) {
-    templatePath = path.resolve(CWD, options.source);
-  } else {
-    const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'add-platform-support-'));
-    templateTempDir = tempDir;
-    templatePath = await downloadPackageAsync(tempDir, moduleInfo.isLocal);
-  }
+  const { templatePath, templateTempDir } = await resolveTemplatePath(options, moduleInfo);
 
   try {
-    const snippetsDir = path.join(templatePath, 'snippets');
-    const augmentedData = await buildAugmentedData(snippetsDir, data);
-
-    const nativePlatforms = platformsToAdd.filter(
-      (p): p is 'apple' | 'android' => p === 'apple' || p === 'android'
+    await addNativePlatformFiles(
+      templatePath,
+      moduleRoot,
+      moduleInfo,
+      platformsToAdd,
+      detectedFeatures,
+      data
     );
-    if (nativePlatforms.length > 0) {
-      await newStep('Adding platform files', async (step) => {
-        await copyTemplateFiles(templatePath, moduleRoot, augmentedData, {
-          platforms: nativePlatforms,
-          platformsOnly: true,
-          moduleType: moduleInfo.isLocal ? 'local' : 'standalone',
-        });
-        const dataForNewPlatforms = {
-          ...data,
-          project: { ...data.project, platforms: nativePlatforms },
-        } as SubstitutionData | LocalSubstitutionData;
-        await copyNativeFileSnippets(
-          snippetsDir,
-          detectedFeatures,
-          dataForNewPlatforms,
-          moduleRoot
-        );
-        step.succeed('Added platform files');
-      });
-    }
-
-    if (platformsToAdd.includes('web')) {
-      await newStep('Updating web implementation', async (step) => {
-        await updateWebStub(templatePath, moduleRoot, data);
-        const dataWithWeb = {
-          ...data,
-          project: { ...data.project, platforms: ['web'] as Platform[] },
-        } as SubstitutionData | LocalSubstitutionData;
-        await copyWebFileSnippets(snippetsDir, detectedFeatures, dataWithWeb, moduleRoot);
-        step.succeed('Updated web implementation');
-      });
-    }
+    await addWebPlatformFiles(templatePath, moduleRoot, platformsToAdd, detectedFeatures, data);
 
     await newStep('Updating expo-module.config.json', async (step) => {
       await updateModuleConfig(configPath, platformsToAdd, data);
@@ -507,17 +599,7 @@ export async function addPlatformSupport(
     console.log(chalk.dim(`   Scaffolded features: ${detectedFeatures.join(', ')}`));
   }
 
-  const packageManager = resolvePackageManager();
-  const nativeOpenCommands = platformsToAdd
-    .filter(
-      (platform): platform is 'apple' | 'android' => platform === 'apple' || platform === 'android'
-    )
-    .map((platform) =>
-      platform === 'apple'
-        ? formatRunCommand(packageManager, 'open:ios')
-        : formatRunCommand(packageManager, 'open:android')
-    );
-
+  const nativeOpenCommands = getNativeOpenCommands(platformsToAdd);
   if (nativeOpenCommands.length > 0) {
     console.log(
       chalk.dim(`   To write the native implementation, use ${nativeOpenCommands.join(' or ')}.`)

@@ -1,7 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { Command, Option } from 'commander';
-import ejs from 'ejs';
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
@@ -40,6 +39,7 @@ import {
 } from './templateUtils';
 import type { CommandOptions, Feature, LocalSubstitutionData, SubstitutionData } from './types';
 import { buildDefaultsWarning } from './utils/defaults';
+import { isInteractive } from './utils/env';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 import { newStep } from './utils/ora';
@@ -54,27 +54,6 @@ const CWD = process.env.INIT_CWD || process.cwd();
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
 const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
-
-/**
- * Determines if we're in an interactive environment.
- * Non-interactive when: CI=1/true or non-TTY stdin.
- */
-function isInteractive(): boolean {
-  const ci = process.env.CI;
-  if (ci === '1' || ci?.toLowerCase() === 'true') {
-    return false;
-  }
-  // Check for Expo's own non-interactive flag, used across expo-module-scripts and @expo/cli
-  // to force non-interactive mode in sub-processes (e.g. during `prepare` or `prepublishOnly`)
-  if (process.env.EXPO_NONINTERACTIVE) {
-    return false;
-  }
-  // Check for TTY
-  if (!process.stdin.isTTY) {
-    return false;
-  }
-  return true;
-}
 
 /**
  * Converts a slug to a native module name (PascalCase).
@@ -909,8 +888,8 @@ program
   .command('add-platform-support [path]')
   .description(
     'Add platform support to an existing Expo module. ' +
-      'For example, add Android to an iOS-only module.' +
-      'This command should be ran from the root directory of an expo-module'
+      'For example, add Android to an iOS-only module. ' +
+      'Run from the module root, or pass the path as the first argument.'
   )
   .option(
     '-p, --platform <platforms...>',
@@ -918,7 +897,7 @@ program
   )
   .option(
     '--features <features...>',
-    `Override auto-detected features. Values: ${ALL_FEATURES.join(', ')}.`
+    `Override best-effort feature detection. Values: ${ALL_FEATURES.join(', ')}.`
   )
   .option(
     '-s, --source <source_dir>',
