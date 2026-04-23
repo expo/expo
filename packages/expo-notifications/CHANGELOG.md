@@ -20,6 +20,7 @@
 
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - Skip redundant device push token registration when token and metadata are unchanged since last successful registration. ([#44836](https://github.com/expo/expo/pull/44836) by [@stephanepham](https://github.com/stephanepham))
+- [Android] Migrated deprecated `Bundle.getParcelable`/`getSerializable`/`getParcelableArrayList` and `Intent.getParcelableExtra` call sites to type-safe variants via `androidx.core.os.BundleCompat` and `androidx.core.content.IntentCompat`. ([@hbabathe](https://github.com/hbabathe))
 
 ## 55.0.10 — 2026-02-25
 

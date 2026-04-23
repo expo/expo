@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.core.os.BundleCompat
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.Promise
@@ -48,14 +49,14 @@ open class NotificationScheduler : Module() {
         schedulingContext,
         createResultReceiver { resultCode: Int, resultData: Bundle? ->
           if (resultCode == NotificationsService.SUCCESS_CODE) {
-            val requests = resultData?.getParcelableArrayList<NotificationRequest>(NotificationsService.NOTIFICATION_REQUESTS_KEY)
+            val requests = resultData?.let { BundleCompat.getParcelableArrayList(it, NotificationsService.NOTIFICATION_REQUESTS_KEY, NotificationRequest::class.java) }
             if (requests == null) {
               promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", null)
             } else {
               promise.resolve(serializeScheduledNotificationRequests(requests))
             }
           } else {
-            val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+            val e = resultData?.let { BundleCompat.getSerializable(it, NotificationsService.EXCEPTION_KEY, Exception::class.java) } as Exception
             promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e)
           }
         }
@@ -78,7 +79,7 @@ open class NotificationScheduler : Module() {
             if (resultCode == NotificationsService.SUCCESS_CODE) {
               promise.resolve(identifier)
             } else {
-              val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
+              val e = resultData?.let { BundleCompat.getSerializable(it, NotificationsService.EXCEPTION_KEY, Exception::class.java) }
               promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. ${e?.message}", e)
             }
           }
@@ -125,7 +126,7 @@ open class NotificationScheduler : Module() {
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null)
         } else {
-          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
+          val e = resultData?.let { BundleCompat.getSerializable(it, NotificationsService.EXCEPTION_KEY, Exception::class.java) }
           promise.reject("ERR_NOTIFICATIONS_FAILED_TO_CANCEL", "Failed to cancel notification.", e)
         }
       }
@@ -139,7 +140,7 @@ open class NotificationScheduler : Module() {
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null)
         } else {
-          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
+          val e = resultData?.let { BundleCompat.getSerializable(it, NotificationsService.EXCEPTION_KEY, Exception::class.java) }
           promise.reject("ERR_NOTIFICATIONS_FAILED_TO_CANCEL", "Failed to cancel all notifications.", e)
         }
       }
