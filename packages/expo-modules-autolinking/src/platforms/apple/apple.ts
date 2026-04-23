@@ -137,11 +137,6 @@ export async function generateModulesProviderAsync(
   await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
 
-interface GeneratePackageListFileContentParams {
-  watchedDirectories: string[];
-  appRoot: string;
-}
-
 /**
  * Generates the string to put into the generated package list.
  */

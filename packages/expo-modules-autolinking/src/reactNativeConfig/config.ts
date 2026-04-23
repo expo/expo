@@ -4,10 +4,7 @@ import path from 'path';
 
 import { memoize } from '../memoize';
 import { fileExistsAsync } from '../utils';
-import type {
-  RNConfigReactNativeConfig,
-  RNConfigReactNativeProjectConfig,
-} from './reactNativeConfig.types';
+import type { RNConfigReactNativeConfig } from './reactNativeConfig.types';
 
 const mockedNativeModules = path.join(__dirname, '..', '..', 'node_modules_mock');
 
