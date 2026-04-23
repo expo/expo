@@ -1,6 +1,5 @@
 import { ctx } from 'expo-router/_ctx';
-import type { GenerateMetadataFunction, Metadata } from 'expo-server';
-import { ImmutableRequest } from 'expo-server/private';
+import type { GenerateMetadataFunction, ImmutableRequest, Metadata } from 'expo-server';
 
 import { serializeMetadataToHtml } from '../utils/metadata/serialize';
 
@@ -13,7 +12,7 @@ type ResolveMetadataOptions = {
     file: string;
     page: string;
   };
-  request?: Request;
+  request: ImmutableRequest;
   params: Record<string, string | string[]>;
 };
 
@@ -82,12 +81,7 @@ export async function resolveMetadata(
   }
 
   const metadata = await waitForMetadataResult(
-    Promise.resolve(
-      generateMetadata(
-        options.request ? new ImmutableRequest(options.request) : undefined,
-        options.params
-      )
-    ),
+    Promise.resolve(generateMetadata(options.request, options.params)),
     options.request?.signal
   );
 

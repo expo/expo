@@ -1,10 +1,10 @@
-import type { Metadata } from 'expo-server';
+import type { ImmutableRequest, Metadata } from 'expo-server';
 type ResolveMetadataOptions = {
     route: {
         file: string;
         page: string;
     };
-    request?: Request;
+    request: ImmutableRequest;
     params: Record<string, string | string[]>;
 };
 type ResolvedMetadata = {

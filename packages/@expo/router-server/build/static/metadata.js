@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveMetadata = resolveMetadata;
 const _ctx_1 = require("expo-router/_ctx");
-const private_1 = require("expo-server/private");
 const serialize_1 = require("../utils/metadata/serialize");
 function createAbortError(signal) {
     const reason = signal.reason;
@@ -49,7 +48,7 @@ async function resolveMetadata(options) {
     if (!generateMetadata) {
         return null;
     }
-    const metadata = await waitForMetadataResult(Promise.resolve(generateMetadata(options.request ? new private_1.ImmutableRequest(options.request) : undefined, options.params)), options.request?.signal);
+    const metadata = await waitForMetadataResult(Promise.resolve(generateMetadata(options.request, options.params)), options.request?.signal);
     if (metadata == null) {
         return null;
     }

@@ -14,7 +14,7 @@ export interface ResolvedMetadata {
 
 export interface ResolveMetadataOptions {
   route: MatchedRouteMetadata;
-  request?: Request;
+  request: ImmutableRequest;
   params: Record<string, string | string[]>;
 }
 
