@@ -21,42 +21,6 @@ type ResolvedMetadata = {
   headTags: string;
 };
 
-function createAbortError(signal: AbortSignal): Error {
-  const reason = signal.reason;
-  if (reason instanceof Error) {
-    return reason;
-  }
-  const error = new Error(typeof reason === 'string' ? reason : 'This operation was aborted.');
-  error.name = 'AbortError';
-  return error;
-}
-
-async function waitForMetadataResult<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
-  if (!signal) {
-    return promise;
-  }
-
-  if (signal.aborted) {
-    throw createAbortError(signal);
-  }
-
-  return await new Promise<T>((resolve, reject) => {
-    const onAbort = () => reject(createAbortError(signal));
-    signal.addEventListener('abort', onAbort, { once: true });
-
-    promise.then(
-      (value) => {
-        signal.removeEventListener('abort', onAbort);
-        resolve(value);
-      },
-      (error) => {
-        signal.removeEventListener('abort', onAbort);
-        reject(error);
-      }
-    );
-  });
-}
-
 function getGenerateMetadata(moduleExports: RouteModuleExports): GenerateMetadataFunction | null {
   return typeof moduleExports.generateMetadata === 'function'
     ? moduleExports.generateMetadata
@@ -66,10 +30,6 @@ function getGenerateMetadata(moduleExports: RouteModuleExports): GenerateMetadat
 export async function resolveMetadata(
   options: ResolveMetadataOptions
 ): Promise<ResolvedMetadata | null> {
-  if (options.request?.signal.aborted) {
-    throw createAbortError(options.request.signal);
-  }
-
   const routeModule = (await ctx(options.route.file)) as RouteModuleExports | undefined;
   if (!routeModule) {
     return null;
@@ -80,10 +40,7 @@ export async function resolveMetadata(
     return null;
   }
 
-  const metadata = await waitForMetadataResult(
-    Promise.resolve(generateMetadata(options.request, options.params)),
-    options.request?.signal
-  );
+  const metadata = await generateMetadata(options.request, options.params);
 
   if (metadata == null) {
     return null;

@@ -15,7 +15,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from './getRootComponent';
-import { resolveMetadata } from './metadata';
+import { resolveMetadata } from '../server/metadata';
 import { createDebug } from '../utils/debug';
 import {
   createInjectedCssElements,
