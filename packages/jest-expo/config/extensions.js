@@ -2,11 +2,7 @@
 
 const assert = require('assert');
 
-function getExtensions(
-  platforms,
-  extensions,
-  workflows,
-) {
+function getExtensions(platforms, extensions, workflows) {
   // In the past we used spread operators to collect the values so now we enforce type safety on them.
   assert(Array.isArray(platforms), 'Expected: `platforms: string[]`');
   assert(Array.isArray(extensions), 'Expected: `extensions: string[]`');
@@ -26,11 +22,7 @@ function getExtensions(
   return fileExtensions;
 }
 
-function getLanguageExtensionsInOrder({
-  isTS,
-  isModern,
-  isReact,
-}) {
+function getLanguageExtensionsInOrder({ isTS, isModern, isReact }) {
   const addLanguage = (lang) => [lang, isReact && `${lang}x`].filter(Boolean);
 
   // Support JavaScript
@@ -69,6 +61,4 @@ module.exports.getBareExtensions = function getBareExtensions(
   // Always add these last
   _addMiscellaneousExtensions(platforms, fileExtensions);
   return fileExtensions;
-}
-
-
+};

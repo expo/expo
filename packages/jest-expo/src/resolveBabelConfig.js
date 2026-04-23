@@ -17,7 +17,7 @@ function resolveBabelConfig(projectRoot) {
 
   try {
     return require.resolve('expo/internal/babel-preset', {
-      paths: [projectRoot, __dirname]
+      paths: [projectRoot, __dirname],
     });
   } catch {
     try {
