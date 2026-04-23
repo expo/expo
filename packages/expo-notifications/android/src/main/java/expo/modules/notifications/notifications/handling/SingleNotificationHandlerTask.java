@@ -101,6 +101,9 @@ public class SingleNotificationHandlerTask {
               promise.resolve();
             } else {
               Exception e = BundleCompat.getSerializable(resultData, NotificationsService.EXCEPTION_KEY, Exception.class);
+              if (e == null) {
+                e = new Exception("Notification presentation failed.");
+              }
               promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);
             }
           }
