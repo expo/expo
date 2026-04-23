@@ -50,12 +50,7 @@ export function validateUrl(
   }
 }
 
-/** Remove the port from a given `host` URL string. */
-export function stripPort(host?: string): string | null {
-  return coerceUrl(host)?.hostname ?? null;
-}
-
-function coerceUrl(urlString?: string): URL | null {
+export function parseUrl(urlString?: string): URL | null {
   if (!urlString) {
     return null;
   }
