@@ -50,7 +50,9 @@ Update your imports:
 +import BottomSheet, { BottomSheetView } from '@expo/ui/community/bottom-sheet';
 ```
 
-That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), methods (`present()`, `dismiss()`, `snapToIndex()`, `expand()`, `collapse()`, `close()`), `BottomSheetModalProvider`, `GestureHandlerRootView`, and all other APIs work without changes.
+That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), methods (`present()`, `dismiss()`, `snapToIndex()`, `expand()`, `collapse()`, `close()`), `BottomSheetModalProvider`, and all other APIs work without changes.
+
+`GestureHandlerRootView` (from `react-native-gesture-handler`) is unrelated to `@gorhom/bottom-sheet` and can be left in place or removed — this implementation does not require it.
 
 ## Compatibility
 
