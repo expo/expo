@@ -1,8 +1,7 @@
-import React from 'react';
-import type { BottomSheetMethods, BottomSheetProps } from './types';
+import type { BottomSheetProps } from './types';
 export { useBottomSheet } from './context';
 /**
  * Web implementation of `BottomSheet` using vaul.
  */
-export declare const BottomSheet: React.ForwardRefExoticComponent<BottomSheetProps & React.RefAttributes<BottomSheetMethods>>;
+export declare function BottomSheet(props: BottomSheetProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=BottomSheet.d.ts.map

@@ -1,11 +1,12 @@
 import { type ReactNode } from 'react';
 import { FlatList, ScrollView, SectionList, TextInput } from 'react-native';
+import { BottomSheet as BottomSheetComponent } from './BottomSheet';
 import type { BottomSheetMethods, BottomSheetProps, BottomSheetViewProps } from './types';
 export { useBottomSheet } from './context';
 /**
  * Bottom sheet component. Defaults to `index={0}` (open at first snap point on mount).
  */
-declare const BottomSheet: import("react").ForwardRefExoticComponent<BottomSheetProps & import("react").RefAttributes<BottomSheetMethods>>;
+declare const BottomSheet: typeof BottomSheetComponent;
 type BottomSheet = BottomSheetMethods;
 /**
  * Modal variant of `BottomSheet`. Always starts closed regardless of the `index` prop.
@@ -14,7 +15,7 @@ type BottomSheet = BottomSheetMethods;
  * @remarks In `@gorhom/bottom-sheet`, `BottomSheetModal` ignores `index` for initial
  * visibility and is always opened via `present()`. This matches that behavior.
  */
-declare const BottomSheetModal: import("react").ForwardRefExoticComponent<BottomSheetProps & import("react").RefAttributes<BottomSheetMethods>>;
+declare function BottomSheetModal(props: BottomSheetProps): import("react/jsx-runtime").JSX.Element;
 type BottomSheetModal = BottomSheetMethods;
 /**
  * A wrapper for content inside a `BottomSheet`.
@@ -23,7 +24,7 @@ type BottomSheetModal = BottomSheetMethods;
  * @remarks When `enableDynamicSizing` is active (no `snapPoints` provided),
  * `flex` styles are automatically stripped so the sheet can measure content height.
  */
-declare function BottomSheetView({ children, style }: BottomSheetViewProps): import("react").JSX.Element;
+declare function BottomSheetView({ children, style }: BottomSheetViewProps): import("react/jsx-runtime").JSX.Element;
 /**
  * A scrollable view for use inside a `BottomSheet`.
  *
@@ -62,7 +63,7 @@ declare const BottomSheetTextInput: typeof TextInput;
  */
 declare function BottomSheetModalProvider({ children }: {
     children: ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export default BottomSheet;
 export { BottomSheet, BottomSheetView, BottomSheetScrollView, BottomSheetFlatList, BottomSheetSectionList, BottomSheetTextInput, BottomSheetModal, BottomSheetModalProvider, };
 export type { BottomSheetProps, BottomSheetMethods, BottomSheetViewProps, BottomSheetHandleProps, BottomSheetBackdropProps, BottomSheetBackgroundProps, BottomSheetFooterProps, } from './types';
