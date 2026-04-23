@@ -600,3 +600,4 @@ function assertExpoMetadata(metadata) {
         throw new Error('Expected Babel state.file.metadata to be an object');
     }
 }
+//# sourceMappingURL=server-actions-plugin.js.map

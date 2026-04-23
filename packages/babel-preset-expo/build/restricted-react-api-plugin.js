@@ -113,3 +113,4 @@ function environmentRestrictedReactAPIsPlugin(api) {
         },
     };
 }
+//# sourceMappingURL=restricted-react-api-plugin.js.map

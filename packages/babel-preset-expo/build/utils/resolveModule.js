@@ -26,3 +26,4 @@ function hasModule(api, id) {
         return false;
     }
 }
+//# sourceMappingURL=resolveModule.js.map

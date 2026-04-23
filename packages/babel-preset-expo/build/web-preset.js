@@ -72,3 +72,4 @@ module.exports = function (babel, options) {
         ],
     };
 };
+//# sourceMappingURL=web-preset.js.map

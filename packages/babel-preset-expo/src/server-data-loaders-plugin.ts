@@ -9,7 +9,6 @@ import type { ConfigAPI, types as t, PluginObj, PluginPass } from '@babel/core';
 import {
   getExpoRouterAbsoluteAppRoot,
   getIsLoaderBundle,
-  getIsServer,
   toPosixPath,
 } from './common';
 
