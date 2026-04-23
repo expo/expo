@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import ejs from 'ejs';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -12,6 +12,7 @@ import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
 import { ALL_FEATURES, resolveFeatures } from './features';
 import {
+  PACKAGE_MANAGERS,
   installDependencies,
   formatRunCommand,
   resolvePackageManager,
@@ -21,6 +22,7 @@ import {
   ALL_PLATFORMS,
   getFeaturesPrompt,
   getLocalFolderNamePrompt,
+  getPackageManagerPrompt,
   getLocalSubstitutionDataPrompts,
   getPlatformPrompt,
   getSlugPrompt,
@@ -368,11 +370,11 @@ async function main(target: string | undefined, options: CommandOptions) {
   options.target = targetDir;
 
   const data = await askForSubstitutionDataAsync(slug, options.local, options);
+  const packageManager = await resolvePackageManagerAsync(interactive, options.local, options);
 
   // Make one line break between prompts and progress logs
   console.log();
 
-  const packageManager = resolvePackageManager();
   const packagePath = options.source
     ? path.resolve(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
@@ -459,6 +461,28 @@ async function main(target: string | undefined, options: CommandOptions) {
     console.log('✅ Successfully created Expo module');
     printFurtherInstructions(targetDir, packageManager, options.example);
   }
+}
+
+async function resolvePackageManagerAsync(
+  interactive: boolean,
+  isLocal: boolean,
+  options: CommandOptions
+): Promise<PackageManagerName> {
+  const defaultPackageManager = resolvePackageManager();
+
+  if (options.packageManager) {
+    return options.packageManager;
+  }
+
+  if (!interactive || isLocal) {
+    return defaultPackageManager;
+  }
+
+  const { packageManager } = await prompts(getPackageManagerPrompt(defaultPackageManager), {
+    onCancel: () => process.exit(0),
+  });
+
+  return packageManager ?? defaultPackageManager;
 }
 
 /**
@@ -1157,6 +1181,12 @@ program
     `Feature examples to include in the module. Use "all" to include all features, or specify any of: ${ALL_FEATURES.join(', ')}.`
   )
   .option('--full-example', 'Include all available feature examples.', false)
+  .addOption(
+    new Option(
+      '--package-manager <manager>',
+      `Package manager to use. Available values: ${PACKAGE_MANAGERS.join(', ')}.`
+    ).choices([...PACKAGE_MANAGERS])
+  )
   .action(main);
 
 program.hook('postAction', async () => {
