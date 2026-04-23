@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] `AppContext.uiRuntimeFactory` is now a `WorkletsUIRuntimeFactory` ObjC-protocol existential instead of a Swift closure. Callers that previously assigned a closure should now assign an instance of a class conforming to `WorkletsUIRuntimeFactory` (declared in `EXWorkletsUIRuntimeFactory.h`). Works around a Swift 6.3 bug that silently drops `AppContext` members with closure types referencing `NS_SWIFT_NAME`-bridged JSI types from the precompiled `.swiftinterface`. (by [@chrfalch](https://github.com/chrfalch))
+- [iOS] `AppContext.uiRuntimeFactory` is now a `WorkletsUIRuntimeFactory` ObjC-protocol existential instead of a Swift closure. Callers that previously assigned a closure should now assign an instance of a class conforming to `WorkletsUIRuntimeFactory` (declared in `EXWorkletsUIRuntimeFactory.h`). Works around a Swift 6.3 bug that silently drops `AppContext` members with closure types referencing `NS_SWIFT_NAME`-bridged JSI types from the precompiled `.swiftinterface`. (by [@chrfalch](https://github.com/chrfalch)) ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🎉 New features
 
@@ -18,6 +18,7 @@
 - [iOS] Add `nativeModule` look up function and `bundleURL` to AppContext. ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Added a polyfill for Swift [`Mutex`](https://developer.apple.com/documentation/synchronization/mutex) for older platform versions. ([#44122](https://github.com/expo/expo/pull/44122) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Exposed a shared OkHttpClient instance through AppContext with new coroutine-friendly extensions. ([#44854](https://github.com/expo/expo/pull/44854) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Replaced the `WORKLETS_ENABLED` compile-time gate with runtime provider injection. `ExpoModulesWorklets` no longer references `worklets::*` C++ symbols and can be shipped as a precompiled xcframework; a new source-only `ExpoModulesWorkletsAdapter` companion pod (included only when `react-native-worklets` is installed) registers an `ExpoWorkletsProvider` implementation via `NSClassFromString`, mirroring the `ExpoCameraBarcodeScanning` pattern. (by [@chrfalch](https://github.com/chrfalch)) ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
