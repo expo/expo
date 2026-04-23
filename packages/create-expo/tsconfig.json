@@ -4,10 +4,8 @@
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "outDir": "build",
-    "resolveJsonModule": true,
     "module": "preserve",
     "moduleResolution": "bundler",
-    "declaration": false,
-    "composite": false
+    "declaration": false
   }
 }
