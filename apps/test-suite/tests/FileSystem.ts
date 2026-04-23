@@ -19,6 +19,21 @@ import { Platform } from 'react-native';
 export const name = 'FileSystem';
 const shouldSkipTestsRequiringPermissions = true;
 
+async function expectAsyncToThrow(
+  expect: (actual: unknown) => jasmine.Matchers<unknown>,
+  action: () => Promise<unknown>
+) {
+  let thrownError;
+
+  try {
+    await action();
+  } catch (error) {
+    thrownError = error;
+  }
+
+  expect(thrownError).toBeDefined();
+}
+
 export async function test({ describe, expect, it, ...t }) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
@@ -2179,18 +2194,6 @@ export async function test({ describe, expect, it, ...t }) {
       } catch {}
     });
 
-    async function expectAsyncToThrow(action: () => Promise<unknown>) {
-      let thrownError;
-
-      try {
-        await action();
-      } catch (error) {
-        thrownError = error;
-      }
-
-      expect(thrownError).toBeDefined();
-    }
-
     it('Zips a single file (async)', async () => {
       const src = new File(zipTestDir, 'hello.txt');
       src.write('Hello zip!');
@@ -2314,14 +2317,14 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Zipping a non-existent source throws', async () => {
       const nonExistent = new File(zipTestDir, 'does_not_exist.txt');
-      await expectAsyncToThrow(() => nonExistent.zip(new File(zipTestDir, 'fail.zip')));
+      await expectAsyncToThrow(expect, () => nonExistent.zip(new File(zipTestDir, 'fail.zip')));
     });
 
     it('Unzipping a non-zip / corrupt file throws', async () => {
       const notAZip = new File(zipTestDir, 'not_a_zip.zip');
       notAZip.write('this is not a zip file');
       const dest = new Directory(zipTestDir, 'corrupt_out');
-      await expectAsyncToThrow(() => notAZip.unzip(dest));
+      await expectAsyncToThrow(expect, () => notAZip.unzip(dest));
     });
 
     it('includeRootDirectory: true wraps contents in root folder', async () => {
@@ -2357,7 +2360,7 @@ export async function test({ describe, expect, it, ...t }) {
       // Pre-create the conflicting file
       new File(dest, 'ow_test.txt').write('existing');
 
-      await expectAsyncToThrow(() => archive.unzip(dest, { overwrite: false }));
+      await expectAsyncToThrow(expect, () => archive.unzip(dest, { overwrite: false }));
     });
 
     it('Zips and unzips an empty directory', async () => {
@@ -2428,6 +2431,274 @@ export async function test({ describe, expect, it, ...t }) {
       // The archive should be inside the destination directory
       expect(archive.uri.startsWith(destDir.uri)).toBe(true);
     });
+  });
+
+  describe('ZipArchive', () => {
+    const zipTestDir = testDirectory + 'zip_archive_test/';
+
+    function createTestArchive(): File {
+      const dir = new Directory(zipTestDir, 'src');
+      dir.create();
+      new File(dir, 'hello.txt').write('Hello world');
+      new File(dir, 'data.json').write('{"key":"value"}');
+      const sub = new Directory(dir, 'sub');
+      sub.create();
+      new File(sub, 'nested.txt').write('Nested content');
+      return dir.zipSync(new File(zipTestDir, 'test.zip'), {
+        overwrite: true,
+        includeRootDirectory: false,
+      });
+    }
+
+    t.beforeEach(async () => {
+      try {
+        await FS.makeDirectoryAsync(zipTestDir, { intermediates: true });
+      } catch {}
+    });
+
+    t.afterEach(async () => {
+      try {
+        await FS.deleteAsync(zipTestDir);
+      } catch {}
+    });
+
+    it('Opens archive via File.openAsArchive()', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      expect(archive).toBeDefined();
+      archive.close();
+    });
+
+    it('Opens archive via new ZipArchive(file)', () => {
+      const archiveFile = createTestArchive();
+      const initialArchive = archiveFile.openAsArchive();
+      const ZipArchiveConstructor = initialArchive.constructor as typeof ZipArchive;
+      initialArchive.close();
+      const archive = new ZipArchiveConstructor(archiveFile);
+      expect(archive).toBeDefined();
+      archive.close();
+    });
+
+    it('Lists entries with correct metadata', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const entries = archive.list();
+        expect(entries.length).toBeGreaterThan(0);
+
+        const fileEntries = entries.filter((e: ZipEntry) => !e.isDirectory);
+        expect(fileEntries.length).toBe(3); // hello.txt, data.json, nested.txt
+
+        // Check that each file entry has expected metadata
+        for (const entry of fileEntries) {
+          expect(typeof entry.name).toBe('string');
+          expect(entry.name.length).toBeGreaterThan(0);
+          expect(entry.isDirectory).toBe(false);
+          expect(entry.size).toBeGreaterThan(0);
+          expect(typeof entry.compressedSize).toBe('number');
+        }
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Lists entries with lastModified as Date', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const entries = archive.list();
+        const fileEntry = entries.find((e: ZipEntry) => !e.isDirectory);
+        expect(fileEntry).toBeDefined();
+        if (fileEntry?.lastModified) {
+          expect(fileEntry.lastModified instanceof Date).toBe(true);
+          expect(fileEntry.lastModified.getTime()).toBeGreaterThan(0);
+        }
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Lists compressionMethod on entries', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const entries = archive.list();
+        const fileEntry = entries.find((e: ZipEntry) => !e.isDirectory);
+        expect(fileEntry).toBeDefined();
+        if (fileEntry?.compressionMethod) {
+          expect(['deflate', 'none']).toContain(fileEntry.compressionMethod);
+        }
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Extracts a single entry to a directory (async)', async () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const dest = new Directory(zipTestDir, 'extracted');
+        dest.create();
+
+        const extracted = await archive.extractEntry('hello.txt', dest);
+        expect(extracted.exists).toBe(true);
+        expect(extracted.uri).toContain('hello.txt');
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Extracts a single entry to a file path (async)', async () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const dest = new File(zipTestDir, 'my_output.txt');
+        const extracted = await archive.extractEntry('hello.txt', dest);
+        expect(extracted.exists).toBe(true);
+        expect(new File(extracted.uri).textSync()).toBe('Hello world');
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Extracts a single entry (sync)', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const dest = new Directory(zipTestDir, 'extracted_sync');
+        dest.create();
+
+        const extracted = archive.extractEntrySync('data.json', dest);
+        expect(extracted.exists).toBe(true);
+        expect(new File(extracted.uri).textSync()).toBe('{"key":"value"}');
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Extracts a nested entry', async () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const dest = new Directory(zipTestDir, 'extracted_nested');
+        dest.create();
+
+        const entries = archive.list();
+        const nestedEntry = entries.find((e: ZipEntry) => e.name.includes('nested'));
+        expect(nestedEntry).toBeDefined();
+
+        const extracted = await archive.extractEntry(nestedEntry!.name, dest);
+        expect(extracted.exists).toBe(true);
+        expect(new File(extracted.uri).textSync()).toBe('Nested content');
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('asFile() returns the source file', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const file = archive.asFile();
+        expect(file.uri).toBe(archiveFile.uri);
+        expect(file.exists).toBe(true);
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Can call close() multiple times without error', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      archive.close();
+      archive.close(); // should not throw
+    });
+
+    it('Full workflow: list → selective extract → verify', async () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const entries = archive.list();
+        const fileEntries = entries.filter((e: ZipEntry) => !e.isDirectory);
+
+        const extractDir = new Directory(zipTestDir, 'selective');
+        extractDir.create();
+
+        for (const entry of fileEntries) {
+          await archive.extractEntry(entry.name, extractDir);
+        }
+
+        // Verify all extracted files
+        expect(new File(extractDir, 'hello.txt').textSync()).toBe('Hello world');
+        expect(new File(extractDir, 'data.json').textSync()).toBe('{"key":"value"}');
+        // Extracting to a directory writes the entry using its basename.
+        const nestedEntry = fileEntries.find((e) => e.name.includes('nested'))!;
+        const nestedFile = new File(extractDir, nestedEntry.name.split('/').pop()!);
+        expect(nestedFile.textSync()).toBe('Nested content');
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Symbol.dispose can be called directly without throwing', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        archive[Symbol.dispose]();
+        // Calling again should also not throw (idempotent like close())
+        archive[Symbol.dispose]();
+      } finally {
+        archive.close();
+      }
+    });
+
+    it('Can call list() after close() and the archive reopens lazily', () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      archive.close();
+      const entries = archive.list();
+      expect(entries.length).toBeGreaterThan(0);
+    });
+
+    it('Can call extractEntry() after close() and the archive reopens lazily', async () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      archive.close();
+      const dest = new Directory(zipTestDir, 'closed_extract');
+      dest.create();
+      const extracted = await archive.extractEntry('hello.txt', dest);
+      expect(extracted.exists).toBe(true);
+      expect(new File(extracted.uri).textSync()).toBe('Hello world');
+    });
+
+    it('Throws when extracting a non-existent entry', async () => {
+      const archiveFile = createTestArchive();
+      const archive = archiveFile.openAsArchive();
+      try {
+        const dest = new Directory(zipTestDir, 'nonexistent_entry');
+        dest.create();
+        await expectAsyncToThrow(expect, () => archive.extractEntry('does_not_exist.txt', dest));
+      } finally {
+        archive.close();
+      }
+    });
+
+    if (Platform.OS === 'android') {
+      it('Entry crc32 is a number on Android', () => {
+        const archiveFile = createTestArchive();
+        const archive = archiveFile.openAsArchive();
+        try {
+          const entries = archive.list();
+          const fileEntries = entries.filter((e: ZipEntry) => !e.isDirectory);
+          expect(fileEntries.length).toBeGreaterThan(0);
+          for (const entry of fileEntries) {
+            expect(typeof entry.crc32).toBe('number');
+          }
+        } finally {
+          archive.close();
+        }
+      });
+    }
   });
 
   addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });

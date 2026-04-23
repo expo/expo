@@ -73,3 +73,13 @@ struct UnzipOptions: Record {
   @Field var createContainingDirectory: Bool = false
   @Field var overwrite: Bool = true
 }
+
+struct ZipEntryRecord: Record {
+  @Field var name: String = ""
+  @Field var isDirectory: Bool = false
+  @Field var size: Int64 = 0
+  @Field var compressedSize: Int64 = 0
+  @Field var crc32: Int64?
+  @Field var lastModified: Double?
+  @Field var compressionMethod: String?
+}

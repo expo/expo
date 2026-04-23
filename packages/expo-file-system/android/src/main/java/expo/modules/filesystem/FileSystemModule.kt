@@ -360,5 +360,34 @@ class FileSystemModule : Module() {
         directory.listAsRecords()
       }
     }
+
+    Class(ZipArchive::class) {
+      Constructor { source: FileSystemFile ->
+        if (!source.file.exists()) {
+          throw ZipSourceNotFoundException(source.file.uri.toString())
+        }
+        ZipArchive(source)
+      }
+
+      Function("list") { archive: ZipArchive ->
+        archive.list()
+      }
+
+      AsyncFunction("extractEntry") Coroutine { archive: ZipArchive, entryName: String, destination: FileSystemPath ->
+        archive.extractEntry(entryName, destination)
+      }
+
+      Function("extractEntrySync") { archive: ZipArchive, entryName: String, destination: FileSystemPath ->
+        archive.extractEntry(entryName, destination)
+      }
+
+      Function("asFile") { archive: ZipArchive ->
+        archive.asFile()
+      }
+
+      Function("close") { archive: ZipArchive ->
+        archive.close()
+      }
+    }
   }
 }

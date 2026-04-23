@@ -97,3 +97,13 @@ data class UnzipOptions(
   @Field
   val overwrite: Boolean = true
 ) : Record
+
+data class ZipEntryRecord(
+  @Field val name: String,
+  @Field val isDirectory: Boolean,
+  @Field val size: Long,
+  @Field val compressedSize: Long,
+  @Field val crc32: Long? = null,
+  @Field val lastModified: Long? = null,
+  @Field val compressionMethod: String? = null
+) : Record

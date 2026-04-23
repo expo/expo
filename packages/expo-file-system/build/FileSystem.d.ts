@@ -1,5 +1,6 @@
 import ExpoFileSystem from './ExpoFileSystem';
 import { type DownloadOptions, type PathInfo, type ZipOptions, type UnzipOptions } from './ExpoFileSystem.types';
+import { ZipArchive } from './ZipArchive';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -71,6 +72,7 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     zipSync(destination: File | Directory, options?: ZipOptions): File;
     unzip(destination: Directory, options?: UnzipOptions): Promise<Directory>;
     unzipSync(destination: Directory, options?: UnzipOptions): Directory;
+    openAsArchive(): ZipArchive;
 }
 /**
  * Represents a directory on the filesystem.

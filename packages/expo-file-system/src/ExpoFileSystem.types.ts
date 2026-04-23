@@ -63,6 +63,38 @@ export enum CompressionLevel {
   BestCompression = 9,
 }
 
+export interface ZipEntry {
+  /**
+   * The name (path) of the entry within the archive.
+   */
+  name: string;
+  /**
+   * Whether this entry represents a directory.
+   */
+  isDirectory: boolean;
+  /**
+   * Uncompressed size in bytes.
+   */
+  size: number;
+  /**
+   * Compressed size in bytes.
+   */
+  compressedSize: number;
+  /**
+   * CRC-32 checksum of the entry.
+   * @platform android
+   */
+  crc32?: number;
+  /**
+   * Last modification date of the entry.
+   */
+  lastModified?: Date;
+  /**
+   * Compression method used for this entry.
+   */
+  compressionMethod?: 'deflate' | 'none';
+}
+
 export enum EncodingType {
   /**
    * Standard encoding format.
@@ -290,8 +322,7 @@ export type DownloadOptions = {
   headers?: {
     [key: string]: string;
   };
-  /**
-   * This flag controls whether the `download` operation is idempotent
+  /** This flag controls whether the `download` operation is idempotent
    * (safe to call multiple times without error).
    *
    * If `true`, downloading a file that already exists overwrites the previous one.
@@ -452,6 +483,13 @@ export declare class File {
    * Synchronous version of `unzip()`.
    */
   unzipSync(destination: Directory, options?: UnzipOptions): Directory;
+
+  /**
+   * Opens this file as a zip archive for reading.
+   * Returns a `ZipArchive` handle for listing entries and partial extraction.
+   * The handle must be closed when done (supports `using` keyword).
+   */
+  openAsArchive(): ZipArchive;
 
   /**
    * Returns A `FileHandle` object that can be used to read and write data to the file.
@@ -656,6 +694,43 @@ export type DirectoryInfo = {
    */
   files?: string[];
 };
+
+export declare class ZipArchive {
+  /**
+   * Opens a zip archive for reading.
+   * @param source The zip archive `File` to open.
+   */
+  constructor(source: File);
+
+  /**
+   * Lists all entries in the archive with metadata.
+   */
+  list(): ZipEntry[];
+
+  /**
+   * Extracts a single entry to the destination.
+   * @param entryName The path of the entry within the archive.
+   * @param destination A `File` (exact path) or `Directory` (entry written inside with original name).
+   */
+  extractEntry(entryName: string, destination: File | Directory): Promise<File>;
+
+  /**
+   * Synchronous version of `extractEntry()`.
+   */
+  extractEntrySync(entryName: string, destination: File | Directory): File;
+
+  /**
+   * Returns a `File` instance pointing to the underlying archive file.
+   */
+  asFile(): File;
+
+  /**
+   * Closes the archive handle and releases native resources.
+   */
+  close(): void;
+
+  [Symbol.dispose](): void;
+}
 
 export type PickFileGeneralOptions = {
   /**

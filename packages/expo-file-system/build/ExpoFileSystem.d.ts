@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo-modules-core';
-import type { Directory, File, DownloadOptions, DownloadProgress, PickSingleFileOptions, PickMultipleFilesOptions, PathInfo, ZipOptions, UnzipOptions } from './ExpoFileSystem.types';
+import type { Directory, File, ZipArchive, DownloadOptions, DownloadProgress, PickSingleFileOptions, PickMultipleFilesOptions, PathInfo, ZipOptions, UnzipOptions } from './ExpoFileSystem.types';
 type FileSystemEvents = {
     downloadProgress: (data: {
         uuid: string;
@@ -19,6 +19,7 @@ declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
     zipSync(sources: (File | Directory)[], destination: File | Directory, options?: ZipOptions): File;
     unzip(source: File, destination: Directory, options?: UnzipOptions): Promise<Directory>;
     unzipSync(source: File, destination: Directory, options?: UnzipOptions): Directory;
+    ZipArchive: typeof ZipArchive;
     totalDiskSpace: number;
     availableDiskSpace: number;
     documentDirectory: string;
