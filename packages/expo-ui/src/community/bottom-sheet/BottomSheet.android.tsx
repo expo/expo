@@ -84,6 +84,9 @@ export function BottomSheet(props: BottomSheetProps) {
   isOpenRef.current = isOpen;
   const pendingIndexRef = useRef(indexProp >= 0 ? clampIndex(indexProp) : null);
   const sheetRef = useRef<ModalBottomSheetRef>(null);
+  // Guards fireCloseCallbacks against double-firing when programmatic hide and
+  // a native onDismissRequest race (e.g. swipe-dismiss during auto-close).
+  const closedRef = useRef(indexProp < 0);
 
   // Stable callback refs
   const onChangeRef = useRef(onChange);
@@ -94,6 +97,8 @@ export function BottomSheet(props: BottomSheetProps) {
   onDismissRef.current = onDismiss;
 
   const fireCloseCallbacks = useCallback(() => {
+    if (closedRef.current) return;
+    closedRef.current = true;
     onCloseRef.current?.();
     onDismissRef.current?.();
     onChangeRef.current?.(-1);
@@ -104,11 +109,13 @@ export function BottomSheet(props: BottomSheetProps) {
     if (indexProp === -1) {
       pendingIndexRef.current = null;
       setIsOpen(false);
+      fireCloseCallbacks();
     } else if (indexProp >= 0) {
       pendingIndexRef.current = clampIndex(indexProp);
+      closedRef.current = false;
       setIsOpen(true);
     }
-  }, [clampIndex, indexProp]);
+  }, [clampIndex, indexProp, fireCloseCallbacks]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -139,6 +146,7 @@ export function BottomSheet(props: BottomSheetProps) {
       }
       const clampedIndex = clampIndex(index);
       pendingIndexRef.current = clampedIndex;
+      closedRef.current = false;
       if (!isOpenRef.current) {
         setIsOpen(true);
       } else if (hasMultipleSnapPoints) {

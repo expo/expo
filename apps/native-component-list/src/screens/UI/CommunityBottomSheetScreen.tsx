@@ -57,6 +57,13 @@ export default function CommunityBottomSheetScreen() {
           <Text style={styles.hint}>No snapPoints — sheet sizes to content</Text>
           <View style={styles.buttonRow}>
             <Button title="Open" onPress={() => fitRef.current?.present()} />
+            <Button
+              title="Open + auto-close 2s"
+              onPress={() => {
+                fitRef.current?.present();
+                setTimeout(() => fitRef.current?.close(), 2000);
+              }}
+            />
           </View>
 
           {/* Event log */}

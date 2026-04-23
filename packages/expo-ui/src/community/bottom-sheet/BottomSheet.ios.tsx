@@ -93,6 +93,8 @@ export function BottomSheet(props: BottomSheetProps) {
   const [currentIndex, setCurrentIndex] = useState(Math.max(indexProp, 0));
   // Ref mirrors currentIndex for use in handleDetentChange without adding it as a useCallback dep
   const currentIndexRef = useRef(currentIndex);
+  // Guards fireCloseCallbacks against double-firing.
+  const closedRef = useRef(indexProp < 0);
 
   // Stable callback refs
   const onChangeRef = useRef(onChange);
@@ -112,6 +114,8 @@ export function BottomSheet(props: BottomSheetProps) {
   const internalContextValue = useMemo(() => ({ fitToContents }), [fitToContents]);
 
   const fireCloseCallbacks = useCallback(() => {
+    if (closedRef.current) return;
+    closedRef.current = true;
     onCloseRef.current?.();
     onDismissRef.current?.();
     onChangeRef.current?.(-1);
@@ -121,14 +125,16 @@ export function BottomSheet(props: BottomSheetProps) {
   useEffect(() => {
     if (indexProp === -1) {
       setIsPresented(false);
+      fireCloseCallbacks();
     } else if (indexProp >= 0) {
+      closedRef.current = false;
       setIsMounted(true);
       setIsPresented(true);
       const clampedIndex = Math.min(indexProp, detents.length - 1);
       setCurrentIndex(clampedIndex);
       currentIndexRef.current = clampedIndex;
     }
-  }, [indexProp, detents.length]);
+  }, [indexProp, detents.length, fireCloseCallbacks]);
 
   const handlePresentedChange = useCallback(
     (presented: boolean) => {
@@ -157,9 +163,11 @@ export function BottomSheet(props: BottomSheetProps) {
     const snapToIndex = (index: number) => {
       if (index === -1) {
         setIsPresented(false);
+        fireCloseCallbacks();
         return;
       }
       const clampedIndex = Math.min(Math.max(index, 0), detents.length - 1);
+      closedRef.current = false;
       setIsMounted(true);
       setIsPresented(true);
       currentIndexRef.current = clampedIndex;
@@ -167,7 +175,15 @@ export function BottomSheet(props: BottomSheetProps) {
       onChangeRef.current?.(clampedIndex);
     };
 
-    const close = () => setIsPresented(false);
+    // Fire close callbacks immediately: the native `onIsPresentedChange` event is
+    // suppressed when JS drives the state change (the Swift layer guards against
+    // the feedback loop), so we can't rely on handlePresentedChange here. The
+    // closedRef guard inside fireCloseCallbacks prevents double-firing if a
+    // native user-dismiss event also arrives during the animation.
+    const close = () => {
+      setIsPresented(false);
+      fireCloseCallbacks();
+    };
 
     return {
       snapToIndex,
@@ -180,7 +196,7 @@ export function BottomSheet(props: BottomSheetProps) {
       present: () => snapToIndex(0),
       dismiss: close,
     };
-  }, [detents]);
+  }, [detents, fireCloseCallbacks]);
 
   useImperativeHandle(ref, () => methods, [methods]);
 

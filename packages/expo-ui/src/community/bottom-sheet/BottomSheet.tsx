@@ -82,8 +82,12 @@ export function BottomSheet(props: BottomSheetProps) {
   onCloseRef.current = onClose;
   const onDismissRef = useRef(onDismiss);
   onDismissRef.current = onDismiss;
+  // Guards fireCloseCallbacks against double-firing.
+  const closedRef = useRef(indexProp < 0);
 
   const fireCloseCallbacks = useCallback(() => {
+    if (closedRef.current) return;
+    closedRef.current = true;
     onCloseRef.current?.();
     onDismissRef.current?.();
     onChangeRef.current?.(-1);
@@ -92,13 +96,15 @@ export function BottomSheet(props: BottomSheetProps) {
   useEffect(() => {
     if (indexProp === -1) {
       setIsOpen(false);
+      fireCloseCallbacks();
       return;
     }
 
     const maxIndex = hasSnapPoints ? snapHeights.length - 1 : 0;
     setSnapIndex(Math.min(Math.max(indexProp, 0), maxIndex));
+    closedRef.current = false;
     setIsOpen(true);
-  }, [hasSnapPoints, indexProp, snapHeights.length]);
+  }, [hasSnapPoints, indexProp, snapHeights.length, fireCloseCallbacks]);
 
   const handleOpenChange = useCallback(
     (open: boolean) => {
@@ -112,16 +118,25 @@ export function BottomSheet(props: BottomSheetProps) {
     const snapToIndex = (index: number) => {
       if (index === -1) {
         setIsOpen(false);
+        fireCloseCallbacks();
         return;
       }
       const maxIndex = hasSnapPoints ? snapHeights.length - 1 : 0;
       const clampedIndex = Math.min(Math.max(index, 0), maxIndex);
+      closedRef.current = false;
       setSnapIndex(clampedIndex);
       setIsOpen(true);
       onChangeRef.current?.(clampedIndex);
     };
 
-    const close = () => setIsOpen(false);
+    // Fire close callbacks immediately: vaul's `onOpenChange` is not guaranteed
+    // to fire when `open` is driven externally, so we don't rely on handleOpenChange
+    // here. The closedRef guard inside fireCloseCallbacks prevents double-firing
+    // if a user-dismiss event also arrives during the animation.
+    const close = () => {
+      setIsOpen(false);
+      fireCloseCallbacks();
+    };
 
     return {
       snapToIndex,
@@ -146,7 +161,7 @@ export function BottomSheet(props: BottomSheetProps) {
       present: () => snapToIndex(0),
       dismiss: close,
     };
-  }, [hasSnapPoints, snapHeights, windowHeight]);
+  }, [hasSnapPoints, snapHeights, windowHeight, fireCloseCallbacks]);
 
   useImperativeHandle(ref, () => methods);
 
