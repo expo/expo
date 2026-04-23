@@ -34,7 +34,9 @@ export default async function (task) {
   const opts = { dev: true };
   await task.clear('build');
   await task.start('build', opts);
-  if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
+  const isTurboNonInteractive = process.env.TURBO_HASH && process.env.TURBO_IS_TUI !== 'true';
+  const isInteractive = process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false);
+  if (!isTurboNonInteractive && isInteractive) {
     await task.watch('metro-require/*', 'metroRequire', opts);
     await task.watch('bin/*', 'bin', opts);
     await task.watch('src/**/*.+(js|ts)', 'cli', opts);
