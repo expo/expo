@@ -64,8 +64,10 @@ class ArrayTypeConverter(
    */
   @Suppress("UNCHECKED_CAST")
   private fun createTypedArray(size: Int): Array<Any?> {
+    val parameterType = arrayType.params.first().jClass
+    val boxedType = parameterType.toBoxedIfPrimitive()
     return java.lang.reflect.Array.newInstance(
-      arrayType.params.first().jClass,
+      boxedType,
       size
     ) as Array<Any?>
   }
