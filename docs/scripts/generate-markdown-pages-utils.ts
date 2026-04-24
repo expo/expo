@@ -55,8 +55,8 @@ export function extractFrontmatter(mdxPath: string): string | null {
   }
   const filtered = match[1]
     .split('\n')
-    .filter(line => !/^\w+:\s*$/.test(line))
-    .filter(line => {
+    .filter((line) => !/^\w+:\s*$/.test(line))
+    .filter((line) => {
       const key = line.match(/^(\w+):/)?.[1];
       return !key || !UI_ONLY_FRONTMATTER_FIELDS.has(key);
     })
@@ -120,7 +120,9 @@ export function findHtmlPages(dir: string): string[] {
 }
 
 /**
- * Recursively find all index.md files in a directory, skipping internal directories.
+ * Recursively find all markdown files in a directory, skipping internal directories.
+ * Matches both `<dir>/index.md` and sibling-path `<slug>.md` files so the per-run
+ * cleanup in generate-markdown-pages.ts sweeps both layouts.
  */
 export function findMarkdownPages(dir: string): string[] {
   const results: string[] = [];
@@ -131,7 +133,7 @@ export function findMarkdownPages(dir: string): string[] {
         continue;
       }
       results.push(...findMarkdownPages(fullPath));
-    } else if (entry.name === 'index.md') {
+    } else if (entry.name.endsWith('.md')) {
       results.push(fullPath);
     }
   }
@@ -242,8 +244,8 @@ export function convertMdxInstructionToMarkdown(
     }
 
     const lines = extractTerminalCommands(cmdMatch[1])
-      .map(line => line.replace(/^\$\s*/, '').trimEnd())
-      .filter(line => line.length > 0 && !line.startsWith('#'));
+      .map((line) => line.replace(/^\$\s*/, '').trimEnd())
+      .filter((line) => line.length > 0 && !line.startsWith('#'));
 
     if (lines.length === 0) {
       return '';
@@ -516,9 +518,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
 
       const managerLines = rawCommands
         .filter((line): line is string => typeof line === 'string')
-        .map(line => line.replace(/^\$\s*/, '').trim())
+        .map((line) => line.replace(/^\$\s*/, '').trim())
         // Preserve existing terminal behavior: drop source comment lines.
-        .filter(line => line.length > 0 && !line.startsWith('#'));
+        .filter((line) => line.length > 0 && !line.startsWith('#'));
 
       // Skip heading-only sections (for example, comment-only manager arrays).
       if (managerLines.length === 0) {
@@ -907,7 +909,7 @@ export function checkMarkdownQuality(markdown: string, pagePath?: string): strin
   if (/bg-palette-|select-none|rounded-full/.test(prose)) {
     warnings.push('Contains CSS class names in text');
   }
-  return warnings.filter(w => !exemptions.some(ex => w.startsWith(ex)));
+  return warnings.filter((w) => !exemptions.some((ex) => w.startsWith(ex)));
 }
 
 const CI_CSS_CLASS_PATTERN = /\b(bg-palette-|select-none|rounded-full\s+border|terminal-snippet)\b/;
@@ -956,7 +958,7 @@ export function checkPage(markdown: string, pagePath?: string): string[] {
     errors.push('Contains CSS class names in text');
   }
 
-  return errors.filter(error => !exemptions.some(ex => error.startsWith(ex)));
+  return errors.filter((error) => !exemptions.some((ex) => error.startsWith(ex)));
 }
 
 const NO_CONTENT_FALLBACK =
