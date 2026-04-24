@@ -1,7 +1,8 @@
 import { Column as ComposeColumn } from '@expo/ui/jetpack-compose';
 
 import { transformToModifiers } from '../transformStyle';
-import type { ColumnProps, UniversalAlignment } from './types';
+import type { UniversalAlignment } from '../types';
+import type { ColumnProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
 
 const alignmentMap: Record<UniversalAlignment, 'start' | 'center' | 'end'> = {
@@ -42,3 +43,5 @@ export function Column({
     </ComposeColumn>
   );
 }
+
+export * from './types';

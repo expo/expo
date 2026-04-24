@@ -84,3 +84,5 @@ export function Button({
     </Pressable>
   );
 }
+
+export * from './types';
