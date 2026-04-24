@@ -11,6 +11,14 @@ PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
 XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
 
+# Use colors only when run in the terminal
+BLUE=""; RESET=""
+if [ -t 1 ]; then
+  BLUE="\033[34m"
+  RESET="\033[0m"
+fi
+echo -e "${BLUE}[Expo]${RESET} Creating stub xcframework for ${PACKAGE_NAME}"
+
 # Platform slices the podspec supports. CocoaPods reads Info.plist at
 # `pod install` time to generate per-slice cases in its xcframework copy
 # script, so every SDK we want to build for must appear here.

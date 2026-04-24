@@ -55,6 +55,9 @@ Pod::Spec.new do |s|
 
   # Create a stub xcframework if needed, so CocoaPods generates the
   # "[CP] Copy XCFrameworks" and "[CP] Embed Pods Frameworks" build phases.
+  # This is only a fallback — CocoaPods skips prepare_command when the podspec
+  # hasn't changed (e.g. CI cache hit). The primary path is
+  # ensure_expo_modules_jsi_stub_xcframework in expo-modules-autolinking.
   s.prepare_command = './scripts/create-stub-xcframework.sh'
 
   s.vendored_frameworks = ["Products/#{s.name}.xcframework"]
