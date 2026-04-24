@@ -4,7 +4,7 @@ sidebar_title: Metrics
 description: A reference of each performance metric tracked by Expo Observe, including concepts and data handling.
 ---
 
-Reference for the performance metrics Expo Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained. All time-based metrics are reported in milliseconds (ms).
+Reference for the performance metrics Expo Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained.
 
 ## Concepts
 
@@ -27,37 +27,109 @@ This allows you to see metrics across multiple sessions for the same user withou
 
 ### Cold launch time
 
-Time from process creation to when the system finished allocating memory, starting a fresh runtime environment, loading the app's code and resources from disk, and initializing its components before rendering the UI. This is the slowest type of launch and typically occurs after a fresh install, app upgrade, device reboot, or when the OS has killed the app to reclaim memory. It is a native-only metric, meaning that your JavaScript code does not affect this metric, but the React Native runtime initialization is included.
+**What it measures:** Time from process creation to when the system has finished allocating memory, starting a fresh runtime environment, loading the app's code and resources from disk, and initializing its components before rendering the UI. This is the slowest type of launch and typically occurs after a fresh install, app upgrade, device reboot, or when the OS has killed the app to reclaim memory. It is a native-only metric, meaning your JavaScript code does not affect this metric, but the React Native runtime initialization is included.
 
 This metric is collected automatically.
+
+**How to improve:**
+
+- Remove unused native modules.
+- Avoid static initializers (`+load` methods in Objective-C, static constructors in C++), and native modules or config plugins that add them.
+- Keep the app's memory and CPU usage low so the OS does not kill the process while in the background. This does not affect this metric itself, but makes subsequent launches warm instead of cold.
+- If you use `expo-updates` with a non-zero `fallbackToCacheTimeout`, the app launch is blocked waiting for an update check. Keep this value at `0` (default), or set `checkOnLaunch` to `NEVER` or `ERROR_RECOVERY_ONLY` to avoid delaying cold launches.
+
+**Our recommendation:** under 1.5s.
 
 ### Warm launch time
 
-Time to launch the app when native libraries, app's state, and resources are already cached in memory. This is a native-only metric that is measured before the JavaScript bundle starts executing.
+**What it measures:** Unlike a cold launch, the app process already exists. The OS just brings it to the foreground and recreates the view hierarchy. Most native resources and services are already in memory, so this type of launch is significantly faster.
 
-During a warm launch, the system only needs to recreate the UI and restore any preserved state.
+Warm launch is largely out of the developer's hands: it is the OS restoring state for a process that is already in memory.
 
 This metric is collected automatically.
+
+**How to improve:**
+
+- Remove unused native modules.
+- Reduce the number of views in the view hierarchy. The OS has to recreate the view tree on warm launch, so a deeply nested or bloated tree takes longer to restore.
+
+**Our recommendation:** under 0.5s.
 
 ### Bundle load time
 
-Time to evaluate your JavaScript bundle. This measures the time the JavaScript runtime spends parsing and executing your bundle code.
+**What it measures:** Duration of loading the JavaScript bytecode and evaluating it. This starts when the bundle begins loading and ends when the bundle finishes evaluating, before [`runApplication`](https://reactnative.dev/docs/appregistry#runapplication) is called.
 
 This metric is collected automatically.
 
+**How to improve:**
+
+- Reduce the bundle size:
+  - Use tree shaking (enabled by default as of Expo SDK 54) and follow the rules that help Metro strip unnecessary code. See [Tree shaking and code removal](/guides/tree-shaking/).
+  - Analyze your JavaScript bundle to remove unused and large dependencies. See [Analyzing JavaScript bundles with Expo Atlas](/guides/analyzing-bundles/).
+- Lazy-load large screens and components with `React.lazy()`. See [Optimize JavaScript loading](https://reactnative.dev/docs/optimizing-javascript-loading).
+- Avoid blocking the JavaScript thread in the top-level scope:
+  - Don't do heavy computations.
+  - Defer any synchronous I/O operations (storage reads and writes).
+
+**Our recommendation:** under 0.3s.
+
 ### Time to first render (TTFR)
 
-Time from app launch until your app first renders content to the screen.
+**What it measures:** Time from when the app finishes native launching to when the root React component first renders on the screen. This is the moment actual content is rendered by React, after the splash screen is hidden. The goal for every app should be to show something meaningful as fast as possible, even if it's a skeleton loading screen.
 
 This metric is collected automatically when you wrap your root layout with `AppMetricsRoot` (see [Get started](/eas/observe/get-started/)). You can also call `AppMetrics.markFirstRender()` manually if needed.
 
+**How to improve:**
+
+- Reduce bundle load time (see above).
+- Avoid synchronous I/O operations (storage reads and writes).
+- Avoid blocking on network requests.
+- Keep the initial render tree small (defer heavy components).
+- Use a lightweight screen as the initial route.
+- Minimize `useEffect` and `useLayoutEffect` chains that block rendering.
+
+**Our recommendation:** under 2s including the cold launch time.
+
 ### Time to interactive (TTI)
 
-Time between the warm/cold launch and when the user can actually tap, scroll, and interact with the app in other ways. It is the most important startup metric because it is what users perceive as "the app is ready". This is measured when you call `AppMetrics.markInteractive()`.
+**What it measures:** Time between the warm/cold launch and when the user can actually tap, scroll, and interact with the app in other ways. It is the most important startup metric because it is what users perceive as "the app is ready".
 
-**When to call:** After all initialization work is complete and the splash screen is hidden. This should represent the moment when users can start using your app.
+This metric is not reported automatically. To start measuring it, call `AppMetrics.markInteractive()` once the screen is ready for user interaction, for example in a `useEffect` that runs after your initial data has loaded. If your app uses deep links, the main screen may not always be the initial screen, so we recommend calling this function on other screens too. Only the first call per launch is recorded, so it is safe to call it multiple times (for example, when the user navigates between screens). If you use `expo-router`, the metric's event automatically includes the current route name.
 
-`markInteractive()` can safely be called multiple times per session, only the first call records the measurement. Call it on every screen that users can deep link to. If you only place it on one screen, TTI will be measured incorrectly when the app is opened via a deep link to a different screen: for example, if screen A has the call but the user deep links to screen B, TTI will not be recorded until they navigate to A.
+**What makes an app "interactive"?**
+
+All of these must be true:
+
+- Content is rendered on the screen (not just a splash or skeleton).
+- Touch handlers are attached and responsive.
+- Navigation is functional.
+
+**How to improve measurement accuracy:** Call `AppMetrics.markInteractive()` only after the screen's content is loaded and touch handlers are active, not just on component mount. If your screen fetches data before becoming usable, place the call after the data is ready.
+
+**How to improve:**
+
+- Reduce time to first render (see above).
+- Avoid waterfall data fetches before showing interactive content.
+- Optimize initial network requests.
+- Avoid rendering large lists (use FlashList or LegendList).
+- Reduce heavy work that may block the JavaScript thread and interactions (I/O operations, state hydration, JSON parsing).
+- If possible, show cached or local data first.
+
+**Our recommendation:** under 3s including the cold launch time.
+
+#### Extra params
+
+Each TTI event includes extra params to help triage issues:
+
+- **`expo.frameRate.slowFrames`** (count): Frames that took 17ms or longer to render. If this is high relative to the startup duration, the main thread was consistently busy during launch. Points to heavy layout work, synchronous bridge calls, or too many components rendering at once.
+- **`expo.frameRate.frozenFrames`** (count): Frames that took 700ms or longer to render. These are hard freezes where the app visibly hung. Even one during startup is a serious issue. Usually caused by synchronous I/O, large JSON parsing, or blocking network calls on the main thread.
+- **`expo.frameRate.totalDelay`** (seconds): Total accumulated time all frames exceeded their target duration. This is the single best "smoothness" number. Compare it to TTI: if TTI is 2.5s and `totalDelay` is 0.1s, startup was slow but smooth (the time was spent on legitimate work). If `totalDelay` is 1.5s, the app was janky for most of the startup, and the user was staring at a stuttering screen.
+
+**How to interpret them:**
+
+- **High TTI + low total delay:** startup is slow but smooth. Optimize what's blocking the launch sequence (bundle size, data fetching, initialization chains).
+- **High TTI + high total delay + many slow frames:** main thread contention. Offload work and simplify the initial render tree.
+- **High TTI + high delay + frozen frames:** something is blocking hard. Look for synchronous I/O, large JSON parsing, or blocking API calls.
 
 ## Data handling
 
