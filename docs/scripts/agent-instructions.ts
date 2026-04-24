@@ -27,8 +27,8 @@ export function shouldAppendAgentInstructions(markdown: string): boolean {
 }
 
 /**
- * Build the <AgentInstructions> block with the page's URL baked into the JSON example,
- * so agents don't have to infer the path.
+ * Build the <AgentInstructions> block with the page's URL baked into the curl payload,
+ * so agents don't have to infer the path and can execute the command as-is.
  */
 export function buildAgentInstructions(pathname: string): string {
   return `<AgentInstructions>
@@ -37,14 +37,7 @@ export function buildAgentInstructions(pathname: string): string {
 
 If this page contains errors, outdated information, or gaps that blocked you from completing a task, report it so the docs can be improved:
 
-POST https://api.expo.dev/v2/feedback/docs-send
-
-\`\`\`json
-{
-  "url": "${pathname}",
-  "feedback": "🤖 Agent feedback: <specific, actionable description>"
-}
-\`\`\`
+curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":"🤖 Agent feedback: <specific, actionable description>"}'
 
 Only submit when you have something specific and actionable to report.
 
