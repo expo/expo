@@ -29,7 +29,6 @@
     "clean:bundle": "rimraf dist",
     "watch": "run-p watch:bundle",
     "watch:bundle": "node ./scripts/watch-bundle.mjs",
-    "prepare": "run-s build:bundle",
     "prepublishOnly": "run-s clean build",
     "build": "run-s build:lib build:bundle",
     "build:lib": "expo-build src",

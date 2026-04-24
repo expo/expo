@@ -14,7 +14,6 @@
     "expotools": "bin/expotools.js"
   },
   "scripts": {
-    "prepare": "taskr release",
     "build": "taskr release",
     "watch": "taskr",
     "clean": "rm -rf build cache",
