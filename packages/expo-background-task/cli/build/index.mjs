@@ -23,3 +23,4 @@ runCliExtension(async ({ command, app }, console) => {
         await client.closeAsync();
     }
 });
+//# sourceMappingURL=index.js.map
