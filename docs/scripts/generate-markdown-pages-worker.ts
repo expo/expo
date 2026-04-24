@@ -42,7 +42,7 @@ function shiftHeadingLevels(markdown: string, levelOffset: number): string {
   let inFence = false;
 
   return lines
-    .map((line) => {
+    .map(line => {
       if (/^\s*```/.test(line)) {
         inFence = !inFence;
         return line;
@@ -144,7 +144,7 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     const html = fs.readFileSync(htmlPath, 'utf-8');
     let markdown = convertHtmlToMarkdown(html);
 
-    const scenePage = SCENE_PAGES.find((page) => page.htmlPath === relHtmlPath);
+    const scenePage = SCENE_PAGES.find(page => page.htmlPath === relHtmlPath);
     if (scenePage) {
       const sceneSections: string[] = [];
       let defaultVariantHeading: string | null = null;
@@ -218,7 +218,7 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
       type: 'result',
       htmlPath,
       status: 'generated',
-      warnings: warnings.length > 0 ? warnings.map((w) => `${relHtmlPath}: ${w}`) : undefined,
+      warnings: warnings.length > 0 ? warnings.map(w => `${relHtmlPath}: ${w}`) : undefined,
     });
   }
 });
