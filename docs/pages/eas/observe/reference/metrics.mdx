@@ -25,6 +25,8 @@ This allows you to see metrics across multiple sessions for the same user withou
 
 ## Metrics
 
+All duration metrics are reported in seconds.
+
 ### Cold launch time
 
 **What it measures:** Time from process creation to when the system has finished allocating memory, starting a fresh runtime environment, loading the app's code and resources from disk, and initializing its components before rendering the UI. This is the slowest type of launch and typically occurs after a fresh install, app upgrade, device reboot, or when the OS has killed the app to reclaim memory. It is a native-only metric, meaning your JavaScript code does not affect this metric, but the React Native runtime initialization is included.
