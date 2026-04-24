@@ -1,6 +1,9 @@
 /**
  * Inline polyfills for legacy WebViews (e.g., Android 9) used by DOM Components.
  * These run before any application code to ensure baseline API availability.
+ *
+ * Array.flat callsite: https://github.com/necolas/react-native-web/blob/a9de220ba9e65bdea540fb5322ffb1da2b0bf442/packages/react-native-web/src/exports/StyleSheet/index.js#L129
+ * performance.measure callsite: https://github.com/facebook/react/blob/561ed529b3a6a16e5b2b76fa5ee86c09f959686c/packages/react-reconciler/src/ReactFiberPerformanceTrack.js#L118-L138
  */
 export const DOM_POLYFILLS_SCRIPT = `
 // Polyfill globalThis
