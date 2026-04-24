@@ -94,8 +94,8 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => [
       '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
       '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
-      'OTHER_LDFLAGS' => '$(inherited) -lc++' # C++ standard library - will propagate to dependant targets
     ],
+    'OTHER_LDFLAGS' => '$(inherited) -lc++', # C++ standard library - will propagate to dependant targets
   }
 
   if use_hermes
