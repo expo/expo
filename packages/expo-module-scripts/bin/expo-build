@@ -202,7 +202,7 @@ const declFilesByInput = new Map();
 for (const input of srcDirSet) {
   const srcDir = path.resolve(baseDir, input);
   const allFound = await findSourceFiles(srcDir);
-  const files = allFound.filter((f) => !f.declaration).map((f) => f.relPath);
+  const files = allFound.map((f) => f.relPath);
   const declFiles = allFound.filter((f) => f.declaration).map((f) => f.relPath);
   if (files.length === 0 && declFiles.length === 0) {
     console.warn(`No source files found in ${path.join(flags.base, input)}`);
