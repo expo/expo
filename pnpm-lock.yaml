@@ -3285,12 +3285,12 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
-      expo-module-scripts:
-        specifier: workspace:*
-        version: link:../expo-module-scripts
       expo-updates:
         specifier: workspace:*
         version: link:../expo-updates
+      npm-run-all2:
+        specifier: ^8.0.4
+        version: 8.0.4
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -3300,6 +3300,9 @@ importers:
       react-native:
         specifier: 0.85.2
         version: 0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
+      rimraf:
+        specifier: ^6.1.2
+        version: 6.1.3
       web-streams-polyfill:
         specifier: ^3.3.2
         version: 3.3.3
@@ -4554,9 +4557,6 @@ importers:
       babel-plugin-dynamic-import-node:
         specifier: ^2.3.3
         version: 2.3.3
-      babel-preset-expo:
-        specifier: workspace:~55.0.8
-        version: link:../babel-preset-expo
       commander:
         specifier: ^12.1.0
         version: 12.1.0
