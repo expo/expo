@@ -140,12 +140,15 @@ async function transformSources(files, srcDir, outDir, format, writeFileIfChange
 
 function emitDeclarations(rootFiles, parsed, compilerHost) {
   const program = ts.createProgram(rootFiles, parsed.options, compilerHost);
-  const result = program.emit();
+  const diagnostics = ts.getPreEmitDiagnostics(program);
 
-  if (result.emitSkipped) {
-    const diagnostics = ts.getPreEmitDiagnostics(program).concat(result.diagnostics);
+  program.emit();
+
+  if (diagnostics.length > 0) {
     console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, compilerHost));
-    process.exit(1);
+    if (diagnostics.some((d) => d.category === ts.DiagnosticCategory.Error)) {
+      process.exit(1);
+    }
   }
 }
 
