@@ -10,6 +10,8 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
     "test": "NODE_OPTIONS=\"--experimental-vm-modules\" expo-module test",
     "expo-module": "expo-module"
   },
