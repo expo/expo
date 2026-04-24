@@ -118,7 +118,6 @@ async function transformSources(files, srcDir, outDir, format, writeFileIfChange
         module: moduleConfig,
         jsc: {
           target: 'esnext',
-          loose: true,
           parser: file.endsWith('.ts') || file.endsWith('.tsx')
             ? { syntax: 'typescript', tsx: file.endsWith('.tsx'), dynamicImport: true }
             : { syntax: 'ecmascript', jsx: file.endsWith('.jsx'), dynamicImport: true },
