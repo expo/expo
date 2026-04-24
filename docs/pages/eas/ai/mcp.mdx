@@ -9,6 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ExpoMCPToolsTable, ExpoMCPPromptsTable } from '~/ui/components/ExpoMCPToolsTable';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -60,13 +61,17 @@ Your AI-assisted tools can autonomously write the code, capture screenshots to v
 
 The complete table of [MCP capabilities](#available-mcp-capabilities) documents the tools and prompts Expo MCP Server provides to AI-assisted tools.
 
-## Prerequisites
-
-Before using Expo MCP Server, ensure you have:
-
-- An Expo account with an EAS paid plan
-- An Expo project created either with `npx create-expo-app@latest --template default@sdk-55` or has the latest `expo` package version installed
-- AI-assisted tools with remote MCP server support (Claude Code, Cursor, VS Code, and so on)
+<Prerequisites numberOfRequirements={3}>
+  <Requirement number={1} title="Expo account with an EAS paid plan">
+    An [EAS paid plan](https://expo.dev/pricing) is required to use Expo MCP Server.
+  </Requirement>
+  <Requirement number={2} title="An Expo project on the latest SDK">
+    Create a project with `npx create-expo-app@latest --template default@sdk-55`, or ensure your existing project has the latest `expo` package installed.
+  </Requirement>
+  <Requirement number={3} title="An AI-assisted tool with remote MCP support">
+    Claude Code, Cursor, VS Code, or any other tool with remote MCP server support.
+  </Requirement>
+</Prerequisites>
 
 ## Installation and setup
 
