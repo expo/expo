@@ -63,5 +63,10 @@ data class UpdatesLogEntry(
         null
       }
     }
+
+    fun getTimestamp(json: String): Long? {
+      return runCatching { JSONObject(json).getLong("timestamp") }
+        .getOrNull()
+    }
   }
 }
