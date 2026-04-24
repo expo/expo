@@ -1,14 +1,14 @@
 ---
-title: Configure EAS Observe
+title: Configure Expo Observe
 sidebar_title: Configuration
-description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
+description: Control how Expo Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
 ---
 
-Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers the `configure()` and `dispatchEvents()`, enabling metrics in development, using a custom endpoint, and separating data by environment.
+Configure Expo Observe at runtime to fit your app's build setup, environment, and data routing. This page covers the `configure()` and `dispatchEvents()`, enabling metrics in development, using a custom endpoint, and separating data by environment.
 
 ## `configure()`
 
-Use the `configure()` method to control how EAS Observe behaves at runtime:
+Use the `configure()` method to control how Expo Observe behaves at runtime:
 
 ```js
 import ExpoObserve from 'expo-observe';
@@ -54,7 +54,7 @@ By default, metrics with the `development` environment are filtered out and not 
 }
 ```
 
-> **warning** Enable this only when testing your EAS Observe integration. Development performance differs significantly from production, so collecting development metrics may affect the results shown in your dashboard.
+> **warning** Enable this only when testing your Expo Observe integration. Development performance differs significantly from production, so collecting development metrics may affect the results shown in your dashboard.
 
 ## Custom endpoint
 

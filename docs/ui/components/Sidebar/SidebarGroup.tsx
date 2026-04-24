@@ -255,7 +255,7 @@ function getIconElement(iconName?: string) {
       return Dataflow03Icon;
     case 'EAS Hosting':
       return Cloud01Icon;
-    case 'EAS Observe':
+    case 'Expo Observe':
       return ActivityIcon;
     case 'Expo Modules API':
       return CpuChip01Icon;

@@ -1,7 +1,7 @@
 ---
-title: Introduction to EAS Observe
+title: Introduction to Expo Observe
 sidebar_title: Introduction
-description: EAS Observe is a performance monitoring service that tracks how your app performs in production across real devices and conditions.
+description: Expo Observe is a performance monitoring service that tracks how your app performs in production across real devices and conditions.
 searchRank: 10
 ---
 
@@ -13,11 +13,11 @@ import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** **EAS Observe** is in [preview](/more/release-statuses/#preview) and subject to breaking changes. While in preview, it is free to use.
+> **important** **Expo Observe** is in [preview](/more/release-statuses/#preview) and subject to breaking changes. While in preview, it is free to use.
 
-**EAS Observe** is a performance monitoring service from EAS (Expo Application Services) for tracking how your app performs in production. It gives you visibility into real-world startup times, rendering performance, and user experience across different devices, networks, and conditions.
+**Expo Observe** is a performance monitoring service from Expo for tracking how your app performs in production. It gives you visibility into real-world startup times, rendering performance, and user experience across different devices, networks, and conditions.
 
-Debugging performance in React Native has traditionally been limited to development tools. EAS Observe focuses on production, where performance characteristics differ significantly from what you see during development.
+Debugging performance in React Native has traditionally been limited to development tools. Expo Observe focuses on production, where performance characteristics differ significantly from what you see during development.
 
 ## Quick start
 
@@ -25,16 +25,16 @@ Debugging performance in React Native has traditionally been limited to developm
 
 Wrap your root layout with the `AppMetricsRoot` component and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
 
-## Why EAS Observe
+## Why Expo Observe
 
-Traditional development-time profiling tools show how your app performs on your machine. EAS Observe shows how it performs for real users:
+Traditional development-time profiling tools show how your app performs on your machine. Expo Observe shows how it performs for real users:
 
 - **Production performance data**: Track startup times, render performance, and bundle load times from real user sessions across a range of devices
 - **Release comparison**: See how metrics change between app versions and OTA updates to catch regressions early
 - **Session investigation**: Drill into individual user sessions to understand why certain devices or conditions lead to slower performance
 - **CLI and dashboard access**: Query metrics from the terminal with `eas observe:` commands or view them in the EAS dashboard
 
-## When to use EAS Observe
+## When to use Expo Observe
 
 | Scenario                                            | Recommendation |
 | --------------------------------------------------- | -------------- |
@@ -50,19 +50,19 @@ Traditional development-time profiling tools show how your app performs on your 
 
 <FAQ>
 
-<Collapsible summary="What metrics does EAS Observe track?">
+<Collapsible summary="What metrics does Expo Observe track?">
 
-EAS Observe focuses on startup metrics: cold launch time, warm launch time, time to first render, time to interactive, and bundle load time. See the [Metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric.
+Expo Observe focuses on startup metrics: cold launch time, warm launch time, time to first render, time to interactive, and bundle load time. See the [Metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric.
 
 </Collapsible>
 
 <Collapsible summary="Which platforms are supported?">
 
-EAS Observe supports Android and iOS. Metrics are collected from production builds and can be filtered by platform in both the dashboard and CLI.
+Expo Observe supports Android and iOS. Metrics are collected from production builds and can be filtered by platform in both the dashboard and CLI.
 
 </Collapsible>
 
-<Collapsible summary="Does EAS Observe collect personally identifiable information?">
+<Collapsible summary="Does Expo Observe collect personally identifiable information?">
 
 No. Users are identified by an anonymous ID that is unique per app installation. This ID is not personally identifiable and is reset if the user uninstalls and reinstalls the app. See [Metrics reference: User](/eas/observe/reference/metrics/#user) for more details.
 
@@ -91,7 +91,7 @@ Metric data is retained for a minimum of 60 days.
 ## Get started
 
 <BoxLink
-  title="Set up EAS Observe"
+  title="Set up Expo Observe"
   description="Install the library and start collecting metrics from your production app."
   href="/eas/observe/get-started"
   Icon={ActivityIcon}
