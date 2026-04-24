@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory.js';
+import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
 /**
  * A React hook to get the DevToolsPluginClient instance.
  */
