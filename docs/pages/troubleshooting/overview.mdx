@@ -1,157 +1,228 @@
----
-title: Troubleshooting overview
-sidebar_title: Overview
-description: An overview of troubleshooting guides for app development with Expo and EAS.
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-import { RouterLogo } from '@expo/styleguide';
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
-import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
-import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { CODE } from '~/ui/components/Text';
+        .calculator {
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 350px;
+            width: 100%;
+        }
 
-This page lists a collection of various troubleshooting guides for Expo and EAS.
+        .display {
+            background: #34495e;
+            color: white;
+            font-size: 2.5em;
+            padding: 20px;
+            text-align: right;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            word-break: break-all;
+        }
 
-## Error and warnings
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
 
-<BoxLink
-  title="View logs"
-  description="Learn how to view logs when using Expo CLI to encounter errors and warnings while developing your app."
-  href="/workflow/logging/"
-  Icon={BookOpen02Icon}
-/>
+        button {
+            height: 70px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
 
-<BoxLink
-  title="Errors and warnings"
-  description="Learn about Redbox errors and stack traces to help you debug your Expo project."
-  href="/debugging/errors-and-warnings/"
-  Icon={BookOpen02Icon}
-/>
+        .number {
+            background: #3498db;
+            color: white;
+        }
 
-<BoxLink
-  title="Common development errors"
-  description="A list of common development errors that are encountered by developers using Expo."
-  href="/workflow/common-development-errors/"
-  Icon={BookOpen02Icon}
-/>
+        .number:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
 
-<BoxLink
-  title='"Application has not been registered" error'
-  description="Learn about what the Application has not been registered error means and how to resolve it."
-  href="/troubleshooting/application-has-not-been-registered/"
-  Icon={BookOpen02Icon}
-/>
+        .operator {
+            background: #e74c3c;
+            color: white;
+        }
 
-<BoxLink
-  title="Clear bundler caches on macOS and Linux"
-  description="Learn how to clear the bundler cache when using Yarn or npm with Expo CLI or React Native CLI on macOS and Linux."
-  href="/troubleshooting/clear-cache-macos-linux/"
-  Icon={BookOpen02Icon}
-/>
+        .operator:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
 
-<BoxLink
-  title="Clear bundler caches on Windows"
-  description="Learn how to clear the bundler cache when using Yarn or npm with Expo CLI or React Native CLI on Windows."
-  href="/troubleshooting/clear-cache-windows/"
-  Icon={BookOpen02Icon}
-/>
+        .equals {
+            background: #27ae60;
+            color: white;
+        }
 
-<BoxLink
-  title='"React Native version mismatch" errors'
-  description="Learn about what React Native version mismatch means and how to resolve it in an Expo or React Native app."
-  href="/troubleshooting/react-native-version-mismatch/"
-  Icon={BookOpen02Icon}
-/>
+        .equals:hover {
+            background: #229954;
+            transform: scale(1.05);
+        }
 
-<BoxLink
-  title="Proxies"
-  description="Learn about troubleshooting proxies with a set of recommended tools."
-  href="/troubleshooting/proxies/"
-  Icon={BookOpen02Icon}
-/>
+        .clear {
+            background: #f39c12;
+            color: white;
+            grid-column: span 2;
+        }
 
-## Runtime issues in development and production
+        .clear:hover {
+            background: #e67e22;
+            transform: scale(1.05);
+        }
 
-<BoxLink
-  title="Debugging runtime issues"
-  description="Learn about different techniques to debug your native runtime issues in development and production."
-  href="/debugging/runtime-issues/"
-  Icon={BookOpen02Icon}
-/>
+        .zero {
+            grid-column: span 2;
+        }
 
-<BoxLink
-  title="Debugging and profiling tools"
-  description="Learn about different tools available to inspect your Expo project at runtime."
-  href="/debugging/tools/"
-  Icon={BookOpen02Icon}
-/>
+        @media (max-width: 400px) {
+            .calculator {
+                margin: 20px;
+                padding: 15px;
+            }
+            
+            button {
+                height: 60px;
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="clear" onclick="clearAll()">AC</button>
+            <button class="clear" onclick="deleteLast()">DEL</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            <button class="operator" onclick="appendToDisplay('*')">×</button>
+            
+            <button class="number" onclick="appendToDisplay('7')">7</button>
+            <button class="number" onclick="appendToDisplay('8')">8</button>
+            <button class="number" onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            
+            <button class="number" onclick="appendToDisplay('4')">4</button>
+            <button class="number" onclick="appendToDisplay('5')">5</button>
+            <button class="number" onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            
+            <button class="number" onclick="appendToDisplay('1')">1</button>
+            <button class="number" onclick="appendToDisplay('2')">2</button>
+            <button class="number" onclick="appendToDisplay('3')">3</button>
+            <button class="equals" onclick="calculate()" rowspan="2">=</button>
+            
+            <button class="number zero" onclick="appendToDisplay('0')">0</button>
+            <button class="number" onclick="appendToDisplay('.')">.</button>
+        </div>
+    </div>
 
-<BoxLink
-  title="Dev tools plugins"
-  description="Learn about using dev tools plugins to inspect and debug your Expo project."
-  href="/debugging/devtools-plugins/"
-  Icon={BookOpen02Icon}
-/>
+    <script>
+        let display = document.getElementById('display');
+        let currentInput = '0';
+        let shouldResetDisplay = false;
 
-## Expo Router
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
 
-<BoxLink
-  title="Expo Router: Troubleshooting"
-  description="A list of common issues with Expo Router setup and how to fix them."
-  href="/router/reference/troubleshooting/"
-  Icon={RouterLogo}
-/>
+        function appendToDisplay(value) {
+            if (shouldResetDisplay) {
+                currentInput = '0';
+                shouldResetDisplay = false;
+            }
 
-<BoxLink
-  title="Expo Router FAQ"
-  description="A list of common questions about Expo Router."
-  href="/router/introduction/"
-  Icon={RouterLogo}
-/>
+            if (currentInput === '0' && value !== '.') {
+                currentInput = value;
+            } else {
+                currentInput += value;
+            }
+            updateDisplay();
+        }
 
-## Push notifications
+        function clearAll() {
+            currentInput = '0';
+            shouldResetDisplay = false;
+            updateDisplay();
+        }
 
-<BoxLink
-  title="Push notifications: Troubleshooting and FAQ"
-  description="A collection of common questions about Expo's push notification service."
-  href="/push-notifications/faq/"
-  Icon={NotificationBoxIcon}
-/>
+        function deleteLast() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
 
-## EAS
+        function calculate() {
+            try {
+                // Replace × with * for evaluation
+                let expression = currentInput.replace(/×/g, '*');
+                let result = eval(expression);
+                
+                // Handle division by zero
+                if (!isFinite(result)) {
+                    currentInput = 'Error';
+                } else {
+                    currentInput = result.toString();
+                    shouldResetDisplay = true;
+                }
+            } catch (error) {
+                currentInput = 'Error';
+            }
+            updateDisplay();
+        }
 
-<BoxLink
-  title="EAS Build: Troubleshooting errors and crashes"
-  description="A reference for troubleshooting build errors and crashes when using EAS Build."
-  href="/build-reference/troubleshooting/"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="EAS Update: Basic debugging"
-  description="Learn how to use basic debugging techniques to fix an update issue."
-  href="/eas-update/debug/"
-  Icon={LayersTwo02Icon}
-/>
-
-<BoxLink
-  title="EAS Update: Advanced debugging"
-  description="Learn advanced strategies on how to debug EAS Update."
-  href="/eas-update/debug/"
-  Icon={LayersTwo02Icon}
-/>
-
-<BoxLink
-  title="EAS Update: Error recovery"
-  description={
-    <>
-      Learn how to take advantage of using built-in error recovery when using{' '}
-      <CODE>expo-updates</CODE> library.
-    </>
-  }
-  href="/eas-update/error-recovery/"
-  Icon={LayersTwo02Icon}
-/>
+        // Keyboard support
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            if (key >= '0' && key <= '9' || key === '.') {
+                appendToDisplay(key);
+            } else if (key === '+' || key === '-') {
+                appendToDisplay(key);
+            } else if (key === '*') {
+                appendToDisplay('×');
+            } else if (key === '/') {
+                appendToDisplay('/');
+            } else if (key === 'Enter' || key === '=') {
+                calculate();
+            } else if (key === 'Escape') {
+                clearAll();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            }
+        });
+    </script>
+</body>
+</html>
