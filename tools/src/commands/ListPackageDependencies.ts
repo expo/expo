@@ -7,12 +7,11 @@ import {
   type ScannedDependency,
 } from '../check-packages/scanDependenciesAsync';
 import logger from '../Logger';
-import { DependencyKind, getListOfPackagesAsync, type Package } from '../Packages';
+import { DependencyKind, getListOfPackagesAsync } from '../Packages';
 
 const { green, yellow, red, cyan, gray, bold } = chalk;
 
 type ActionOptions = {
-  all: boolean;
   json: boolean;
   undeclared: boolean;
   devOnly: boolean;
@@ -22,9 +21,8 @@ type PackageCheckType = 'package' | 'plugin' | 'cli' | 'utils';
 
 export default (program: Command) => {
   program
-    .command('list-package-dependencies [packageNames...]')
+    .command('list-package-dependencies <packageNames...>')
     .alias('lpd')
-    .option('-a, --all', 'List dependencies for all packages.', false)
     .option('--json', 'Output as JSON.', false)
     .option(
       '--undeclared',
@@ -39,20 +37,17 @@ export default (program: Command) => {
 async function main(packageNames: string[], options: ActionOptions): Promise<void> {
   const allPackages = await getListOfPackagesAsync();
 
-  let packages: Package[];
-  if (options.all) {
-    packages = allPackages;
-  } else if (packageNames.length > 0) {
-    packages = allPackages.filter((pkg) => packageNames.includes(pkg.packageName));
-    const found = new Set(packages.map((p) => p.packageName));
-    for (const name of packageNames) {
-      if (!found.has(name)) {
-        logger.warn(`Package ${yellow(name)} not found in monorepo.`);
-      }
-    }
-  } else {
-    logger.error('Specify package names or use --all to scan all packages.');
+  if (!packageNames.length) {
+    logger.error('Specify at least one package name.');
     process.exit(1);
+  }
+
+  const packages = allPackages.filter((pkg) => packageNames.includes(pkg.packageName));
+  const found = new Set(packages.map((p) => p.packageName));
+  for (const name of packageNames) {
+    if (!found.has(name)) {
+      logger.warn(`Package ${yellow(name)} not found in monorepo.`);
+    }
   }
 
   if (!packages.length) {
