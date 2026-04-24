@@ -24,6 +24,26 @@
       "source": "./src/Expo.ts",
       "default": "./build/Expo.js"
     },
+    "./types": {
+      "types": "./types/index.d.ts",
+      "default": "./types/index.js"
+    },
+    "./internal/*": {
+      "types": "./internal/*.d.ts",
+      "default": "./internal/*.js"
+    },
+    "./dom/*": {
+      "types": "./dom/*.d.ts",
+      "default": "./dom/*.js"
+    },
+    "./config": {
+      "types": "./config/index.d.ts",
+      "default": "./config/index.js"
+    },
+    "./config/paths": {
+      "types": "./config/paths.d.ts",
+      "default": "./config/paths.js"
+    },
     "./src/*.ts": {
       "types": {
         "source": "./src/*.ts",
@@ -40,7 +60,17 @@
       "source": "./src/*.ts",
       "default": "./build/*.js"
     },
-    "./package.json": "./package.json"
+    "./AppEntry.js": "./AppEntry.js",
+    "./virtual/*": "./virtual/*.js",
+    "./scripts/*.js": "./scripts/*.js",
+    "./scripts/*": "./scripts/*",
+    "./bin/*": "./bin/*",
+    "./package.json": "./package.json",
+    "./*.json": "./*.json",
+    "./*": {
+      "types": "./*.d.ts",
+      "default": "./*.js"
+    }
   },
   "bin": {
     "expo": "bin/cli",
