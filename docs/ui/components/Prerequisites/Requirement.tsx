@@ -1,8 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
-import { type PropsWithChildren } from 'react';
+import { type PropsWithChildren, type ReactNode } from 'react';
 
 type RequirementProps = PropsWithChildren<{
-  title: string;
+  title: ReactNode;
   number: number;
 }>;
 
@@ -11,7 +11,7 @@ export function Requirement({ title, number, children }: RequirementProps) {
     <div className={mergeClasses('border-default flex gap-1.5 border-t p-5')}>
       <p className="mb-2 text-right font-medium">{number}.</p>
       <div className="flex-1 overflow-hidden">
-        <p className="mb-2 font-medium">{title}</p>
+        <div className="mb-2 flex items-center gap-2 font-medium">{title}</div>
         <div className={mergeClasses('[&_p]:ml-0 [&_pre>pre]:mt-0 [&>*:last-child]:mb-0!')}>
           {children}
         </div>
