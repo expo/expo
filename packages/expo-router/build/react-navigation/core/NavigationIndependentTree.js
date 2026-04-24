@@ -11,8 +11,6 @@ const useIsFocused_1 = require("./useIsFocused");
  * Component to make the child navigation container independent of parent containers.
  */
 function NavigationIndependentTree({ children }) {
-    return (
-    // We need to clear any existing contexts for nested independent container to work correctly
-    (0, jsx_runtime_1.jsx)(NavigationProvider_1.NavigationRouteContext.Provider, { value: undefined, children: (0, jsx_runtime_1.jsx)(NavigationContext_1.NavigationContext.Provider, { value: undefined, children: (0, jsx_runtime_1.jsx)(useIsFocused_1.IsFocusedContext.Provider, { value: undefined, children: (0, jsx_runtime_1.jsx)(NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider, { value: true, children: children }) }) }) }));
+    return ((0, jsx_runtime_1.jsx)(NavigationProvider_1.NavigationRouteContext.Provider, { value: undefined, children: (0, jsx_runtime_1.jsx)(NavigationContext_1.NavigationContext.Provider, { value: undefined, children: (0, jsx_runtime_1.jsx)(useIsFocused_1.IsFocusedContext.Provider, { value: undefined, children: (0, jsx_runtime_1.jsx)(NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider, { value: true, children: children }) }) }) }));
 }
 //# sourceMappingURL=NavigationIndependentTree.js.map

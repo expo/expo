@@ -48,7 +48,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
       return await MediaLibrary.getAlbumsAsync({
         includeSmartAlbums,
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ERR_NO_ENOUGH_PERMISSIONS') {
         return [];
       } else {

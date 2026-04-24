@@ -15,7 +15,7 @@ function ExpoConstant({ name }: { name: string }) {
       if (typeof value === 'function') {
         try {
           value = await value();
-        } catch (error) {
+        } catch (error: any) {
           console.error(error);
           return setError(error.message);
         }

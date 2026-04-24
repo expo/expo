@@ -4,7 +4,7 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
-    "moduleResolution": "node10",
+    "moduleResolution": "bundler",
     "verbatimModuleSyntax": false,
     "noEmit": false,
     "resolveJsonModule": true,

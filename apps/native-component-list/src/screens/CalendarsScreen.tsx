@@ -101,7 +101,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       await Calendar.createCalendarAsync(newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -114,7 +114,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       await Calendar.updateCalendarAsync(calendarId, newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -132,7 +132,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
             await Calendar.deleteCalendarAsync(calendar.id);
             Alert.alert('Calendar deleted successfully');
             findCalendars();
-          } catch (e) {
+          } catch (e: any) {
             Alert.alert('Calendar not deleted successfully', e.message);
           }
         },
