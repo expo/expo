@@ -18,6 +18,7 @@ export type SourceFileImportRef = {
   packageName: string;
   packagePath?: string;
   isTypeOnly?: boolean;
+  isSideEffect?: boolean;
   /** 1-based line number in the source file where this import appears */
   line?: number;
 };
@@ -32,6 +33,7 @@ export type FileRef = {
 export type ScannedDependency = {
   packageName: string;
   isTypeOnly: boolean;
+  isSideEffect: boolean;
   /** The dependency kind from package.json, or undefined if undeclared */
   kind: DependencyKind | undefined;
   /** One entry per file, deduplicated, showing the first import line */
@@ -67,7 +69,7 @@ export async function scanDependenciesAsync(
   // Aggregate imports by package name, tracking one line per file (the earliest)
   const aggregated = new Map<
     string,
-    { isTypeOnly: boolean; fileLines: Map<string, number> }
+    { isTypeOnly: boolean; isSideEffect: boolean; fileLines: Map<string, number> }
   >();
 
   for (const source of sources) {
@@ -78,7 +80,7 @@ export async function scanDependenciesAsync(
 
       let entry = aggregated.get(ref.packageName);
       if (!entry) {
-        entry = { isTypeOnly: true, fileLines: new Map() };
+        entry = { isTypeOnly: true, isSideEffect: true, fileLines: new Map() };
         aggregated.set(ref.packageName, entry);
       }
 
@@ -90,6 +92,9 @@ export async function scanDependenciesAsync(
       if (!ref.isTypeOnly) {
         entry.isTypeOnly = false;
       }
+      if (!ref.isSideEffect) {
+        entry.isSideEffect = false;
+      }
     }
   }
 
@@ -98,6 +103,7 @@ export async function scanDependenciesAsync(
     results.push({
       packageName,
       isTypeOnly: entry.isTypeOnly,
+      isSideEffect: entry.isSideEffect,
       kind: dependencyMap.get(packageName)?.kind,
       files: [...entry.fileLines.entries()]
         .sort(([a], [b]) => a.localeCompare(b))
@@ -171,6 +177,7 @@ function collectTypescriptImports(
   imports: SourceFileImportRef[]
 ) {
   if (ts.isImportDeclaration(node)) {
+    const isSideEffect = !node.importClause;
     let isTypeOnly = false;
     if (node.importClause?.namedBindings) {
       isTypeOnly =
@@ -182,15 +189,16 @@ function collectTypescriptImports(
     }
     const line = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile)).line + 1;
     // Collect `import` statements
-    imports.push(createTypescriptImportRef(node.moduleSpecifier.getText(), isTypeOnly, line));
+    imports.push(createTypescriptImportRef(node.moduleSpecifier.getText(), isTypeOnly, isSideEffect, line));
   } else if (
     ts.isCallExpression(node) &&
     node.expression.getText() === 'require' &&
     node.arguments.every((arg) => ts.isStringLiteral(arg)) // Filter `require(requireFrom(...))
   ) {
+    const isSideEffect = ts.isExpressionStatement(node.parent);
     const line = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile)).line + 1;
     // Collect `require` statement
-    imports.push(createTypescriptImportRef(node.arguments[0].getText(), false, line));
+    imports.push(createTypescriptImportRef(node.arguments[0].getText(), false, isSideEffect, line));
   } else if (
     ts.isCallExpression(node) &&
     node.expression.getText() === 'require.resolve' &&
@@ -199,7 +207,7 @@ function collectTypescriptImports(
   ) {
     const line = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile)).line + 1;
     // Collect `require.resolve` statement
-    imports.push(createTypescriptImportRef(node.arguments[0].getText(), false, line));
+    imports.push(createTypescriptImportRef(node.arguments[0].getText(), false, false, line));
   } else {
     ts.forEachChild(node, (child) => {
       collectTypescriptImports(child, sourceFile, imports);
@@ -213,16 +221,17 @@ function collectTypescriptImports(
 function createTypescriptImportRef(
   importText: string,
   importTypeOnly = false,
+  importSideEffect = false,
   line?: number
 ): SourceFileImportRef {
   const importValue = importText.replace(/['"]/g, '').trim();
 
   if (isBuiltin(importValue)) {
-    return { type: 'builtIn', importValue, packageName: importValue, isTypeOnly: importTypeOnly, line };
+    return { type: 'builtIn', importValue, packageName: importValue, isTypeOnly: importTypeOnly, isSideEffect: importSideEffect, line };
   }
 
   if (importValue.startsWith('.')) {
-    return { type: 'internal', importValue, packageName: importValue, isTypeOnly: importTypeOnly, line };
+    return { type: 'internal', importValue, packageName: importValue, isTypeOnly: importTypeOnly, isSideEffect: importSideEffect, line };
   }
 
   if (importValue.startsWith('@')) {
@@ -233,6 +242,7 @@ function createTypescriptImportRef(
       packageName: `${packageScope}/${packageName}`,
       packagePath: packagePath.join('/'),
       isTypeOnly: importTypeOnly,
+      isSideEffect: importSideEffect,
       line,
     };
   }
@@ -244,6 +254,7 @@ function createTypescriptImportRef(
     packageName,
     packagePath: packagePath.join(','),
     isTypeOnly: importTypeOnly,
+    isSideEffect: importSideEffect,
     line,
   };
 }

@@ -95,6 +95,7 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
           packageName: d.packageName,
           kind: d.kind ?? null,
           isTypeOnly: d.isTypeOnly,
+          isSideEffect: d.isSideEffect,
           files: d.files.map((f) => ({ path: f.relativePath, line: f.line })),
         }));
       } else {
@@ -163,6 +164,9 @@ function buildHints(dep: ScannedDependency): string {
   const parts: string[] = [];
   if (dep.isTypeOnly) {
     parts.push('types only');
+  }
+  if (dep.isSideEffect) {
+    parts.push('side-effect');
   }
   return parts.join(', ');
 }
