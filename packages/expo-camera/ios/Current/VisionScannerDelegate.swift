@@ -3,10 +3,11 @@ import ExpoModulesCore
 
 protocol ScannerResultHandler {
   func onItemScanned(result: [String: Any])
+  @MainActor func onScannerDismissed()
 }
 
 @available(iOS 16.0, *)
-class VisionScannerDelegate: NSObject, DataScannerViewControllerDelegate {
+class VisionScannerDelegate: NSObject, DataScannerViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
   private let handler: ScannerResultHandler
 
   init(handler: ScannerResultHandler) {
@@ -25,5 +26,9 @@ class VisionScannerDelegate: NSObject, DataScannerViewControllerDelegate {
         return
       }
     }
+  }
+
+  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    handler.onScannerDismissed()
   }
 }
