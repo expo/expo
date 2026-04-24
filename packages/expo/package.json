@@ -80,6 +80,14 @@
       "types": "./config/paths.d.ts",
       "default": "./config/paths.js"
     },
+    "./src/winter": {
+      "types": {
+        "source": "./src/winter/index.ts",
+        "default": "./build/winter/index.d.ts"
+      },
+      "source": "./src/winter/index.ts",
+      "default": "./build/winter/index.js"
+    },
     "./src/*.ts": {
       "types": {
         "source": "./src/*.ts",
