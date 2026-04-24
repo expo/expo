@@ -8,10 +8,25 @@
   "bin": {
     "expo-updates": "bin/cli.js"
   },
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
   "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:utils && pnpm run build:cli",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
+    "build:utils": "expo-build --base utils cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

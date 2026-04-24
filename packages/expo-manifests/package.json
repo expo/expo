@@ -5,6 +5,17 @@
   "main": "build/Manifests.js",
   "types": "build/Manifests.d.ts",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/Manifests.ts",
+        "default": "./build/Manifests.d.ts"
+      },
+      "source": "./src/Manifests.ts",
+      "default": "./build/Manifests.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "expo-build src",
     "clean": "expo-module clean",
