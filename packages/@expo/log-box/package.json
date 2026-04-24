@@ -2,6 +2,22 @@
   "name": "@expo/log-box",
   "version": "55.0.7",
   "main": "app/index.ts",
+  "exports": {
+    ".": "./app/index.ts",
+    "./utils": {
+      "types": {
+        "source": "./src/utils.ts",
+        "default": "./build/utils.d.ts"
+      },
+      "source": "./src/utils.ts",
+      "default": "./build/utils.js"
+    },
+    "./package.json": "./package.json",
+    "./src/*": "./src/*.ts",
+    "./src/*.ts": "./src/*.ts",
+    "./*.js": "./*.js",
+    "./*": "./*.js"
+  },
   "scripts": {
     "start": "expo start",
     "lint": "expo-module lint",
