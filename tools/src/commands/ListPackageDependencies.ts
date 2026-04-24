@@ -1,13 +1,13 @@
 import { Command } from '@expo/commander';
 import chalk from 'chalk';
 
+import logger from '../Logger';
+import { DependencyKind, getListOfPackagesAsync } from '../Packages';
 import {
   isNCCBuilt,
   scanDependenciesAsync,
   type ScannedDependency,
 } from '../check-packages/scanDependenciesAsync';
-import logger from '../Logger';
-import { DependencyKind, getListOfPackagesAsync } from '../Packages';
 
 const { green, yellow, red, cyan, gray, bold } = chalk;
 
@@ -83,8 +83,7 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
         continue;
       }
 
-      const label =
-        checkType === 'package' ? pkg.packageName : `${pkg.packageName} (${checkType})`;
+      const label = checkType === 'package' ? pkg.packageName : `${pkg.packageName} (${checkType})`;
 
       if (options.json) {
         jsonOutput[label] = filtered.map((d) => ({

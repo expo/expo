@@ -189,7 +189,9 @@ function collectTypescriptImports(
     }
     const line = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile)).line + 1;
     // Collect `import` statements
-    imports.push(createTypescriptImportRef(node.moduleSpecifier.getText(), isTypeOnly, isSideEffect, line));
+    imports.push(
+      createTypescriptImportRef(node.moduleSpecifier.getText(), isTypeOnly, isSideEffect, line)
+    );
   } else if (
     ts.isCallExpression(node) &&
     node.expression.getText() === 'require' &&
@@ -208,7 +210,11 @@ function collectTypescriptImports(
     const line = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile)).line + 1;
     // Collect `require.resolve` statement
     imports.push(createTypescriptImportRef(node.arguments[0].getText(), false, false, line));
-  } else if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument) && ts.isStringLiteral(node.argument.literal)) {
+  } else if (
+    ts.isImportTypeNode(node) &&
+    ts.isLiteralTypeNode(node.argument) &&
+    ts.isStringLiteral(node.argument.literal)
+  ) {
     const line = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile)).line + 1;
     // Collect `typeof import('...')` and `import('...')` in type positions
     imports.push(createTypescriptImportRef(node.argument.literal.getText(), true, false, line));
@@ -231,11 +237,25 @@ function createTypescriptImportRef(
   const importValue = importText.replace(/['"]/g, '').trim();
 
   if (isBuiltin(importValue)) {
-    return { type: 'builtIn', importValue, packageName: importValue, isTypeOnly: importTypeOnly, isSideEffect: importSideEffect, line };
+    return {
+      type: 'builtIn',
+      importValue,
+      packageName: importValue,
+      isTypeOnly: importTypeOnly,
+      isSideEffect: importSideEffect,
+      line,
+    };
   }
 
   if (importValue.startsWith('.')) {
-    return { type: 'internal', importValue, packageName: importValue, isTypeOnly: importTypeOnly, isSideEffect: importSideEffect, line };
+    return {
+      type: 'internal',
+      importValue,
+      packageName: importValue,
+      isTypeOnly: importTypeOnly,
+      isSideEffect: importSideEffect,
+      line,
+    };
   }
 
   if (importValue.startsWith('@')) {
