@@ -40,6 +40,7 @@ PODS:
     - ExpoModulesTestCore
   - Expo (55.0.2):
     - ExpoModulesCore
+    - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -300,6 +301,7 @@ PODS:
     - Yoga
   - Expo/Tests (55.0.2):
     - ExpoModulesCore
+    - ExpoModulesJSI
     - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
@@ -560,13 +562,11 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesJSI (55.0.12):
-    - hermes-engine
+  - ExpoModulesJSI (55.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.12):
-    - hermes-engine
+  - ExpoModulesJSI/Tests (55.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
@@ -705,6 +705,9 @@ PODS:
     - React-RCTFabric
   - ExpoVideo (55.0.9):
     - ExpoModulesCore
+  - ExpoVideoDashSupportModule (1.0.0):
+    - ExpoModulesCore
+    - ExpoVideo
   - ExpoVideoThumbnails (55.0.9):
     - ExpoModulesCore
   - ExpoWebBrowser (55.0.9):
@@ -3319,8 +3322,8 @@ DEPENDENCIES:
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
+  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
@@ -3348,6 +3351,7 @@ DEPENDENCIES:
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
+  - ExpoVideoDashSupportModule (from `../modules/expo-video-dash-support-module/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
@@ -3638,7 +3642,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
     inhibit_warnings: false
-    :path: "../../../packages/expo-modules-core"
+    :path: "../../../packages/expo-modules-jsi/apple"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoModulesWorklets:
@@ -3707,6 +3711,9 @@ EXTERNAL SOURCES:
   ExpoVideo:
     inhibit_warnings: false
     :path: "../../../packages/expo-video/ios"
+  ExpoVideoDashSupportModule:
+    inhibit_warnings: false
+    :path: "../modules/expo-video-dash-support-module/ios"
   ExpoVideoThumbnails:
     inhibit_warnings: false
     :path: "../../../packages/expo-video-thumbnails/ios"
@@ -3924,7 +3931,7 @@ SPEC CHECKSUMS:
   EXConstants: ed3e09607493bb717a7932f0e6786846169692a2
   EXJSONUtils: 475f1af3d20fbd99268694df81d096817092aa89
   EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: 5b891535ab874124ee26c5216419748c2fcc55e3
+  Expo: 944473cd66ee19b8ee899df0b98e490bce19b991
   expo-dev-client: 929c5e873b07c54035ab42aa165f095f74478d6c
   expo-dev-launcher: 52dad5ea74c968013ebb2707370e28a0cf9d8b7f
   expo-dev-menu: 3ab7b064b3d3db84334481bdb24325e0b67889c3
@@ -3973,8 +3980,8 @@ SPEC CHECKSUMS:
   ExpoMaps: 94294944cff46ad1170ce4f92800adecbcdd04ac
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
   ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
-  ExpoModulesCore: a3dfc5e19028675ac402beedd870eae5a6d4a4d2
-  ExpoModulesJSI: 793687b04cbaa73ee8548bfdbcfba85954d1b2b5
+  ExpoModulesCore: 110aff3e8bff75926b963c45ef9caf89e4132c5c
+  ExpoModulesJSI: 71ee2c91700fbad70c35aff1dcea87d3a6e071bb
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoModulesWorklets: 3a4d6451e29822c01c397da92be1f962a0f870fe
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
@@ -3998,13 +4005,14 @@ SPEC CHECKSUMS:
   ExpoTrackingTransparency: a980b930c8e2affc688dd93940dc5b88f55c875b
   ExpoUI: e6e61b9aa1424349659c6cb1165adee716a89b69
   ExpoVideo: eca730ba53ec45c2a188aa9dbfe11f7f809d66a1
+  ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 2340f0b7f599c9ce6ba49a885f783de919cf4dd3
   ExpoWebBrowser: b65b3921741b51c5513e2a369f59c37076987d9b
   EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
   EXUpdates: a0f980531cbcf45906b2489febd4e11a5895f332
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
   FBLazyVector: 26fd21c75314e101f280d401e97f27d54f3f7064
-  hermes-engine: 725fd85144e1348879039099a6be950c471a4f2c
+  hermes-engine: e1ae00897676f600a9439d408b42f8c8ba5dbc24
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4022,7 +4030,7 @@ SPEC CHECKSUMS:
   React: 13cf8451582adb1bb324306e1893b91d1cba28c6
   React-callinvoker: 91e6a605826b684ad2e623811253b4d0c4196bef
   React-Core: 46818de5f211b2a2759ac823b591af8a0a95c2c1
-  React-Core-prebuilt: 4016009b4cc1d669b1a2369a5d707cdb39fa12ef
+  React-Core-prebuilt: 1e81ce373ae6d21c61a961e1be02e77633de3007
   React-CoreModules: a6a37afee48d4a31ab398640b0795462647d5c67
   React-cxxreact: 2ec3e2f7a8ae9303460d4ba94cde183ea90d64cd
   React-debug: 0d21117b897ce0359c9d2c9dfe952f237476a14a
@@ -4092,7 +4100,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 22e2265d86a4e871e5e858f4e7ef1c8d01103680
   ReactCodegen: f564776e1b15423920d439de1965d2000433dbd2
   ReactCommon: a804bb8d1dcf3ecdec3a77eb8bba19b7863bbbdb
-  ReactNativeDependencies: a24dd0e4b4318c05556b4b7bb144738f83775e22
+  ReactNativeDependencies: ceedcc3a6ff166bea3c3816a22f58c478ffad807
   RNCAsyncStorage: 2ad919e88b8bc2cd80e8697ce66d04d006743283
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
   RNCPicker: d74667bdfc08ed389a2a277d95b8faf2349290a9
@@ -4112,6 +4120,6 @@ SPEC CHECKSUMS:
   Yoga: 04bb4bfeb02c0000b940c1e6e89e856cd8de5a71
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 7df6831a3f59b622e60d2578195aceb45270c92d
+PODFILE CHECKSUM: a63ddafbc2bc8dd131f1bd3f4790fd1cf3a50279
 
 COCOAPODS: 1.16.2

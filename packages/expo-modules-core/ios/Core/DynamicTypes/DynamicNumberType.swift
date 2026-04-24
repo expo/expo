@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicNumberType<NumberType>: AnyDynamicType {
   let numberType: NumberType.Type
 
@@ -12,7 +14,7 @@ internal struct DynamicNumberType<NumberType>: AnyDynamicType {
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    if jsValue.kind == .number {
+    if jsValue.isNumber() {
       if let FloatingPointType = NumberType.self as? any BinaryFloatingPoint.Type {
         return FloatingPointType.init(jsValue.getDouble())
       }

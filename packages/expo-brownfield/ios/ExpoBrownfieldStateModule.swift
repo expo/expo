@@ -20,7 +20,7 @@ public class ExpoBrownfieldStateModule: Module {
       }
       
       Function("set") { (state: SharedState, value: JavaScriptValue?) in
-        state.set(value?.getRaw())
+        state.set(value?.getAny())
       }
     }
 

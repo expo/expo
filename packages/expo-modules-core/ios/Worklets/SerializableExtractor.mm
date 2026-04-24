@@ -2,8 +2,6 @@
 
 #import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
 #import <ExpoModulesWorklets/SerializableExtractor.h>
-#import <ExpoModulesJSI/EXJavaScriptValue.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 #if WORKLETS_ENABLED
 
@@ -12,35 +10,34 @@
 
 @implementation EXSerializableExtractor
 
-+ (BOOL)isSerializable:(nonnull EXJavaScriptValue *)value
-               runtime:(nonnull EXJavaScriptRuntime *)runtime
++ (BOOL)isSerializableWithRuntimePointer:(void *)runtimePointer
+                            valuePointer:(const void *)valuePointer
 {
-  jsi::Value jsValue = [value get];
-  jsi::Runtime *rt = [runtime get];
+  jsi::Runtime &rt = *reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  const jsi::Value &value = *reinterpret_cast<const jsi::Value *>(valuePointer);
 
-  if (!jsValue.isObject()) {
+  if (!value.isObject()) {
     return NO;
   }
 
-  jsi::Object obj = jsValue.getObject(*rt);
+  jsi::Object obj = value.getObject(rt);
 
-  return obj.hasProperty(*rt, "__serializableRef") && obj.hasNativeState(*rt);
+  return obj.hasProperty(rt, "__serializableRef") && obj.hasNativeState(rt);
 }
 
-+ (nullable EXJavaScriptSerializable *)extractSerializable:(nonnull EXJavaScriptValue *)value
-                                                   runtime:(nonnull EXJavaScriptRuntime *)runtime
++ (nullable EXJavaScriptSerializable *)extractSerializableWithRuntimePointer:(void *)runtimePointer
+                                                                valuePointer:(const void *)valuePointer
 {
-  if (![self isSerializable:value runtime:runtime]) {
+  if (![self isSerializableWithRuntimePointer:runtimePointer valuePointer:valuePointer]) {
     return nil;
   }
 
-  jsi::Value jsValue = [value get];
-  jsi::Runtime *rt = [runtime get];
-  jsi::Object obj = jsValue.getObject(*rt);
+  jsi::Runtime &rt = *reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  const jsi::Value &value = *reinterpret_cast<const jsi::Value *>(valuePointer);
 
-  auto serializable = worklets::extractSerializableOrThrow(*rt, jsValue);
+  auto serializable = worklets::extractSerializableOrThrow(rt, value);
 
-  return [[EXJavaScriptSerializable alloc] initWithSerializable:serializable runtime:runtime];
+  return [[EXJavaScriptSerializable alloc] initWithSerializable:serializable];
 }
 
 @end
@@ -49,13 +46,14 @@
 
 @implementation EXSerializableExtractor
 
-+ (BOOL)isSerializable:(nonnull EXJavaScriptValue *)value runtime:(nonnull EXJavaScriptRuntime *)runtime
++ (BOOL)isSerializableWithRuntimePointer:(void *)runtimePointer
+                            valuePointer:(const void *)valuePointer
 {
   return NO;
 }
 
-+ (nullable EXJavaScriptSerializable *)extractSerializable:(nonnull EXJavaScriptValue *)value
-                                                   runtime:(nonnull EXJavaScriptRuntime *)runtime
++ (nullable EXJavaScriptSerializable *)extractSerializableWithRuntimePointer:(void *)runtimePointer
+                                                                valuePointer:(const void *)valuePointer
 {
   return nil;
 }

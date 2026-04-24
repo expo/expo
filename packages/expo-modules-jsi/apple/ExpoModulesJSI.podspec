@@ -24,11 +24,13 @@ Pod::Spec.new do |s|
   if ENV['USE_FRAMEWORKS']
     header_search_paths.concat([
       # Transitive dependency of React-Core
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspector/jsinspector_modern.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectorcdp/jsinspector_moderncdp.framework/Headers"',
       # Transitive dependencies of React-runtimescheduler
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
-      '"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsitooling/JSITooling.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React_timing.framework/Headers"',
@@ -39,7 +41,6 @@ Pod::Spec.new do |s|
     ])
   end
 
-  # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
@@ -56,9 +57,6 @@ Pod::Spec.new do |s|
   # "[CP] Copy XCFrameworks" and "[CP] Embed Pods Frameworks" build phases.
   s.prepare_command = './scripts/create-stub-xcframework.sh'
 
-  s.source_files = [
-    "Sources/ExpoModulesJSI-RuntimeProvider/**/*.{h,mm}"
-  ]
   s.vendored_frameworks = ["Products/#{s.name}.xcframework"]
 
   s.script_phase = {
@@ -72,5 +70,14 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/**/*.swift'
+    test_spec.pod_target_xcconfig = {
+      # `UIUtilities.framework` is a private Apple sub-framework auto-linked by Swift Testing
+      # / SwiftUI helpers. Its path is not in the default framework search paths for test
+      # targets, so we add it explicitly here.
+      'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "$(SDKROOT)/System/Library/SubFrameworks"',
+      # Swift/C++ interop requires explicit linkage to libc++ for C++ exception handling
+      # (resolves the `___gxx_personality_v0` linker error).
+      'OTHER_LDFLAGS' => '$(inherited) -lc++',
+    }
   end
 end

@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicBoolType: AnyDynamicType {
   static let shared = DynamicBoolType()
 
