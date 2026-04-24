@@ -2,15 +2,16 @@
   "name": "expo-maps",
   "version": "55.0.9",
   "description": "Provides a Map component that uses Google Maps on Android and Apple Maps on iOS.",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/maps/",
   "repository": {
@@ -35,5 +36,16 @@
     "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
+  },
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
   }
 }

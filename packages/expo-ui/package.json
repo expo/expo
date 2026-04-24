@@ -2,50 +2,80 @@
   "name": "@expo/ui",
   "version": "55.0.1",
   "description": "A collection of UI components",
-  "sideEffects": [
-    "*.fx.js"
-  ],
+  "sideEffects": false,
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "types": "./build/universal/index.d.ts",
-      "default": "./src/universal/index.ts"
+      "types": {
+        "source": "./src/universal/index.ts",
+        "default": "./build/universal/index.d.ts"
+      },
+      "source": "./src/universal/index.ts",
+      "default": "./build/universal/index.js"
     },
     "./swift-ui": {
-      "types": "./build/swift-ui/index.d.ts",
-      "default": "./src/swift-ui/index.tsx"
+      "types": {
+        "source": "./src/swift-ui/index.tsx",
+        "default": "./build/swift-ui/index.d.ts"
+      },
+      "source": "./src/swift-ui/index.tsx",
+      "default": "./build/swift-ui/index.js"
     },
     "./swift-ui/modifiers": {
-      "types": "./build/swift-ui/modifiers/index.d.ts",
-      "default": "./src/swift-ui/modifiers/index.ts"
+      "types": {
+        "source": "./src/swift-ui/modifiers/index.ts",
+        "default": "./build/swift-ui/modifiers/index.d.ts"
+      },
+      "source": "./src/swift-ui/modifiers/index.ts",
+      "default": "./build/swift-ui/modifiers/index.js"
     },
     "./jetpack-compose": {
-      "types": "./build/jetpack-compose/index.d.ts",
-      "default": "./src/jetpack-compose/index.ts"
+      "types": {
+        "source": "./src/jetpack-compose/index.ts",
+        "default": "./build/jetpack-compose/index.d.ts"
+      },
+      "source": "./src/jetpack-compose/index.ts",
+      "default": "./build/jetpack-compose/index.js"
     },
     "./jetpack-compose/modifiers": {
-      "types": "./build/jetpack-compose/modifiers/index.d.ts",
-      "default": "./src/jetpack-compose/modifiers/index.ts"
+      "types": {
+        "source": "./src/jetpack-compose/modifiers/index.ts",
+        "default": "./build/jetpack-compose/modifiers/index.d.ts"
+      },
+      "source": "./src/jetpack-compose/modifiers/index.ts",
+      "default": "./build/jetpack-compose/modifiers/index.js"
     },
     "./datetimepicker": {
-      "types": "./build/datetime-picker/index.d.ts",
-      "default": "./src/datetime-picker/index.tsx"
+      "types": {
+        "source": "./src/datetime-picker/index.tsx",
+        "default": "./build/datetime-picker/index.d.ts"
+      },
+      "source": "./src/datetime-picker/index.tsx",
+      "default": "./build/datetime-picker/index.js"
     },
     "./community/bottom-sheet": {
       "types": "./build/community/bottom-sheet/index.d.ts",
       "default": "./src/community/bottom-sheet/index.tsx"
     },
     "./community/segmented-control": {
-      "types": "./build/community/segmented-control/index.d.ts",
-      "default": "./src/community/segmented-control/index.tsx"
+      "types": {
+        "source": "./src/community/segmented-control/index.tsx",
+        "default": "./build/community/segmented-control/index.d.ts"
+      },
+      "source": "./src/community/segmented-control/index.tsx",
+      "default": "./build/community/segmented-control/index.js"
     },
     "./community/picker": {
-      "types": "./build/community/picker/index.d.ts",
-      "default": "./src/community/picker/index.tsx"
-    }
+      "types": {
+        "source": "./src/community/picker/index.tsx",
+        "default": "./build/community/picker/index.d.ts"
+      },
+      "source": "./src/community/picker/index.tsx",
+      "default": "./build/community/picker/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

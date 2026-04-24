@@ -3,8 +3,9 @@
   "version": "10.0.12",
   "description": "A module for reading, writing, and manipulating JSON files",
   "main": "build/JsonFile.js",
+  "types": "build/JsonFile.d.ts",
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",

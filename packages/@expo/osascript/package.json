@@ -20,11 +20,12 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "files": [
     "build"
   ],
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",

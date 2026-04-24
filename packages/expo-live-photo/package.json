@@ -3,7 +3,7 @@
   "title": "Expo Video",
   "version": "55.0.8",
   "description": "Library, which makes it possible to display live photos on iOS",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
@@ -14,12 +14,11 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/live-photo/",
   "repository": {

@@ -2,15 +2,46 @@
   "name": "expo",
   "version": "55.0.2",
   "description": "The Expo SDK",
-  "main": "src/Expo.ts",
-  "module": "src/Expo.ts",
+  "main": "build/Expo.js",
+  "module": "build/Expo.js",
   "types": "build/Expo.d.ts",
   "sideEffects": [
     "*.fx.tsx",
     "*.fx.web.tsx",
+    "*.fx.js",
+    "*.fx.web.js",
     "./src/winter/*.ts",
-    "./src/async-require/*.ts"
+    "./build/winter/*.js",
+    "./src/async-require/*.ts",
+    "./build/async-require/*.js"
   ],
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/Expo.ts",
+        "default": "./build/Expo.d.ts"
+      },
+      "source": "./src/Expo.ts",
+      "default": "./build/Expo.js"
+    },
+    "./src/*.ts": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./src/*": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./package.json": "./package.json"
+  },
   "bin": {
     "expo": "bin/cli",
     "expo-modules-autolinking": "bin/autolinking",
@@ -50,7 +81,7 @@
     "template.tgz"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "../expo-module-scripts/bin/expo-build src",
     "clean": "rimraf build",
     "lint": "eslint src",
     "test": "jest",

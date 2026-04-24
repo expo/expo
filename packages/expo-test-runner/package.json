@@ -18,12 +18,11 @@
   },
   "homepage": "https://github.com/expo/expo-test-runner#readme",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",

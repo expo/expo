@@ -3,18 +3,29 @@
   "title": "Expo Image",
   "version": "55.0.5",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "expo-module build",
-    "build:plugin": "expo-module build plugin",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/image/",
   "repository": {

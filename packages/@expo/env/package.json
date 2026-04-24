@@ -3,8 +3,9 @@
   "version": "2.1.1",
   "description": "hydrate environment variables from .env files into process.env",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",

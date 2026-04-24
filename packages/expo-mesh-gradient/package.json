@@ -2,15 +2,14 @@
   "name": "expo-mesh-gradient",
   "version": "55.0.8",
   "description": "A module that exposes MeshGradient view from SwiftUI to React Native",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/mesh-gradient/",
   "repository": {
@@ -36,5 +35,16 @@
     "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
+  },
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
   }
 }
