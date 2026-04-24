@@ -208,6 +208,10 @@ function collectTypescriptImports(
     const line = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile)).line + 1;
     // Collect `require.resolve` statement
     imports.push(createTypescriptImportRef(node.arguments[0].getText(), false, false, line));
+  } else if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument) && ts.isStringLiteral(node.argument.literal)) {
+    const line = ts.getLineAndCharacterOfPosition(sourceFile, node.getStart(sourceFile)).line + 1;
+    // Collect `typeof import('...')` and `import('...')` in type positions
+    imports.push(createTypescriptImportRef(node.argument.literal.getText(), true, false, line));
   } else {
     ts.forEachChild(node, (child) => {
       collectTypescriptImports(child, sourceFile, imports);
