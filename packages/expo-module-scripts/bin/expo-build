@@ -59,6 +59,7 @@ function createBuildHost(baseDir, rootDir, outDir) {
   const parsed = ts.getParsedCommandLineOfConfigFile(
     configPath,
     {
+      noEmit: false,
       emitDeclarationOnly: true,
       declaration: true,
       declarationMap: false,
