@@ -37,6 +37,10 @@ struct FunctionTests {
       @Field var a: ValueOrUndefined<Double?> = .value(unwrapped: 1.0)
     }
 
+    struct TestRecordWithHeaders: Record {
+      @Field var headers: [String: String] = [:]
+    }
+
     struct TestEncodable: Encodable {
       let name: String
       let version: Int
@@ -83,6 +87,10 @@ struct FunctionTests {
 
         Function("withRecord") { (f: TestRecord) in
           return "\(f.property)"
+        }
+
+        Function("withRecordWithHeaders") { (f: TestRecordWithHeaders) in
+          return "\(f.headers.count)"
         }
 
         Function("withURL") {
@@ -244,6 +252,19 @@ struct FunctionTests {
             property: undefined
           })
         """).asString() == "expo"
+      )
+    }
+
+    @Test
+    func `accepts record while dropping undefined values from nested dictionaries`() throws {
+      #expect(
+        try runtime.eval("""
+          expo.modules.TestModule.withRecordWithHeaders({
+            headers: {
+              authorization: undefined
+            }
+          })
+        """).asString() == "0"
       )
     }
 
