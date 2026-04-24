@@ -72,7 +72,9 @@
   },
   "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "expo-build cjs:src",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build cjs:src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
