@@ -12,10 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SwiftUIVirtualViewObjC : NSObject
 
 @property (nonatomic) NSInteger tag;
+@property (nonatomic, copy, nullable) NSString *componentName;
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
 
-- (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
+- (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props NS_SWIFT_UI_ACTOR;
 
 - (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
 
@@ -28,14 +29,14 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Called for mounting (attaching) a child component view inside `self` component view.
  */
-- (void)mountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
+- (void)mountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index NS_SWIFT_UI_ACTOR;
 
 /*
  * Called for unmounting (detaching) a child component view from `self` component view.
  */
-- (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
+- (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index NS_SWIFT_UI_ACTOR;
 
-- (void)removeFromSuperview;
+- (void)removeFromSuperview NS_SWIFT_UI_ACTOR;
 
 @end
 

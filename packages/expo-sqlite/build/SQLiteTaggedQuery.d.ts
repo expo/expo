@@ -1,5 +1,5 @@
-import { SQLiteRunResult } from './NativeStatement';
-import { SQLiteDatabase } from './SQLiteDatabase';
+import type { SQLiteRunResult } from './NativeStatement';
+import type { SQLiteDatabase } from './SQLiteDatabase';
 /**
  * Conditional type that returns `T[]` when type parameter is explicitly provided,
  * or union type when using the default `unknown` type.

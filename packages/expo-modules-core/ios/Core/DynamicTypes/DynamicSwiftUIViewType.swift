@@ -36,7 +36,16 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
     }
     // Direct match, the virtual view's content type matches exactly.
     // e.g. View(SlotView.self)
+    // Both the production (`SwiftUIVirtualView`, NSObject-based) and dev
+    // (`SwiftUIVirtualViewDev`, UIView-based) concrete classes are checked —
+    // only one is instantiated at runtime per build, but the type-erased
+    // `findView` lookup needs to know about both. Without this, dev builds
+    // would fall through to the `ViewWrapper` branch below, which recursively
+    // unwraps and is not strictly equivalent to returning `contentView` as-is.
     if let view = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.SwiftUIVirtualView<ViewType.Props, ViewType>.self) {
+      return view.contentView
+    }
+    if let view = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.SwiftUIVirtualViewDev<ViewType.Props, ViewType>.self) {
       return view.contentView
     }
     // For wrapper types

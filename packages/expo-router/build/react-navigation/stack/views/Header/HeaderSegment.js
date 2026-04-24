@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeaderSegment = HeaderSegment;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const elements_1 = require("../../../elements");
@@ -60,7 +61,7 @@ function HeaderSegment(props) {
         setLeftLabelLayout({ height, width });
     };
     const { progress, layout, modal, onGoBack, backHref, headerTitle: title, headerLeft: left = onGoBack
-        ? (props) => <elements_1.HeaderBackButton {...props}/>
+        ? (props) => (0, jsx_runtime_1.jsx)(elements_1.HeaderBackButton, { ...props })
         : undefined, headerRight: right, headerBackImage, headerBackTitle, headerBackButtonDisplayMode = react_native_1.Platform.OS === 'ios' ? 'default' : 'minimal', headerBackTruncatedTitle, headerBackAccessibilityLabel, headerBackTestID, headerBackAllowFontScaling, headerBackTitleStyle, headerTitleContainerStyle, headerLeftContainerStyle, headerRightContainerStyle, headerBackgroundContainerStyle, headerStyle: customHeaderStyle, headerStatusBarHeight, styleInterpolator, ...rest } = props;
     const defaultHeight = (0, elements_1.getDefaultHeaderHeight)(layout, modal, headerStatusBarHeight);
     const { height = defaultHeight } = react_native_1.StyleSheet.flatten(customHeaderStyle || {});
@@ -104,8 +105,8 @@ function HeaderSegment(props) {
         })
         : undefined;
     const headerTitle = typeof title !== 'function'
-        ? (props) => <elements_1.HeaderTitle {...props} onLayout={handleTitleLayout}/>
+        ? (props) => (0, jsx_runtime_1.jsx)(elements_1.HeaderTitle, { ...props, onLayout: handleTitleLayout })
         : (props) => title({ ...props, onLayout: handleTitleLayout });
-    return (<elements_1.Header modal={modal} layout={layout} headerTitle={headerTitle} headerLeft={headerLeft} headerRight={headerRight} headerTitleContainerStyle={[titleStyle, headerTitleContainerStyle]} headerLeftContainerStyle={[leftButtonStyle, headerLeftContainerStyle]} headerRightContainerStyle={[rightButtonStyle, headerRightContainerStyle]} headerBackButtonDisplayMode={headerBackButtonDisplayMode} headerBackgroundContainerStyle={[backgroundStyle, headerBackgroundContainerStyle]} headerStyle={customHeaderStyle} headerStatusBarHeight={headerStatusBarHeight} {...rest}/>);
+    return ((0, jsx_runtime_1.jsx)(elements_1.Header, { modal: modal, layout: layout, headerTitle: headerTitle, headerLeft: headerLeft, headerRight: headerRight, headerTitleContainerStyle: [titleStyle, headerTitleContainerStyle], headerLeftContainerStyle: [leftButtonStyle, headerLeftContainerStyle], headerRightContainerStyle: [rightButtonStyle, headerRightContainerStyle], headerBackButtonDisplayMode: headerBackButtonDisplayMode, headerBackgroundContainerStyle: [backgroundStyle, headerBackgroundContainerStyle], headerStyle: customHeaderStyle, headerStatusBarHeight: headerStatusBarHeight, ...rest }));
 }
 //# sourceMappingURL=HeaderSegment.js.map

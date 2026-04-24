@@ -1,6 +1,6 @@
-import { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
+import type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
 
-export { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved };
+export type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
 
 export type AnalyticsEvent = PageWillRender | PageFocusedEvent | PageBlurredEvent | PageRemoved;
 

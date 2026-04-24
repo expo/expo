@@ -9,6 +9,6 @@ export * from './AuthRequest.types';
 export * from './AuthSession.types';
 export * from './TokenRequest.types';
 export * from './providers/Provider.types';
-export { GoogleAuthRequestConfig } from './providers/Google';
-export { FacebookAuthRequestConfig } from './providers/Facebook';
+export type { GoogleAuthRequestConfig } from './providers/Google';
+export type { FacebookAuthRequestConfig } from './providers/Facebook';
 //# sourceMappingURL=index.d.ts.map

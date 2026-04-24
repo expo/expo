@@ -1,5 +1,5 @@
-import { AuthError } from './Errors';
-import { TokenResponse } from './TokenRequest';
+import type { AuthError } from './Errors';
+import type { TokenResponse } from './TokenRequest';
 
 // @needsAudit
 /**

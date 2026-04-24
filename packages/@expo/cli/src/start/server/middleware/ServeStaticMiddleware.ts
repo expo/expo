@@ -3,7 +3,7 @@ import send from 'send';
 import { parse } from 'url';
 
 import { parsePlatformHeader } from './resolvePlatform';
-import { ServerRequest, ServerResponse } from './server.types';
+import type { ServerRequest, ServerResponse } from './server.types';
 import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:start:server:middleware:serveStatic') as typeof console.log;

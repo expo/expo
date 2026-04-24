@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNativeStackNavigator = createNativeStackNavigator;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const expo_glass_effect_1 = require("expo-glass-effect");
 const React = __importStar(require("react"));
 const composition_options_1 = require("./composition-options");
@@ -118,22 +119,14 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
     // END FORK
     return (
     // START FORK
-    <descriptors_context_1.DescriptorsContext value={descriptors}>
-      {/* END FORK */}
-      <NavigationContent>
-        <composition_options_1.CompositionContext value={contextValue}>
-          <native_stack_1.NativeStackView {...rest} 
-    // START FORK
-    state={computedState} navigation={navigationWrapper} descriptors={mergedDescriptors} 
-    // state={state}
-    // navigation={navigation}
-    // descriptors={descriptors}
-    // END FORK
-    describe={describe}/>
-        </composition_options_1.CompositionContext>
-      </NavigationContent>
-      {/* START FORK */}
-    </descriptors_context_1.DescriptorsContext>
+    (0, jsx_runtime_1.jsx)(descriptors_context_1.DescriptorsContext, { value: descriptors, children: (0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(composition_options_1.CompositionContext, { value: contextValue, children: (0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { ...rest, 
+                    // START FORK
+                    state: computedState, navigation: navigationWrapper, descriptors: mergedDescriptors, 
+                    // state={state}
+                    // navigation={navigation}
+                    // descriptors={descriptors}
+                    // END FORK
+                    describe: describe }) }) }) })
     // END FORK
     );
 }

@@ -10,12 +10,14 @@ import androidx.compose.runtime.Composable
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class HorizontalFloatingToolbarVariant(val value: String) : Enumerable {
   STANDARD("standard"),
   VIBRANT("vibrant")
 }
 
+@OptimizedComposeProps
 data class HorizontalFloatingToolbarProps(
   val variant: HorizontalFloatingToolbarVariant? =
     HorizontalFloatingToolbarVariant.STANDARD,

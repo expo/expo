@@ -5,6 +5,7 @@
 #import <ExpoModulesCore/CoreModuleHelper.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
+#import <ExpoModulesCore/SwiftUIVirtualViewObjCDev.h>
 #import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/ExpoModulesCore.h>

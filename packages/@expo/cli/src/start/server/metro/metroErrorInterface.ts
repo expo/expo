@@ -10,10 +10,12 @@ import chalk from 'chalk';
 import { stripVTControlCharacters } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
-import { parse, StackFrame } from 'stacktrace-parser';
+import type { StackFrame } from 'stacktrace-parser';
+import { parse } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
-import { LogBoxLog, LogBoxLogData } from './log-box/LogBoxLog';
+import type { LogBoxLogData } from './log-box/LogBoxLog';
+import { LogBoxLog } from './log-box/LogBoxLog';
 import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxSymbolication';
 import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 import { Log } from '../../../log';

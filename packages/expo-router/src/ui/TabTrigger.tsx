@@ -1,6 +1,8 @@
 import { Slot } from '@radix-ui/react-slot';
-import { ReactNode, use, ReactElement, ComponentProps, useCallback } from 'react';
-import { View, StyleSheet, Pressable, PressableProps } from 'react-native';
+import type { ReactNode, ReactElement, ComponentProps } from 'react';
+import { use, useCallback } from 'react';
+import type { View, PressableProps } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
 
 import { TabTriggerMapContext } from './TabContext';
 import type { TriggerMap } from './common';
@@ -8,7 +10,7 @@ import { appendBaseUrl } from '../fork/getPathFromState';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
 import { stripGroupSegmentsFromPath } from '../matchers';
-import { TabNavigationState } from '../react-navigation/native';
+import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigatorContext } from '../views/Navigator';
 

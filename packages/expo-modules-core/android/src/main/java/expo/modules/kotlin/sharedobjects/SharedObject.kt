@@ -50,7 +50,7 @@ open class SharedObject(runtime: Runtime? = null) {
         jniInterop,
         eventName,
         args
-          .map { JSTypeConverterProvider.convertToJSValue(it) }
+          .map { JSTypeConverterProvider.convertToJSValue(it, useExperimentalConverter = true) }
           .toTypedArray()
       )
     } catch (e: Throwable) {

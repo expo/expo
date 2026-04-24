@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [next][iOS] Add `asset.getMediaSubtypes()`, `asset.getLivePhotoVideoUri()`, `asset.getIsInCloud()`, and `asset.getOrientation()` ([#44568](https://github.com/expo/expo/pull/44568) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add `asset.getAlbums()` ([#44604](https://github.com/expo/expo/pull/44604) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add `Album.getAll()` ([#44446](https://github.com/expo/expo/pull/44446) by [@Wenszel](https://github.com/Wenszel))
 - [next][iOS] Add `album.removeAssets()` ([#44455](https://github.com/expo/expo/pull/44455) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add usePermissions ([#44403](https://github.com/expo/expo/pull/44403) by [@Wenszel](https://github.com/Wenszel))

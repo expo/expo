@@ -40,7 +40,6 @@
 }
 
 - (void)hostDidStart:(nonnull RCTHost *)host {
-  host.runtimeDelegate = self;
   if ([self.delegate respondsToSelector:@selector(hostDidStart:)]) {
     [self.delegate hostDidStart:host];
   }

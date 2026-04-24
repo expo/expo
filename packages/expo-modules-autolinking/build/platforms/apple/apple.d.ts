@@ -1,4 +1,4 @@
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import type { ExtraDependencies, ModuleDescriptorIos, ModuleIosPodspecInfo, PackageRevision } from '../../types';
 interface AppleConfigurationOutput {
     buildFromSource: string[];

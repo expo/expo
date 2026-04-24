@@ -1,5 +1,3 @@
-import type { SupportedPlatform } from '../types';
-
 /** Dependency configuration for Android platform. */
 export interface RNConfigDependencyAndroid {
   sourceDir: string;

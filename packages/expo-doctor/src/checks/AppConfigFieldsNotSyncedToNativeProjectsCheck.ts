@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { env } from '../utils/env';
 import { existsAndIsNotIgnoredAsync } from '../utils/files';

@@ -1,10 +1,11 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import { generateFaviconAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
 import path from 'path';
 
 import { getUserDefinedFile } from './publicFolder';
-import { ExportAssetMap } from './saveAssets';
+import type { ExportAssetMap } from './saveAssets';
 import { Log } from '../log';
 
 const debug = require('debug')('expo:favicon') as typeof console.log;

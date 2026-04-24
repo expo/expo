@@ -1,4 +1,4 @@
-import { CodeChallengeMethod } from './AuthRequest.types';
+import type { CodeChallengeMethod } from './AuthRequest.types';
 /**
  * URL using the `https` scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
  */

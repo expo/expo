@@ -11,6 +11,11 @@ on:
         description: 'Max parallel packages (default: auto)'
         required: false
         default: ''
+      publish:
+        description: 'Publish XCFramework tarballs to GCS'
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -20,7 +25,11 @@ jobs:
   prebuild:
     runs-on: macos-15
     timeout-minutes: 120
+    permissions:
+      contents: read
+      id-token: write
     strategy:
+      fail-fast: false
       matrix:
         flavor: [Debug, Release]
     steps:
@@ -50,6 +59,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Prebuild External XCFrameworks (${{ matrix.flavor }})
+        id: prebuild_xcframeworks
         env:
           INPUT_PACKAGES: ${{ github.event.inputs.packages }}
           INPUT_CONCURRENCY: ${{ github.event.inputs.concurrency }}
@@ -69,10 +79,59 @@ jobs:
 
       - name: Upload XCFrameworks
         uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
         with:
           name: xcframeworks-${{ matrix.flavor }}
           path: packages/precompile/.build/*/output/**/${{ matrix.flavor == 'Debug' && 'debug' || 'release' }}/xcframeworks/*.tar.gz
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
           include-hidden-files: true
+
+      - name: Authenticate to Google Cloud
+        if: ${{ success() && github.event.inputs.publish == 'true' }}
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: exponentjs
+          workload_identity_provider: projects/321830142373/locations/global/workloadIdentityPools/github/providers/expo
+
+      - name: Setup gcloud
+        if: ${{ success() && github.event.inputs.publish == 'true' }}
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: exponentjs
+
+      - name: Upload XCFramework directory structure to GCS
+        if: ${{ success() && github.event.inputs.publish == 'true' }}
+        run: |
+          SYNC_ROOT="$RUNNER_TEMP/precompiled-modules-upload"
+          rm -rf "$SYNC_ROOT"
+          mkdir -p "$SYNC_ROOT"
+
+          # Stage only XCFramework tarballs into a clean tree that mirrors the
+          # package-relative output layout we want to publish to GCS.
+          rsync \
+            --recursive \
+            --verbose \
+            --prune-empty-dirs \
+            --include='*/' \
+            --include='*/xcframeworks/*.tar.gz' \
+            --exclude='*' \
+            packages/precompile/.build/ \
+            "$SYNC_ROOT/"
+
+          if ! find "$SYNC_ROOT" -type f -print -quit | grep -q .; then
+            echo "::warning::No XCFramework tarballs found to upload."
+            exit 0
+          fi
+
+          # Sync each top-level package directory separately so objects still land under:
+          #   gs://eas-build-precompiled-modules/<pkg>/output/.../xcframeworks/*.tar.gz
+          # without requiring bucket-level metadata access for a root rsync target.
+          shopt -s nullglob
+          for package_dir in "$SYNC_ROOT"/*; do
+            [ -d "$package_dir" ] || continue
+            package_name="$(basename "$package_dir")"
+            gcloud storage rsync \
+              "$package_dir" \
+              "gs://eas-build-precompiled-modules/$package_name" \
+              --recursive
+          done

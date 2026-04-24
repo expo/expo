@@ -1,4 +1,4 @@
-import { DependencyList } from 'react';
+import type { DependencyList } from 'react';
 import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
 /**
  * A hook that loads an image from the given source and returns a reference

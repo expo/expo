@@ -1,3 +1,4 @@
+// TODO(@kitten): Remove
 export { PermissionStatus, } from 'expo-modules-core';
 // @needsAudit
 /**

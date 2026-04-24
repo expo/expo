@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { getXcodeVersionAsync } from '../utils/getXcodeVersionAsync';
 

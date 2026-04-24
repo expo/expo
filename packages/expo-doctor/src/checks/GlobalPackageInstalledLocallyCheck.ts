@@ -1,4 +1,4 @@
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
 
 export class GlobalPackageInstalledLocallyCheck implements DoctorCheck {

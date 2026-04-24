@@ -1,4 +1,5 @@
-import { AndroidConfig, withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
+import type { AndroidConfig } from 'expo/config-plugins';
+import { withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
 
 import { compileMockModWithResultsAsync } from './mockMods';
 import type { PluginConfigType } from '../pluginConfig';

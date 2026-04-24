@@ -1,4 +1,5 @@
-import DeviceSensor, { Listener, Subscription } from './DeviceSensor';
+import type { Listener, Subscription } from './DeviceSensor';
+import DeviceSensor from './DeviceSensor';
 import ExponentDeviceMotion from './ExponentDeviceMotion';
 
 export type DeviceMotionMeasurement = {

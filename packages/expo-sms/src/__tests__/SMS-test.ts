@@ -2,7 +2,7 @@ import { Platform } from 'expo-modules-core';
 
 import ExpoSMS from '../ExpoSMS';
 import * as SMS from '../SMS';
-import { SMSAttachment } from '../SMS.types';
+import type { SMSAttachment } from '../SMS.types';
 
 it(`normalizes one phone number into an array`, async () => {
   try {

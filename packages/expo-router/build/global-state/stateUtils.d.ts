@@ -1,5 +1,5 @@
-import { ResultState } from '../fork/getStateFromPath';
-import { type NavigationState, PartialRoute, type PartialState } from '../react-navigation/native';
+import type { ResultState } from '../fork/getStateFromPath';
+import type { PartialRoute, NavigationState, PartialState } from '../react-navigation/native';
 /**
  * React Navigation uses params to store information about the screens, rather then create new state for each level.
  * This function traverses the action state that will not be part of state and returns a payload that can be used in action.

@@ -1,6 +1,8 @@
-import { CodedError, TypedArray } from 'expo-modules-core';
+import type { TypedArray } from 'expo-modules-core';
+import { CodedError } from 'expo-modules-core';
 
-import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions } from './Crypto.types';
+import type { CryptoDigestAlgorithm, CryptoDigestOptions } from './Crypto.types';
+import { CryptoEncoding } from './Crypto.types';
 
 const getCrypto = (): Crypto => {
   if (typeof globalThis.crypto !== 'undefined') {

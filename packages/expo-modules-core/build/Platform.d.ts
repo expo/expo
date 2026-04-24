@@ -1,4 +1,4 @@
-import { PlatformOSType } from 'react-native';
+import type { PlatformOSType } from 'react-native';
 export type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'default';
 export type PlatformSelect = <T>(specifics: {
     [platform in PlatformSelectOSType]?: T;

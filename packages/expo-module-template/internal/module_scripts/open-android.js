@@ -6,9 +6,32 @@ const os = require('os');
 
 const projectPath = path.join(process.cwd(), 'example', 'android');
 
+function openApp(command, args, options = {}) {
+  const detached = options.detached ?? true;
+  const child = spawn(command, args, {
+    detached,
+    stdio: options.stdio ?? 'ignore',
+  });
+
+  child.once('error', (error) => {
+    console.error(`Error: Failed to open Android Studio: ${error.message}`);
+    process.exit(1);
+  });
+
+  child.once('spawn', () => {
+    if (detached) {
+      child.unref();
+    }
+  });
+}
+
 switch (process.platform) {
   case 'darwin':
-    spawn('open', ['-a', 'Android Studio', projectPath], { stdio: 'inherit' });
+    // Open command sends an AppleEvent to launch the app and then exits immediately, so we can inherit the stdio.
+    openApp('open', ['-a', 'Android Studio', projectPath], {
+      detached: false,
+      stdio: 'inherit',
+    });
     break;
   case 'linux': {
     const home = os.homedir();
@@ -72,7 +95,8 @@ switch (process.platform) {
         process.exit(1);
       }
     }
-    spawn(studioSh, [projectPath], { stdio: 'inherit' });
+    // On Linux we launch Android Studio directly (long-running process), so don't inherit stdio
+    openApp(studioSh, [projectPath]);
     break;
   }
   case 'win32': {
@@ -87,12 +111,11 @@ switch (process.platform) {
       );
       process.exit(1);
     }
-    spawn(studioExe, [projectPath], { stdio: 'inherit' });
+    // On Windows we launch Android Studio directly (long-running process), so don't inherit stdio
+    openApp(studioExe, [projectPath]);
     break;
   }
   default:
     console.error(`Error: Unsupported platform: ${process.platform}`);
     process.exit(1);
 }
-
-process.exit(0);

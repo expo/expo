@@ -1,12 +1,12 @@
 import chalk from 'chalk';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 
 import * as Log from '../../log';
 import { link } from '../../utils/link';
 import { ora } from '../../utils/ora';
 import { promptAsync } from '../../utils/prompts';
-import { DevToolsPlugin } from '../server/DevToolsPlugin';
-import { DevToolsPluginCommand, DevToolsPluginOutput } from '../server/DevToolsPlugin.schema';
+import type { DevToolsPlugin } from '../server/DevToolsPlugin';
+import type { DevToolsPluginCommand, DevToolsPluginOutput } from '../server/DevToolsPlugin.schema';
 
 /**
  * Handles the CLI extension menu item selection and execution of the plugin command for use

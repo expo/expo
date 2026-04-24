@@ -1,4 +1,4 @@
-import { ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
+import type { ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
 /**
  * Returns an Expo token that can be used to send a push notification to the device using Expo's push notifications service.
  *

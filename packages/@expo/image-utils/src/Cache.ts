@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import { join, resolve } from 'path';
 
-import { ImageOptions } from './Image.types';
+import type { ImageOptions } from './Image.types';
 
 const CACHE_LOCATION = '.expo/web/cache/production/images';
 

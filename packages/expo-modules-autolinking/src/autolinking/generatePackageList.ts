@@ -1,5 +1,5 @@
 import { getLinkingImplementationForPlatform } from '../platforms';
-import { ModuleDescriptor, ModuleDescriptorIos, SupportedPlatform } from '../types';
+import type { ModuleDescriptor, ModuleDescriptorIos, SupportedPlatform } from '../types';
 
 interface GenerateModulesProviderParams {
   platform: SupportedPlatform;

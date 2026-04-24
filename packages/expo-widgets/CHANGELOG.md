@@ -6,6 +6,7 @@
 
 - Pass environment to Widgets and Live Activities. ([#43681](https://github.com/expo/expo/pull/43681) by [@jakex7](https://github.com/jakex7))
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- Remove hardcoded `containerBackground` in favor of `@expo/ui` modifier. ([#44192](https://github.com/expo/expo/pull/44192) by [@jakex7](https://github.com/jakex7))
 
 ### 🎉 New features
 
@@ -28,6 +29,10 @@
 - Add support for `React.Fragment`. ([#43833](https://github.com/expo/expo/pull/43833) by [@jakex7](https://github.com/jakex7))
 - Add Button children support. ([#43832](https://github.com/expo/expo/pull/43832) by [@jakex7](https://github.com/jakex7))
 - Remove unused `Compression` related code. ([#43981](https://github.com/expo/expo/pull/43981) by [@jakex7](https://github.com/jakex7))
+- Fix `getLiveActivityUrl` reading URL from shared storage so Dynamic Island tap navigates to the deep link URL. ([#44346](https://github.com/expo/expo/pull/44346) by [@prenansb](https://github.com/prenansb))
+- [plugin] Fix "extension CFBundleVersion not synced with main app" ([#44928](https://github.com/expo/expo/pull/44928) by [@jakex7](https://github.com/jakex7))
+- [plugin] Use relative paths in Xcode project ([#45000](https://github.com/expo/expo/pull/45000) by [@jakex7](https://github.com/jakex7))
+- Exclude worklets and reanimated from widgets bundle ([#44999](https://github.com/expo/expo/pull/44999) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

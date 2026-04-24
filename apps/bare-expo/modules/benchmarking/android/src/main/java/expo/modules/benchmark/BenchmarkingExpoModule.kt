@@ -2,6 +2,16 @@ package expo.modules.benchmark
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+
+class Point : Record {
+  @Field
+  var x: Double = 0.0
+
+  @Field
+  var y: Double = 0.0
+}
 
 class BenchmarkingExpoModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -21,6 +31,10 @@ class BenchmarkingExpoModule : Module() {
 
     Function("foldArray") { array: List<Double> ->
       array.sum()
+    }
+
+    Function("echoObject") { point: Point ->
+      point
     }
   }
 }

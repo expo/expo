@@ -1,13 +1,10 @@
-import {
-  createPermissionHook,
-  PermissionHookOptions,
-  PermissionResponse,
-  UnavailabilityError,
-} from 'expo-modules-core';
+import type { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
-import { GranularPermission } from './types/GranularPermission';
+import type { GranularPermission } from './types/GranularPermission';
+import type { MediaSubtype } from './types/MediaSubtype';
 
 export * from './MediaLibraryNext.types';
 
@@ -28,6 +25,41 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
       throw new UnavailabilityError('MediaLibrary', 'setFavorite is only available on iOS');
     }
     return super.setFavorite(isFavorite);
+  }
+
+  // @hidden
+  getMediaSubtypes(): Promise<MediaSubtype[]> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'getMediaSubtypes is only available on iOS');
+    }
+    return super.getMediaSubtypes();
+  }
+
+  // @hidden
+  getLivePhotoVideoUri(): Promise<string | null> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError(
+        'MediaLibrary',
+        'getLivePhotoVideoUri is only available on iOS'
+      );
+    }
+    return super.getLivePhotoVideoUri();
+  }
+
+  // @hidden
+  getIsInCloud(): Promise<boolean> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'getIsInCloud is only available on iOS');
+    }
+    return super.getIsInCloud();
+  }
+
+  // @hidden
+  getOrientation(): Promise<number | null> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'getOrientation is only available on iOS');
+    }
+    return super.getOrientation();
   }
 }
 

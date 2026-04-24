@@ -124,13 +124,6 @@ inline jsi::Value valueFromArrayBuffer(jsi::Runtime &runtime, const jsi::ArrayBu
 }
 
 /**
- * Converts a `expo::TypedArray` to a `jsi::Value`.
- */
-inline jsi::Value valueFromTypedArray(jsi::Runtime &runtime, const TypedArray &typedArray) {
-  return jsi::Value(runtime, typedArray);
-}
-
-/**
  * Returns the size of the array buffer storage in bytes.
  */
 inline size_t arrayBufferSize(jsi::Runtime &runtime, const jsi::ArrayBuffer &arrayBuffer) {

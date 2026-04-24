@@ -1,4 +1,4 @@
-import { ResourceGroupXML, ResourceItemXML, ResourceKind, ResourceXML } from './Resources';
+import type { ResourceGroupXML, ResourceItemXML, ResourceKind, ResourceXML } from './Resources';
 export declare function readStylesXMLAsync({ path, fallback, }: {
     path: string;
     fallback?: string | null;

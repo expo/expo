@@ -1,5 +1,5 @@
 import {
-  ConfigPlugin,
+  type ConfigPlugin,
   IOSConfig,
   createRunOncePlugin,
   withAndroidManifest,

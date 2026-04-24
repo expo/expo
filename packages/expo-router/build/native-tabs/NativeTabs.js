@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabs = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 // We need this file to re-export the navigator
 // Otherwise rsc would fail
 const NativeBottomTabsNavigator_1 = require("./NativeBottomTabsNavigator");
@@ -28,6 +29,6 @@ const BottomAccessory = Object.assign(elements_1.NativeTabsBottomAccessory, {
  * ```
  */
 exports.NativeTabs = Object.assign((props) => {
-    return <NativeBottomTabsNavigator_1.NativeTabsNavigatorWrapper {...props}/>;
+    return (0, jsx_runtime_1.jsx)(NativeBottomTabsNavigator_1.NativeTabsNavigatorWrapper, { ...props });
 }, { Trigger: NativeTabTrigger_1.NativeTabTrigger, BottomAccessory });
 //# sourceMappingURL=NativeTabs.js.map

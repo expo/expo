@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { memoize } from './memoize';
-import {
+import type {
   AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
   AndroidPublication,

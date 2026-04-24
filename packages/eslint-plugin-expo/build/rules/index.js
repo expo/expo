@@ -11,3 +11,4 @@ exports.rules = {
     'prefer-box-shadow': prefer_box_shadow_1.preferBoxShadow,
     'use-dom-exports': use_dom_exports_1.useDomExports,
 };
+//# sourceMappingURL=index.js.map

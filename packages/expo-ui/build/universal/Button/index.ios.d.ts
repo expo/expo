@@ -1,3 +1,3 @@
 import type { ButtonProps } from './types';
-export declare function Button({ children, label, onPress, variant, style, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, }: ButtonProps): import("react").JSX.Element;
+export declare function Button({ children, label, onPress, variant, style, onAppear, onDisappear, disabled, hidden, testID, modifiers: extraModifiers, }: ButtonProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.ios.d.ts.map

@@ -27,6 +27,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Picker replacement',
+    route: 'ui/community-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPickerScreen'));
+    },
+  },
+  {
     name: 'Community DateTimePicker replacement',
     route: 'ui/community-datetimepicker',
     options: {},
@@ -40,6 +48,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
+    name: 'TabView component',
+    route: 'ui/tabview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TabViewScreen'));
     },
   },
   {

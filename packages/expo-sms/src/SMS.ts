@@ -1,9 +1,9 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import ExpoSMS from './ExpoSMS';
-import { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';
+import type { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';
 
-export { SMSAttachment, SMSResponse, SMSOptions };
+export type { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';
 
 function processAttachments(
   attachments: SMSAttachment | SMSAttachment[] | undefined

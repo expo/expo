@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
-import { XcodeProject } from 'xcode';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ExpoConfig } from '@expo/config-types';
+import type { XcodeProject } from 'xcode';
+import type { ConfigPlugin } from '../Plugin.types';
 type Bitcode = NonNullable<ExpoConfig['ios']>['bitcode'];
 /**
  * Plugin to set a bitcode preference for the Xcode project

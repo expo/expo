@@ -30,6 +30,24 @@ function stopRunResult(name: string): PackageResult {
   return { packageName: name, statuses: [], errors: [], stopRun: true };
 }
 
+function failedResult(name: string): PackageResult {
+  return {
+    packageName: name,
+    statuses: [],
+    errors: [
+      {
+        packageName: name,
+        productName: 'p',
+        flavor: 'Release',
+        unitId: `${name}/p[Release]`,
+        stage: 'build',
+        error: new Error(`${name} failed`),
+      },
+    ],
+    stopRun: false,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -246,5 +264,99 @@ describe('runPackagesInParallel', () => {
     // d must start after both b and c finish
     assert.ok(bEnd < dStart, 'b must finish before d starts');
     assert.ok(cEnd < dStart, 'c must finish before d starts');
+  });
+
+  it('skips downstream packages when a dependency fails (transitive diamond)', async () => {
+    const a = makePkg('a');
+    const b = makePkg('b');
+    const c = makePkg('c');
+    const d = makePkg('d');
+
+    // b → a, c → a, d → b, c
+    const dependsOn = new Map<string, Set<string>>([
+      ['a', new Set()],
+      ['b', new Set(['a'])],
+      ['c', new Set(['a'])],
+      ['d', new Set(['b', 'c'])],
+    ]);
+
+    const failedDepsReceived: Record<string, string[] | undefined> = {};
+    const realExecutions: string[] = [];
+
+    const results = await runPackagesInParallel(
+      [a, b, c, d],
+      dependsOn,
+      4,
+      new AbortController(),
+      async (pkg, _signal, failedDeps) => {
+        failedDepsReceived[pkg.packageName] = failedDeps;
+        if (failedDeps && failedDeps.length > 0) {
+          // Caller signals this package should be skipped; return a fake result.
+          return failedResult(pkg.packageName);
+        }
+        realExecutions.push(pkg.packageName);
+        if (pkg.packageName === 'a') {
+          return failedResult('a');
+        }
+        return successResult(pkg.packageName);
+      }
+    );
+
+    // a runs for real (and fails)
+    assert.ok(realExecutions.includes('a'), 'a should run for real');
+    // b, c, d must NOT run for real — they are skipped due to upstream failure
+    assert.ok(!realExecutions.includes('b'), 'b should be skipped because a failed');
+    assert.ok(!realExecutions.includes('c'), 'c should be skipped because a failed');
+    assert.ok(!realExecutions.includes('d'), 'd should be skipped transitively');
+
+    // Executor should be called for every package so it can synthesize statuses,
+    // but dependents should receive non-empty failedDeps.
+    assert.equal(failedDepsReceived.a, undefined, 'a has no failed upstream deps');
+    assert.deepEqual(failedDepsReceived.b, ['a']);
+    assert.deepEqual(failedDepsReceived.c, ['a']);
+    assert.ok(
+      failedDepsReceived.d && failedDepsReceived.d.length > 0,
+      'd must be told its deps failed (transitively)'
+    );
+
+    assert.equal(results.length, 4, 'all four packages must appear in results');
+  });
+
+  it('does not skip independent packages when an unrelated package fails', async () => {
+    const a = makePkg('a');
+    const b = makePkg('b');
+
+    // a and b are independent
+    const dependsOn = new Map<string, Set<string>>([
+      ['a', new Set()],
+      ['b', new Set()],
+    ]);
+
+    let bFailedDeps: string[] | undefined = ['sentinel'];
+    const realExecutions: string[] = [];
+
+    await runPackagesInParallel(
+      [a, b],
+      dependsOn,
+      2,
+      new AbortController(),
+      async (pkg, _signal, failedDeps) => {
+        realExecutions.push(pkg.packageName);
+        if (pkg.packageName === 'b') {
+          bFailedDeps = failedDeps;
+        }
+        if (pkg.packageName === 'a') {
+          return failedResult('a');
+        }
+        return successResult(pkg.packageName);
+      }
+    );
+
+    assert.ok(realExecutions.includes('a'));
+    assert.ok(realExecutions.includes('b'), 'b is independent and should run');
+    assert.ok(
+      bFailedDeps === undefined || bFailedDeps.length === 0,
+      `b should have no failed deps, got ${JSON.stringify(bFailedDeps)}`
+    );
   });
 });

@@ -19,11 +19,26 @@ it(`returns sync results`, () => {
     '<style id="expo-generated-fonts">@font-face{font-family:"foo bar";src:url("font.ttf");font-display:auto}</style>',
     '<link rel="preload" href="font.ttf" as="font" crossorigin="" />',
   ]);
+  expect(Server.getServerResourceDescriptors()).toEqual([
+    {
+      css: '@font-face{font-family:"foo bar";src:url("font.ttf");font-display:auto}',
+      id: 'expo-generated-fonts',
+      type: 'style',
+    },
+    {
+      as: 'font',
+      crossOrigin: '',
+      href: 'font.ttf',
+      rel: 'preload',
+      type: 'link',
+    },
+  ]);
 
   Server.resetServerContext();
   expect(Font.isLoaded(name)).toBe(false);
 
   expect(Server.getServerResources()).toEqual([]);
+  expect(Server.getServerResourceDescriptors()).toEqual([]);
 });
 
 it('getLoadedFonts is available', () => {

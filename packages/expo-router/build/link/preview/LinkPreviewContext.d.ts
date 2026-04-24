@@ -1,5 +1,5 @@
-import { PropsWithChildren } from 'react';
-export declare function LinkPreviewContextProvider({ children }: PropsWithChildren): import("react").JSX.Element;
+import type { PropsWithChildren } from 'react';
+export declare function LinkPreviewContextProvider({ children }: PropsWithChildren): import("react/jsx-runtime").JSX.Element;
 export declare const useLinkPreviewContext: () => {
     isStackAnimationDisabled: boolean;
     openPreviewKey: string | undefined;

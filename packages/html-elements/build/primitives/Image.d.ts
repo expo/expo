@@ -1,6 +1,7 @@
-import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { Image as NativeImage, ImageStyle as NativeImageStyle, StyleProp } from 'react-native';
-import { WebViewStyle } from './View';
+import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import type { ImageStyle as NativeImageStyle, StyleProp } from 'react-native';
+import { Image as NativeImage } from 'react-native';
+import type { WebViewStyle } from './View';
 type NativeImageProps = ComponentProps<typeof NativeImage> & ClassAttributes<typeof NativeImage>;
 export interface WebImageStyle {
     opacity?: number;

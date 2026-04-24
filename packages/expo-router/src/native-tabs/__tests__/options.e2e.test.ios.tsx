@@ -7,12 +7,12 @@ import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import {
-  type DrawableIcon,
-  type MaterialIcon,
-  type NativeTabsTriggerIconProps,
-  type SFSymbolIcon,
-  type SrcIcon,
+import type {
+  DrawableIcon,
+  MaterialIcon,
+  NativeTabsTriggerIconProps,
+  SFSymbolIcon,
+  SrcIcon,
 } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 

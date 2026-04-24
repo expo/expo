@@ -3,6 +3,7 @@ package expo.modules.medialibrary.next.objects.asset.delegates
 import android.net.Uri
 import android.os.Bundle
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
+import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
@@ -23,6 +24,7 @@ interface AssetDelegate {
   suspend fun getUri(): Uri
   suspend fun getInfo(): AssetInfo
   suspend fun getMimeType(): MimeType
+  suspend fun getAlbums(): List<Album>
   suspend fun getLocation(): Location?
   suspend fun getExif(): Bundle
   suspend fun delete()

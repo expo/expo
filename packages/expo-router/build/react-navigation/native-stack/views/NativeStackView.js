@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeStackView = NativeStackView;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -49,8 +50,7 @@ function NativeStackView({ state, descriptors, describe }) {
         acc[route.key] = acc[route.key] || describe(route, true);
         return acc;
     }, {});
-    return (<elements_1.SafeAreaProviderCompat>
-      {state.routes.concat(state.preloadedRoutes).map((route, i) => {
+    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: state.routes.concat(state.preloadedRoutes).map((route, i) => {
             const isFocused = state.index === i;
             const previousKey = state.routes[i - 1]?.key;
             const nextKey = state.routes[i + 1]?.key;
@@ -67,21 +67,21 @@ function NativeStackView({ state, descriptors, describe }) {
             const { header, headerShown, headerBackIcon, headerBackImageSource, headerLeft, headerTransparent, headerBackTitle, presentation, contentStyle, ...rest } = options;
             const nextPresentation = nextDescriptor?.options.presentation;
             const isPreloaded = preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
-            return (<elements_1.Screen key={route.key} focused={isFocused} route={route} navigation={navigation} headerShown={headerShown} headerTransparent={headerTransparent} header={header !== undefined ? (header({
+            return ((0, jsx_runtime_1.jsx)(elements_1.Screen, { focused: isFocused, route: route, navigation: navigation, headerShown: headerShown, headerTransparent: headerTransparent, header: header !== undefined ? (header({
                     back: headerBack,
                     options,
                     route,
                     navigation,
-                })) : (<elements_1.Header {...rest} back={headerBack} title={(0, elements_1.getHeaderTitle)(options, route.name)} headerLeft={typeof headerLeft === 'function'
+                })) : ((0, jsx_runtime_1.jsx)(elements_1.Header, { ...rest, back: headerBack, title: (0, elements_1.getHeaderTitle)(options, route.name), headerLeft: typeof headerLeft === 'function'
                         ? ({ label, ...rest }) => headerLeft({
                             ...rest,
                             label: headerBackTitle ?? label,
                         })
                         : headerLeft === undefined && canGoBack
-                            ? ({ tintColor, label, ...rest }) => (<elements_1.HeaderBackButton {...rest} label={headerBackTitle ?? label} tintColor={tintColor} backImage={headerBackIcon !== undefined || headerBackImageSource !== undefined
-                                    ? () => (<react_native_1.Image source={headerBackIcon?.source ?? headerBackImageSource} resizeMode="contain" tintColor={tintColor} style={styles.backImage}/>)
-                                    : undefined} onPress={navigation.goBack}/>)
-                            : headerLeft} headerTransparent={headerTransparent}/>)} style={[
+                            ? ({ tintColor, label, ...rest }) => ((0, jsx_runtime_1.jsx)(elements_1.HeaderBackButton, { ...rest, label: headerBackTitle ?? label, tintColor: tintColor, backImage: headerBackIcon !== undefined || headerBackImageSource !== undefined
+                                    ? () => ((0, jsx_runtime_1.jsx)(react_native_1.Image, { source: headerBackIcon?.source ?? headerBackImageSource, resizeMode: "contain", tintColor: tintColor, style: styles.backImage }))
+                                    : undefined, onPress: navigation.goBack }))
+                            : headerLeft, headerTransparent: headerTransparent })), style: [
                     react_native_1.StyleSheet.absoluteFill,
                     {
                         display: (isFocused ||
@@ -94,15 +94,8 @@ function NativeStackView({ state, descriptors, describe }) {
                     presentation != null && TRANSPARENT_PRESENTATIONS.includes(presentation)
                         ? { backgroundColor: 'transparent' }
                         : null,
-                ]}>
-            <elements_1.HeaderBackContext.Provider value={headerBack}>
-              <AnimatedHeaderHeightProvider>
-                <react_native_1.View style={[styles.contentContainer, contentStyle]}>{render()}</react_native_1.View>
-              </AnimatedHeaderHeightProvider>
-            </elements_1.HeaderBackContext.Provider>
-          </elements_1.Screen>);
-        })}
-    </elements_1.SafeAreaProviderCompat>);
+                ], children: (0, jsx_runtime_1.jsx)(elements_1.HeaderBackContext.Provider, { value: headerBack, children: (0, jsx_runtime_1.jsx)(AnimatedHeaderHeightProvider, { children: (0, jsx_runtime_1.jsx)(react_native_1.View, { style: [styles.contentContainer, contentStyle], children: render() }) }) }) }, route.key));
+        }) }));
 }
 const AnimatedHeaderHeightProvider = ({ children }) => {
     const headerHeight = (0, elements_1.useHeaderHeight)();
@@ -110,9 +103,7 @@ const AnimatedHeaderHeightProvider = ({ children }) => {
     React.useEffect(() => {
         animatedHeaderHeight.setValue(headerHeight);
     }, [animatedHeaderHeight, headerHeight]);
-    return (<useAnimatedHeaderHeight_1.AnimatedHeaderHeightContext.Provider value={animatedHeaderHeight}>
-      {children}
-    </useAnimatedHeaderHeight_1.AnimatedHeaderHeightContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(useAnimatedHeaderHeight_1.AnimatedHeaderHeightContext.Provider, { value: animatedHeaderHeight, children: children }));
 };
 const styles = react_native_1.StyleSheet.create({
     contentContainer: {

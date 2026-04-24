@@ -1,8 +1,5 @@
 import crypto from 'crypto';
-import Debug from 'debug';
 import { Builder, Parser } from 'xml2js';
-
-const debug = Debug('expo:expo-splash-screen:ios:InterfaceBuilder');
 
 export type IBBoolean = 'YES' | 'NO' | boolean;
 
@@ -308,8 +305,6 @@ export function removeImageFromSplashScreen(
 ) {
   const mainView = xml.document.scenes[0]?.scene[0]?.objects[0]?.viewController[0]?.view[0];
 
-  debug(`Remove all splash screen image elements`);
-
   if (mainView != null) {
     if (mainView.subviews[0] != null) {
       removeExisting(mainView.subviews[0].imageView, IMAGE_ID);
@@ -491,7 +486,6 @@ export function removeExisting<TItem extends { $: { id: string } }>(
   const id = typeof item === 'string' ? item : item.$?.id;
   const existingItem = array?.findIndex((existingItem) => existingItem.$.id === id);
   if (existingItem > -1) {
-    debug(`Removing existing IB item with id ${id}, from: %O`, array);
     array.splice(existingItem, 1);
   }
   return array;

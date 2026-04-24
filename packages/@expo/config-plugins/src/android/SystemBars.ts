@@ -1,6 +1,6 @@
-import { ResourceXML } from './Resources';
+import type { ResourceXML } from './Resources';
 import { assignStylesValue, getAppThemeGroup } from './Styles';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withAndroidStyles } from '../plugins/android-plugins';
 import * as WarningAggregator from '../utils/warnings';
 

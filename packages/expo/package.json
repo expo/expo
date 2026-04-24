@@ -108,7 +108,7 @@
     "expo-updates": "workspace:*",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.0",
+    "react-native": "0.85.2",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {

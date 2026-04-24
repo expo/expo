@@ -26,6 +26,7 @@ import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 // region Records
 
@@ -162,6 +163,7 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
 
 // region Props
 
+@OptimizedComposeProps
 data class TextFieldProps(
   val defaultValue: String = "",
   val autoFocus: Boolean = false,

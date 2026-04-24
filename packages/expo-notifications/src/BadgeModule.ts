@@ -1,4 +1,4 @@
-import { BadgeModule } from './BadgeModule.types';
+import type { BadgeModule } from './BadgeModule.types';
 
 export default {
   addListener: () => {},

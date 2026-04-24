@@ -20,6 +20,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 open class ChipPressedEvent : Record, Serializable
@@ -82,6 +83,7 @@ private fun FunctionalComposableScope.slotContent(slotName: String): (@Composabl
 
 // region AssistChip
 
+@OptimizedComposeProps
 data class AssistChipProps(
   val enabled: Boolean = true,
   val colors: AssistChipColors = AssistChipColors(),
@@ -138,6 +140,7 @@ fun FunctionalComposableScope.AssistChipContent(
 
 // region FilterChip
 
+@OptimizedComposeProps
 data class FilterChipProps(
   val selected: Boolean = false,
   val enabled: Boolean = true,
@@ -199,6 +202,7 @@ fun FunctionalComposableScope.FilterChipContent(
 
 // region InputChip
 
+@OptimizedComposeProps
 data class InputChipProps(
   val enabled: Boolean = true,
   val selected: Boolean = false,
@@ -262,6 +266,7 @@ fun FunctionalComposableScope.InputChipContent(
 
 // region SuggestionChip
 
+@OptimizedComposeProps
 data class SuggestionChipProps(
   val enabled: Boolean = true,
   val colors: SuggestionChipColors = SuggestionChipColors(),

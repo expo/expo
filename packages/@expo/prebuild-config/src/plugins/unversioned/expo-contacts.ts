@@ -1,6 +1,7 @@
-import { ConfigPlugin, withEntitlementsPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
-import { JSONObject } from '@expo/json-file';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { withEntitlementsPlist } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
+import type { JSONObject } from '@expo/json-file';
 
 import { createLegacyPlugin } from './createLegacyPlugin';
 

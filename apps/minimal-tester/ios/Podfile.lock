@@ -255,7 +255,6 @@ PODS:
     - boost
     - DoubleConversion
     - ExpoModulesJSI
-    - ExpoModulesMacros
     - fast_float
     - fmt
     - glog
@@ -287,7 +286,6 @@ PODS:
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesMacros (0.0.7)
   - ExpoModulesWorklets (55.0.12):
     - ExpoModulesCore
     - ExpoModulesJSI
@@ -333,7 +331,7 @@ PODS:
   - EXUpdatesInterface (55.1.3):
     - ExpoModulesCore
   - fast_float (8.0.0)
-  - FBLazyVector (0.85.0)
+  - FBLazyVector (0.85.2)
   - fmt (12.1.0)
   - glog (0.3.5)
   - hermes-engine (250829098.0.10):
@@ -375,31 +373,31 @@ PODS:
     - fast_float (= 8.0.0)
     - fmt (= 12.1.0)
     - glog
-  - RCTDeprecation (0.85.0)
-  - RCTRequired (0.85.0)
-  - RCTSwiftUI (0.85.0)
-  - RCTSwiftUIWrapper (0.85.0):
+  - RCTDeprecation (0.85.2)
+  - RCTRequired (0.85.2)
+  - RCTSwiftUI (0.85.2)
+  - RCTSwiftUIWrapper (0.85.2):
     - RCTSwiftUI
-  - RCTTypeSafety (0.85.0):
-    - FBLazyVector (= 0.85.0)
-    - RCTRequired (= 0.85.0)
-    - React-Core (= 0.85.0)
+  - RCTTypeSafety (0.85.2):
+    - FBLazyVector (= 0.85.2)
+    - RCTRequired (= 0.85.2)
+    - React-Core (= 0.85.2)
   - ReachabilitySwift (5.2.4)
-  - React (0.85.0):
-    - React-Core (= 0.85.0)
-    - React-Core/DevSupport (= 0.85.0)
-    - React-Core/RCTWebSocket (= 0.85.0)
-    - React-RCTActionSheet (= 0.85.0)
-    - React-RCTAnimation (= 0.85.0)
-    - React-RCTBlob (= 0.85.0)
-    - React-RCTImage (= 0.85.0)
-    - React-RCTLinking (= 0.85.0)
-    - React-RCTNetwork (= 0.85.0)
-    - React-RCTSettings (= 0.85.0)
-    - React-RCTText (= 0.85.0)
-    - React-RCTVibration (= 0.85.0)
-  - React-callinvoker (0.85.0)
-  - React-Core (0.85.0):
+  - React (0.85.2):
+    - React-Core (= 0.85.2)
+    - React-Core/DevSupport (= 0.85.2)
+    - React-Core/RCTWebSocket (= 0.85.2)
+    - React-RCTActionSheet (= 0.85.2)
+    - React-RCTAnimation (= 0.85.2)
+    - React-RCTBlob (= 0.85.2)
+    - React-RCTImage (= 0.85.2)
+    - React-RCTLinking (= 0.85.2)
+    - React-RCTNetwork (= 0.85.2)
+    - React-RCTSettings (= 0.85.2)
+    - React-RCTText (= 0.85.2)
+    - React-RCTVibration (= 0.85.2)
+  - React-callinvoker (0.85.2)
+  - React-Core (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -409,7 +407,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTDeprecation
-    - React-Core/Default (= 0.85.0)
+    - React-Core/Default (= 0.85.2)
     - React-cxxreact
     - React-featureflags
     - React-hermes
@@ -424,82 +422,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/CoreModulesHeaders (0.85.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTDeprecation
-    - React-Core/Default
-    - React-cxxreact
-    - React-featureflags
-    - React-hermes
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-jsinspectorcdp
-    - React-jsitooling
-    - React-perflogger
-    - React-runtimeexecutor
-    - React-runtimescheduler
-    - React-utils
-    - SocketRocket
-    - Yoga
-  - React-Core/Default (0.85.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTDeprecation
-    - React-cxxreact
-    - React-featureflags
-    - React-hermes
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-jsinspectorcdp
-    - React-jsitooling
-    - React-perflogger
-    - React-runtimeexecutor
-    - React-runtimescheduler
-    - React-utils
-    - SocketRocket
-    - Yoga
-  - React-Core/DevSupport (0.85.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTDeprecation
-    - React-Core/Default (= 0.85.0)
-    - React-Core/RCTWebSocket (= 0.85.0)
-    - React-cxxreact
-    - React-featureflags
-    - React-hermes
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-jsinspectorcdp
-    - React-jsitooling
-    - React-perflogger
-    - React-runtimeexecutor
-    - React-runtimescheduler
-    - React-utils
-    - SocketRocket
-    - Yoga
-  - React-Core/RCTActionSheetHeaders (0.85.0):
+  - React-Core/CoreModulesHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -524,7 +447,57 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTAnimationHeaders (0.85.0):
+  - React-Core/Default (0.85.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTDeprecation
+    - React-cxxreact
+    - React-featureflags
+    - React-hermes
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-jsinspectorcdp
+    - React-jsitooling
+    - React-perflogger
+    - React-runtimeexecutor
+    - React-runtimescheduler
+    - React-utils
+    - SocketRocket
+    - Yoga
+  - React-Core/DevSupport (0.85.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTDeprecation
+    - React-Core/Default (= 0.85.2)
+    - React-Core/RCTWebSocket (= 0.85.2)
+    - React-cxxreact
+    - React-featureflags
+    - React-hermes
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-jsinspectorcdp
+    - React-jsitooling
+    - React-perflogger
+    - React-runtimeexecutor
+    - React-runtimescheduler
+    - React-utils
+    - SocketRocket
+    - Yoga
+  - React-Core/RCTActionSheetHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -549,7 +522,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTBlobHeaders (0.85.0):
+  - React-Core/RCTAnimationHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -574,7 +547,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTImageHeaders (0.85.0):
+  - React-Core/RCTBlobHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -599,7 +572,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTLinkingHeaders (0.85.0):
+  - React-Core/RCTImageHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -624,7 +597,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTNetworkHeaders (0.85.0):
+  - React-Core/RCTLinkingHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -649,7 +622,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTSettingsHeaders (0.85.0):
+  - React-Core/RCTNetworkHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -674,7 +647,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTTextHeaders (0.85.0):
+  - React-Core/RCTSettingsHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -699,7 +672,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTVibrationHeaders (0.85.0):
+  - React-Core/RCTTextHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -724,7 +697,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-Core/RCTWebSocket (0.85.0):
+  - React-Core/RCTVibrationHeaders (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -734,7 +707,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTDeprecation
-    - React-Core/Default (= 0.85.0)
+    - React-Core/Default
     - React-cxxreact
     - React-featureflags
     - React-hermes
@@ -749,7 +722,32 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-CoreModules (0.85.0):
+  - React-Core/RCTWebSocket (0.85.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTDeprecation
+    - React-Core/Default (= 0.85.2)
+    - React-cxxreact
+    - React-featureflags
+    - React-hermes
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-jsinspectorcdp
+    - React-jsitooling
+    - React-perflogger
+    - React-runtimeexecutor
+    - React-runtimescheduler
+    - React-utils
+    - SocketRocket
+    - Yoga
+  - React-CoreModules (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -757,22 +755,22 @@ PODS:
     - glog
     - RCT-Folly
     - RCT-Folly/Fabric
-    - RCTTypeSafety (= 0.85.0)
-    - React-Core/CoreModulesHeaders (= 0.85.0)
+    - RCTTypeSafety (= 0.85.2)
+    - React-Core/CoreModulesHeaders (= 0.85.2)
     - React-debug
-    - React-jsi (= 0.85.0)
+    - React-jsi (= 0.85.2)
     - React-jsinspector
     - React-jsinspectorcdp
     - React-jsinspectortracing
     - React-NativeModulesApple
     - React-RCTBlob
     - React-RCTFBReactNativeSpec
-    - React-RCTImage (= 0.85.0)
+    - React-RCTImage (= 0.85.2)
     - React-runtimeexecutor
     - React-utils
     - ReactCommon
     - SocketRocket
-  - React-cxxreact (0.85.0):
+  - React-cxxreact (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -781,20 +779,20 @@ PODS:
     - hermes-engine
     - RCT-Folly
     - RCT-Folly/Fabric
-    - React-callinvoker (= 0.85.0)
-    - React-debug (= 0.85.0)
-    - React-jsi (= 0.85.0)
+    - React-callinvoker (= 0.85.2)
+    - React-debug (= 0.85.2)
+    - React-jsi (= 0.85.2)
     - React-jsinspector
     - React-jsinspectorcdp
     - React-jsinspectortracing
-    - React-logger (= 0.85.0)
-    - React-perflogger (= 0.85.0)
+    - React-logger (= 0.85.2)
+    - React-perflogger (= 0.85.2)
     - React-runtimeexecutor
-    - React-timing (= 0.85.0)
+    - React-timing (= 0.85.2)
     - React-utils
     - SocketRocket
-  - React-debug (0.85.0)
-  - React-defaultsnativemodule (0.85.0):
+  - React-debug (0.85.2)
+  - React-defaultsnativemodule (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -816,7 +814,7 @@ PODS:
     - React-webperformancenativemodule
     - SocketRocket
     - Yoga
-  - React-domnativemodule (0.85.0):
+  - React-domnativemodule (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -836,7 +834,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-Fabric (0.85.0):
+  - React-Fabric (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -850,24 +848,24 @@ PODS:
     - React-Core
     - React-cxxreact
     - React-debug
-    - React-Fabric/animated (= 0.85.0)
-    - React-Fabric/animationbackend (= 0.85.0)
-    - React-Fabric/animations (= 0.85.0)
-    - React-Fabric/attributedstring (= 0.85.0)
-    - React-Fabric/bridging (= 0.85.0)
-    - React-Fabric/componentregistry (= 0.85.0)
-    - React-Fabric/componentregistrynative (= 0.85.0)
-    - React-Fabric/components (= 0.85.0)
-    - React-Fabric/consistency (= 0.85.0)
-    - React-Fabric/core (= 0.85.0)
-    - React-Fabric/dom (= 0.85.0)
-    - React-Fabric/imagemanager (= 0.85.0)
-    - React-Fabric/leakchecker (= 0.85.0)
-    - React-Fabric/mounting (= 0.85.0)
-    - React-Fabric/observers (= 0.85.0)
-    - React-Fabric/scheduler (= 0.85.0)
-    - React-Fabric/telemetry (= 0.85.0)
-    - React-Fabric/uimanager (= 0.85.0)
+    - React-Fabric/animated (= 0.85.2)
+    - React-Fabric/animationbackend (= 0.85.2)
+    - React-Fabric/animations (= 0.85.2)
+    - React-Fabric/attributedstring (= 0.85.2)
+    - React-Fabric/bridging (= 0.85.2)
+    - React-Fabric/componentregistry (= 0.85.2)
+    - React-Fabric/componentregistrynative (= 0.85.2)
+    - React-Fabric/components (= 0.85.2)
+    - React-Fabric/consistency (= 0.85.2)
+    - React-Fabric/core (= 0.85.2)
+    - React-Fabric/dom (= 0.85.2)
+    - React-Fabric/imagemanager (= 0.85.2)
+    - React-Fabric/leakchecker (= 0.85.2)
+    - React-Fabric/mounting (= 0.85.2)
+    - React-Fabric/observers (= 0.85.2)
+    - React-Fabric/scheduler (= 0.85.2)
+    - React-Fabric/telemetry (= 0.85.2)
+    - React-Fabric/uimanager (= 0.85.2)
     - React-featureflags
     - React-graphics
     - React-jsi
@@ -879,7 +877,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/animated (0.85.0):
+  - React-Fabric/animated (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -905,7 +903,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/animationbackend (0.85.0):
+  - React-Fabric/animationbackend (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -930,7 +928,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/animations (0.85.0):
+  - React-Fabric/animations (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -955,7 +953,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/attributedstring (0.85.0):
+  - React-Fabric/attributedstring (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -980,7 +978,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/bridging (0.85.0):
+  - React-Fabric/bridging (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1005,7 +1003,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/componentregistry (0.85.0):
+  - React-Fabric/componentregistry (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1030,7 +1028,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/componentregistrynative (0.85.0):
+  - React-Fabric/componentregistrynative (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1055,7 +1053,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/components (0.85.0):
+  - React-Fabric/components (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1069,10 +1067,10 @@ PODS:
     - React-Core
     - React-cxxreact
     - React-debug
-    - React-Fabric/components/legacyviewmanagerinterop (= 0.85.0)
-    - React-Fabric/components/root (= 0.85.0)
-    - React-Fabric/components/scrollview (= 0.85.0)
-    - React-Fabric/components/view (= 0.85.0)
+    - React-Fabric/components/legacyviewmanagerinterop (= 0.85.2)
+    - React-Fabric/components/root (= 0.85.2)
+    - React-Fabric/components/scrollview (= 0.85.2)
+    - React-Fabric/components/view (= 0.85.2)
     - React-featureflags
     - React-graphics
     - React-jsi
@@ -1084,32 +1082,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/components/legacyviewmanagerinterop (0.85.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-cxxreact
-    - React-debug
-    - React-featureflags
-    - React-graphics
-    - React-jsi
-    - React-jsiexecutor
-    - React-logger
-    - React-rendererdebug
-    - React-runtimeexecutor
-    - React-runtimescheduler
-    - React-utils
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-  - React-Fabric/components/root (0.85.0):
+  - React-Fabric/components/legacyviewmanagerinterop (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1134,7 +1107,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/components/scrollview (0.85.0):
+  - React-Fabric/components/root (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1159,7 +1132,32 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/components/view (0.85.0):
+  - React-Fabric/components/scrollview (0.85.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-cxxreact
+    - React-debug
+    - React-featureflags
+    - React-graphics
+    - React-jsi
+    - React-jsiexecutor
+    - React-logger
+    - React-rendererdebug
+    - React-runtimeexecutor
+    - React-runtimescheduler
+    - React-utils
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+  - React-Fabric/components/view (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1186,7 +1184,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-Fabric/consistency (0.85.0):
+  - React-Fabric/consistency (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1211,7 +1209,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/core (0.85.0):
+  - React-Fabric/core (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1236,7 +1234,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/dom (0.85.0):
+  - React-Fabric/dom (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1261,7 +1259,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/imagemanager (0.85.0):
+  - React-Fabric/imagemanager (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1286,7 +1284,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/leakchecker (0.85.0):
+  - React-Fabric/leakchecker (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1311,7 +1309,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/mounting (0.85.0):
+  - React-Fabric/mounting (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1336,7 +1334,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/observers (0.85.0):
+  - React-Fabric/observers (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1350,8 +1348,8 @@ PODS:
     - React-Core
     - React-cxxreact
     - React-debug
-    - React-Fabric/observers/events (= 0.85.0)
-    - React-Fabric/observers/intersection (= 0.85.0)
+    - React-Fabric/observers/events (= 0.85.2)
+    - React-Fabric/observers/intersection (= 0.85.2)
     - React-featureflags
     - React-graphics
     - React-jsi
@@ -1363,32 +1361,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/observers/events (0.85.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-cxxreact
-    - React-debug
-    - React-featureflags
-    - React-graphics
-    - React-jsi
-    - React-jsiexecutor
-    - React-logger
-    - React-rendererdebug
-    - React-runtimeexecutor
-    - React-runtimescheduler
-    - React-utils
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-  - React-Fabric/observers/intersection (0.85.0):
+  - React-Fabric/observers/events (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1413,7 +1386,32 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/scheduler (0.85.0):
+  - React-Fabric/observers/intersection (0.85.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-cxxreact
+    - React-debug
+    - React-featureflags
+    - React-graphics
+    - React-jsi
+    - React-jsiexecutor
+    - React-logger
+    - React-rendererdebug
+    - React-runtimeexecutor
+    - React-runtimescheduler
+    - React-utils
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+  - React-Fabric/scheduler (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1442,7 +1440,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/telemetry (0.85.0):
+  - React-Fabric/telemetry (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1467,7 +1465,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/uimanager (0.85.0):
+  - React-Fabric/uimanager (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1481,7 +1479,7 @@ PODS:
     - React-Core
     - React-cxxreact
     - React-debug
-    - React-Fabric/uimanager/consistency (= 0.85.0)
+    - React-Fabric/uimanager/consistency (= 0.85.2)
     - React-featureflags
     - React-graphics
     - React-jsi
@@ -1494,7 +1492,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-Fabric/uimanager/consistency (0.85.0):
+  - React-Fabric/uimanager/consistency (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1520,7 +1518,7 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-FabricComponents (0.85.0):
+  - React-FabricComponents (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1535,8 +1533,8 @@ PODS:
     - React-cxxreact
     - React-debug
     - React-Fabric
-    - React-FabricComponents/components (= 0.85.0)
-    - React-FabricComponents/textlayoutmanager (= 0.85.0)
+    - React-FabricComponents/components (= 0.85.2)
+    - React-FabricComponents/textlayoutmanager (= 0.85.2)
     - React-featureflags
     - React-graphics
     - React-jsi
@@ -1549,7 +1547,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components (0.85.0):
+  - React-FabricComponents/components (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1564,17 +1562,17 @@ PODS:
     - React-cxxreact
     - React-debug
     - React-Fabric
-    - React-FabricComponents/components/inputaccessory (= 0.85.0)
-    - React-FabricComponents/components/iostextinput (= 0.85.0)
-    - React-FabricComponents/components/modal (= 0.85.0)
-    - React-FabricComponents/components/rncore (= 0.85.0)
-    - React-FabricComponents/components/safeareaview (= 0.85.0)
-    - React-FabricComponents/components/scrollview (= 0.85.0)
-    - React-FabricComponents/components/switch (= 0.85.0)
-    - React-FabricComponents/components/text (= 0.85.0)
-    - React-FabricComponents/components/textinput (= 0.85.0)
-    - React-FabricComponents/components/unimplementedview (= 0.85.0)
-    - React-FabricComponents/components/virtualview (= 0.85.0)
+    - React-FabricComponents/components/inputaccessory (= 0.85.2)
+    - React-FabricComponents/components/iostextinput (= 0.85.2)
+    - React-FabricComponents/components/modal (= 0.85.2)
+    - React-FabricComponents/components/rncore (= 0.85.2)
+    - React-FabricComponents/components/safeareaview (= 0.85.2)
+    - React-FabricComponents/components/scrollview (= 0.85.2)
+    - React-FabricComponents/components/switch (= 0.85.2)
+    - React-FabricComponents/components/text (= 0.85.2)
+    - React-FabricComponents/components/textinput (= 0.85.2)
+    - React-FabricComponents/components/unimplementedview (= 0.85.2)
+    - React-FabricComponents/components/virtualview (= 0.85.2)
     - React-featureflags
     - React-graphics
     - React-jsi
@@ -1587,34 +1585,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/inputaccessory (0.85.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-cxxreact
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-jsi
-    - React-jsiexecutor
-    - React-logger
-    - React-RCTFBReactNativeSpec
-    - React-rendererdebug
-    - React-runtimescheduler
-    - React-utils
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
-  - React-FabricComponents/components/iostextinput (0.85.0):
+  - React-FabricComponents/components/inputaccessory (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1641,7 +1612,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/modal (0.85.0):
+  - React-FabricComponents/components/iostextinput (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1668,7 +1639,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/rncore (0.85.0):
+  - React-FabricComponents/components/modal (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1695,7 +1666,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/safeareaview (0.85.0):
+  - React-FabricComponents/components/rncore (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1722,7 +1693,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/scrollview (0.85.0):
+  - React-FabricComponents/components/safeareaview (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1749,7 +1720,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/switch (0.85.0):
+  - React-FabricComponents/components/scrollview (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1776,7 +1747,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/text (0.85.0):
+  - React-FabricComponents/components/switch (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1803,7 +1774,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/textinput (0.85.0):
+  - React-FabricComponents/components/text (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1830,7 +1801,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/unimplementedview (0.85.0):
+  - React-FabricComponents/components/textinput (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1857,7 +1828,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/components/virtualview (0.85.0):
+  - React-FabricComponents/components/unimplementedview (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1884,7 +1855,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricComponents/textlayoutmanager (0.85.0):
+  - React-FabricComponents/components/virtualview (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1911,7 +1882,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-FabricImage (0.85.0):
+  - React-FabricComponents/textlayoutmanager (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1920,21 +1891,48 @@ PODS:
     - hermes-engine
     - RCT-Folly
     - RCT-Folly/Fabric
-    - RCTRequired (= 0.85.0)
-    - RCTTypeSafety (= 0.85.0)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-cxxreact
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-jsi
+    - React-jsiexecutor
+    - React-logger
+    - React-RCTFBReactNativeSpec
+    - React-rendererdebug
+    - React-runtimescheduler
+    - React-utils
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - React-FabricImage (0.85.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired (= 0.85.2)
+    - RCTTypeSafety (= 0.85.2)
     - React-Fabric
     - React-featureflags
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - React-jsiexecutor (= 0.85.0)
+    - React-jsiexecutor (= 0.85.2)
     - React-logger
     - React-rendererdebug
     - React-utils
     - ReactCommon
     - SocketRocket
     - Yoga
-  - React-featureflags (0.85.0):
+  - React-featureflags (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1943,7 +1941,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - SocketRocket
-  - React-featureflagsnativemodule (0.85.0):
+  - React-featureflagsnativemodule (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1958,7 +1956,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-graphics (0.85.0):
+  - React-graphics (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1972,7 +1970,7 @@ PODS:
     - React-jsiexecutor
     - React-utils
     - SocketRocket
-  - React-hermes (0.85.0):
+  - React-hermes (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1981,18 +1979,18 @@ PODS:
     - hermes-engine
     - RCT-Folly
     - RCT-Folly/Fabric
-    - React-cxxreact (= 0.85.0)
+    - React-cxxreact (= 0.85.2)
     - React-jsi
-    - React-jsiexecutor (= 0.85.0)
+    - React-jsiexecutor (= 0.85.2)
     - React-jsinspector
     - React-jsinspectorcdp
     - React-jsinspectortracing
     - React-jsitooling
     - React-oscompat
-    - React-perflogger (= 0.85.0)
+    - React-perflogger (= 0.85.2)
     - React-runtimeexecutor
     - SocketRocket
-  - React-idlecallbacksnativemodule (0.85.0):
+  - React-idlecallbacksnativemodule (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2008,7 +2006,7 @@ PODS:
     - React-runtimescheduler
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-ImageManager (0.85.0):
+  - React-ImageManager (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2023,7 +2021,7 @@ PODS:
     - React-rendererdebug
     - React-utils
     - SocketRocket
-  - React-intersectionobservernativemodule (0.85.0):
+  - React-intersectionobservernativemodule (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2044,7 +2042,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - React-jserrorhandler (0.85.0):
+  - React-jserrorhandler (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2059,7 +2057,7 @@ PODS:
     - React-jsi
     - ReactCommon/turbomodule/bridging
     - SocketRocket
-  - React-jsi (0.85.0):
+  - React-jsi (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2069,7 +2067,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - SocketRocket
-  - React-jsiexecutor (0.85.0):
+  - React-jsiexecutor (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2090,7 +2088,7 @@ PODS:
     - React-runtimeexecutor
     - React-utils
     - SocketRocket
-  - React-jsinspector (0.85.0):
+  - React-jsinspector (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2105,11 +2103,11 @@ PODS:
     - React-jsinspectornetwork
     - React-jsinspectortracing
     - React-oscompat
-    - React-perflogger (= 0.85.0)
+    - React-perflogger (= 0.85.2)
     - React-runtimeexecutor
     - React-utils
     - SocketRocket
-  - React-jsinspectorcdp (0.85.0):
+  - React-jsinspectorcdp (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2118,7 +2116,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - SocketRocket
-  - React-jsinspectornetwork (0.85.0):
+  - React-jsinspectornetwork (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2128,7 +2126,7 @@ PODS:
     - RCT-Folly/Fabric
     - React-jsinspectorcdp
     - SocketRocket
-  - React-jsinspectortracing (0.85.0):
+  - React-jsinspectortracing (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2142,7 +2140,7 @@ PODS:
     - React-oscompat
     - React-timing
     - SocketRocket
-  - React-jsitooling (0.85.0):
+  - React-jsitooling (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2151,18 +2149,18 @@ PODS:
     - hermes-engine
     - RCT-Folly
     - RCT-Folly/Fabric
-    - React-cxxreact (= 0.85.0)
+    - React-cxxreact (= 0.85.2)
     - React-debug
-    - React-jsi (= 0.85.0)
+    - React-jsi (= 0.85.2)
     - React-jsinspector
     - React-jsinspectorcdp
     - React-jsinspectortracing
     - React-runtimeexecutor
     - React-utils
     - SocketRocket
-  - React-jsitracing (0.85.0):
+  - React-jsitracing (0.85.2):
     - React-jsi
-  - React-logger (0.85.0):
+  - React-logger (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2171,7 +2169,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - SocketRocket
-  - React-Mapbuffer (0.85.0):
+  - React-Mapbuffer (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2181,7 +2179,7 @@ PODS:
     - RCT-Folly/Fabric
     - React-debug
     - SocketRocket
-  - React-microtasksnativemodule (0.85.0):
+  - React-microtasksnativemodule (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2195,7 +2193,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-NativeModulesApple (0.85.0):
+  - React-NativeModulesApple (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2216,7 +2214,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - React-networking (0.85.0):
+  - React-networking (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2229,8 +2227,8 @@ PODS:
     - React-performancetimeline
     - React-timing
     - SocketRocket
-  - React-oscompat (0.85.0)
-  - React-perflogger (0.85.0):
+  - React-oscompat (0.85.2)
+  - React-perflogger (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2239,7 +2237,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - SocketRocket
-  - React-performancecdpmetrics (0.85.0):
+  - React-performancecdpmetrics (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2253,7 +2251,7 @@ PODS:
     - React-runtimeexecutor
     - React-timing
     - SocketRocket
-  - React-performancetimeline (0.85.0):
+  - React-performancetimeline (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2267,9 +2265,9 @@ PODS:
     - React-perflogger
     - React-timing
     - SocketRocket
-  - React-RCTActionSheet (0.85.0):
-    - React-Core/RCTActionSheetHeaders (= 0.85.0)
-  - React-RCTAnimation (0.85.0):
+  - React-RCTActionSheet (0.85.2):
+    - React-Core/RCTActionSheetHeaders (= 0.85.2)
+  - React-RCTAnimation (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2286,7 +2284,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon
     - SocketRocket
-  - React-RCTAppDelegate (0.85.0):
+  - React-RCTAppDelegate (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2320,7 +2318,7 @@ PODS:
     - React-utils
     - ReactCommon
     - SocketRocket
-  - React-RCTBlob (0.85.0):
+  - React-RCTBlob (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2339,7 +2337,7 @@ PODS:
     - React-RCTNetwork
     - ReactCommon
     - SocketRocket
-  - React-RCTFabric (0.85.0):
+  - React-RCTFabric (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2376,7 +2374,7 @@ PODS:
     - React-utils
     - SocketRocket
     - Yoga
-  - React-RCTFBReactNativeSpec (0.85.0):
+  - React-RCTFBReactNativeSpec (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2390,10 +2388,10 @@ PODS:
     - React-Core
     - React-jsi
     - React-NativeModulesApple
-    - React-RCTFBReactNativeSpec/components (= 0.85.0)
+    - React-RCTFBReactNativeSpec/components (= 0.85.2)
     - ReactCommon
     - SocketRocket
-  - React-RCTFBReactNativeSpec/components (0.85.0):
+  - React-RCTFBReactNativeSpec/components (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2416,7 +2414,7 @@ PODS:
     - ReactCommon
     - SocketRocket
     - Yoga
-  - React-RCTImage (0.85.0):
+  - React-RCTImage (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2432,14 +2430,14 @@ PODS:
     - React-RCTNetwork
     - ReactCommon
     - SocketRocket
-  - React-RCTLinking (0.85.0):
-    - React-Core/RCTLinkingHeaders (= 0.85.0)
-    - React-jsi (= 0.85.0)
+  - React-RCTLinking (0.85.2):
+    - React-Core/RCTLinkingHeaders (= 0.85.2)
+    - React-jsi (= 0.85.2)
     - React-NativeModulesApple
     - React-RCTFBReactNativeSpec
     - ReactCommon
-    - ReactCommon/turbomodule/core (= 0.85.0)
-  - React-RCTNetwork (0.85.0):
+    - ReactCommon/turbomodule/core (= 0.85.2)
+  - React-RCTNetwork (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2459,7 +2457,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon
     - SocketRocket
-  - React-RCTRuntime (0.85.0):
+  - React-RCTRuntime (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2481,7 +2479,7 @@ PODS:
     - React-RuntimeHermes
     - React-utils
     - SocketRocket
-  - React-RCTSettings (0.85.0):
+  - React-RCTSettings (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2496,10 +2494,10 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon
     - SocketRocket
-  - React-RCTText (0.85.0):
-    - React-Core/RCTTextHeaders (= 0.85.0)
+  - React-RCTText (0.85.2):
+    - React-Core/RCTTextHeaders (= 0.85.2)
     - Yoga
-  - React-RCTVibration (0.85.0):
+  - React-RCTVibration (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2513,11 +2511,11 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon
     - SocketRocket
-  - React-rendererconsistency (0.85.0)
-  - React-renderercss (0.85.0):
+  - React-rendererconsistency (0.85.2)
+  - React-renderercss (0.85.2):
     - React-debug
     - React-utils
-  - React-rendererdebug (0.85.0):
+  - React-rendererdebug (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2527,7 +2525,7 @@ PODS:
     - RCT-Folly/Fabric
     - React-debug
     - SocketRocket
-  - React-RuntimeApple (0.85.0):
+  - React-RuntimeApple (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2556,7 +2554,7 @@ PODS:
     - React-runtimescheduler
     - React-utils
     - SocketRocket
-  - React-RuntimeCore (0.85.0):
+  - React-RuntimeCore (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2578,7 +2576,7 @@ PODS:
     - React-runtimescheduler
     - React-utils
     - SocketRocket
-  - React-runtimeexecutor (0.85.0):
+  - React-runtimeexecutor (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2588,10 +2586,10 @@ PODS:
     - RCT-Folly/Fabric
     - React-debug
     - React-featureflags
-    - React-jsi (= 0.85.0)
+    - React-jsi (= 0.85.2)
     - React-utils
     - SocketRocket
-  - React-RuntimeHermes (0.85.0):
+  - React-RuntimeHermes (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2612,7 +2610,7 @@ PODS:
     - React-runtimeexecutor
     - React-utils
     - SocketRocket
-  - React-runtimescheduler (0.85.0):
+  - React-runtimescheduler (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2634,9 +2632,9 @@ PODS:
     - React-timing
     - React-utils
     - SocketRocket
-  - React-timing (0.85.0):
+  - React-timing (0.85.2):
     - React-debug
-  - React-utils (0.85.0):
+  - React-utils (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2646,9 +2644,9 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - React-debug
-    - React-jsi (= 0.85.0)
+    - React-jsi (= 0.85.2)
     - SocketRocket
-  - React-webperformancenativemodule (0.85.0):
+  - React-webperformancenativemodule (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2665,9 +2663,9 @@ PODS:
     - React-runtimeexecutor
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - ReactAppDependencyProvider (0.85.0):
+  - ReactAppDependencyProvider (0.85.2):
     - ReactCodegen
-  - ReactCodegen (0.85.0):
+  - ReactCodegen (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2693,7 +2691,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - ReactCommon (0.85.0):
+  - ReactCommon (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2701,9 +2699,9 @@ PODS:
     - glog
     - RCT-Folly
     - RCT-Folly/Fabric
-    - ReactCommon/turbomodule (= 0.85.0)
+    - ReactCommon/turbomodule (= 0.85.2)
     - SocketRocket
-  - ReactCommon/turbomodule (0.85.0):
+  - ReactCommon/turbomodule (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2712,15 +2710,15 @@ PODS:
     - hermes-engine
     - RCT-Folly
     - RCT-Folly/Fabric
-    - React-callinvoker (= 0.85.0)
-    - React-cxxreact (= 0.85.0)
-    - React-jsi (= 0.85.0)
-    - React-logger (= 0.85.0)
-    - React-perflogger (= 0.85.0)
-    - ReactCommon/turbomodule/bridging (= 0.85.0)
-    - ReactCommon/turbomodule/core (= 0.85.0)
+    - React-callinvoker (= 0.85.2)
+    - React-cxxreact (= 0.85.2)
+    - React-jsi (= 0.85.2)
+    - React-logger (= 0.85.2)
+    - React-perflogger (= 0.85.2)
+    - ReactCommon/turbomodule/bridging (= 0.85.2)
+    - ReactCommon/turbomodule/core (= 0.85.2)
     - SocketRocket
-  - ReactCommon/turbomodule/bridging (0.85.0):
+  - ReactCommon/turbomodule/bridging (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2729,13 +2727,13 @@ PODS:
     - hermes-engine
     - RCT-Folly
     - RCT-Folly/Fabric
-    - React-callinvoker (= 0.85.0)
-    - React-cxxreact (= 0.85.0)
-    - React-jsi (= 0.85.0)
-    - React-logger (= 0.85.0)
-    - React-perflogger (= 0.85.0)
+    - React-callinvoker (= 0.85.2)
+    - React-cxxreact (= 0.85.2)
+    - React-jsi (= 0.85.2)
+    - React-logger (= 0.85.2)
+    - React-perflogger (= 0.85.2)
     - SocketRocket
-  - ReactCommon/turbomodule/core (0.85.0):
+  - ReactCommon/turbomodule/core (0.85.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2744,14 +2742,14 @@ PODS:
     - hermes-engine
     - RCT-Folly
     - RCT-Folly/Fabric
-    - React-callinvoker (= 0.85.0)
-    - React-cxxreact (= 0.85.0)
-    - React-debug (= 0.85.0)
-    - React-featureflags (= 0.85.0)
-    - React-jsi (= 0.85.0)
-    - React-logger (= 0.85.0)
-    - React-perflogger (= 0.85.0)
-    - React-utils (= 0.85.0)
+    - React-callinvoker (= 0.85.2)
+    - React-cxxreact (= 0.85.2)
+    - React-debug (= 0.85.2)
+    - React-featureflags (= 0.85.2)
+    - React-jsi (= 0.85.2)
+    - React-logger (= 0.85.2)
+    - React-perflogger (= 0.85.2)
+    - React-utils (= 0.85.2)
     - SocketRocket
   - SDWebImage (5.21.7):
     - SDWebImage/Core (= 5.21.7)
@@ -2773,8 +2771,8 @@ PODS:
     - ZXingObjC/Core
 
 DEPENDENCIES:
-  - "boost (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/boost.podspec`)"
-  - "DoubleConversion (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)"
+  - "boost (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/boost.podspec`)"
+  - "DoubleConversion (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)"
   - EASClient (from `../../../packages/expo-eas-client/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
@@ -2799,90 +2797,89 @@ DEPENDENCIES:
   - "ExpoLogBox (from `../../../packages/@expo/log-box`)"
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
-  - "ExpoModulesMacros (from `../../../node_modules/.pnpm/@expo+expo-modules-macros-plugin@0.0.7/node_modules/@expo/expo-modules-macros-plugin/apple`)"
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
-  - "fast_float (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/fast_float.podspec`)"
-  - "FBLazyVector (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/FBLazyVector`)"
-  - "fmt (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/fmt.podspec`)"
-  - "glog (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/glog.podspec`)"
-  - "hermes-engine (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)"
-  - "RCT-Folly (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)"
-  - "RCTDeprecation (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)"
-  - "RCTRequired (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Required`)"
-  - "RCTSwiftUI (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactApple/RCTSwiftUI`)"
-  - "RCTSwiftUIWrapper (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactApple/RCTSwiftUIWrapper`)"
-  - "RCTTypeSafety (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/TypeSafety`)"
-  - "React (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/`)"
-  - "React-callinvoker (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/callinvoker`)"
-  - "React-Core (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/`)"
-  - "React-Core/RCTWebSocket (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/`)"
-  - "React-CoreModules (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/React/CoreModules`)"
-  - "React-cxxreact (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/cxxreact`)"
-  - "React-debug (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/debug`)"
-  - "React-defaultsnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/defaults`)"
-  - "React-domnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/dom`)"
-  - "React-Fabric (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon`)"
-  - "React-FabricComponents (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon`)"
-  - "React-FabricImage (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon`)"
-  - "React-featureflags (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/featureflags`)"
-  - "React-featureflagsnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/featureflags`)"
-  - "React-graphics (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/graphics`)"
-  - "React-hermes (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/hermes`)"
-  - "React-idlecallbacksnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks`)"
-  - "React-ImageManager (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/ios`)"
-  - "React-intersectionobservernativemodule (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver`)"
-  - "React-jserrorhandler (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jserrorhandler`)"
-  - "React-jsi (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsi`)"
-  - "React-jsiexecutor (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsiexecutor`)"
-  - "React-jsinspector (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsinspector-modern`)"
-  - "React-jsinspectorcdp (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsinspector-modern/cdp`)"
-  - "React-jsinspectornetwork (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsinspector-modern/network`)"
-  - "React-jsinspectortracing (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsinspector-modern/tracing`)"
-  - "React-jsitooling (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsitooling`)"
-  - "React-jsitracing (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/hermes/executor/`)"
-  - "React-logger (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/logger`)"
-  - "React-Mapbuffer (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon`)"
-  - "React-microtasksnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
-  - "React-NativeModulesApple (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
-  - "React-networking (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/networking`)"
-  - "React-oscompat (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/oscompat`)"
-  - "React-perflogger (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/reactperflogger`)"
-  - "React-performancecdpmetrics (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/performance/cdpmetrics`)"
-  - "React-performancetimeline (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/performance/timeline`)"
-  - "React-RCTActionSheet (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/ActionSheetIOS`)"
-  - "React-RCTAnimation (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/NativeAnimation`)"
-  - "React-RCTAppDelegate (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/AppDelegate`)"
-  - "React-RCTBlob (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Blob`)"
-  - "React-RCTFabric (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/React`)"
-  - "React-RCTFBReactNativeSpec (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/React`)"
-  - "React-RCTImage (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Image`)"
-  - "React-RCTLinking (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/LinkingIOS`)"
-  - "React-RCTNetwork (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Network`)"
-  - "React-RCTRuntime (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/React/Runtime`)"
-  - "React-RCTSettings (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Settings`)"
-  - "React-RCTText (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Text`)"
-  - "React-RCTVibration (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Vibration`)"
-  - "React-rendererconsistency (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/consistency`)"
-  - "React-renderercss (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/css`)"
-  - "React-rendererdebug (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/debug`)"
-  - "React-RuntimeApple (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/runtime/platform/ios`)"
-  - "React-RuntimeCore (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/runtime`)"
-  - "React-runtimeexecutor (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/runtimeexecutor`)"
-  - "React-RuntimeHermes (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/runtime`)"
-  - "React-runtimescheduler (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)"
-  - "React-timing (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/timing`)"
-  - "React-utils (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/utils`)"
-  - "React-webperformancenativemodule (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/webperformance`)"
+  - "fast_float (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/fast_float.podspec`)"
+  - "FBLazyVector (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/FBLazyVector`)"
+  - "fmt (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/fmt.podspec`)"
+  - "glog (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/glog.podspec`)"
+  - "hermes-engine (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)"
+  - "RCT-Folly (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)"
+  - "RCTDeprecation (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)"
+  - "RCTRequired (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Required`)"
+  - "RCTSwiftUI (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactApple/RCTSwiftUI`)"
+  - "RCTSwiftUIWrapper (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactApple/RCTSwiftUIWrapper`)"
+  - "RCTTypeSafety (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/TypeSafety`)"
+  - "React (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/`)"
+  - "React-callinvoker (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/callinvoker`)"
+  - "React-Core (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/`)"
+  - "React-Core/RCTWebSocket (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/`)"
+  - "React-CoreModules (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/React/CoreModules`)"
+  - "React-cxxreact (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/cxxreact`)"
+  - "React-debug (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/debug`)"
+  - "React-defaultsnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/defaults`)"
+  - "React-domnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/dom`)"
+  - "React-Fabric (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon`)"
+  - "React-FabricComponents (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon`)"
+  - "React-FabricImage (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon`)"
+  - "React-featureflags (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/featureflags`)"
+  - "React-featureflagsnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/featureflags`)"
+  - "React-graphics (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/graphics`)"
+  - "React-hermes (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/hermes`)"
+  - "React-idlecallbacksnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks`)"
+  - "React-ImageManager (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/ios`)"
+  - "React-intersectionobservernativemodule (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver`)"
+  - "React-jserrorhandler (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jserrorhandler`)"
+  - "React-jsi (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsi`)"
+  - "React-jsiexecutor (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsiexecutor`)"
+  - "React-jsinspector (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsinspector-modern`)"
+  - "React-jsinspectorcdp (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsinspector-modern/cdp`)"
+  - "React-jsinspectornetwork (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsinspector-modern/network`)"
+  - "React-jsinspectortracing (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsinspector-modern/tracing`)"
+  - "React-jsitooling (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsitooling`)"
+  - "React-jsitracing (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/hermes/executor/`)"
+  - "React-logger (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/logger`)"
+  - "React-Mapbuffer (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon`)"
+  - "React-microtasksnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
+  - "React-NativeModulesApple (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
+  - "React-networking (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/networking`)"
+  - "React-oscompat (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/oscompat`)"
+  - "React-perflogger (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/reactperflogger`)"
+  - "React-performancecdpmetrics (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/performance/cdpmetrics`)"
+  - "React-performancetimeline (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/performance/timeline`)"
+  - "React-RCTActionSheet (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/ActionSheetIOS`)"
+  - "React-RCTAnimation (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/NativeAnimation`)"
+  - "React-RCTAppDelegate (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/AppDelegate`)"
+  - "React-RCTBlob (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Blob`)"
+  - "React-RCTFabric (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/React`)"
+  - "React-RCTFBReactNativeSpec (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/React`)"
+  - "React-RCTImage (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Image`)"
+  - "React-RCTLinking (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/LinkingIOS`)"
+  - "React-RCTNetwork (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Network`)"
+  - "React-RCTRuntime (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/React/Runtime`)"
+  - "React-RCTSettings (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Settings`)"
+  - "React-RCTText (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Text`)"
+  - "React-RCTVibration (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Vibration`)"
+  - "React-rendererconsistency (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/consistency`)"
+  - "React-renderercss (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/css`)"
+  - "React-rendererdebug (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/debug`)"
+  - "React-RuntimeApple (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/runtime/platform/ios`)"
+  - "React-RuntimeCore (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/runtime`)"
+  - "React-runtimeexecutor (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/runtimeexecutor`)"
+  - "React-RuntimeHermes (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/runtime`)"
+  - "React-runtimescheduler (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)"
+  - "React-timing (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/timing`)"
+  - "React-utils (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/utils`)"
+  - "React-webperformancenativemodule (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/webperformance`)"
   - ReactAppDependencyProvider (from `build/generated/ios/ReactAppDependencyProvider`)
   - ReactCodegen (from `build/generated/ios/ReactCodegen`)
-  - "ReactCommon/turbomodule/core (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon`)"
+  - "ReactCommon/turbomodule/core (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon`)"
   - SocketRocket (~> 0.7.1)
-  - "Yoga (from `../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/yoga`)"
+  - "Yoga (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/yoga`)"
 
 SPEC REPOS:
   trunk:
@@ -2899,9 +2896,9 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   boost:
-    :podspec: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/boost.podspec"
+    :podspec: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
-    :podspec: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+    :podspec: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EASClient:
     :path: "../../../packages/expo-eas-client/ios"
   EXConstants:
@@ -2950,8 +2947,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
     :path: "../../../packages/expo-modules-core"
-  ExpoModulesMacros:
-    :path: "../../../node_modules/.pnpm/@expo+expo-modules-macros-plugin@0.0.7/node_modules/@expo/expo-modules-macros-plugin/apple"
   ExpoModulesWorklets:
     :path: "../../../packages/expo-modules-core"
   ExpoSplashScreen:
@@ -2965,156 +2960,156 @@ EXTERNAL SOURCES:
   EXUpdatesInterface:
     :path: "../../../packages/expo-updates-interface/ios"
   fast_float:
-    :podspec: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/fast_float.podspec"
+    :podspec: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/fast_float.podspec"
   FBLazyVector:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/FBLazyVector"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/FBLazyVector"
   fmt:
-    :podspec: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/fmt.podspec"
+    :podspec: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/fmt.podspec"
   glog:
-    :podspec: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/glog.podspec"
+    :podspec: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
-    :podspec: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
+    :podspec: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v250829098.0.10
   RCT-Folly:
-    :podspec: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
+    :podspec: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   RCTRequired:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Required"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Required"
   RCTSwiftUI:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactApple/RCTSwiftUI"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactApple/RCTSwiftUI"
   RCTSwiftUIWrapper:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactApple/RCTSwiftUIWrapper"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactApple/RCTSwiftUIWrapper"
   RCTTypeSafety:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/TypeSafety"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/TypeSafety"
   React:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/"
   React-callinvoker:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/callinvoker"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/callinvoker"
   React-Core:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/"
   React-CoreModules:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/React/CoreModules"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/React/CoreModules"
   React-cxxreact:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/cxxreact"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/cxxreact"
   React-debug:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/debug"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/debug"
   React-defaultsnativemodule:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/defaults"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/defaults"
   React-domnativemodule:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/dom"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/dom"
   React-Fabric:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon"
   React-FabricComponents:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon"
   React-FabricImage:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon"
   React-featureflags:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/featureflags"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/featureflags"
   React-featureflagsnativemodule:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/featureflags"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/featureflags"
   React-graphics:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/graphics"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/graphics"
   React-hermes:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/hermes"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/hermes"
   React-idlecallbacksnativemodule:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/idlecallbacks"
   React-ImageManager:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/ios"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/ios"
   React-intersectionobservernativemodule:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver"
   React-jserrorhandler:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jserrorhandler"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jserrorhandler"
   React-jsi:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsi"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsi"
   React-jsiexecutor:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsiexecutor"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsinspector-modern"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsinspector-modern"
   React-jsinspectorcdp:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsinspector-modern/cdp"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsinspector-modern/cdp"
   React-jsinspectornetwork:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsinspector-modern/network"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsinspector-modern/network"
   React-jsinspectortracing:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsinspector-modern/tracing"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsinspector-modern/tracing"
   React-jsitooling:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/jsitooling"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/jsitooling"
   React-jsitracing:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/hermes/executor/"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/hermes/executor/"
   React-logger:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/logger"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/logger"
   React-Mapbuffer:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   React-NativeModulesApple:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/networking"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/networking"
   React-oscompat:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/oscompat"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/oscompat"
   React-perflogger:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/reactperflogger"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/reactperflogger"
   React-performancecdpmetrics:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/performance/cdpmetrics"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/performance/cdpmetrics"
   React-performancetimeline:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/performance/timeline"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/performance/timeline"
   React-RCTActionSheet:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/ActionSheetIOS"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/NativeAnimation"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/NativeAnimation"
   React-RCTAppDelegate:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/AppDelegate"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/AppDelegate"
   React-RCTBlob:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Blob"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Blob"
   React-RCTFabric:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/React"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/React"
   React-RCTFBReactNativeSpec:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/React"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/React"
   React-RCTImage:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Image"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Image"
   React-RCTLinking:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/LinkingIOS"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/LinkingIOS"
   React-RCTNetwork:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Network"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Network"
   React-RCTRuntime:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/React/Runtime"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/React/Runtime"
   React-RCTSettings:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Settings"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Settings"
   React-RCTText:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Text"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Text"
   React-RCTVibration:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/Libraries/Vibration"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/Libraries/Vibration"
   React-rendererconsistency:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/consistency"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/consistency"
   React-renderercss:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/css"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/css"
   React-rendererdebug:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/debug"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/debug"
   React-RuntimeApple:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/runtime/platform/ios"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/runtime/platform/ios"
   React-RuntimeCore:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/runtime"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/runtime"
   React-runtimeexecutor:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/runtimeexecutor"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/runtimeexecutor"
   React-RuntimeHermes:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/runtime"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/runtime"
   React-runtimescheduler:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/renderer/runtimescheduler"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/renderer/runtimescheduler"
   React-timing:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/timing"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/timing"
   React-utils:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/utils"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/utils"
   React-webperformancenativemodule:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/react/nativemodule/webperformance"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/webperformance"
   ReactAppDependencyProvider:
     :path: build/generated/ios/ReactAppDependencyProvider
   ReactCodegen:
     :path: build/generated/ios/ReactCodegen
   ReactCommon:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon"
   Yoga:
-    :path: "../../../node_modules/.pnpm/react-native@0.85.0_@babel+core@7.29.0_@react-native+jest-preset@0.85.0_@babel+core@7.2_dbb5c14d9fd5c9bb3d7d1e4c732bd070/node_modules/react-native/ReactCommon/yoga"
+    :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
@@ -3141,17 +3136,16 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 72475c0e8644ad4dae17742bde04d5a0fe4ad4f9
   ExpoLinearGradient: 76405dc81ad27c300347829ed90ba26e7597e846
   ExpoLogBox: 4a892fbcf6e343ffc1a6b714dcdc04a754d7e42f
-  ExpoModulesCore: 81b82d526f08558360e67486adb7cabafab504ba
-  ExpoModulesJSI: 6f46a421b581c29d4c21cd4540e0fd441ae4a4f5
-  ExpoModulesMacros: 6e01118aed19527180871e271177089c34d90dd2
-  ExpoModulesWorklets: ea1792afcb0510c63a9079a205e4e8b83f9bb933
+  ExpoModulesCore: db4784fdcd7f736f4c33c423e557d7bc0080666c
+  ExpoModulesJSI: f9560f914ae6bddf0f51457c4c7e6158506766a8
+  ExpoModulesWorklets: 92bd2e952b7e02b04dda6c12cdf29c5d17dffe1d
   ExpoSplashScreen: a2c6d6afe0a90c7bcfb706d452b7fa59f979560f
   ExpoVideo: eca730ba53ec45c2a188aa9dbfe11f7f809d66a1
   EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
   EXUpdates: 9128a615d41f62abc13371b6c5cb2ef7a8b41ab3
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
-  FBLazyVector: dfb9ab6ee2eac316f7869edf6ec27b9e872329f0
+  FBLazyVector: 4cd65993d9ef677523093deeb7d8710f39fb9ed7
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
   glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
   hermes-engine: 407f52f1dca2c25263c5f76e80cc38a39e0f6ec0
@@ -3159,81 +3153,81 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   RCT-Folly: 36c4f904fb6cd0219dcb76b94e9502d2a72fab0b
-  RCTDeprecation: df7412cdad525035c3adeb14c1dc35b344e98187
-  RCTRequired: 28a4bf1ef190650fcd6973d8a6a8f8beb30ef807
-  RCTSwiftUI: 3003f1af83c332be5946ec0433fedcf0ada06551
-  RCTSwiftUIWrapper: 8f3fffae1ef081441a25f02d7724155ced60a444
-  RCTTypeSafety: 94675f4478b5bdc80edd36b017bcd61cda7ae48b
+  RCTDeprecation: 5c945c659e2d68c1428f4a732c83198a4ad6a659
+  RCTRequired: c98eb09689f6a2a2c75f6fd419fa94fe71a672c9
+  RCTSwiftUI: 88767b796e06cd4af8dca2f7a3f97fccf1d723e0
+  RCTSwiftUIWrapper: 0be3792f93251cb4b7b2e8b24fdb65a438c5a3e8
+  RCTTypeSafety: d41d46dfcac19a7f7d3861c2733c8b72dd79dc5b
   ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
-  React: 1b1536b9099195944034e65b1830f463caaa8390
-  React-callinvoker: 4959a69fb49a4aa112b4c7bf0c1bd9ca3710d9a6
-  React-Core: 5a71c4ca1f28b013e1b866f3a611a37dda2da674
-  React-CoreModules: e779ef68cf531fa9af3f79802d8bf1dbfb3ac6f4
-  React-cxxreact: 5022998454941ce93938f65efe5c9426a749d0f7
-  React-debug: 2b75669c8916bb6897cc29b0c0fadf6083453ba6
-  React-defaultsnativemodule: 1b85e0359bdd79bd25c92d361a7fc129fc0ba491
-  React-domnativemodule: a3bd7f86e0c34a4b6e3b29d305825d8443d81196
-  React-Fabric: e27ac294acdb388e4369db01fba8faeaa989d1cc
-  React-FabricComponents: 62023ca4f970d53dbea9866fb681afd68171642e
-  React-FabricImage: e13b7b2bc7a466f528b7d49a150686ee43a5519a
-  React-featureflags: ab7758e3e5d174c1b3dc9a410f7f911cb7cb1c4b
-  React-featureflagsnativemodule: 53e9cfbf7d90aff82734c5970242d45e0befbab7
-  React-graphics: d1b81b7d3d1c6f637462f57e2490e118fdd94840
-  React-hermes: 32dbf6fbb37cdbf6bf297f6d220d3a5be3b7a58a
-  React-idlecallbacksnativemodule: 609904842dde4336d0ee4ebf45e1035125f15f9a
-  React-ImageManager: 4927e5fe51263ea83032be6a2255e657da2195b0
-  React-intersectionobservernativemodule: 95042156fdeeef8e6344e9caadc53de263d329f8
-  React-jserrorhandler: d0ea3b3f9280ecf0ad77daceec98a953ec0f68cd
-  React-jsi: 5ebf5605fe779ce8fe995fbdd8000459cf4833b8
-  React-jsiexecutor: 3d1df80a63fc7be59cb051b98e5c0b80d0c9c5eb
-  React-jsinspector: 496f29c27929cc5b2125a46c18d60cd6a8c94bfd
-  React-jsinspectorcdp: 6572484e28c4c9bcc1014eb680f8cb00504ea049
-  React-jsinspectornetwork: 76065e2ae6ad45dfdf76074cc36b4bcefaa7bdb1
-  React-jsinspectortracing: e013bdf2e6b41eb52132805710c28423aaedb2b7
-  React-jsitooling: 78a74455dd30a734bc06de5879e7d0a433bf45ad
-  React-jsitracing: a7565cbcbf2e3b777ce4d8ad93ed4c4fccc4b5dd
-  React-logger: 8a3faffeb34f66ad45b70a87f4fc4b522c8cc792
-  React-Mapbuffer: 4331996a168afe9027277cf20c5b905a9662dd23
-  React-microtasksnativemodule: d74758fc92424808e0d82fb0692415e40c6b4e14
-  React-NativeModulesApple: 637070d914b8136cb6c0d7c58c69acb61de2c724
-  React-networking: 418a705cf5cb57bf9309c4a06c8b3292b59dc441
-  React-oscompat: 2c4945336d3a1e509944c6a6a530bc1b6e756581
-  React-perflogger: 829d1bd2a11e740af9e42d8321c5c6ec13448792
-  React-performancecdpmetrics: 3e2ad886fa5ee2f8527de6d1db05f863997a1d55
-  React-performancetimeline: 415fe0260fc28f6fcf39964b0128b5e0aa42b609
-  React-RCTActionSheet: b4830feb56db4f96fb8c1b57f5b709260b2f3039
-  React-RCTAnimation: 5cb95b92df9d5335849640e7c49b0f2efa80a415
-  React-RCTAppDelegate: 64b498a0a6cd87824604f6b13dd3d05036ef611f
-  React-RCTBlob: a4678060524ff793669966862942474ca3489791
-  React-RCTFabric: 3f20a27a4684c3c8eaee5a605f13efb3797ce819
-  React-RCTFBReactNativeSpec: 0cb61c4c41c124b492664df466eecf9adce9cbbd
-  React-RCTImage: b5d3b1bc9a1e8d5e37a8b07c7e13d014a17edec8
-  React-RCTLinking: d6b816eab9a73152715a0fb68d4d5dcd0dc1446a
-  React-RCTNetwork: 7b3e25b45cfb7f97eca1d0d0e97c3f7823f13a2e
-  React-RCTRuntime: 440e9b96d8bcbaf218101acc79dc24b012574055
-  React-RCTSettings: 665d4017d92344abb61a9e58bbf86a45afe3326e
-  React-RCTText: 7cd0aea67ce3099250a23be29ef24060e9ba8d8b
-  React-RCTVibration: 3d59ee80b015749b7804fc6e452f8254f683862a
-  React-rendererconsistency: ebae5a9bd0c5349d5350679f7da7beac6682a2b9
-  React-renderercss: cf6832fa2dc52cb14631b31ba6a0037e1e3fc1e3
-  React-rendererdebug: 9ff5660d01ff6ab2ec6c2cb3f1fa12b601f025bb
-  React-RuntimeApple: 7d10b238856130859c0c0aad06ca1aa9970330e9
-  React-RuntimeCore: d61e9d2b89df25ffc6fa055f7f2c5a8e8ccc7477
-  React-runtimeexecutor: 0796640a20eca301aa696bdbf9054417f8ad4fc9
-  React-RuntimeHermes: bc6db55565bfeb1a197e16d5f33cfc6f5dda9a55
-  React-runtimescheduler: 0374e12502b3af2a697ef0ad846527cb41599aea
-  React-timing: fe2bc8d6652855e0f6081e141d9877078f24da52
-  React-utils: f2dc3878565c3cc54bdf7f65a106efaf93f189a6
-  React-webperformancenativemodule: 214e42892a044b865f73ad4f88cac6979c27aa76
-  ReactAppDependencyProvider: 5787b37b8e2e51dfeab697ec031cc7c4080dcea2
-  ReactCodegen: e59feb01dc7540f670e5e2477814f8dbdfdce102
-  ReactCommon: 6a42764f1136fb9ac210e05e88a0733a00ee23d3
+  React: 13cf8451582adb1bb324306e1893b91d1cba28c6
+  React-callinvoker: 88365b6d743b7c42822a90cd133b7e2416b8acb4
+  React-Core: 7b706e4ac6f52738db68502eb30946076c35e1d0
+  React-CoreModules: 1682399652339851a80afc327a3c0e68ede4cf9d
+  React-cxxreact: 46e6865db33cbd264c36bb2f7661c1f5ee4d89f3
+  React-debug: cd389012bc268f667fd1683e08d3863d2a356e92
+  React-defaultsnativemodule: 40f14b43ff20d45ddef6518e88264a22961172e8
+  React-domnativemodule: d0884933cf0da20bdd6dfaacbab8df2d6bd5d5c8
+  React-Fabric: 402a3aee083b200750945c2bf45a57efe2172eb8
+  React-FabricComponents: 42b909c5aef9a0c1104f9807c017b3795338d6aa
+  React-FabricImage: 5e5e5d10bb271a5cd280d5cb7a160fe876645c30
+  React-featureflags: 22a1083e062701684004843a57de697cc1ef4c4a
+  React-featureflagsnativemodule: eacd0079fbd42b6a1d40dd4ea6e31b6585512417
+  React-graphics: 7a531dc098764aca96766dd8a8b7d75191190cfd
+  React-hermes: 72640d42191cfd3ef38c50545ad9ef97840f612b
+  React-idlecallbacksnativemodule: 94be1282756659f829c1457a1a5782722e1e8a11
+  React-ImageManager: 016674b2ce3b786fae62a6adaaa7b0475906b7e7
+  React-intersectionobservernativemodule: f9c9c8c0c7565edd0094fda642f52d844026cf84
+  React-jserrorhandler: b34ec9b0c8e22f8a947361ecdffd3123f94fb7b0
+  React-jsi: 6d74cc36ab81a93f63029198a62ba2eb86969356
+  React-jsiexecutor: 940f7b36d6b0f9cdea08408603f04831945aebad
+  React-jsinspector: 482dee9c3051f7307dec1bebcbc74c5512471b75
+  React-jsinspectorcdp: d0d03aec6bfc7847fe848b936f0ea7be691ec309
+  React-jsinspectornetwork: 617000228458a7044c0fb7c32e5d05d0973083b4
+  React-jsinspectortracing: eeb0af68138aa9546e5894dc623a21413fb41fed
+  React-jsitooling: 90bf5f40a909186eb61d5ca44e5ed7e5cba22a47
+  React-jsitracing: ad8ffc9195a20aeeb8d28369b55a7e021e58a7f8
+  React-logger: 188cc4543ffe468c44f5077db63e5ab401b5cd29
+  React-Mapbuffer: 50533f5891fe292c649df574d67968f8f3dd8c99
+  React-microtasksnativemodule: e087a4a117873b780d0f047b2d2ba56faf289059
+  React-NativeModulesApple: 2af667879ee665f9cfb0cf76052477756ab3d9fd
+  React-networking: eb25ea902110ae8839d756bbef602761bf49162c
+  React-oscompat: 7ad27ef927bc98ba7839ca1bbc098bcb9885fcda
+  React-perflogger: b5253060e98d212b591fbd34c250b6e9a3996f42
+  React-performancecdpmetrics: df63fa87a513ed921a7cf47d46dccc3bdda9e627
+  React-performancetimeline: ec51826c70b2517ffa95cceae5da6c62f64232cd
+  React-RCTActionSheet: cde705186932803784ddc62d1f8b4624b910206c
+  React-RCTAnimation: ea6262ec1255b6794cb98fb5b3cff57e2c74c7ab
+  React-RCTAppDelegate: d393b51d66b722b02c72c9a750aaab02e637b93e
+  React-RCTBlob: 7cc616524cf4a83803c487b9da4a11bcf6505689
+  React-RCTFabric: f1ee6b7552915787207aaec3135f0a9f5717c49d
+  React-RCTFBReactNativeSpec: d06a9b306d7fa8f2ad4f002ed08e2039bac5c2b4
+  React-RCTImage: 0b7916bc46230a45c5c515a37dde0d191482ac18
+  React-RCTLinking: d66d4bc9925ac24bfa3cfb58ec9fc18b0ef68b7e
+  React-RCTNetwork: 99e1432d8d8adbb046ce8522b348d125aa5076d3
+  React-RCTRuntime: 3a78d7dd1198a6874aa99931b7f6a71fac20379e
+  React-RCTSettings: 618efaa07fa8ba7329fd339621118bc1010baaf5
+  React-RCTText: 22413452d105567ad7f9111d677b06b3f97849c4
+  React-RCTVibration: 96d188a2465e9d180f7367b8599d1f60dbac516a
+  React-rendererconsistency: 5e42c1a4af4fba9a2ec55adf5ae5fc50aca3bb93
+  React-renderercss: 015a2c7cd153280a854f8d54ae5222cc69c4a569
+  React-rendererdebug: c28efbdc7c3a4a68fa167862b2784541c1bfca00
+  React-RuntimeApple: ac6427550eecd0c2ac4dfd1275997f9b85be207e
+  React-RuntimeCore: 9e9544591b5c90f57fd50335d047826dad3e3516
+  React-runtimeexecutor: cc8f89ae667a4a9bd62ad7648a0664ee928d8448
+  React-RuntimeHermes: 4d20a977fb4ee32b40cff0a0592b3bf12ba14798
+  React-runtimescheduler: 6a93dcccec30e20be5da696ad98718fefbb6b446
+  React-timing: b9d2410d2776fdba3ef5eff18d7599e55f62bae3
+  React-utils: 0e96fd99b153d4ef53621131a330667595c63695
+  React-webperformancenativemodule: 227a6e4f0f7a513885ff5403b7c9c9234f319c9e
+  ReactAppDependencyProvider: 22e2265d86a4e871e5e858f4e7ef1c8d01103680
+  ReactCodegen: e337dd68087d3aab3431a71fd17197fec85c63ef
+  ReactCommon: eae62f1181bfa316ff00c19bb907c2950cc64d34
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: c032154b93caa7298059b4731854ed59dcefbac2
+  Yoga: f06376cd052a59f136fac86c42687db330e0cc8d
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: ad1d54b98c5b018506b56216fe175f088a00ceda

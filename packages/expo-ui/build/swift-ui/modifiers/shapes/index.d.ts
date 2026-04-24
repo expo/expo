@@ -1,7 +1,7 @@
 /**
  * Shape builders for modifiers that accept shapes, such as `background` and `containerShape`.
  *
- * Shapes: `roundedRectangle`, `capsule`, `rectangle`, `ellipse`, `circle`.
+ * Shapes: `roundedRectangle`, `capsule`, `rectangle`, `ellipse`, `circle`, `containerRelativeShape`.
  *
  * @example
  * ```tsx
@@ -56,6 +56,9 @@ export declare const shapes: {
     circle: () => {
         shape: string;
     };
+    containerRelativeShape: () => {
+        shape: string;
+    };
 };
-export type Shape = ReturnType<typeof shapes.roundedRectangle> | ReturnType<typeof shapes.capsule> | ReturnType<typeof shapes.rectangle> | ReturnType<typeof shapes.ellipse> | ReturnType<typeof shapes.circle>;
+export type Shape = ReturnType<typeof shapes.roundedRectangle> | ReturnType<typeof shapes.capsule> | ReturnType<typeof shapes.rectangle> | ReturnType<typeof shapes.ellipse> | ReturnType<typeof shapes.circle> | ReturnType<typeof shapes.containerRelativeShape>;
 //# sourceMappingURL=index.d.ts.map

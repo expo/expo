@@ -1,12 +1,17 @@
-import { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
+import type { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
-import { GranularPermission } from './types/GranularPermission';
+import type { GranularPermission } from './types/GranularPermission';
+import type { MediaSubtype } from './types/MediaSubtype';
 export * from './MediaLibraryNext.types';
 export declare class Query extends ExpoMediaLibraryNext.Query {
 }
 export declare class Asset extends ExpoMediaLibraryNext.Asset {
     getFavorite(): Promise<boolean>;
     setFavorite(isFavorite: boolean): Promise<void>;
+    getMediaSubtypes(): Promise<MediaSubtype[]>;
+    getLivePhotoVideoUri(): Promise<string | null>;
+    getIsInCloud(): Promise<boolean>;
+    getOrientation(): Promise<number | null>;
 }
 export declare class Album extends ExpoMediaLibraryNext.Album {
 }

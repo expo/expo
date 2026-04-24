@@ -2,8 +2,8 @@
   "name": "expo-env-info",
   "version": "2.0.11",
   "preferGlobal": true,
-  "type": "module",
   "bin": "./bin/expo-env-info.js",
+  "main": "./build/main.js",
   "files": [
     "bin",
     "build"

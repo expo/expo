@@ -1,10 +1,8 @@
 import type { DependencyResolution } from 'expo-modules-autolinking/exports';
 import resolveFrom from 'resolve-from';
 
-import {
-  getVersionedNativeModuleNamesAsync,
-  VersionedNativeModuleNamesCache,
-} from './versionedNativeModules';
+import type { VersionedNativeModuleNamesCache } from './versionedNativeModules';
+import { getVersionedNativeModuleNamesAsync } from './versionedNativeModules';
 
 export function importAutolinkingExportsFromProject(
   projectDir: string

@@ -1,7 +1,7 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import View, { ViewProps } from '../primitives/View';
+import type { ViewProps } from '../primitives/View';
+import View from '../primitives/View';
 
 export function HR(props: ViewProps) {
   return <View {...props} style={[styles.hr, props.style]} />;

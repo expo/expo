@@ -14,7 +14,7 @@ import {
   type RouteNode,
 } from 'expo-router/internal/routing';
 import { shouldLinkExternally } from 'expo-router/internal/utils';
-import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
+import type { RouteInfo, RoutesManifest } from 'expo-server/private';
 
 export interface Group {
   pos: number;

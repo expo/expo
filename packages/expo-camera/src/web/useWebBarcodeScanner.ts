@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import * as WebBarcodeScanner from './WebBarcodeScanner';
-import { BarcodeType, BarcodeScanningResult, MountErrorListener } from '../Camera.types';
+import type { BarcodeType, BarcodeScanningResult, MountErrorListener } from '../Camera.types';
 
 function mapToViewCoordinates(
   result: BarcodeScanningResult,

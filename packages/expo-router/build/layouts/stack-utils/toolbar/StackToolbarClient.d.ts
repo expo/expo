@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import type { ColorValue } from 'react-native';
 import { type ToolbarPlacement } from './context';
-import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 export interface StackToolbarProps {
     /**
      * Child elements to compose the toolbar. Can include Stack.Toolbar.Button,
@@ -114,7 +114,7 @@ export interface StackToolbarProps {
  * @platform ios
  */
 export declare const StackToolbar: {
-    (props: StackToolbarProps): import("react").JSX.Element;
+    (props: StackToolbarProps): import("react/jsx-runtime").JSX.Element;
     Button: import("react").FC<import("./StackToolbarButton").StackToolbarButtonProps>;
     Menu: import("react").FC<import("./StackToolbarMenu").StackToolbarMenuProps>;
     MenuAction: import("react").FC<import("./StackToolbarMenu").StackToolbarMenuActionProps>;

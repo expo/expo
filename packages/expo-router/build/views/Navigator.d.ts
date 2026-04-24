@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StackRouter } from '../layouts/StackClient';
-import { RouterFactory, useNavigationBuilder } from '../react-navigation/native';
+import type { RouterFactory } from '../react-navigation/native';
+import { useNavigationBuilder } from '../react-navigation/native';
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
     contextKey: string;
     router: RouterFactory<any, any, any>;
@@ -20,7 +21,7 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
  *
  * @hidden
  */
-export declare function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({ initialRouteName, screenOptions, children, router, routerOptions, }: NavigatorProps<T>): React.JSX.Element | null;
+export declare function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({ initialRouteName, screenOptions, children, router, routerOptions, }: NavigatorProps<T>): import("react/jsx-runtime").JSX.Element | null;
 export declare namespace Navigator {
     var Slot: typeof NavigatorSlot;
     var useContext: typeof useNavigatorContext;
@@ -41,7 +42,7 @@ export declare function useNavigatorContext(): NavigatorContextValue;
  * the current `_layout`, you can use this to determine if you are inside
  * a custom navigator or not.
  */
-export declare function Slot(props: Omit<NavigatorProps<any>, 'children'>): React.JSX.Element;
+export declare function Slot(props: Omit<NavigatorProps<any>, 'children'>): import("react/jsx-runtime").JSX.Element;
 /**
  * Render the current navigator content.
  */
@@ -49,6 +50,6 @@ declare function NavigatorSlot(): React.JSX.Element;
 /**
  * The default navigator for the app when no root _layout is provided.
  */
-export declare function DefaultNavigator(): React.JSX.Element;
+export declare function DefaultNavigator(): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=Navigator.d.ts.map

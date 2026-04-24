@@ -4,7 +4,7 @@ import type { TransformResult, Warning } from 'lightningcss';
 import { getBrowserslistTargets } from './browserslist';
 import type { CollectedDependencies } from './collect-dependencies';
 import { wrapDevelopmentCSS } from './css';
-import { CSSMetadata } from '../serializer/jsOutput';
+import type { CSSMetadata } from '../serializer/jsOutput';
 
 type NotReadonly<T> = {
   -readonly [P in keyof T]: T[P];

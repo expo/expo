@@ -1,8 +1,8 @@
 import type { LoaderFunction } from 'expo-server';
 import { type ComponentType, type PropsWithChildren } from 'react';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { type SuspenseFallbackProps } from './views/SuspenseFallback';
-import { type ErrorBoundaryProps } from './views/Try';
+import type { SuspenseFallbackProps } from './views/SuspenseFallback';
+import type { ErrorBoundaryProps } from './views/Try';
 export type DynamicConvention = {
     name: string;
     deep: boolean;
@@ -70,6 +70,6 @@ export type RouteProps = PropsWithChildren<{
     params: object | undefined;
 }>;
 /** Provides the matching routes and filename to the children. */
-export declare function Route({ children, node, params }: RouteProps): import("react").JSX.Element;
+export declare function Route({ children, node, params }: RouteProps): import("react/jsx-runtime").JSX.Element;
 export { sortRoutesWithInitial, sortRoutes };
 //# sourceMappingURL=Route.d.ts.map

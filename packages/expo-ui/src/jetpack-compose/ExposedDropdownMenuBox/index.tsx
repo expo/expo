@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
-import { ReactNode } from 'react';
-import { NativeSyntheticEvent } from 'react-native';
+import type { ReactNode } from 'react';
+import type { NativeSyntheticEvent } from 'react-native';
 
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';

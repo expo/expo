@@ -1,12 +1,20 @@
 import 'abort-controller/polyfill';
 
-import { DevicePushToken } from '../../Tokens.types';
-import { updateDevicePushTokenAsync } from '../updateDevicePushTokenAsync';
+import * as Application from 'expo-application';
+
+import ServerRegistrationModule from '../../ServerRegistrationModule';
+import type { DevicePushToken } from '../../Tokens.types';
+import {
+  updateDevicePushTokenAsync,
+  hasDeviceTokenChangedAsync,
+} from '../updateDevicePushTokenAsync';
 
 const TOKEN: DevicePushToken = { type: 'ios', data: 'i-am-token' };
 
 jest.mock('../../ServerRegistrationModule', () => ({
   getInstallationIdAsync: () => 'abcdefg',
+  getRegistrationInfoAsync: jest.fn(),
+  setRegistrationInfoAsync: jest.fn(),
 }));
 
 declare const global: any;
@@ -94,5 +102,93 @@ describe('given valid registration info', () => {
     expect(global.fetch).toHaveBeenCalledTimes(2);
     warnSpy.mockRestore();
     debugSpy.mockRestore();
+  });
+});
+
+describe('hasDeviceTokenChangedAsync', () => {
+  const mockedGetRegistrationInfoAsync =
+    ServerRegistrationModule.getRegistrationInfoAsync as jest.MockedFunction<
+      NonNullable<typeof ServerRegistrationModule.getRegistrationInfoAsync>
+    >;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns true when no stored data exists', async () => {
+    mockedGetRegistrationInfoAsync.mockResolvedValue(null);
+    expect(await hasDeviceTokenChangedAsync(TOKEN)).toBe(true);
+  });
+
+  it('returns true when stored data has no lastRegisteredDeviceToken key', async () => {
+    mockedGetRegistrationInfoAsync.mockResolvedValue(JSON.stringify({ isEnabled: true }));
+    expect(await hasDeviceTokenChangedAsync(TOKEN)).toBe(true);
+  });
+
+  it('returns false when all fields match and TTL is valid', async () => {
+    mockedGetRegistrationInfoAsync.mockResolvedValue(
+      JSON.stringify({
+        lastRegisteredDeviceToken: {
+          deviceToken: TOKEN.data,
+          appId: Application.applicationId,
+          development: false,
+          type: 'apns',
+          registeredAt: Date.now(),
+        },
+      })
+    );
+    expect(await hasDeviceTokenChangedAsync(TOKEN)).toBe(false);
+  });
+
+  it('returns true when deviceToken differs', async () => {
+    mockedGetRegistrationInfoAsync.mockResolvedValue(
+      JSON.stringify({
+        lastRegisteredDeviceToken: {
+          deviceToken: 'different-token',
+          appId: Application.applicationId,
+          development: false,
+          type: 'apns',
+          registeredAt: Date.now(),
+        },
+      })
+    );
+    expect(await hasDeviceTokenChangedAsync(TOKEN)).toBe(true);
+  });
+
+  it('returns true when TTL has expired', async () => {
+    const eightDaysAgo = Date.now() - 8 * 24 * 60 * 60 * 1000;
+    mockedGetRegistrationInfoAsync.mockResolvedValue(
+      JSON.stringify({
+        lastRegisteredDeviceToken: {
+          deviceToken: TOKEN.data,
+          appId: Application.applicationId,
+          development: false,
+          type: 'apns',
+          registeredAt: eightDaysAgo,
+        },
+      })
+    );
+    expect(await hasDeviceTokenChangedAsync(TOKEN)).toBe(true);
+  });
+
+  it('returns true when registeredAt is in the future (clock skew)', async () => {
+    const oneHourInFuture = Date.now() + 60 * 60 * 1000;
+    mockedGetRegistrationInfoAsync.mockResolvedValue(
+      JSON.stringify({
+        lastRegisteredDeviceToken: {
+          deviceToken: TOKEN.data,
+          appId: Application.applicationId,
+          development: false,
+          type: 'apns',
+          registeredAt: oneHourInFuture,
+        },
+      })
+    );
+    expect(await hasDeviceTokenChangedAsync(TOKEN)).toBe(true);
+  });
+
+  it('returns true when storage throws (fail-open)', async () => {
+    mockedGetRegistrationInfoAsync.mockRejectedValue(new Error('keychain error'));
+    expect(await hasDeviceTokenChangedAsync(TOKEN)).toBe(true);
   });
 });

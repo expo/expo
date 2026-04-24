@@ -14,6 +14,7 @@ import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.composeOrNull
 import expo.modules.ui.findChildSlotView
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 class DropdownMenuItemColors : Record {
@@ -25,6 +26,7 @@ class DropdownMenuItemColors : Record {
   @Field val disabledTrailingIconColor: Color? = null
 }
 
+@OptimizedComposeProps
 data class DropdownMenuItemProps(
   val enabled: Boolean = true,
   val elementColors: DropdownMenuItemColors = DropdownMenuItemColors(),

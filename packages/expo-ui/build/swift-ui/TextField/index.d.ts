@@ -1,6 +1,6 @@
-import { Ref } from 'react';
-import { type ViewEvent } from '../../types';
-import { type CommonViewModifierProps } from '../types';
+import type { Ref } from 'react';
+import type { ViewEvent } from '../../types';
+import type { CommonViewModifierProps } from '../types';
 /**
  * Can be used for imperatively setting text and focus on the `TextField` component.
  */
@@ -59,5 +59,5 @@ export type NativeTextFieldProps = Omit<TextFieldProps, 'onValueChange' | 'onFoc
 /**
  * Renders a SwiftUI `TextField`.
  */
-export declare function TextField(props: TextFieldProps): import("react").JSX.Element;
+export declare function TextField(props: TextFieldProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

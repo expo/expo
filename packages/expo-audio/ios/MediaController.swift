@@ -83,7 +83,7 @@ class MediaController {
       info[MPMediaItemPropertyPlaybackDuration] = player.duration
       info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
     }
-    info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 1.0
+    info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 0.0
     info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
   }
 

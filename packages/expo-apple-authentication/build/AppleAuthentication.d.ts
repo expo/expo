@@ -1,5 +1,5 @@
-import { EventSubscription } from 'expo-modules-core';
-import { AppleAuthenticationCredential, AppleAuthenticationCredentialState, AppleAuthenticationRefreshOptions, AppleAuthenticationSignInOptions, AppleAuthenticationSignOutOptions, AppleAuthenticationFullName, AppleAuthenticationFullNameFormatStyle } from './AppleAuthentication.types';
+import { type EventSubscription } from 'expo-modules-core';
+import type { AppleAuthenticationCredential, AppleAuthenticationCredentialState, AppleAuthenticationRefreshOptions, AppleAuthenticationSignInOptions, AppleAuthenticationSignOutOptions, AppleAuthenticationFullName, AppleAuthenticationFullNameFormatStyle } from './AppleAuthentication.types';
 /**
  * Determine if the current device's operating system supports Apple authentication.
  * @return A promise that fulfills with `true` if the system supports Apple authentication, and `false` otherwise.
@@ -15,7 +15,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
  *
  * Additionally, you will only receive Apple Authentication Credentials the first time users sign
  * into your app, so you must store it for later use. It's best to store this information either
- * server-side, or using [SecureStore](./securestore), so that the data persists across app installs.
+ * server-side, or using [`expo-secure-store`](./securestore), so that the data persists across app installs.
  * You can use [`AppleAuthenticationCredential.user`](#appleauthenticationcredential) to identify
  * the user, since this remains the same for apps released by the same developer.
  *
@@ -68,5 +68,5 @@ export declare function getCredentialStateAsync(user: string): Promise<AppleAuth
  */
 export declare function formatFullName(fullName: AppleAuthenticationFullName, formatStyle?: AppleAuthenticationFullNameFormatStyle): string;
 export declare function addRevokeListener(listener: () => void): EventSubscription;
-export { EventSubscription as Subscription };
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 //# sourceMappingURL=AppleAuthentication.d.ts.map

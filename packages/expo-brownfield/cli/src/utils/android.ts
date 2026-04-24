@@ -39,6 +39,8 @@ export const findBrownfieldLibrary = (): string | undefined => {
     const errorMessage = error instanceof Error ? error.message : '';
     CLIError.handle('android-library-unknown-error', errorMessage);
   }
+
+  return;
 };
 
 export const printAndroidConfig = (config: AndroidConfig) => {

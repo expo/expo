@@ -5,5 +5,5 @@
       "ThemeProvider": ["../common/ThemeProvider"]
     }
   },
-  "include": ["tests/**/*"]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

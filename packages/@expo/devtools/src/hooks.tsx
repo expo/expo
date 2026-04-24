@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { DevToolsPluginClient } from './DevToolsPluginClient';
+import type { DevToolsPluginClient } from './DevToolsPluginClient';
 import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
 import type { DevToolsPluginClientOptions } from './devtools.types';
 

@@ -1,4 +1,4 @@
-import { NormalizedOptions } from '../../Fingerprint.types';
+import type { NormalizedOptions } from '../../Fingerprint.types';
 import { profile } from '../Profile';
 
 it(`respects input types`, () => {

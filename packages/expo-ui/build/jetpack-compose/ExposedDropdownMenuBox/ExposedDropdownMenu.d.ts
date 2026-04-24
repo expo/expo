@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
 /**
@@ -31,5 +31,5 @@ export type ExposedDropdownMenuProps = {
  *
  * Must be used inside an `ExposedDropdownMenuBox`.
  */
-export declare function ExposedDropdownMenu(props: ExposedDropdownMenuProps): import("react").JSX.Element;
+export declare function ExposedDropdownMenu(props: ExposedDropdownMenuProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=ExposedDropdownMenu.d.ts.map

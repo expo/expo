@@ -12,6 +12,7 @@ import { PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
+import { BuildFlavor } from '../Prebuilder.types';
 import { runWithLogPrefix } from '../Utils';
 import { ArtifactLock } from './ArtifactLock';
 import type { PrebuildContext } from './Context';
@@ -21,7 +22,7 @@ import { logPackageBanner, printPrebuildSummary, writeErrorLog } from './Reporte
 import { runSteps, resolveFlavorTemplatedPath } from './RunSteps';
 import type { PackageResult } from './Scheduler';
 import { runPackagesInParallel } from './Scheduler';
-import type { PrebuildRunResult, Step, UnitStatus, ProductStage } from './Types';
+import type { PrebuildRunResult, Step, UnitStatus, UnitError, ProductStage } from './Types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -143,6 +144,41 @@ const defaultSteps: PipelineSteps = {
 // ---------------------------------------------------------------------------
 // Main pipeline
 // ---------------------------------------------------------------------------
+
+/**
+ * PackageResult for a package being skipped because an upstream DAG dep failed.
+ * One UnitStatus (all stages `'skipped'`, `skipReason` set) + one UnitError
+ * per product×flavor — never touches disk.
+ */
+export function synthesizeSkippedResult(
+  pkg: SPMPackageSource,
+  failedDeps: string[],
+  buildFlavors: BuildFlavor[],
+  productFilter?: string
+): PackageResult {
+  const reason = `dependency ${failedDeps.join(', ')} failed`;
+  const statuses: UnitStatus[] = [];
+  const errors: UnitError[] = [];
+
+  for (const product of pkg.getSwiftPMConfiguration().products) {
+    if (productFilter && productFilter !== product.name) continue;
+    for (const flavor of buildFlavors) {
+      const status = createUnitStatus(pkg.packageName, product.name, flavor);
+      status.skipReason = reason;
+      statuses.push(status);
+      errors.push({
+        packageName: pkg.packageName,
+        productName: product.name,
+        flavor,
+        unitId: status.unitId,
+        stage: 'prepare',
+        error: new Error(`Skipped: ${reason} — no build attempted`),
+      });
+    }
+  }
+
+  return { packageName: pkg.packageName, statuses, errors, stopRun: false };
+}
 
 /**
  * Executes all build steps for a single package (package-scope + flavor/product loops).
@@ -341,8 +377,21 @@ export async function runPrebuildPipeline(
       ctx.dependsOn,
       concurrency,
       ctx.abortController,
-      (pkg, signal) =>
-        executePackageSteps(
+      (pkg, signal, failedDeps) => {
+        if (failedDeps && failedDeps.length > 0) {
+          logger.info(
+            `⏭️  Skipping ${chalk.yellow(pkg.packageName)} — dependency failed: ${chalk.yellow(failedDeps.join(', '))}`
+          );
+          return Promise.resolve(
+            synthesizeSkippedResult(
+              pkg,
+              failedDeps,
+              ctx.request.buildFlavors,
+              ctx.request.productFilter
+            )
+          );
+        }
+        return executePackageSteps(
           pkg,
           packageIndices.get(pkg.packageName) ?? 0,
           packages.length,
@@ -350,7 +399,8 @@ export async function runPrebuildPipeline(
           steps,
           artifactLock,
           signal
-        )
+        );
+      }
     );
 
     // Merge results into root context

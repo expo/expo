@@ -1,6 +1,7 @@
 import { CodedError, NativeModule, registerWebModule } from 'expo-modules-core';
 
-import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
+import type { SpeechOptions, WebVoice } from './Speech.types';
+import { VoiceQuality } from './Speech.types';
 
 //https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
 const MAX_SPEECH_INPUT_LENGTH = 32767;

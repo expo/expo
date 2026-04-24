@@ -1,14 +1,14 @@
 import { parse } from 'url';
 
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
+import type { RuntimePlatform } from './resolvePlatform';
 import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
   parsePlatformHeader,
   resolvePlatformFromUserAgentHeader,
-  RuntimePlatform,
 } from './resolvePlatform';
-import { ServerRequest, ServerResponse } from './server.types';
+import type { ServerRequest, ServerResponse } from './server.types';
 import * as Log from '../../../log';
 
 const debug = require('debug')(

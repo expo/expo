@@ -90,3 +90,9 @@ jobs:
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 30
           FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 8
         run: pnpm expotools native-unit-tests --platform ios
+      - name: 📤 Upload xcresult
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-unit-tests-results
+          path: /tmp/ios-unit-tests-results

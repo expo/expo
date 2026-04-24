@@ -2,7 +2,6 @@ import type { XcodeProject } from 'expo/config-plugins';
 import { readdirSync } from 'node:fs';
 
 import type { Group, PbxGroup, PbxNativeTarget, PbxNativeTargetSection, Target } from '../types';
-import { readFromTemplate } from '../utils';
 import { Constants } from './constants';
 
 export const createFramework = (

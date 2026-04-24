@@ -1,7 +1,7 @@
 import type { SpawnResult } from '@expo/spawn-async';
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { parseInstallCheckOutput } from '../utils/parseInstallCheckOutput';
 import { spawnExpoCLI } from '../utils/spawnExpoCLI';

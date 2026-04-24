@@ -1,4 +1,4 @@
-import { PermissionResponse } from './PermissionsInterface';
+import type { PermissionResponse } from './PermissionsInterface';
 type RequestPermissionMethod<Permission extends PermissionResponse> = () => Promise<Permission>;
 type GetPermissionMethod<Permission extends PermissionResponse> = () => Promise<Permission>;
 type PermissionHookMethods<Permission extends PermissionResponse, Options = never> = {

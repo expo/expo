@@ -45,7 +45,7 @@ export declare class StackView extends React.Component<Props, State> {
     private handleGestureStart;
     private handleGestureEnd;
     private handleGestureCancel;
-    render(): React.JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export {};
 //# sourceMappingURL=StackView.d.ts.map

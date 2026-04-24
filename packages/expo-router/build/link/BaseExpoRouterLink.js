@@ -38,8 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseExpoRouterLink = BaseExpoRouterLink;
-// Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
-// `to` / `action` support removed.
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
@@ -90,15 +89,12 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
         throw new Error('Link: When using `asChild`, you must pass a single child element that will emit the `onPress` event.');
     }
     // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
-    const element = (<Component {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
-        web: {
-            onClick: onPress,
-        },
-        default: { onPress },
-    })}/>);
-    return prefetch ? (<>
-      <Prefetch_1.Prefetch href={href}/>
-      {element}
-    </>) : (element);
+    const element = ((0, jsx_runtime_1.jsx)(Component, { ...props, ...hrefAttrs, ...rest, style: style, ...react_native_1.Platform.select({
+            web: {
+                onClick: onPress,
+            },
+            default: { onPress },
+        }) }));
+    return prefetch ? ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(Prefetch_1.Prefetch, { href: href }), element] })) : (element);
 }
 //# sourceMappingURL=BaseExpoRouterLink.js.map

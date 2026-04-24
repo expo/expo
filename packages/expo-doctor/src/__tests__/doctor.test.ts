@@ -1,5 +1,5 @@
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
-import { DoctorCheck } from '../checks/checks.types';
+import type { DoctorCheck } from '../checks/checks.types';
 import {
   printCheckResultSummaryOnComplete,
   printFailedCheckIssueAndAdvice,

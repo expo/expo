@@ -1,4 +1,4 @@
-import { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
 
 import Text from './Text';
 

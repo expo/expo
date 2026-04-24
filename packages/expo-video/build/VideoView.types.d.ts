@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 import type { VideoPlayer } from './VideoPlayer.types';
 /**
  * Describes how a video should be scaled to fit in a container.
@@ -232,6 +232,14 @@ export type ButtonOptions = {
  */
 export type FullscreenOrientation = 'default' | 'portrait' | 'portraitUp' | 'portraitDown' | 'landscape' | 'landscapeLeft' | 'landscapeRight';
 /**
+ * Determines whether the player keeps fullscreen when Picture in Picture (PiP) stops.
+ * Only has an effect if the player was in fullscreen when PiP started.
+ * - `'always'`: Always re-enter fullscreen when PiP stops.
+ * - `'autoEnter'`: Re-enter fullscreen only when PiP was started automatically by the app going to the background.
+ * - `'never'`: Do not re-enter fullscreen when PiP stops.
+ */
+export type KeepFullscreenOnPiPStopBehavior = 'always' | 'autoEnter' | 'never';
+/**
  * Describes the options for fullscreen video mode.
  */
 export type FullscreenOptions = {
@@ -259,5 +267,13 @@ export type FullscreenOptions = {
      * @platform ios
      */
     autoExitOnRotate?: boolean;
+    /**
+     * Determines whether the player keeps fullscreen when Picture in Picture (PiP) stops.
+     * Only has an effect if the player was in fullscreen when PiP started.
+     *
+     * @default 'autoEnter'
+     * @platform ios
+     */
+    keepFullscreenOnPiPStop?: KeepFullscreenOnPiPStopBehavior;
 };
 //# sourceMappingURL=VideoView.types.d.ts.map

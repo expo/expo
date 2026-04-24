@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeToolbarSearchBarSlot = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const native_1 = require("../../../../toolbar/native");
@@ -17,7 +18,7 @@ const NativeToolbarSearchBarSlot = ({ hidesSharedBackground, hidden, separateBac
     if (hidden) {
         return null;
     }
-    return (<native_1.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={!separateBackground} type="searchBar"/>);
+    return ((0, jsx_runtime_1.jsx)(native_1.RouterToolbarItem, { hidesSharedBackground: hidesSharedBackground, identifier: id, sharesBackground: !separateBackground, type: "searchBar" }));
 };
 exports.NativeToolbarSearchBarSlot = NativeToolbarSearchBarSlot;
 //# sourceMappingURL=native.ios.js.map

@@ -24,6 +24,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 // region Transition types
 
@@ -108,6 +109,7 @@ private fun List<ExitTransitionRecord>.toComposedExitTransition(): ExitTransitio
 
 // endregion
 
+@OptimizedComposeProps
 data class AnimatedVisibilityProps(
   val visible: Boolean = true,
   val enterTransition: List<EnterTransitionRecord>? = null,

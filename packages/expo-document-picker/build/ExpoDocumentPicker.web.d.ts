@@ -1,4 +1,4 @@
-import { DocumentPickerOptions, DocumentPickerResult } from './types';
+import type { DocumentPickerOptions, DocumentPickerResult } from './types';
 declare const _default: {
     getDocumentAsync({ type, multiple, base64, }: DocumentPickerOptions): Promise<DocumentPickerResult>;
 };

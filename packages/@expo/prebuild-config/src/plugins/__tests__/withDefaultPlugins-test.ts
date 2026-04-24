@@ -1,7 +1,7 @@
+import type { ExportedConfig } from '@expo/config-plugins';
 import {
   compileModsAsync,
   evalModsAsync,
-  ExportedConfig,
   IOSConfig,
   withGradleProperties,
   XML,

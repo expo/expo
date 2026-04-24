@@ -1,4 +1,4 @@
-import { createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
 export * from './MediaLibraryNext.types';
@@ -18,6 +18,34 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
             throw new UnavailabilityError('MediaLibrary', 'setFavorite is only available on iOS');
         }
         return super.setFavorite(isFavorite);
+    }
+    // @hidden
+    getMediaSubtypes() {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('MediaLibrary', 'getMediaSubtypes is only available on iOS');
+        }
+        return super.getMediaSubtypes();
+    }
+    // @hidden
+    getLivePhotoVideoUri() {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('MediaLibrary', 'getLivePhotoVideoUri is only available on iOS');
+        }
+        return super.getLivePhotoVideoUri();
+    }
+    // @hidden
+    getIsInCloud() {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('MediaLibrary', 'getIsInCloud is only available on iOS');
+        }
+        return super.getIsInCloud();
+    }
+    // @hidden
+    getOrientation() {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('MediaLibrary', 'getOrientation is only available on iOS');
+        }
+        return super.getOrientation();
     }
 }
 export class Album extends ExpoMediaLibraryNext.Album {

@@ -33,7 +33,7 @@ export function formatProperty(property: [string, Property], parent?: string): F
       );
     });
   } // note: sub-properties are sometimes nested within "items"
-  else if (propertyValue.items && propertyValue.items.properties) {
+  else if (propertyValue.items?.properties) {
     Object.entries(propertyValue.items.properties).forEach(subproperty => {
       subproperties.push(
         formatProperty(subproperty, parent ? `${parent}.${propertyKey}` : propertyKey)

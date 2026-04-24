@@ -15,8 +15,8 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
-  private var firstLoad: Bool = true
   private var firstLoadInitialized: Bool = false
+  private var devMenuInitialized: Bool = false
 
   /**
    * Initializes ReactNativeHostManager instance
@@ -41,17 +41,13 @@ public class ReactNativeHostManager {
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
-    if !(firstLoad && firstLoadInitialized) {
-      cleanupPreviousInstance()
-      initializeInstance()
+    guard firstLoadInitialized, let reactNativeFactory else {
+      fatalError(
+        "loadView called before initialize(). Call ReactNativeHostManager.shared.initialize() first."
+      )
     }
 
-    guard let reactNativeFactory else {
-      fatalError("Trying to load view without initializing reactNativeFactory")
-    }
-
-    firstLoad = false
-    setupDevMenu(moduleName)
+    setupDevMenu()
 
     return reactNativeFactory.rootViewFactory.view(
       withModuleName: moduleName,
@@ -80,17 +76,26 @@ public class ReactNativeHostManager {
       reactNativeDelegate = nil
       reactNativeFactory = nil
     }
+    devMenuInitialized = false
   }
 
   /**
    * Starts React Native (which initializes delegates) and
    * fetches and updates the manifest for dev menu if dev menu is
-   * available
+   * available. Runs at most once per factory — calling startReactNative
+   * multiple times on the same factory would duplicate delegate setup.
    */
-  private func setupDevMenu(_ moduleName: String) {
+  private func setupDevMenu() {
+    #if DEBUG && canImport(EXDevMenu)
+    if devMenuInitialized {
+      return
+    }
+
     guard let reactNativeFactory else {
       fatalError("Trying to setup dev menu without initialized reactNativeFactory")
     }
+
+    devMenuInitialized = true
 
     // Needed to set up delegates (e.g. for expo-dev-menu)
     reactNativeFactory.startReactNative(
@@ -99,7 +104,6 @@ public class ReactNativeHostManager {
       launchOptions: nil
     )
 
-    #if DEBUG && canImport(EXDevMenu)
     ManifestProvider.fetchManifest(bundleURL: reactNativeDelegate?.bundleURL()) { json, url in
       if let json, let url {
         let manifest = ManifestFactory.manifest(forManifestJSON: json)

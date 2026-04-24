@@ -34,6 +34,19 @@ final class AssetCollectionRepository {
     return fetchedCollection
   }
 
+  func get(containing asset: PHAsset) -> [PHAssetCollection] {
+    var collections: [PHAssetCollection] = []
+    let pHFetchResult = PHAssetCollection.fetchAssetCollectionsContaining(
+      asset,
+      with: .album,
+      options: nil
+    )
+    pHFetchResult.enumerateObjects { collection, _, _ in
+      collections.append(collection)
+    }
+    return collections
+  }
+
   func get(byTitle title: String) -> PHAssetCollection? {
     let pHFetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: nil)
     var fetchedCollection: PHAssetCollection?

@@ -1,9 +1,15 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
 import ExponentSpeech from './ExponentSpeech';
-import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice } from './Speech.types';
+import type { SpeechOptions, Voice } from './Speech.types';
 
-export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice };
+export {
+  type SpeechOptions,
+  type SpeechEventCallback,
+  VoiceQuality,
+  type Voice,
+  type WebVoice,
+} from './Speech.types';
 
 type SpeechEventSharedParams = {
   /** The speech utterance or callback ID */

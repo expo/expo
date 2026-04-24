@@ -1,4 +1,4 @@
-import { HorizontalAlignment, HorizontalArrangement, PrimitiveBaseProps, VerticalAlignment, VerticalArrangement } from '../layout-types';
+import { type HorizontalAlignment, type HorizontalArrangement, type PrimitiveBaseProps, type VerticalAlignment, type VerticalArrangement } from '../layout-types';
 export type ColumnProps = {
     children?: React.ReactNode;
     /**
@@ -18,5 +18,5 @@ export type ColumnProps = {
      */
     verticalAlignment?: VerticalAlignment;
 } & PrimitiveBaseProps;
-export declare function Column(props: ColumnProps): import("react").JSX.Element;
+export declare function Column(props: ColumnProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

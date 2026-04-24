@@ -5,24 +5,74 @@ internal import ExpoModulesJSI_Cxx
 
 public struct JavaScriptTypedArray: ~Copyable {
   internal weak let runtime: JavaScriptRuntime?
-  internal let pointee: expo.TypedArray
+  internal let pointee: facebook.jsi.Object
+
+  /**
+   The underlying `ArrayBuffer` backing this typed array. Stored alongside `pointee`
+   so that holding the Swift value keeps the backing store alive on the JS side —
+   the JS garbage collector cannot free the buffer while this reference exists.
+   */
+  internal let arrayBuffer: facebook.jsi.ArrayBuffer
 
   public let kind: Kind
 
-  init(_ runtime: JavaScriptRuntime, _ typedArray: consuming expo.TypedArray) {
+  init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
     self.runtime = runtime
-    self.pointee = typedArray
-    self.kind = Kind(rawValue: Int(pointee.getKind(runtime.pointee).rawValue))!
-    self.byteLength = Int(pointee.getProperty(runtime.pointee, "byteLength").getNumber())
-    self.byteOffset = Int(pointee.getProperty(runtime.pointee, "byteOffset").getNumber())
-    self.length = Int(pointee.getProperty(runtime.pointee, "length").getNumber())
+    self.kind = Kind(rawValue: Int(expo.getTypedArrayKind(runtime.pointee, object).rawValue))!
+    self.byteLength = Int(object.getProperty(runtime.pointee, "byteLength").getNumber())
+    self.byteOffset = Int(object.getProperty(runtime.pointee, "byteOffset").getNumber())
+    self.length = Int(object.getProperty(runtime.pointee, "length").getNumber())
+    self.arrayBuffer = expo.getTypedArrayBuffer(runtime.pointee, object)
+    self.pointee = object
   }
 
-  public func getUnsafeMutableRawPointer() -> UnsafeMutableRawPointer {
+  /**
+   Invokes the closure with a raw buffer pointer covering the typed array's bytes.
+   The pointer is valid only for the duration of the closure and must not escape it.
+   */
+  public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
+    return try body(UnsafeRawBufferPointer(start: startPointer(), count: byteLength))
+  }
+
+  /**
+   Invokes the closure with a mutable raw buffer pointer covering the typed array's bytes.
+   Writes through the buffer are visible to JavaScript. The pointer is valid only for the duration of the closure.
+   */
+  public func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
+    return try body(UnsafeMutableRawBufferPointer(start: startPointer(), count: byteLength))
+  }
+
+  /**
+   Invokes the closure with a typed buffer pointer over the elements of the typed array.
+   The generic type must match the array's element type (e.g. `UInt8` for `Uint8Array`, `Int32` for `Int32Array`);
+   passing a mismatched type reinterprets the bytes and is a programmer error.
+   */
+  public func withUnsafeBufferPointer<T, R>(as type: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
+    return try withUnsafeBytes { bytes in
+      try body(bytes.bindMemory(to: T.self))
+    }
+  }
+
+  /**
+   Invokes the closure with a mutable typed buffer pointer over the elements of the typed array.
+   The generic type must match the array's element type. Writes through the buffer are visible to JavaScript.
+   */
+  public func withUnsafeMutableBufferPointer<T, R>(as type: T.Type, _ body: (UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
+    return try withUnsafeMutableBytes { bytes in
+      try body(bytes.bindMemory(to: T.self))
+    }
+  }
+
+  /**
+   Returns a pointer to the first byte of the typed array's data — the beginning of the underlying
+   ArrayBuffer, advanced by `byteOffset`. The pointer is tied to the ArrayBuffer retained by this
+   value; it is only valid while this `JavaScriptTypedArray` is alive.
+   */
+  private func startPointer() -> UnsafeMutablePointer<UInt8> {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    return pointee.__getRawPointerUnsafe(runtime.pointee)
+    return expo.arrayBufferData(runtime.pointee, arrayBuffer).advanced(by: byteOffset)
   }
 
   // We need to redefine the C++ enum (see TypedArray.h) to expose it to Swift
@@ -71,8 +121,8 @@ public struct JavaScriptTypedArray: ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let arrayBuffer = pointee.getPropertyAsObject(runtime.pointee, "buffer").getArrayBuffer(runtime.pointee)
-    return JavaScriptArrayBuffer(runtime, arrayBuffer)
+    let buffer = pointee.getPropertyAsObject(runtime.pointee, "buffer").getArrayBuffer(runtime.pointee)
+    return JavaScriptArrayBuffer(runtime, buffer)
   }
 
   /**
@@ -82,7 +132,7 @@ public struct JavaScriptTypedArray: ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, expo.valueFromTypedArray(runtime.pointee, pointee))
+    return JavaScriptValue(runtime, facebook.jsi.Value(runtime.pointee, pointee))
   }
 
   // MARK: - Providing JavaScriptObject API

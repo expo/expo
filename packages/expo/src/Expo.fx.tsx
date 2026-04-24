@@ -2,6 +2,8 @@
 import './winter';
 import './async-require';
 import 'expo-asset';
+
+// @ts-expect-error: Virtual import
 import 'expo/virtual/rsc';
 
 import { AppRegistry, NativeModules, LogBox } from 'react-native';

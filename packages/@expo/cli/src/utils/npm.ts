@@ -1,5 +1,5 @@
 import { IOSConfig } from '@expo/config-plugins';
-import { JSONValue } from '@expo/json-file';
+import type { JSONValue } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import { TarTypeFlag } from 'multitars';
 import assert from 'node:assert';

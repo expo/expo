@@ -5,7 +5,7 @@ import { globSync } from 'glob';
 import XML from 'xml-js';
 import YAML from 'yaml';
 
-import {
+import type {
   Closure,
   CursorInfoOutput,
   FileType,

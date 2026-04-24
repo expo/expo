@@ -1,10 +1,3 @@
-/**
- * Copyright (c) Expo.
- * Copyright (c) Nicolas Gallagher.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 import { processColor } from 'react-native';
 const isWebColor = (color) => color === 'currentcolor' ||
     color === 'currentColor' ||

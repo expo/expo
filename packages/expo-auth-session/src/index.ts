@@ -13,5 +13,5 @@ export * from './TokenRequest.types';
 export * from './providers/Provider.types';
 
 // Provider specific types
-export { GoogleAuthRequestConfig } from './providers/Google';
-export { FacebookAuthRequestConfig } from './providers/Facebook';
+export type { GoogleAuthRequestConfig } from './providers/Google';
+export type { FacebookAuthRequestConfig } from './providers/Facebook';

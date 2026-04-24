@@ -1,19 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAndroidSplashConfig = getAndroidSplashConfig;
-function getAndroidSplashConfig({ android = {}, resizeMode = 'contain', ...rest }) {
+function getAndroidSplashConfig({ android = {}, ...rest }) {
     // Respect the splash screen object, don't mix and match across different splash screen objects
     // in case the user wants the top level splash to apply to every platform except android.
-    const { dark, ...root } = {
-        ...rest,
-        ...android,
-        resizeMode: android.resizeMode ?? resizeMode,
-        dark: { ...rest.dark, ...android.dark },
-    };
+    const { dark, ...root } = { ...rest, ...android, dark: { ...rest.dark, ...android.dark } };
     return {
         drawable: root.drawable,
         imageWidth: root.imageWidth ?? 100,
-        resizeMode: root.resizeMode,
+        resizeMode: root.resizeMode ?? 'contain',
         backgroundColor: root.backgroundColor ?? '#ffffff',
         image: root.image,
         mdpi: root.mdpi ?? root.image,

@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'Community Picker replacement',
+    route: 'ui/community-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPickerScreen'));
+    },
+  },
+  {
     name: 'Community SegmentedControl replacement',
     route: 'ui/community-segmented-control',
     options: {},

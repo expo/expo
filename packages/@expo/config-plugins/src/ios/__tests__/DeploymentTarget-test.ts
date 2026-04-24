@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import { vol } from 'memfs';
 import path from 'path';
 import xcode from 'xcode';

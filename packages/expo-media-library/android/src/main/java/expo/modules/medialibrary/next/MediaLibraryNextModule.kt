@@ -95,6 +95,10 @@ class MediaLibraryNextModule : Module() {
         self.getInfo()
       }
 
+      AsyncFunction("getAlbums") Coroutine { self: Asset ->
+        self.getAlbums()
+      }
+
       AsyncFunction("getLocation") Coroutine { self: Asset ->
         self.getLocation()
       }

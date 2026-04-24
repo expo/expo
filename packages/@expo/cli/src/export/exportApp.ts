@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -20,14 +20,9 @@ import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportS
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
-import { Options } from './resolveOptions';
-import {
-  ExportAssetMap,
-  BundleOutput,
-  getFilesFromSerialAssets,
-  persistMetroFilesAsync,
-  BundleAssetWithFileHashes,
-} from './saveAssets';
+import type { Options } from './resolveOptions';
+import type { ExportAssetMap, BundleOutput, BundleAssetWithFileHashes } from './saveAssets';
+import { getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap } from './writeContents';
 import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';

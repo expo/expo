@@ -27,3 +27,4 @@ Object.defineProperty(exports, "CLIError", { enumerable: true, get: function () 
 __exportStar(require("./ios"), exports);
 __exportStar(require("./prebuild"), exports);
 __exportStar(require("./spinner"), exports);
+//# sourceMappingURL=index.js.map
