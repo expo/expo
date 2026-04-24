@@ -82,3 +82,4 @@ function formatTable(columns, rows) {
     const body = rows.map((row) => columns.map((col, i) => String(row[col] ?? '').padEnd(widths[i])).join(' | '));
     return [header, separator, ...body].join('\n');
 }
+//# sourceMappingURL=index.js.map
