@@ -45,7 +45,7 @@ class TypeConverterCollection<Type : Any>(
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): Type {
     val possibleConverters = converters
       .map { (key, converter) -> key to converter }
-      .filter { (key, _) -> key.jClass.isInstance(value) }
+      .filter { (key, _) -> key.jClass.toBoxedIfPrimitive().isInstance(value) }
 
     if (possibleConverters.isEmpty()) {
       // We don't have a converter for Dynamic, but we can try to convert it to ExpoDynamic
@@ -93,4 +93,16 @@ class TypeConverterCollection<Type : Any>(
       }.toTypedArray()
     )
   }
+}
+
+private fun Class<*>.toBoxedIfPrimitive(): Class<*> = when (this) {
+  Int::class.java -> Integer::class.java
+  Long::class.java -> java.lang.Long::class.java
+  Double::class.java -> java.lang.Double::class.java
+  Float::class.java -> java.lang.Float::class.java
+  Boolean::class.java -> java.lang.Boolean::class.java
+  Byte::class.java -> java.lang.Byte::class.java
+  Short::class.java -> java.lang.Short::class.java
+  Char::class.java -> java.lang.Character::class.java
+  else -> this
 }
