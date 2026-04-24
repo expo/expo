@@ -36,6 +36,7 @@ export default (program: Command) => {
 
 async function main(packageNames: string[], options: ActionOptions): Promise<void> {
   const allPackages = await getListOfPackagesAsync();
+  const monorepoPackageNames = new Set(allPackages.map((p) => p.packageName));
 
   if (!packageNames.length) {
     logger.error('Specify at least one package name.');
@@ -95,7 +96,7 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
         }));
       } else {
         logger.log(`\n${green.bold(label)}`);
-        printTable(filtered);
+        printTable(filtered, monorepoPackageNames);
       }
     }
   }
@@ -105,13 +106,23 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
   }
 }
 
-function printTable(deps: ScannedDependency[]) {
-  const rows = deps.map((d) => ({
-    dep: d.packageName,
-    kind: kindLabel(d.kind),
-    hints: buildHints(d),
-    refs: d.files.map((f) => `${f.relativePath}:${f.line}`),
-  }));
+function printTable(deps: ScannedDependency[], monorepoPackageNames: Set<string>) {
+  const rows = deps.map((d) => {
+    const isInternal = monorepoPackageNames.has(d.packageName);
+    return {
+      dep: isInternal ? `${d.packageName}*` : d.packageName,
+      isInternal,
+      kind: kindLabel(d.kind),
+      hints: buildHints(d),
+      refs: d.files.map((f) => `${f.relativePath}:${f.line}`),
+    };
+  });
+
+  // Sort internal dependencies first, then alphabetically
+  rows.sort((a, b) => {
+    if (a.isInternal !== b.isInternal) return a.isInternal ? -1 : 1;
+    return a.dep.localeCompare(b.dep);
+  });
 
   const GAP = 2;
   const depW = Math.max('Dependency'.length, ...rows.map((r) => r.dep.length)) + GAP;
@@ -143,7 +154,7 @@ function printTable(deps: ScannedDependency[]) {
     const firstRef = row.refs[0] ?? '';
     logger.log(
       indent +
-        row.dep.padEnd(depW) +
+        depCell(row.dep, row.isInternal, depW) +
         coloredCell(row.kind, kindW) +
         hintCell(row.hints, hintsW) +
         gray(firstRef)
@@ -179,6 +190,11 @@ function kindLabel(kind: DependencyKind | undefined): string {
     default:
       return kind;
   }
+}
+
+function depCell(text: string, isInternal: boolean, width: number): string {
+  const colored = isInternal ? green(text) : text;
+  return colored + ' '.repeat(Math.max(0, width - text.length));
 }
 
 /** Render a kind cell: colored text + plain padding to fill the column width */
