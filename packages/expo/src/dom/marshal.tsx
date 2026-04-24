@@ -1,16 +1,17 @@
 import type { BridgeMessage, JSONValue } from './dom.types';
 import { DOM_EVENT, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
+import { getWebViewBridge, hasWebViewBridge } from './webview-bridge';
 
 const IS_DOM =
   typeof window !== 'undefined' &&
   typeof window.$$EXPO_INITIAL_PROPS !== 'undefined' &&
-  typeof window.ReactNativeWebView !== 'undefined';
+  hasWebViewBridge();
 
 const emit = <TData extends JSONValue>(message: BridgeMessage<TData>) => {
   if (!IS_DOM) {
     return;
   }
-  window.ReactNativeWebView.postMessage(JSON.stringify(message));
+  getWebViewBridge().postMessage(JSON.stringify(message));
 };
 
 export const addEventListener = <TData extends JSONValue>(
