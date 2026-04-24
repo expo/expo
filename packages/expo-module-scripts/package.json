@@ -10,10 +10,10 @@
   "exports": {
     "./package.json": "./package.json",
     "./babel.config.*": {
-      "require": "./babel.config.*.js"
+      "require": "./babel.config.*.cjs"
     },
     "./babel.config.*.js": {
-      "require": "./babel.config.*.js"
+      "require": "./babel.config.*.cjs"
     },
     "./eslintrc.base.js": {
       "require": "./eslintrc.base.cjs"
@@ -78,7 +78,6 @@
     "@testing-library/react-native": "^13.3.0",
     "@types/jest": "^29.2.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",
-    "babel-preset-expo": "workspace:~55.0.8",
     "commander": "^12.1.0",
     "eslint-config-universe": "workspace:^15.0.3",
     "glob": "^13.0.0",
