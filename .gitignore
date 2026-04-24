@@ -18,6 +18,9 @@ yarn-error.log
 # Turborepo
 .turbo/
 
+# build outputs
+/packages/**/build/
+
 # Ruby
 .direnv
 

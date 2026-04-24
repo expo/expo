@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/native-tabs/utils/index.ts"],"names":[],"mappings":";;;AAAA,iCAAwD;AAA/C,sHAAA,6BAA6B,OAAA;AACtC,+BAAsD;AAA7C,oHAAA,4BAA4B,OAAA","sourcesContent":["export { convertLabelStylePropToObject } from './label';\nexport { convertIconColorPropToObject } from './icon';\n"]}

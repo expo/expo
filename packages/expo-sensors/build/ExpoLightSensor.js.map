@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoLightSensor.js","sourceRoot":"","sources":["../src/ExpoLightSensor.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,iBAAiB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoLightSensor');\n"]}
