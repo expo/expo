@@ -36,6 +36,14 @@ Configs live in `packages/expo-modules-autolinking/external-configs/ios/<package
 - **Config location**: `packages/expo-modules-autolinking/external-configs/ios/<package-name>/spm.config.json`
 - **Source location**: `node_modules/<package-name>/` (resolved at build time)
 - **Output location**: `packages/precompile/.build/<package-name>/output/<flavor>/xcframeworks/`
+- **Remote fallback**: external package prebuilds can download missing tarballs from a bucket when `EXPO_PRECOMPILED_EXTERNAL_MODULES_URL` is set.
+
+### Remote Artifact Downloads
+
+Remote downloads are opt-in via `EXPO_PRECOMPILED_EXTERNAL_MODULES_URL`.
+
+- Supports `gs://<bucket-name>` and HTTPS URLs. `gs://` is translated to `https://storage.googleapis.com/<bucket-name>` at download time.
+- Final download path: `<baseUrl>/<npm-package>/output/<packageVersion>/<reactNativeVersion>/<hermesVersion>/<flavor>/xcframeworks/<Product>.tar.gz` when versions are known, otherwise `<baseUrl>/<npm-package>/output/<flavor>/xcframeworks/<Product>.tar.gz`
 
 ### The SPMPackageSource Interface
 
