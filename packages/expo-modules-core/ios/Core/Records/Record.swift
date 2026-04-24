@@ -68,6 +68,7 @@ public extension Record {
 
   @JavaScriptActor
   func update(withObject object: borrowing JavaScriptObject, appContext: AppContext) throws {
+    // Using a set keeps declared-field lookups O(1) when selectively hydrating the record.
     let propertyNames = Set(object.getPropertyNames())
 
     try fieldsOf(self).forEach { field in

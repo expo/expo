@@ -27,8 +27,8 @@ struct AsyncFunctionTests {
         promise.resolve(record)
       }
 
-      AsyncFunction("resolvesRecordWithUndefined") { (promise: Promise) in
-        promise.resolve(WithUndefinedRecord())
+      AsyncFunction("resolvesRecordWithUndefined") {
+        return WithUndefinedRecord()
       }
 
       AsyncFunction("returnsOptionalString") { (returnNil: Bool) -> String? in
@@ -67,8 +67,8 @@ struct AsyncFunctionTests {
     try await expect(equals: "resolved")
   }
 
-  @Test("converts a Record with undefined fields resolved via the manual promise path")
-  func testResolvesRecordWithUndefined() async throws {
+  @Test
+  func `converts a Record with undefined fields returned from async function`() async throws {
     let result = try await runtime.evalAsync("expo.modules.TestModule.resolvesRecordWithUndefined()")
     let object = try result.asObject()
 
