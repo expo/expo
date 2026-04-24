@@ -6,9 +6,8 @@
       "outputs": ["build/**"],
       "dependsOn": [
         "@expo/config#build",
-        "@expo/metro-config#build",
-        "expo-modules-autolinking#build",
-        "expo-modules-core#build"
+        "@expo/env#build",
+        "@expo/json-file#build"
       ]
     }
   }
