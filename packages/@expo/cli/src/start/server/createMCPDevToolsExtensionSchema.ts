@@ -29,7 +29,7 @@ import type { DevToolsPlugin } from './DevToolsPlugin';
  *     "foo": { "type": "string", "description": "Foo description (Used by: \"cmd1\")" },
  *     ...
  *   },
- *   "required": ["command"],
+ *   "required": ["command", "id"],
  *   "additionalProperties": false
  * }
  * ```
@@ -103,6 +103,15 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPlugin) {
   const schema = z
     .object({
       command: z.enum(commandNames).describe(commandDescription),
+      id: z
+        .string()
+        .describe(
+          "Required. The id of the connected app to target (e.g. '7015ba42f21f015f608dd1beec9f460310eaac3f-1'). " +
+            'Get this value by calling expo-cli-list-apps first. If there are multiple apps connected, you MUST ' +
+            'present the user with a tool for selecting which app to target, then STOP and wait for the user to respond with their selection. ' +
+            'Do NOT proceed, guess, or pick a default. Only use the id the user explicitly selected. ' +
+            'If the user has already selected an app earlier in the conversation, reuse that id without asking again.'
+        ),
       ...allParameters,
     })
     .strict(); // .strict() adds additionalProperties: false

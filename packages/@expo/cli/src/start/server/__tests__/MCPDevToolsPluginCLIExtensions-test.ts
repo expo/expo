@@ -5,14 +5,20 @@ import type { DevToolsPluginCommand } from '../DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from '../DevToolsPluginCliExtensionExecutor';
 import type { McpServer } from '../MCP';
 import { addMcpCapabilities } from '../MCPDevToolsPluginCLIExtensions';
+import { queryAllInspectorAppsAsync } from '../middleware/inspector/JsInspector';
 
 jest.mock('../DevToolsPluginCliExtensionExecutor');
+jest.mock('../middleware/inspector/JsInspector');
 jest.mock('../../../log', () => ({
   Log: {
     error: jest.fn(),
     log: jest.fn(),
   },
 }));
+
+const mockedQueryAllInspectorAppsAsync = queryAllInspectorAppsAsync as jest.MockedFunction<
+  typeof queryAllInspectorAppsAsync
+>;
 
 const MockedExecutor = DevToolsPluginCliExtensionExecutor as jest.MockedClass<
   typeof DevToolsPluginCliExtensionExecutor
@@ -21,6 +27,28 @@ const MockedExecutor = DevToolsPluginCliExtensionExecutor as jest.MockedClass<
 const PROJECT_ROOT = '/tmp/project';
 
 let executeMock: jest.Mock;
+
+const MOCK_APP = {
+  id: '1',
+  title: 'Test App',
+  appId: 'com.test.app',
+  description: 'Test',
+  type: 'node' as const,
+  devtoolsFrontendUrl: '',
+  webSocketDebuggerUrl: '',
+  deviceName: 'iPhone 15',
+};
+
+const MOCK_APP_2 = {
+  id: '2',
+  title: 'Test App 2',
+  appId: 'com.test.app2',
+  description: 'Test 2',
+  type: 'node' as const,
+  devtoolsFrontendUrl: '',
+  webSocketDebuggerUrl: '',
+  deviceName: 'Pixel 8',
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -31,6 +59,7 @@ beforeEach(() => {
         execute: executeMock,
       }) as unknown as InstanceType<typeof DevToolsPluginCliExtensionExecutor>
   );
+  mockedQueryAllInspectorAppsAsync.mockResolvedValue([MOCK_APP]);
 });
 
 describe(addMcpCapabilities, () => {
@@ -51,17 +80,19 @@ describe(addMcpCapabilities, () => {
     await addMcpCapabilities(mcpServer, devServerManager);
 
     expect(queryPluginsAsync).toHaveBeenCalledTimes(1);
-    expect(registerTool).toHaveBeenCalledTimes(1);
+    // expo-inspector + 1 plugin tool
+    expect(registerTool).toHaveBeenCalledTimes(2);
 
-    const [toolName, toolDefinition, toolHandler] = registerTool.mock.calls[0];
+    // First call is expo-inspector, second is the plugin
+    const [toolName, toolDefinition, toolHandler] = registerTool.mock.calls[1];
     expect(toolName).toBe('test-plugin');
     expect(toolDefinition.title).toBe('test-plugin');
     expect(toolDefinition.description).toBe('Test MCP plugin');
     expect(typeof toolHandler).toBe('function');
 
     const schema = toolDefinition.inputSchema.parameters;
-    expect(schema.safeParse({ command: 'first-command', foo: 'bar' }).success).toBe(true);
-    expect(schema.safeParse({ command: 'second-command' }).success).toBe(true);
+    expect(schema.safeParse({ command: 'first-command', id: '1', foo: 'bar' }).success).toBe(true);
+    expect(schema.safeParse({ command: 'second-command', id: '1' }).success).toBe(true);
     expect(MockedExecutor).not.toHaveBeenCalled();
   });
 
@@ -88,10 +119,12 @@ describe(addMcpCapabilities, () => {
 
     await addMcpCapabilities(mcpServer, devServerManager);
 
-    const [, , handler] = registerTool.mock.calls[0];
+    // First call is expo-inspector, second is the plugin
+    const [, , handler] = registerTool.mock.calls[1];
     const result = await handler({
       parameters: {
         command: 'run-analysis',
+        id: '1',
         path: '/tmp/data',
       },
     });
@@ -102,6 +135,7 @@ describe(addMcpCapabilities, () => {
       command: 'run-analysis',
       args: { path: '/tmp/data' },
       metroServerOrigin: 'http://localhost:19000',
+      app: MOCK_APP,
     });
     expect(getJsInspectorBaseUrl).toHaveBeenCalledTimes(1);
     expect(result).toEqual({
@@ -124,6 +158,47 @@ describe(addMcpCapabilities, () => {
     });
   });
 
+  it('resolves the correct app when id is provided', async () => {
+    const command = createCommand({ name: 'run' });
+    const plugin = createPlugin('test-plugin', 'Test Plugin', [command]);
+    const { devServerManager } = createDevServerManager([plugin]);
+    const registerTool = jest.fn();
+    const mcpServer = { registerTool } as unknown as McpServer;
+
+    mockedQueryAllInspectorAppsAsync.mockResolvedValue([MOCK_APP, MOCK_APP_2]);
+    executeMock.mockResolvedValue([]);
+
+    await addMcpCapabilities(mcpServer, devServerManager);
+    const [, , handler] = registerTool.mock.calls[1];
+    await handler({
+      parameters: { command: 'run', id: '2' },
+    });
+
+    expect(executeMock).toHaveBeenCalledWith(expect.objectContaining({ app: MOCK_APP_2 }));
+  });
+
+  it('returns error when id does not match any connected app', async () => {
+    const command = createCommand({ name: 'run' });
+    const plugin = createPlugin('test-plugin', 'Test Plugin', [command]);
+    const { devServerManager } = createDevServerManager([plugin]);
+    const registerTool = jest.fn();
+    const mcpServer = { registerTool } as unknown as McpServer;
+
+    executeMock.mockResolvedValue([]);
+
+    await addMcpCapabilities(mcpServer, devServerManager);
+    const [, , handler] = registerTool.mock.calls[1];
+    const result = await handler({
+      parameters: { command: 'run', id: 'nonexistent-id' },
+    });
+
+    expect(result).toEqual({
+      content: [{ type: 'text', text: 'No connected app found with ID: nonexistent-id' }],
+      isError: true,
+    });
+    expect(executeMock).not.toHaveBeenCalled();
+  });
+
   it('returns error output when command execution fails', async () => {
     const command = createCommand({ name: 'failing-command' });
     const plugin = createPlugin('broken-plugin', 'Broken Plugin', [command]);
@@ -134,9 +209,10 @@ describe(addMcpCapabilities, () => {
     executeMock.mockRejectedValue(error);
 
     await addMcpCapabilities(mcpServer, devServerManager);
-    const [, , handler] = registerTool.mock.calls[0];
+    // First call is expo-inspector, second is the plugin
+    const [, , handler] = registerTool.mock.calls[1];
     const response = await handler({
-      parameters: { command: 'failing-command' },
+      parameters: { command: 'failing-command', id: '1' },
     });
 
     const logError = Log.error as jest.Mock;
@@ -178,7 +254,9 @@ describe(addMcpCapabilities, () => {
     await addMcpCapabilities(mcpServer, devServerManager);
 
     expect(queryPluginsAsync).toHaveBeenCalledTimes(1);
-    expect(registerTool).not.toHaveBeenCalled();
+    // Only expo-inspector is registered, no plugin tools
+    expect(registerTool).toHaveBeenCalledTimes(1);
+    expect(registerTool.mock.calls[0][0]).toBe('expo-cli-list-apps');
   });
 });
 
