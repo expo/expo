@@ -1,4 +1,124 @@
----
+---import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
+
+export default function App() {
+  const [page, setPage] = useState("home");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+
+  const whatsappNumber = "201278085839"; // رقمك
+
+  const sendOrder = () => {
+    const msg = `طلب جديد:
+الاسم: ${name}
+الهاتف: ${phone}
+من: ${from}
+إلى: ${to}`;
+
+    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
+
+    Alert.alert("تم", "سيتم فتح واتساب لإرسال الطلب");
+    console.log(url);
+  };
+
+  if (page === "home") {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>🚀 تطبيق سمسطا توصيل</Text>
+
+        <TouchableOpacity style={styles.btn} onPress={() => setPage("order")}>
+          <Text style={styles.btnText}>🛒 طلب توصيل</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.btn} onPress={() => setPage("driver")}>
+          <Text style={styles.btnText}>🚖 تسجيل سائق</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (page === "order") {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>🛒 طلب توصيل</Text>
+
+        <TextInput placeholder="الاسم" style={styles.input} onChangeText={setName} />
+        <TextInput placeholder="رقم الهاتف" style={styles.input} onChangeText={setPhone} />
+        <TextInput placeholder="من" style={styles.input} onChangeText={setFrom} />
+        <TextInput placeholder="إلى" style={styles.input} onChangeText={setTo} />
+
+        <TouchableOpacity style={styles.btn} onPress={sendOrder}>
+          <Text style={styles.btnText}>📩 إرسال على واتساب</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setPage("home")}>
+          <Text style={styles.back}>⬅ رجوع</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (page === "driver") {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>🚖 تسجيل السائق</Text>
+
+        <TextInput placeholder="اسم السائق" style={styles.input} />
+        <TextInput placeholder="رقم الهاتف" style={styles.input} />
+
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => Alert.alert("تم", "تم تسجيل السائق (نموذج)")}
+        >
+          <Text style={styles.btnText}>تسجيل</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setPage("home")}>
+          <Text style={styles.back}>⬅ رجوع</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: "#fff",
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 8,
+  },
+  btn: {
+    backgroundColor: "#007bff",
+    padding: 12,
+    marginVertical: 10,
+    borderRadius: 8,
+  },
+  btnText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  back: {
+    textAlign: "center",
+    marginTop: 10,
+    color: "red",
+  },
+});
 title: Introduction to development builds
 sidebar_title: Introduction
 description: Why use development builds and how to get started.
