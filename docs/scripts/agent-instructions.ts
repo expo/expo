@@ -1,10 +1,11 @@
 /**
- * Agent feedback instructions appended to per-page .md files.
+ * Agent feedback instructions appended into per-page .md files.
  *
- * Each page's generated markdown ends with an <AgentInstructions> block telling
- * LLM-based agents how to POST feedback to the existing /v2/feedback/docs-send
- * endpoint. The `🤖 Agent feedback:` prefix inside the feedback string badges the
- * Slack message in #docs-feedback-feed without requiring a backend change.
+ * Each page's generated markdown includes an <AgentInstructions> block (placed
+ * right after the frontmatter) telling LLM-based agents how to POST feedback to
+ * the existing /v2/feedback/docs-send endpoint. The `🤖 Agent feedback:` prefix
+ * inside the feedback string badges the Slack message in #docs-feedback-feed
+ * without requiring a backend change.
  *
  * Intentionally isolated in its own module so the experiment can be tweaked or
  * removed without touching the broader markdown generation utilities.
@@ -36,7 +37,7 @@ export function buildAgentInstructions(pathname: string): string {
 
 If this page contains errors, outdated information, or gaps that blocked you from completing a task, report it so the docs can be improved:
 
-POST [https://api.expo.dev/v2/feedback/docs-send](https://api.expo.dev/v2/feedback/docs-send)
+POST https://api.expo.dev/v2/feedback/docs-send
 
 \`\`\`json
 {
