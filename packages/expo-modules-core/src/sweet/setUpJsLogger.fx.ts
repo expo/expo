@@ -1,6 +1,8 @@
 import { CodedError } from '../errors/CodedError';
 import { requireOptionalNativeModule } from '../requireNativeModule';
 
+declare const window: typeof globalThis | undefined;
+
 type LogListener = {
   action: (...data: any[]) => void;
   eventName: string;
