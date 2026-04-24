@@ -4077,8 +4077,8 @@ importers:
         specifier: ^7.5.8
         version: 7.7.1
       '@vercel/ncc':
-        specifier: 0.38.3
-        version: 0.38.3
+        specifier: ^0.38.3
+        version: 0.38.4
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
@@ -9514,10 +9514,6 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
-
-  '@vercel/ncc@0.38.3':
-    resolution: {integrity: sha512-rnK6hJBS6mwc+Bkab+PGPs9OiS0i/3kdTO+CkI8V0/VrW3vmz7O2Pxjw/owOlmo6PKEIxRSeZKv/kuL9itnpYA==}
-    hasBin: true
 
   '@vercel/ncc@0.38.4':
     resolution: {integrity: sha512-8LwjnlP39s08C08J5NstzriPvW1SP8Zfpp1BvC2sI35kPeZnHfxVkCwu4/+Wodgnd60UtT1n8K8zw+Mp7J9JmQ==}
@@ -19854,8 +19850,6 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
-
-  '@vercel/ncc@0.38.3': {}
 
   '@vercel/ncc@0.38.4': {}
 

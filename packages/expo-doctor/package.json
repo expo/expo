@@ -45,7 +45,7 @@
     "@types/debug": "^4.1.8",
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",
-    "@vercel/ncc": "0.38.3",
+    "@vercel/ncc": "^0.38.3",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
     "expo-modules-autolinking": "workspace:*",
