@@ -3,8 +3,13 @@
   "dangerouslyDisablePackageManagerCheck": true,
   "tasks": {
     "build": {
-      "outputs": ["build/**", "dist/**", "lib/**"],
-      "outputLogs": "errors-only",
+      "outputs": [
+        "build/**",
+        "plugin/build/**",
+        "cli/build/**",
+        "utils/build/**"
+      ],
+      "outputLogs": "new-only",
       "dependsOn": ["^build"]
     },
     "lint": {
