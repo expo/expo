@@ -17,7 +17,7 @@
         "default": "./build/index.d.ts"
       },
       "source": "./src/index.ts",
-      "default": "./src/index.js"
+      "default": "./build/index.js"
     },
     "./types": "./types.d.ts",
     "./src/polyfill/dangerous-internal": {
