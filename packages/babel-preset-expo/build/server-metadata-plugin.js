@@ -68,3 +68,4 @@ function markForConstantFolding(state) {
     assertExpoMetadata(state.file.metadata);
     state.file.metadata.performConstantFolding = true;
 }
+//# sourceMappingURL=server-metadata-plugin.js.map
