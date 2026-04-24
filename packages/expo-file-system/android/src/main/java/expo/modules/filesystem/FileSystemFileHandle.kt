@@ -3,7 +3,6 @@ package expo.modules.filesystem
 import android.content.ContentResolver
 import android.net.Uri
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Enumerable
 import java.io.File
