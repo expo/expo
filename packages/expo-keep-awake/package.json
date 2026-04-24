@@ -9,11 +9,15 @@
     ".": {
       "types": "./build/index.d.ts",
       "default": "./src/index.ts"
+    },
+    "./*": {
+      "types": "./build/*.d.ts",
+      "default": "./src/*.ts"
     }
   },
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-module build-src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

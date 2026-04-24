@@ -4648,6 +4648,9 @@ importers:
       '@react-native/jest-preset':
         specifier: 0.85.2
         version: 0.85.2(@babel/core@7.29.0)(react@19.2.3)
+      '@swc/core':
+        specifier: ^1.15.18
+        version: 1.15.18
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.2)))(react-native@0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)

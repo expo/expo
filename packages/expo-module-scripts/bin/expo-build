@@ -1,0 +1,271 @@
+#!/usr/bin/env node
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { parseArgs } from 'node:util';
+
+import { transform } from '@swc/core';
+import ts from 'typescript';
+
+const cwd = process.cwd();
+
+const VALID_FORMATS = new Set(['esm', 'cjs', 'script']);
+const EXCLUDED_DIRS = new Set([/*TODO*/]);
+const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
+
+const { values: flags, positionals } = parseArgs({
+  options: {
+    base: { type: 'string', short: 'b', default: '.' },
+  },
+  allowPositionals: true,
+});
+
+// Parse positional args: [format:]input[=output]
+function parseTargets(positionals) {
+  if (positionals.length === 0) {
+    return [{ format: 'esm', input: 'src', output: 'build' }];
+  }
+
+  return positionals.map((arg) => {
+    let format = 'esm';
+    let rest = arg;
+
+    const colonIdx = rest.indexOf(':');
+    if (colonIdx !== -1) {
+      format = rest.slice(0, colonIdx);
+      rest = rest.slice(colonIdx + 1);
+    }
+
+    if (!VALID_FORMATS.has(format)) {
+      console.error(`Invalid format "${format}" in "${arg}". Expected "esm", "cjs", or "script".`);
+      process.exit(1);
+    }
+
+    const eqIdx = rest.indexOf('=');
+    const input = eqIdx !== -1 ? rest.slice(0, eqIdx) : rest;
+    const output = eqIdx !== -1 ? rest.slice(eqIdx + 1) : 'build';
+
+    if (!input) {
+      console.error(`Missing input directory in "${arg}".`);
+      process.exit(1);
+    }
+
+    return { format, input, output };
+  });
+}
+
+function createBuildHost(baseDir) {
+  const configPath = path.join(baseDir, 'tsconfig.json');
+  const parsed = ts.getParsedCommandLineOfConfigFile(
+    configPath,
+    { emitDeclarationOnly: true, declaration: true, declarationMap: false },
+    {
+      ...ts.sys,
+      onUnRecoverableConfigFileDiag(diagnostic) {
+        console.error(
+          ts.flattenDiagnosticMessageText(diagnostic.messageText, ts.sys.newLine)
+        );
+        process.exit(1);
+      },
+    }
+  );
+
+  const compilerHost = ts.createCompilerHost(parsed.options);
+  compilerHost.getCurrentDirectory = () => baseDir;
+
+  const writtenFiles = new Set();
+
+  function writeFileIfChanged(filePath, content) {
+    const resolved = path.resolve(filePath);
+    writtenFiles.add(resolved);
+    try {
+      if (fs.readFileSync(resolved, 'utf-8') === content) return;
+    } catch {}
+    fs.mkdirSync(path.dirname(resolved), { recursive: true });
+    fs.writeFileSync(resolved, content);
+  }
+
+  compilerHost.writeFile = (fileName, text) => {
+    writeFileIfChanged(fileName, text);
+  };
+
+  return { parsed, compilerHost, writtenFiles, writeFileIfChanged };
+}
+
+async function transformSources(files, srcDir, outDir, format, writeFileIfChanged) {
+  const moduleConfig =
+    format === 'cjs'
+      ? { type: 'commonjs', lazy: true, importInterop: 'node', exportInteropAnnotation: true }
+      : format === 'script'
+        ? { type: 'commonjs', strict: true, strictMode: false, noInterop: true }
+        : { type: 'es6' };
+
+  await Promise.all(
+    files.map(async (file) => {
+      const sourcePath = path.join(srcDir, file);
+      const sourceText = await fs.promises.readFile(sourcePath, 'utf-8');
+
+      const result = await transform(sourceText, {
+        filename: file,
+        isModule: 'unknown',
+        sourceMaps: true,
+        module: moduleConfig,
+        jsc: {
+          target: 'esnext',
+          loose: true,
+          parser: file.endsWith('.ts') || file.endsWith('.tsx')
+            ? { syntax: 'typescript', tsx: file.endsWith('.tsx'), dynamicImport: true }
+            : { syntax: 'ecmascript', jsx: file.endsWith('.jsx'), dynamicImport: true },
+          transform: {
+            react: { runtime: 'automatic' },
+          },
+        },
+      });
+
+      const outFile = path.join(outDir, file.replace(/\.[jt]sx?$/, '.js'));
+
+      let code = result.code;
+      if (result.map) {
+        const mapFile = path.basename(outFile) + '.map';
+        code += `\n//# sourceMappingURL=${mapFile}\n`;
+        const mapObj = JSON.parse(result.map);
+        mapObj.sourcesContent = mapObj.sources.map(() => null);
+        writeFileIfChanged(path.join(path.dirname(outFile), mapFile), JSON.stringify(mapObj));
+      }
+
+      writeFileIfChanged(outFile, code);
+    })
+  );
+}
+
+function emitDeclarations(rootFiles, parsed, compilerHost) {
+  const program = ts.createProgram(rootFiles, parsed.options, compilerHost);
+  const result = program.emit();
+
+  if (result.emitSkipped) {
+    const diagnostics = ts.getPreEmitDiagnostics(program).concat(result.diagnostics);
+    console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, compilerHost));
+    process.exit(1);
+  }
+}
+
+async function findOutputFiles(dir) {
+  let entries;
+  try {
+    entries = await fs.promises.readdir(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const files = [];
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isSymbolicLink()) continue;
+    if (entry.isDirectory()) {
+      files.push(...(await findOutputFiles(fullPath)));
+    } else {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+async function findSourceFiles(dir, rel = '') {
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    if (entry.isSymbolicLink()) continue;
+    const relPath = rel ? `${rel}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      if (EXCLUDED_DIRS.has(entry.name) || /^__.*__$/.test(entry.name)) {
+        continue;
+      }
+      files.push(...(await findSourceFiles(path.join(dir, entry.name), relPath)));
+    } else if (entry.name.endsWith('.d.ts') || entry.name.endsWith('.d.tsx')) {
+      files.push({ relPath, declaration: true });
+    } else if (SOURCE_EXTENSIONS.has(path.extname(entry.name))) {
+      files.push({ relPath, declaration: false });
+    }
+  }
+  return files;
+}
+
+const baseDir = path.resolve(cwd, flags.base);
+const targets = parseTargets(positionals);
+
+// Collect unique source directories across all targets
+const srcDirSet = new Set(targets.map((t) => t.input));
+const filesByInput = new Map();
+const declFilesByInput = new Map();
+for (const input of srcDirSet) {
+  const srcDir = path.resolve(baseDir, input);
+  const allFound = await findSourceFiles(srcDir);
+  const files = allFound.filter((f) => !f.declaration).map((f) => f.relPath);
+  const declFiles = allFound.filter((f) => f.declaration).map((f) => f.relPath);
+  if (files.length === 0 && declFiles.length === 0) {
+    console.warn(`No source files found in ${path.join(flags.base, input)}`);
+  }
+  filesByInput.set(input, files);
+  declFilesByInput.set(input, declFiles);
+}
+
+const allFiles = [...filesByInput.values()].flat();
+const allDeclFiles = [...declFilesByInput.values()].flat();
+if (allFiles.length === 0 && allDeclFiles.length === 0) {
+  process.exit(0);
+}
+
+const { parsed, compilerHost, writtenFiles, writeFileIfChanged } = createBuildHost(baseDir);
+
+// Emit declarations once, using all unique source files
+const allSrcFiles = [...filesByInput.entries()].flatMap(([input, files]) =>
+  files.map((file) => path.join(path.resolve(baseDir, input), file))
+);
+const uniqueSrcFiles = [...new Set(allSrcFiles)];
+
+// Copy .d.ts files to each output directory
+async function copyDeclarationFiles(declFiles, srcDir, outDir, writeFileIfChanged) {
+  await Promise.all(
+    declFiles.map(async (file) => {
+      const content = await fs.promises.readFile(path.join(srcDir, file), 'utf-8');
+      writeFileIfChanged(path.join(outDir, file), content);
+    })
+  );
+}
+
+// Run declarations + all SWC targets + .d.ts copies in parallel
+await Promise.all([
+  allFiles.length > 0
+    ? Promise.resolve(emitDeclarations(uniqueSrcFiles, parsed, compilerHost))
+    : undefined,
+  ...targets.map((target) => {
+    const files = filesByInput.get(target.input);
+    if (!files || files.length === 0) return;
+    const srcDir = path.resolve(baseDir, target.input);
+    const outDir = path.resolve(baseDir, target.output);
+    return transformSources(files, srcDir, outDir, target.format, writeFileIfChanged);
+  }),
+  ...targets.map((target) => {
+    const declFiles = declFilesByInput.get(target.input);
+    if (!declFiles || declFiles.length === 0) return;
+    const srcDir = path.resolve(baseDir, target.input);
+    const outDir = path.resolve(baseDir, target.output);
+    return copyDeclarationFiles(declFiles, srcDir, outDir, writeFileIfChanged);
+  }),
+]);
+
+// Stale cleanup across all output directories
+const outDirs = new Set(targets.map((t) => path.resolve(baseDir, t.output)));
+const existingFiles = (await Promise.all([...outDirs].map(findOutputFiles))).flat();
+const staleFiles = existingFiles.filter((file) => !writtenFiles.has(file));
+await Promise.all(staleFiles.map((file) => fs.promises.rm(file)));
+
+for (const [input, files] of filesByInput) {
+  for (const file of files) {
+    console.log(path.join(flags.base, input, file));
+  }
+}
+for (const [input, files] of declFilesByInput) {
+  for (const file of files) {
+    console.log(path.join(flags.base, input, file));
+  }
+}

@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "bin": {
+    "expo-build": "bin/expo-build",
     "expo-module": "bin/expo-module.js"
   },
   "exports": {
@@ -81,6 +82,7 @@
     "commander": "^12.1.0",
     "eslint-config-universe": "workspace:^15.0.3",
     "glob": "^13.0.0",
+    "@swc/core": "^1.15.18",
     "jest-expo": "workspace:~55.0.9",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",

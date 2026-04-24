@@ -10,6 +10,7 @@ program.command(
   `Type check the source TypeScript without emitting JS and watch for file changes`
 );
 program.command('build', `Compile the source JS or TypeScript and watch for file changes`);
+program.command('build-src', `Transpile source with oxc-transform and emit declarations with tsc`);
 program.command('lint', `Lint the files for syntax errors, style guidance, and common warnings`);
 program.command('test', `Run unit tests with an interactive watcher`);
 program.command('clean', `Removes compiled files`);
