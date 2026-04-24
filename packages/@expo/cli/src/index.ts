@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 import arg from 'arg';
 import chalk from 'chalk';
 import Debug from 'debug';
