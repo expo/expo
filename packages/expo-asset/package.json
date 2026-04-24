@@ -30,7 +30,19 @@
     "./package.json": "./package.json",
     "./plugin": "./plugin/build/index.js",
     ".": {
-      "react-server": "./build/index.server.js",
+      "react-server": {
+        "types": {
+          "source": "./src/index.server.ts",
+          "default": "./build/index.server.d.ts"
+        },
+        "source": "./src/index.server.ts",
+        "default": "./build/index.server.js"
+      },
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
       "default": "./build/index.js"
     }
   },
