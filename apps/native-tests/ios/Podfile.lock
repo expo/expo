@@ -2946,8 +2946,8 @@ SPEC CHECKSUMS:
   ExpoClipboard: 0acdce934cb6a71b507da1117399645265e51ed5
   ExpoImage: d9446e7c2d365c063df7c8acd9c88b76a7b48ee4
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
-  ExpoModulesCore: fc41658f257c0171e040fd5fc961273ce18676fb
-  ExpoModulesJSI: 71ee2c91700fbad70c35aff1dcea87d3a6e071bb
+  ExpoModulesCore: 110aff3e8bff75926b963c45ef9caf89e4132c5c
+  ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
   ExpoRouter: 617b413f30eb9fa39b210e4261814b13afd0418b
@@ -2956,7 +2956,7 @@ SPEC CHECKSUMS:
   EXUpdates: a0f980531cbcf45906b2489febd4e11a5895f332
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
   FBLazyVector: 26fd21c75314e101f280d401e97f27d54f3f7064
-  hermes-engine: 407f52f1dca2c25263c5f76e80cc38a39e0f6ec0
+  hermes-engine: e1ae00897676f600a9439d408b42f8c8ba5dbc24
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -2972,7 +2972,7 @@ SPEC CHECKSUMS:
   React: 13cf8451582adb1bb324306e1893b91d1cba28c6
   React-callinvoker: 91e6a605826b684ad2e623811253b4d0c4196bef
   React-Core: 46818de5f211b2a2759ac823b591af8a0a95c2c1
-  React-Core-prebuilt: 3a1ee419a7f93d70e63a00762e53f060993ba202
+  React-Core-prebuilt: aa3a9c89665bf746f418c0d1080f9b1d6a31b8f1
   React-CoreModules: a6a37afee48d4a31ab398640b0795462647d5c67
   React-cxxreact: 2ec3e2f7a8ae9303460d4ba94cde183ea90d64cd
   React-debug: 0d21117b897ce0359c9d2c9dfe952f237476a14a
@@ -3034,7 +3034,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 22e2265d86a4e871e5e858f4e7ef1c8d01103680
   ReactCodegen: a144d5712b03c60bf2f561f0dd53d64ab72bd934
   ReactCommon: a804bb8d1dcf3ecdec3a77eb8bba19b7863bbbdb
-  ReactNativeDependencies: 50c4e73ccc8d8a6ad866d6c6a5780961078a2db9
+  ReactNativeDependencies: 528dbbb8b8a65fefeb4e907d20c370792331db73
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
   RNGestureHandler: c84901d120acdae2f6f27b5889a7cf144e64e6ec
   RNReanimated: c51bd6bd2ff1ef0140d6056ff496e6089432d00c

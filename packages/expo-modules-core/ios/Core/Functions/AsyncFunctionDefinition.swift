@@ -99,9 +99,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       return
     }
 
-    let queue = queue ?? defaultQueue
-
-    dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: nativeArguments, queue: queue) { [body, name] in
+    let bodyBlock: () -> Void = { [body, name] in
       let returnedValue: ReturnType
 
       do {
@@ -119,6 +117,16 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       if !self.takesPromise {
         promise.resolve(returnedValue, dynamicType: self.returnType)
       }
+    }
+    // Run inline when the runtime has no scheduler (e.g. tests) to avoid
+    // touching the runtime from a background queue.
+    let supportsAsyncScheduling = (try? appContext.runtime.supportsAsyncScheduling) ?? false
+
+    if supportsAsyncScheduling {
+      let queue = queue ?? defaultQueue
+      dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: nativeArguments, queue: queue, bodyBlock)
+    } else {
+      bodyBlock()
     }
   }
 

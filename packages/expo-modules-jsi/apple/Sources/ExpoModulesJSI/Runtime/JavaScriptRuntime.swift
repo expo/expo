@@ -307,6 +307,14 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   // MARK: - Runtime execution
 
   /**
+   Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
+   Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.
+   */
+  public var supportsAsyncScheduling: Bool {
+    return scheduler.supportsAsyncScheduling()
+  }
+
+  /**
    Schedules a closure to be executed with granted synchronized access to the runtime.
    */
   public func schedule(priority: SchedulerPriority = .normal, @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> sending Void) -> Void {
