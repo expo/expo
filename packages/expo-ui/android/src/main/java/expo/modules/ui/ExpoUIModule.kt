@@ -5,8 +5,15 @@ package expo.modules.ui
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.ui.graphics.toArgb
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.ui.colors.MaterialColorsOptions
+import expo.modules.ui.colors.isDynamicColorSupported
+import expo.modules.ui.colors.isSystemInDarkTheme
+import expo.modules.ui.colors.seedColorScheme
+import expo.modules.ui.colors.toTokenMap
 import expo.modules.ui.button.ButtonContent
 import expo.modules.ui.button.ButtonPressedEvent
 import expo.modules.ui.button.ButtonProps
@@ -94,6 +101,26 @@ class ExpoUIModule : Module() {
     }
     Constant("ToggleButtonIconSize") {
       return@Constant ToggleButtonDefaults.IconSize.value
+    }
+
+    Constant("isDynamicColorAvailable") {
+      return@Constant isDynamicColorSupported
+    }
+
+    Function("getMaterialColors") { options: MaterialColorsOptions? ->
+      val context = appContext.currentActivity
+        ?: appContext.reactContext
+        ?: throw Exceptions.ReactContextLost()
+      val resolvedScheme = options?.scheme
+        ?: if (context.isSystemInDarkTheme()) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+      val isDark = resolvedScheme == ExpoColorScheme.DARK
+      val seedArgb = options?.seedColor?.composeOrNull?.toArgb()
+      val colorScheme = if (seedArgb != null) {
+        seedColorScheme(seedArgb, isDark)
+      } else {
+        resolvedScheme.toColorScheme(context)
+      }
+      colorScheme.toTokenMap()
     }
 
     View(RNHostView::class)

@@ -187,6 +187,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Material Colors',
+    route: 'ui/material-colors',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MaterialColorsScreen'));
+    },
+  },
+  {
     name: 'Text component',
     route: 'ui/text',
     options: {},

@@ -81,6 +81,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/card': ['jetpack-compose/Card/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/carousel': ['jetpack-compose/Carousel/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/colors': ['jetpack-compose/colors.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/dropdownmenu': ['jetpack-compose/DropdownMenu/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/exposeddropdownmenubox': [
     'jetpack-compose/ExposedDropdownMenuBox/index.tsx',
