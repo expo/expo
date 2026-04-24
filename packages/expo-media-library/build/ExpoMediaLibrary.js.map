@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoMediaLibrary.js","sourceRoot":"","sources":["../src/ExpoMediaLibrary.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,kBAAkB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoMediaLibrary');\n"]}

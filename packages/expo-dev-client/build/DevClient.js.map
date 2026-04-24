@@ -1,1 +1,0 @@
-{"version":3,"file":"DevClient.js","sourceRoot":"","sources":["../src/DevClient.ts"],"names":[],"mappings":"AAAA,cAAc,eAAe,CAAC","sourcesContent":["export * from 'expo-dev-menu';\n"]}
