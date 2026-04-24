@@ -54,7 +54,7 @@ function parseTargets(positionals) {
   });
 }
 
-function createBuildHost(baseDir, rootDir, outDir) {
+function createBuildHost(baseDir, outDir) {
   const configPath = path.join(baseDir, 'tsconfig.json');
   const parsed = ts.getParsedCommandLineOfConfigFile(
     configPath,
@@ -63,7 +63,6 @@ function createBuildHost(baseDir, rootDir, outDir) {
       emitDeclarationOnly: true,
       declaration: true,
       declarationMap: false,
-      rootDir: path.resolve(baseDir, rootDir),
       outDir: path.resolve(baseDir, outDir),
     },
     {
@@ -225,7 +224,6 @@ if (allFiles.length === 0 && allDeclFiles.length === 0) {
 
 const { parsed, compilerHost, writtenFiles, writeFileIfChanged } = createBuildHost(
   baseDir,
-  targets[0].input,
   targets[0].output
 );
 
