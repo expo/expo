@@ -62,11 +62,13 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   /**
    Underlying JSI runtime of the running app.
    */
-  public var _runtime: ExpoRuntime? {
+  private var _runtime: ExpoRuntime? {
     didSet {
-      if _runtime == nil {
+      if _runtime == nil && oldValue != nil {
         destroy()
-      } else if _runtime != oldValue {
+        return
+      }
+      if _runtime != nil && _runtime != oldValue {
         JavaScriptActor.assumeIsolated {
           // Try to install the core object automatically when the runtime changes.
           try? prepareRuntime()
@@ -577,6 +579,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       // Otherwise the JSCRuntime asserts may fail on deallocation.
       releaseRuntimeObjects()
     }
+    _runtime = nil
   }
 
   /**
