@@ -191,6 +191,10 @@ export function setLocationHref(href: string) {
   location = new Location(href);
 }
 
+// TODO(@kitten): Investigate if window/global can be swapped to globalThis
+declare const global: typeof globalThis;
+declare const window: typeof globalThis;
+
 export function install() {
   Object.defineProperty(global, 'Location', {
     value: Location,
