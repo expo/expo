@@ -9,6 +9,11 @@ import path from 'node:path';
 import { parentPort, workerData } from 'node:worker_threads';
 
 import {
+  buildAgentInstructions,
+  shouldAppendAgentInstructions,
+  urlPathFromHtmlPath,
+} from './agent-instructions.ts';
+import {
   checkMarkdownQuality,
   convertMdxInstructionToMarkdown,
   convertHtmlToMarkdown,
@@ -193,6 +198,11 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     }
 
     const warnings = checkMarkdownQuality(markdown, relHtmlPath);
+
+    if (shouldAppendAgentInstructions(markdown)) {
+      const pathname = urlPathFromHtmlPath(relHtmlPath);
+      markdown = markdown.trimEnd() + '\n\n' + buildAgentInstructions(pathname);
+    }
 
     const mdPath = path.join(path.dirname(htmlPath), 'index.md');
     fs.writeFileSync(mdPath, markdown);
