@@ -9,12 +9,13 @@
     "expo-updates": "bin/cli.js"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
     "pretest:e2e-cli": "expo-module prepublishOnly",
     "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js"
   },

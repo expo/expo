@@ -8,6 +8,8 @@ packages:
 
 ignoreWorkspaceCycles: true
 
+shellEmulator: true
+
 ignoredBuiltDependencies:
   - '@parcel/watcher'
   - '@swc/core'

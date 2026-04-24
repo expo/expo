@@ -33,9 +33,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "run-p build:cjs build:mjs",
-    "build:cjs": "tsc -p tsconfig.json",
-    "build:mjs": "tsc -p tsconfig.mjs.json",
+    "build": "expo-build cjs:src=build/cjs src=build/mjs",
     "clean": "rimraf build",
     "prepublishOnly": "run-s clean build",
     "lint": "eslint .",
