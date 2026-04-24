@@ -1,7 +1,12 @@
 name: Publish Canaries
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+      inputs:
+        skip-ios-prebuilds:
+          description: Skip bundling iOS xcframeworks
+          type: boolean
+          default: false
   pull_request:
     paths:
       - .github/workflows/publish-canaries.yml
@@ -45,7 +50,7 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
       - name: 📦 Publish canaries
-        run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
+        run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }} ${{ inputs.skip-ios-prebuilds && '--skip-ios-prebuilds' || '' }}
         env:
           FORCE_COLOR: '2'
       - name: 🔔 Notify on Slack
