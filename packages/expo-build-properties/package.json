@@ -11,7 +11,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-build src",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
