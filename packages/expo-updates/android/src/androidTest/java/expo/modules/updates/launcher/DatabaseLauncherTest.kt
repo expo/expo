@@ -7,9 +7,11 @@ import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import io.mockk.coEvery
@@ -89,5 +91,136 @@ class DatabaseLauncherTest {
       "new lastAccessed date should be within 1000 ms of now",
       Date().time - sameUpdate.lastAccessed.time < 1000
     )
+  }
+
+  @Test
+  fun testIsAssetValid_FileDoesNotExist() = runTest {
+    val launcher = createLauncher()
+    val asset = createTestAsset()
+    val nonExistentFile = File(context.cacheDir, "nonexistent.bundle")
+
+    val isValid = launcher.javaClass.getDeclaredMethod(
+      "isAssetValid",
+      File::class.java,
+      AssetEntity::class.java
+    ).apply { isAccessible = true }.invoke(launcher, nonExistentFile, asset) as Boolean
+
+    Assert.assertFalse("Non-existent file should be invalid", isValid)
+  }
+
+  @Test
+  fun testIsAssetValid_SizeMismatch() = runTest {
+    val launcher = createLauncher()
+    val testFile = File(context.cacheDir, "test-size-mismatch.bundle")
+    val content = "test content"
+    testFile.writeText(content)
+
+    try {
+      val asset = createTestAsset()
+      asset.expectedSize = 9999L
+      asset.hash = UpdatesUtils.sha256(testFile)
+
+      val isValid = launcher.javaClass.getDeclaredMethod(
+        "isAssetValid",
+        File::class.java,
+        AssetEntity::class.java
+      ).apply { isAccessible = true }.invoke(launcher, testFile, asset) as Boolean
+
+      Assert.assertFalse("File with wrong size should be invalid", isValid)
+    } finally {
+      testFile.delete()
+    }
+  }
+
+  @Test
+  fun testIsAssetValid_CorrectFile() = runTest {
+    val launcher = createLauncher()
+    val testFile = File(context.cacheDir, "test-correct.bundle")
+    val content = "test content for validation"
+    testFile.writeText(content)
+
+    try {
+      val asset = createTestAsset()
+      asset.isLaunchAsset = true
+      asset.expectedSize = content.length.toLong()
+      asset.hash = UpdatesUtils.sha256(testFile)
+
+      val isValid = launcher.javaClass.getDeclaredMethod(
+        "isAssetValid",
+        File::class.java,
+        AssetEntity::class.java
+      ).apply { isAccessible = true }.invoke(launcher, testFile, asset) as Boolean
+
+      Assert.assertTrue("Valid file should pass validation", isValid)
+    } finally {
+      testFile.delete()
+    }
+  }
+
+  @Test
+  fun testEnsureAssetExists_DeletesCorruptedFile() = runTest {
+    val testFile = File(context.cacheDir, "test-corrupted.bundle")
+    val content = "corrupted content"
+    testFile.writeText(content)
+
+    try {
+      val asset = createTestAsset()
+      asset.relativePath = testFile.name
+      asset.isLaunchAsset = true
+      asset.expectedSize = 9999L
+      asset.hash = ByteArray(32) { 0x00 }
+
+      val fileDownloader = mockk<FileDownloader>()
+      coEvery { fileDownloader.downloadAsset(any(), any(), any(), any(), any()) } throws Exception("Download failed")
+
+      val launcher = DatabaseLauncher(
+        context,
+        UpdatesConfiguration(
+          null,
+          mapOf(
+            "updateUrl" to Uri.parse("https://example.com"),
+            "hasEmbeddedUpdate" to false
+          )
+        ),
+        context.cacheDir,
+        fileDownloader,
+        SelectionPolicy(mockk(), mockk(), mockk()),
+        UpdatesLogger(context.filesDir),
+        TestScope()
+      )
+
+      Assert.assertTrue("File should exist before validation", testFile.exists())
+      val result = launcher.ensureAssetExists(asset, db, null, JSONObject())
+
+      Assert.assertNull("Should return null for corrupted file with no fallback", result)
+      Assert.assertFalse("Corrupted file should be deleted", testFile.exists())
+    } finally {
+      testFile.delete()
+    }
+  }
+
+  private fun createLauncher(): DatabaseLauncher {
+    return DatabaseLauncher(
+      context,
+      UpdatesConfiguration(
+        null,
+        mapOf(
+          "updateUrl" to Uri.parse("https://example.com"),
+          "hasEmbeddedUpdate" to false
+        )
+      ),
+      context.cacheDir,
+      mockk(),
+      SelectionPolicy(mockk(), mockk(), mockk()),
+      UpdatesLogger(context.filesDir),
+      TestScope()
+    )
+  }
+
+  private fun createTestAsset(): AssetEntity {
+    val asset = AssetEntity("test-bundle-key", "bundle")
+    asset.relativePath = "test.bundle"
+    asset.isLaunchAsset = true
+    return asset
   }
 }

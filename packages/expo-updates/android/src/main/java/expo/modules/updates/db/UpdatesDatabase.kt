@@ -46,7 +46,7 @@ import java.util.*
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
   exportSchema = false,
-  version = 13
+  version = 14
 )
 @TypeConverters(Converters::class)
 abstract class UpdatesDatabase : RoomDatabase() {
@@ -79,7 +79,8 @@ abstract class UpdatesDatabase : RoomDatabase() {
           MIGRATION_9_10,
           MIGRATION_10_11,
           MIGRATION_11_12,
-          MIGRATION_12_13
+          MIGRATION_12_13,
+          MIGRATION_13_14
         )
           .allowMainThreadQueries()
           .fallbackToDestructiveMigration()
@@ -236,6 +237,17 @@ abstract class UpdatesDatabase : RoomDatabase() {
         db.runInTransaction {
           execSQL("ALTER TABLE `updates` ADD COLUMN `url` TEXT")
           execSQL("ALTER TABLE `updates` ADD COLUMN `headers` TEXT")
+        }
+      }
+    }
+
+    /**
+     * Add the `expected_size` column to `assets` for validation
+     */
+    val MIGRATION_13_14: Migration = object : Migration(13, 14) {
+      override fun migrate(db: SupportSQLiteDatabase) {
+        db.runInTransaction {
+          execSQL("ALTER TABLE `assets` ADD COLUMN `expected_size` INTEGER")
         }
       }
     }
