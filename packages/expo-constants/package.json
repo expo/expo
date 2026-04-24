@@ -6,12 +6,23 @@
   "types": "build/Constants.d.ts",
   "sideEffects": false,
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "types": "./build/Constants.d.ts",
-      "react-server": "./build/Constants.server.js",
+      "react-server": {
+        "types": {
+          "source": "./src/Constants.server.ts",
+          "default": "./build/Constants.server.d.ts"
+        },
+        "source": "./src/Constants.server.ts",
+        "default": "./build/Constants.server.js"
+      },
+      "types": {
+        "source": "./src/Constants.ts",
+        "default": "./build/Constants.d.ts"
+      },
+      "source": "./src/Constants.ts",
       "default": "./build/Constants.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "expo-build src",

@@ -8,11 +8,11 @@
   "exports": {
     ".": {
       "types": {
-        "source": "src/index.ts",
-        "default": "build/index.d.ts"
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
       },
-      "source": "src/index.ts",
-      "default": "build/index.js"
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./package.json": "./package.json"
   },
