@@ -1,6 +1,8 @@
 /**
  Protocol for type-erased record fields.
  */
+import ExpoModulesJSI
+
 public protocol AnyField {
   func get() -> Any
 }
@@ -21,4 +23,7 @@ internal protocol AnyFieldInternal: AnyField {
   var isRequired: Bool { get }
 
   func set(_ newValue: Any?, appContext: AppContext) throws
+
+  @JavaScriptActor
+  func set(jsValue: JavaScriptValue, appContext: AppContext) throws
 }

@@ -223,6 +223,31 @@ struct FunctionTests {
     }
 
     @Test
+    func `accepts record while ignoring extra function-valued properties`() throws {
+      #expect(
+        try runtime.eval("""
+          expo.modules.TestModule.withRecord({
+            property: "123",
+            signal: {
+              addEventListener() {}
+            }
+          })
+        """).asString() == "123"
+      )
+    }
+
+    @Test
+    func `accepts record while treating undefined field values as missing`() throws {
+      #expect(
+        try runtime.eval("""
+          expo.modules.TestModule.withRecord({
+            property: undefined
+          })
+        """).asString() == "expo"
+      )
+    }
+
+    @Test
     func `accepts no optional record`() throws {
       #expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord()").asString() == "no value")
     }

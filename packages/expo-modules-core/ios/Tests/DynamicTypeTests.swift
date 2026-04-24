@@ -392,6 +392,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicConvertibleType
 
   @Suite("DynamicConvertibleType")
+  @JavaScriptActor
   struct DynamicConvertibleTypeTests {
     let appContext: AppContext
 
@@ -412,6 +413,69 @@ struct DynamicTypeTests {
       #expect(try (~CGPoint.self).cast([2.1, 3.7], appContext: appContext) as? CGPoint == CGPoint(x: 2.1, y: 3.7))
       #expect(try (~CGVector.self).cast(["dx": 0.8, "dy": 4.1], appContext: appContext) as? CGVector == CGVector(dx: 0.8, dy: 4.1))
       #expect(try (~URL.self).cast("/test/path", appContext: appContext) as? URL == URL(fileURLWithPath: "/test/path"))
+    }
+
+    @Test
+    func `casts record from JS value while ignoring extra function-valued properties`() throws {
+      struct TestRecord: Record {
+        @Field var property: String = ""
+      }
+
+      let jsValue = try appContext.runtime.eval("""
+        ({
+          property: "expo",
+          signal: {
+            addEventListener() {}
+          }
+        })
+      """)
+
+      let record = try (~TestRecord.self).cast(jsValue: jsValue, appContext: appContext) as? TestRecord
+      #expect(record?.property == "expo")
+    }
+
+    @Test
+    func `returns record directly to JS while preserving omission and undefined`() throws {
+      struct NestedRecord: Record {
+        @Field var label: String = "nested"
+      }
+
+      struct TestRecord: Record {
+        @Field var nested: NestedRecord = NestedRecord()
+        @Field var optional: String?
+        @Field var maybeNumber: ValueOrUndefined<Double?> = .undefined
+      }
+
+      let result = try (~TestRecord.self).castToJS(TestRecord(), appContext: appContext)
+      let object = try result.asObject()
+
+      #expect(object.hasProperty("nested") == true)
+      #expect(try object.getProperty("nested").asObject().getProperty("label").asString() == "nested")
+      #expect(object.hasProperty("optional") == false)
+      #expect(object.hasProperty("maybeNumber") == true)
+      #expect(object.getProperty("maybeNumber").isUndefined() == true)
+    }
+
+    @Test
+    func `returns formatted record directly to JS while preserving formatter behavior`() throws {
+      struct TestRecord: Record {
+        @Field var a: String = "a"
+        @Field var b: String? = nil
+        @Field var c: String = "c"
+      }
+
+      let formatted = TestRecord().format { formatter in
+        formatter.property("a", keyPath: \.a).map { $0.uppercased() }
+        formatter.property("b", keyPath: \.b).map { $0 ?? "default" }
+        formatter.property("c", keyPath: \.c).skip()
+      }
+
+      let result = try (~FormattedRecord<TestRecord>.self).castToJS(formatted, appContext: appContext)
+      let object = try result.asObject()
+
+      #expect(try object.getProperty("a").asString() == "A")
+      #expect(try object.getProperty("b").asString() == "default")
+      #expect(object.hasProperty("c") == false)
     }
 
     @Test

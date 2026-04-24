@@ -87,6 +87,20 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
       throw FieldInvalidTypeException((fieldKey: key!, value: newValue, desiredType: Type.self)).causedBy(error)
     }
   }
+
+  @JavaScriptActor
+  internal func set(jsValue: JavaScriptValue, appContext: AppContext) throws {
+    do {
+      let rawValue = try fieldType.cast(jsValue: jsValue, appContext: appContext)
+      let convertedValue = try fieldType.cast(rawValue, appContext: appContext)
+
+      if let value = convertedValue as? Type {
+        wrappedValue = value
+      }
+    } catch {
+      throw FieldInvalidTypeException((fieldKey: key!, value: jsValue, desiredType: Type.self)).causedBy(error)
+    }
+  }
 }
 
 internal final class FieldRequiredException: GenericException<String>, @unchecked Sendable {
