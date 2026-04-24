@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Add support for optionally downloading external precompiled XCFramework tarballs from during `pod install`. ([#45067](https://github.com/expo/expo/pull/45067) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Resolve 3rd-party prebuilt xcframework packages via `@react-native-community/cli` autolinking output instead of guessing `node_modules/<pkg>`, fixing pnpm non-hoisted layouts, transitive native deps, yarn resolutions/PnP, and aliased specifiers ([#45004](https://github.com/expo/expo/pull/45004) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
