@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "outputs": ["build/**", "dist/**", "lib/**"],
+      "outputLogs": "errors-only",
       "dependsOn": ["^build"]
     },
     "lint": {
