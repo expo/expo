@@ -3,16 +3,20 @@
   "version": "56.0.13",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
-  "main": "src/index.ts",
-  "types": "build",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
   "keywords": [],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./rsc/runtime.js": "./rsc/runtime.js",
     "./rsc/runtime": "./rsc/runtime.js",
@@ -26,7 +30,7 @@
     "!**/__tests__"
   ],
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
