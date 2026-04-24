@@ -15,15 +15,15 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Observe** is in [preview](/more/release-statuses/#preview) and subject to breaking changes. While in preview, it is free to use.
 
-**EAS Observe** is a performance monitoring service for tracking how your app performs in production. It gives you visibility into real-world startup times, rendering performance, and user experience across different devices, networks, and conditions.
+**EAS Observe** is a performance monitoring service from EAS (Expo Application Services) for tracking how your app performs in production. It gives you visibility into real-world startup times, rendering performance, and user experience across different devices, networks, and conditions.
 
-Debugging performance in React Native has traditionally been limited to development-time tools. EAS Observe focuses on production, where performance characteristics differ significantly from what you see during development.
+Debugging performance in React Native has traditionally been limited to development tools. EAS Observe focuses on production, where performance characteristics differ significantly from what you see during development.
 
 ## Quick start
 
 <Terminal cmd={['# Install the library', '$ npx expo install expo-observe']} />
 
-Wrap your root layout with `AppMetricsRoot` and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
+Wrap your root layout with the `AppMetricsRoot` component and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
 
 ## Why EAS Observe
 
@@ -52,7 +52,7 @@ Traditional development-time profiling tools show how your app performs on your 
 
 <Collapsible summary="What metrics does EAS Observe track?">
 
-EAS Observe focuses on startup metrics: Cold Launch Time, Warm Launch Time, Time to First Render, Time to Interactive, and Bundle Load Time. See the [metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric.
+EAS Observe focuses on startup metrics: cold launch time, warm launch time, time to first render, time to interactive, and bundle load time. See the [Metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric.
 
 </Collapsible>
 
@@ -76,7 +76,7 @@ Metrics collected while offline are stored locally on the device. They are autom
 
 <Collapsible summary="Can I test metrics during development?">
 
-By default, metrics from the `development` environment are filtered out and not dispatched. You can enable development metrics for testing by setting `enableInDebug` to `true` in your app config. See [Configuration](/eas/observe/configuration/#enable-metrics-in-development) for details.
+By default, metrics from the `development` environment are filtered out and not dispatched. You can enable development metrics for testing by setting `enableInDebug` to `true` in your [app config](/workflow/configuration/). See [Configuration](/eas/observe/configuration/#enable-metrics-in-development) for details.
 
 </Collapsible>
 

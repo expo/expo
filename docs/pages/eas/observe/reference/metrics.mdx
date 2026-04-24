@@ -1,8 +1,10 @@
 ---
 title: Metrics reference
 sidebar_title: Metrics
-description: Detailed descriptions of each performance metric tracked by EAS Observe, including concepts and data handling.
+description: A reference of each performance metric tracked by EAS Observe, including concepts and data handling.
 ---
+
+Reference for the performance metrics EAS Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained. All time-based metrics are reported in milliseconds (ms).
 
 ## Concepts
 
@@ -17,7 +19,7 @@ A **user** is identified by an anonymous ID that is unique per app installation.
 - Is generated when the app is first installed
 - Persists across app updates
 - Is reset if the user uninstalls and reinstalls the app
-- Is not personally identifiable information (PII)
+- Is not Personally Identifiable Information (PII)
 
 This allows you to see metrics across multiple sessions for the same user without collecting personal data.
 
@@ -25,9 +27,7 @@ This allows you to see metrics across multiple sessions for the same user withou
 
 ### Cold launch time
 
-Time to launch the app from scratch when the app's native code and resources are not in memory. This is a native-only metric that is measured before the JavaScript bundle starts executing.
-
-A cold launch occurs after a fresh install, app upgrade, device reboot, or when the OS has killed the app to reclaim memory. The system must load the app from disk and create the process, making this the slowest launch type.
+Time from process creation to when the system finished allocating memory, starting a fresh runtime environment, loading the app's code and resources from disk, and initializing its components before rendering the UI. This is the slowest type of launch and typically occurs after a fresh install, app upgrade, device reboot, or when the OS has killed the app to reclaim memory. It is a native-only metric, meaning that your JavaScript code does not affect this metric, but the React Native runtime initialization is included.
 
 This metric is collected automatically.
 
@@ -41,21 +41,21 @@ This metric is collected automatically.
 
 ### Bundle load time
 
-How long it takes to evaluate your JavaScript bundle. This measures the time the JavaScript runtime spends parsing and executing your bundle code.
+Time to evaluate your JavaScript bundle. This measures the time the JavaScript runtime spends parsing and executing your bundle code.
 
 This metric is collected automatically.
 
-### Time to first render
+### Time to first render (TTFR)
 
 Time from app launch until your app first renders content to the screen.
 
 This metric is collected automatically when you wrap your root layout with `AppMetricsRoot` (see [Get started](/eas/observe/get-started/)). You can also call `AppMetrics.markFirstRender()` manually if needed.
 
-### Time to interactive
+### Time to interactive (TTI)
 
-Time from app launch until your app is fully ready for user interaction. This is measured when you call `AppMetrics.markInteractive()`.
+Time between the warm/cold launch and when the user can actually tap, scroll, and interact with the app in other ways. It is the most important startup metric because it is what users perceive as "the app is ready". This is measured when you call `AppMetrics.markInteractive()`.
 
-**When to call:** After all initialization work is complete and the splash screen is hidden. This should represent the moment when users can actually start using your app.
+**When to call:** After all initialization work is complete and the splash screen is hidden. This should represent the moment when users can start using your app.
 
 `markInteractive()` can safely be called multiple times per session, only the first call records the measurement. Call it on every screen that users can deep link to. If you only place it on one screen, TTI will be measured incorrectly when the app is opened via a deep link to a different screen: for example, if screen A has the call but the user deep links to screen B, TTI will not be recorded until they navigate to A.
 
@@ -63,7 +63,7 @@ Time from app launch until your app is fully ready for user interaction. This is
 
 ### Offline collection
 
-Metrics collected while the device is offline are stored locally on the device. They are automatically sent to the server when the app moves to the background and there is connectivity. You can also call `ExpoObserve.dispatchEvents()` to flush events manually at any time (see [Configuration](/eas/observe/configuration/)).
+Metrics collected while the device is offline are stored on the device. They are automatically sent to the server when the app moves to the background, provided there is connectivity. You can also call [`ExpoObserve.dispatchEvents()`](/eas/observe/configuration/#dispatchevents) to flush events manually at any time.
 
 ### Data retention
 
@@ -75,4 +75,4 @@ All sessions are tracked. There is no sampling applied to the data collection.
 
 ### Environment
 
-All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default, or can be overridden via `configure({ environment })`. Metrics with the `development` environment are filtered out before dispatching unless `enableInDebug` is set to `true` in your app config (see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development)). You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default, or can be overridden via [`configure({ environment })`](/eas/observe/configuration/#configure). Metrics with the `development` environment are filtered out before dispatching unless `enableInDebug` is set to `true` in your app config (for information, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development)). You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
