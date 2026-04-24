@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- Added CLI extension exposing some simple devtools for the CLI and MCP server ([#42202](https://github.com/expo/expo/pull/42202) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 

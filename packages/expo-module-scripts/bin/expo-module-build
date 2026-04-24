@@ -16,6 +16,28 @@ let args = getArgs();
 if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
   const target = args[0];
   const targetDir = path.join(process.cwd(), args[0]);
+
+  const createdFiles = [];
+
+  // For cli targets, auto-generate missing config files so that
+  // extension authors only need to provide cli/src/index.ts.
+  if (target === 'cli') {
+    if (!fs.existsSync(path.join(targetDir, 'tsconfig.json'))) {
+      const tsconfig = JSON.stringify({
+        extends: 'expo-module-scripts/tsconfig.node',
+        compilerOptions: { outDir: 'build', rootDir: 'src' },
+        include: ['./src'],
+        exclude: ['**/__mocks__/*', '**/__tests__/*'],
+      }, null, 2);
+      fs.writeFileSync(path.join(targetDir, 'tsconfig.json'), tsconfig + '\n');
+      createdFiles.push(path.join(targetDir, 'tsconfig.json'));
+    }
+    if (!fs.existsSync(path.join(targetDir, 'package.json'))) {
+      fs.writeFileSync(path.join(targetDir, 'package.json'), JSON.stringify({ type: 'module' }, null, 2) + '\n');
+      createdFiles.push(path.join(targetDir, 'package.json'));
+    }
+  }
+
   if (fs.existsSync(path.join(targetDir, 'tsconfig.json'))) {
     // Push the rest of the arguments minus the `plugin` arg
     const restArgs = args.slice(1);
@@ -24,7 +46,35 @@ if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
     console.log(`tsconfig.json not found in ${target}, skipping build for ${target}`);
     process.exit(0);
   }
-}
 
-args = addWatchFlagIfNeeded(args);
-await commandRunner(path.join(dirname, 'expo-module-tsc'), args);
+  args = addWatchFlagIfNeeded(args);
+  await commandRunner(path.join(dirname, 'expo-module-tsc'), args);
+
+  // For cli targets, rename .js -> .mjs and .d.ts -> .d.mts so the
+  // output is explicitly ESM regardless of any package.json.
+  if (target === 'cli') {
+    const buildDir = path.join(targetDir, 'build');
+    if (fs.existsSync(buildDir)) {
+      for (const file of fs.readdirSync(buildDir)) {
+        const filePath = path.join(buildDir, file);
+        if (file.endsWith('.d.ts')) {
+          fs.renameSync(filePath, filePath.replace(/\.d\.ts$/, '.d.mts'));
+        } else if (file.endsWith('.d.ts.map')) {
+          fs.renameSync(filePath, filePath.replace(/\.d\.ts\.map$/, '.d.mts.map'));
+        } else if (file.endsWith('.js')) {
+          fs.renameSync(filePath, filePath.replace(/\.js$/, '.mjs'));
+        } else if (file.endsWith('.js.map')) {
+          fs.renameSync(filePath, filePath.replace(/\.js\.map$/, '.mjs.map'));
+        }
+      }
+    }
+
+    // Clean up any auto-generated files
+    for (const f of createdFiles) {
+      fs.unlinkSync(f);
+    }
+  }
+} else {
+  args = addWatchFlagIfNeeded(args);
+  await commandRunner(path.join(dirname, 'expo-module-tsc'), args);
+}

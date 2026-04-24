@@ -4,6 +4,7 @@ import * as TaskManager from 'expo-task-manager';
 
 import type { BackgroundTaskOptions } from './BackgroundTask.types';
 import { BackgroundTaskStatus } from './BackgroundTask.types';
+import { maybeInitDevToolsAsync } from './BackgroundTaskDevToolsClient';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 
 // Flag to warn about running on Apple simulator
@@ -97,6 +98,7 @@ export async function registerTaskAsync(
     return;
   }
   _validate(taskName);
+  maybeInitDevToolsAsync();
   if (await TaskManager.isTaskRegisteredAsync(taskName)) {
     return;
   }
