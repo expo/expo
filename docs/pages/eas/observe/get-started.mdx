@@ -80,6 +80,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { AppMetrics, AppMetricsRoot } from 'expo-observe';
 import { useEffect, useState } from 'react';
 
+// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
@@ -87,10 +88,16 @@ function RootLayout() {
 
   useEffect(() => {
     async function prepare() {
-      await authenticateUser();
-      await fetchInitialData();
-      setIsReady(true);
+      try {
+        await authenticateUser();
+        await fetchInitialData();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
     }
+
     prepare();
   }, []);
 
@@ -115,31 +122,44 @@ export default AppMetricsRoot.wrap(RootLayout);
 
 <Tab label="Without Expo Router">
 
-```tsx
+```tsx App.tsx
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { AppMetrics } from 'expo-observe';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     async function prepare() {
-      await authenticateUser();
-      await fetchInitialData();
-      setIsReady(true);
+      try {
+        await authenticateUser();
+        await fetchInitialData();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
     }
+
     prepare();
   }, []);
 
   useEffect(() => {
     if (isReady) {
-      SplashScreen.hide();
+      SplashScreen.hideAsync();
       AppMetrics.markInteractive();
     }
   }, [isReady]);
 
-  // ...
+  if (!isReady) {
+    return null;
+  }
+
+  // your app
 }
 ```
 
