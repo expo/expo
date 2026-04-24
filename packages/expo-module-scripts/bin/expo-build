@@ -54,11 +54,17 @@ function parseTargets(positionals) {
   });
 }
 
-function createBuildHost(baseDir) {
+function createBuildHost(baseDir, rootDir, outDir) {
   const configPath = path.join(baseDir, 'tsconfig.json');
   const parsed = ts.getParsedCommandLineOfConfigFile(
     configPath,
-    { emitDeclarationOnly: true, declaration: true, declarationMap: false },
+    {
+      emitDeclarationOnly: true,
+      declaration: true,
+      declarationMap: false,
+      rootDir: path.resolve(baseDir, rootDir),
+      outDir: path.resolve(baseDir, outDir),
+    },
     {
       ...ts.sys,
       onUnRecoverableConfigFileDiag(diagnostic) {
@@ -217,7 +223,11 @@ if (allFiles.length === 0 && allDeclFiles.length === 0) {
   process.exit(0);
 }
 
-const { parsed, compilerHost, writtenFiles, writeFileIfChanged } = createBuildHost(baseDir);
+const { parsed, compilerHost, writtenFiles, writeFileIfChanged } = createBuildHost(
+  baseDir,
+  targets[0].input,
+  targets[0].output
+);
 
 // Emit declarations once, using all unique source files
 const allSrcFiles = [...filesByInput.entries()].flatMap(([input, files]) =>
