@@ -102,10 +102,7 @@ function setupDevToolsListeners(): void {
       client?.sendMessage('response', {
         requestId: params.requestId,
         method: 'error',
-        error:
-          typeof error === 'object' && error !== null && 'message' in error
-            ? error.message
-            : String(error),
+        error: errorMessage(error),
         originalMethod: 'listDatabases',
       } as SQLiteResponse);
     }
@@ -131,10 +128,7 @@ function setupDevToolsListeners(): void {
       } catch (error: unknown) {
         client?.sendMessage(eventName, {
           method: 'error',
-          error:
-            typeof error === 'object' && error !== null && 'message' in error
-              ? error.message
-              : String(error),
+          error: errorMessage(error),
           originalMethod: 'getDatabase',
         } as SQLiteResponse);
       }
@@ -185,10 +179,7 @@ function setupDevToolsListeners(): void {
         client?.sendMessage('response', {
           requestId: params.requestId,
           method: 'error',
-          error:
-            typeof error === 'object' && error !== null && 'message' in error
-              ? error.message
-              : String(error),
+          error: errorMessage(error),
           originalMethod: 'executeQuery',
         } as SQLiteResponse);
       }
@@ -220,10 +211,7 @@ function setupDevToolsListeners(): void {
         client?.sendMessage('response', {
           requestId: params.requestId,
           method: 'error',
-          error:
-            typeof error === 'object' && error !== null && 'message' in error
-              ? error.message
-              : String(error),
+          error: errorMessage(error),
           originalMethod: 'listTables',
         } as SQLiteResponse);
       }
@@ -267,13 +255,16 @@ function setupDevToolsListeners(): void {
         client?.sendMessage('response', {
           requestId: params.requestId,
           method: 'error',
-          error:
-            typeof error === 'object' && error !== null && 'message' in error
-              ? error.message
-              : String(error),
+          error: errorMessage(error),
           originalMethod: 'getTableSchema',
         } as SQLiteResponse);
       }
     }
   );
+}
+
+function errorMessage(error: unknown): string {
+  return typeof error === 'object' && error !== null && 'message' in error
+    ? String(error.message)
+    : String(error);
 }

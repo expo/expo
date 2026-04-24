@@ -63,9 +63,7 @@ function setupDevToolsListeners() {
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'listDatabases',
             });
         }
@@ -85,9 +83,7 @@ function setupDevToolsListeners() {
         catch (error) {
             client?.sendMessage(eventName, {
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'getDatabase',
             });
         }
@@ -131,9 +127,7 @@ function setupDevToolsListeners() {
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'executeQuery',
             });
         }
@@ -161,9 +155,7 @@ function setupDevToolsListeners() {
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'listTables',
             });
         }
@@ -195,12 +187,15 @@ function setupDevToolsListeners() {
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'getTableSchema',
             });
         }
     });
+}
+function errorMessage(error) {
+    return typeof error === 'object' && error !== null && 'message' in error
+        ? String(error.message)
+        : String(error);
 }
 //# sourceMappingURL=SQLiteDevToolsClient.js.map
