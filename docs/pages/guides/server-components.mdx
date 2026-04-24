@@ -110,7 +110,7 @@ export async function Pokemon() {
       <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{json.name}</Text>
       <Image source={{ uri: json.sprites.front_default }} style={{ width: 100, height: 100 }} />
 
-      {json.abilities.map((ability) => (
+      {json.abilities.map(ability => (
         <Text key={ability.ability.name}>- {ability.ability.name}</Text>
       ))}
     </View>
@@ -238,7 +238,7 @@ export async function renderProfile({
       // The EXPO_PUBLIC_ prefix is not required here.
       'X-Secret': process.env.SECRET,
     },
-  }).then((res) => res.json());
+  }).then(res => res.json());
 
   // Render
   return (
@@ -332,13 +332,13 @@ export async function renderTasks() {
 
 async function MediumTask() {
   // Wait one second before resolving.
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise(resolve => setTimeout(resolve, 1000));
   return <Text>Medium task done!</Text>;
 }
 
 async function ExpensiveTask() {
   // Wait three seconds before resolving.
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise(resolve => setTimeout(resolve, 3000));
   return <Text>Expensive task done!</Text>;
 }
 ```
