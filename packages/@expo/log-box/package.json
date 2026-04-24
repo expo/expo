@@ -13,6 +13,8 @@
       "default": "./build/utils.js"
     },
     "./package.json": "./package.json",
+    "./lib": "./lib.ts",
+    "./lib.ts": "./lib.ts",
     "./src/*": "./src/*.ts",
     "./src/*.ts": "./src/*.ts",
     "./*.js": "./*.js",
