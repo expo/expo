@@ -47,7 +47,13 @@ Instructions are not available for older Expo SDK and React Native versions. Add
   <Requirement number={6} title="babel.config.js extends babel-preset-expo">
     Your **babel.config.js** [must extend `babel-preset-expo`](/versions/latest/config/babel/).
   </Requirement>
-  <Requirement number={7} title={<><CODE>npx expo export</CODE> runs successfully</>}>
+  <Requirement
+    number={7}
+    title={
+      <>
+        <CODE>npx expo export</CODE> runs successfully
+      </>
+    }>
     The command `npx expo export -p android` must run successfully in your project if it supports
     Android, and `npx expo export -p ios` if it supports iOS.
   </Requirement>

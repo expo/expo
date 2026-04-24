@@ -8,6 +8,7 @@ import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStore
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -17,10 +18,14 @@ To create your app's release build (also known as production build) locally, you
 
 Creating a release build locally for Android requires signing it with an [upload key](https://developer.android.com/studio/publish/app-signing#certificates-keystores) and generating an Android Application Bundle (**.aab**). Follow the steps below:
 
-### Prerequisites
-
-- [OpenJDK distribution](/get-started/set-up-your-environment/?mode=development-build&buildEnv=local#install-watchman-and-jdk) installed to access the `keytool` command
-- **android** directory generated. If you are using [CNG](/workflow/continuous-native-generation/), then run `npx expo prebuild` to generate it.
+<Prerequisites numberOfRequirements={2}>
+  <Requirement number={1} title="OpenJDK installed">
+    Install an [OpenJDK distribution](/get-started/set-up-your-environment/?mode=development-build&buildEnv=local#install-watchman-and-jdk) to access the `keytool` command.
+  </Requirement>
+  <Requirement number={2} title="android directory generated">
+    If you are using [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), run `npx expo prebuild` to generate it.
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 
@@ -122,11 +127,17 @@ Google Play Store requires manual app submission when submitting the **.aab** fi
 
 To create an iOS release build locally for Apple App Store, you need to use Xcode which handles the signing and submission process via App Store Connect.
 
-### Prerequisites
-
-- Paid Apple Developer membership
-- [Xcode installed](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-xcode-and-watchman) on your computer
-- **ios** directory generated. If you are using [CNG](/workflow/continuous-native-generation/), then run `npx expo prebuild` to generate it.
+<Prerequisites numberOfRequirements={3}>
+  <Requirement number={1} title="Apple Developer membership">
+    A paid Apple Developer membership is required to sign and submit iOS apps.
+  </Requirement>
+  <Requirement number={2} title="Xcode installed">
+    [Install Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-xcode-and-watchman) on your computer.
+  </Requirement>
+  <Requirement number={3} title="ios directory generated">
+    If you are using [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), run `npx expo prebuild` to generate it.
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 
