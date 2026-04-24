@@ -149,7 +149,10 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     }
 
     func deallocate(context: UnsafeMutableRawPointer) {
-      Unmanaged<HostObjectContext>.fromOpaque(context).release()
+      let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeRetainedValue()
+      JavaScriptActor.assumeIsolated {
+        context.dealloc()
+      }
     }
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc)).toOpaque()
