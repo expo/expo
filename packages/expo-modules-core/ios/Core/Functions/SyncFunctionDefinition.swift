@@ -71,6 +71,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
   // MARK: - AnySyncFunctionDefinition
 
   @JavaScriptActor
+  @discardableResult
   func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
     do {
       try validateArgumentsNumber(function: self, received: arguments.count)
@@ -125,16 +126,22 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
   }
 }
 
+@_transparent
 @JavaScriptActor
-internal func toNativeClosureArguments(
-  converter: MainValueConverter,
-  fn: AnyFunctionDefinition,
+internal func toNativeClosureArguments<F: AnyFunctionDefinition>(
+  converter: borrowing MainValueConverter,
+  fn: borrowing F,
   this: JavaScriptValue,
   arguments: borrowing JavaScriptValuesBuffer
 ) throws -> [Any] {
+  let receivedArgumentsCount = arguments.count
+
+  if !fn.takesOwner && receivedArgumentsCount == 0 {
+    return []
+  }
+
   // This array will include the owner (if needed) and function arguments.
   var nativeArguments: [Any] = []
-  let receivedArgumentsCount = arguments.count
 
   // If the function takes the owner, convert it and add to the final arguments.
   if fn.takesOwner, !this.isUndefined(), let ownerType = fn.dynamicArgumentTypes.first {
