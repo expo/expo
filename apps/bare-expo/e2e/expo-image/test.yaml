@@ -6,10 +6,10 @@ jsEngine: graaljs
     text: 'Open'
     optional: true
 
-# Wait for the image to be loaded
-- extendedWaitUntil:
-    visible: 'image-comparison-ready'
-    timeout: 10000
+# Testing
+- tapOn:
+    point: '50%, 50%'
+    delay: 3000
 
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
