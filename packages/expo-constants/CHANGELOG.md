@@ -13,7 +13,7 @@
 ### 💡 Others
 
 - Switch app config generation from `@expo/config` to `expo/config` public API ([#44721](https://github.com/expo/expo/pull/44721) by [@kitten](https://github.com/kitten))
-
+- [Android] Migrate `ConstantsModule` off the deprecated `Constants {}` definition block to per-key `Constant(name) { value }` registrations. ([#45097](https://github.com/expo/expo/pull/45097) by [@siddarthkay](https://github.com/siddarthkay))
 ## 55.0.7 — 2026-02-25
 
 _This version does not introduce any user-facing changes._
