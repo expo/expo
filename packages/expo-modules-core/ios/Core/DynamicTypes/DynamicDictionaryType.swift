@@ -68,7 +68,7 @@ internal struct DynamicDictionaryType: AnyDynamicType {
     let jsObject = runtime.createObject()
     for (key, element) in dict {
       guard let key = key as? String else { continue }
-      jsObject.setProperty(key, value: try valueType.castToJS(element, appContext: appContext))
+      jsObject.setProperty(key, value: try valueType.convertToJS(element, appContext: appContext))
     }
     return jsObject.asValue()
   }

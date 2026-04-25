@@ -270,6 +270,17 @@ struct DynamicTypeTests {
     }
 
     @Test
+    func `returns convertible elements to JS`() throws {
+      let sizes = [CGSize(width: 4, height: 3)]
+      let jsValue = try (~[CGSize].self).castToJS(sizes, appContext: appContext)
+      let jsArray = try jsValue.asArray()
+      let sizeObject = try jsArray[0].asObject()
+
+      #expect(try sizeObject.getProperty("width").asDouble() == 4)
+      #expect(try sizeObject.getProperty("height").asDouble() == 3)
+    }
+
+    @Test
     func `wraps is true`() {
       #expect((~[Double].self ~> [Double].self) == true)
       #expect((~[[String]].self ~> [[String]].self) == true)
@@ -353,6 +364,17 @@ struct DynamicTypeTests {
     }
 
     @Test
+    func `returns convertible values to JS`() throws {
+      let sizes: [String: CGSize] = ["size": CGSize(width: 4, height: 3)]
+      let jsValue = try (~[String: CGSize].self).castToJS(sizes, appContext: appContext)
+      let jsObject = try jsValue.asObject()
+      let sizeObject = try jsObject.getProperty("size").asObject()
+
+      #expect(try sizeObject.getProperty("width").asDouble() == 4)
+      #expect(try sizeObject.getProperty("height").asDouble() == 3)
+    }
+
+    @Test
     func `throws CastingException`() {
       #expect(throws: Conversions.CastingException<[AnyHashable: Any]>.self) {
         try (~[String: String].self).cast(84, appContext: appContext)
@@ -411,8 +433,18 @@ struct DynamicTypeTests {
     @Test
     func `casts succeeds`() throws {
       #expect(try (~CGPoint.self).cast([2.1, 3.7], appContext: appContext) as? CGPoint == CGPoint(x: 2.1, y: 3.7))
+      #expect(try (~CGSize.self).cast([4.0, 3.0], appContext: appContext) as? CGSize == CGSize(width: 4, height: 3))
       #expect(try (~CGVector.self).cast(["dx": 0.8, "dy": 4.1], appContext: appContext) as? CGVector == CGVector(dx: 0.8, dy: 4.1))
       #expect(try (~URL.self).cast("/test/path", appContext: appContext) as? URL == URL(fileURLWithPath: "/test/path"))
+    }
+
+    @Test
+    func `casts CGSize from JS values`() throws {
+      let arrayValue = try appContext.runtime.eval("[4, 3]")
+      let objectValue = try appContext.runtime.eval("({ width: 4, height: 3 })")
+
+      #expect(try appContext.converter.toNative(arrayValue, ~CGSize.self) as? CGSize == CGSize(width: 4, height: 3))
+      #expect(try appContext.converter.toNative(objectValue, ~CGSize.self) as? CGSize == CGSize(width: 4, height: 3))
     }
 
     @Test
@@ -435,7 +467,7 @@ struct DynamicTypeTests {
     }
 
     @Test
-    func `returns record directly to JS while preserving omission and undefined`() throws {
+    func `returns record directly to JS while preserving null and undefined`() throws {
       struct NestedRecord: Record {
         @Field var label: String = "nested"
       }
@@ -451,7 +483,8 @@ struct DynamicTypeTests {
 
       #expect(object.hasProperty("nested") == true)
       #expect(try object.getProperty("nested").asObject().getProperty("label").asString() == "nested")
-      #expect(object.hasProperty("optional") == false)
+      #expect(object.hasProperty("optional") == true)
+      #expect(object.getProperty("optional").isNull() == true)
       #expect(object.hasProperty("maybeNumber") == true)
       #expect(object.getProperty("maybeNumber").isUndefined() == true)
     }

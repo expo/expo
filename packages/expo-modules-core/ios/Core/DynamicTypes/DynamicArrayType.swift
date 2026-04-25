@@ -61,7 +61,7 @@ internal struct DynamicArrayType: AnyDynamicType {
     let runtime = try appContext.runtime
     let jsArray = runtime.createArray(length: array.count)
     for (index, element) in array.enumerated() {
-      try jsArray.set(value: try elementType.castToJS(element, appContext: appContext), at: index)
+      try jsArray.set(value: try elementType.convertToJS(element, appContext: appContext), at: index)
     }
     return jsArray.asValue()
   }

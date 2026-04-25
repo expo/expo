@@ -168,14 +168,14 @@ internal func recordFieldValueToJSValue(
   if let dynamicType {
     convertedValue = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: dynamicType)
     if Optional.isNil(convertedValue) {
-      return nil
+      return .null
     }
     return try dynamicType.castToJS(convertedValue, appContext: appContext)
   }
 
   convertedValue = Conversions.convertFunctionResult(value, appContext: appContext)
   if Optional.isNil(convertedValue) {
-    return nil
+    return .null
   }
   if let jsValue = convertedValue as? JavaScriptValue {
     return jsValue
