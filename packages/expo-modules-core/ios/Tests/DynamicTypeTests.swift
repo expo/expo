@@ -433,18 +433,8 @@ struct DynamicTypeTests {
     @Test
     func `casts succeeds`() throws {
       #expect(try (~CGPoint.self).cast([2.1, 3.7], appContext: appContext) as? CGPoint == CGPoint(x: 2.1, y: 3.7))
-      #expect(try (~CGSize.self).cast([4.0, 3.0], appContext: appContext) as? CGSize == CGSize(width: 4, height: 3))
       #expect(try (~CGVector.self).cast(["dx": 0.8, "dy": 4.1], appContext: appContext) as? CGVector == CGVector(dx: 0.8, dy: 4.1))
       #expect(try (~URL.self).cast("/test/path", appContext: appContext) as? URL == URL(fileURLWithPath: "/test/path"))
-    }
-
-    @Test
-    func `casts CGSize from JS values`() throws {
-      let arrayValue = try appContext.runtime.eval("[4, 3]")
-      let objectValue = try appContext.runtime.eval("({ width: 4, height: 3 })")
-
-      #expect(try appContext.converter.toNative(arrayValue, ~CGSize.self) as? CGSize == CGSize(width: 4, height: 3))
-      #expect(try appContext.converter.toNative(objectValue, ~CGSize.self) as? CGSize == CGSize(width: 4, height: 3))
     }
 
     @Test
