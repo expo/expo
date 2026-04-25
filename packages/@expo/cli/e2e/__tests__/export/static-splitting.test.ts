@@ -102,6 +102,7 @@ describe('exports static with bundle splitting', () => {
         'links',
         'styled',
         'metadata',
+        '\\[id\\]',
       ]
         .sort()
         .map((file) =>
