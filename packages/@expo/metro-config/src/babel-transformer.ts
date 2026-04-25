@@ -9,8 +9,6 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import assert from 'node:assert';
-import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';

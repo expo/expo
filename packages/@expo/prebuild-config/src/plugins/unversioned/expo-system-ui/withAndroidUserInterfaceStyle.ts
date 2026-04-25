@@ -1,4 +1,5 @@
-import { ConfigPlugin, WarningAggregator, withStringsXml } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { WarningAggregator, withStringsXml } from '@expo/config-plugins';
 
 export const withAndroidUserInterfaceStyle: ConfigPlugin<void> = (config) => {
   return withStringsXml(config, (config) => {

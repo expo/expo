@@ -26,3 +26,5 @@ export function Switch({
     />
   );
 }
+
+export * from './types';

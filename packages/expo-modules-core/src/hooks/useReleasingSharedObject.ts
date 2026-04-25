@@ -1,6 +1,7 @@
 'use client';
 
-import { DependencyList, useEffect, useMemo, useRef } from 'react';
+import type { DependencyList } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import type { SharedObject } from '../ts-declarations/SharedObject';
 

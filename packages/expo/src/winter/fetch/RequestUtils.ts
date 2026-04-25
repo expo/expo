@@ -1,4 +1,4 @@
-import { type NativeHeadersType } from './NativeRequest';
+import type { NativeHeadersType } from './NativeRequest';
 import { convertFormDataAsync } from './convertFormData';
 import { blobToArrayBufferAsync } from '../../utils/blobUtils';
 

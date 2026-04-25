@@ -7,7 +7,7 @@
 import { types } from '@babel/core';
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { SerializerConfigT } from '@expo/metro/metro-config';
-import { ExpoSerializerOptions } from './fork/baseJSBundle';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
 export declare function isModuleEmptyFor(ast?: types.File): boolean;

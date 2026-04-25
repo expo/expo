@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import * as Base64 from './Base64';
 import { TokenError } from './Errors';
 import { requestAsync } from './Fetch';
-import { GrantType, } from './TokenRequest.types';
+import { GrantType } from './TokenRequest.types';
 /**
  * Returns the current time in seconds.
  */

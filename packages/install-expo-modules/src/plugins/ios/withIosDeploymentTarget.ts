@@ -1,11 +1,14 @@
-import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { withDangerousMod } from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
-import { ISA, XCBuildConfiguration } from 'xcparse';
+import type { XCBuildConfiguration } from 'xcparse';
+import { ISA } from 'xcparse';
 
-import { withXCParseXcodeProject, XCParseXcodeProject } from './withXCParseXcodeProject';
+import type { XCParseXcodeProject } from './withXCParseXcodeProject';
+import { withXCParseXcodeProject } from './withXCParseXcodeProject';
 
 type IosDeploymentTargetConfigPlugin = ConfigPlugin<{ deploymentTarget: string }>;
 

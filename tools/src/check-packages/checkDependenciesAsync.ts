@@ -1,8 +1,12 @@
-import { glob } from 'glob';
-import { isBuiltin } from 'node:module';
 import path from 'node:path';
-import ts from 'typescript';
 
+import {
+  getPackageName,
+  getSourceFileImports,
+  getSourceFilesAsync,
+  isNCCBuilt,
+  type SourceFileImportRef,
+} from './scanDependenciesAsync';
 import type { ActionOptions } from './types';
 import Logger from '../Logger';
 import { DependencyKind, type PackageDependency, type Package } from '../Packages';
@@ -19,19 +23,6 @@ type PackageCheckType = ActionOptions['checkPackageType'];
  * dependency chains in user projects!
  */
 type IgnoreKind = 'types-only' | 'ignore' | 'ignore-dev';
-
-type SourceFile = {
-  path: string;
-  type: 'source' | 'test';
-};
-
-type SourceFileImportRef = {
-  type: 'builtIn' | 'internal' | 'external';
-  importValue: string;
-  packageName: string;
-  packagePath?: string;
-  isTypeOnly?: boolean;
-};
 
 const IGNORED_PACKAGES: string[] = [
   'sqlite-inspector-webui', // This is prebuilt devtools plugin webui. It's not a user depended package.
@@ -67,6 +58,7 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'jest-expo': {
     'babel-preset-expo': 'ignore-dev', // TODO: Remove; only used as a fallback for now
+    expo: 'ignore-dev', // NOTE: Not resolvable without introducing a circular dependency
   },
 
   '@expo/metro-runtime': {
@@ -99,7 +91,6 @@ const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
   '@react-native/assets-registry/registry': 'ignore-dev',
 };
 
-const REGEXP_REPLACE_SLASHES = /\\/g;
 const WORKSPACE_SPECIFIER = 'workspace:';
 
 /**
@@ -127,7 +118,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
 
   const validator = createExternalImportValidator(pkg);
   let invalidImports: {
-    file: SourceFile;
+    file: { path: string };
     importRef: SourceFileImportRef;
     kind: DependencyKind | undefined;
   }[] = [];
@@ -208,11 +199,6 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
   }
 }
 
-function isNCCBuilt(pkg: Package): boolean {
-  const { build: buildScript } = pkg.packageJson.scripts;
-  return !!pkg.packageJson.bin && !!buildScript?.includes('ncc');
-}
-
 function isDisallowedImport(ref: SourceFileImportRef): boolean {
   const packageName = getPackageName(ref.packageName);
   return packageName === 'metro' || packageName.startsWith('metro-');
@@ -281,169 +267,4 @@ function createExternalImportValidator(pkg: Package) {
       return null;
     },
   };
-}
-
-/** Get a list of all source files to validate for dependency chains */
-async function getSourceFilesAsync(pkg: Package, type: PackageCheckType): Promise<SourceFile[]> {
-  const files = await glob('src/**/*.{ts,tsx,js,jsx}', {
-    cwd: getSourceFilePaths(pkg, type),
-    absolute: true,
-    nodir: true,
-  });
-
-  return files
-    .filter((filePath) => !filePath.endsWith('.d.ts'))
-    .map((filePath) => toPosixPath(filePath))
-    .map((filePath) =>
-      filePath.includes('/__tests__/') || filePath.includes('/__mocks__/')
-        ? { path: filePath, type: 'test' }
-        : { path: filePath, type: 'source' }
-    );
-}
-
-function getPackageName(name: string): string {
-  let idx: number;
-  if (name[0] === '@') {
-    idx = name.indexOf('/');
-    return idx > -1 ? name.slice(0, name.indexOf('/', idx + 1)) : name;
-  } else {
-    idx = name.indexOf('/');
-    return idx > -1 ? name.slice(0, idx) : name;
-  }
-}
-
-/** Get the path of source files based on the package, and the type of check currently running */
-function getSourceFilePaths(pkg: Package, type: PackageCheckType): string {
-  switch (type) {
-    case 'package':
-      return pkg.path;
-
-    case 'plugin':
-    case 'cli':
-    case 'utils':
-      return path.join(pkg.path, type);
-
-    default:
-      throw new Error(`Unexpected package type received: ${type}`);
-  }
-}
-
-/** Parse and return all imports from a single source file, usign TypeScript AST parsing */
-function getSourceFileImports(sourceFile: SourceFile): SourceFileImportRef[] {
-  const importRefs: SourceFileImportRef[] = [];
-  const compiler = createTypescriptCompiler();
-  const source = compiler.getSourceFile(sourceFile.path, ts.ScriptTarget.Latest, (message) => {
-    throw new Error(`Failed to parse ${sourceFile.path}: ${message}`);
-  });
-
-  if (source) {
-    return collectTypescriptImports(source, importRefs);
-  }
-
-  return importRefs;
-}
-
-/** Iterate the parsed TypeScript AST and collect all imports or require statements */
-function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: SourceFileImportRef[]) {
-  if (ts.isImportDeclaration(node)) {
-    let isTypeOnly = false;
-    if (node.importClause?.namedBindings) {
-      isTypeOnly =
-        node.importClause.isTypeOnly ||
-        (ts.isNamedImports(node.importClause.namedBindings) &&
-          node.importClause.namedBindings.elements.every((binding) => binding.isTypeOnly));
-    } else {
-      isTypeOnly = !!node.importClause?.isTypeOnly;
-    }
-    // Collect `import` statements
-    imports.push(createTypescriptImportRef(node.moduleSpecifier.getText(), isTypeOnly));
-  } else if (
-    ts.isCallExpression(node) &&
-    node.expression.getText() === 'require' &&
-    node.arguments.every((arg) => ts.isStringLiteral(arg)) // Filter `require(requireFrom(...))
-  ) {
-    // Collect `require` statement
-    imports.push(createTypescriptImportRef(node.arguments[0].getText()));
-  } else if (
-    ts.isCallExpression(node) &&
-    node.expression.getText() === 'require.resolve' &&
-    node.arguments.length === 1 && // Filter out `require.resolve('', { paths: ... })`
-    ts.isStringLiteral(node.arguments[0]) // Filter `require(requireFrom(...))
-  ) {
-    // Collect `require.resolve` statement
-    imports.push(createTypescriptImportRef(node.arguments[0].getText()));
-  } else {
-    ts.forEachChild(node, (child) => {
-      collectTypescriptImports(child, imports);
-    });
-  }
-
-  return imports;
-}
-
-/** Analyze the import and return the import ref object */
-function createTypescriptImportRef(
-  importText: string,
-  importTypeOnly = false
-): SourceFileImportRef {
-  const importValue = importText.replace(/['"]/g, '').trim();
-
-  if (isBuiltin(importValue)) {
-    return { type: 'builtIn', importValue, packageName: importValue, isTypeOnly: importTypeOnly };
-  }
-
-  if (importValue.startsWith('.')) {
-    return { type: 'internal', importValue, packageName: importValue, isTypeOnly: importTypeOnly };
-  }
-
-  if (importValue.startsWith('@')) {
-    const [packageScope, packageName, ...packagePath] = importValue.split('/');
-    return {
-      type: 'external',
-      importValue,
-      packageName: `${packageScope}/${packageName}`,
-      packagePath: packagePath.join('/'),
-      isTypeOnly: importTypeOnly,
-    };
-  }
-
-  const [packageName, ...packagePath] = importValue.split('/');
-  return {
-    type: 'external',
-    importValue,
-    packageName,
-    packagePath: packagePath.join(','),
-    isTypeOnly: importTypeOnly,
-  };
-}
-
-/** The shared but lazily initialized TypeScript compiler instance */
-let compiler: ts.CompilerHost | null = null;
-
-/** Get or create the TypeScript compiler used to analyze imports for all source files */
-function createTypescriptCompiler() {
-  if (!compiler) {
-    compiler = ts.createCompilerHost(
-      {
-        allowJs: true,
-        noEmit: true,
-        isolatedModules: true,
-        resolveJsonModule: false,
-        moduleResolution: ts.ModuleResolutionKind.Classic, // we don't want node_modules
-        incremental: true,
-        noLib: true,
-        noResolve: true,
-      },
-      true
-    );
-  }
-
-  return compiler;
-}
-
-/**
- * Convert any platform-specific path to a POSIX path.
- */
-function toPosixPath(filePath: string): string {
-  return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }

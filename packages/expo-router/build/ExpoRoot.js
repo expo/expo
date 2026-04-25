@@ -35,7 +35,8 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = ExpoRoot;
-const react_1 = __importStar(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const constants_1 = require("./constants");
@@ -74,17 +75,13 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      * is a HTML document, we need to ensure its inside the <body>
      */
     const wrapper = (0, react_1.useMemo)(() => ({ children }) => {
-        return (<ParentWrapper>
-            <LinkPreviewContext_1.LinkPreviewContextProvider>
-              <react_native_safe_area_context_1.SafeAreaProvider 
-        // SSR support
-        initialMetrics={INITIAL_METRICS}>
-                {children}
-              </react_native_safe_area_context_1.SafeAreaProvider>
-            </LinkPreviewContext_1.LinkPreviewContextProvider>
-          </ParentWrapper>);
+        return ((0, jsx_runtime_1.jsx)(ParentWrapper, { children: (0, jsx_runtime_1.jsx)(LinkPreviewContext_1.LinkPreviewContextProvider, { children: (0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaProvider
+                // SSR support
+                , { 
+                    // SSR support
+                    initialMetrics: INITIAL_METRICS, children: children }) }) }));
     }, [ParentWrapper]);
-    return <ContextNavigator {...props} wrapper={wrapper}/>;
+    return (0, jsx_runtime_1.jsx)(ContextNavigator, { ...props, wrapper: wrapper });
 }
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
@@ -122,38 +119,28 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
             const Tutorial = require('./onboard/Tutorial').Tutorial;
-            return (<WrapperComponent>
-          <Tutorial />
-        </WrapperComponent>);
+            return ((0, jsx_runtime_1.jsx)(WrapperComponent, { children: (0, jsx_runtime_1.jsx)(Tutorial, {}) }));
         }
         else {
             // Ensure tutorial styles are stripped in production.
             return null;
         }
     }
-    return (<storeContext_1.StoreContext.Provider value={store}>
-      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} onStateChange={store.onStateChange} documentTitle={documentTitle} onReady={store.onReady}>
-        <serverLocationContext_1.ServerContext.Provider value={serverContext}>
-          <WrapperComponent>
-            <Content />
-          </WrapperComponent>
-        </serverLocationContext_1.ServerContext.Provider>
-      </NavigationContainer_1.NavigationContainer>
-    </storeContext_1.StoreContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(storeContext_1.StoreContext.Provider, { value: store, children: (0, jsx_runtime_1.jsx)(NavigationContainer_1.NavigationContainer, { ref: store.navigationRef, initialState: store.state, linking: store.linking, onUnhandledAction: onUnhandledAction, onStateChange: store.onStateChange, documentTitle: documentTitle, onReady: store.onReady, children: (0, jsx_runtime_1.jsx)(serverLocationContext_1.ServerContext.Provider, { value: serverContext, children: (0, jsx_runtime_1.jsx)(WrapperComponent, { children: (0, jsx_runtime_1.jsx)(Content, {}) }) }) }) }));
 }
 function Content() {
-    const children = [<primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>];
+    const children = [(0, jsx_runtime_1.jsx)(primitives_1.Screen, { name: constants_1.INTERNAL_SLOT_NAME, component: router_store_1.store.rootComponent })];
     if ((0, utils_1.shouldAppendNotFound)()) {
-        children.push(<primitives_1.Screen name={constants_1.NOT_FOUND_ROUTE_NAME} component={Unmatched_1.Unmatched}/>);
+        children.push((0, jsx_runtime_1.jsx)(primitives_1.Screen, { name: constants_1.NOT_FOUND_ROUTE_NAME, component: Unmatched_1.Unmatched }));
     }
     if ((0, utils_1.shouldAppendSitemap)()) {
-        children.push(<primitives_1.Screen name={constants_1.SITEMAP_ROUTE_NAME} component={Sitemap_1.Sitemap}/>);
+        children.push((0, jsx_runtime_1.jsx)(primitives_1.Screen, { name: constants_1.SITEMAP_ROUTE_NAME, component: Sitemap_1.Sitemap }));
     }
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         children,
         id: constants_1.INTERNAL_SLOT_NAME,
     });
-    return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
+    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: descriptors[state.routes[state.index].key].render() }));
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {

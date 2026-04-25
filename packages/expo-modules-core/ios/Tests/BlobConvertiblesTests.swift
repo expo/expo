@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("BlobConvertibles")
+@JavaScriptActor
 struct BlobConvertiblesTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {
@@ -29,8 +30,8 @@ struct BlobConvertiblesTests {
     #expect(isUint8Array == true)
 
     let array = try runtime.eval("Array.from(result)").asArray()
-    #expect(array[0]?.getInt() == 0x00)
-    #expect(array[1]?.getInt() == 0xff)
+    #expect(array[0].getInt() == 0x00)
+    #expect(array[1].getInt() == 0xff)
   }
 
   @Test
@@ -44,8 +45,8 @@ struct BlobConvertiblesTests {
     #expect(isUint8Array == true)
 
     let array = try runtime.eval("Array.from(result.key)").asArray()
-    #expect(array[0]?.getInt() == 0x00)
-    #expect(array[1]?.getInt() == 0xff)
+    #expect(array[0].getInt() == 0x00)
+    #expect(array[1].getInt() == 0xff)
   }
 
   @Test
@@ -60,8 +61,8 @@ struct BlobConvertiblesTests {
     }
 
     let array = try runtime.eval("Array.from(globalThis.result)").asArray()
-    #expect(array[0]?.getInt() == 0x00)
-    #expect(array[1]?.getInt() == 0xff)
+    #expect(array[0].getInt() == 0x00)
+    #expect(array[1].getInt() == 0xff)
   }
 
   @Test
@@ -76,8 +77,8 @@ struct BlobConvertiblesTests {
     }
 
     let array = try runtime.eval("Array.from(globalThis.result.key)").asArray()
-    #expect(array[0]?.getInt() == 0x00)
-    #expect(array[1]?.getInt() == 0xff)
+    #expect(array[0].getInt() == 0x00)
+    #expect(array[1].getInt() == 0xff)
   }
 
   // MARK: - Helpers

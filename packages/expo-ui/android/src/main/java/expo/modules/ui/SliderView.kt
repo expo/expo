@@ -17,6 +17,7 @@ import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 class SliderColors : Record {
@@ -36,6 +37,7 @@ class SliderColors : Record {
   val inactiveTickColor: Color? = null
 }
 
+@OptimizedComposeProps
 data class SliderProps(
   val value: Float = 0.0f,
   val min: Float = 0.0f,

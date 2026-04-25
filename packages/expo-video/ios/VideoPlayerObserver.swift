@@ -456,7 +456,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
 
     // The AVPlayerItem.error can't be modified, so we have a custom field for caching errors
     if newStatus == .error {
-      let playerItemError = (playerItem as? VideoPlayerItem)?.urlAsset.cachingError ?? playerItem.error ?? error
+      let playerItemError = (playerItem as? VideoPlayerItem)?.urlAsset.transportError ?? playerItem.error ?? error
       error = PlayerItemLoadException(playerItemError?.localizedDescription)
       status = .error
     }

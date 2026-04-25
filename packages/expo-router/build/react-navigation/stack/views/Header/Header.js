@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Header = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -70,6 +71,6 @@ exports.Header = React.memo(function Header({ back, layout, progress, options, r
         : isModal || isParentHeaderShown
             ? 0
             : insets.top;
-    return (<HeaderSegment_1.HeaderSegment {...options} title={(0, elements_1.getHeaderTitle)(options, route.name)} progress={progress} layout={layout} modal={isModal} headerBackTitle={options.headerBackTitle !== undefined ? options.headerBackTitle : previousTitle} headerStatusBarHeight={statusBarHeight} onGoBack={back ? goBack : undefined} backHref={back ? back.href : undefined} styleInterpolator={styleInterpolator}/>);
+    return ((0, jsx_runtime_1.jsx)(HeaderSegment_1.HeaderSegment, { ...options, title: (0, elements_1.getHeaderTitle)(options, route.name), progress: progress, layout: layout, modal: isModal, headerBackTitle: options.headerBackTitle !== undefined ? options.headerBackTitle : previousTitle, headerStatusBarHeight: statusBarHeight, onGoBack: back ? goBack : undefined, backHref: back ? back.href : undefined, styleInterpolator: styleInterpolator }));
 });
 //# sourceMappingURL=Header.js.map

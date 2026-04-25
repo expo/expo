@@ -1,5 +1,5 @@
 import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
 import {
   type DependencyResolution,
   scanDependenciesRecursively,
@@ -8,7 +8,7 @@ import {
   mergeResolutionResults,
 } from '../dependencies';
 import { createMemoizer } from '../memoize';
-import { PackageRevision, SearchResults, SupportedPlatform } from '../types';
+import type { PackageRevision, SearchResults, SupportedPlatform } from '../types';
 
 export async function resolveExpoModule(
   resolution: DependencyResolution,

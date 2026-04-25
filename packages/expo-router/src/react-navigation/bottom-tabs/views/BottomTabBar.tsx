@@ -9,7 +9,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { type EdgeInsets } from 'react-native-safe-area-context';
+import type { EdgeInsets } from 'react-native-safe-area-context';
 
 import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
 import {

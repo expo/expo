@@ -4,9 +4,9 @@ import type { ColorValue } from 'react-native';
 import { Drawer } from 'vaul';
 
 import modalStyles from './modalStyles';
-import { CSSWithVars } from './types';
+import type { CSSWithVars } from './types';
 import { useIsDesktop } from './utils';
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 
 function ModalStackRouteDrawer({
   routeKey,

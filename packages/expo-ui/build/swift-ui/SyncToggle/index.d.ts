@@ -25,5 +25,5 @@ export type SyncToggleProps = {
  * A toggle driven by observable native state.
  * Use `useNativeState(false)` to create the state.
  */
-export declare function SyncToggle(props: SyncToggleProps): import("react").JSX.Element;
+export declare function SyncToggle(props: SyncToggleProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -32,6 +32,9 @@
     "watch": "pnpm run build -w",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
+  "engines": {
+    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0"
+  },
   "devDependencies": {
     "@expo/config": "workspace:*",
     "@expo/env": "workspace:*",

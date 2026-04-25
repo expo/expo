@@ -2,11 +2,7 @@ import { isRunningInExpoGo } from 'expo';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 
-import {
-  BackgroundFetchOptions,
-  BackgroundFetchResult,
-  BackgroundFetchStatus,
-} from './BackgroundFetch.types';
+import { type BackgroundFetchOptions, BackgroundFetchStatus } from './BackgroundFetch.types';
 import ExpoBackgroundFetch from './ExpoBackgroundFetch';
 
 let didShowDeprecationWarning = false;
@@ -138,4 +134,8 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
   await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
 
-export { BackgroundFetchResult, BackgroundFetchStatus, BackgroundFetchOptions };
+export {
+  BackgroundFetchResult,
+  BackgroundFetchStatus,
+  type BackgroundFetchOptions,
+} from './BackgroundFetch.types';

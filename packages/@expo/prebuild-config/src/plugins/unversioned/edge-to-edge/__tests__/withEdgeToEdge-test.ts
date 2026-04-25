@@ -1,10 +1,6 @@
-import {
-  WarningAggregator,
-  AndroidConfig,
-  ExportedConfigWithProps,
-  ModConfig,
-} from '@expo/config-plugins';
-import { type ExpoConfig } from '@expo/config-types';
+import type { AndroidConfig, ExportedConfigWithProps, ModConfig } from '@expo/config-plugins';
+import { WarningAggregator } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 
 import { applyEdgeToEdge } from '../withEdgeToEdge';
 import { restoreDefaultTheme } from '../withRestoreDefaultTheme';

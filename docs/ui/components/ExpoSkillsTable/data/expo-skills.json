@@ -2,14 +2,19 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-04-02T10:41:54.890Z"
+    "fetchedAt": "2026-04-23T16:26:03.579Z"
   },
-  "totalSkills": 12,
+  "totalSkills": 13,
   "skills": [
     {
       "name": "building-native-ui",
       "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/building-native-ui/SKILL.md"
+    },
+    {
+      "name": "eas-update-insights",
+      "description": "Check the health of published EAS Updates: crash rates, install/launch counts, unique users, payload size, and the split between embedded and OTA users per channel. Use when the user asks how an update is performing, whether a rollout is healthy, how many users are on the embedded build vs OTA, or wants to gate CI on update health.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-update-insights/SKILL.md"
     },
     {
       "name": "expo-api-routes",

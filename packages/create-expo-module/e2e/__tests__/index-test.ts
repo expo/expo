@@ -39,6 +39,7 @@ describe('CLI flags', () => {
     expect(result.stdout).toMatch(/--author-name/);
     expect(result.stdout).toMatch(/--barrel/);
     expect(result.stdout).toMatch(/--platform/);
+    expect(result.stdout).toMatch(/--package-manager/);
     expect(result.stdout).toMatch(/--license/);
     expect(result.stdout).toMatch(/--module-version/);
   });

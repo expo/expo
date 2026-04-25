@@ -6,11 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.withIosSplashAssets = void 0;
 exports.buildContentsJsonImages = buildContentsJsonImages;
 const image_utils_1 = require("@expo/image-utils");
-const debug_1 = __importDefault(require("debug"));
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const debug = (0, debug_1.default)('expo:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreenLogo.imageset';
 const LEGACY_IMAGESET_PATH = 'Images.xcassets/SplashScreenLegacy.imageset';
@@ -177,8 +175,6 @@ function buildContentsJsonImages({ image, darkImage, tabletImage, darkTabletImag
 }
 async function writeContentsJsonAsync({ assetPath, image, darkImage, tabletImage, darkTabletImage, }) {
     const images = buildContentsJsonImages({ image, darkImage, tabletImage, darkTabletImage });
-    debug(`create contents.json:`, assetPath);
-    debug(`use images:`, images);
     await fs_1.default.promises.mkdir(assetPath, { recursive: true });
     await fs_1.default.promises.writeFile(path_1.default.join(assetPath, 'Contents.json'), JSON.stringify({
         images,

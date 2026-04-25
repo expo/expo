@@ -1,5 +1,5 @@
-import { EmitterSubscription } from 'react-native';
-import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
+import type { EmitterSubscription } from 'react-native';
+import type { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
 /**
  * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
  * It is recommended to use the [`useURL()`](#useurl) hook instead.

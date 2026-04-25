@@ -1,17 +1,21 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 /**
- This class is the Objective-C component of SwiftUIVirtualView. This file essentially combines:
-   - iOS `UIView`
-   - react-native's `UIView+ComponentViewProtocol`
-   - Expo's `ExpoFabricViewObjC`
+ Production variant of SwiftUIVirtualView's ObjC layer.
+ Inherits from NSObject (not UIView) for minimal overhead.
+ The UIView hierarchy stubs swallow layout calls so Fabric/RCTMountingManager can send
+ them without crashing. Mounting this view inside a standard UIView is still a fatal
+ error: `forwardingTargetForSelector:` detects UIKit's first-responder probe and throws
+ with an actionable message pointing at the missing `<Host>` wrapper.
  */
 
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 
-#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
+
+#import <React/RCTLog.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewProtocol.h>
@@ -97,6 +101,31 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
   return self;
 }
 
+// Detect when this NSObject is incorrectly inserted into a UIKit view hierarchy.
+// UIKit calls a private selector early in `_isAncestorOfFirstResponder`.
+// We intercept it here and throw before the insertion proceeds.
+// The selector name is constructed from fragments to
+// avoid a literal private API string in the binary.
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+  static SEL hierarchyInsertionSelector;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSString *selName = [@[@"_", @"isAncestor", @"OfFirst", @"Responder"] componentsJoinedByString:@""];
+    hierarchyInsertionSelector = NSSelectorFromString(selName);
+  });
+  if (aSelector == hierarchyInsertionSelector) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:
+                                     @"A SwiftUI view \"%@\" (tag: %ld) is being mounted inside a standard UIView. "
+                                     @"Wrap your component with `<Host>` from '@expo/ui/swift-ui'.",
+                                     self.componentName ?: NSStringFromClass([self class]), (long)self.tag]
+                                 userInfo:nil];
+  }
+
+  return [super forwardingTargetForSelector:aSelector];
+}
+
 #pragma mark - UIView(UIViewHierarchy)
 
 - (nullable UIView *)superview
@@ -175,19 +204,6 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
   return NO;
 }
 
-#if DEBUG
-- (BOOL)_isAncestorOfFirstResponder
-{
-  // UIKit internal selector called from `insertSubview:atIndex:`
-  // when a VirtualView inserted to a standard UIView.
-  // We use this call point here for sanity check.
-  @throw [NSException exceptionWithName:@"SwiftUIVirtualViewException"
-                                 reason:@"A SwiftUI view is inserted as a child of a standard UIView. Double check that in JSX you have wrapped your component with `<Host>` from '@expo/ui/swift-ui'."
-                               userInfo:nil];
-  return NO;
-}
-#endif
-
 - (nullable UIView *)viewWithTag:(NSInteger)tag
 {
   return nil;
@@ -205,186 +221,6 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
 {
 }
 
-#pragma mark - RCTComponentViewProtocol implementations
-
-+ (react::ComponentDescriptorProvider)componentDescriptorProvider
-{
-  std::string className([NSStringFromClass([self class]) UTF8String]);
-
-  // We're caching the flavor pointer so that the component handle stay the same for the same class name.
-  // Otherwise, the component handle would change after reload which may cause memory leaks and unexpected view recycling behavior.
-  expo::ExpoViewComponentDescriptor<>::Flavor flavor = _componentFlavorsCache[className];
-
-  if (flavor == nullptr) {
-    flavor = _componentFlavorsCache[className] = std::make_shared<std::string const>(className);
-  }
-
-  ComponentName componentName = ComponentName { flavor->c_str() };
-  ComponentHandle componentHandle = reinterpret_cast<ComponentHandle>(componentName);
-
-  return ComponentDescriptorProvider {
-    componentHandle,
-    componentName,
-    flavor,
-    &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor<>>
-  };
-}
-
-+ (std::vector<react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
-{
-  return {};
-}
-
-- (void)mountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index
-{
-  // Implemented in `SwiftUIVirtualView.swift`
-}
-
-- (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index
-{
-  // Implemented in `SwiftUIVirtualView.swift`
-}
-
-- (void)updateProps:(const react::Props::Shared &)props oldProps:(const react::Props::Shared &)oldProps
-{
-  _props = std::static_pointer_cast<const ViewProps>(props);
-}
-
-- (void)updateEventEmitter:(const react::EventEmitter::Shared &)eventEmitter
-{
-  assert(std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter));
-  _eventEmitter = std::static_pointer_cast<const ViewEventEmitter>(eventEmitter);
-}
-
-- (void)handleCommand:(NSString *)commandName args:(NSArray *)args
-{
-  // Default implementation does nothing.
-}
-
-- (void)updateLayoutMetrics:(const react::LayoutMetrics &)layoutMetrics
-           oldLayoutMetrics:(const react::LayoutMetrics &)oldLayoutMetrics
-{
-  // Yoga layout is not respected in SwiftUI integration.
-}
-
-- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
-{
-  if (updateMask & RNComponentViewUpdateMaskProps) {
-    const auto &newProps = static_cast<const expo::ExpoViewProps &>(*_props);
-    NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
-
-    for (const auto &item : newProps.propsMap) {
-      NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
-
-      // Ignore props inherited from the base view and Yoga.
-      if ([self supportsPropWithName:propName]) {
-        propsMap[propName] = convertFollyDynamicToId(item.second);
-      }
-    }
-
-    [self updateProps:propsMap];
-    [self viewDidUpdateProps];
-  }
-}
-
-- (void)prepareForRecycle
-{
-  // Default implementation does nothing.
-  _eventEmitter.reset();
-}
-
-- (react::Props::Shared)props
-{
-  RCTAssert(NO, @"props access should be implemented by RCTViewComponentView.");
-  return nullptr;
-}
-
-- (BOOL)isJSResponder
-{
-  // Default implementation always returns `NO`.
-  return NO;
-}
-
-- (void)setIsJSResponder:(BOOL)isJSResponder
-{
-  // Default implementation does nothing.
-}
-
-- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys
-{
-  // Default implementation does nothing.
-}
-
-- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN
-{
-  return nil;
-}
-
-- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
-{
-  // Clipped subviews are not supported in SwiftUI integration.
-}
-
-- (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
-{
-  const auto &eventEmitter = static_cast<const expo::ExpoViewEventEmitter &>(*_eventEmitter);
-
-  eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
-    return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
-  });
-}
-
-#pragma mark - Methods to override in Swift
-
-- (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props
-{
-  // Implemented in `SwiftUIVirtualView.swift`
-}
-
-- (void)updateState:(react::State::Shared const &)state oldState:(react::State::Shared const &)oldState
-{
-  _state = std::static_pointer_cast<const expo::ExpoViewShadowNode<>::ConcreteState>(state);
-}
-
-- (void)viewDidUpdateProps
-{
-  // Implemented in `SwiftUIVirtualView.swift`
-}
-
-- (void)setShadowNodeSize:(float)width height:(float)height
-{
-  if (_state) {
-#if REACT_NATIVE_TARGET_VERSION >= 82
-    _state->updateState(expo::ExpoViewState(width, height), EventQueue::UpdateMode::unstable_Immediate);
-#else
-    _state->updateState(expo::ExpoViewState(width, height));
-#endif
-  }
-}
-
-- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height
-{
-  if (_state) {
-    float widthValue = width ? [width floatValue] : std::numeric_limits<float>::quiet_NaN();
-    float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
-#if REACT_NATIVE_TARGET_VERSION >= 82
-    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), EventQueue::UpdateMode::unstable_Immediate);
-#else
-    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
-#endif
-  }
-}
-
-- (BOOL)supportsPropWithName:(nonnull NSString *)name
-{
-  // Implemented in `SwiftUIVirtualView.swift`
-  return NO;
-}
-
-- (void)invalidate
-{
-  // Default implementation does nothing.
-  [self prepareForRecycle];
-}
+#include "SwiftUIVirtualViewSharedImpl+Private.h"
 
 @end

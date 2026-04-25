@@ -1,4 +1,4 @@
-import { type ImageSourcePropType, type StyleProp, type TextStyle } from 'react-native';
+import type { ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export interface StackToolbarLabelProps {
     /**

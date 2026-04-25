@@ -4,6 +4,7 @@ exports.useTabSlot = useTabSlot;
 exports.TabSlot = TabSlot;
 exports.defaultTabsSlotRender = defaultTabsSlotRender;
 exports.isTabSlot = isTabSlot;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
@@ -28,19 +29,15 @@ function useTabSlot({ detachInactiveScreens = ['android', 'ios', 'web'].includes
     if (!loaded[focusedRouteKey]) {
         setLoaded({ ...loaded, [focusedRouteKey]: true });
     }
-    return (<react_native_screens_1.ScreenContainer enabled={detachInactiveScreens} hasTwoStates style={[styles.screenContainer, style]}>
-      {state.routes.map((route, index) => {
+    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenContainer, { enabled: detachInactiveScreens, hasTwoStates: true, style: [styles.screenContainer, style], children: state.routes.map((route, index) => {
             const descriptor = descriptors[route.key];
-            return (<TabContext_1.TabContext.Provider key={descriptor.route.key} value={descriptor.options}>
-            {renderFn(descriptor, {
+            return ((0, jsx_runtime_1.jsx)(TabContext_1.TabContext.Provider, { value: descriptor.options, children: renderFn(descriptor, {
                     index,
                     isFocused: state.index === index,
                     loaded: loaded[route.key],
                     detachInactiveScreens,
-                })}
-          </TabContext_1.TabContext.Provider>);
-        })}
-    </react_native_screens_1.ScreenContainer>);
+                }) }, descriptor.route.key));
+        }) }));
 }
 /**
  * Renders the current tab.
@@ -72,9 +69,7 @@ function defaultTabsSlotRender(descriptor, { isFocused, loaded, detachInactiveSc
         // Don't render a lazy screen if we've never navigated to it
         return null;
     }
-    return (<react_native_screens_1.Screen key={descriptor.route.key} enabled={detachInactiveScreens} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur} style={[styles.screen, isFocused ? styles.focused : styles.unfocused]}>
-      {descriptor.render()}
-    </react_native_screens_1.Screen>);
+    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Screen, { enabled: detachInactiveScreens, activityState: isFocused ? 2 : 0, freezeOnBlur: freezeOnBlur, style: [styles.screen, isFocused ? styles.focused : styles.unfocused], children: descriptor.render() }, descriptor.route.key));
 }
 /**
  * @hidden

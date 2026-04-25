@@ -1,5 +1,5 @@
-import { PBXNativeTarget, XCBuildConfiguration, XcodeProject } from 'xcode';
-import { NativeTargetSectionEntry } from './utils/Xcodeproj';
+import type { PBXNativeTarget, XCBuildConfiguration, XcodeProject } from 'xcode';
+import type { NativeTargetSectionEntry } from './utils/Xcodeproj';
 export declare enum TargetType {
     APPLICATION = "com.apple.product-type.application",
     EXTENSION = "com.apple.product-type.app-extension",

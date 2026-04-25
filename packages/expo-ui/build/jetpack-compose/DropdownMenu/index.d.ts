@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
-import { StyleProp, ViewStyle, type ColorValue } from 'react-native';
-import { ModifierConfig } from '../../types';
+import type { ReactNode } from 'react';
+import type { StyleProp, ViewStyle, ColorValue } from 'react-native';
+import type { ModifierConfig } from '../../types';
 /**
  * Props of the `DropdownMenu` component.
  */
@@ -38,7 +38,7 @@ export type DropdownMenuProps = {
  */
 export declare function Items(props: {
     children: ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export declare namespace Items {
     var tag: string;
 }
@@ -47,7 +47,7 @@ export declare namespace Items {
  */
 export declare function Trigger(props: {
     children: ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export declare namespace Trigger {
     var tag: string;
 }
@@ -56,8 +56,8 @@ export declare namespace Trigger {
  */
 export declare function Preview(props: {
     children: ReactNode;
-}): import("react").JSX.Element;
-declare function DropdownMenu(props: DropdownMenuProps): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
+declare function DropdownMenu(props: DropdownMenuProps): import("react/jsx-runtime").JSX.Element;
 declare namespace DropdownMenu {
     var Trigger: typeof import(".").Trigger;
     var Preview: typeof import(".").Preview;

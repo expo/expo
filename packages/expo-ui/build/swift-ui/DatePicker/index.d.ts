@@ -34,5 +34,5 @@ export type DatePickerProps = {
 /**
  * Renders a SwiftUI `DatePicker` component.
  */
-export declare function DatePicker(props: DatePickerProps): import("react").JSX.Element;
+export declare function DatePicker(props: DatePickerProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

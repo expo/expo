@@ -1,5 +1,6 @@
 import { act } from '@testing-library/react-native';
-import { Dispatch, SetStateAction, useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useState } from 'react';
 import { Text } from 'react-native';
 import {
   type HeaderBarButtonItemWithAction,

@@ -1,4 +1,4 @@
-import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
+import type { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
 import ExpoAppleAuthenticationButton from './ExpoAppleAuthenticationButton';
 
 // @needsAudit

@@ -1,13 +1,14 @@
 import { requireNativeView } from 'expo';
-import { Ref } from 'react';
+import type { Ref } from 'react';
 
 import { worklets } from '../../State/optionalWorklets';
-import { type ObservableState, useNativeState } from '../../State/useNativeState';
+import type { ObservableState } from '../../State/useNativeState';
+import { useNativeState } from '../../State/useNativeState';
 import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
-import { type ViewEvent } from '../../types';
+import type { ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 /**
  * Can be used for imperatively focusing and selecting text on the `TextField` component.

@@ -4,7 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig, modifyConfigAsync, PackageJSONConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import { modifyConfigAsync } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -14,14 +15,15 @@ import path from 'path';
 import { disableNetwork } from '../../api/settings';
 import { Log } from '../../log';
 import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
-import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
+import type { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
 import { copyPublicFolderAsync } from '../publicFolder';
-import { ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
-import { Options } from './resolveOptions';
+import type { ExportAssetMap } from '../saveAssets';
+import { persistMetroFilesAsync } from '../saveAssets';
+import type { Options } from './resolveOptions';
 import {
   isExecutingFromXcodebuild,
   logInXcode,

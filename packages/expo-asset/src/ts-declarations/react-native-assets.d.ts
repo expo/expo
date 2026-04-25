@@ -1,5 +1,5 @@
 declare module 'react-native/Libraries/Image/AssetSourceResolver' {
-  import { PackagerAsset } from '@react-native/assets/registry';
+  import type { PackagerAsset } from '@react-native/assets/registry';
 
   export type ResolvedAssetSource = {
     __packager_asset: boolean;
@@ -31,9 +31,8 @@ declare module 'react-native/Libraries/Image/AssetSourceResolver' {
 }
 
 declare module 'react-native/Libraries/Image/resolveAssetSource' {
-  import AssetSourceResolver, {
-    ResolvedAssetSource,
-  } from 'react-native/Libraries/Image/AssetSourceResolver';
+  import type { ResolvedAssetSource } from 'react-native/Libraries/Image/AssetSourceResolver';
+  import type AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
 
   export default function resolveAssetSource(source: any): ResolvedAssetSource | null;
 

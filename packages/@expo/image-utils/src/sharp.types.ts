@@ -1,4 +1,4 @@
-import { ImageFormat, ResizeMode } from './Image.types';
+import type { ImageFormat, ResizeMode } from './Image.types';
 
 export type SharpGlobalOptions = {
   compressionLevel?: '';

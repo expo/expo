@@ -1,4 +1,5 @@
-import { PlatformOSType, Platform as ReactNativePlatform } from 'react-native';
+import type { PlatformOSType } from 'react-native';
+import { Platform as ReactNativePlatform } from 'react-native';
 
 import {
   isDOMAvailable,

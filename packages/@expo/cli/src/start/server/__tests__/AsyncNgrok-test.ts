@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 
-import { NgrokInstance, NgrokResolver } from '../../doctor/ngrok/NgrokResolver';
+import type { NgrokInstance } from '../../doctor/ngrok/NgrokResolver';
+import { NgrokResolver } from '../../doctor/ngrok/NgrokResolver';
 import { hasAdbReverseAsync, startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
 

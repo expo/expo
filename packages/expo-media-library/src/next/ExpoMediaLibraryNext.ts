@@ -1,8 +1,10 @@
-import { NativeModule, PermissionResponse, requireNativeModule } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo-modules-core';
+import { NativeModule, requireNativeModule } from 'expo-modules-core';
 
-import { GranularPermission } from './MediaLibraryNext.types';
+import type { GranularPermission } from './MediaLibraryNext.types';
 import { Album } from './types/Album';
 import { Asset } from './types/Asset';
+import type { MediaTypeFilter } from './types/MediaTypeFilter';
 import { Query } from './types/Query';
 
 declare class ExpoMediaLibraryNextModule extends NativeModule {
@@ -18,6 +20,7 @@ declare class ExpoMediaLibraryNextModule extends NativeModule {
     writeOnly?: boolean,
     granularPermissions?: GranularPermission[]
   ): Promise<PermissionResponse>;
+  presentPermissionsPicker(mediaTypes?: MediaTypeFilter[]): Promise<void>;
 }
 
 export default requireNativeModule<ExpoMediaLibraryNextModule>('ExpoMediaLibraryNext');

@@ -1,6 +1,7 @@
 // Common utilities for interacting with `args` library.
 // These functions should be used by every command.
-import arg, { Spec } from 'arg';
+import type { Spec } from 'arg';
+import arg from 'arg';
 import chalk from 'chalk';
 
 import { replaceValue } from './array';

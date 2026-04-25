@@ -1,5 +1,6 @@
 import type { ExpoConfig } from '@expo/config';
-import JsonFile, { JSONObject } from '@expo/json-file';
+import type { JSONObject } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -9,7 +10,8 @@ import path from 'path';
 
 import { sanitizedName } from './createFileTransform';
 import { Log } from './log';
-import { formatRunCommand, PackageManagerName } from './resolvePackageManager';
+import type { PackageManagerName } from './resolvePackageManager';
+import { formatRunCommand } from './resolvePackageManager';
 import { env } from './utils/env';
 import { downloadAndExtractGitHubRepositoryAsync } from './utils/github';
 import {

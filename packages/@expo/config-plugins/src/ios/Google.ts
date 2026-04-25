@@ -1,14 +1,14 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import plist from '@expo/plist';
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
-import { XcodeProject } from 'xcode';
+import type { XcodeProject } from 'xcode';
 
-import { InfoPlist } from './IosConfig.types';
+import type { InfoPlist } from './IosConfig.types';
 import { getSourceRoot } from './Paths';
 import { appendScheme } from './Scheme';
-import { ConfigPlugin, ModProps } from '../Plugin.types';
+import type { ConfigPlugin, ModProps } from '../Plugin.types';
 import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { withInfoPlist, withXcodeProject } from '../plugins/ios-plugins';
 

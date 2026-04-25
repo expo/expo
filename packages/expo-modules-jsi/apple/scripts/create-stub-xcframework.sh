@@ -11,9 +11,13 @@ PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
 XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
 
-if [[ -d "$XCFRAMEWORK_PATH" ]]; then
-  exit 0
+# Use colors only when run in the terminal
+BLUE=""; RESET=""
+if [ -t 1 ]; then
+  BLUE="\033[34m"
+  RESET="\033[0m"
 fi
+echo -e "${BLUE}[Expo]${RESET} Creating stub xcframework for ${PACKAGE_NAME}"
 
 # Platform slices the podspec supports. CocoaPods reads Info.plist at
 # `pod install` time to generate per-slice cases in its xcframework copy
@@ -26,6 +30,11 @@ SLICES=(
   "tvos-arm64|tvos||arm64"
   "tvos-arm64_x86_64-simulator|tvos|simulator|arm64 x86_64"
 )
+
+# Always regenerate the Info.plist so it declares every slice. A previous
+# build may have produced an xcframework with only the target platform's
+# slice (e.g. device-only or simulator-only), which would cause CocoaPods
+# to generate a copy script that is missing the other variant.
 
 # The stub binary is only inspected by CocoaPods at install time to detect
 # that this is a dynamic framework — it is never linked against (the real
@@ -42,7 +51,9 @@ for slice in "${SLICES[@]}"; do
   IFS='|' read -r slice_id platform variant archs <<<"$slice"
   slice_dir="${XCFRAMEWORK_PATH}/${slice_id}/${PACKAGE_NAME}.framework"
   mkdir -p "$slice_dir"
-  cp "$STUB_SOURCE" "${slice_dir}/${PACKAGE_NAME}"
+  if [[ ! -f "${slice_dir}/${PACKAGE_NAME}" ]]; then
+    cp "$STUB_SOURCE" "${slice_dir}/${PACKAGE_NAME}"
+  fi
 
   arch_entries=""
   for arch in $archs; do

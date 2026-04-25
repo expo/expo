@@ -17,16 +17,18 @@ public class ReactNativeHostManager {
   private var reactNativeFactory: RCTReactNativeFactory?
   private var firstLoadInitialized: Bool = false
   private var devMenuInitialized: Bool = false
+  private var turboModuleClasses: [String: AnyClass] = [:]
 
   /**
    * Initializes ReactNativeHostManager instance
    * Instance can be initialized only once
    */
-  public func initialize() {
+  public func initialize(turboModuleClasses: [String: AnyClass] = [:]) {
     if firstLoadInitialized {
       return
     }
 
+    self.turboModuleClasses = turboModuleClasses
     firstLoadInitialized = true
     initializeInstance()
     // Ensure this won't get stripped by the Swift compiler
@@ -60,7 +62,7 @@ public class ReactNativeHostManager {
   * Initializes a React Native instance
   */
   public func initializeInstance() {
-    let delegate = ReactNativeDelegate()
+    let delegate = ReactNativeDelegate(turboModuleClasses: turboModuleClasses)
     reactNativeFactory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
     reactNativeDelegate = delegate

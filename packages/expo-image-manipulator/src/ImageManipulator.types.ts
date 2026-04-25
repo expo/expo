@@ -1,5 +1,5 @@
 import type { NativeModule } from 'expo';
-import { SharedRef } from 'expo-modules-core/types';
+import type { SharedRef } from 'expo-modules-core/types';
 
 import type { ImageManipulatorContext } from './ImageManipulatorContext';
 import type { ImageRef } from './ImageRef';

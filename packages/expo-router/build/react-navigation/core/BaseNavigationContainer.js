@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseNavigationContainer = BaseNavigationContainer;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
@@ -340,20 +341,6 @@ function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, on
         message += `\n\nThis is a development-only warning and won't be shown in production.`;
         console.error(message);
     });
-    return (<NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider value={false}>
-      <NavigationContainerRefContext_1.NavigationContainerRefContext.Provider value={navigation}>
-        <NavigationBuilderContext_1.NavigationBuilderContext.Provider value={builderContext}>
-          <NavigationStateContext_1.NavigationStateContext.Provider value={context}>
-            <UnhandledActionContext_1.UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
-              <DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                <EnsureSingleNavigator_1.EnsureSingleNavigator>
-                  <ThemeProvider_1.ThemeProvider value={theme}>{children}</ThemeProvider_1.ThemeProvider>
-                </EnsureSingleNavigator_1.EnsureSingleNavigator>
-              </DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext.Provider>
-            </UnhandledActionContext_1.UnhandledActionContext.Provider>
-          </NavigationStateContext_1.NavigationStateContext.Provider>
-        </NavigationBuilderContext_1.NavigationBuilderContext.Provider>
-      </NavigationContainerRefContext_1.NavigationContainerRefContext.Provider>
-    </NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(NavigationIndependentTreeContext_1.NavigationIndependentTreeContext.Provider, { value: false, children: (0, jsx_runtime_1.jsx)(NavigationContainerRefContext_1.NavigationContainerRefContext.Provider, { value: navigation, children: (0, jsx_runtime_1.jsx)(NavigationBuilderContext_1.NavigationBuilderContext.Provider, { value: builderContext, children: (0, jsx_runtime_1.jsx)(NavigationStateContext_1.NavigationStateContext.Provider, { value: context, children: (0, jsx_runtime_1.jsx)(UnhandledActionContext_1.UnhandledActionContext.Provider, { value: onUnhandledAction ?? defaultOnUnhandledAction, children: (0, jsx_runtime_1.jsx)(DeprecatedNavigationInChildContext_1.DeprecatedNavigationInChildContext.Provider, { value: navigationInChildEnabled, children: (0, jsx_runtime_1.jsx)(EnsureSingleNavigator_1.EnsureSingleNavigator, { children: (0, jsx_runtime_1.jsx)(ThemeProvider_1.ThemeProvider, { value: theme, children: children }) }) }) }) }) }) }) }));
 }
 //# sourceMappingURL=BaseNavigationContainer.js.map

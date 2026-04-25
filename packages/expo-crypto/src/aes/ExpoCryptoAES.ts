@@ -1,6 +1,6 @@
 import { NativeModule, requireNativeModule } from 'expo';
 
-import {
+import type {
   AESDecryptOptions,
   AESEncryptOptions,
   AESKeySize,

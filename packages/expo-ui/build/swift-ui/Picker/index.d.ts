@@ -35,6 +35,6 @@ export type PickerProps<T extends SelectionValueType = any> = {
  * </Picker>
  * ```
  */
-export declare function Picker<T extends SelectionValueType>(props: PickerProps<T>): import("react").JSX.Element;
+export declare function Picker<T extends SelectionValueType>(props: PickerProps<T>): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

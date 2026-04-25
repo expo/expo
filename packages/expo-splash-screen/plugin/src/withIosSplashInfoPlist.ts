@@ -1,10 +1,7 @@
-import Debug from 'debug';
 import { ExpoConfig } from 'expo/config';
 import { ConfigPlugin, InfoPlist, WarningAggregator, withInfoPlist } from 'expo/config-plugins';
 
 import { IOSSplashConfig } from './types';
-
-const debug = Debug('expo:expo-splash-screen:ios:infoPlist');
 
 export const withIosSplashInfoPlist: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
   return withInfoPlist(config, (config) => {
@@ -24,7 +21,6 @@ export function setSplashInfoPlist(
     splash.dark?.backgroundColor ||
     splash.dark?.tabletBackgroundColor
   );
-  debug(`isDarkModeEnabled: `, isDarkModeEnabled);
 
   if (isDarkModeEnabled) {
     // IOSConfig.UserInterfaceStyle.getUserInterfaceStyle(config);
@@ -49,7 +45,6 @@ export function setSplashInfoPlist(
     // TODO: What to do here ??
     infoPlist.UILaunchStoryboardName = 'SplashScreen';
   } else {
-    debug(`Disabling UILaunchStoryboardName`);
     delete infoPlist.UILaunchStoryboardName;
   }
 

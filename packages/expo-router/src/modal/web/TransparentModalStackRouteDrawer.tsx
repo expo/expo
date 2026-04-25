@@ -3,7 +3,7 @@ import React from 'react';
 import { Drawer } from 'vaul';
 
 import modalStyles from './modalStyles';
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 
 function TransparentModalStackRouteDrawer({
   routeKey,

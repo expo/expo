@@ -2,23 +2,21 @@ import { UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-import {
+import type {
+  SecurityLevel,
   LocalAuthenticationOptions,
   AuthenticationType,
   LocalAuthenticationResult,
-  SecurityLevel,
-  BiometricsSecurityLevel,
-  LocalAuthenticationError,
 } from './LocalAuthentication.types';
 
 export {
-  LocalAuthenticationOptions,
+  type LocalAuthenticationOptions,
   AuthenticationType,
-  LocalAuthenticationResult,
+  type LocalAuthenticationResult,
   SecurityLevel,
-  BiometricsSecurityLevel,
-  LocalAuthenticationError,
-};
+  type BiometricsSecurityLevel,
+  type LocalAuthenticationError,
+} from './LocalAuthentication.types';
 
 // @needsAudit
 /**

@@ -3,17 +3,21 @@
 #import <ExpoModulesCore/EXSharedObjectUtils.h>
 #import <ExpoModulesCore/SharedObject.h>
 
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
-
 @implementation EXSharedObjectUtils
 
-+ (void)setNativeState:(nonnull EXJavaScriptObject *)object
-               runtime:(nonnull EXJavaScriptRuntime *)runtime
++ (void)setNativeState:(void *)runtimePointer
+          valuePointer:(void *)valuePointer
               objectId:(long)objectId
-              releaser:(nonnull ObjectReleaser)releaser
+              releaser:(ObjectReleaser)releaser
 {
-  auto nativeState = std::make_shared<expo::SharedObject::NativeState>(objectId, releaser);
-  [object get]->setNativeState(*[runtime get], nativeState);
+  auto &runtime = *reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  auto &value = *reinterpret_cast<jsi::Value *>(valuePointer);
+  auto object = value.getObject(runtime);
+  auto nativeState = std::make_shared<expo::SharedObject::NativeState>(
+    objectId,
+    [releaser](long id) { releaser(id); }
+  );
+  object.setNativeState(runtime, nativeState);
 }
 
 @end

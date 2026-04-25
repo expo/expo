@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { Children, isValidElement, type Ref, type ReactNode, type ReactElement } from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 export type PickerItemValue = string | number | null;
 
@@ -43,7 +43,7 @@ export type PickerItemProps<T extends PickerItemValue> = {
  */
 export function PickerItem<T extends PickerItemValue>(
   _props: PickerItemProps<T>
-): React.ReactElement | null {
+): ReactElement | null {
   return null;
 }
 
@@ -55,7 +55,7 @@ export type PickerProps<T extends PickerItemValue = PickerItemValue> = {
   /**
    * Ref handle exposing `focus()` and `blur()` methods.
    */
-  ref?: React.Ref<PickerRef>;
+  ref?: Ref<PickerRef>;
   /**
    * The currently selected value. Must match the `value` of one of the `Picker.Item` children.
    */
@@ -79,7 +79,7 @@ export type PickerProps<T extends PickerItemValue = PickerItemValue> = {
   /**
    * `Picker.Item` children that define the available options.
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -100,7 +100,7 @@ export type PickerRef = {
 };
 
 export type PickerWithItems = {
-  <T extends PickerItemValue>(props: PickerProps<T>): React.ReactElement | null;
+  <T extends PickerItemValue>(props: PickerProps<T>): ReactElement | null;
   Item: typeof PickerItem;
 };
 
@@ -116,12 +116,12 @@ export type ExtractedPickerItem<T extends PickerItemValue = PickerItemValue> = {
  * Extracts `Picker.Item` children props into an array of item entries.
  */
 export function extractPickerItems<T extends PickerItemValue>(
-  children: React.ReactNode
+  children: ReactNode
 ): ExtractedPickerItem<T>[] {
-  return React.Children.toArray(children)
+  return Children.toArray(children)
     .filter(
-      (child): child is React.ReactElement<PickerItemProps<T>> =>
-        React.isValidElement(child) && child.type === PickerItem
+      (child): child is ReactElement<PickerItemProps<T>> =>
+        isValidElement(child) && child.type === PickerItem
     )
     .map(({ props: { label = '', value, color, fontFamily, enabled } }) => ({
       label,

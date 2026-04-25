@@ -51,6 +51,8 @@ await Updates.fetchUpdateAsync();
 await Updates.reloadAsync();
 ```
 
+> **info** Any header you want to override at runtime must be declared in `updates.requestHeaders` in your app config.
+
 ### Risks and considerations when switching channels
 
 Switching channels changes the JavaScript bundle the app runs. If your app depends on migrations or data shapes that are not compatible across channels, switching back and forth may cause issues.

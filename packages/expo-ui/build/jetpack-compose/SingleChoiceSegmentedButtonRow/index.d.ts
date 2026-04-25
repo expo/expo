@@ -13,5 +13,5 @@ export type SingleChoiceSegmentedButtonRowProps = {
  * A row container for single-choice `SegmentedButton` children.
  * Maps to Material 3 `SingleChoiceSegmentedButtonRow`.
  */
-export declare function SingleChoiceSegmentedButtonRow(props: SingleChoiceSegmentedButtonRowProps): import("react").JSX.Element;
+export declare function SingleChoiceSegmentedButtonRow(props: SingleChoiceSegmentedButtonRowProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

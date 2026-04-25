@@ -1,4 +1,4 @@
-import * as forge from 'node-forge';
+import type * as forge from 'node-forge';
 
 import {
   getAsn1Hash,

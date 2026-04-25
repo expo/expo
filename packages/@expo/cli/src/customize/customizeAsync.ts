@@ -1,8 +1,8 @@
 import { getConfig } from '@expo/config';
 
 import { queryAndGenerateAsync, selectAndGenerateAsync } from './generate';
-import { Options } from './resolveOptions';
-import { DestinationResolutionProps } from './templates';
+import type { Options } from './resolveOptions';
+import type { DestinationResolutionProps } from './templates';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { findUpProjectRootOrAssert } from '../utils/findUp';

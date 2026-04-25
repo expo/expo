@@ -1,6 +1,6 @@
-import { Ref } from 'react';
-import { ColorValue } from 'react-native';
-import { ModifierConfig } from '../../types';
+import type { Ref } from 'react';
+import type { ColorValue } from 'react-native';
+import type { ModifierConfig } from '../../types';
 /**
  * Can be used for imperatively setting text and focus on the `TextField` component.
  */
@@ -122,56 +122,56 @@ export type OutlinedTextFieldProps = BaseTextFieldProps & {
 /**
  * A Material3 `TextField`.
  */
-declare function TextFieldComponent(props: TextFieldProps): import("react").JSX.Element;
+declare function TextFieldComponent(props: TextFieldProps): import("react/jsx-runtime").JSX.Element;
 declare namespace TextFieldComponent {
     var Label: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Placeholder: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var LeadingIcon: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var TrailingIcon: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Prefix: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Suffix: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var SupportingText: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 /**
  * A Material3 `OutlinedTextField` with a transparent background and border outline.
  */
-declare function OutlinedTextFieldComponent(props: OutlinedTextFieldProps): import("react").JSX.Element;
+declare function OutlinedTextFieldComponent(props: OutlinedTextFieldProps): import("react/jsx-runtime").JSX.Element;
 declare namespace OutlinedTextFieldComponent {
     var Label: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Placeholder: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var LeadingIcon: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var TrailingIcon: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Prefix: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Suffix: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var SupportingText: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 export { TextFieldComponent as TextField, OutlinedTextFieldComponent as OutlinedTextField };
 //# sourceMappingURL=index.d.ts.map

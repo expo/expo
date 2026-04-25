@@ -1,6 +1,8 @@
-import { NativeModule, PermissionResponse, SharedObject } from 'expo-modules-core';
-import { AudioMetadata, AudioMode, AudioPlaylistLoopMode, AudioPlaylistStatus, AudioSource, AudioSourceInfo, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions, RecordingStatus } from './Audio.types';
-import { AudioLockScreenOptions } from './AudioConstants';
+import type { PermissionResponse } from 'expo-modules-core';
+import { NativeModule, SharedObject } from 'expo-modules-core';
+import type { AudioMetadata, AudioMode, AudioPlaylistLoopMode, AudioPlaylistStatus, AudioSource, AudioSourceInfo, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions, RecordingStatus } from './Audio.types';
+import type { AudioLockScreenOptions } from './AudioConstants';
+import type { AudioStream } from './AudioStream.types';
 /**
  * @hidden
  */
@@ -17,6 +19,7 @@ export declare class NativeAudioModule extends NativeModule {
     readonly AudioPlayer: typeof AudioPlayer;
     readonly AudioRecorder: typeof AudioRecorder;
     readonly AudioPlaylist: typeof AudioPlaylist;
+    readonly AudioStream: typeof AudioStream;
 }
 export declare class AudioPlayer extends SharedObject<AudioEvents> {
     /**

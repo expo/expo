@@ -1,5 +1,5 @@
-import { ContactField, ContactQueryOptions, FormOptions, PartialContactDetails } from './Contact.props';
-import { ExistingEmail, ExistingPhone, ExistingDate, ExistingExtraName, ExistingAddress, ExistingRelation, ExistingUrlAddress, ExistingSocialProfile, ExistingImAddress, NewEmail, NewPhone, NewDate, NewExtraName, NewAddress, NewRelation, NewUrlAddress, NewSocialProfile, NewImAddress, ContactPatch, CreateContactRecord, ContactDate, NonGregorianBirthday } from './Contact.types';
+import type { ContactField, ContactQueryOptions, FormOptions, PartialContactDetails } from './Contact.props';
+import type { ExistingEmail, ExistingPhone, ExistingDate, ExistingExtraName, ExistingAddress, ExistingRelation, ExistingUrlAddress, ExistingSocialProfile, ExistingImAddress, NewEmail, NewPhone, NewDate, NewExtraName, NewAddress, NewRelation, NewUrlAddress, NewSocialProfile, NewImAddress, ContactPatch, CreateContactRecord, ContactDate, NonGregorianBirthday } from './Contact.types';
 export declare class Contact {
     /**
      * Constructor for Contact instance.

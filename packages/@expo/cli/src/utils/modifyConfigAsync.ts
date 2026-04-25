@@ -1,4 +1,5 @@
-import { ExpoConfig, modifyConfigAsync } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { modifyConfigAsync } from '@expo/config';
 import chalk from 'chalk';
 
 import { SilentError } from './errors';

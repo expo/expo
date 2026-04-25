@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import * as React from 'react';
 import { PixelRatio, StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
@@ -66,10 +67,7 @@ const CanvasWrapper = ({ pointerEvents, children, style, ...props }) => {
         }
         setRef(props.canvasRef, canvas);
     }, [_canvasRef]);
-    return (<View {...props} style={[styles.wrapper, style]} ref={ref} onLayout={onLayout}>
-      <Canvas ref={_canvasRef} style={[StyleSheet.absoluteFill, { pointerEvents }]}/>
-      {children}
-    </View>);
+    return (_jsxs(View, { ...props, style: [styles.wrapper, style], ref: ref, onLayout: onLayout, children: [_jsx(Canvas, { ref: _canvasRef, style: [StyleSheet.absoluteFill, { pointerEvents }] }), children] }));
 };
 const styles = StyleSheet.create({
     wrapper: {

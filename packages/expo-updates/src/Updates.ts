@@ -2,17 +2,17 @@ import { CodedError } from 'expo-modules-core';
 import { Image } from 'react-native';
 
 import ExpoUpdates from './ExpoUpdates';
-import { UpdatesCheckAutomaticallyNativeValue } from './ExpoUpdatesModule.types';
-import {
+import type { UpdatesCheckAutomaticallyNativeValue } from './ExpoUpdatesModule.types';
+import type {
   LocalAssets,
   Manifest,
   UpdateCheckResult,
   UpdateFetchResult,
-  UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
   ReloadScreenOptions,
   ReloadScreenImageSource,
 } from './Updates.types';
+import { UpdatesCheckAutomaticallyValue } from './Updates.types';
 
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:

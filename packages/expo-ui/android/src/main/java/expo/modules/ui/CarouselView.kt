@@ -19,6 +19,7 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class FlingBehaviorType(val value: String) : Enumerable {
   SINGLE_ADVANCE("singleAdvance"),
@@ -54,6 +55,7 @@ fun paddingValuesFromEither(either: Either<Float, PaddingValuesRecord>?): Paddin
   }
 }
 
+@OptimizedComposeProps
 data class HorizontalCenteredHeroCarouselProps(
   val maxItemWidth: Float? = null,
   val itemSpacing: Float? = null,
@@ -93,6 +95,7 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
   }
 }
 
+@OptimizedComposeProps
 data class HorizontalMultiBrowseCarouselProps(
   val preferredItemWidth: Float = 200f,
   val itemSpacing: Float? = null,
@@ -132,6 +135,7 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
   }
 }
 
+@OptimizedComposeProps
 data class HorizontalUncontainedCarouselProps(
   val itemWidth: Float = 200f,
   val itemSpacing: Float? = null,

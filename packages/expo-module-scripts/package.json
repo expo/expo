@@ -10,10 +10,10 @@
   "exports": {
     "./package.json": "./package.json",
     "./babel.config.*": {
-      "require": "./babel.config.*.js"
+      "require": "./babel.config.*.cjs"
     },
     "./babel.config.*.js": {
-      "require": "./babel.config.*.js"
+      "require": "./babel.config.*.cjs"
     },
     "./eslintrc.base.js": {
       "require": "./eslintrc.base.cjs"
@@ -76,10 +76,8 @@
     "@expo/spawn-async": "^1.7.2",
     "@react-native/jest-preset": "0.85.2",
     "@testing-library/react-native": "^13.3.0",
-    "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.2.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",
-    "babel-preset-expo": "workspace:~55.0.8",
     "commander": "^12.1.0",
     "eslint-config-universe": "workspace:^15.0.3",
     "glob": "^13.0.0",
@@ -87,8 +85,7 @@
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
     "resolve-workspace-root": "^2.0.0",
-    "ts-jest": "~29.0.4",
-    "typescript": "^5.9.2"
+    "ts-jest": "~29.4.7"
   },
   "devDependencies": {
     "@expo/metro": "56.0.0-rc.0",

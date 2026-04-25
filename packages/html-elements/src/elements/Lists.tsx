@@ -1,8 +1,10 @@
-import React, { ComponentType, PropsWithChildren } from 'react';
+import type { ComponentType, PropsWithChildren } from 'react';
 import { Platform } from 'react-native';
 
-import Text, { TextProps } from '../primitives/Text';
-import View, { ViewProps } from '../primitives/View';
+import type { TextProps } from '../primitives/Text';
+import Text from '../primitives/Text';
+import type { ViewProps } from '../primitives/View';
+import View from '../primitives/View';
 
 function createView(nativeProps: ViewProps = {}): ComponentType<ViewProps> {
   return function Dom(props: ViewProps) {

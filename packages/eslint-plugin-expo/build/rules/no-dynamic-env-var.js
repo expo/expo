@@ -40,3 +40,4 @@ exports.noDynamicEnvVar = createRule({
         };
     },
 });
+//# sourceMappingURL=no-dynamic-env-var.js.map

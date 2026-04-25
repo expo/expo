@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MaterialTopTabBar = MaterialTopTabBar;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_native_1 = require("react-native");
 const color_1 = require("../../../utils/color");
 const elements_1 = require("../../elements");
@@ -18,9 +19,7 @@ catch (e) {
     throw new Error("Install the 'react-native-tab-view' package and its peer dependencies to use the Expo Router's TopTabs.");
 }
 const renderLabelDefault = ({ color, labelText, style, allowFontScaling }) => {
-    return (<elements_1.Text style={[{ color }, styles.label, style]} allowFontScaling={allowFontScaling}>
-      {labelText}
-    </elements_1.Text>);
+    return ((0, jsx_runtime_1.jsx)(elements_1.Text, { style: [{ color }, styles.label, style], allowFontScaling: allowFontScaling, children: labelText }));
 };
 function MaterialTopTabBar({ state, navigation, descriptors, ...rest }) {
     const { colors } = (0, native_1.useTheme)();
@@ -63,7 +62,7 @@ function MaterialTopTabBar({ state, navigation, descriptors, ...rest }) {
             },
         ];
     }));
-    return (<TabBar {...rest} navigationState={state} options={tabBarOptions} direction={direction} scrollEnabled={focusedOptions.tabBarScrollEnabled} bounces={focusedOptions.tabBarBounces} activeColor={activeColor} inactiveColor={inactiveColor} pressColor={focusedOptions.tabBarPressColor} pressOpacity={focusedOptions.tabBarPressOpacity} tabStyle={focusedOptions.tabBarItemStyle} indicatorStyle={[{ backgroundColor: colors.primary }, focusedOptions.tabBarIndicatorStyle]} gap={focusedOptions.tabBarGap} android_ripple={focusedOptions.tabBarAndroidRipple} indicatorContainerStyle={focusedOptions.tabBarIndicatorContainerStyle} contentContainerStyle={focusedOptions.tabBarContentContainerStyle} style={[{ backgroundColor: colors.card }, focusedOptions.tabBarStyle]} onTabPress={({ route, preventDefault }) => {
+    return ((0, jsx_runtime_1.jsx)(TabBar, { ...rest, navigationState: state, options: tabBarOptions, direction: direction, scrollEnabled: focusedOptions.tabBarScrollEnabled, bounces: focusedOptions.tabBarBounces, activeColor: activeColor, inactiveColor: inactiveColor, pressColor: focusedOptions.tabBarPressColor, pressOpacity: focusedOptions.tabBarPressOpacity, tabStyle: focusedOptions.tabBarItemStyle, indicatorStyle: [{ backgroundColor: colors.primary }, focusedOptions.tabBarIndicatorStyle], gap: focusedOptions.tabBarGap, android_ripple: focusedOptions.tabBarAndroidRipple, indicatorContainerStyle: focusedOptions.tabBarIndicatorContainerStyle, contentContainerStyle: focusedOptions.tabBarContentContainerStyle, style: [{ backgroundColor: colors.card }, focusedOptions.tabBarStyle], onTabPress: ({ route, preventDefault }) => {
             const event = navigation.emit({
                 type: 'tabPress',
                 target: route.key,
@@ -72,15 +71,15 @@ function MaterialTopTabBar({ state, navigation, descriptors, ...rest }) {
             if (event.defaultPrevented) {
                 preventDefault();
             }
-        }} onTabLongPress={({ route }) => navigation.emit({
+        }, onTabLongPress: ({ route }) => navigation.emit({
             type: 'tabLongPress',
             target: route.key,
-        })} renderIndicator={({ navigationState: state, ...rest }) => {
+        }), renderIndicator: ({ navigationState: state, ...rest }) => {
             return focusedOptions.tabBarIndicator ? (focusedOptions.tabBarIndicator({
                 state: state,
                 ...rest,
-            })) : (<TabBarIndicator navigationState={state} {...rest}/>);
-        }}/>);
+            })) : ((0, jsx_runtime_1.jsx)(TabBarIndicator, { navigationState: state, ...rest }));
+        } }));
 }
 const styles = react_native_1.StyleSheet.create({
     label: {

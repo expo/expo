@@ -21,6 +21,7 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/native": "^7.1.33",
+    "@expo/ui": "workspace:*",
     "expo": "workspace:*",
     "expo-font": "workspace:*",
     "expo-linking": "workspace:*",

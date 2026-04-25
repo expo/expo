@@ -1,5 +1,6 @@
-import { ExpoConfig, getConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
+import type { ModPlatform } from '@expo/config-plugins';
 import { updateXcodeProject } from '@expo/inline-modules';
 import chalk from 'chalk';
 

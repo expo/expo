@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import {
   normalizeStaticPlugin,
   resolveConfigPluginFunctionWithInfo,

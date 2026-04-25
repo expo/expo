@@ -61,7 +61,7 @@ public final class ExpoFetchModule: Module {
       AsyncFunction("arrayBuffer") { (response: NativeResponse, promise: Promise) in
         response.waitFor(states: [.bodyCompleted]) { _ in
           let data = response.sink.finalize()
-          promise.resolve(ArrayBuffer.wrap(dataWithoutCopy: data))
+          promise.resolve(NativeArrayBuffer.wrap(dataWithoutCopy: data))
         }
       }.runOnQueue(fetchRequestQueue)
 

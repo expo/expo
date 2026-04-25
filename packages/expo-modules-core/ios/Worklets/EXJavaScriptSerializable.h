@@ -1,8 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesJSI/EXJavaScriptObject.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 // Enum mirroring worklets::Serializable::ValueType for Swift exposure
 typedef NS_ENUM(NSInteger, EXSerializableValueType) {

@@ -1,7 +1,8 @@
-import { type ConfigPlugin } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
 import { ISA, type XCBuildConfiguration } from 'xcparse';
 
-import { withXCParseXcodeProject, XCParseXcodeProject } from './withXCParseXcodeProject';
+import type { XCParseXcodeProject } from './withXCParseXcodeProject';
+import { withXCParseXcodeProject } from './withXCParseXcodeProject';
 
 export function setSwiftVersionIfNotPresent(
   swiftVersionToSet: string,

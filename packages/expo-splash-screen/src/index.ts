@@ -45,4 +45,4 @@ export function hide(): void {}
  */
 export async function hideAsync(): Promise<void> {}
 
-export { SplashScreenOptions };
+export type { SplashScreenOptions } from './SplashScreen.types';

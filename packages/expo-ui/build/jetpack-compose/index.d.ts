@@ -8,6 +8,7 @@ export * from './Card';
 export * from './Checkbox';
 export * from './Chip';
 export * from './Button';
+export * from './colors';
 export * from './Icon';
 export * from './IconButton';
 export * from './DropdownMenu';
@@ -45,5 +46,5 @@ export * from './Row';
 export * from './Column';
 export * from './FlowRow';
 export { useNativeState } from '../State/useNativeState';
-export { ViewEvent } from '../types';
+export type { ViewEvent } from '../types';
 //# sourceMappingURL=index.d.ts.map

@@ -51,3 +51,4 @@ program
     await (0, commands_1.tasksAndroid)(this);
 });
 program.parse();
+//# sourceMappingURL=index.js.map

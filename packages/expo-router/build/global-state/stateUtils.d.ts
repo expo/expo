@@ -1,5 +1,5 @@
-import { ResultState } from '../fork/getStateFromPath';
-import { type NavigationState, PartialRoute, type PartialState } from '../react-navigation/native';
+import type { ResultState } from '../fork/getStateFromPath';
+import type { PartialRoute, NavigationState, PartialState } from '../react-navigation/native';
 /**
  * React Navigation uses params to store information about the screens, rather then create new state for each level.
  * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
@@ -22,7 +22,7 @@ export declare function findDivergentState(_actionState: ResultState, _navigatio
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<import("../react-navigation/native").ParamListBase, string>[];
+        routes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
         type: string;
         stale: false;
     }>>;
@@ -31,11 +31,11 @@ export declare function findDivergentState(_actionState: ResultState, _navigatio
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<import("../react-navigation/native").ParamListBase, string>[];
+        routes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
         type: string;
         stale: false;
     }>;
     actionStateRoute: PartialRoute<any> | undefined;
-    navigationRoutes: import("../react-navigation/native").NavigationRoute<import("../react-navigation/native").ParamListBase, string>[];
+    navigationRoutes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
 };
 //# sourceMappingURL=stateUtils.d.ts.map

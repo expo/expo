@@ -108,7 +108,7 @@ export default class EventsScreen extends React.Component<Props, State> {
       await Calendar.createEventAsync(calendar.id, newEvent);
       Alert.alert('Event saved successfully');
       this._findEvents(calendar.id);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Event not saved successfully', e.message);
     }
   };
@@ -120,7 +120,7 @@ export default class EventsScreen extends React.Component<Props, State> {
         instanceStartDate: event.startDate,
       });
       Alert.alert('Event found using getEventAsync', JSON.stringify(newEvent));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error finding event', e.message);
     }
   };
@@ -132,7 +132,7 @@ export default class EventsScreen extends React.Component<Props, State> {
         instanceStartDate: event.startDate,
       });
       Alert.alert('Attendees found using getAttendeesForEventAsync', JSON.stringify(attendees));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error finding attendees', e.message);
     }
   };
@@ -153,7 +153,7 @@ export default class EventsScreen extends React.Component<Props, State> {
       });
       Alert.alert('Event saved successfully');
       this._findEvents(calendar.id);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Event not saved successfully', e.message);
     }
   };
@@ -167,7 +167,7 @@ export default class EventsScreen extends React.Component<Props, State> {
       });
       Alert.alert('Event deleted successfully');
       this._findEvents(calendar.id);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Event not deleted successfully', e.message);
     }
   };

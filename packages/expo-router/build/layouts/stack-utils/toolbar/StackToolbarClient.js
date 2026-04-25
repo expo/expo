@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbar = void 0;
 exports.appendStackToolbarPropsToOptions = appendStackToolbarPropsToOptions;
 const react_1 = require("react");
+const jsx_runtime_1 = require("react/jsx-runtime");
+const react_2 = require("react");
 const StackToolbarButton_1 = require("./StackToolbarButton");
 const StackToolbarMenu_1 = require("./StackToolbarMenu");
 const StackToolbarSearchBarSlot_1 = require("./StackToolbarSearchBarSlot");
@@ -83,28 +85,20 @@ const StackToolbar = (props) => {
         throw new Error(`Stack.Toolbar cannot be nested inside another Stack.Toolbar.`);
     }
     if (props.placement === 'bottom' || !props.placement) {
-        return <StackToolbarBottom {...props}/>;
+        return (0, jsx_runtime_1.jsx)(StackToolbarBottom, { ...props });
     }
-    return <StackToolbarHeader {...props} key={props.placement}/>;
+    return (0, react_1.createElement)(StackToolbarHeader, { ...props, key: props.placement });
 };
 exports.StackToolbar = StackToolbar;
 const StackToolbarBottom = ({ children, disableImePadding, tintColor, backgroundColor, }) => {
-    const colors = (0, react_1.useMemo)(() => ({ tintColor, backgroundColor }), [tintColor, backgroundColor]);
-    return (<context_1.ToolbarPlacementContext.Provider value="bottom">
-      <context_1.ToolbarColorContext.Provider value={colors}>
-        <NativeMenuContext_1.NativeMenuContext value>
-          <native_1.RouterToolbarHost withImePadding={!disableImePadding} backgroundColor={backgroundColor}>
-            {children}
-          </native_1.RouterToolbarHost>
-        </NativeMenuContext_1.NativeMenuContext>
-      </context_1.ToolbarColorContext.Provider>
-    </context_1.ToolbarPlacementContext.Provider>);
+    const colors = (0, react_2.useMemo)(() => ({ tintColor, backgroundColor }), [tintColor, backgroundColor]);
+    return ((0, jsx_runtime_1.jsx)(context_1.ToolbarPlacementContext.Provider, { value: "bottom", children: (0, jsx_runtime_1.jsx)(context_1.ToolbarColorContext.Provider, { value: colors, children: (0, jsx_runtime_1.jsx)(NativeMenuContext_1.NativeMenuContext, { value: true, children: (0, jsx_runtime_1.jsx)(native_1.RouterToolbarHost, { withImePadding: !disableImePadding, backgroundColor: backgroundColor, children: children }) }) }) }));
 };
 const StackToolbarHeader = ({ children, placement, asChild, disableImePadding, tintColor, backgroundColor, }) => {
     if (placement !== 'left' && placement !== 'right') {
         throw new Error(`Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`);
     }
-    const options = (0, react_1.useMemo)(() => appendStackToolbarPropsToOptions({}, 
+    const options = (0, react_2.useMemo)(() => appendStackToolbarPropsToOptions({}, 
     // satisfies ensures every prop is listed here
     {
         children,
@@ -128,7 +122,7 @@ function appendStackToolbarPropsToOptions(options, props) {
         backgroundColor: props.backgroundColor,
     };
     if (asChild) {
-        const wrappedChildren = (<context_1.ToolbarColorContext.Provider value={colors}>{children}</context_1.ToolbarColorContext.Provider>);
+        const wrappedChildren = ((0, jsx_runtime_1.jsx)(context_1.ToolbarColorContext.Provider, { value: colors, children: children }));
         if (placement === 'left') {
             return {
                 ...options,

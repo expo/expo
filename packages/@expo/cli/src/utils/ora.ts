@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import oraReal, { Ora } from 'ora';
+import type { Ora } from 'ora';
+import oraReal from 'ora';
 
 // import * as Log from '../log';
 import { env } from './env';

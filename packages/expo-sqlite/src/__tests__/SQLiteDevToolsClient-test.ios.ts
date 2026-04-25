@@ -1,4 +1,4 @@
-import { type DevToolsPluginClient, type getDevToolsPluginClientAsync } from 'expo/devtools';
+import type { DevToolsPluginClient, getDevToolsPluginClientAsync } from 'expo/devtools';
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs';
 

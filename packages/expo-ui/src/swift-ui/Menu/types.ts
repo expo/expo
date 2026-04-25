@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 /**
  * Props for the `Menu` component.

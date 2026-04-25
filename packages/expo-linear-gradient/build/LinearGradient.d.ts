@@ -1,6 +1,6 @@
 import { Component } from 'react';
-import { ColorValue, ViewProps } from 'react-native';
-import { NativeLinearGradientPoint } from './NativeLinearGradient.types';
+import type { ColorValue, ViewProps } from 'react-native';
+import type { NativeLinearGradientPoint } from './NativeLinearGradient.types';
 /**
  * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
  * at which the gradient starts or ends, as a fraction of the overall size of the gradient ranging
@@ -64,7 +64,7 @@ export type LinearGradientProps = ViewProps & {
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
 export declare class LinearGradient extends Component<LinearGradientProps> {
-    render(): import("react").JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
-export { NativeLinearGradientPoint };
+export type { NativeLinearGradientPoint } from './NativeLinearGradient.types';
 //# sourceMappingURL=LinearGradient.d.ts.map

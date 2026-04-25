@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CardStack = void 0;
 exports.getAnimationEnabled = getAnimationEnabled;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const elements_1 = require("../../../elements");
@@ -404,56 +405,49 @@ class CardStack extends React.Component {
             }
             return false;
         });
-        return (<react_native_1.View style={styles.container}>
-        {renderHeader({
-                mode: 'float',
-                layout,
-                scenes,
-                getPreviousScene: this.getPreviousScene,
-                getFocusedRoute: this.getFocusedRoute,
-                onContentHeightChange: this.handleHeaderLayout,
-                style: [
-                    styles.floating,
-                    isFloatHeaderAbsolute && [
-                        // Without this, the header buttons won't be touchable on Android when headerTransparent: true
-                        { height: focusedHeaderHeight },
-                        styles.absolute,
+        return ((0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.container, children: [renderHeader({
+                    mode: 'float',
+                    layout,
+                    scenes,
+                    getPreviousScene: this.getPreviousScene,
+                    getFocusedRoute: this.getFocusedRoute,
+                    onContentHeightChange: this.handleHeaderLayout,
+                    style: [
+                        styles.floating,
+                        isFloatHeaderAbsolute && [
+                            // Without this, the header buttons won't be touchable on Android when headerTransparent: true
+                            { height: focusedHeaderHeight },
+                            styles.absolute,
+                        ],
                     ],
-                ],
-            })}
-        <Screens_1.MaybeScreenContainer enabled={detachInactiveScreens} style={styles.container} onLayout={this.handleLayout}>
-          {[...routes, ...state.preloadedRoutes].map((route, index) => {
-                const focused = focusedRoute.key === route.key;
-                const gesture = gestures[route.key];
-                const scene = scenes[index];
-                // It is possible that for a short period the route appears in both arrays.
-                // Particularly, if the screen is removed with `retain`, then it needs a moment to execute the animation.
-                // However, due to the router action, it immediately populates the `preloadedRoutes` array.
-                // Practically, the logic below takes care that it is rendered only once.
-                const isPreloaded = state.preloadedRoutes.includes(route) && !routes.includes(route);
-                if (state.preloadedRoutes.includes(route) &&
-                    routes.includes(route) &&
-                    index >= routes.length) {
-                    return null;
-                }
-                const { headerShown = true, headerTransparent, freezeOnBlur, autoHideHomeIndicator, } = scene.descriptor.options;
-                const safeAreaInsetTop = insets.top;
-                const safeAreaInsetRight = insets.right;
-                const safeAreaInsetBottom = insets.bottom;
-                const safeAreaInsetLeft = insets.left;
-                const headerHeight = headerShown !== false ? headerHeights[route.key] : 0;
-                // Start from current card and count backwards the number of cards with same interpolation
-                const interpolationIndex = getInterpolationIndex(scenes, index);
-                const isModal = getIsModal(scene, interpolationIndex, isParentModal);
-                const isNextScreenTransparent = scenes[index + 1]?.descriptor.options.presentation === 'transparentModal';
-                const detachCurrentScreen = scenes[index + 1]?.descriptor.options.detachPreviousScreen !== false;
-                const activityState = isPreloaded ? STATE_INACTIVE : activeStates[index];
-                return (<Screens_1.MaybeScreen key={route.key} style={[react_native_1.StyleSheet.absoluteFill]} enabled={detachInactiveScreens} active={activityState} freezeOnBlur={freezeOnBlur} shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded} homeIndicatorHidden={autoHideHomeIndicator} pointerEvents="box-none">
-                <CardContainer_1.CardContainer index={index} interpolationIndex={interpolationIndex} modal={isModal} active={index === routes.length - 1} focused={focused} opening={openingRouteKeys.includes(route.key)} closing={closingRouteKeys.includes(route.key)} layout={layout} gesture={gesture} scene={scene} safeAreaInsetTop={safeAreaInsetTop} safeAreaInsetRight={safeAreaInsetRight} safeAreaInsetBottom={safeAreaInsetBottom} safeAreaInsetLeft={safeAreaInsetLeft} onGestureStart={onGestureStart} onGestureCancel={onGestureCancel} onGestureEnd={onGestureEnd} headerHeight={headerHeight} isParentHeaderShown={isParentHeaderShown} onHeaderHeightChange={this.handleHeaderLayout} getPreviousScene={this.getPreviousScene} getFocusedRoute={this.getFocusedRoute} hasAbsoluteFloatHeader={isFloatHeaderAbsolute && !headerTransparent} renderHeader={renderHeader} onOpenRoute={onOpenRoute} onCloseRoute={onCloseRoute} onTransitionStart={onTransitionStart} onTransitionEnd={onTransitionEnd} isNextScreenTransparent={isNextScreenTransparent} detachCurrentScreen={detachCurrentScreen} preloaded={isPreloaded}/>
-              </Screens_1.MaybeScreen>);
-            })}
-        </Screens_1.MaybeScreenContainer>
-      </react_native_1.View>);
+                }), (0, jsx_runtime_1.jsx)(Screens_1.MaybeScreenContainer, { enabled: detachInactiveScreens, style: styles.container, onLayout: this.handleLayout, children: [...routes, ...state.preloadedRoutes].map((route, index) => {
+                        const focused = focusedRoute.key === route.key;
+                        const gesture = gestures[route.key];
+                        const scene = scenes[index];
+                        // It is possible that for a short period the route appears in both arrays.
+                        // Particularly, if the screen is removed with `retain`, then it needs a moment to execute the animation.
+                        // However, due to the router action, it immediately populates the `preloadedRoutes` array.
+                        // Practically, the logic below takes care that it is rendered only once.
+                        const isPreloaded = state.preloadedRoutes.includes(route) && !routes.includes(route);
+                        if (state.preloadedRoutes.includes(route) &&
+                            routes.includes(route) &&
+                            index >= routes.length) {
+                            return null;
+                        }
+                        const { headerShown = true, headerTransparent, freezeOnBlur, autoHideHomeIndicator, } = scene.descriptor.options;
+                        const safeAreaInsetTop = insets.top;
+                        const safeAreaInsetRight = insets.right;
+                        const safeAreaInsetBottom = insets.bottom;
+                        const safeAreaInsetLeft = insets.left;
+                        const headerHeight = headerShown !== false ? headerHeights[route.key] : 0;
+                        // Start from current card and count backwards the number of cards with same interpolation
+                        const interpolationIndex = getInterpolationIndex(scenes, index);
+                        const isModal = getIsModal(scene, interpolationIndex, isParentModal);
+                        const isNextScreenTransparent = scenes[index + 1]?.descriptor.options.presentation === 'transparentModal';
+                        const detachCurrentScreen = scenes[index + 1]?.descriptor.options.detachPreviousScreen !== false;
+                        const activityState = isPreloaded ? STATE_INACTIVE : activeStates[index];
+                        return ((0, jsx_runtime_1.jsx)(Screens_1.MaybeScreen, { style: [react_native_1.StyleSheet.absoluteFill], enabled: detachInactiveScreens, active: activityState, freezeOnBlur: freezeOnBlur, shouldFreeze: activityState === STATE_INACTIVE && !isPreloaded, homeIndicatorHidden: autoHideHomeIndicator, pointerEvents: "box-none", children: (0, jsx_runtime_1.jsx)(CardContainer_1.CardContainer, { index: index, interpolationIndex: interpolationIndex, modal: isModal, active: index === routes.length - 1, focused: focused, opening: openingRouteKeys.includes(route.key), closing: closingRouteKeys.includes(route.key), layout: layout, gesture: gesture, scene: scene, safeAreaInsetTop: safeAreaInsetTop, safeAreaInsetRight: safeAreaInsetRight, safeAreaInsetBottom: safeAreaInsetBottom, safeAreaInsetLeft: safeAreaInsetLeft, onGestureStart: onGestureStart, onGestureCancel: onGestureCancel, onGestureEnd: onGestureEnd, headerHeight: headerHeight, isParentHeaderShown: isParentHeaderShown, onHeaderHeightChange: this.handleHeaderLayout, getPreviousScene: this.getPreviousScene, getFocusedRoute: this.getFocusedRoute, hasAbsoluteFloatHeader: isFloatHeaderAbsolute && !headerTransparent, renderHeader: renderHeader, onOpenRoute: onOpenRoute, onCloseRoute: onCloseRoute, onTransitionStart: onTransitionStart, onTransitionEnd: onTransitionEnd, isNextScreenTransparent: isNextScreenTransparent, detachCurrentScreen: detachCurrentScreen, preloaded: isPreloaded }) }, route.key));
+                    }) })] }));
     }
 }
 exports.CardStack = CardStack;

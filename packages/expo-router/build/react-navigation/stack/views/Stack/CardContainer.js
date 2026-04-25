@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CardContainer = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -123,39 +124,22 @@ function CardContainerInner({ interpolationIndex, index, active, opening, closin
         return undefined;
     }, [canGoBack, backTitle, href]);
     const animated = animation !== 'none';
-    return (<CardA11yWrapper_1.CardA11yWrapper ref={wrapperRef} focused={focused} active={active} animated={animated} isNextScreenTransparent={isNextScreenTransparent} detachCurrentScreen={detachCurrentScreen}>
-      <Card_1.Card animated={animated} interpolationIndex={interpolationIndex} gestureDirection={gestureDirection} layout={layout} insets={insets} direction={direction} gesture={gesture} current={scene.progress.current} next={scene.progress.next} opening={opening} closing={closing} onOpen={handleOpen} onClose={handleClose} overlay={cardOverlay} overlayEnabled={cardOverlayEnabled} shadowEnabled={cardShadowEnabled} onTransition={handleTransition} onGestureBegin={handleGestureBegin} onGestureCanceled={handleGestureCanceled} onGestureEnd={handleGestureEnd} gestureEnabled={index === 0 ? false : gestureEnabled} gestureResponseDistance={gestureResponseDistance} gestureVelocityImpact={gestureVelocityImpact} transitionSpec={transitionSpec} styleInterpolator={cardStyleInterpolator} pageOverflowEnabled={headerMode !== 'float' && presentation !== 'modal'} preloaded={preloaded} containerStyle={hasAbsoluteFloatHeader && headerMode !== 'screen' ? { marginTop: headerHeight } : null} contentStyle={[
-            {
-                backgroundColor: presentation === 'transparentModal' ? 'transparent' : colors.background,
-            },
-            cardStyle,
-        ]}>
-        <react_native_1.View style={styles.container}>
-          <ModalPresentationContext_1.ModalPresentationContext.Provider value={modal}>
-            {headerMode !== 'float'
-            ? renderHeader({
-                mode: 'screen',
-                layout,
-                scenes: [previousScene, scene],
-                getPreviousScene,
-                getFocusedRoute,
-                onContentHeightChange: onHeaderHeightChange,
-                style: styles.header,
-            })
-            : null}
-            <react_native_1.View style={styles.scene}>
-              <elements_1.HeaderBackContext.Provider value={headerBack}>
-                <elements_1.HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
-                  <elements_1.HeaderHeightContext.Provider value={headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0)}>
-                    {scene.descriptor.render()}
-                  </elements_1.HeaderHeightContext.Provider>
-                </elements_1.HeaderShownContext.Provider>
-              </elements_1.HeaderBackContext.Provider>
-            </react_native_1.View>
-          </ModalPresentationContext_1.ModalPresentationContext.Provider>
-        </react_native_1.View>
-      </Card_1.Card>
-    </CardA11yWrapper_1.CardA11yWrapper>);
+    return ((0, jsx_runtime_1.jsx)(CardA11yWrapper_1.CardA11yWrapper, { ref: wrapperRef, focused: focused, active: active, animated: animated, isNextScreenTransparent: isNextScreenTransparent, detachCurrentScreen: detachCurrentScreen, children: (0, jsx_runtime_1.jsx)(Card_1.Card, { animated: animated, interpolationIndex: interpolationIndex, gestureDirection: gestureDirection, layout: layout, insets: insets, direction: direction, gesture: gesture, current: scene.progress.current, next: scene.progress.next, opening: opening, closing: closing, onOpen: handleOpen, onClose: handleClose, overlay: cardOverlay, overlayEnabled: cardOverlayEnabled, shadowEnabled: cardShadowEnabled, onTransition: handleTransition, onGestureBegin: handleGestureBegin, onGestureCanceled: handleGestureCanceled, onGestureEnd: handleGestureEnd, gestureEnabled: index === 0 ? false : gestureEnabled, gestureResponseDistance: gestureResponseDistance, gestureVelocityImpact: gestureVelocityImpact, transitionSpec: transitionSpec, styleInterpolator: cardStyleInterpolator, pageOverflowEnabled: headerMode !== 'float' && presentation !== 'modal', preloaded: preloaded, containerStyle: hasAbsoluteFloatHeader && headerMode !== 'screen' ? { marginTop: headerHeight } : null, contentStyle: [
+                {
+                    backgroundColor: presentation === 'transparentModal' ? 'transparent' : colors.background,
+                },
+                cardStyle,
+            ], children: (0, jsx_runtime_1.jsx)(react_native_1.View, { style: styles.container, children: (0, jsx_runtime_1.jsxs)(ModalPresentationContext_1.ModalPresentationContext.Provider, { value: modal, children: [headerMode !== 'float'
+                            ? renderHeader({
+                                mode: 'screen',
+                                layout,
+                                scenes: [previousScene, scene],
+                                getPreviousScene,
+                                getFocusedRoute,
+                                onContentHeightChange: onHeaderHeightChange,
+                                style: styles.header,
+                            })
+                            : null, (0, jsx_runtime_1.jsx)(react_native_1.View, { style: styles.scene, children: (0, jsx_runtime_1.jsx)(elements_1.HeaderBackContext.Provider, { value: headerBack, children: (0, jsx_runtime_1.jsx)(elements_1.HeaderShownContext.Provider, { value: isParentHeaderShown || headerShown !== false, children: (0, jsx_runtime_1.jsx)(elements_1.HeaderHeightContext.Provider, { value: headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0), children: scene.descriptor.render() }) }) }) })] }) }) }) }));
 }
 exports.CardContainer = React.memo(CardContainerInner);
 const styles = react_native_1.StyleSheet.create({

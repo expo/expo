@@ -1,0 +1,19 @@
+# docs/ is intentionally a standalone pnpm project, not a member of the root
+# expo monorepo workspace. This file exists to stop pnpm from traversing upward
+# to the root pnpm-workspace.yaml. Without it, `pnpm install` from docs/ runs
+# as a root-workspace install and never touches docs/ as standalone.
+packages: []
+
+# Explicitly allow install scripts for native-binary deps we depend on at
+# build/runtime. Yarn ran these by default; pnpm blocks them unless whitelisted.
+onlyBuiltDependencies:
+  - sharp
+  - workerd
+  - '@sentry/cli'
+
+# Silence warnings for build scripts we intentionally skip. Matches the root
+# expo monorepo's pattern for these packages.
+ignoredBuiltDependencies:
+  - '@fingerprintjs/fingerprintjs-pro-react'
+  - esbuild
+  - unrs-resolver

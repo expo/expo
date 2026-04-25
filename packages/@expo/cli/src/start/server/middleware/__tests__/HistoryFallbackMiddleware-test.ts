@@ -1,5 +1,5 @@
 import { HistoryFallbackMiddleware } from '../HistoryFallbackMiddleware';
-import { ServerRequest } from '../server.types';
+import type { ServerRequest } from '../server.types';
 
 const asRequest = (req: Partial<ServerRequest>) => req as ServerRequest;
 

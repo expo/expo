@@ -25,5 +25,5 @@ export type SyncSwitchProps = {
  * A switch driven by observable native state.
  * Use `useNativeState(false)` to create the state.
  */
-export declare function SyncSwitch(props: SyncSwitchProps): import("react").JSX.Element;
+export declare function SyncSwitch(props: SyncSwitchProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

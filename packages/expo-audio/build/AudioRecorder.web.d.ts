@@ -1,5 +1,5 @@
-import { RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions } from './Audio.types';
-import { AudioRecorder, RecordingEvents } from './AudioModule.types';
+import type { RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions } from './Audio.types';
+import type { AudioRecorder, RecordingEvents } from './AudioModule.types';
 export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<RecordingEvents> implements AudioRecorder {
     constructor(options: Partial<RecordingOptions>);
     setup(): Promise<void>;

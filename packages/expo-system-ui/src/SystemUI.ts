@@ -1,4 +1,5 @@
-import { ColorValue, Platform, processColor } from 'react-native';
+import type { ColorValue } from 'react-native';
+import { Platform, processColor } from 'react-native';
 
 import ExpoSystemUI from './ExpoSystemUI';
 

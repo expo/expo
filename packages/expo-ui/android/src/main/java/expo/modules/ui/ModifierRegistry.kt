@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.selectable
@@ -122,6 +123,12 @@ internal data class WrapContentWidthParams(
 @OptimizedRecord
 internal data class WrapContentHeightParams(
   @Field val alignment: AlignmentType? = null
+) : Record
+
+@OptimizedRecord
+internal data class DefaultMinSizeParams(
+  @Field val minWidth: Float? = null,
+  @Field val minHeight: Float? = null
 ) : Record
 
 @OptimizedRecord
@@ -399,6 +406,14 @@ object ModifierRegistry {
     register("height") { map, _, _, _ ->
       val params = recordFromMap<HeightParams>(map)
       Modifier.height(params.height.dp)
+    }
+
+    register("defaultMinSize") { map, _, _, _ ->
+      val params = recordFromMap<DefaultMinSizeParams>(map)
+      Modifier.defaultMinSize(
+        minWidth = params.minWidth?.dp ?: androidx.compose.ui.unit.Dp.Unspecified,
+        minHeight = params.minHeight?.dp ?: androidx.compose.ui.unit.Dp.Unspecified
+      )
     }
 
     register("wrapContentWidth") { map, _, _, _ ->

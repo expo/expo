@@ -1,4 +1,4 @@
-import commander from 'commander';
+import type commander from 'commander';
 /**
  * A cli command which:
  * - creates InlineModulesList.kt file

@@ -1,4 +1,4 @@
-import { VideoSource, VideoPlayer, PlayerBuilderOptions } from './VideoPlayer.types';
+import type { VideoSource, VideoPlayer, PlayerBuilderOptions } from './VideoPlayer.types';
 /**
  * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
  *

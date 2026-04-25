@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { ExpoModifier } from '../../types';
+import type { ExpoModifier } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type SpacerProps = {

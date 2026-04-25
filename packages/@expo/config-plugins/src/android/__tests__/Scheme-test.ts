@@ -2,7 +2,8 @@ import { resolve } from 'path';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
-import { AndroidManifest, getMainActivity, readAndroidManifestAsync } from '../Manifest';
+import type { AndroidManifest } from '../Manifest';
+import { getMainActivity, readAndroidManifestAsync } from '../Manifest';
 import {
   appendScheme,
   ensureManifestHasValidIntentFilter,

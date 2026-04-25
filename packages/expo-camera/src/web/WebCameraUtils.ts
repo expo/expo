@@ -2,7 +2,7 @@
 import * as CapabilityUtils from './WebCapabilityUtils';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
 import { requestUserMediaAsync } from './WebUserMediaManager';
-import {
+import type {
   CameraType,
   CameraCapturedPicture,
   ImageSize,

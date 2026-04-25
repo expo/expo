@@ -1,4 +1,4 @@
-import Dispatch
+import ExpoModulesJSI
 
 /**
  Holds a reference to the module instance and caches its definition.
@@ -23,7 +23,7 @@ public final class ModuleHolder {
    JavaScript object that represents the module instance in the runtime.
    */
   @JavaScriptActor
-  public internal(set) lazy var javaScriptObject: JavaScriptObject? = createJavaScriptModuleObject()
+  private var javaScriptObject: JavaScriptObject?
 
   /**
    Caches the definition of the module type.
@@ -59,37 +59,17 @@ public final class ModuleHolder {
     return definition.getLegacyConstants()
   }
 
-  // MARK: Calling functions
-
-  @preconcurrency
-  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> Void = { _ in }) {
-    guard let appContext else {
-      callback(.failure(Exceptions.AppContextLost()))
-      return
+  @JavaScriptActor
+  func getJavaScriptValue() -> JavaScriptValue? {
+    if javaScriptObject == nil {
+      javaScriptObject = createJavaScriptModuleObject()
     }
-    guard let function = definition.functions[functionName] else {
-      callback(.failure(FunctionNotFoundException((functionName: functionName, moduleName: self.name))))
-      return
-    }
-    function.call(by: self, withArguments: args, appContext: appContext, callback: callback)
+    return javaScriptObject?.asValue()
   }
 
-  @discardableResult
-  func callSync(function functionName: String, args: [Any]) -> Any? {
-    guard let appContext, let function = definition.functions[functionName] as? AnySyncFunctionDefinition else {
-      return nil
-    }
-    do {
-      let arguments = try cast(arguments: args, forFunction: function, appContext: appContext)
-      let result = try function.call(by: self, withArguments: arguments, appContext: appContext)
-
-      if let result = result as? SharedObject {
-        return appContext.sharedObjectRegistry.ensureSharedJavaScriptObject(runtime: try appContext.runtime, nativeObject: result)
-      }
-      return result
-    } catch {
-      return error
-    }
+  @JavaScriptActor
+  func releaseJavaScriptObject() {
+    javaScriptObject = nil
   }
 
   // MARK: JavaScript Module Object
