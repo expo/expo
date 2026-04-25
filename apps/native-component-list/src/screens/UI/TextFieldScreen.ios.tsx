@@ -9,6 +9,7 @@ import {
   Text,
   HStack,
   Picker,
+  useNativeState,
 } from '@expo/ui/swift-ui';
 import {
   autocorrectionDisabled,
@@ -24,12 +25,21 @@ import {
   foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
+import { runOnJS } from 'react-native-worklets';
 
 export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
+  const phoneRef = React.useRef<TextFieldRef>(null);
   const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
 
-  // Submit label picker
+  const setPhoneCursor = React.useCallback((position: number) => {
+    phoneRef.current?.setSelection(position, position);
+  }, []);
+
+  const username = useNativeState('johndoe');
+  const imperativeText = useNativeState('Select me!');
+  const maskedPhone = useNativeState('');
+
   const submitLabelOptions = [
     'continue',
     'done',
@@ -50,21 +60,21 @@ export default function TextFieldScreen() {
         {/* Profile Form */}
         <Section title="Profile">
           <TextField
-            defaultValue="johndoe"
+            text={username}
             placeholder="Username"
             modifiers={[autocorrectionDisabled()]}
-            onValueChange={(v) => console.log('username:', v)}
+            onTextChange={(v) => console.log('username:', v)}
           />
           <TextField
             placeholder="Email"
             modifiers={[keyboardType('email-address'), autocorrectionDisabled()]}
-            onValueChange={(v) => console.log('email:', v)}
+            onTextChange={(v) => console.log('email:', v)}
           />
           <TextField
             axis="vertical"
             placeholder="Tell us about yourself..."
             modifiers={[lineLimit(3, { reservesSpace: true })]}
-            onValueChange={(v) => console.log('bio:', v)}
+            onTextChange={(v) => console.log('bio:', v)}
           />
         </Section>
 
@@ -79,13 +89,45 @@ export default function TextFieldScreen() {
           <TextField
             placeholder="Phone number"
             modifiers={[keyboardType('phone-pad')]}
-            onValueChange={(v) => console.log('phone:', v)}
+            onTextChange={(v) => console.log('phone:', v)}
           />
           <TextField
             placeholder="Website"
             modifiers={[keyboardType('url'), autocorrectionDisabled()]}
           />
           <TextField placeholder="Amount" modifiers={[keyboardType('decimal-pad')]} />
+        </Section>
+
+        {/* Worklet-based phone masking — updates synchronously on the UI thread */}
+        <Section title="Worklet Phone Masking">
+          <TextField
+            ref={phoneRef}
+            text={maskedPhone}
+            placeholder="(555) 123-4567"
+            modifiers={[keyboardType('phone-pad')]}
+            onTextChange={(v) => {
+              'worklet';
+              const digits = v.replace(/\D/g, '').slice(0, 10);
+              let formatted: string;
+              if (digits.length === 0) {
+                formatted = '';
+              } else if (digits.length <= 3) {
+                formatted = digits;
+              } else if (digits.length <= 6) {
+                formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+              } else {
+                formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+              }
+              if (formatted !== v) {
+                maskedPhone.value = formatted;
+                // To keep selection at the end of the input while typing
+                runOnJS(setPhoneCursor)(formatted.length);
+              }
+            }}
+          />
+          <Text modifiers={[foregroundStyle('secondary')]}>
+            Formatted on the UI thread, no flicker between the typed value and the masked value.
+          </Text>
         </Section>
 
         {/* Multiline Variants */}
@@ -132,7 +174,7 @@ export default function TextFieldScreen() {
         <Section title="Imperative API">
           <TextField
             ref={textRef}
-            defaultValue="Select me!"
+            text={imperativeText}
             placeholder="Imperative field"
             modifiers={[autocorrectionDisabled()]}
             onSelectionChange={setSelection}

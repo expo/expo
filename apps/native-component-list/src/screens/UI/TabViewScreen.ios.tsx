@@ -87,7 +87,6 @@ function NotePage({ index }: { index: number }) {
         Note {index}
       </Text>
       <TextField
-        defaultValue=""
         placeholder={`Type into note ${index}…`}
         modifiers={[
           padding({ all: 12 }),
