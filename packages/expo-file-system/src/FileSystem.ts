@@ -528,9 +528,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
           keyPrefix: options.persistenceConfig.keyPrefix ?? DOWNLOAD_TASK_PERSISTENCE_KEY_PREFIX,
         }
       : undefined;
-    this._id = this._persistenceConfig
-      ? (options?.persistenceConfig?.customId ?? uuid.v4())
-      : null;
+    this._id = this._persistenceConfig ? (options?.persistenceConfig?.customId ?? uuid.v4()) : null;
   }
 
   get state(): DownloadTaskState {
