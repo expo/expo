@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 - Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
