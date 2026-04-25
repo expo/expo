@@ -1,6 +1,6 @@
-import type { GenerateMetadataFunction } from 'expo-server';
 import Head from 'expo-router/head';
 import { Text } from 'react-native';
+import type { GenerateMetadataFunction, Metadata } from 'expo-router/server';
 
 export const generateMetadata: GenerateMetadataFunction = async () => {
   return {
@@ -15,7 +15,7 @@ export const generateMetadata: GenerateMetadataFunction = async () => {
       card: 'summary',
       title: 'Metadata Twitter Title',
     },
-  };
+  } satisfies Metadata;
 };
 
 export default function MetadataPage() {
