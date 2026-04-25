@@ -28,6 +28,14 @@ import type {
   ResolvedVerification,
 } from './types';
 
+const NEGATIVE_ROBOT_DIRECTIVES = new Set([
+  'noarchive',
+  'nosnippet',
+  'noimageindex',
+  'nocache',
+  'notranslate',
+]);
+
 export function resolveMetadata(metadata: Metadata): ResolvedMetadata {
   const resolvedRobots = resolveRobots(metadata.robots);
 
@@ -529,6 +537,13 @@ function serializeRobotsValue(
   for (const [key, value] of Object.entries(robots)) {
     if (key === 'googleBot' || value == null || typeof value === 'object') continue;
     if (typeof value === 'boolean') {
+      if (NEGATIVE_ROBOT_DIRECTIVES.has(key)) {
+        if (value) {
+          values.push(key);
+        }
+        continue;
+      }
+
       values.push(value ? key : `no${key}`);
       continue;
     }

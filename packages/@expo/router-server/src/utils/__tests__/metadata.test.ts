@@ -175,6 +175,26 @@ describe(serializeMetadataToHtml, () => {
       expect(html).toContain('name="robots" content="index"');
       expect(html).toContain('name="googlebot" content="noindex, nofollow"');
     });
+
+    it('does not double-negate negative directives set to false', () => {
+      const html = serializeMetadataToHtml({
+        robots: {
+          index: false,
+          follow: false,
+          noarchive: false,
+          nosnippet: false,
+          noimageindex: true,
+          nocache: true,
+          notranslate: true,
+        },
+      });
+
+      expect(html).toContain(
+        'name="robots" content="noindex, nofollow, noimageindex, nocache, notranslate"'
+      );
+      expect(html).not.toContain('nonoarchive');
+      expect(html).not.toContain('nonosnippet');
+    });
   });
 
   describe('openGraph', () => {
