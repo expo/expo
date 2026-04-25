@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Migrate `ConstantsModule` off the deprecated `Constants {}` definition block to per-key `Constant(name) { value }` registrations. ([#45097](https://github.com/expo/expo/pull/45097) by [@siddarthkay](https://github.com/siddarthkay))
+
 ## 56.0.16 — 2026-05-26
 
 _This version does not introduce any user-facing changes._
