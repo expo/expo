@@ -62,9 +62,9 @@
     "@bacons/xcode": "1.0.0-alpha.29",
     "@expo/spawn-async": "^1.7.2",
     "@types/diff": "^5.2.0",
-    "@types/prompts": "^2.0.6",
-    "@types/react": "~19.2.0",
-    "@types/node": "^22.14.0",
+    "@types/prompts": "catalog:",
+    "@types/react": "catalog:",
+    "@types/node": "catalog:",
     "create-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.6"

@@ -39,12 +39,12 @@
     "@expo/config-plugins": "workspace:*",
     "@expo/plist": "workspace:*",
     "@expo/spawn-async": "^1.7.2",
-    "@types/prompts": "^2.0.6",
-    "chalk": "^4.0.0",
-    "commander": "^12.1.0",
+    "@types/prompts": "catalog:",
+    "chalk": "catalog:",
+    "commander": "catalog:",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
-    "prompts": "^2.3.2",
+    "prompts": "catalog:",
     "update-check": "^1.5.4"
   }
 }

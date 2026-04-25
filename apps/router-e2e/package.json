@@ -83,7 +83,7 @@
     "react-native-webview": "13.16.1"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
+    "@types/react": "catalog:",
     "compression": "^1.8.0",
     "esbuild": "^0.25.8",
     "express": "^5.1.0",

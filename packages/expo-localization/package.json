@@ -41,9 +41,9 @@
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "@types/i18n-js": "^3.8.2",
-    "@types/react": "~19.2.0",
+    "@types/react": "catalog:",
     "@types/rtl-detect": "^1.0.3",
     "expo-module-scripts": "workspace:*",
     "i18n-js": "^3.9.2"

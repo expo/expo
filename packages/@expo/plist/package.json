@@ -34,7 +34,7 @@
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {

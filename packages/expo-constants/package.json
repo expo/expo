@@ -45,7 +45,7 @@
     "@expo/env": "workspace:~2.1.1"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-manifests": "workspace:*",
     "expo-updates": "workspace:*",
     "expo-module-scripts": "workspace:*"

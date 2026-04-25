@@ -21,7 +21,7 @@
   "homepage": "https://docs.expo.dev/modules",
   "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "catalog:"
   },
   "peerDependencies": {}
 }

@@ -36,10 +36,10 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
-    "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "react-native": "0.85.2",
+    "react-native": "catalog:",
     "resolve-workspace-root": "^2.0.0"
   },
   "peerDependencies": {

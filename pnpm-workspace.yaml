@@ -38,6 +38,45 @@ patchedDependencies:
 
 preferWorkspacePackages: true
 
+catalog:
+  '@babel/cli': ^7.23.4
+  '@babel/core': ^7.26.0
+  '@expo/metro': 56.0.0-rc.0
+  '@testing-library/dom': ^10.4.0
+  '@testing-library/jest-dom': ^6.6.3
+  '@testing-library/react': ^16.3.0
+  '@testing-library/react-native': ^13.3.0
+  '@types/babel__code-frame': ^7.27.0
+  '@types/babel__core': ^7.20.5
+  '@types/babel__generator': ^7.27.0
+  '@types/debug': ^4.1.8
+  '@types/eslint': ^8.56.12
+  '@types/invariant': ^2.2.35
+  '@types/jest': ^29.5.12
+  '@types/node': ^22.14.0
+  '@types/picomatch': ^4.0.3
+  '@types/prompts': ^2.4.9
+  '@types/react': ~19.2.2
+  '@types/react-dom': ^19.1.7
+  chalk: ^4.1.2
+  commander: ^12.1.0
+  debug: ^4.3.4
+  eslint: ^9.39.4
+  eslint8: npm:eslint@^8.57.1
+  jest: ^29.7.0
+  multitars: ^1.0.0
+  npm-run-all2: ^8.0.4
+  picomatch: ^4.0.4
+  prompts: ^2.4.2
+  react: 19.2.3
+  react-native: 0.85.2
+  react-server-dom-webpack: ~19.0.4
+  resolve-from: ^5.0.0
+  rimraf: ^6.1.2
+  semver: ^7.7.4
+  terminal-link: ^2.1.1
+  typescript: ^6.0.2
+
 minimumReleaseAge: 1440
 
 minimumReleaseAgeExclude:

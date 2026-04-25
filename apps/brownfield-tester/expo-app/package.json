@@ -39,7 +39,7 @@
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {
-    "@types/react": "~19.2.2",
-    "typescript": "~5.9.2"
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
   }
 }

@@ -30,8 +30,8 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
+    "@types/jest": "catalog:",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

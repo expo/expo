@@ -42,12 +42,12 @@
     "node": "22.14.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@types/jest": "catalog:",
     "@vercel/ncc": "^0.38.4",
     "expo-module-scripts": "workspace:*",
     "expotools": "workspace:*",
-    "jest": "^29.7.0",
+    "jest": "catalog:",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.2"
+    "typescript": "catalog:"
   }
 }
