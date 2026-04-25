@@ -7,6 +7,13 @@ exports.resolveTwitter = resolveTwitter;
 exports.resolveVerification = resolveVerification;
 exports.resolveAppleWebApp = resolveAppleWebApp;
 exports.resolveOther = resolveOther;
+const NEGATIVE_ROBOT_DIRECTIVES = new Set([
+    'noarchive',
+    'nosnippet',
+    'noimageindex',
+    'nocache',
+    'notranslate',
+]);
 function resolveMetadata(metadata) {
     const resolvedRobots = resolveRobots(metadata.robots);
     return {
@@ -416,6 +423,12 @@ function serializeRobotsValue(robots) {
         if (key === 'googleBot' || value == null || typeof value === 'object')
             continue;
         if (typeof value === 'boolean') {
+            if (NEGATIVE_ROBOT_DIRECTIVES.has(key)) {
+                if (value) {
+                    values.push(key);
+                }
+                continue;
+            }
             values.push(value ? key : `no${key}`);
             continue;
         }
