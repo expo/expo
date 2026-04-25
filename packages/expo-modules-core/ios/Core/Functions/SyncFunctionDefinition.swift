@@ -143,14 +143,12 @@ internal func toNativeClosureArguments<F: AnyFunctionDefinition>(
   this: JavaScriptValue,
   arguments: borrowing JavaScriptValuesBuffer
 ) throws -> [Any] {
-  let receivedArgumentsCount = arguments.count
-
-  if !fn.takesOwner && receivedArgumentsCount == 0 {
+  if !fn.takesOwner, fn.argumentsCount == 0 {
     return []
   }
 
-  // This array will include the owner (if needed) and function arguments.
   var nativeArguments: [Any] = []
+  nativeArguments.reserveCapacity(fn.dynamicArgumentTypes.count)
 
   // If the function takes the owner, convert it and add to the final arguments.
   if fn.takesOwner, !this.isUndefined(), let ownerType = fn.dynamicArgumentTypes.first {
@@ -158,16 +156,20 @@ internal func toNativeClosureArguments<F: AnyFunctionDefinition>(
     nativeArguments.append(nativeOwner)
   }
 
-  // Convert JS values to non-JS native types desired by the function.
-  let dynamicTypesWithoutOwner = Array(fn.dynamicArgumentTypes.dropFirst(nativeArguments.count))
-  nativeArguments.append(
-    contentsOf: try converter.toNative(arguments, dynamicTypesWithoutOwner)
-  )
+  // Convert JS values to native types desired by the function.
+  let typeOffset = nativeArguments.count
+  for i in 0..<arguments.count {
+    let type = fn.dynamicArgumentTypes[typeOffset + i]
+    do {
+      try nativeArguments.append(converter.toNative(arguments[i], type))
+    } catch {
+      throw ArgumentCastException((index: i, type: type)).causedBy(error)
+    }
+  }
 
   // Fill in with nils in place of missing optional arguments.
-  if receivedArgumentsCount < fn.argumentsCount {
-    let missingOptionals = Array(repeating: Any?.none as Any, count: fn.argumentsCount - receivedArgumentsCount)
-    nativeArguments.append(contentsOf: missingOptionals)
+  for _ in arguments.count..<fn.argumentsCount {
+    nativeArguments.append(Any?.none as Any)
   }
   return nativeArguments
 }
