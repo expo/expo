@@ -13,7 +13,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class DockedSearchBarProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps

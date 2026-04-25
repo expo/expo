@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Replaced the Objective-C++ JSI layer (`EXJavaScriptRuntime`, `EXJavaScriptObject`, `ExpoModulesHostObject`, `EXSharedObjectUtils`, etc.) with the new `ExpoModulesJSI` Swift package. Third-party native modules depending on these types must migrate to the new Swift-first API. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -17,6 +18,7 @@
 - [iOS] Add `nativeModule` look up function and `bundleURL` to AppContext. ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Added a polyfill for Swift [`Mutex`](https://developer.apple.com/documentation/synchronization/mutex) for older platform versions. ([#44122](https://github.com/expo/expo/pull/44122) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Exposed a shared OkHttpClient instance through AppContext with new coroutine-friendly extensions. ([#44854](https://github.com/expo/expo/pull/44854) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Allow compile-time optimization of compose view props when the property class is annotated with `@OptimizedComposeProps`. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -42,6 +44,7 @@
 
 - [iOS] Fixed precompile build failing on `SwiftUIVirtualViewSharedImpl+Private.h` leaking into the public module umbrella. ([#44993](https://github.com/expo/expo/pull/44993) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added explicit c++ linkage specifier to `ExpoModulesCore.podspec` to propagate to swift-only targets like Expo Widgets ([#44984](https://github.com/expo/expo/pull/44984) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Rewrote the core type system, definitions, `AppContext`, and worklets integration on top of the new `ExpoModulesJSI` package. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Extracted ObjC protocols (`EXAppContextProtocol`, `EXReactDelegateProtocol`, `EXAppContextFactoryRegistry`) for cross-xcframework module boundaries. Refactored legacy module registry, Fabric view headers, JSI layer, and podspecs for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add `ViewWrapper` protocol and `AnyContentViewProvider` for type-erased access to wrapped SwiftUI views. ([#43669](https://github.com/expo/expo/pull/43669) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Decoupled Worklets integration into separate podspec. ([#42971](https://github.com/expo/expo/pull/42971) by [@chrfalch](https://github.com/chrfalch))

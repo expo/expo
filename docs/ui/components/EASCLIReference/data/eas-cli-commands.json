@@ -1,8 +1,8 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-04-22T18:11:39.049Z",
-    "cliVersion": "18.8.0"
+    "fetchedAt": "2026-04-23T19:49:08.793Z",
+    "cliVersion": "18.8.1"
   },
   "totalCommands": 104,
   "commands": [

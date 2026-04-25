@@ -53,6 +53,12 @@ module.exports = defineConfig([
       // TODO(@kitten): Please move this to universe
       'no-unused-expressions': 'off',
       'no-unused-vars': 'off',
+      'no-useless-return': 'off',
+      'no-unreachable': 'off',
+      'no-undef': 'off',
+      'no-dupe-keys': 'off',
+      'no-dupe-class-members': 'off',
+      'no-dupe-args': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
     },

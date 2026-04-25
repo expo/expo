@@ -19,6 +19,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 // region LinearProgressIndicator
 
@@ -29,6 +30,7 @@ class DrawStopIndicatorConfig : Record {
   @Field val stopSize: Float? = null
 }
 
+@OptimizedComposeProps
 data class LinearProgressIndicatorProps(
   val progress: Float? = null,
   val color: Color? = null,
@@ -91,6 +93,7 @@ fun FunctionalComposableScope.LinearProgressIndicatorContent(props: LinearProgre
 
 // region CircularProgressIndicator
 
+@OptimizedComposeProps
 data class CircularProgressIndicatorProps(
   val progress: Float? = null,
   val color: Color? = null,
@@ -139,6 +142,7 @@ fun FunctionalComposableScope.CircularProgressIndicatorContent(props: CircularPr
 
 // region LinearWavyProgressIndicator
 
+@OptimizedComposeProps
 data class LinearWavyProgressIndicatorProps(
   val progress: Float? = null,
   val color: Color? = null,
@@ -175,6 +179,7 @@ fun FunctionalComposableScope.LinearWavyProgressIndicatorContent(props: LinearWa
 
 // region CircularWavyProgressIndicator
 
+@OptimizedComposeProps
 data class CircularWavyProgressIndicatorProps(
   val progress: Float? = null,
   val color: Color? = null,

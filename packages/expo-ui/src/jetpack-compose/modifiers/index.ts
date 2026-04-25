@@ -91,6 +91,17 @@ export const width = (value: number) => createModifier('width', { width: value }
 export const height = (value: number) => createModifier('height', { height: value });
 
 /**
+ * Constrain the size of the wrapped layout only when it would be
+ * otherwise unconstrained: the `minWidth` and `minHeight` constraints
+ * are only applied when the incoming corresponding constraint is `0`.
+ * @param options.minWidth - Minimum width in dp.
+ * @param options.minHeight - Minimum height in dp.
+ * @see [Compose `defaultMinSize` modifier](https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#%28androidx.compose.ui.Modifier%29.defaultMinSize%28androidx.compose.ui.unit.Dp%2Candroidx.compose.ui.unit.Dp%29)
+ */
+export const defaultMinSize = (options: { minWidth?: number; minHeight?: number }) =>
+  createModifier('defaultMinSize', options);
+
+/**
  * Wraps the width to the content size.
  * @param alignment - Optional horizontal alignment ('start', 'centerHorizontally', 'end').
  */

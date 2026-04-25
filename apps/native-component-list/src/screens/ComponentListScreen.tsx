@@ -15,10 +15,10 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScreenConfig } from 'src/types/ScreenConfig';
 import { getScreenIdForLinking } from 'test-suite/screens/getScreenIdForLinking';
 
 import { useTheme } from '../../../common/ThemeProvider';
+import type { ScreenConfig } from '../types/ScreenConfig';
 
 export interface ListElement {
   screenName?: string;

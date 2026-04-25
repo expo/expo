@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.DialogProperties
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class BasicAlertDialogProps(
   val properties: ExpoDialogProperties = ExpoDialogProperties(),
   val modifiers: ModifierList = emptyList()

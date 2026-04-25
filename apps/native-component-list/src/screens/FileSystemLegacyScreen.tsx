@@ -192,7 +192,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
     try {
       const info = await FileSystem.getInfoAsync(this.download.fileUri);
       Alert.alert('File Info:', JSON.stringify(info), [{ text: 'OK', onPress: () => {} }]);
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
     }
   };
@@ -203,7 +203,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
     try {
       const result = await FileSystem.readAsStringAsync(asset.localUri!);
       Alert.alert('Result', result);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error', e.message);
     }
   };
@@ -214,7 +214,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
     try {
       const result = await FileSystem.getInfoAsync(asset.localUri!);
       Alert.alert('Result', JSON.stringify(result, null, 2));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error', e.message);
     }
   };
@@ -227,7 +227,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
       await FileSystem.copyAsync({ from: asset.localUri!, to: tmpFile });
       const result = await FileSystem.readAsStringAsync(tmpFile);
       Alert.alert('Result', result);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error', e.message);
     }
   };
@@ -318,7 +318,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
       await FileSystem.downloadAsync(asset, tmpFile);
       const result = await FileSystem.readAsStringAsync(tmpFile);
       Alert.alert('Result', result);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error', e.message);
     }
   };

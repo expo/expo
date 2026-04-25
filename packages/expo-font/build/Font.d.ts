@@ -50,5 +50,5 @@ export declare function unloadAllAsync(): Promise<void>;
  * @hidden
  */
 export declare function unloadAsync(fontFamilyOrFontMap: string | Record<string, UnloadFontOptions>, options?: UnloadFontOptions): Promise<void>;
-export { FontDisplay, type FontSource, type FontResource, type UnloadFontOptions } from './Font.types';
+export { FontDisplay, type FontSource, type FontResource, type UnloadFontOptions, } from './Font.types';
 //# sourceMappingURL=Font.d.ts.map

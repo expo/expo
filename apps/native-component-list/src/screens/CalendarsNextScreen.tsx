@@ -121,7 +121,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
       const calendar = await createCalendar(newCalendar);
       Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -134,7 +134,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
       calendar.update(newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -152,7 +152,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
             calendar.delete();
             Alert.alert('Calendar deleted successfully');
             findCalendars();
-          } catch (e) {
+          } catch (e: any) {
             Alert.alert('Calendar not deleted successfully', e.message);
           }
         },

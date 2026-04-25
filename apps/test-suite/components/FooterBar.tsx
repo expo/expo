@@ -16,7 +16,7 @@ export default function FooterBar({ children }: FooterBarProps) {
   const { bottom, left, right } = useSafeAreaInsets();
   const { theme } = useTheme();
 
-  const isRunningInBareExpo = Constants.expoConfig.slug === 'bare-expo';
+  const isRunningInBareExpo = Constants.expoConfig?.slug === 'bare-expo';
 
   const padding = {
     paddingBottom: 16 + (isRunningInBareExpo ? 0 : bottom),

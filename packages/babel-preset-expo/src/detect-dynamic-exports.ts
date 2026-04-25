@@ -1,7 +1,7 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import type { PluginObj, ConfigAPI, types as t } from '@babel/core';
+import type { PluginObj, ConfigAPI } from '@babel/core';
 
 const debug = require('debug')('expo:babel:exports');
 

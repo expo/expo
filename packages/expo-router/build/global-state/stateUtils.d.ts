@@ -22,7 +22,7 @@ export declare function findDivergentState(_actionState: ResultState, _navigatio
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<import("../react-navigation/native").ParamListBase, string>[];
+        routes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
         type: string;
         stale: false;
     }>>;
@@ -31,11 +31,11 @@ export declare function findDivergentState(_actionState: ResultState, _navigatio
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<import("../react-navigation/native").ParamListBase, string>[];
+        routes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
         type: string;
         stale: false;
     }>;
     actionStateRoute: PartialRoute<any> | undefined;
-    navigationRoutes: import("../react-navigation/native").NavigationRoute<import("../react-navigation/native").ParamListBase, string>[];
+    navigationRoutes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
 };
 //# sourceMappingURL=stateUtils.d.ts.map

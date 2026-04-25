@@ -31,6 +31,8 @@
 - Remove unused `Compression` related code. ([#43981](https://github.com/expo/expo/pull/43981) by [@jakex7](https://github.com/jakex7))
 - Fix `getLiveActivityUrl` reading URL from shared storage so Dynamic Island tap navigates to the deep link URL. ([#44346](https://github.com/expo/expo/pull/44346) by [@prenansb](https://github.com/prenansb))
 - [plugin] Fix "extension CFBundleVersion not synced with main app" ([#44928](https://github.com/expo/expo/pull/44928) by [@jakex7](https://github.com/jakex7))
+- [plugin] Use relative paths in Xcode project ([#45000](https://github.com/expo/expo/pull/45000) by [@jakex7](https://github.com/jakex7))
+- Exclude worklets and reanimated from widgets bundle ([#44999](https://github.com/expo/expo/pull/44999) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

@@ -1,9 +1,11 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A protocol for classes/structs accepted as an argument of functions.
  */
-public protocol AnyArgument {
+public protocol AnyArgument: ~Copyable {
   nonisolated static func getDynamicType() -> AnyDynamicType
 }
 
@@ -116,5 +118,11 @@ extension Array: AnyArgument {
 extension Data: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicDataType.shared
+  }
+}
+
+extension JavaScriptValue: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicJavaScriptType.shared
   }
 }

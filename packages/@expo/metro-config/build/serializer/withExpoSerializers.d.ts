@@ -8,7 +8,7 @@ import type { MetroConfig } from '@expo/metro/metro';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
-import { SerialAsset } from './serializerAssets';
+export type { SerialAsset } from './serializerAssets';
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 export type SerializerParameters = [
     string,
@@ -28,4 +28,3 @@ export declare function withExpoSerializers<Config extends InputConfigT = InputC
 export declare function withSerializerPlugins<Config extends InputConfigT = InputConfigT>(config: Config, processors: SerializerPlugin[], options?: SerializerConfigOptions): Config;
 export declare function createDefaultExportCustomSerializer(config: Partial<MetroConfig>, configOptions?: SerializerConfigOptions): Serializer;
 export declare function createSerializerFromSerialProcessors(config: MetroConfig, processors: (SerializerPlugin | undefined)[], originalSerializer: Serializer | null, options?: SerializerConfigOptions): Serializer;
-export { SerialAsset };

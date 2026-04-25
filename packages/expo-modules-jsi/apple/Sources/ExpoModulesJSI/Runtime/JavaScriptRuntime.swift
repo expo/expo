@@ -37,11 +37,6 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    */
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
 
-  public init(provider: JavaScriptRuntimeProvider) {
-    self.pointee = provider.consume()
-    self.scheduler = expo.RuntimeScheduler(pointee)
-  }
-
   /**
    Creates a runtime from the JSI runtime.
    */
@@ -312,6 +307,14 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   // MARK: - Runtime execution
 
   /**
+   Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
+   Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.
+   */
+  public var supportsAsyncScheduling: Bool {
+    return scheduler.supportsAsyncScheduling()
+  }
+
+  /**
    Schedules a closure to be executed with granted synchronized access to the runtime.
    */
   public func schedule(priority: SchedulerPriority = .normal, @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> sending Void) -> Void {
@@ -387,7 +390,24 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   /**
-   Asynchronously executes a closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   Asynchronously executes a sync closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   */
+  public func execute<R: Sendable>(
+    @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R
+  ) async throws -> sending R {
+    return try await withUnsafeThrowingContinuation { continuation in
+      scheduler.scheduleTask(.ImmediatePriority) {
+        do {
+          continuation.resume(returning: try JavaScriptActor.assumeIsolated(closure))
+        } catch {
+          continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+  /**
+   Asynchronously executes an async closure on the JavaScript runtime thread, awaiting its completion without blocking.
    */
   public func execute<R: Sendable>(
     taskName: String? = "[JS] runtime.execute (async \(#function))",

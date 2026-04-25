@@ -163,5 +163,5 @@ async function unloadFontInNamespaceAsync(fontFamily, options) {
     }
     await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
-export { FontDisplay } from './Font.types';
+export { FontDisplay, } from './Font.types';
 //# sourceMappingURL=Font.js.map

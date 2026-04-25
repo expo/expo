@@ -306,6 +306,8 @@ internal struct ClipShapeModifier: ViewModifier, Record {
       content.clipShape(makeCapsule(style: roundedCornerStyle))
     case .circle:
       content.clipShape(Circle())
+    case .containerRelativeShape:
+      content.clipShape(ContainerRelativeShape())
     case .ellipse:
       content.clipShape(Ellipse())
     case .rectangle:
@@ -526,6 +528,8 @@ internal struct MaskModifier: ViewModifier, Record {
       content.mask(makeCapsule(style: roundedCornerStyle))
     case .circle:
       content.mask(Circle())
+    case .containerRelativeShape:
+      content.mask(ContainerRelativeShape())
     case .ellipse:
       content.mask(Ellipse())
     case .rectangle:

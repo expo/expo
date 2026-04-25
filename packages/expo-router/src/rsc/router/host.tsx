@@ -188,7 +188,7 @@ const checkStatus = async <T extends ResponseLike>(responsePromise: Promise<T>):
 type Elements = Promise<Record<string, ReactNode>> & {
   prev?: Record<string, ReactNode> | undefined;
 };
-function getCached<T>(c: () => T, m: WeakMap<object, T>, k: object): T {
+function getCached<T>(c: () => T, m: WeakMap<any, T>, k: object): T {
   return (m.has(k) ? m : m.set(k, c())).get(k) as T;
 }
 

@@ -13,3 +13,4 @@ const buildAndroid = async (command) => {
     }
 };
 exports.default = buildAndroid;
+//# sourceMappingURL=build-android.js.map

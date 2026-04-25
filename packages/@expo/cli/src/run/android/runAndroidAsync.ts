@@ -7,7 +7,6 @@ import type { Options, ResolvedOptions } from './resolveOptions';
 import { resolveOptionsAsync } from './resolveOptions';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
-import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';

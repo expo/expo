@@ -1,7 +1,8 @@
 import { HStack } from '@expo/ui/swift-ui';
 
 import { transformToModifiers } from '../transformStyle';
-import type { RowProps, UniversalAlignment } from './types';
+import type { UniversalAlignment } from '../types';
+import type { RowProps } from './types';
 
 const alignmentMap: Record<UniversalAlignment, 'top' | 'center' | 'bottom'> = {
   start: 'top',
@@ -45,3 +46,5 @@ export function Row({
     </HStack>
   );
 }
+
+export * from './types';

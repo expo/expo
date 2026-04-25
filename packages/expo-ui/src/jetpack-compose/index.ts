@@ -9,6 +9,7 @@ export * from './Card';
 export * from './Checkbox';
 export * from './Chip';
 export * from './Button';
+export * from './colors';
 export * from './Icon';
 export * from './IconButton';
 export * from './DropdownMenu';

@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("DynamicEitherType")
+@JavaScriptActor
 struct DynamicEitherTypeTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {
@@ -36,7 +37,7 @@ struct DynamicEitherTypeTests {
     let either1 = try (~Either<Int, String>.self).cast(jsValue: .number(123), appContext: appContext) as! Either<Int, String>
     #expect(try either1.as(Int.self) == 123)
 
-    let either2 = try (~Either<Int, String>.self).cast(jsValue: .string("expo", runtime: runtime), appContext: appContext) as! Either<Int, String>
+    let either2 = try (~Either<Int, String>.self).cast(jsValue: JavaScriptValue(runtime, "expo"), appContext: appContext) as! Either<Int, String>
     #expect(try either2.as(String.self) == "expo")
   }
 

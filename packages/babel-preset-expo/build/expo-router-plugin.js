@@ -94,3 +94,4 @@ function expoRouterBabelPlugin(api) {
         },
     };
 }
+//# sourceMappingURL=expo-router-plugin.js.map

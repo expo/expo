@@ -54,15 +54,12 @@ EXSerializableValueType toObjCValueType(worklets::Serializable::ValueType type) 
 }
 
 @implementation EXJavaScriptSerializable {
-  __weak EXJavaScriptRuntime *_runtime;
   std::shared_ptr<worklets::Serializable> _serializable;
 }
 
 - (nonnull instancetype)initWithSerializable:(std::shared_ptr<worklets::Serializable>)serializable
-                                     runtime:(nonnull EXJavaScriptRuntime *)runtime
 {
   if (self = [super init]) {
-    _runtime = runtime;
     _serializable = serializable;
     _valueType = toObjCValueType(serializable->valueType());
   }

@@ -4,7 +4,7 @@ import { glob } from 'glob';
 import path from 'path';
 
 import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { existsAndIsNotIgnoredAsync, isFileIgnoredAsync } from '../utils/files';
+import { isFileIgnoredAsync } from '../utils/files';
 
 export class ProjectSetupCheck implements DoctorCheck {
   description = 'Check for common project setup issues';

@@ -6,8 +6,7 @@
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
-
-#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 
 #import <React/RCTComponentViewFactory.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
@@ -105,10 +104,10 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
     flavor = _componentFlavorsCache[className] = std::make_shared<std::string const>(className);
   }
 
-  ComponentName componentName = ComponentName { flavor->c_str() };
-  ComponentHandle componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+  react::ComponentName componentName = react::ComponentName { flavor->c_str() };
+  react::ComponentHandle componentHandle = reinterpret_cast<react::ComponentHandle>(componentName);
 
-  return ComponentDescriptorProvider {
+  return react::ComponentDescriptorProvider {
     componentHandle,
     componentName,
     flavor,
@@ -148,7 +147,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
   const auto &eventEmitter = static_cast<const ExpoViewEventEmitter &>(*_eventEmitter);
 
   eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
-    return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
+    return expo::convertObjCObjectToJSIValue(runtime, payload);
   });
 }
 
@@ -159,7 +158,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
   // Implemented in `ExpoFabricView.swift`
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateState:(react::State::Shared const &)state oldState:(react::State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<const ExpoViewShadowNode<>::ConcreteState>(state);
 }
@@ -173,7 +172,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 {
   if (_state) {
 #if REACT_NATIVE_TARGET_VERSION >= 82
-    _state->updateState(ExpoViewState(width,height), EventQueue::UpdateMode::unstable_Immediate);
+    _state->updateState(ExpoViewState(width,height), react::EventQueue::UpdateMode::unstable_Immediate);
 #else
     _state->updateState(ExpoViewState(width,height));
 #endif
@@ -193,7 +192,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
     float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
 #if REACT_NATIVE_TARGET_VERSION >= 82
     // synchronous update is only available in React Native 0.82 and above
-    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), EventQueue::UpdateMode::unstable_Immediate);
+    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), react::EventQueue::UpdateMode::unstable_Immediate);
 #else
     _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
 #endif

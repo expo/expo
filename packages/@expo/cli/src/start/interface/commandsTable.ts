@@ -106,11 +106,6 @@ export function printUsage(
   }
 }
 
-interface LogCommandsOutput {
-  lines: number;
-  print(): void;
-}
-
 function logCommandsTable(
   ui: (false | { key?: string; msg?: string; status?: string; disabled?: boolean })[]
 ) {

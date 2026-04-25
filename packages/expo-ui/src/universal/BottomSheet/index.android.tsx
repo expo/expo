@@ -31,3 +31,5 @@ export function BottomSheet({
     </ModalBottomSheet>
   );
 }
+
+export * from './types';

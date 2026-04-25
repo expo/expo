@@ -29,6 +29,7 @@ import java.util.Calendar
 import java.util.Date
 import android.graphics.Color as AndroidColor
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 data class DatePickerResult(
@@ -106,6 +107,7 @@ class SelectableDatesRecord : Record {
   @Field val end: Long? = null
 }
 
+@OptimizedComposeProps
 data class DateTimePickerProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
@@ -118,6 +120,7 @@ data class DateTimePickerProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
+@OptimizedComposeProps
 data class DatePickerDialogProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
@@ -129,6 +132,7 @@ data class DatePickerDialogProps(
   val selectableDates: SelectableDatesRecord? = null,
 ) : ComposeProps
 
+@OptimizedComposeProps
 data class TimePickerDialogProps(
   val initialDate: Long? = null,
   val is24Hour: Boolean = true,

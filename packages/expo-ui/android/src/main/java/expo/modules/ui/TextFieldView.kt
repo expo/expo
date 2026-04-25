@@ -30,6 +30,7 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.ui.state.ObservableState
 import expo.modules.ui.state.WorkletCallback
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 // region Records
 
@@ -176,6 +177,7 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
 
 // region Props
 
+@OptimizedComposeProps
 data class TextFieldProps(
   val value: ObservableState? = null,
   val autoFocus: Boolean = false,

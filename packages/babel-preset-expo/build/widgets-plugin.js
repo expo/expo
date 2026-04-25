@@ -117,3 +117,4 @@ function buildTemplateLiteral(t, code) {
 function escapeTemplateLiteral(value) {
     return value.replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 }
+//# sourceMappingURL=widgets-plugin.js.map

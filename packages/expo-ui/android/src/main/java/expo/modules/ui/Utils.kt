@@ -43,7 +43,7 @@ fun getImageVector(icon: String?): ImageVector? {
 }
 
 // TODO(@lukmccall): Make it work with introspectable
-//@Introspectable
+// @Introspectable
 data class GenericEventPayload1<T>(
   @Field val value: T
 ) : Record

@@ -6,337 +6,6 @@ import Testing
 
 @Suite("Function")
 struct FunctionTests {
-  let appContext: AppContext
-  let functionName = "test function name"
-
-  init() {
-    appContext = AppContext.create()
-  }
-
-  // MARK: - Native context
-
-  @Suite("native")
-  struct NativeTests {
-    let appContext: AppContext
-    let functionName = "test function name"
-
-    init() {
-      appContext = AppContext.create()
-    }
-
-    @Test
-    func `is called`() async throws {
-      var wasCalled = false
-
-      try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) {
-            wasCalled = true
-            continuation.resume()
-          }
-        }
-        .call(function: functionName, args: [])
-      }
-
-      #expect(wasCalled == true)
-    }
-
-    @Test
-    func `returns bool values`() async throws {
-      try await testFunctionReturning(value: true)
-      try await testFunctionReturning(value: false)
-      try await testFunctionReturning(value: [true, false])
-    }
-
-    @Test
-    func `returns int values`() async throws {
-      try await testFunctionReturning(value: 1_234)
-      try await testFunctionReturning(value: [2, 1, 3, 7])
-    }
-
-    @Test
-    func `returns double values`() async throws {
-      try await testFunctionReturning(value: 3.14)
-      try await testFunctionReturning(value: [0, 1.1, 2.2])
-    }
-
-    @Test
-    func `returns string values`() async throws {
-      try await testFunctionReturning(value: "a string")
-      try await testFunctionReturning(value: ["expo", "modules", "core"])
-    }
-
-    @Test
-    func `is called with nil value`() async {
-      let str: String? = nil
-      let receivedValue = await withCheckedContinuation { continuation in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) { (a: String?) in
-            continuation.resume(returning: a)
-          }
-        }
-        .call(function: functionName, args: [str as Any])
-      }
-      #expect(receivedValue == nil)
-    }
-
-    @Test
-    func `is called with an array of arrays`() async {
-      let array: [[String]] = [["expo"]]
-      let innerValue = await withCheckedContinuation { continuation in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) { (a: [[String]]) in
-            continuation.resume(returning: a.first!.first)
-          }
-        }
-        .call(function: functionName, args: [array])
-      }
-      #expect(innerValue == array.first!.first)
-    }
-
-    // MARK: Converting records
-
-    @Test
-    func `converts to simple record when passed as an argument`() async throws {
-      struct TestRecord: Record {
-        @Field var property: String = "expo"
-        @Field var optionalProperty: Int?
-        @Field("propertyWithCustomKey") var customKeyProperty: String = "expo"
-      }
-      let dict = [
-        "property": "Hello",
-        "propertyWithCustomKey": "Expo!"
-      ]
-
-      let result = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any?, Error>) in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) { (a: TestRecord) in
-            return a.property
-          }
-        }
-        .call(function: functionName, args: [dict]) { result in
-          switch result {
-          case .success(let value):
-            continuation.resume(returning: value as? String)
-          case .failure(let error):
-            continuation.resume(throwing: error)
-          }
-        }
-      }
-
-      #expect(result != nil)
-      #expect(result is String)
-      #expect(result as? String == dict["property"]!)
-    }
-
-    @Test
-    func `converts to record with custom key`() async throws {
-      struct TestRecord: Record {
-        @Field var property: String = "expo"
-        @Field var optionalProperty: Int?
-        @Field("propertyWithCustomKey") var customKeyProperty: String = "expo"
-      }
-      let dict = [
-        "property": "Hello",
-        "propertyWithCustomKey": "Expo!"
-      ]
-
-      let result = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any?, Error>) in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) { (a: TestRecord) in
-            return a.customKeyProperty
-          }
-        }
-        .call(function: functionName, args: [dict]) { result in
-          switch result {
-          case .success(let value):
-            continuation.resume(returning: value as? String)
-          case .failure(let error):
-            continuation.resume(throwing: error)
-          }
-        }
-      }
-
-      #expect(result != nil)
-      #expect(result is String)
-      #expect(result as? String == dict["propertyWithCustomKey"])
-    }
-
-    @Test
-    func `returns the record back (sync)`() throws {
-      struct TestRecord: Record {
-        @Field var property: String = "expo"
-        @Field var optionalProperty: Int?
-        @Field("propertyWithCustomKey") var customKeyProperty: String = "expo"
-      }
-      let dict = [
-        "property": "Hello",
-        "propertyWithCustomKey": "Expo!"
-      ]
-
-      let result = try Function(functionName) { (record: TestRecord) in record }
-        .call(by: nil, withArguments: [dict], appContext: appContext) as? TestRecord
-
-      guard let result = Conversions.convertFunctionResult(result, appContext: appContext) as? TestRecord.Dict else {
-        Issue.record("Expected TestRecord.Dict")
-        return
-      }
-
-      #expect(result["property"] as? String == dict["property"])
-      #expect(result["propertyWithCustomKey"] as? String == dict["propertyWithCustomKey"])
-    }
-
-    @Test
-    func `returns the record back (async)`() async throws {
-      struct TestRecord: Record {
-        @Field var property: String = "expo"
-        @Field var optionalProperty: Int?
-        @Field("propertyWithCustomKey") var customKeyProperty: String = "expo"
-      }
-      let dict = [
-        "property": "Hello",
-        "propertyWithCustomKey": "Expo!"
-      ]
-
-      let result = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any?, Error>) in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) { (a: TestRecord) in
-            return a
-          }
-        }
-        .call(function: functionName, args: [dict]) { result in
-          switch result {
-          case .success(let value):
-            continuation.resume(returning: value as? [String: Sendable])
-          case .failure(let error):
-            continuation.resume(throwing: error)
-          }
-        }
-      }
-
-      #expect(result != nil)
-      #expect(result is Record.Dict)
-
-      let valueAsDict = result as! Record.Dict
-
-      #expect(valueAsDict["property"] as? String == dict["property"])
-      #expect(valueAsDict["propertyWithCustomKey"] as? String == dict["propertyWithCustomKey"])
-    }
-
-    @Test
-    func `throws when called with more arguments than expected`() async throws {
-      let error = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<(any Error)?, Error>) in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) { (_: Int) in
-            return "something"
-          }
-        }
-        // Function expects one argument, let's give it more.
-        .call(function: functionName, args: [1, 2]) { result in
-          switch result {
-          case .failure(let error):
-            continuation.resume(returning: error)
-          case .success(_):
-            continuation.resume(returning: nil)
-          }
-        }
-      }
-
-      #expect(error != nil)
-      #expect(error is InvalidArgsNumberException)
-    }
-
-    @Test
-    func `allows to skip trailing optional arguments`() throws {
-      let returnedValue = "something"
-      var cWasNil = false
-
-      let fn = Function(functionName) { (a: String, b: Int?, c: Bool?) in
-        cWasNil = c == nil
-        return returnedValue
-      }
-
-      let result1 = try fn.call(by: nil, withArguments: ["test"], appContext: appContext) as? String
-      #expect(result1 == returnedValue)
-      #expect(cWasNil == true)
-
-      cWasNil = false
-      let result2 = try fn.call(by: nil, withArguments: ["test", 3], appContext: appContext) as? String
-      #expect(result2 == returnedValue)
-      #expect(cWasNil == true)
-    }
-
-    @Test
-    func `throws when called without required arguments`() {
-      let fn = Function(functionName) { (requiredArgument: String, optionalArgument: Int?) in
-        return "something"
-      }
-
-      #expect {
-        try fn.call(by: nil, withArguments: [], appContext: appContext)
-      } throws: { error in
-        guard let callError = error as? FunctionCallException else {
-          return false
-        }
-        guard let argsError = callError.rootCause as? InvalidArgsNumberException else {
-          return false
-        }
-        return argsError.param.received == 0 &&
-               argsError.param.required == 1 &&
-               argsError.param.expected == 2
-      }
-    }
-
-    @Test
-    func `throws when called with arguments of incompatible types`() async throws {
-      let error = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<(any ChainableException)?, Error>) in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) { (_: String) in
-            return "something"
-          }
-        }
-        // Function expects a string, let's give it a number.
-        .call(function: functionName, args: [1]) { result in
-          switch result {
-          case .failure(let error):
-            continuation.resume(returning: error)
-          case .success(_):
-            continuation.resume(returning: nil)
-          }
-        }
-      }
-
-      #expect(error != nil)
-      #expect(error is FunctionCallException)
-      #expect(error?.isCausedBy(ArgumentCastException.self) == true)
-      #expect(error?.isCausedBy(Conversions.CastingException<String>.self) == true)
-    }
-
-    // Helper function
-    private func testFunctionReturning<T: Equatable & Sendable>(value returnValue: T) async throws {
-      let result = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Any?, Error>) in
-        mockModuleHolder(appContext) {
-          AsyncFunction(functionName) {
-            return returnValue
-          }
-        }
-        .call(function: functionName, args: []) { result in
-          switch result {
-          case .success(let value):
-            continuation.resume(returning: value as? T)
-          case .failure(let error):
-            continuation.resume(throwing: error)
-          }
-        }
-      }
-
-      #expect(result != nil)
-      #expect(result is T)
-      #expect(result as? T == returnValue)
-    }
-  }
-
-  // MARK: - JavaScript context
 
   @Suite("JavaScript")
   @JavaScriptActor
@@ -404,8 +73,8 @@ struct FunctionTests {
           }
         }
 
-        Function("withFunction") { (fn: JavaScriptFunction<String>) -> String in
-          return try fn.call("foo", "bar")
+        Function("withFunction") { (fn: JavaScriptValue) throws -> String in
+          return try fn.asFunction().call(arguments: "foo", "bar").asString()
         }
 
         Function("withCGFloat") { (f: CGFloat) in
@@ -478,6 +147,26 @@ struct FunctionTests {
 
         AsyncFunction("withNestedURLAsync") {
           return TestURLRecord()
+        }
+
+        Function("withArrayOfArrays") { (a: [[String]]) -> String in
+          return a.first!.first!
+        }
+
+        Function("withTrailingOptionals") { (a: String, b: Int?, c: Bool?) -> String in
+          return c == nil ? "c was nil" : "c was set"
+        }
+
+        Function("withOneArg") { (a: Int) -> String in
+          return "got \(a)"
+        }
+
+        Function("expectsString") { (a: String) -> String in
+          return a
+        }
+
+        Function("withRecordAndCustomKey") { (a: TestRecord) -> String in
+          return a.property
         }
 
         Class("Shared", SharedString.self) {
@@ -731,6 +420,40 @@ struct FunctionTests {
       let boolResult = try runtime.eval("expo.modules.TestModule.withEither(true)")
       #expect(boolResult.kind == .bool)
       #expect(boolResult.getBool() == true)
+    }
+
+    // MARK: - Argument handling
+
+    @Test
+    func `accepts an array of arrays`() throws {
+      let result = try runtime.eval("expo.modules.TestModule.withArrayOfArrays([['expo']])")
+      #expect(try result.asString() == "expo")
+    }
+
+    @Test
+    func `allows to skip trailing optional arguments`() throws {
+      let result = try runtime.eval("expo.modules.TestModule.withTrailingOptionals('test')")
+      #expect(try result.asString() == "c was nil")
+    }
+
+    @Test
+    func `throws when called with more arguments than expected`() throws {
+      #expect(throws: (any Error).self) {
+        try runtime.eval("expo.modules.TestModule.withOneArg(1, 2)")
+      }
+    }
+
+    @Test
+    func `throws when called without required arguments`() throws {
+      #expect(throws: (any Error).self) {
+        try runtime.eval("expo.modules.TestModule.withOneArg()")
+      }
+    }
+
+    @Test
+    func `returns record with correct properties`() throws {
+      let result = try runtime.eval("expo.modules.TestModule.withRecordAndCustomKey({property: 'Hello'})")
+      #expect(try result.asString() == "Hello")
     }
 
     // MARK: - Helpers

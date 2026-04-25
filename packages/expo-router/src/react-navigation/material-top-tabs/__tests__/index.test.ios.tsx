@@ -1,6 +1,5 @@
 import { expect, jest, test } from '@jest/globals';
 import { fireEvent, render } from '@testing-library/react-native';
-import type * as React from 'react';
 import { Button, View } from 'react-native';
 
 import { NavigationContainer } from '../../../fork/NavigationContainer';
@@ -29,7 +28,6 @@ jest.mock('react-native-pager-view', () => {
 jest.mock(
   'react-native-tab-view',
   () => {
-    const React = require('react');
     const { View, Text, Pressable } = require('react-native');
 
     return {

@@ -94,8 +94,8 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => [
       '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
       '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
-      'OTHER_LDFLAGS' => '$(inherited) -lc++' # C++ standard library - will propagate to dependant targets
     ],
+    'OTHER_LDFLAGS' => '$(inherited) -lc++', # C++ standard library - will propagate to dependant targets
   }
 
   if use_hermes
@@ -117,7 +117,7 @@ Pod::Spec.new do |s|
     s.static_framework = true
     s.header_dir     = 'ExpoModulesCore'
     s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-    s.exclude_files = ['ios/JSI', 'ios/Tests', 'ios/Worklets', 'common/cpp/JSI']
+    s.exclude_files = ['ios/Tests', 'ios/Worklets']
     s.compiler_flags = compiler_flags
     s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
   end

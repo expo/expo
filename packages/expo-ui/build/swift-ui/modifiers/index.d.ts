@@ -149,7 +149,7 @@ export declare const opacity: (value: number) => ModifierConfig;
  * @param cornerRadius - Corner radius for rounded rectangle (default: 8)
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
-export declare const clipShape: (shape: "rectangle" | "circle" | "capsule" | "ellipse" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
+export declare const clipShape: (shape: "rectangle" | "circle" | "capsule" | "ellipse" | "roundedRectangle" | "containerRelativeShape", cornerRadius?: number) => ModifierConfig;
 /**
  * Adds a border to a view.
  * @param params - The border parameters. Color and width.
@@ -546,7 +546,7 @@ export declare const layoutPriority: (priority: number) => ModifierConfig;
  * @param cornerRadius - Corner radius for rounded rectangle (default: `8`).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
-export declare const mask: (shape: "rectangle" | "circle" | "capsule" | "ellipse" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
+export declare const mask: (shape: "rectangle" | "circle" | "capsule" | "ellipse" | "roundedRectangle" | "containerRelativeShape", cornerRadius?: number) => ModifierConfig;
 /**
  * Overlays another view on top.
  * @param params - Overlay color and alignment.
@@ -590,7 +590,7 @@ export declare const glassEffect: (params?: {
         interactive?: boolean;
         tint?: Color;
     };
-    shape?: "circle" | "capsule" | "rectangle" | "ellipse" | "roundedRectangle";
+    shape?: "circle" | "capsule" | "rectangle" | "ellipse" | "roundedRectangle" | "containerRelativeShape";
     cornerRadius?: number;
 }) => ModifierConfig;
 /**

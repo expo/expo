@@ -323,7 +323,13 @@ class EnabledUpdatesController(
       requestHeaders
     )
     if (!isValidRequestHeaders) {
-      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Invalid update requestHeaders override: $requestHeaders", null)
+      throw CodedException(
+        "ERR_UPDATES_RUNTIME_OVERRIDE",
+        "Invalid update requestHeaders override: $requestHeaders. " +
+          "Override keys must be declared in `updates.requestHeaders` in your app config " +
+          "at build time. Add the key to `updates.requestHeaders` and rebuild the app.",
+        null
+      )
     }
     val configOverride = UpdatesConfigurationOverride.saveRequestHeaders(context, requestHeaders)
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)

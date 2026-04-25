@@ -38,6 +38,7 @@ internal fun Project.applyPikaPlugin() {
 
   val pika = extensions.getByType(PikaGradleExtension::class.java)
   pika.introspectableAnnotation("expo.modules.kotlin.types.OptimizedRecord")
+  pika.introspectableAnnotation("expo.modules.kotlin.views.OptimizedComposeProps")
 }
 
 internal fun Project.configurePika(shouldBeEnabled: Boolean = true) {

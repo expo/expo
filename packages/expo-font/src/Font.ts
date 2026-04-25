@@ -223,4 +223,9 @@ async function unloadFontInNamespaceAsync(
   await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
 
-export { FontDisplay, type FontSource, type FontResource, type UnloadFontOptions } from './Font.types';
+export {
+  FontDisplay,
+  type FontSource,
+  type FontResource,
+  type UnloadFontOptions,
+} from './Font.types';

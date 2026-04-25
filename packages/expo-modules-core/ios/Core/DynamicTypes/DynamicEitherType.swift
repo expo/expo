@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicEitherType<EitherType: AnyEither>: AnyDynamicType {
   let eitherType: EitherType.Type
 

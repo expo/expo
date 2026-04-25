@@ -21,7 +21,7 @@ export declare function useNavigationBuilder<State extends NavigationState, Rout
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>>) => Readonly<{
@@ -53,7 +53,7 @@ export declare function useNavigationBuilder<State extends NavigationState, Rout
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }> | PartialState<Readonly<{
@@ -61,7 +61,7 @@ export declare function useNavigationBuilder<State extends NavigationState, Rout
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>>): void;
@@ -75,7 +75,7 @@ export declare function useNavigationBuilder<State extends NavigationState, Rout
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>;
@@ -126,7 +126,7 @@ export declare function useNavigationBuilder<State extends NavigationState, Rout
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T;
@@ -178,7 +178,7 @@ export declare function useNavigationBuilder<State extends NavigationState, Rout
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T;
