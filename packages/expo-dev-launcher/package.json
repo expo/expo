@@ -9,7 +9,8 @@
     "directory": "packages/expo-dev-launcher"
   },
   "scripts": {
-    "build:plugin": "expo-module build plugin",
+    "build": "pnpm build:plugin",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "expo-module": "expo-module"
   },
   "keywords": [
