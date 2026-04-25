@@ -30,6 +30,10 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
     self.name = name
     self.body = body
     self.dynamicArgumentTypes = dynamicArgumentTypes
+    self.trailingOptionalArgumentsCount = dynamicArgumentTypes
+      .reversed()
+      .prefix(while: { $0 is DynamicOptionalType })
+      .count
   }
 
   // MARK: - AnyFunction
@@ -38,8 +42,14 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
 
   let dynamicArgumentTypes: [AnyDynamicType]
 
+  private let trailingOptionalArgumentsCount: Int
+
   var argumentsCount: Int {
     return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
+  }
+
+  var requiredArgumentsCount: Int {
+    return argumentsCount - trailingOptionalArgumentsCount
   }
 
   var takesOwner: Bool = false

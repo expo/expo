@@ -52,6 +52,10 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
     self.dynamicArgumentTypes = dynamicArgumentTypes
     self.returnType = returnType
     self.body = body
+    self.trailingOptionalArgumentsCount = dynamicArgumentTypes
+      .reversed()
+      .prefix(while: { $0 is DynamicOptionalType })
+      .count
   }
 
   // MARK: - AnyFunction
@@ -62,8 +66,14 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   let returnType: AnyDynamicType
 
+  private let trailingOptionalArgumentsCount: Int
+
   var argumentsCount: Int {
     return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
+  }
+
+  var requiredArgumentsCount: Int {
+    return argumentsCount - trailingOptionalArgumentsCount
   }
 
   var takesOwner: Bool = false
