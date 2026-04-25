@@ -232,6 +232,34 @@ private fun String?.toImeAction(): ImeAction = when (this) {
 
 // endregion Mappers
 
+// region Value helpers
+
+private fun Any?.extractText(): String = when (this) {
+  is String -> this
+  is Map<*, *> -> (this["text"] as? String) ?: ""
+  else -> ""
+}
+
+private fun getSelection(
+  raw: Any?,
+  isStringMode: Boolean,
+  textLength: Int,
+  localSelection: TextRange
+): TextRange {
+  if (isStringMode) {
+    return TextRange(
+      localSelection.start.coerceIn(0, textLength),
+      localSelection.end.coerceIn(0, textLength)
+    )
+  }
+  val selMap = (raw as? Map<*, *>)?.get("selection") as? Map<*, *>
+  val start = (selMap?.get("start") as? Number)?.toInt()?.coerceIn(0, textLength) ?: textLength
+  val end = (selMap?.get("end") as? Number)?.toInt()?.coerceIn(0, textLength) ?: textLength
+  return TextRange(start, end)
+}
+
+// endregion Value helpers
+
 // region View
 
 @Composable
@@ -285,13 +313,7 @@ fun FunctionalComposableScope.TextFieldContent(
     capitalization = kbOpts?.capitalization.toCapitalization(),
     imeAction = kbOpts?.imeAction.toImeAction()
   )
-  val currentText = {
-    when (val v = state.value) {
-      is String -> v
-      is Map<*, *> -> (v["text"] as? String) ?: ""
-      else -> ""
-    }
-  }
+  val currentText = { state.value.extractText() }
   val keyboardActions = KeyboardActions(
     onDone = { defaultKeyboardAction(ImeAction.Done); onKeyboardActionTriggered(KeyboardActionEvent("done", currentText())) },
     onGo = { defaultKeyboardAction(ImeAction.Go); onKeyboardActionTriggered(KeyboardActionEvent("go", currentText())) },
@@ -325,22 +347,8 @@ fun FunctionalComposableScope.TextFieldContent(
 
   val localSelection = remember { mutableStateOf(TextRange.Zero) }
   val raw = state.value
-  val text = when (raw) {
-    is String -> raw
-    is Map<*, *> -> (raw["text"] as? String) ?: ""
-    else -> ""
-  }
-  val selection: TextRange = if (isStringMode) {
-    TextRange(
-      localSelection.value.start.coerceIn(0, text.length),
-      localSelection.value.end.coerceIn(0, text.length)
-    )
-  } else {
-    val selMap = (raw as? Map<*, *>)?.get("selection") as? Map<*, *>
-    val s = (selMap?.get("start") as? Number)?.toInt()?.coerceIn(0, text.length) ?: text.length
-    val e = (selMap?.get("end") as? Number)?.toInt()?.coerceIn(0, text.length) ?: text.length
-    TextRange(s, e)
-  }
+  val text = raw.extractText()
+  val selection = getSelection(raw, isStringMode, text.length, localSelection.value)
   val value = TextFieldValue(text, selection)
   val onValueChange: (TextFieldValue) -> Unit = { new ->
     if (new.text != value.text || new.selection != value.selection) {

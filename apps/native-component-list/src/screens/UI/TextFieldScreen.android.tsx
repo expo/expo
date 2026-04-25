@@ -145,7 +145,7 @@ export default function TextFieldScreen() {
         <Card modifiers={cardModifiers}>
           <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
             <ComposeText style={{ typography: 'labelLarge' }}>Worklet Phone Masking</ComposeText>
-            <TextField<TextFieldValue>
+            <TextField
               value={maskedPhone}
               keyboardOptions={{ keyboardType: 'phone' }}
               modifiers={[fillMaxWidth()]}
