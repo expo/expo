@@ -115,7 +115,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       let returnedValue: ReturnType
 
       do {
-        guard let argumentsTuple = try Conversions.toTuple(nativeArguments) as? Args else {
+        guard let argumentsTuple: Args = try Conversions.toTuple(nativeArguments) else {
           throw ArgumentConversionException()
         }
         returnedValue = try body(argumentsTuple)

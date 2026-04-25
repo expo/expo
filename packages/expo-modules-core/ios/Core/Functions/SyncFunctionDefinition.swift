@@ -86,8 +86,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
     do {
       try validateArgumentsNumber(function: self, received: arguments.count)
       let nativeArguments = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
-
-      guard let argumentsTuple = try Conversions.toTuple(nativeArguments) as? Args else {
+      guard let argumentsTuple: Args = try Conversions.toTuple(nativeArguments) else {
         throw ArgumentConversionException()
       }
       return try body(argumentsTuple) as Any
