@@ -445,7 +445,7 @@ describe('exports server', () => {
       ).toBe('TEST_VALUE');
     });
 
-    it('injects generateMetadata tags into the initial server HTML head before Head tags', async () => {
+    it('injects `generateMetadata()` result into the initial server HTML <head>', async () => {
       const html = await server.fetchAsync('/metadata').then((res) => res.text());
       const page = getHtml(html);
       const head = page.querySelector('html > head');
@@ -462,6 +462,20 @@ describe('exports server', () => {
         .map((node) => node.toString());
 
       expect(metadataHeadNodes).toMatchSnapshot();
+    });
+
+    it('resolves async `generateMetadata()` with request and route params', async () => {
+      const page = getHtml(
+        await server.fetchAsync('/metadata-async/123').then((res) => res.text())
+      );
+
+      expect(page.querySelector('html > body [data-testid="async-metadata-text"]')?.innerText).toBe(
+        'Async Metadata'
+      );
+      expect(page.querySelector('html > head > title')?.innerText).toBe('Async Metadata 123');
+      expect(page.querySelector('html > head > meta[name="description"]')?.attributes.content).toBe(
+        'Async metadata for /metadata-async/123'
+      );
     });
   });
 });
