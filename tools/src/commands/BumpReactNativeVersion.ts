@@ -158,7 +158,6 @@ async function updateBundledNativeModules(newVersion: string): Promise<void> {
 async function podInstallAsync(cwd: string): Promise<void> {
   const depsToUpdate = new Set<string>();
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
       if (depsToUpdate.size > 0) {

@@ -8,6 +8,7 @@ import {
   type SourceFileImportRef,
 } from './scanDependenciesAsync';
 import type { ActionOptions } from './types';
+// eslint-disable-next-line import/no-named-as-default
 import Logger from '../Logger';
 import { DependencyKind, type PackageDependency, type Package } from '../Packages';
 
