@@ -76,7 +76,7 @@ export default function ImageComparisonScreen() {
   return (
     <>
       <ImageComparisonBody sections={sections} onFirstImageLoad={() => setReady(true)} />
-      {ready ? <View testID="image-comparison-ready" style={styles.readyMarker} /> : null}
+      {ready ? <Text style={styles.readyMarker}>image-comparison-ready</Text> : null}
     </>
   );
 }
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: 1,
-    height: 1,
+    fontSize: 1,
+    color: 'transparent',
   },
 });
