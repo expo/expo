@@ -24,9 +24,13 @@ const SERVER_CALLER = {
   supportsStaticESM: true,
 };
 
-function transformTest(code: string, caller: babel.TransformCaller) {
+function transformTest(
+  code: string,
+  caller: babel.TransformCaller,
+  options: { filename?: string } = {}
+) {
   const result = babel.transform(code, {
-    filename: '/app/index',
+    filename: options.filename ?? '/app/index',
     babelrc: false,
     configFile: false,
     presets: [preset],
@@ -48,42 +52,7 @@ function transformTest(code: string, caller: babel.TransformCaller) {
 }
 
 describe('serverMetadataPlugin', () => {
-  it('removes route generateMetadata exports from client bundles', () => {
-    const result = transformTest(
-      `
-      export async function generateMetadata() {
-        return { title: 'Hello' };
-      }
-
-      export default function Index() {
-        return <div>Hello</div>;
-      }
-      `,
-      CLIENT_CALLER as babel.TransformCaller
-    );
-
-    expect(result.metadata.performConstantFolding).toBe(true);
-    expect(result.code).not.toContain('generateMetadata');
-    expect(result.code).toContain('export default function Index()');
-  });
-
-  it('removes generateMetadata variable exports from client bundles', () => {
-    const result = transformTest(
-      `
-      export const generateMetadata = async () => ({ title: 'Hello' });
-
-      export default function Index() {
-        return <div>Hello</div>;
-      }
-      `,
-      CLIENT_CALLER as babel.TransformCaller
-    );
-
-    expect(result.metadata.performConstantFolding).toBe(true);
-    expect(result.code).not.toContain('generateMetadata');
-  });
-
-  it('preserves route generateMetadata exports in server bundles', () => {
+  it('preserves `generateMetadata()` exports in server bundles', () => {
     const result = transformTest(
       `
       export async function generateMetadata() {
@@ -98,6 +67,136 @@ describe('serverMetadataPlugin', () => {
     );
 
     expect(result.metadata.performConstantFolding).toBeUndefined();
-    expect(result.code).toContain('export async function generateMetadata()');
+    expect(result.code).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from "react/jsx-runtime";
+      export async function generateMetadata() {
+        return {
+          title: 'Hello'
+        };
+      }
+      export default function Index() {
+        return /*#__PURE__*/_jsx("div", {
+          children: "Hello"
+        });
+      }"
+    `);
+  });
+
+  it('removes `generateMetadata()` exports from client bundles', () => {
+    const result = transformTest(
+      `
+      export async function generateMetadata() {
+        return { title: 'Hello' };
+      }
+
+      export default function Index() {
+        return <div>Hello</div>;
+      }
+      `,
+      CLIENT_CALLER as babel.TransformCaller
+    );
+
+    expect(result.metadata.performConstantFolding).toBe(true);
+    expect(result.code).not.toContain('generateMetadata');
+    expect(result.code).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from "react/jsx-runtime";
+      export default function Index() {
+        return /*#__PURE__*/_jsx("div", {
+          children: "Hello"
+        });
+      }"
+    `);
+  });
+
+  it('removes `generateMetadata()` variable exports from client bundles', () => {
+    const result = transformTest(
+      `
+      export const generateMetadata = async () => ({ title: 'Hello' });
+
+      export default function Index() {
+        return <div>Hello</div>;
+      }
+      `,
+      CLIENT_CALLER as babel.TransformCaller
+    );
+
+    expect(result.metadata.performConstantFolding).toBe(true);
+    expect(result.code).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from "react/jsx-runtime";
+      export default function Index() {
+        return /*#__PURE__*/_jsx("div", {
+          children: "Hello"
+        });
+      }"
+    `);
+  });
+
+  it('removes `generateMetadata()` exports from mixed variable exports in client bundles', () => {
+    const result = transformTest(
+      `
+      export const generateMetadata = async () => ({ title: 'Hello' }), routeValue = 'client';
+
+      export default function Index() {
+        return <div>{routeValue}</div>;
+      }
+      `,
+      CLIENT_CALLER as babel.TransformCaller
+    );
+
+    expect(result.metadata.performConstantFolding).toBe(true);
+    expect(result.code).not.toContain('generateMetadata');
+    expect(result.code).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from "react/jsx-runtime";
+      export const routeValue = 'client';
+      export default function Index() {
+        return /*#__PURE__*/_jsx("div", {
+          children: routeValue
+        });
+      }"
+    `);
+  });
+
+  it('preserves non-metadata exports in client bundles', () => {
+    const result = transformTest(
+      `
+      export const title = 'Hello';
+      export default function Index() {
+        return <div>{title}</div>;
+      }
+      `,
+      CLIENT_CALLER as babel.TransformCaller
+    );
+
+    expect(result.metadata.performConstantFolding).toBeUndefined();
+    expect(result.code).toMatchInlineSnapshot(`
+      "import { jsx as _jsx } from "react/jsx-runtime";
+      export const title = 'Hello';
+      export default function Index() {
+        return /*#__PURE__*/_jsx("div", {
+          children: title
+        });
+      }"
+    `);
+  });
+
+  it('does not modify files outside the app directory', () => {
+    const result = transformTest(
+      `
+      export async function generateMetadata() {
+        return { title: 'Hello' };
+      }
+      `,
+      CLIENT_CALLER as babel.TransformCaller,
+      { filename: '/components/metadata' }
+    );
+
+    expect(result.metadata.performConstantFolding).toBeUndefined();
+    expect(result.code).toMatchInlineSnapshot(`
+      "export async function generateMetadata() {
+        return {
+          title: 'Hello'
+        };
+      }"
+    `);
   });
 });
