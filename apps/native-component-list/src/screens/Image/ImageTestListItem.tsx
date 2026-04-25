@@ -25,11 +25,18 @@ type PropsType = {
   test: ImageTest;
   animValue?: Animated.Value;
   useAnimatedComponent: boolean;
+  onImageLoad?: () => void;
 };
 const AnimatedExpoImage = Animated.createAnimatedComponent(Image);
 
-export function ImageTestListItem({ test, animValue, useAnimatedComponent }: PropsType) {
+export function ImageTestListItem({
+  test,
+  animValue,
+  useAnimatedComponent,
+  onImageLoad,
+}: PropsType) {
   const imageProps = resolveProps(test.props, animValue);
+  const expoImageProps = onImageLoad ? { ...imageProps, onLoad: onImageLoad } : imageProps;
 
   return (
     <View style={styles.container}>
@@ -39,7 +46,7 @@ export function ImageTestListItem({ test, animValue, useAnimatedComponent }: Pro
       <View style={styles.content}>
         <ImageTestView
           style={styles.image}
-          imageProps={imageProps}
+          imageProps={expoImageProps}
           ImageComponent={useAnimatedComponent ? AnimatedExpoImage : Image}
           loadOnDemand={test.loadOnDemand}
         />

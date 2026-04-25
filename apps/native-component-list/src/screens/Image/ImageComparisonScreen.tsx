@@ -11,17 +11,30 @@ export function ImageComparisonBody({
   useAnimatedComponent,
   animValue,
   sections,
+  onFirstImageLoad,
 }: {
   useAnimatedComponent?: boolean;
   animValue?: Animated.Value;
   sections: { title: string; data: ImageTest[] }[];
+  onFirstImageLoad?: () => void;
 }) {
-  const renderItem = ({ item }: { item: ImageTest }) => {
+  const firstSection = sections[0];
+  const renderItem = ({
+    item,
+    index,
+    section,
+  }: {
+    item: ImageTest;
+    index: number;
+    section: { title: string; data: ImageTest[] };
+  }) => {
+    const isFirstRow = index === 0 && section === firstSection;
     return (
       <ImageTestListItem
         test={item}
         animValue={animValue}
         useAnimatedComponent={!!useAnimatedComponent}
+        onImageLoad={isFirstRow ? onFirstImageLoad : undefined}
       />
     );
   };
@@ -55,11 +68,17 @@ export function ImageComparisonBody({
 }
 
 export default function ImageComparisonScreen() {
+  const [ready, setReady] = React.useState(false);
   const sections = imageTests.tests.map((test) => ({
     title: test.name,
     data: test.tests,
   }));
-  return <ImageComparisonBody sections={sections} />;
+  return (
+    <>
+      <ImageComparisonBody sections={sections} onFirstImageLoad={() => setReady(true)} />
+      {ready ? <View testID="image-comparison-ready" /> : null}
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
