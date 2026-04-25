@@ -103,6 +103,17 @@ export interface GetStaticContentOptions {
         data?: unknown;
         key: string;
     };
+    request?: Request;
+    assets?: AssetInfo;
+}
+/**
+ * @type {import('@expo/router-server/src/static/renderStreamingContent').GetStreamingContentOptions}
+ */
+export interface GetStreamingContentOptions {
+    loader?: {
+        data?: unknown;
+        key: string;
+    };
     metadata?: {
         headTags: string;
     } | null;
