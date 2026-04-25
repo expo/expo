@@ -132,21 +132,38 @@ public struct Conversions {
   // MARK: - Any to JavaScript
 
   /**
-   Converts an arbitrary native value to a `JavaScriptValue`.
-   Handles Swift primitives, strings, arrays, and dictionaries with `Any` values
-   that can't be statically matched to `JavaScriptRepresentable`.
+   Converts a native value to a `JavaScriptValue`. When the value conforms to `AnyArgument`,
+   the fast path via `getDynamicType().castToJS()` is used. Otherwise falls back to
+   `unknownToJavaScriptValue` which handles type-erased values through `NSNumber`/`NSDictionary` matching.
    */
-  static func anyToJavaScriptValue(_ value: Any, runtime: JavaScriptRuntime) throws -> JavaScriptValue {
-    if let value = value as? JavaScriptRepresentable {
-      return .representing(value: value, in: runtime)
+  static func anyToJavaScriptValue<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if ValueType.self is AnyOptional.Type, Optional.isNil(value) {
+      return .null
     }
+    if let value = value as? AnyArgument {
+      return try type(of: value).getDynamicType().castToJS(value, appContext: appContext)
+    }
+    return try unknownToJavaScriptValue(value, appContext: appContext)
+  }
+
+  /**
+   Slow path for values whose concrete type is erased to `Any`.
+   Kept separate from `anyToJavaScriptValue` so that the default `AnyDynamicType.castToJS`
+   can call this without re-entering the `AnyArgument` check and causing infinite recursion.
+   */
+  static func unknownToJavaScriptValue(_ value: Any, appContext: AppContext) throws -> JavaScriptValue {
+    if let value = value as? JavaScriptRepresentable {
+      return .representing(value: value, in: try appContext.runtime)
+    }
+
+    let runtime = try appContext.runtime
+
     switch value {
     case is Void:
       return .undefined
     case is NSNull:
       return .null
     case let number as NSNumber:
-      // NSNumber wrapping a boolean is also a valid NSNumber, so check for bool first.
       if number === kCFBooleanTrue {
         return .true()
       }
@@ -161,18 +178,18 @@ public struct Conversions {
     case let array as NSArray:
       let jsArray = runtime.createArray(length: array.count)
       for (index, element) in array.enumerated() {
-        try jsArray.set(value: anyToJavaScriptValue(element, runtime: runtime), at: index)
+        try jsArray.set(value: anyToJavaScriptValue(element, appContext: appContext), at: index)
       }
       return jsArray.asValue()
     case let dict as NSDictionary:
       let jsObject = runtime.createObject()
       for (key, element) in dict {
         guard let key = key as? String else { continue }
-        jsObject.setProperty(key, value: try anyToJavaScriptValue(element, runtime: runtime))
+        jsObject.setProperty(key, value: try anyToJavaScriptValue(element, appContext: appContext))
       }
       return jsObject.asValue()
     default:
-      log.warn("anyToJavaScriptValue: unsupported native type '\(type(of: value))', returning undefined")
+      log.warn("unknownToJavaScriptValue: unsupported native type '\(type(of: value))', returning undefined")
       return .undefined
     }
   }

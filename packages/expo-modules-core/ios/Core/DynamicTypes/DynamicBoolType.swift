@@ -35,6 +35,13 @@ internal struct DynamicBoolType: AnyDynamicType {
     throw Conversions.ConversionToNativeFailedException((kind: jsValue.kind, nativeType: Bool.self))
   }
 
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if let value = value as? Bool {
+      return value ? .true() : .false()
+    }
+    throw Conversions.ConversionToJSFailedException((kind: .bool, nativeType: ValueType.self))
+  }
+
   var description: String {
     "Bool"
   }
