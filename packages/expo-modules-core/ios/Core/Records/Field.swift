@@ -9,7 +9,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public var wrappedValue: Type
 
-  private let fieldType: AnyDynamicType = ~Type.self
+  internal let fieldType: AnyDynamicType = ~Type.self
 
   /**
    Field's key in the dictionary, which by default is a label of the wrapped property.

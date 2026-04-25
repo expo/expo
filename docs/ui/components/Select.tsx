@@ -92,7 +92,7 @@ export function Select({
           <SelectPrimitive.Viewport>
             <SelectPrimitive.Group>
               {optionsLabel && (
-                <SelectPrimitive.Label className="text-2xs text-tertiary cursor-default px-3 pt-2 pb-1">
+                <SelectPrimitive.Label className="text-tertiary cursor-default px-3 pt-2 pb-1 text-xs">
                   {optionsLabel}
                 </SelectPrimitive.Label>
               )}
@@ -108,7 +108,7 @@ export function Select({
                   <SelectPrimitive.ItemText>
                     <div
                       className={mergeClasses(
-                        'text-default flex items-center gap-2 text-left text-xs leading-tight font-normal whitespace-pre-wrap',
+                        'text-default flex items-center gap-2 text-left text-sm leading-tight font-normal whitespace-pre-wrap',
                         size === 'lg' && 'text-lg'
                       )}>
                       {leftSlot}
@@ -148,7 +148,7 @@ export function Select({
     return (
       <div className="flex flex-col gap-1">
         {typeof caption === 'string' ? (
-          <p className="text-tertiary text-xs font-medium">{caption}</p>
+          <p className="text-tertiary text-sm font-medium">{caption}</p>
         ) : (
           caption
         )}

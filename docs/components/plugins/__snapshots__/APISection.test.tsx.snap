@@ -99,14 +99,14 @@ exports[`APISection expo-apple-authentication 1`] = `
       data-text="true"
     >
       <span
-        class="text-tertiary text-xs font-medium"
+        class="text-tertiary text-sm font-medium"
         data-text="true"
       >
         Type:
       </span>
        
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
         data-text="true"
       >
         React.Element
@@ -135,10 +135,36 @@ exports[`APISection expo-apple-authentication 1`] = `
         class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
-your screen. The App Store Guidelines require you to use this component to start the
-authentication process instead of a custom button. Limited customization of the button is
-available via the provided properties.
+        This component displays Apple's proprietary "Sign In with Apple" / "Continue with Apple" button
+using the native 
+        <a
+          class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+          href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <code
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            data-text="true"
+          >
+            ASAuthorizationAppleIDButton
+          </code>
+        </a>
+        .
+Apple's 
+        <a
+          class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+          href="https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Human Interface Guidelines
+        </a>
+        
+allow custom buttons as long as they follow Apple's branding rules (approved title, official
+logo asset, approved colors, proportions, and minimum size). Using this component is the easiest
+way to meet those requirements, since the system button is automatically Apple-approved,
+localized, and accessible.
       </p>
       
 
@@ -152,7 +178,7 @@ available via the provided properties.
           href="#appleauthenticationisavailableasync"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.isAvailableAsync()
@@ -161,7 +187,7 @@ available via the provided properties.
         
 resolves to 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           true
@@ -169,7 +195,7 @@ resolves to
         . This component will render nothing if it is not available, and you will get
 a warning in development mode (
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           __DEV__ === true
@@ -184,7 +210,7 @@ a warning in development mode (
       >
         The properties of this component extend from 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           View
@@ -192,21 +218,21 @@ a warning in development mode (
         ; however, you should not attempt to set
 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           backgroundColor
         </code>
          or 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           borderRadius
         </code>
          with the 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           style
@@ -214,7 +240,7 @@ a warning in development mode (
          property. This will not work and is against
 the App Store Guidelines. Instead, you should use the 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           buttonStyle
@@ -222,7 +248,7 @@ the App Store Guidelines. Instead, you should use the
          property to choose one of the
 predefined color styles and the 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           cornerRadius
@@ -236,7 +262,7 @@ button.
         class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        Make sure to attach height and width via the style props as without these styles, the button will
+        Make sure to attach height and width via the style props, since without them the button will
 not appear on the screen.
       </p>
       <blockquote
@@ -270,7 +296,7 @@ not appear on the screen.
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -300,7 +326,7 @@ for more details.
     </div>
     <div>
       <p
-        class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-2xs text-tertiary flex border-y px-4 py-2 font-medium"
+        class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-tertiary flex border-y px-4 py-2 text-xs font-medium"
         data-text="true"
       >
         <span
@@ -310,7 +336,7 @@ for more details.
         >
           AppleAuthenticationButtonProps
           <a
-            class="border border-solid rounded-full whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] text-2xs text-tertiary flex flex-row items-center gap-2 font-medium"
+            class="border border-solid rounded-full whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] text-tertiary flex flex-row items-center gap-2 text-xs font-medium"
             href="#appleauthenticationbuttonprops"
           >
             <span
@@ -401,12 +427,12 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-tertiary text-xs font-medium mx-4 mb-2.5"
+          class="text-tertiary text-sm font-medium mx-4 mb-2.5"
         >
           Type:
            
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
             data-md="type-sig"
             data-text="true"
           >
@@ -482,12 +508,12 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-tertiary text-xs font-medium mx-4 mb-2.5"
+          class="text-tertiary text-sm font-medium mx-4 mb-2.5"
         >
           Type:
            
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
             data-md="type-sig"
             data-text="true"
           >
@@ -563,13 +589,13 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-tertiary text-xs font-medium mx-4 mb-2.5"
+          class="text-tertiary text-sm font-medium mx-4 mb-2.5"
         >
           Optional • 
           Type:
            
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
             data-md="type-sig"
             data-text="true"
           >
@@ -586,7 +612,7 @@ for more details.
             The border radius to use when rendering the button. This works similarly to
 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               style.borderRadius
@@ -648,12 +674,12 @@ for more details.
           </h3>
         </div>
         <div
-          class="text-tertiary text-xs font-medium mx-4 mb-2.5"
+          class="text-tertiary text-sm font-medium mx-4 mb-2.5"
         >
           Type:
            
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
             data-md="type-sig"
             data-text="true"
           >
@@ -684,7 +710,7 @@ for more details.
               href="#appleauthenticationisavailableasync"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthentication.signInAsync
@@ -748,13 +774,13 @@ in here.
           </h3>
         </div>
         <div
-          class="text-tertiary text-xs font-medium mx-4 mb-2.5"
+          class="text-tertiary text-sm font-medium mx-4 mb-2.5"
         >
           Optional • 
           Type:
            
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
             data-md="type-sig"
             data-text="true"
           >
@@ -828,14 +854,14 @@ in here.
           >
             The custom style to apply to the button. Should not include 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               backgroundColor
             </code>
              or 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               borderRadius
@@ -896,7 +922,7 @@ properties.
             data-text="true"
           >
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
               data-text="true"
             >
               <a
@@ -1009,7 +1035,7 @@ properties.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1018,17 +1044,17 @@ properties.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -1053,7 +1079,7 @@ properties.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -1093,7 +1119,7 @@ properties.
                 formatStyle
               </span>
               <span
-                class="text-3xs! text-tertiary flex"
+                class="text-tertiary flex text-xs!"
               >
                 (optional)
               </span>
@@ -1102,7 +1128,7 @@ properties.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -1168,13 +1194,13 @@ properties.
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           string
@@ -1252,7 +1278,7 @@ properties.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1261,17 +1287,17 @@ properties.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -1296,7 +1322,7 @@ properties.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 string
@@ -1319,7 +1345,7 @@ This should come from the user field of an
                     href="#appleauthenticationcredentialstate"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                      class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       AppleAuthenticationCredential
@@ -1376,7 +1402,7 @@ This should come from the user field of an
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           
 
@@ -1423,13 +1449,13 @@ This should come from the user field of an
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -1476,7 +1502,7 @@ This should come from the user field of an
               href="#appleauthenticationcredentialstate"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthenticationCredentialState
@@ -1577,13 +1603,13 @@ value depending on the state of the credential.
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -1621,14 +1647,14 @@ value depending on the state of the credential.
           >
             A promise that fulfills with 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               true
             </code>
              if the system supports Apple authentication, and 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               false
@@ -1695,7 +1721,7 @@ value depending on the state of the credential.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1704,17 +1730,17 @@ value depending on the state of the credential.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -1739,7 +1765,7 @@ value depending on the state of the credential.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -1766,7 +1792,7 @@ value depending on the state of the credential.
                     href="#appleauthenticationrefreshoptions"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                      class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       AppleAuthenticationRefreshOptions
@@ -1818,13 +1844,13 @@ Calling this method will show the sign in modal before actually refreshing the u
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -1871,7 +1897,7 @@ Calling this method will show the sign in modal before actually refreshing the u
               href="#appleauthenticationcredential"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthenticationCredential
@@ -1880,7 +1906,7 @@ Calling this method will show the sign in modal before actually refreshing the u
             
 object after a successful authentication, and rejects with 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               ERR_REQUEST_CANCELED
@@ -1948,7 +1974,7 @@ refresh operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1957,17 +1983,17 @@ refresh operation.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -1988,7 +2014,7 @@ refresh operation.
                 options
               </span>
               <span
-                class="text-3xs! text-tertiary flex"
+                class="text-tertiary flex text-xs!"
               >
                 (optional)
               </span>
@@ -1997,7 +2023,7 @@ refresh operation.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -2024,7 +2050,7 @@ refresh operation.
                     href="#appleauthenticationsigninoptions"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                      class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       AppleAuthenticationSignInOptions
@@ -2072,7 +2098,12 @@ server-side, or using
           class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
           href="./securestore"
         >
-          SecureStore
+          <code
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            data-text="true"
+          >
+            expo-secure-store
+          </code>
         </a>
         , so that the data persists across app installs.
 You can use 
@@ -2081,7 +2112,7 @@ You can use
           href="#appleauthenticationcredential"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthenticationCredential.user
@@ -2117,13 +2148,13 @@ the user, since this remains the same for apps released by the same developer.
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -2170,7 +2201,7 @@ the user, since this remains the same for apps released by the same developer.
               href="#appleauthenticationcredential"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthenticationCredential
@@ -2179,7 +2210,7 @@ the user, since this remains the same for apps released by the same developer.
             
 object after a successful authentication, and rejects with 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               ERR_REQUEST_CANCELED
@@ -2247,7 +2278,7 @@ sign-in operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -2256,17 +2287,17 @@ sign-in operation.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -2291,7 +2322,7 @@ sign-in operation.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -2318,7 +2349,7 @@ sign-in operation.
                     href="#appleauthenticationsignoutoptions"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                      class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       AppleAuthenticationSignOutOptions
@@ -2357,7 +2388,7 @@ from using
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             signInAsync
@@ -2369,7 +2400,7 @@ from using
           href="#appleauthenticationrefreshasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             refreshAsync
@@ -2404,13 +2435,13 @@ from using
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -2457,7 +2488,7 @@ from using
               href="#appleauthenticationcredential"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 AppleAuthenticationCredential
@@ -2466,7 +2497,7 @@ from using
             
 object after a successful authentication, and rejects with 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               ERR_REQUEST_CANCELED
@@ -2574,7 +2605,7 @@ sign-out operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -2583,12 +2614,12 @@ sign-out operation.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
@@ -2613,7 +2644,7 @@ sign-out operation.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span
@@ -2660,13 +2691,13 @@ sign-out operation.
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           EventSubscription
@@ -2777,7 +2808,7 @@ sign-out operation.
       </p>
     </div>
     <p
-      class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-2xs text-tertiary flex border-y px-4 py-2 font-medium"
+      class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-tertiary flex border-y px-4 py-2 text-xs font-medium"
       data-text="true"
     >
       <span
@@ -2787,7 +2818,7 @@ sign-out operation.
       >
         Subscription Methods
         <a
-          class="border border-solid rounded-full whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] text-2xs text-tertiary flex flex-row items-center gap-2 font-medium"
+          class="border border-solid rounded-full whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] text-tertiary flex flex-row items-center gap-2 text-xs font-medium"
           href="#subscription-methods"
         >
           <span
@@ -2910,13 +2941,13 @@ After calling this function, the listener will no longer receive any events from
               </g>
             </svg>
             <span
-              class="text-tertiary text-xs font-medium"
+              class="text-tertiary text-sm font-medium"
             >
               Returns:
             </span>
           </div>
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
             data-text="true"
           >
             void
@@ -3030,7 +3061,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signInAsync()
@@ -3043,7 +3074,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationrefreshasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.refreshAsync()
@@ -3055,7 +3086,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationsignoutasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signOutAsync()
@@ -3095,7 +3126,7 @@ which contains all of the pertinent user and credential information.
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -3130,7 +3161,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -3139,17 +3170,17 @@ for more details.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Property
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -3173,7 +3204,7 @@ for more details.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3202,7 +3233,7 @@ for more details.
                   A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     user
@@ -3229,7 +3260,7 @@ the app's server counterpart. Unlike
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3257,7 +3288,7 @@ the app's server counterpart. Unlike
                 >
                   The user's email address. Might not be present if you didn't request the 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     EMAIL
@@ -3287,7 +3318,7 @@ an Apple domain.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3320,21 +3351,21 @@ an Apple domain.
                 >
                   The user's name. May be 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
                   </code>
                    or contain 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
                   </code>
                    values if you didn't request the 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     FULL_NAME
@@ -3363,7 +3394,7 @@ your app.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3411,7 +3442,7 @@ your app.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -3454,7 +3485,7 @@ your app.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3482,7 +3513,7 @@ your app.
                 >
                   An arbitrary string that your app provided as 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     state
@@ -3491,7 +3522,7 @@ your app.
 credential. Used to verify that the response was from the request you made. Can be used to
 avoid replay attacks. If you did not provide 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     state
@@ -3499,7 +3530,7 @@ avoid replay attacks. If you did not provide
                    when making the sign-in request, this field
 will be 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
@@ -3526,7 +3557,7 @@ will be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 string
@@ -3616,7 +3647,7 @@ developers.
         An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
           data-text="true"
         >
           null
@@ -3631,7 +3662,7 @@ may be
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -3640,17 +3671,17 @@ may be
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Property
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -3674,7 +3705,7 @@ may be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3717,7 +3748,7 @@ may be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3760,7 +3791,7 @@ may be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3803,7 +3834,7 @@ may be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3846,7 +3877,7 @@ may be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3889,7 +3920,7 @@ may be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <span>
@@ -3976,12 +4007,12 @@ may be
       data-text="true"
     >
       <span
-        class="text-tertiary text-xs font-medium"
+        class="text-tertiary text-sm font-medium"
       >
         Literal Type: 
       </span>
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
         data-text="true"
       >
         string
@@ -4027,7 +4058,7 @@ may be
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -4056,13 +4087,13 @@ for more details.
       </blockquote>
     </div>
     <p
-      class="tracking-[-0.006rem] text-tertiary text-xs font-medium mx-4 mb-2.5 [table_&]:last:mb-0"
+      class="tracking-[-0.006rem] text-tertiary text-sm font-medium mx-4 mb-2.5 [table_&]:last:mb-0"
       data-text="true"
     >
       Acceptable values are:
        
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
         data-text="true"
       >
         'default'
@@ -4073,7 +4104,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
         data-text="true"
       >
         'short'
@@ -4084,7 +4115,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
         data-text="true"
       >
         'medium'
@@ -4095,7 +4126,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
         data-text="true"
       >
         'long'
@@ -4106,7 +4137,7 @@ for more details.
          | 
       </span>
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
         data-text="true"
       >
         'abbreviated'
@@ -4178,7 +4209,7 @@ for more details.
           href="#appleauthenticationrefreshasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.refreshAsync()
@@ -4218,7 +4249,7 @@ You must include the ID string of the user whose credentials you'd like to refre
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -4253,7 +4284,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4262,17 +4293,17 @@ for more details.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Property
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -4292,7 +4323,7 @@ for more details.
                 requestedScopes
               </span>
               <span
-                class="text-3xs! text-tertiary flex"
+                class="text-tertiary flex text-xs!"
               >
                 (optional)
               </span>
@@ -4301,7 +4332,7 @@ for more details.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -4327,7 +4358,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
@@ -4336,14 +4367,14 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
                   </code>
                   . Defaults to 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     []
@@ -4366,7 +4397,7 @@ requests they will be
                 state
               </span>
               <span
-                class="text-3xs! text-tertiary flex"
+                class="text-tertiary flex text-xs!"
               >
                 (optional)
               </span>
@@ -4375,7 +4406,7 @@ requests they will be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 string
@@ -4425,7 +4456,7 @@ OAuth 2.0 protocol
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 string
@@ -4510,7 +4541,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signInAsync()
@@ -4550,7 +4581,7 @@ None of these options are required.
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -4585,7 +4616,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4594,17 +4625,17 @@ for more details.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Property
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -4624,7 +4655,7 @@ for more details.
                 nonce
               </span>
               <span
-                class="text-3xs! text-tertiary flex"
+                class="text-tertiary flex text-xs!"
               >
                 (optional)
               </span>
@@ -4633,7 +4664,7 @@ for more details.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 string
@@ -4677,7 +4708,7 @@ for more details.
                 requestedScopes
               </span>
               <span
-                class="text-3xs! text-tertiary flex"
+                class="text-tertiary flex text-xs!"
               >
                 (optional)
               </span>
@@ -4686,7 +4717,7 @@ for more details.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -4712,7 +4743,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
@@ -4721,14 +4752,14 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     null
                   </code>
                   . Defaults to 
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     []
@@ -4751,7 +4782,7 @@ requests they will be
                 state
               </span>
               <span
-                class="text-3xs! text-tertiary flex"
+                class="text-tertiary flex text-xs!"
               >
                 (optional)
               </span>
@@ -4760,7 +4791,7 @@ requests they will be
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 string
@@ -4862,7 +4893,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationsignoutasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signOutAsync()
@@ -4902,7 +4933,7 @@ You must include the ID string of the user to sign out.
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -4937,7 +4968,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4946,17 +4977,17 @@ for more details.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Property
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -4976,7 +5007,7 @@ for more details.
                 state
               </span>
               <span
-                class="text-3xs! text-tertiary flex"
+                class="text-tertiary flex text-xs!"
               >
                 (optional)
               </span>
@@ -4985,7 +5016,7 @@ for more details.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 string
@@ -5035,7 +5066,7 @@ OAuth 2.0 protocol
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 string
@@ -5160,7 +5191,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationbutton"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthenticationButton
@@ -5222,7 +5253,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE ＝ 0
@@ -5291,7 +5322,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
@@ -5360,7 +5391,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.BLACK ＝ 2
@@ -5442,7 +5473,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationbutton"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthenticationButton
@@ -5504,7 +5535,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
@@ -5573,7 +5604,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationButtonType.CONTINUE ＝ 1
@@ -5669,7 +5700,7 @@ OAuth 2.0 protocol
                 </g>
               </svg>
               <span
-                class="text-3xs! leading-none! font-normal whitespace-nowrap"
+                class="text-xs! leading-none! font-normal whitespace-nowrap"
               >
                 iOS 13.2+
               </span>
@@ -5678,7 +5709,7 @@ OAuth 2.0 protocol
         </div>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
@@ -5760,7 +5791,7 @@ OAuth 2.0 protocol
           href="#appleauthenticationgetcredentialstateasyncuser"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.getCredentialStateAsync()
@@ -5799,7 +5830,7 @@ OAuth 2.0 protocol
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -5880,7 +5911,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationCredentialState.REVOKED ＝ 0
@@ -5942,7 +5973,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationCredentialState.AUTHORIZED ＝ 1
@@ -6004,7 +6035,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationCredentialState.NOT_FOUND ＝ 2
@@ -6066,7 +6097,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationCredentialState.TRANSFERRED ＝ 3
@@ -6184,7 +6215,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationOperation.IMPLICIT ＝ 0
@@ -6253,7 +6284,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGIN ＝ 1
@@ -6315,7 +6346,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationOperation.REFRESH ＝ 2
@@ -6377,7 +6408,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGOUT ＝ 3
@@ -6452,7 +6483,7 @@ for more details.
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             AppleAuthentication.signInAsync()
@@ -6493,7 +6524,7 @@ for more details.
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           
 
@@ -6539,7 +6570,7 @@ You will still need to handle null values for any fields you request.
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -6620,7 +6651,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationScope.FULL_NAME ＝ 0
@@ -6682,7 +6713,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationScope.EMAIL ＝ 1
@@ -6784,7 +6815,7 @@ for more details.
           </g>
         </svg>
         <div
-          class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+          class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
         >
           <p
             class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
@@ -6865,7 +6896,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
@@ -6934,7 +6965,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
@@ -7003,7 +7034,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
@@ -7153,13 +7184,13 @@ exports[`APISection expo-pedometer 1`] = `
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -7267,7 +7298,7 @@ exports[`APISection expo-pedometer 1`] = `
               </g>
             </svg>
             <span
-              class="text-3xs! leading-none! font-normal whitespace-nowrap"
+              class="text-xs! leading-none! font-normal whitespace-nowrap"
             >
               iOS
             </span>
@@ -7279,7 +7310,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -7288,17 +7319,17 @@ exports[`APISection expo-pedometer 1`] = `
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -7323,7 +7354,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -7369,7 +7400,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -7437,13 +7468,13 @@ exports[`APISection expo-pedometer 1`] = `
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -7490,7 +7521,7 @@ exports[`APISection expo-pedometer 1`] = `
               href="#pedometerresult"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 PedometerResult
@@ -7548,7 +7579,7 @@ exports[`APISection expo-pedometer 1`] = `
               </g>
             </svg>
             <div
-              class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+              class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
             >
               
 
@@ -7655,13 +7686,13 @@ a start date that is more than seven days in the past returns only the available
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -7699,7 +7730,7 @@ a start date that is more than seven days in the past returns only the available
           >
             Returns a promise that fulfills with a 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               boolean
@@ -7799,13 +7830,13 @@ available on this device.
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           <a
@@ -7889,7 +7920,7 @@ available on this device.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -7898,17 +7929,17 @@ available on this device.
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -7933,7 +7964,7 @@ available on this device.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 <a
@@ -7961,7 +7992,7 @@ provided with a single argument that is
                     href="#pedometerresult"
                   >
                     <code
-                      class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                      class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                       data-text="true"
                     >
                       PedometerResult
@@ -8012,13 +8043,13 @@ provided with a single argument that is
             </g>
           </svg>
           <span
-            class="text-tertiary text-xs font-medium"
+            class="text-tertiary text-sm font-medium"
           >
             Returns:
           </span>
         </div>
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           EventSubscription
@@ -8040,7 +8071,7 @@ provided with a single argument that is
               href="#subscription"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                 data-text="true"
               >
                 Subscription
@@ -8049,7 +8080,7 @@ provided with a single argument that is
              that enables you to call
 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
               data-text="true"
             >
               remove()
@@ -8089,7 +8120,7 @@ provided with a single argument that is
               </g>
             </svg>
             <div
-              class="text-default w-full last:mb-0 text-xs [&_code]:text-[90%] [&_p]:text-xs"
+              class="text-default w-full last:mb-0 text-sm [&_code]:text-[90%] [&_p]:text-sm"
             >
               
 
@@ -8106,7 +8137,7 @@ provided with a single argument that is
                   target="_blank"
                 >
                   <code
-                    class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                    class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                     data-text="true"
                   >
                     Health Connect API
@@ -8115,7 +8146,7 @@ provided with a single argument that is
                 .
 On iOS, the 
                 <code
-                  class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+                  class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
                   data-text="true"
                 >
                   getStepCountAsync
@@ -8233,7 +8264,7 @@ On iOS, the
       </p>
     </div>
     <p
-      class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-2xs text-tertiary flex border-y px-4 py-2 font-medium"
+      class="tracking-[-0.006rem] border-palette-gray4 bg-subtle text-tertiary flex border-y px-4 py-2 text-xs font-medium"
       data-text="true"
     >
       <span
@@ -8243,7 +8274,7 @@ On iOS, the
       >
         Subscription Methods
         <a
-          class="border border-solid rounded-full whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] text-2xs text-tertiary flex flex-row items-center gap-2 font-medium"
+          class="border border-solid rounded-full whitespace-nowrap border-button-quaternary bg-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] text-tertiary flex flex-row items-center gap-2 text-xs font-medium"
           href="#subscription-methods"
         >
           <span
@@ -8366,13 +8397,13 @@ After calling this function, the listener will no longer receive any events from
               </g>
             </svg>
             <span
-              class="text-tertiary text-xs font-medium"
+              class="text-tertiary text-sm font-medium"
             >
               Returns:
             </span>
           </div>
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
             data-text="true"
           >
             void
@@ -8483,7 +8514,7 @@ After calling this function, the listener will no longer receive any events from
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -8492,17 +8523,17 @@ After calling this function, the listener will no longer receive any events from
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Property
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -8526,7 +8557,7 @@ After calling this function, the listener will no longer receive any events from
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 number
@@ -8621,7 +8652,7 @@ After calling this function, the listener will no longer receive any events from
         class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
       >
         <table
-          class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+          class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
           <thead
             class="border-b-default bg-subtle border-b"
@@ -8630,12 +8661,12 @@ After calling this function, the listener will no longer receive any events from
               class="even:bg-subtle"
             >
               <th
-                class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+                class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
               >
                 Parameter
               </th>
               <th
-                class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+                class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
               >
                 Type
               </th>
@@ -8660,7 +8691,7 @@ After calling this function, the listener will no longer receive any events from
                 class="border-secondary border-r p-4 text-left last:border-r-0"
               >
                 <code
-                  class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                  class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                   data-text="true"
                 >
                   <a
@@ -8702,7 +8733,7 @@ After calling this function, the listener will no longer receive any events from
           </g>
         </svg>
         <span
-          class="text-tertiary text-xs font-medium"
+          class="text-tertiary text-sm font-medium"
         >
           Returns:
         </span>
@@ -8712,7 +8743,7 @@ After calling this function, the listener will no longer receive any events from
         data-text="true"
       >
         <code
-          class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+          class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
           data-text="true"
         >
           void
@@ -8777,12 +8808,12 @@ After calling this function, the listener will no longer receive any events from
       data-text="true"
     >
       <span
-        class="text-tertiary text-xs font-medium"
+        class="text-tertiary text-sm font-medium"
       >
         Literal Type: 
       </span>
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
         data-text="true"
       >
         union
@@ -8799,13 +8830,13 @@ After calling this function, the listener will no longer receive any events from
       </p>
     </div>
     <p
-      class="tracking-[-0.006rem] text-tertiary text-xs font-medium mx-4 mb-2.5 [table_&]:last:mb-0"
+      class="tracking-[-0.006rem] text-tertiary text-sm font-medium mx-4 mb-2.5 [table_&]:last:mb-0"
       data-text="true"
     >
       Acceptable values are:
        
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
         data-text="true"
       >
         'never'
@@ -8816,7 +8847,7 @@ After calling this function, the listener will no longer receive any events from
          | 
       </span>
       <code
-        class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
+        class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 mb-px"
         data-text="true"
       >
         number
@@ -8892,7 +8923,7 @@ After calling this function, the listener will no longer receive any events from
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_span]:text-xs [&_code_span]:text-inherit [&_strong]:text-xs [&_blockquote_div]:text-xs [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -8901,17 +8932,17 @@ After calling this function, the listener will no longer receive any events from
             class="even:bg-subtle"
           >
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Property
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Type
             </th>
             <th
-              class="border-secondary text-secondary border-r px-4 font-medium text-left text-3xs py-2 [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
+              class="border-secondary text-secondary border-r px-4 font-medium text-left py-2 text-xs [&_code]:text-secondary [&_code]:text-xs last:border-r-0"
             >
               Description
             </th>
@@ -8935,7 +8966,7 @@ After calling this function, the listener will no longer receive any events from
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 boolean
@@ -8975,7 +9006,7 @@ in order to enable/disable the permission.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 PermissionExpiration
@@ -9013,7 +9044,7 @@ in order to enable/disable the permission.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 boolean
@@ -9051,7 +9082,7 @@ in order to enable/disable the permission.
               class="border-secondary border-r p-4 text-left last:border-r-0"
             >
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5 [&>span]:text-inherit!"
                 data-text="true"
               >
                 PermissionStatus
@@ -9224,7 +9255,7 @@ in order to enable/disable the permission.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -9293,7 +9324,7 @@ in order to enable/disable the permission.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -9362,7 +9393,7 @@ in order to enable/disable the permission.
         </h4>
       </div>
       <code
-        class="text-2xs text-tertiary mb-2 inline-flex wrap-anywhere"
+        class="text-tertiary mb-2 inline-flex text-xs wrap-anywhere"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"

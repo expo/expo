@@ -305,7 +305,7 @@ struct JavaScriptFunctionTests {
     try runtime.eval("globalThis.checkArgs = function(a, b) { return [a === null, b === undefined]; };")
 
     let fn = runtime.global().getPropertyAsFunction("checkArgs")
-    let result = try fn.call(arguments: JavaScriptValue.null(), JavaScriptValue.undefined())
+    let result = try fn.call(arguments: JavaScriptValue.null, JavaScriptValue.undefined)
     let array = result.getArray()
 
     #expect(try array.getValue(at: 0).getBool() == true)

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `expo-splash-screen` plugin config type and remove legacy `splash` properties from fingerprint sources. ([#44598](https://github.com/expo/expo/pull/44598) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
 
 ## 0.16.5 — 2026-02-25

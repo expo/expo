@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
 import NotificationScheduler from './NotificationScheduler';
-import { SchedulableNotificationTriggerInput } from './Notifications.types';
+import type { SchedulableNotificationTriggerInput } from './Notifications.types';
 import { parseTrigger } from './scheduleNotificationAsync';
 
 /**

@@ -227,7 +227,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/routing/installation/': '/router/installation/',
   '/routing/create-pages/': '/router/create-pages/',
   '/routing/navigating-pages/': '/router/navigating-pages/',
-  '/routing/layouts/': '/router/basics/layout/',
+  '/routing/layouts/': '/router/basics/navigation-layouts/',
   '/routing/appearance/': '/router/introduction/',
   '/routing/error-handling/': '/router/error-handling/',
 
@@ -379,7 +379,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/continuous-deployment/': '/eas/workflows/examples/',
 
   // Expo Router Advanced guides
-  '/router/advance/root-layout': '/router/basics/layout/#root-layout',
+  '/router/advance/root-layout': '/router/basics/navigation-layouts/#root-layout',
   '/router/advance/stack': '/router/advanced/stack/',
   '/router/advance/tabs': '/router/advanced/tabs/',
   '/router/advance/native-tabs': '/router/advanced/native-tabs/',
@@ -512,11 +512,12 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After Expo Router Getting Started Guide
   '/router/reference/authentication/': '/router/advanced/authentication/',
-  '/router/advanced/root-layout/': '/router/basics/layout/#root-layout/',
+  '/router/advanced/root-layout/': '/router/basics/navigation-layouts/#root-layout/',
   '/router/reference/not-found/': '/router/error-handling/',
   '/router/navigating-pages/': '/router/basics/navigation/',
   '/router/create-pages/': '/router/basics/core-concepts/',
-  '/router/layouts/': '/router/basics/layout/',
+  '/router/layouts/': '/router/basics/navigation-layouts/',
+  '/router/basics/layout/': '/router/basics/navigation-layouts/',
 
   // After updating config plugin section
   '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',

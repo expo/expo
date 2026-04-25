@@ -27,7 +27,7 @@ export declare class StackView extends React.Component<Props, State> {
         closingRouteKeys?: undefined;
         replacingRouteKeys?: undefined;
     } | {
-        routes: import("../../../native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../../../core").NavigationRoute<ParamListBase, string>[];
         previousState: StackNavigationState<ParamListBase>;
         previousDescriptors: StackDescriptorMap;
         openingRouteKeys: string[];
@@ -45,7 +45,7 @@ export declare class StackView extends React.Component<Props, State> {
     private handleGestureStart;
     private handleGestureEnd;
     private handleGestureCancel;
-    render(): React.JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export {};
 //# sourceMappingURL=StackView.d.ts.map

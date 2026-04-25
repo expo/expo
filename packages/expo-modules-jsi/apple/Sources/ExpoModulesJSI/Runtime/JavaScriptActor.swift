@@ -73,7 +73,10 @@ internal class JavaScriptExecutor: SerialExecutor, @unchecked Sendable {
    Stops program execution if the executor is not isolating the current context.
    */
   func checkIsolated() {
-    precondition(isIsolatingCurrentContext() == true, "JavaScriptActor operations must be run on the JavaScript thread")
+    // Using `assert` instead of `precondition` because this check is a heuristic based on
+    // thread name, not a precise isolation guarantee. Worklet runtimes legitimately run on
+    // the UI thread, which would cause a false-positive crash with `precondition`.
+    assert(isIsolatingCurrentContext() == true, "JavaScriptActor operations must be run on the JavaScript thread")
   }
 
   /**

@@ -1,7 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
-import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
+import { CodeChallengeMethod, ResponseType } from './AuthRequest.types';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';

@@ -1,6 +1,6 @@
-import { DevServerManager } from './DevServerManager';
+import type { DevServerManager } from './DevServerManager';
 import { AbortCommandError } from '../../utils/errors';
-import { Options } from '../resolveOptions';
+import type { Options } from '../resolveOptions';
 
 /** Launch the app on various platforms in parallel. */
 export async function openPlatformsAsync(

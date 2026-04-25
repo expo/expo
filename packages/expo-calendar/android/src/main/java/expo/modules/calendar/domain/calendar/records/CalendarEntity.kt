@@ -6,10 +6,12 @@ import expo.modules.calendar.domain.event.enums.AlarmMethod
 import expo.modules.calendar.domain.event.enums.Availability
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
 /**
  * Calendar info that is returned to JS
  */
+@OptimizedRecord
 data class CalendarEntity(
   @Field val id: String?,
   @Field val title: String?,

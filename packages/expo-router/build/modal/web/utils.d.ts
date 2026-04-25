@@ -1,5 +1,5 @@
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
-import { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 /**
  * A minimal subset of `ExtendedStackNavigationOptions` needed for the helper
  * @internal
@@ -43,7 +43,7 @@ export declare function useIsDesktop(breakpoint?: number): boolean;
 export declare function convertStackStateToNonModalState(state: StackNavigationState<ParamListBase>, descriptors: Record<string, {
     options: ExtendedStackNavigationOptions;
 }>, isWeb: boolean): {
-    routes: import("../../react-navigation/native").NavigationRoute<ParamListBase, string>[];
+    routes: import("../../react-navigation/core").NavigationRoute<ParamListBase, string>[];
     index: number;
 };
 /**

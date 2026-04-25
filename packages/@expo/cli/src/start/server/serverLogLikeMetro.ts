@@ -11,7 +11,8 @@ import path from 'path';
 import { mapSourcePosition } from 'source-map-support';
 import * as stackTraceParser from 'stacktrace-parser';
 
-import { parseErrorStack, StackFrame } from './metro/log-box/LogBoxSymbolication';
+import type { StackFrame } from './metro/log-box/LogBoxSymbolication';
+import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
 import { env } from '../../utils/env';
 import { memoize } from '../../utils/fn';
 import { LogBoxLog } from './metro/log-box/LogBoxLog';

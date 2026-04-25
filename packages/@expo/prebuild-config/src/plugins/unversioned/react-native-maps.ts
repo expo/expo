@@ -1,4 +1,5 @@
-import { AndroidConfig, ConfigPlugin, IOSConfig, withInfoPlist } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { AndroidConfig, IOSConfig, withInfoPlist } from '@expo/config-plugins';
 import resolveFrom from 'resolve-from';
 
 import { createLegacyPlugin } from './createLegacyPlugin';

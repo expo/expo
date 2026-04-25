@@ -1,9 +1,11 @@
-import { getPackageJson, PackageJSONConfig } from '@expo/config';
+import type { PackageJSONConfig } from '@expo/config';
+import { getPackageJson } from '@expo/config';
 import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { intersects as semverIntersects, Range as SemverRange } from 'semver';
+import type { Range as SemverRange } from 'semver';
+import { intersects as semverIntersects } from 'semver';
 
 import * as Log from '../log';
 import { isModuleSymlinked } from '../utils/isModuleSymlinked';

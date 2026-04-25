@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import * as React from 'react';
@@ -114,7 +115,7 @@ export class GLView extends React.Component {
         const { onContextCreate, onContextRestored, onContextLost, webglContextAttributes, msaaSamples, nativeRef_EXPERIMENTAL, 
         // @ts-ignore: ref does not exist
         ref, ...domProps } = this.props;
-        return <Canvas {...domProps} canvasRef={this.setCanvasRef}/>;
+        return _jsx(Canvas, { ...domProps, canvasRef: this.setCanvasRef });
     }
     componentDidUpdate(prevProps) {
         const { webglContextAttributes } = this.props;

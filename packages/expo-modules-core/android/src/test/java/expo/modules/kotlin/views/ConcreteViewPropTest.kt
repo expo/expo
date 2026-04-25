@@ -9,6 +9,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.toAnyType
 import io.mockk.mockk
 import org.junit.Test
+import expo.modules.kotlin.types.OptimizedRecord
 
 class ConcreteViewPropTest {
   @Test
@@ -30,6 +31,7 @@ class ConcreteViewPropTest {
 
   @Test
   fun `should be able to convert records`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       lateinit var id: String

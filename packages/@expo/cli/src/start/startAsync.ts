@@ -1,18 +1,21 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { shouldReduceLogs } from '../events';
+import { getLogFile, shouldReduceLogs } from '../events';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
-import { Options, resolvePortsAsync } from './resolveOptions';
+import type { Options } from './resolveOptions';
+import { resolvePortsAsync } from './resolveOptions';
 import * as Log from '../log';
-import { BundlerStartOptions } from './server/BundlerDevServer';
-import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
+import type { BundlerStartOptions } from './server/BundlerDevServer';
+import type { MultiBundlerStartOptions } from './server/DevServerManager';
+import { DevServerManager } from './server/DevServerManager';
 import { openPlatformsAsync } from './server/openPlatforms';
-import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
+import type { PlatformBundlers } from './server/platformBundlers';
+import { getPlatformBundlers } from './server/platformBundlers';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
@@ -70,6 +73,10 @@ export async function startAsync(
 ) {
   if (!shouldReduceLogs()) {
     Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+    const logFile = getLogFile();
+    if (!isInteractive() && logFile) {
+      Log.log(chalk.gray(`Logs: ${logFile}`));
+    }
   }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);

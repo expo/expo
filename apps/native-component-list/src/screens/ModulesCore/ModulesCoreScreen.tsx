@@ -25,7 +25,7 @@ if (!isRunningInExpoGo()) {
     name: 'Benchmarks',
     route: 'modulescore/benchmarks',
     getComponent() {
-      return optionalRequire(() => require('./ModulesBenchmarksScreen'));
+      return optionalRequire(() => require('./Benchmarks/ModulesBenchmarksScreen'));
     },
   });
 }

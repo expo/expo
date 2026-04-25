@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { ExpoModifier } from '../../types';
+import type { ExpoModifier } from '../../types';
 type ShapeType = 'star' | 'pillStar' | 'pill' | 'circle' | 'rectangle' | 'polygon' | 'roundedCorner';
 /**
  * Corner radii for RoundedCorner shape.

@@ -3,8 +3,8 @@ package expo.modules.filesystem
 import android.content.ContentResolver
 import android.net.Uri
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.Enumerable
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -13,7 +13,7 @@ import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import kotlin.math.min
 
-enum class FileMode(val descriptor: String) : Record {
+enum class FileMode(val descriptor: String) : Enumerable {
   /** Read-only */
   READ("r"),
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { OnErrorEvent } from './ImageWrapper.types';
-import { ImageNativeProps, ImageSource } from '../Image.types';
+import type { OnErrorEvent } from './ImageWrapper.types';
+import type { ImageNativeProps, ImageSource } from '../Image.types';
 import { useBlurhash } from '../utils/blurhash/useBlurhash';
 import { isThumbhashString } from '../utils/resolveSources';
 import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';

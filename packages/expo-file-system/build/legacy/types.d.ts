@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo-modules-core';
-import { DownloadProgressData, ProgressEvent, UploadProgressData } from './FileSystem.types';
+import type { DownloadProgressData, ProgressEvent, UploadProgressData } from './FileSystem.types';
 type PlatformMethod = (...args: any[]) => Promise<any>;
 /**
  * @hidden

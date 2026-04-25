@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import { vol } from 'memfs';
 import { parseMultipart } from 'multitars';
 
@@ -13,9 +13,9 @@ import {
   ExpoGoManifestHandlerMiddleware,
   ResponseContentType,
 } from '../ExpoGoManifestHandlerMiddleware';
-import { ManifestMiddlewareOptions } from '../ManifestMiddleware';
+import type { ManifestMiddlewareOptions } from '../ManifestMiddleware';
 import { resolveRuntimeVersionWithExpoUpdatesAsync } from '../resolveRuntimeVersionWithExpoUpdatesAsync';
-import { ServerRequest } from '../server.types';
+import type { ServerRequest } from '../server.types';
 
 jest.mock('../../../../api/user/user');
 jest.mock('../../../../log');

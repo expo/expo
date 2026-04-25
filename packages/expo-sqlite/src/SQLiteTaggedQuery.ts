@@ -1,5 +1,5 @@
-import { SQLiteBindValue, SQLiteRunResult } from './NativeStatement';
-import { SQLiteDatabase } from './SQLiteDatabase';
+import type { SQLiteBindValue, SQLiteRunResult } from './NativeStatement';
+import type { SQLiteDatabase } from './SQLiteDatabase';
 import { parseSQLQuery, type SQLParsedInfo } from './queryUtils';
 
 /**

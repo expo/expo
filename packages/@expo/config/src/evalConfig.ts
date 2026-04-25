@@ -1,6 +1,6 @@
 import { loadModuleSync } from '@expo/require-utils';
 
-import { AppJSONConfig, ConfigContext, ExpoConfig } from './Config.types';
+import type { AppJSONConfig, ConfigContext, ExpoConfig } from './Config.types';
 import { ConfigError } from './Errors';
 import { serializeSkippingMods } from './Serialize';
 import { NON_STANDARD_SYMBOL } from './environment';

@@ -19,7 +19,8 @@ import { LoaderCache, LoaderCacheContext } from '../loaders/LoaderCache';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { fetchLoader } from '../loaders/utils';
 import { renderRouter } from '../testing-library';
-import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
+import type { MemoryContext } from '../testing-library/context-stubs';
+import { inMemoryContext } from '../testing-library/context-stubs';
 
 jest.mock('../loaders/utils', () => ({
   fetchLoader: jest.fn(),

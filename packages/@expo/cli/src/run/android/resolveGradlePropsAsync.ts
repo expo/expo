@@ -1,6 +1,7 @@
 import path from 'path';
 
-import { Device, getDeviceABIsAsync } from '../../start/platforms/android/adb';
+import type { Device } from '../../start/platforms/android/adb';
+import { getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
 
 // Supported ABIs for Android. see https://developer.android.com/ndk/guides/abis

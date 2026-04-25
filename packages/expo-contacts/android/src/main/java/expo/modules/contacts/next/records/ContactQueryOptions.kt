@@ -4,7 +4,9 @@ import android.provider.ContactsContract
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class ContactQueryOptions : Record {
   @Field val limit: Int? = null
 

@@ -6,7 +6,7 @@ import path from 'path';
 import semver from 'semver';
 
 import { env } from './env';
-import { Options, SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
+import type { Options, SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
 
 const SHARP_HELP_PATTERN = /\n\nSpecify --help for available options/g;
 const SHARP_REQUIRED_VERSION = '^5.2.0';

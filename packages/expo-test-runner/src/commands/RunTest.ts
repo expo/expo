@@ -1,10 +1,11 @@
 import chalk from 'chalk';
-import { CommanderStatic } from 'commander';
+import type { CommanderStatic } from 'commander';
 import fs from 'fs';
 
-import { Application, Config } from '../Config';
+import type { Application, Config } from '../Config';
 import TemplateProject from '../TemplateProject';
-import { DefaultOptions, registerCommand } from '../registerCommand';
+import type { DefaultOptions } from '../registerCommand';
+import { registerCommand } from '../registerCommand';
 
 interface RunTestOptions extends DefaultOptions {
   test: string;

@@ -1,4 +1,5 @@
-import Ajv, { ErrorObject, Options } from 'ajv';
+import type { ErrorObject, Options } from 'ajv';
+import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import fs from 'fs';
 import traverse from 'json-schema-traverse';
@@ -29,7 +30,8 @@ type SchemerOptions = Options & {
 
 type AssetField = { fieldPath: string; data: string; meta: Meta };
 
-export { SchemerError, ValidationError, ErrorCodes, ErrorCode } from './Error';
+export { SchemerError, ValidationError, ErrorCodes, type ErrorCode } from './Error';
+
 export default class Schemer {
   options: SchemerOptions;
   ajv: Ajv;

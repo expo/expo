@@ -11,7 +11,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.ValueOrUndefined
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class PatchContactRecord(
   @Field val isFavourite: ValueOrUndefined<Boolean> = ValueOrUndefined.Undefined(),
   @Field val givenName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),

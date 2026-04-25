@@ -8,9 +8,14 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { animation } from './animation/index';
 import { background } from './background';
+import { containerBackground } from './containerBackground';
 import { containerShape } from './containerShape';
 import { contentShape } from './contentShape';
-import { createModifier, createModifierWithEventListener, ModifierConfig } from './createModifier';
+import {
+  createModifier,
+  createModifierWithEventListener,
+  type ModifierConfig,
+} from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
@@ -213,7 +218,13 @@ export const opacity = (value: number) => createModifier('opacity', { value });
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
 export const clipShape = (
-  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
+  shape:
+    | 'rectangle'
+    | 'circle'
+    | 'capsule'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape',
   cornerRadius?: number
 ) => createModifier('clipShape', { shape, cornerRadius });
 
@@ -693,7 +704,13 @@ export const layoutPriority = (priority: number) => createModifier('layoutPriori
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
 export const mask = (
-  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
+  shape:
+    | 'rectangle'
+    | 'circle'
+    | 'capsule'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape',
   cornerRadius?: number
 ) => createModifier('mask', { shape, cornerRadius });
 
@@ -742,7 +759,13 @@ export const glassEffect = (params?: {
     interactive?: boolean;
     tint?: Color;
   };
-  shape?: 'circle' | 'capsule' | 'rectangle' | 'ellipse' | 'roundedRectangle';
+  shape?:
+    | 'circle'
+    | 'capsule'
+    | 'rectangle'
+    | 'ellipse'
+    | 'roundedRectangle'
+    | 'containerRelativeShape';
   cornerRadius?: number;
 }) => createModifier('glassEffect', params);
 
@@ -1385,7 +1408,8 @@ export type BuiltInModifier =
   | ReturnType<typeof contentTransition>
   | ReturnType<typeof resizable>
   | ReturnType<typeof widgetAccentedRenderingMode>
-  | ReturnType<typeof widgetURL>;
+  | ReturnType<typeof widgetURL>
+  | ReturnType<typeof containerBackground>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1418,6 +1442,7 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 };
 
 export * from './animation/index';
+export * from './containerBackground';
 export * from './containerShape';
 export * from './contentShape';
 export * from './shapes/index';
@@ -1425,6 +1450,7 @@ export * from './background';
 export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
+export * from './tabViewModifiers';
 export * from './datePickerStyle';
 export * from './progressViewStyle';
 export * from './gaugeStyle';

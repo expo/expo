@@ -93,6 +93,7 @@
             "description": "Supported platform versions",
             "enum": [
                 "iOS(.v15)",
+                "iOS(.v16)",
                 "macOS(.v11)",
                 "tvOS(.v15)",
                 "macCatalyst(.v15)",

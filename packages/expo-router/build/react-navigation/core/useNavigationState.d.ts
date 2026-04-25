@@ -10,6 +10,6 @@ export declare function useNavigationState<ParamList extends ParamListBase, T>(s
 export declare function NavigationStateListenerProvider({ state, children, }: {
     state: NavigationState<ParamListBase>;
     children: React.ReactNode;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=useNavigationState.d.ts.map

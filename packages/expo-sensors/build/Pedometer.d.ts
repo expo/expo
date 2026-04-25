@@ -1,4 +1,4 @@
-import { PermissionExpiration, PermissionResponse, PermissionStatus, type EventSubscription } from 'expo-modules-core';
+import { type PermissionResponse, type EventSubscription } from 'expo-modules-core';
 export type PedometerResult = {
     /**
      * Number of steps taken between the given dates.
@@ -47,5 +47,5 @@ export declare function getPermissionsAsync(): Promise<PermissionResponse>;
  * Asks the user to grant permissions for accessing pedometer.
  */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
-export { EventSubscription as Subscription, PermissionResponse, PermissionStatus, PermissionExpiration, };
+export { type EventSubscription as Subscription, type PermissionResponse, PermissionStatus, type PermissionExpiration, } from 'expo-modules-core';
 //# sourceMappingURL=Pedometer.d.ts.map

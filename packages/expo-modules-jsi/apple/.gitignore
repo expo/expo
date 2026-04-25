@@ -2,3 +2,9 @@
 .build
 .DerivedData
 .swiftpm
+
+# Staged slices for incremental xcframework builds
+.xcframework-slices
+
+# Built xcframework output
+Products

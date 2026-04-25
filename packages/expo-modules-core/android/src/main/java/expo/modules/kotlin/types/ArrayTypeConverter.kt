@@ -64,8 +64,10 @@ class ArrayTypeConverter(
    */
   @Suppress("UNCHECKED_CAST")
   private fun createTypedArray(size: Int): Array<Any?> {
+    val parameterType = arrayType.params.first().jClass
+    val boxedType = parameterType.toBoxedIfPrimitive()
     return java.lang.reflect.Array.newInstance(
-      (arrayType.params.first().kClass).java,
+      boxedType,
       size
     ) as Array<Any?>
   }
@@ -77,7 +79,7 @@ class ArrayTypeConverter(
 }
 
 internal fun isPrimitiveArray(typeDescriptor: TypeDescriptor): Boolean {
-  return when (typeDescriptor.kClass.java) {
+  return when (typeDescriptor.jClass) {
     BooleanArray::class.java,
     ByteArray::class.java,
     CharArray::class.java,

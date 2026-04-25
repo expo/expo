@@ -3,7 +3,9 @@ package expo.modules.calendar.next.records
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class AttendeeRecord(
   @Field
   var id: String? = null,
@@ -24,13 +26,7 @@ enum class AttendeeRole(val value: String) : Enumerable {
   ORGANIZER("organizer"),
   PERFORMER("performer"),
   SPEAKER("speaker"),
-  NONE("none");
-
-  companion object {
-    fun fromAndroidValue(value: Int): AttendeeRole? = entries.find {
-      it.value == expo.modules.calendar.domain.attendee.enums.AttendeeRole.fromContentProviderValue(value).value
-    }
-  }
+  NONE("none")
 }
 
 enum class AttendeeStatus(val value: String) : Enumerable {
@@ -38,33 +34,12 @@ enum class AttendeeStatus(val value: String) : Enumerable {
   DECLINED("declined"),
   INVITED("invited"),
   TENTATIVE("tentative"),
-  NONE("none");
-
-  companion object {
-    fun fromAndroidValue(value: Int): AttendeeStatus? = entries.find {
-      it.value == expo.modules.calendar.domain.attendee.enums.AttendeeStatus.fromContentProviderValue(value).value
-    }
-  }
+  NONE("none")
 }
 
 enum class AttendeeType(val value: String) : Enumerable {
   RESOURCE("resource"),
   OPTIONAL("optional"),
   REQUIRED("required"),
-  NONE("none");
-
-  companion object {
-    fun fromAndroidValue(value: Int): AttendeeType? = entries.find {
-      it.value == expo.modules.calendar.domain.attendee.enums.AttendeeType.fromContentProviderValue(value).value
-    }
-
-    fun fromAttendeeTypesString(attendeeTypesString: String?): List<AttendeeType> {
-      return attendeeTypesString
-        ?.split(",")
-        ?.filter { it.isNotBlank() }
-        ?.map { attendeeTypeString ->
-          entries.find { it.value == attendeeTypeString } ?: NONE
-        } ?: emptyList()
-    }
-  }
+  NONE("none")
 }

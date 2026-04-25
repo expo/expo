@@ -202,7 +202,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
           role="tab"
           aria-selected={isActive}
           className={mergeClasses(
-            'rounded-md px-2 py-1 text-xs font-semibold transition-colors',
+            'rounded-md px-2 py-1 text-sm font-semibold transition-colors',
             isActive
               ? 'bg-palette-gray6 text-palette-white'
               : 'text-palette-gray9 hocus:bg-palette-gray5'
@@ -220,7 +220,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
 const PackageSelect = ({ managers, activeManager, onSelect, className }: PackageTabsProps) => (
   <Select
     className={mergeClasses(
-      'h-6! min-h-[16px]! min-w-[76px] gap-1! px-2! py-0! text-xs [&_svg]:size-3!',
+      'h-6! min-h-[16px]! min-w-[76px] gap-1! px-2! py-0! text-sm [&_svg]:size-3!',
       className
     )}
     ariaLabel="Select package manager"

@@ -1,4 +1,4 @@
-import { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 /**
  * Create a build source file and link it to Xcode.
  *

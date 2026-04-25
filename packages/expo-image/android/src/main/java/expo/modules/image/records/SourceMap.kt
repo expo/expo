@@ -21,6 +21,7 @@ import expo.modules.image.customize
 import expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
 sealed interface Source {
   val width: Int
@@ -58,6 +59,7 @@ class DecodedSource(
   }
 }
 
+@OptimizedRecord
 data class SourceMap(
   @Field val uri: String? = null,
   @Field override val width: Int = 0,

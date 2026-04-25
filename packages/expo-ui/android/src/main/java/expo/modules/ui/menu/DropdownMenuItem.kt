@@ -3,21 +3,20 @@ package expo.modules.ui.menu
 import android.graphics.Color
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.ComposeProps
+import expo.modules.ui.UIComposableScope
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.composeOrNull
 import expo.modules.ui.findChildSlotView
-import java.io.Serializable
+import expo.modules.kotlin.views.OptimizedComposeProps
 
-class ItemPressedEvent : Record, Serializable
-
+@OptimizedRecord
 class DropdownMenuItemColors : Record {
   @Field val textColor: Color? = null
   @Field val leadingIconColor: Color? = null
@@ -27,6 +26,7 @@ class DropdownMenuItemColors : Record {
   @Field val disabledTrailingIconColor: Color? = null
 }
 
+@OptimizedComposeProps
 data class DropdownMenuItemProps(
   val enabled: Boolean = true,
   val elementColors: DropdownMenuItemColors = DropdownMenuItemColors(),
@@ -36,7 +36,7 @@ data class DropdownMenuItemProps(
 @Composable
 fun FunctionalComposableScope.DropdownMenuItemContent(
   props: DropdownMenuItemProps,
-  onItemPressed: (ItemPressedEvent) -> Unit
+  onItemPressed: () -> Unit
 ) {
   val textSlotView = findChildSlotView(view, "text")
   val leadingSlotView = findChildSlotView(view, "leadingIcon")
@@ -46,7 +46,7 @@ fun FunctionalComposableScope.DropdownMenuItemContent(
   val defaultColors = MenuDefaults.itemColors()
 
   DropdownMenuItem(
-    text = { textSlotView?.let { with(ComposableScope()) { with(it) { Content() } } } ?: Unit },
+    text = { textSlotView?.let { with(UIComposableScope()) { with(it) { Content() } } } ?: Unit },
     enabled = props.enabled,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     colors = MenuDefaults.itemColors(
@@ -58,13 +58,13 @@ fun FunctionalComposableScope.DropdownMenuItemContent(
       disabledTrailingIconColor = colors.disabledTrailingIconColor.composeOrNull ?: defaultColors.disabledTrailingIconColor
     ),
     leadingIcon = leadingSlotView?.let {
-      { with(ComposableScope()) { with(it) { Content() } } }
+      { with(UIComposableScope()) { with(it) { Content() } } }
     },
     trailingIcon = trailingSlotView?.let {
-      { with(ComposableScope()) { with(it) { Content() } } }
+      { with(UIComposableScope()) { with(it) { Content() } } }
     },
     onClick = {
-      onItemPressed(ItemPressedEvent())
+      onItemPressed()
     }
   )
 }

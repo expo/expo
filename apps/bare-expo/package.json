@@ -25,8 +25,7 @@
       "exclude": [
         "expo-ads-facebook",
         "expo-ads-admob",
-        "expo-module-template",
-        "expo-module-template-local"
+        "expo-module-template"
       ],
       "ios": {
         "flags": {
@@ -58,6 +57,7 @@
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.4.18",
     "expo": "workspace:*",
+    "expo-app-metrics": "workspace:*",
     "expo-background-fetch": "workspace:*",
     "expo-brownfield": "workspace:*",
     "expo-build-properties": "workspace:*",
@@ -72,6 +72,7 @@
     "expo-navigation-bar": "workspace:*",
     "expo-network-addons": "workspace:*",
     "expo-notifications": "workspace:*",
+    "expo-observe": "workspace:*",
     "expo-router": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "expo-status-bar": "workspace:*",
@@ -83,7 +84,7 @@
     "native-component-list": "workspace:*",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.0",
+    "react-native": "0.85.2",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-keyboard-controller": "^1.20.7",
     "react-native-pager-view": "6.9.1",
@@ -92,7 +93,7 @@
     "react-native-screens": "4.24.0",
     "react-native-svg": "15.15.4",
     "react-native-view-shot": "4.0.3",
-    "react-native-webview": "13.16.0",
+    "react-native-webview": "13.16.1",
     "react-native-worklets": "0.8.1",
     "test-suite": "workspace:*"
   },

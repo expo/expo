@@ -6,11 +6,7 @@
 
 #include <jsi/jsi.h>
 
-#ifdef __APPLE__
-#include <ExpoModulesJSI/JSIUtils.h>
-#else
 #include "JSIUtils.h"
-#endif
 
 namespace jsi = facebook::jsi;
 

@@ -6,8 +6,10 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.Field
 import expo.modules.video.player.VideoPlayer
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
 @UnstableApi
+@OptimizedRecord
 class ScrubbingModeOptions(
   @Field var scrubbingModeEnabled: Boolean = false,
   @Field var increaseCodecOperatingRate: Boolean = true,

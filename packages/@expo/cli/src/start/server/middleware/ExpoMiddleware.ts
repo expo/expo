@@ -1,6 +1,6 @@
 import { parse } from 'url';
 
-import { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 import * as Log from '../../../log';
 
 /** Base middleware creator for Expo dev servers. */

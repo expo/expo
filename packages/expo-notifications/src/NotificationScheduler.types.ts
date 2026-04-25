@@ -1,6 +1,6 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import type { ProxyNativeModule } from 'expo-modules-core';
 
-import { NotificationRequest, NotificationContentInput } from './Notifications.types';
+import type { NotificationRequest, NotificationContentInput } from './Notifications.types';
 
 export interface NotificationSchedulerModule extends ProxyNativeModule {
   getAllScheduledNotificationsAsync?: () => Promise<NotificationRequest[]>;

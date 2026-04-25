@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
 import { type Route } from '../../../native';
 import type { Layout, Scene, StackHeaderMode } from '../../types';
@@ -16,5 +15,5 @@ export type Props = {
     }) => void;
     style?: StyleProp<ViewStyle>;
 };
-export declare function HeaderContainer({ mode, scenes, layout, getPreviousScene, getFocusedRoute, onContentHeightChange, style, }: Props): React.JSX.Element;
+export declare function HeaderContainer({ mode, scenes, layout, getPreviousScene, getFocusedRoute, onContentHeightChange, style, }: Props): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=HeaderContainer.d.ts.map

@@ -11,6 +11,10 @@ const schema = {
             enum: ['most-recent', 'launcher'],
             nullable: true,
         },
+        defaultLaunchURL: {
+            type: ['string'],
+            nullable: true,
+        },
         launchModeExperimental: {
             type: 'string',
             enum: ['most-recent', 'launcher'],
@@ -45,6 +49,10 @@ const schema = {
                     type: 'boolean',
                     nullable: true,
                 },
+                defaultLaunchURL: {
+                    type: 'string',
+                    nullable: true,
+                },
             },
             nullable: true,
         },
@@ -67,6 +75,10 @@ const schema = {
                 },
                 embeddedBundle: {
                     type: 'boolean',
+                    nullable: true,
+                },
+                defaultLaunchURL: {
+                    type: 'string',
                     nullable: true,
                 },
             },

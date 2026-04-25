@@ -5,7 +5,7 @@
       "name": "ExpoBackgroundFetch",
       "podName": "ExpoBackgroundFetch",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

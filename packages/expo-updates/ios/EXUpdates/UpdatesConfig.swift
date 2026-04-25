@@ -145,14 +145,7 @@ public final class UpdatesConfig: NSObject {
   }
 
   private static func configDictionaryWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> [String: Any] {
-    // Check the main bundle first (standard app), then fall back to the framework bundle.
-    // In brownfield setups, the Expo project is packaged as an xcframework where Expo.plist
-    // is embedded in the framework bundle rather than the host app bundle.
-    var configPlistPath = Bundle.main.path(forResource: PlistName, ofType: "plist")
-    if configPlistPath == nil {
-      configPlistPath = Bundle(for: UpdatesConfig.self).path(forResource: PlistName, ofType: "plist")
-    }
-    guard let configPlistPath else {
+    guard let configPlistPath = updatesBundle.path(forResource: PlistName, ofType: "plist") else {
       throw UpdatesConfigError.ExpoUpdatesConfigPlistError
     }
 

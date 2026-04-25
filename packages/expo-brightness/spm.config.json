@@ -5,7 +5,7 @@
       "name": "ExpoBrightness",
       "podName": "ExpoBrightness",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

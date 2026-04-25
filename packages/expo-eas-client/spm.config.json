@@ -5,7 +5,7 @@
       "name": "EASClient",
       "podName": "EASClient",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
-import { ColorValue } from 'react-native';
+import type { ColorValue } from 'react-native';
 
-import { ModifierConfig, ViewEvent } from '../../types';
+import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 type SlotNativeViewProps = {
@@ -84,12 +84,6 @@ function TrailingIcon(props: { children: React.ReactNode }) {
 }
 
 /**
- * A dropdown menu item component that wraps Compose's `DropdownMenuItem`.
- * Should be used inside `DropdownMenu.Items`.
- *
- * @platform android
- */
-/**
  * A text slot for `DropdownMenuItem`.
  * Wrap text content to display as the menu item label.
  *
@@ -101,7 +95,7 @@ function TextSlot(props: { children: React.ReactNode }) {
 
 /**
  * A dropdown menu item component that wraps Compose's `DropdownMenuItem`.
- * Should be used inside `ContextMenu.Items`.
+ * Should be used inside `DropdownMenu.Items` or `ExposedDropdownMenu`.
  *
  * @platform android
  */

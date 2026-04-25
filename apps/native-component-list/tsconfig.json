@@ -3,9 +3,7 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "experimentalDecorators": true,
-    "baseUrl": ".",
     "paths": {
-      "@expo/vector-icons": ["react-native-vector-icons"],
       "ThemeProvider": ["../common/ThemeProvider"],
       "benchmarking": ["../bare-expo/modules/benchmarking"],
       "worklets-tester": ["../bare-expo/modules/worklets-tester"],

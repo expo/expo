@@ -1,8 +1,9 @@
 import { requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
-import { NativeSyntheticEvent, StyleSheet, Platform, processColor } from 'react-native';
+import type { NativeSyntheticEvent } from 'react-native';
+import { StyleSheet, Platform, processColor } from 'react-native';
 
-import {
+import type {
   ImageErrorEventData,
   ImageLoadEventData,
   ImageNativeProps,

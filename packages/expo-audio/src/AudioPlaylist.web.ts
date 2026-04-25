@@ -1,11 +1,11 @@
-import {
+import type {
   AudioPlaylistLoopMode,
   AudioPlaylistStatus,
   AudioSource,
   AudioSourceInfo,
 } from './Audio.types';
 import { PLAYLIST_STATUS_UPDATE, TRACK_CHANGED } from './AudioEventKeys';
-import { AudioPlaylist, AudioPlaylistEvents } from './AudioModule.types';
+import type { AudioPlaylist, AudioPlaylistEvents } from './AudioModule.types';
 import { getSourceUri, nextId } from './AudioUtils.web';
 import { resolveSource } from './utils/resolveSource';
 

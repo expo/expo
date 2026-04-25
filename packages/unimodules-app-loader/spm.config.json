@@ -4,9 +4,7 @@
     {
       "name": "UMAppLoader",
       "podName": "UMAppLoader",
-      "platforms": [
-        "iOS(.v15)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [],
       "targets": [
         {
@@ -16,13 +14,8 @@
           "pattern": "**/*.m",
           "headerPattern": "**/*.h",
           "dependencies": [],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ],
-          "includeDirectories": [
-            "."
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"],
+          "includeDirectories": ["."]
         }
       ]
     }

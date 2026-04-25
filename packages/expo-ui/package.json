@@ -7,6 +7,10 @@
   ],
   "exports": {
     "./package.json": "./package.json",
+    ".": {
+      "types": "./build/universal/index.d.ts",
+      "default": "./src/universal/index.ts"
+    },
     "./swift-ui": {
       "types": "./build/swift-ui/index.d.ts",
       "default": "./src/swift-ui/index.tsx"
@@ -26,6 +30,14 @@
     "./datetimepicker": {
       "types": "./build/datetime-picker/index.d.ts",
       "default": "./src/datetime-picker/index.tsx"
+    },
+    "./community/segmented-control": {
+      "types": "./build/community/segmented-control/index.d.ts",
+      "default": "./src/community/segmented-control/index.tsx"
+    },
+    "./community/picker": {
+      "types": "./build/community/picker/index.d.ts",
+      "default": "./src/community/picker/index.tsx"
     }
   },
   "scripts": {
@@ -43,16 +55,21 @@
     "directory": "packages/expo-ui"
   },
   "keywords": [
+    "react",
     "react-native",
     "expo",
     "UI components",
     "SwiftUI",
-    "Jetpack Compose"
+    "Jetpack Compose",
+    "cross platform",
+    "web",
+    "universal"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "sf-symbols-typescript": "^2.1.0"
+    "sf-symbols-typescript": "^2.1.0",
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
@@ -67,11 +84,15 @@
   "peerDependencies": {
     "expo": "workspace:*",
     "react": "*",
+    "react-dom": "*",
     "react-native": "*",
     "react-native-reanimated": "*",
     "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
     "react-native-reanimated": {
       "optional": true
     },

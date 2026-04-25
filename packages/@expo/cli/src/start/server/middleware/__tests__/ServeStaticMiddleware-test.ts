@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import send from 'send';
 
 import { ServeStaticMiddleware } from '../ServeStaticMiddleware';
-import { ServerRequest } from '../server.types';
+import type { ServerRequest } from '../server.types';
 
 beforeEach(() => vol.reset());
 

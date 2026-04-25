@@ -1,4 +1,5 @@
-import spawnAsync, { SpawnOptions } from '@expo/spawn-async';
+import type { SpawnOptions } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import { BasePackageManager } from './BasePackageManager';
 export declare class NpmPackageManager extends BasePackageManager {
     readonly name = "npm";

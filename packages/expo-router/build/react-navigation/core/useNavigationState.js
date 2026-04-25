@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigationState = useNavigationState;
 exports.NavigationStateListenerProvider = NavigationStateListenerProvider;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const useLatestCallback_1 = __importDefault(require("../../utils/useLatestCallback"));
 const useSyncExternalStoreWithSelector_1 = require("../../utils/useSyncExternalStoreWithSelector");
@@ -75,9 +76,7 @@ function NavigationStateListenerProvider({ state, children, }) {
         getState,
         subscribe,
     }), [getState, subscribe]);
-    return (<NavigationStateListenerContext.Provider value={context}>
-      {children}
-    </NavigationStateListenerContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(NavigationStateListenerContext.Provider, { value: context, children: children }));
 }
 const NavigationStateListenerContext = react_1.default.createContext(undefined);
 //# sourceMappingURL=useNavigationState.js.map

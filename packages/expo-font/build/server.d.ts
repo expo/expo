@@ -1,9 +1,11 @@
-import { FontSource } from './Font.types';
+import { type ServerFontResourceDescriptor } from './ExpoFontLoader';
+import type { FontSource } from './Font.types';
 /**
  * @returns the server resources that should be statically extracted.
  * @private
  */
 export declare function getServerResources(): string[];
+export declare function getServerResourceDescriptors(): ServerFontResourceDescriptor[];
 /**
  * @returns clear the server resources from the global scope.
  * @private

@@ -1,4 +1,5 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 
 import {
   closeDevelopmentSessionAsync,

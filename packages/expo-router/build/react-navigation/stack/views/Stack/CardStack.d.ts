@@ -62,7 +62,7 @@ export declare class CardStack extends React.Component<Props, State> {
     private handleHeaderLayout;
     private getFocusedRoute;
     private getPreviousScene;
-    render(): React.JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export {};
 //# sourceMappingURL=CardStack.d.ts.map

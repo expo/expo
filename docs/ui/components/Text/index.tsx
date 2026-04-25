@@ -203,7 +203,7 @@ export const P = createTextComponent(
 export const CODE = createTextComponent(
   TextElement.CODE,
   mergeClasses(
-    'text-[13px] leading-[130%] font-normal tracking-[-0.003rem]',
+    'text-xs leading-[130%] font-normal',
     'border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5'
   )
 );
@@ -224,10 +224,7 @@ export const SPAN = createTextComponent(
   TextElement.SPAN,
   'font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem]'
 );
-export const FOOTNOTE = createTextComponent(
-  TextElement.P,
-  'font-normal text-[13px] leading-[1.6154] tracking-[-0.003rem]'
-);
+export const FOOTNOTE = createTextComponent(TextElement.P, 'font-normal text-xs');
 export const CAPTION = createTextComponent(
   TextElement.P,
   'font-normal text-[12px] leading-[1.6154]'
@@ -246,7 +243,7 @@ export const KBD = createTextComponent(
   TextElement.KBD,
   mergeClasses(
     'border-secondary bg-subtle shadow-kbd relative -top-px inline-block min-h-[20px] min-w-[22px] rounded-sm border px-1',
-    'text-2xs text-secondary text-center leading-[20px] font-semibold',
+    'text-secondary text-center text-xs leading-[20px] font-semibold',
     'dark:bg-element'
   )
 );

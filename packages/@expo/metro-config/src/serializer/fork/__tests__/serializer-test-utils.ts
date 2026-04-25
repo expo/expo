@@ -6,12 +6,12 @@ import assert from 'assert';
 import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
 import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
-import {
+import type {
   SerialAsset,
   SerializerConfigOptions,
   SerializerPlugin,
-  createSerializerFromSerialProcessors,
 } from '../../withExpoSerializers';
+import { createSerializerFromSerialProcessors } from '../../withExpoSerializers';
 
 // General helper to reduce boilerplate
 export async function serializeToWithGraph(

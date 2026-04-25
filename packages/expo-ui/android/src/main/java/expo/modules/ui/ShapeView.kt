@@ -28,6 +28,8 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import android.graphics.Color as GraphicsColor
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class ShapeType(val value: String) : Enumerable {
   STAR("star"),
@@ -39,6 +41,7 @@ enum class ShapeType(val value: String) : Enumerable {
   ROUNDED_CORNER("roundedCorner")
 }
 
+@OptimizedRecord
 data class CornerRadii(
   @Field val topStart: Float = 0f,
   @Field val topEnd: Float = 0f,
@@ -46,6 +49,7 @@ data class CornerRadii(
   @Field val bottomEnd: Float = 0f
 ) : Record
 
+@OptimizedComposeProps
 data class ShapeProps(
   val cornerRounding: Float = 0.0f,
   val smoothing: Float = 0.0f,
@@ -142,6 +146,7 @@ private fun createRoundedCornerPath(size: Size, cornerRadii: CornerRadii?, densi
   }
 }
 
+@OptimizedRecord
 data class ShapeRecord(
   @Field
   val cornerRounding: Float = 0.0f,

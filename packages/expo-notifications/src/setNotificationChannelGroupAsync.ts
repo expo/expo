@@ -1,4 +1,4 @@
-import {
+import type {
   NotificationChannelGroup,
   NotificationChannelGroupInput,
 } from './NotificationChannelGroupManager.types';

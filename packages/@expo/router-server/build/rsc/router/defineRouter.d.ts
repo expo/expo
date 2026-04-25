@@ -8,8 +8,7 @@
 import { type RouteProps, type ShouldSkip } from 'expo-router/internal/rsc';
 import type { FunctionComponent, ReactNode } from 'react';
 import type { PathSpec } from '../path';
-import { defineEntries } from '../server';
-import type { BuildConfig } from '../server';
+import type { BuildConfig, defineEntries } from '../server';
 type RoutePropsForLayout = Omit<RouteProps, 'searchParams'> & {
     children: ReactNode;
 };

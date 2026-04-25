@@ -1,5 +1,5 @@
 import { RuntimeRedirectMiddleware } from '../RuntimeRedirectMiddleware';
-import { ServerRequest, ServerResponse } from '../server.types';
+import type { ServerRequest, ServerResponse } from '../server.types';
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 

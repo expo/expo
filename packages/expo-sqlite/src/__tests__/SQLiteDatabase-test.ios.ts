@@ -1,12 +1,8 @@
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 
-import {
-  deserializeDatabaseAsync,
-  openDatabaseAsync,
-  openDatabaseSync,
-  SQLiteDatabase,
-} from '../SQLiteDatabase';
+import type { SQLiteDatabase } from '../SQLiteDatabase';
+import { deserializeDatabaseAsync, openDatabaseAsync, openDatabaseSync } from '../SQLiteDatabase';
 
 jest.mock('expo/devtools', () => ({
   getDevToolsPluginClientAsync: jest.fn(),

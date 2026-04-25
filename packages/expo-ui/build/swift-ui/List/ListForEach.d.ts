@@ -21,5 +21,5 @@ export type ListForEachProps = {
  * A compound component of `List` that enables item deletion and reordering.
  * This component must be used as a child of `List` (as `List.ForEach`).
  */
-export declare function ListForEach({ children, onDelete, onMove, ...props }: ListForEachProps): import("react").JSX.Element;
+export declare function ListForEach({ children, onDelete, onMove, ...props }: ListForEachProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=ListForEach.d.ts.map

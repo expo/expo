@@ -1,15 +1,15 @@
-import { CodedError, EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 
-import {
+import type {
   AppleAuthenticationCredential,
   AppleAuthenticationCredentialState,
-  AppleAuthenticationOperation,
   AppleAuthenticationRefreshOptions,
   AppleAuthenticationSignInOptions,
   AppleAuthenticationSignOutOptions,
   AppleAuthenticationFullName,
   AppleAuthenticationFullNameFormatStyle,
 } from './AppleAuthentication.types';
+import { AppleAuthenticationOperation } from './AppleAuthentication.types';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
 // @needsAudit
@@ -35,7 +35,7 @@ export async function isAvailableAsync(): Promise<boolean> {
  *
  * Additionally, you will only receive Apple Authentication Credentials the first time users sign
  * into your app, so you must store it for later use. It's best to store this information either
- * server-side, or using [SecureStore](./securestore), so that the data persists across app installs.
+ * server-side, or using [`expo-secure-store`](./securestore), so that the data persists across app installs.
  * You can use [`AppleAuthenticationCredential.user`](#appleauthenticationcredential) to identify
  * the user, since this remains the same for apps released by the same developer.
  *
@@ -163,4 +163,5 @@ export function addRevokeListener(listener: () => void): EventSubscription {
   return ExpoAppleAuthentication.addListener('Expo.appleIdCredentialRevoked', listener);
 }
 
-export { EventSubscription as Subscription };
+// TODO(@kitten): Remove re-export from EMC
+export type { EventSubscription as Subscription } from 'expo-modules-core';

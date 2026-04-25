@@ -6,7 +6,7 @@
             "podName": "react-native-safe-area-context",
             "codegenName": "safeareacontext",
             "platforms": [
-                "iOS(.v15)"
+                "iOS(.v16)"
             ],
             "externalDependencies": [
                 "ReactNativeDependencies",

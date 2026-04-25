@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { vol } from 'memfs';
 
-import { XcodeProject } from '../../Plugin.types';
+import type { XcodeProject } from '../../Plugin.types';
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
 import { setBitcodeWithConfig } from '../Bitcode';

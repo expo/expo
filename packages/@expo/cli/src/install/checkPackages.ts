@@ -1,10 +1,9 @@
 import { getConfig } from '@expo/config';
-import * as PackageManager from '@expo/package-manager';
+import type * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
-import resolveFrom from 'resolve-from';
 
 import { fixPackagesAsync } from './fixPackages';
-import { Options } from './resolveOptions';
+import type { Options } from './resolveOptions';
 import * as Log from '../log';
 import {
   getVersionedDependenciesAsync,

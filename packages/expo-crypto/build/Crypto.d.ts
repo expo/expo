@@ -1,5 +1,6 @@
-import { UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
-import { CryptoDigestAlgorithm, CryptoDigestOptions, Digest } from './Crypto.types';
+import type { UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
+import type { CryptoDigestOptions, Digest } from './Crypto.types';
+import { CryptoDigestAlgorithm } from './Crypto.types';
 export * from './Crypto.types';
 export * from './aes';
 /**

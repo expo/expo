@@ -1,5 +1,5 @@
 import type { ExpoOptions } from './getPathFromState-forks';
-import { PathConfigMap } from '../react-navigation/native';
+import type { PathConfigMap } from '../react-navigation/native';
 import type { NavigationState, PartialState } from '../react-navigation/routers';
 export type Options<ParamList extends object> = ExpoOptions & {
     path?: string;

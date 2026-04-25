@@ -1,4 +1,4 @@
-import { XcodeProject } from 'xcode';
+import type { XcodeProject } from 'xcode';
 
 import { resolvePathOrProject } from './Xcodeproj';
 import { getXCBuildConfigurationFromPbxproj } from '../Target';

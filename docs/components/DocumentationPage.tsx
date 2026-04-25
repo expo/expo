@@ -372,6 +372,12 @@ export default function DocumentationPage({
             />
           )}
           {title && <Separator />}
+          <blockquote className="sr-only">
+            <p>
+              For the complete documentation index, see <A href="/llms.txt">llms.txt</A>. Use this
+              Use this file to discover all available pages.
+            </p>
+          </blockquote>
           {children}
         </main>
         <Footer

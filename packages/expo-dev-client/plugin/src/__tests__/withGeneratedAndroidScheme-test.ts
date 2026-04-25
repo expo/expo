@@ -1,4 +1,4 @@
-import { AndroidConfig, AndroidManifest } from '@expo/config-plugins';
+import { AndroidConfig, type AndroidManifest } from 'expo/config-plugins';
 
 import {
   removeExpoSchemaFromVerifiedIntentFilters,
@@ -9,6 +9,7 @@ describe(setGeneratedAndroidScheme, () => {
   it(`prevents adding duplicates`, () => {
     let androidManifest: AndroidManifest = {
       manifest: {
+        queries: [],
         application: [
           {
             activity: [
@@ -68,6 +69,7 @@ describe(setGeneratedAndroidScheme, () => {
   it(`removes exp+ scheme when intent filter autoVerify is true`, () => {
     let androidManifest: AndroidManifest = {
       manifest: {
+        queries: [],
         application: [
           {
             activity: [

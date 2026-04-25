@@ -1,4 +1,4 @@
-import { ModuleDescriptor, SupportedPlatform } from '../types';
+import type { ModuleDescriptor, SupportedPlatform } from '../types';
 interface GenerateModulesProviderParams {
     platform: SupportedPlatform;
     targetPath: string;

@@ -1,4 +1,4 @@
-import { Terminal } from '@expo/metro/metro-core';
+import type { Terminal } from '@expo/metro/metro-core';
 import arg = require('arg');
 import { stripVTControlCharacters } from 'node:util';
 
@@ -14,7 +14,7 @@ import {
   MetroTerminalReporter,
   stripMetroInfo,
 } from '../MetroTerminalReporter';
-import { BundleDetails } from '../TerminalReporter.types';
+import type { BundleDetails } from '../TerminalReporter.types';
 import {
   LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED_SDK_52,
   LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED_SDK_54,

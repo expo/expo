@@ -20,6 +20,7 @@ function resolveProps(props) {
     if (Object.keys(resolvedProps).length > 0) {
         return resolvedProps;
     }
+    return;
 }
 const setAndroidStatusBarStyles = (styles, { hidden, style }) => {
     styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {

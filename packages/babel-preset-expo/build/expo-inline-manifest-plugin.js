@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.expoInlineManifestPlugin = expoInlineManifestPlugin;
+exports.getConfigPluginProps = getConfigPluginProps;
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:inline-manifest');
 // Convert expo value to PWA value
@@ -40,7 +41,7 @@ function getExpoConstantsManifest(projectRoot) {
 function applyWebDefaults({ config, appName, webName }) {
     const appJSON = config.exp;
     // For RN CLI support
-    const { web: webManifest = {}, splash = {}, ios = {}, android = {} } = appJSON;
+    const { web: webManifest = {}, ios = {}, android = {} } = appJSON;
     const languageISOCode = webManifest.lang;
     const primaryColor = appJSON.primaryColor;
     const description = appJSON.description;
@@ -59,7 +60,8 @@ function applyWebDefaults({ config, appName, webName }) {
      * The background_color should be the same color as the load page,
      * to provide a smooth transition from the splash screen to your app.
      */
-    const backgroundColor = webManifest.backgroundColor || splash.backgroundColor; // No default background color
+    const splash = getConfigPluginProps(appJSON, 'expo-splash-screen');
+    const backgroundColor = webManifest.backgroundColor || splash?.backgroundColor; // No default background color
     return {
         ...appJSON,
         name: appName,
@@ -189,3 +191,19 @@ function expoInlineManifestPlugin(api) {
         },
     };
 }
+/**
+ * Get the props for a config-plugin
+ */
+function getConfigPluginProps(config, pluginName) {
+    const plugin = (config.plugins ?? []).find((plugin) => {
+        if (Array.isArray(plugin)) {
+            return plugin[0] === pluginName;
+        }
+        return plugin === pluginName;
+    });
+    if (Array.isArray(plugin)) {
+        return (plugin[1] ?? null);
+    }
+    return null;
+}
+//# sourceMappingURL=expo-inline-manifest-plugin.js.map

@@ -1,4 +1,5 @@
-import spawnAsync, { SpawnResult } from '@expo/spawn-async';
+import type { SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 
 import { env } from '../../../utils/env';

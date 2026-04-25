@@ -80,7 +80,7 @@ struct AccountSheet: View {
         viewModel.signOut()
       }
       label: {
-        Text("Logout")
+        Text("Log out")
           .font(.headline)
           .fontWeight(.bold)
           .foregroundColor(.white)
@@ -126,7 +126,7 @@ struct AccountSheet: View {
             .transition(.scale.combined(with: .opacity))
         }
 
-        Text("Log In")
+        Text("Log in")
           .font(.headline)
           .fontWeight(.semibold)
       }
@@ -147,7 +147,7 @@ struct AccountSheet: View {
       }
     }
     label: {
-      Text("Sign Up")
+      Text("Sign up")
         .font(.headline)
         .fontWeight(.semibold)
         .foregroundColor(.black.opacity(0.7))

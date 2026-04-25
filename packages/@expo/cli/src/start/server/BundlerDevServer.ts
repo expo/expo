@@ -6,19 +6,17 @@ import { AsyncWsTunnel } from './AsyncWsTunnel';
 import { Bonjour } from './Bonjour';
 import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
-import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { PlatformBundlers } from './platformBundlers';
+import type { CreateURLOptions } from './UrlCreator';
+import { UrlCreator } from './UrlCreator';
+import type { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
 import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { isInteractive } from '../../utils/interactive';
 import { openBrowserAsync } from '../../utils/open';
-import {
-  BaseOpenInCustomProps,
-  BaseResolveDeviceProps,
-  PlatformManager,
-} from '../platforms/PlatformManager';
+import type { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -462,7 +460,10 @@ export abstract class BundlerDevServer {
       const serverUrl = this.getDevServerUrl({ hostType: 'localhost' });
       // Allow opening the tunnel URL when using Metro web.
       const url = this.name === 'metro' ? (this.getTunnelUrl() ?? serverUrl) : serverUrl;
-      await openBrowserAsync(url!);
+      // Only launch the browser automatically if the process is interactive, otherwise we'll assume it's an agent.
+      if (isInteractive()) {
+        await openBrowserAsync(url!);
+      }
       return { url };
     }
 

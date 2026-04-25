@@ -2,7 +2,6 @@ import type { XcodeProject } from 'expo/config-plugins';
 import { readdirSync } from 'node:fs';
 
 import type { Group, PbxGroup, PbxNativeTarget, PbxNativeTargetSection, Target } from '../types';
-import { readFromTemplate } from '../utils';
 import { Constants } from './constants';
 
 export const createFramework = (
@@ -165,6 +164,7 @@ const getCommonBuildSettings = (
     SWIFT_OPTIMIZATION_LEVEL: `"-Onone"`,
     CODE_SIGN_ENTITLEMENTS: `"${targetName}/${targetName}.entitlements"`,
     // DEVELOPMENT_TEAM: `""`,
+    DEFINES_MODULE: '"YES"',
     BUILD_LIBRARY_FOR_DISTRIBUTION: '"YES"',
     USER_SCRIPT_SANDBOXING: '"NO"',
     SKIP_INSTALL: '"NO"',

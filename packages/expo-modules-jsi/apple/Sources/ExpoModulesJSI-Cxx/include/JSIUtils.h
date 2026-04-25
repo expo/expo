@@ -9,8 +9,13 @@
 #include "CppError.h"
 #include "MemoryBuffer.h"
 #include "NativeState.h"
+#include "TypedArray.h"
 
 namespace jsi = facebook::jsi;
+
+// All pointers in this header are non-null by default. Use `_Nullable` for
+// pointers that may legitimately be null (e.g. `getNativeState` return value).
+#pragma clang assume_nonnull begin
 
 namespace expo {
 
@@ -66,7 +71,14 @@ inline std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::stri
 inline jsi::Function createHostFunction(jsi::Runtime &runtime, const jsi::PropNameID &propName, HostFunctionClosure *closure) {
   auto closurePtr = std::shared_ptr<HostFunctionClosure>(closure);
   return jsi::Function::createFromHostFunction(runtime, propName, 0, [closurePtr](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t count) -> jsi::Value {
-    return closurePtr->call(thisValue, args, count);
+    auto result = closurePtr->call(thisValue, args, count);
+
+    // If the Swift closure stored a pending error, rethrow its JSError directly
+    // to preserve all properties (message, code, stack, etc.).
+    if (auto *error = CppError::getCurrent()) {
+      throw error->release();
+    }
+    return result;
   });
 }
 
@@ -78,25 +90,25 @@ inline jsi::Function createHostFunction(jsi::Runtime &runtime, const char *name,
 jsi::Runtime* createHermesRuntime();
 
 inline jsi::Value evaluateJavaScript(jsi::Runtime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
-  return expo::CppError::tryCatch(^{
+  return expo::CppError::tryCatch(runtime, ^{
     return runtime.evaluateJavaScript(buffer, sourceURL);
   });
 }
 
-inline jsi::Value callFunction(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value *args, size_t count) {
-  return expo::CppError::tryCatch(^{
+inline jsi::Value callFunction(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
+  return expo::CppError::tryCatch(runtime, ^{
     return function.call(runtime, args, count);
   });
 }
 
-inline jsi::Value callFunctionWithThis(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *args, size_t count) {
-  return expo::CppError::tryCatch(^{
+inline jsi::Value callFunctionWithThis(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *_Nullable args, size_t count) {
+  return expo::CppError::tryCatch(runtime, ^{
     return function.callWithThis(runtime, jsThis, args, count);
   });
 }
 
-inline jsi::Value callAsConstructor(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value *args, size_t count) {
-  return expo::CppError::tryCatch(^{
+inline jsi::Value callAsConstructor(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
+  return expo::CppError::tryCatch(runtime, ^{
     return function.callAsConstructor(runtime, args, count);
   });
 }
@@ -179,5 +191,7 @@ inline expo::NativeState *_Nullable getNativeState(jsi::Runtime &runtime, const 
 }
 
 } // namespace expo
+
+#pragma clang assume_nonnull end
 
 #endif // __cplusplus

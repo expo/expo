@@ -1,7 +1,7 @@
-import { Definitions } from 'dot';
-import { Application, DetoxTest } from './Config';
+import type { Definitions } from 'dot';
+import type { Application, DetoxTest } from './Config';
 import { Platform } from './Platform';
-import { ProjectFile } from './TemplateFile';
+import type { ProjectFile } from './TemplateFile';
 export default class TemplateProject {
     protected config: Application;
     protected name: string;

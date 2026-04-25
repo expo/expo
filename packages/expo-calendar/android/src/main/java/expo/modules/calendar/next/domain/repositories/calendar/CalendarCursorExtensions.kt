@@ -29,7 +29,7 @@ fun Cursor.toCalendarEntity() = CalendarEntity(
   allowedReminders = getList(CalendarContract.Calendars.ALLOWED_REMINDERS) { value ->
     AllowedReminder.entries.find { it.value == value }
   }.filterNotNull(),
-  calendarAccessLevel = getOptionalInt(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL).let { value ->
+  calendarAccessLevel = getOptionalInt(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)?.let { value ->
     CalendarAccessLevel.entries.find { it.value == value }
   },
   calendarColor = getOptionalInt(CalendarContract.Calendars.CALENDAR_COLOR),

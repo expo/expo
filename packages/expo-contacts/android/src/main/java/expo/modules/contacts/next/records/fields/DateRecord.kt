@@ -7,20 +7,24 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.Required
 import expo.modules.kotlin.types.ValueOrUndefined
+import expo.modules.kotlin.types.OptimizedRecord
 
 sealed interface DateRecord {
+  @OptimizedRecord
   data class Existing(
     @Required @Field override val id: String,
     @Field val label: String? = null,
     @Field val date: ContactDateRecord? = null
   ) : ExistingRecord
 
+  @OptimizedRecord
   data class New(
     @Field val label: String? = null,
     @Field val date: ContactDateRecord? = null
   ) : NewRecord
 
-  class Patch() : PatchRecord {
+  @OptimizedRecord
+  class Patch : PatchRecord {
     @Required @Field
     override lateinit var id: String
 
@@ -29,6 +33,7 @@ sealed interface DateRecord {
     @Field val date: ValueOrUndefined<ContactDateRecord?> = ValueOrUndefined.Undefined()
   }
 
+  @OptimizedRecord
   data class ContactDateRecord(
     @Field val year: Int? = null,
     @Required @Field val month: Int,

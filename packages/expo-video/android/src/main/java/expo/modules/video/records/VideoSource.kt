@@ -18,8 +18,10 @@ import expo.modules.video.UnsupportedDRMTypeException
 import expo.modules.video.buildExpoVideoMediaSource
 import expo.modules.video.enums.ContentType
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
 @OptIn(UnstableApi::class)
+@OptimizedRecord
 class VideoSource(
   @Field var uri: Uri? = null,
   @Field var drm: DRMOptions? = null,

@@ -1,0 +1,139 @@
+package expo.modules.observe
+
+import android.content.Context
+import expo.modules.observe.storage.PendingMetricsManager
+import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.interfaces.constants.ConstantsInterface
+
+class ObservabilityManager(
+  // TODO(@lukmccall): Consider saving context as weak reference to avoid potential memory leaks
+  private val context: Context,
+  constants: ConstantsInterface?,
+  val sessionManager: SessionManager
+) {
+  private val baseManager: BaseObservabilityManager
+  private val enableInDebug: Boolean
+  private val useOpenTelemetry: Boolean
+
+  // TODO: Can this information change during expo module lifecycle?
+  init {
+    val manifest = getManifest(constants)
+    checkNotNull(manifest) {
+      "Manifest is required to initialize ObservabilityManager."
+    }
+
+    val projectId = manifest.projectId
+    checkNotNull(projectId) {
+      "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
+    }
+    val baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL
+    enableInDebug = manifest.enableInDebug
+    useOpenTelemetry = manifest.useOpenTelemetry
+
+    val pendingMetricsManager = PendingMetricsManager(context)
+
+    baseManager = BaseObservabilityManager(
+      context = context,
+      sessionManager = sessionManager,
+      pendingMetricsManager = pendingMetricsManager,
+      projectId = projectId,
+      baseUrl = baseUrl,
+      enableInDebug = enableInDebug,
+      useOpenTelemetry = useOpenTelemetry
+    )
+
+    sessionManager.addMetricsInsertListener { metricIds ->
+      pendingMetricsManager.addPendingMetrics(metricIds)
+    }
+  }
+
+  suspend fun dispatchUnsentMetrics() {
+    baseManager.dispatchUnsentMetrics()
+  }
+
+  fun scheduleBackgroundDispatch() {
+    ObservabilityBackgroundWorker.scheduleBackgroundDispatch(
+      context = context,
+      projectId = baseManager.projectId,
+      baseUrl = baseManager.baseUrl,
+      enableInDebug = enableInDebug,
+      useOpenTelemetry = useOpenTelemetry
+    )
+  }
+}
+
+class BaseObservabilityManager(
+  private val context: Context,
+  private val sessionManager: SessionManager,
+  private val pendingMetricsManager: PendingMetricsManager,
+  val projectId: String,
+  val baseUrl: String,
+  private val enableInDebug: Boolean = false,
+  private val useOpenTelemetry: Boolean = false
+) {
+  private val eventDispatcher = EventDispatcher(
+    context = context,
+    projectId = projectId,
+    baseUrl = baseUrl,
+    useOpenTelemetry = useOpenTelemetry
+  )
+
+  suspend fun dispatchUnsentMetrics() {
+    val pendingIds = pendingMetricsManager.getAllPendingMetricIds()
+    if (pendingIds.isEmpty()) {
+      return
+    }
+
+    // When disabled, mark pending metrics as sent without dispatching
+    if (!ObservePreferences.getDispatchingEnabled(context)) {
+      pendingMetricsManager.removePendingMetrics(pendingIds)
+      return
+    }
+
+    val sessionsWithPendingMetrics = sessionManager.getSessionsWithMetrics(pendingIds)
+
+    // Clean up orphaned pending IDs (metrics deleted from MetricsDatabase but still in pending table)
+    val resolvedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }.toSet()
+    val orphanedIds = pendingIds.filter { it !in resolvedMetricIds }
+    if (orphanedIds.isNotEmpty()) {
+      pendingMetricsManager.removePendingMetrics(orphanedIds)
+    }
+
+    if (sessionsWithPendingMetrics.isEmpty()) {
+      return
+    }
+
+    val (toDispatch, toSkip) = if (enableInDebug) {
+      Pair(sessionsWithPendingMetrics, emptyList())
+    } else {
+      sessionsWithPendingMetrics.partition { it.session.environment != "development" }
+    }
+
+    // Remove skipped (dev) metrics from pending table without dispatching
+    toSkip
+      .flatMap { it.metrics }
+      .map { it.metricId }
+      .takeIf { it.isNotEmpty() }
+      ?.let { pendingMetricsManager.removePendingMetrics(it) }
+
+    if (toDispatch.isEmpty()) return
+
+    val events = toDispatch.map { sessionWithMetrics ->
+      Event(
+        metadata = Metadata.fromSessionMetadata(sessionWithMetrics.session),
+        metrics = sessionWithMetrics.metrics.map { EASMetric.fromMetric(it) }
+      )
+    }
+
+    if (eventDispatcher.dispatch(events)) {
+      val dispatchedMetricIds = toDispatch.flatMap { it.metrics }.map { it.metricId }
+      pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
+    }
+  }
+
+  suspend fun cleanup() {
+    pendingMetricsManager.cleanupOldPendingMetrics()
+    // TODO(@ubax): Move sessionManager.cleanupOldMetrics() out of eas observe
+    sessionManager.cleanupOldMetrics()
+  }
+}

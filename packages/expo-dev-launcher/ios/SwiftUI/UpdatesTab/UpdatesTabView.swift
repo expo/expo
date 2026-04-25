@@ -25,7 +25,3 @@ struct UpdatesTabView: View {
     #endif
   }
 }
-
-#Preview {
-  UpdatesTabView()
-}

@@ -74,7 +74,7 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
         className={mergeClasses(
           'text-default w-full leading-normal',
           'last:mb-0',
-          size === 'sm' && 'text-xs [&_code]:text-[90%] [&_p]:text-xs'
+          size === 'sm' && 'text-sm [&_code]:text-[90%] [&_p]:text-sm'
         )}>
         {type === finalType ? children : contentChildren.filter((_, i) => i !== 0)}
       </div>

@@ -12,6 +12,10 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed background task execution failing with "Could not find TaskService module" due to broken `ModuleRegistryProvider.singletonModules()` lookup after `EXTaskService` was migrated from `EXSingletonModule` to `NSObject`. ([#44646](https://github.com/expo/expo/pull/44646) by [@xTMNTxRaphaelx](https://github.com/xTMNTxRaphaelx))
+- [Android] Preserve WorkManager cancellation semantics when a background task worker is cancelled. ([#44667](https://github.com/expo/expo/pull/44667) by [@chrfalch](https://github.com/chrfalch))- [Android] Prevent background task registration from replacing an already scheduled or running worker. ([#44663](https://github.com/expo/expo/pull/44663) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fixed a race when rescheduling background tasks concurrently. ([#44666](https://github.com/expo/expo/pull/44666) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25

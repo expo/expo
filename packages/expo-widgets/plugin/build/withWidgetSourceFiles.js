@@ -48,15 +48,13 @@ const withWidgetSourceFiles = (config, { widgets, targetName, onFilesGenerated, 
         if (fs.existsSync(targetDirectory)) {
             fs.rmSync(targetDirectory, { recursive: true, force: true });
         }
-        if (!fs.existsSync(targetDirectory)) {
-            fs.mkdirSync(targetDirectory, { recursive: true });
-        }
+        fs.mkdirSync(targetDirectory, { recursive: true });
         const entitlementsPath = path.join(targetDirectory, `${targetName}.entitlements`);
         const entitlementsContent = {
             'com.apple.security.application-groups': [groupIdentifier],
         };
         fs.writeFileSync(entitlementsPath, plist_1.default.build(entitlementsContent));
-        const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory);
+        const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory, config.ios?.version ?? config.version ?? '1.0', config.ios?.buildNumber ?? '1');
         const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
         const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(widget, targetDirectory));
         onFilesGenerated([entitlementsPath, infoPlistPath, indexSwiftPath, ...widgetSwiftPaths]);
@@ -91,9 +89,9 @@ const createWidgetSwift = (widget, targetPath) => {
     fs.writeFileSync(widgetFilePath, widgetSwift(widget));
     return widgetFilePath;
 };
-const createInfoPlist = (groupIdentifier, targetPath) => {
+const createInfoPlist = (groupIdentifier, targetPath, marketingVersion, bundleVersion) => {
     const infoPlistPath = `${targetPath}/Info.plist`;
-    fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier));
+    fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier, marketingVersion, bundleVersion));
     return infoPlistPath;
 };
 const addIndexSwiftChunk = (widgets, index, isLastChunk) => `
@@ -120,7 +118,7 @@ struct ${widget.name}: Widget {
     .supportedFamilies([.${widget.supportedFamilies.join(', .')}])${widget.contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
-const infoPlist = (groupIdentifier) => `<?xml version="1.0" encoding="UTF-8"?>
+const infoPlist = (groupIdentifier, marketingVersion, bundleVersion) => `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -131,6 +129,10 @@ const infoPlist = (groupIdentifier) => `<?xml version="1.0" encoding="UTF-8"?>
 	</dict>
   <key>ExpoWidgetsAppGroupIdentifier</key>
   <string>${groupIdentifier}</string>
+	<key>CFBundleShortVersionString</key>
+	<string>${marketingVersion}</string>
+	<key>CFBundleVersion</key>
+	<string>${bundleVersion}</string>
 </dict>
 </plist>
 `;

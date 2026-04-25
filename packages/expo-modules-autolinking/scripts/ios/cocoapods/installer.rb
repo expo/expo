@@ -56,6 +56,11 @@ module Pod
       # Call original implementation first
       _original_run_podfile_pre_install_hooks.bind(self).()
 
+      # ExpoModulesJSI needs a stub xcframework so CocoaPods generates the
+      # "[CP] Copy XCFrameworks" build phase. The stub is gitignored and may be
+      # absent after a fresh checkout or when CI restores a stale Pods/ cache.
+      ensure_expo_modules_jsi_stub_xcframework()
+
       # Disable use_frameworks! for pods that can't be built as frameworks
       Expo::PrecompiledModules.perform_pre_install(self)
 
@@ -78,6 +83,23 @@ module Pod
     end
 
     private
+
+    # Creates the stub xcframework for ExpoModulesJSI if it doesn't exist.
+    # CocoaPods only runs prepare_command when a pod is freshly downloaded or
+    # its podspec changes, so CI cache hits skip it. This method runs on every
+    # pod install to guarantee the stub is always present.
+    def ensure_expo_modules_jsi_stub_xcframework
+      jsi_target = self.pod_targets.find { |t| t.name == 'ExpoModulesJSI' }
+      return if jsi_target.nil?
+
+      pod_dir = jsi_target.sandbox.pod_dir('ExpoModulesJSI')
+      return unless File.directory?(pod_dir)
+
+      xcframework_path = File.join(pod_dir, 'Products', 'ExpoModulesJSI.xcframework')
+      return if File.directory?(xcframework_path)
+
+      system('./scripts/create-stub-xcframework.sh', chdir: pod_dir.to_s)
+    end
 
     # We should only disable USE_FRAMEWORKS for specific pods when:
     # - RCT_USE_PREBUILT_RNCORE is not '1'

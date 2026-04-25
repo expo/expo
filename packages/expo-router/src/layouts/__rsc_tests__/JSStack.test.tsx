@@ -1,7 +1,5 @@
 /// <reference types="jest-expo/rsc/expect" />
 
-import React from 'react';
-
 import Stack from '../JSStack';
 
 it(`renders to RSC`, async () => {

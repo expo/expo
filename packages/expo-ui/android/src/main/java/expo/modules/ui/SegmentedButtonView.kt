@@ -10,11 +10,13 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRowScope
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class SegmentedButtonColors(
   @Field val activeBorderColor: Color? = null,
   @Field val activeContentColor: Color? = null,
@@ -30,6 +32,7 @@ data class SegmentedButtonColors(
   @Field val disabledInactiveContainerColor: Color? = null
 ) : Record
 
+@OptimizedComposeProps
 data class SegmentedButtonProps(
   val selected: Boolean = false,
   val checked: Boolean = false,
@@ -69,7 +72,7 @@ fun FunctionalComposableScope.SegmentedButtonContent(
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   val label: @Composable () -> Unit = labelSlotView?.let {
     {
-      with(ComposableScope()) {
+      with(UIComposableScope()) {
         with(it) {
           Content()
         }

@@ -1,17 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Checkbox } from 'expo-checkbox';
-import Constants from 'expo-constants';
-import * as React from 'react';
-import {
-  type EmitterSubscription,
-  Alert,
-  FlatList,
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useTheme } from '../../common/ThemeProvider';
 import { getTestModules, Module } from '../TestModules';
@@ -20,17 +11,31 @@ import {
   getScreenIdForLinking,
   getSelectedTestNames,
 } from './getScreenIdForLinking';
+import FooterBar from '../components/FooterBar';
 import PlatformTouchable from '../components/PlatformTouchable';
 import { routeNames } from '../constants/routeNames';
 
-function ListItem({ title, onPressItem, selected, id }) {
+const supportsGlass = isLiquidGlassAvailable();
+const SELECTION_STORAGE_KEY = 'test-suite:selected-modules';
+
+function ListItem({
+  title,
+  onPressItem,
+  selected,
+  id,
+}: {
+  title: string;
+  onPressItem: (id: string) => void;
+  selected: boolean;
+  id: string;
+}) {
   const { theme } = useTheme();
   const onPress = () => onPressItem(id);
 
   return (
     <PlatformTouchable onPress={onPress}>
       <View style={[styles.listItem, { borderBottomColor: theme.border.secondary }]}>
-        <Text style={styles.label}>{title}</Text>
+        <Text style={[styles.label, { color: theme.text.default }]}>{title}</Text>
         <View style={{ pointerEvents: 'none' }}>
           <Checkbox color={theme.icon.info} value={selected} />
         </View>
@@ -39,243 +44,177 @@ function ListItem({ title, onPressItem, selected, id }) {
   );
 }
 
-export default class SelectScreen extends React.PureComponent<
-  { navigation: any },
-  { selected: Set<string>; modules: Module[] }
-> {
-  state = {
-    selected: new Set<string>(),
-    modules: [],
-  };
-  _openUrlSubscription: EmitterSubscription = null;
+export default function SelectScreen({ navigation }) {
+  const { theme } = useTheme();
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [modules, setModules] = useState<Module[]>([]);
+  const [footerHeight, setFooterHeight] = useState(0);
 
-  constructor(props) {
-    super(props);
+  const onFooterLayout = useCallback((e) => {
+    setFooterHeight(e.nativeEvent.layout.height);
+  }, []);
 
-    if (global.ErrorUtils) {
-      const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
-
-      global.ErrorUtils.setGlobalHandler((error, isFatal) => {
-        // Prevent optionalRequire from failing
-        if (
-          isFatal &&
-          (error.message.includes('Native module cannot be null') ||
-            error.message.includes(
-              `from NativeViewManagerAdapter isn't exported by @unimodules/react-native-adapter. Views of this type may not render correctly. Exported view managers: `
-            ))
-        ) {
-          console.log('Caught require error');
-        } else {
-          originalErrorHandler(error, isFatal);
-        }
-      });
-    }
-  }
-
-  componentWillUnmount() {
-    if (this._openUrlSubscription != null) {
-      this._openUrlSubscription?.remove();
-      this._openUrlSubscription = null;
-    }
-  }
-
-  checkLinking = (incomingTests: string) => {
-    const tests = getSelectedTestNames(incomingTests);
-    const query = createQueryString(tests);
-    this.props.navigation.navigate(routeNames.run, { tests: query });
-  };
-
-  _handleOpenURL = ({ url }: { url: string }) => {
-    url = url || '';
-    // TODO: Use Expo Linking library once parseURL is implemented for web
-    if (url.includes(`/${routeNames.select}/`)) {
-      const selectedTests = url.split('/').pop();
-      if (selectedTests) {
-        this.checkLinking(selectedTests);
-        return;
+  useEffect(() => {
+    AsyncStorage.getItem(SELECTION_STORAGE_KEY).then((value) => {
+      if (value) {
+        try {
+          setSelected(new Set(JSON.parse(value)));
+        } catch {}
       }
-    }
+    });
+  }, []);
 
-    if (url.includes('/all')) {
-      // Test all available modules
-      const query = createQueryString(getTestModules().map((m) => m.name));
-
-      this.props.navigation.navigate(routeNames.run, {
-        tests: query,
-      });
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
       return;
     }
+    AsyncStorage.setItem(SELECTION_STORAGE_KEY, JSON.stringify([...selected]));
+  }, [selected]);
 
-    // Application wasn't started from a deep link which we handle. So, we can load test modules.
-    this._loadTestModules();
-  };
+  const handleOpenURL = useCallback(
+    ({ url }: { url: string }) => {
+      url = url || '';
+      // TODO: Use Expo Linking library once parseURL is implemented for web
+      if (url.includes(`/${routeNames.select}/`)) {
+        const selectedTests = url.split('/').pop();
+        if (selectedTests) {
+          const tests = getSelectedTestNames(selectedTests);
+          const query = createQueryString(tests);
+          navigation.navigate(routeNames.run, { tests: query });
+          return;
+        }
+      }
 
-  _loadTestModules = () => {
-    this.setState({
-      modules: getTestModules(),
-    });
-  };
+      if (url.includes('/all')) {
+        const query = createQueryString(getTestModules().map((m) => m.name));
+        navigation.navigate(routeNames.run, { tests: query });
+        return;
+      }
 
-  componentDidMount() {
-    this._openUrlSubscription = Linking.addEventListener('url', this._handleOpenURL);
+      setModules(getTestModules());
+    },
+    [navigation]
+  );
+
+  useEffect(() => {
+    const subscription = Linking.addEventListener('url', handleOpenURL);
 
     Linking.getInitialURL()
       .then((url) => {
-        this._handleOpenURL({ url });
+        handleOpenURL({ url });
       })
       .catch((err) => console.error('Failed to load initial URL', err));
-  }
 
-  _keyExtractor = ({ name }) => name;
+    return () => {
+      subscription?.remove();
+    };
+  }, [handleOpenURL]);
 
-  _onPressItem = (id) => {
-    this.setState((state) => {
-      const selected = new Set(state.selected);
-      if (selected.has(id)) selected.delete(id);
-      else selected.add(id);
-      return { selected };
+  const keyExtractor = useCallback(({ name }) => name, []);
+
+  const onPressItem = useCallback((id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
     });
-  };
+  }, []);
 
-  _renderItem = ({ item }: { item: Module }) => {
-    const { name } = item;
-    const id = getScreenIdForLinking(item);
-    return (
-      <ListItem
-        id={id}
-        onPressItem={this._onPressItem}
-        selected={this.state.selected.has(id)}
-        title={name}
-      />
-    );
-  };
-
-  _selectAll = () => {
-    this.setState((prevState) => {
-      if (prevState.selected.size === prevState.modules.length) {
-        return { selected: new Set<string>() };
-      }
-      const selected = new Set<string>(prevState.modules.map(getScreenIdForLinking));
-      return { selected };
-    });
-  };
-
-  _navigateToTests = () => {
-    const { selected } = this.state;
-    if (selected.size === 0) {
-      Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
-    } else {
-      const query = createQueryString(Array.from(selected.values()));
-
-      this.props.navigation.navigate(routeNames.run, { tests: query });
-    }
-  };
-
-  render() {
-    const { selected, modules } = this.state;
-    const allSelected = selected.size === modules.length;
-    const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
-
-    return (
-      <>
-        <FlatList<Module>
-          data={modules}
-          contentContainerStyle={{ backgroundColor: '#fff' }}
-          extraData={this.state}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
-          initialNumToRender={15}
-        />
-        <Footer
-          buttonTitle={buttonTitle}
-          canRunTests={selected.size}
-          onRun={this._navigateToTests}
-          onToggle={this._selectAll}
-        />
-      </>
-    );
-  }
-}
-
-function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
-  const { bottom, left, right } = useSafeAreaInsets();
-  const { theme } = useTheme();
-
-  const isRunningInBareExpo = Constants.expoConfig.slug === 'bare-expo';
-  const paddingVertical = 16;
-
-  return (
-    <View
-      style={[
-        styles.buttonRow,
-        {
-          paddingBottom: isRunningInBareExpo ? 0 : bottom,
-          paddingLeft: left,
-          paddingRight: right,
-          borderColor: theme.border.default,
-          backgroundColor: theme.background.default,
-        },
-      ]}>
-      <FooterButton
-        style={{ paddingVertical, alignItems: 'flex-start' }}
-        title={buttonTitle}
-        onPress={onToggle}
-      />
-      <FooterButton
-        style={{ paddingVertical, alignItems: 'flex-end' }}
-        title="Run Tests"
-        disabled={!canRunTests}
-        onPress={onRun}
-      />
-    </View>
+  const renderItem = useCallback(
+    ({ item }: { item: Module }) => {
+      const { name } = item;
+      const id = getScreenIdForLinking(item);
+      return (
+        <ListItem id={id} onPressItem={onPressItem} selected={selected.has(id)} title={name} />
+      );
+    },
+    [onPressItem, selected]
   );
-}
 
-function FooterButton({ title, style, ...props }) {
-  const { theme } = useTheme();
+  const selectAll = useCallback(() => {
+    setSelected((prev) => {
+      if (prev.size === modules.length) {
+        return new Set<string>();
+      }
+      return new Set<string>(modules.map(getScreenIdForLinking));
+    });
+  }, [modules]);
+
+  const navigateToTests = useCallback(() => {
+    if (selected.size === 0) {
+      return;
+    }
+    const query = createQueryString(Array.from(selected.values()));
+    navigation.navigate(routeNames.run, { tests: query });
+  }, [selected, navigation]);
+
+  const allSelected = selected.size === modules.length;
+  const buttonTitle = allSelected ? 'Deselect all' : 'Select all';
+
+  const footer = (
+    <FooterBar>
+      <TouchableOpacity onPress={selectAll}>
+        <Text style={[styles.footerButtonText, { color: theme.text.link }]}>{buttonTitle}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={navigateToTests}
+        disabled={selected.size === 0}
+        style={{ opacity: selected.size === 0 ? 0.4 : 1 }}>
+        <Text style={[styles.footerButtonText, { color: theme.text.link }]}>
+          {selected.size > 0 ? `Run tests (${selected.size})` : 'Run tests'}
+        </Text>
+      </TouchableOpacity>
+    </FooterBar>
+  );
+
   return (
-    <TouchableOpacity
-      style={[styles.footerButton, { opacity: props.disabled ? 0.4 : 1 }, style]}
-      {...props}>
-      <Text style={[styles.footerButtonTitle, { color: theme.text.info }]}>{title}</Text>
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <FlatList<Module>
+        data={modules}
+        extraData={selected}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        initialNumToRender={15}
+        style={{ flex: 1, backgroundColor: theme.background.screen }}
+        contentContainerStyle={supportsGlass ? { paddingBottom: footerHeight } : undefined}
+      />
+      <View style={supportsGlass ? styles.footerOverlay : undefined} onLayout={onFooterLayout}>
+        {footer}
+      </View>
+    </View>
   );
 }
 
 const HORIZONTAL_MARGIN = 20;
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  container: {
     flex: 1,
   },
-  footerButtonTitle: {
+  footerOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  footerButtonText: {
     fontSize: 16,
-  },
-  footerButton: {
-    flex: 1,
-    justifyContent: 'center',
-    marginHorizontal: HORIZONTAL_MARGIN,
+    fontWeight: '600',
   },
   listItem: {
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    paddingVertical: 14,
+    gap: 16,
+    paddingVertical: 16,
     paddingHorizontal: HORIZONTAL_MARGIN,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   label: {
-    color: 'black',
+    flex: 1,
     fontSize: 16,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    backgroundColor: 'white',
-  },
-  contentContainerStyle: {
-    paddingBottom: 128,
   },
 });

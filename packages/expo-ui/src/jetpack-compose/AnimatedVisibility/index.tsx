@@ -24,7 +24,7 @@
  */
 import { requireNativeView } from 'expo';
 
-import { PrimitiveBaseProps, transformProps } from '../layout-types';
+import { type PrimitiveBaseProps, transformProps } from '../layout-types';
 import { ENTER_TRANSITION_SYMBOL, EXIT_TRANSITION_SYMBOL } from './symbols';
 
 type EnterTransitionRecord = {

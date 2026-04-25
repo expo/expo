@@ -1,0 +1,5 @@
+    AsyncFunction("setValueAsync") { value: String ->
+<% if (project.features.includes('Event')) { %>      sendEvent("onChange", mapOf(
+        "value" to value
+      ))
+<% } %>    }

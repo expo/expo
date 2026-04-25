@@ -72,6 +72,8 @@ function getBatteryStateString(batteryState: Battery.BatteryState): string {
       return 'CHARGING';
     case Battery.BatteryState.FULL:
       return 'FULL';
+    case Battery.BatteryState.NOT_CHARGING:
+      return 'NOT_CHARGING';
     case Battery.BatteryState.UNKNOWN:
     default:
       return 'UNKNOWN';

@@ -52,106 +52,136 @@ void JSClassesDecorator::registerClass(
   );
 }
 
+// Creates a JS class in the runtime, sets up its prototype with host functions,
+// and registers it in classRegistry.
+std::shared_ptr<jsi::Function> JSClassesDecorator::installClass(
+  jsi::Runtime &runtime,
+  const std::string &name,
+  ClassEntry &classInfo
+) {
+  auto &[prototypeDecorators, constructorDecorators, constructor, ownerClass, isSharedRef] = classInfo;
+
+  auto weakConstructor = std::weak_ptr<decltype(constructor)::element_type>(constructor);
+  expo::common::ClassConstructor jsConstructor = [weakConstructor = std::move(weakConstructor)](
+    jsi::Runtime &runtime,
+    const jsi::Value &thisValue,
+    const jsi::Value *args,
+    size_t count
+  ) -> jsi::Value {
+    // We need to check if the constructor is still alive.
+    // If not we can just ignore the call. We're destroying the module.
+    auto ctr = weakConstructor.lock();
+    if (ctr == nullptr) {
+      return jsi::Value::undefined();
+    }
+
+    auto thisObject = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
+
+    try {
+      JNIEnv *env = jni::Environment::current();
+      /**
+      * This will push a new JNI stack frame for the LocalReferences in this
+      * function call. When the stack frame for this lambda is popped,
+      * all LocalReferences are deleted.
+      */
+      jni::JniLocalScope scope(env, (int) count);
+      auto result = ctr->callJNISync(
+        env,
+        runtime,
+        thisValue,
+        args,
+        count
+      );
+      if (result == nullptr) {
+        return {runtime, thisValue};
+      }
+      jobject unpackedResult = result.get();
+      jclass resultClass = env->GetObjectClass(unpackedResult);
+      if (env->IsAssignableFrom(
+        resultClass,
+        JCacheHolder::get().jSharedObject
+      )) {
+        JSIContext *jsiContext = getJSIContext(runtime);
+        auto jsThisObject = JavaScriptObject::newInstance(
+          jsiContext,
+          jsiContext->runtimeHolder,
+          thisObject
+        );
+        jsiContext->registerSharedObject(result, jsThisObject);
+      }
+      return {runtime, thisValue};
+    } catch (jni::JniException &jniException) {
+      rethrowAsCodedError(runtime, jniException);
+    }
+  };
+
+  auto klass = createClass(
+    runtime,
+    name,
+    isSharedRef,
+    std::move(jsConstructor)
+  );
+
+  for (const auto &decorator: constructorDecorators) {
+    decorator->decorate(runtime, klass);
+  }
+
+  auto klassSharedPtr = std::make_shared<jsi::Function>(std::move(klass));
+
+  JSIContext *jsiContext = getJSIContext(runtime);
+
+  auto jsThisObject = JavaScriptObject::newInstance(
+    jsiContext,
+    jsiContext->runtimeHolder,
+    klassSharedPtr
+  );
+
+  if (ownerClass != nullptr) {
+    jsiContext->registerClass(jni::make_local(ownerClass), jsThisObject);
+  }
+
+  jsi::PropNameID prototypePropNameId = jsi::PropNameID::forAscii(runtime, "prototype", 9);
+  jsi::Object klassPrototype = klassSharedPtr
+    ->getProperty(runtime, prototypePropNameId)
+    .asObject(runtime);
+
+  for (const auto &decorator: prototypeDecorators) {
+    decorator->decorate(runtime, klassPrototype);
+  }
+
+  return klassSharedPtr;
+}
+
+// Used by the worklet runtime path. Installs all classes in the runtime
+// and registers them in classRegistry.
+// Transfers decorator ownership to each prototype via NativeState so
+// MethodMetadata stays alive since host functions capture weak_ptrs to it.
+void JSClassesDecorator::consumeForWorklet(jsi::Runtime &runtime) {
+  for (auto &[name, classInfo]: classes) {
+    auto klass = installClass(runtime, name, classInfo);
+    jsi::Object proto = klass->getProperty(runtime, "prototype").asObject(runtime);
+    auto state = std::make_shared<ClassPrototypeState>();
+    state->prototypeDecorators = std::move(classInfo.prototypeDecorators);
+    state->constructorDecorators = std::move(classInfo.constructorDecorators);
+    state->constructor = std::move(classInfo.constructor);
+    proto.setNativeState(runtime, std::move(state));
+  }
+  classes.clear();
+}
+
+// Installs all classes and sets them as properties on the passed object.
 void JSClassesDecorator::decorate(
   jsi::Runtime &runtime,
   jsi::Object &jsObject
 ) {
   for (auto &[name, classInfo]: classes) {
-    auto &[prototypeDecorators, constructorDecorators, constructor, ownerClass, isSharedRef] = classInfo;
-
-    auto weakConstructor = std::weak_ptr<decltype(constructor)::element_type>(constructor);
-    expo::common::ClassConstructor jsConstructor = [weakConstructor = std::move(weakConstructor)](
-      jsi::Runtime &runtime,
-      const jsi::Value &thisValue,
-      const jsi::Value *args,
-      size_t count
-    ) -> jsi::Value {
-      // We need to check if the constructor is still alive.
-      // If not we can just ignore the call. We're destroying the module.
-      auto ctr = weakConstructor.lock();
-      if (ctr == nullptr) {
-        return jsi::Value::undefined();
-      }
-
-      auto thisObject = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
-
-      try {
-        JNIEnv *env = jni::Environment::current();
-        /**
-        * This will push a new JNI stack frame for the LocalReferences in this
-        * function call. When the stack frame for this lambda is popped,
-        * all LocalReferences are deleted.
-        */
-        jni::JniLocalScope scope(env, (int) count);
-        auto result = ctr->callJNISync(
-          env,
-          runtime,
-          thisValue,
-          args,
-          count
-        );
-        if (result == nullptr) {
-          return {runtime, thisValue};
-        }
-        jobject unpackedResult = result.get();
-        jclass resultClass = env->GetObjectClass(unpackedResult);
-        if (env->IsAssignableFrom(
-          resultClass,
-          JCacheHolder::get().jSharedObject
-        )) {
-          JSIContext *jsiContext = getJSIContext(runtime);
-          auto jsThisObject = JavaScriptObject::newInstance(
-            jsiContext,
-            jsiContext->runtimeHolder,
-            thisObject
-          );
-          jsiContext->registerSharedObject(result, jsThisObject);
-        }
-        return {runtime, thisValue};
-      } catch (jni::JniException &jniException) {
-        rethrowAsCodedError(runtime, jniException);
-      }
-    };
-
-    auto klass = createClass(
-      runtime,
-      name,
-      isSharedRef,
-      std::move(jsConstructor)
-    );
-
-    for (const auto &decorator: constructorDecorators) {
-      decorator->decorate(runtime, klass);
-    }
-
-    auto klassSharedPtr = std::make_shared<jsi::Function>(std::move(klass));
-
-    JSIContext *jsiContext = getJSIContext(runtime);
-
-    auto jsThisObject = JavaScriptObject::newInstance(
-      jsiContext,
-      jsiContext->runtimeHolder,
-      klassSharedPtr
-    );
-
-    if (ownerClass != nullptr) {
-      jsiContext->registerClass(jni::make_local(ownerClass), jsThisObject);
-    }
+    auto klass = installClass(runtime, name, classInfo);
 
     jsObject.setProperty(
       runtime,
       jsi::String::createFromUtf8(runtime, name),
-      jsi::Value(runtime, *klassSharedPtr)
+      jsi::Value(runtime, *klass)
     );
-
-    jsi::PropNameID prototypePropNameId = jsi::PropNameID::forAscii(runtime, "prototype", 9);
-    jsi::Object klassPrototype = klassSharedPtr
-      ->getProperty(runtime, prototypePropNameId)
-      .asObject(runtime);
-
-    for (const auto &decorator: prototypeDecorators) {
-      decorator->decorate(runtime, klassPrototype);
-    }
   }
 }
 

@@ -1,5 +1,6 @@
 import JsonFile from '@expo/json-file';
-import spawnAsync, { SpawnOptions } from '@expo/spawn-async';
+import type { SpawnOptions } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 

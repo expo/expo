@@ -1,7 +1,9 @@
 {
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
+    "rootDir": "./src",
     "outDir": "./build",
+    "rootDir": "./src",
     "emitDeclarationOnly": true
   },
   "include": ["./src/**/*"],

@@ -40,7 +40,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-docs: 'true'
+          pnpm-docs: 'true'
           docs-api-data: 'true'
       - name: 📦 Install workspace deps
         run: pnpm install --ignore-scripts --frozen-lockfile
@@ -52,41 +52,45 @@ jobs:
       - name: 📝 Regenerate `unversioned` data for Docs
         if: steps.expo-caches.outputs.docs-api-data-hit != 'true'
         run: expotools generate-docs-api-data
-      - name: 🧶 Yarn install
+      - name: 📦 Install docs deps
         working-directory: docs
-        if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
-        run: yarn install --immutable
+        if: steps.expo-caches.outputs.pnpm-docs-hit != 'true'
+        run: pnpm install --frozen-lockfile
       - name: 🧪 Run Docs tests
         working-directory: docs
-        run: yarn test
+        run: pnpm test
       - name: 🧪 Test Cloudflare worker and routes
         working-directory: docs
-        run: yarn test:worker
+        run: pnpm test:worker
       - name: 🚨 Lint Docs website code
         working-directory: docs
         env:
           NODE_ENV: production
-        run: yarn lint --max-warnings 0
+        run: pnpm lint --max-warnings 0
+      - name: 📦 Read Vale version
+        id: vale-version
+        working-directory: docs
+        run: echo "version=$(node -p "require('./.vale-version.json').version")" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
-        uses: errata-ai/vale-action@v2.1.1
+        uses: vale-cli/vale-action@v2.1.1
         with:
-          version: 3.12.0
+          version: ${{ steps.vale-version.outputs.version }}
           reporter: github-pr-check
-          files: 'docs/pages'
-          vale_flags: '--config=./docs/.vale.ini'
+          files: '["docs/pages", "docs/scenes", "docs/README.md"]'
+          vale_flags: --config=./docs/.vale.ini --glob=!{docs/pages/versions/latest,docs/pages/versions/latest/**,docs/pages/internal,docs/pages/internal/**}
           fail_on_error: true
-          # Override bundled reviewdog (0.17.0) to avoid 300-file diff limit
+          # Override vale-action's older bundled reviewdog to avoid large-diff limits.
           reviewdog_url: https://github.com/reviewdog/reviewdog/releases/download/v0.21.0/reviewdog_0.21.0_Linux_x86_64.tar.gz
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
-        run: yarn export
+        run: pnpm export
         timeout-minutes: 20
         env:
           # NOTE(@krystofwoldrich): Missing token won't fail the build
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: 🔗 Lint pages links
         working-directory: docs
-        run: yarn lint-links --quiet
+        run: pnpm lint-links --quiet
       - name: 🚀 Deploy Docs website
         if: github.ref == 'refs/heads/main'
         id: deploy

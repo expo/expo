@@ -62,7 +62,7 @@ class AnyFunctionTest {
 
     assertThrows<ArgumentCastException>(
       """
-      The 1st argument cannot be cast to type class kotlin.Int (received class java.lang.String)
+      The 1st argument cannot be cast to type int (received class java.lang.String)
       → Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')
       """.trimIndent()
     ) {

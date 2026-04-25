@@ -66,7 +66,7 @@ function SecureStoreView() {
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -81,7 +81,7 @@ function SecureStoreView() {
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -96,7 +96,7 @@ function SecureStoreView() {
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -111,7 +111,7 @@ function SecureStoreView() {
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }
@@ -120,7 +120,7 @@ function SecureStoreView() {
     try {
       await SecureStore.deleteItemAsync(key, { keychainService: service });
       Alert.alert('Success!', 'Value deleted', [{ text: 'OK', onPress: () => {} }]);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
   }

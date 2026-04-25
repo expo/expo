@@ -1,6 +1,6 @@
 import * as Log from '../../../../log';
 import { ExpoMiddleware } from '../ExpoMiddleware';
-import { ServerNext, ServerRequest, ServerResponse } from '../server.types';
+import type { ServerNext, ServerRequest, ServerResponse } from '../server.types';
 
 jest.mock('../../../../log');
 

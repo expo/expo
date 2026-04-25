@@ -1,11 +1,15 @@
-import { CommandMenu, CommandMenuTrigger } from '@expo/styleguide-search-ui';
-import { ReactNode, useState } from 'react';
+import { CommandMenuTrigger, useCommandMenuShortcut } from '@expo/styleguide-search-ui/trigger';
+import { lazy, ReactNode, Suspense, useRef, useState } from 'react';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 
 import { ExpoDashboardItem } from './ExpoDashboardItem';
 import { entries } from './expoEntries';
+
+const CommandMenu = lazy(() =>
+  import('@expo/styleguide-search-ui').then(m => ({ default: m.CommandMenu }))
+);
 
 type SearchProps = {
   mainSection?: string;
@@ -18,6 +22,13 @@ export const Search = ({ mainSection }: SearchProps) => {
   const { version } = usePageApiVersion();
   const [open, setOpen] = useState(false);
   const [expoDashboardItems, setExpoDashboardItems] = useState<ReactNode[]>([]);
+  const hasOpened = useRef(false);
+
+  if (open) {
+    hasOpened.current = true;
+  }
+
+  useCommandMenuShortcut(setOpen, { enabled: !hasOpened.current });
 
   async function getExpoItemsAsync(query: string) {
     const filteredEntries = entries.filter(entry =>
@@ -30,23 +41,27 @@ export const Search = ({ mainSection }: SearchProps) => {
 
   return (
     <>
-      <CommandMenu
-        open={open}
-        setOpen={setOpen}
-        config={{
-          docsVersion: version,
-          docsTransformUrl: transformDocsUrl,
-          ...(mainSection && { docsSectionContext: { mainSection } }),
-        }}
-        customSections={[
-          {
-            heading: 'EAS dashboard',
-            items: expoDashboardItems,
-            getItemsAsync: getExpoItemsAsync,
-            sectionIndex: Number.MAX_SAFE_INTEGER,
-          },
-        ]}
-      />
+      {hasOpened.current && (
+        <Suspense>
+          <CommandMenu
+            open={open}
+            setOpen={setOpen}
+            config={{
+              docsVersion: version,
+              docsTransformUrl: transformDocsUrl,
+              ...(mainSection && { docsSectionContext: { mainSection } }),
+            }}
+            customSections={[
+              {
+                heading: 'EAS dashboard',
+                items: expoDashboardItems,
+                getItemsAsync: getExpoItemsAsync,
+                sectionIndex: Number.MAX_SAFE_INTEGER,
+              },
+            ]}
+          />
+        </Suspense>
+      )}
       <CommandMenuTrigger
         setOpen={setOpen}
         className="hocus:bg-element hocus:dark:bg-subtle mb-2.5"

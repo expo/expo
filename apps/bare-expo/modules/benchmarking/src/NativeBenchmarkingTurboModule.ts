@@ -5,6 +5,7 @@ export interface Spec extends TurboModule {
   addNumbers(a: number, b: number): number;
   addStrings(a: string, b: string): string;
   foldArray(array: number[]): number;
+  echoObject(point: Object): Object;
 }
 
 export default TurboModuleRegistry.get<Spec>('BenchmarkingTurboModule') as Spec | null;

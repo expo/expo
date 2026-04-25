@@ -19,7 +19,7 @@ class CustomTypeConvertersTest {
           CustomType()
         }
         .from { string: String ->
-          Truth.assertThat("string").isEqualTo("string")
+          Truth.assertThat(string).isEqualTo("string")
           CustomType()
         }
         .from { listOfNumber: List<Int> ->

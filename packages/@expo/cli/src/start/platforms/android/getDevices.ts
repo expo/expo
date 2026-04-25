@@ -1,4 +1,5 @@
-import { Device, getAttachedDevicesAsync } from './adb';
+import type { Device } from './adb';
+import { getAttachedDevicesAsync } from './adb';
 import { listAvdsAsync } from './emulator';
 import { CommandError } from '../../../utils/errors';
 

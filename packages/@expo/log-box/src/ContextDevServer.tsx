@@ -1,4 +1,5 @@
-import React, { useEffect, useState, createContext, use, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import React, { useEffect, useState, createContext, use } from 'react';
 
 import { fetchProjectMetadataAsync } from './utils/devServerEndpoints';
 

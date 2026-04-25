@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createComponentForStaticNavigation = createComponentForStaticNavigation;
 exports.createPathConfigForStaticNavigation = createPathConfigForStaticNavigation;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 const react_is_1 = require("react-is");
@@ -75,15 +76,13 @@ const getItemsFromScreens = (Screen, screens) => {
         if (component == null) {
             throw new Error(`Couldn't find a 'screen' property for the screen '${name}'. This can happen if you passed 'undefined'. You likely forgot to export your component from the file it's defined in, or mixed up default import and named import when importing.`);
         }
-        const element = isNavigator ? (React.createElement(component, {})) : (<MemoizedScreen component={component}/>);
+        const element = isNavigator ? (React.createElement(component, {})) : ((0, jsx_runtime_1.jsx)(MemoizedScreen, { component: component }));
         return () => {
             const shouldRender = useIf == null || useIf();
             if (!shouldRender) {
                 return null;
             }
-            return (<Screen key={name} name={name} {...props}>
-          {() => element}
-        </Screen>);
+            return ((0, jsx_runtime_1.jsx)(Screen, { name: name, ...props, children: () => element }, name));
         };
     });
 };
@@ -119,16 +118,14 @@ function createComponentForStaticNavigation(tree, displayName
                     if (!shouldRender) {
                         return null;
                     }
-                    return (<Group key={key} navigationKey={key} {...group}>
-                {children}
-              </Group>);
+                    return ((0, jsx_runtime_1.jsx)(Group, { navigationKey: key, ...group, children: children }, key));
                 };
             }));
         }
     }
     const NavigatorComponent = () => {
         const children = items.map((item) => item());
-        return <Navigator {...rest}>{children}</Navigator>;
+        return (0, jsx_runtime_1.jsx)(Navigator, { ...rest, children: children });
     };
     NavigatorComponent.displayName = displayName;
     return NavigatorComponent;

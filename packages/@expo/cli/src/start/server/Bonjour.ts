@@ -1,4 +1,5 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 
 import { getSession } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';

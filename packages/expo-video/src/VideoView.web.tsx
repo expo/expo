@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet } from 'react-native';
 
-import VideoPlayer, { getSourceUri } from './VideoPlayer.web';
+import type VideoPlayer from './VideoPlayer.web';
+import { getSourceUri } from './VideoPlayer.web';
 import type { VideoViewProps } from './VideoView.types';
 
 type FullscreenChangeListeners = {

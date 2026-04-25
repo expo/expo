@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageTransition } from '../Image.types';
+import type { ImageTransition } from '../Image.types';
 type Callbacks = {
     onReady?: (() => void) | null;
     onAnimationFinished?: (() => void) | null;
@@ -32,6 +32,6 @@ export default function AnimationManager({ children: renderFunction, initial, tr
     initial: AnimationManagerNode | null;
     transition: ImageTransition | null | undefined;
     recyclingKey?: string | null | undefined;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=AnimationManager.d.ts.map

@@ -1,7 +1,7 @@
-import React, { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { type StackScreenProps, StackSearchBar } from './stack-utils';
-import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState, type RouteProp } from '../react-navigation/native';
-import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '../react-navigation/native-stack';
+import { type ParamListBase, type StackNavigationState, StackRouter as RNStackRouter, type RouteProp } from '../react-navigation/native';
+import type { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { Protected } from '../views/Protected';
 /**
  * We extend NativeStackNavigationOptions with our custom props
@@ -46,98 +46,98 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
         shadow?: string;
     };
 };
-declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/native-stack").NativeStackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & {
+declare const RNStack: import("react").ForwardRefExoticComponent<Omit<Omit<import("..").NativeStackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/core").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
-        navigation: import("../react-navigation/native").NavigationHelpers<ParamListBase, {}>;
-        descriptors: Record<string, import("../react-navigation/native").Descriptor<NativeStackNavigationOptions, import("../react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, NativeStackNavigationOptions, NativeStackNavigationEventMap>, RouteProp<ParamListBase, string>>>;
+        navigation: import("..").NavigationHelpers<ParamListBase, {}>;
+        descriptors: Record<string, import("..").Descriptor<NativeStackNavigationOptions, import("..").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, NativeStackNavigationOptions, NativeStackNavigationEventMap>, RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
     }) => React.ReactElement) | undefined;
     screenListeners?: Partial<{
-        transitionStart: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        gestureCancel: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
-        sheetDetentChange: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
-        focus: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
+        transitionStart: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        gestureCancel: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
+        sheetDetentChange: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
+        focus: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
         route: RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/native-stack").NativeStackNavigationProp<ParamListBase, string, undefined>;
+        navigation: import("..").NativeStackNavigationProp<ParamListBase, string, undefined>;
     }) => Partial<{
-        transitionStart: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        gestureCancel: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
-        sheetDetentChange: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
-        focus: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
+        transitionStart: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        gestureCancel: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
+        sheetDetentChange: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
+        focus: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }>) | undefined;
     screenOptions?: NativeStackNavigationOptions | ((props: {
         route: RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/native-stack").NativeStackNavigationProp<ParamListBase, string, undefined>;
+        navigation: import("..").NativeStackNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
     }) => NativeStackNavigationOptions) | undefined;
-    screenLayout?: ((props: import("../react-navigation/native").ScreenLayoutArgs<ParamListBase, string, NativeStackNavigationOptions, import("../react-navigation/native-stack").NativeStackNavigationProp<ParamListBase, string, undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("..").ScreenLayoutArgs<ParamListBase, string, NativeStackNavigationOptions, import("..").NativeStackNavigationProp<ParamListBase, string, undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
         source?: string;
         target?: string;
-    }>>(original: import("../react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("../react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
+    }>>(original: import("../react-navigation/core").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("../react-navigation/core").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
     UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("../react-navigation/native-stack").NativeStackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("..").NativeStackNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/core").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
-        navigation: import("../react-navigation/native").NavigationHelpers<ParamListBase, {}>;
-        descriptors: Record<string, import("../react-navigation/native").Descriptor<NativeStackNavigationOptions, import("../react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, NativeStackNavigationOptions, NativeStackNavigationEventMap>, RouteProp<ParamListBase, string>>>;
+        navigation: import("..").NavigationHelpers<ParamListBase, {}>;
+        descriptors: Record<string, import("..").Descriptor<NativeStackNavigationOptions, import("..").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, NativeStackNavigationOptions, NativeStackNavigationEventMap>, RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
     }) => React.ReactElement) | undefined;
     screenListeners?: Partial<{
-        transitionStart: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        gestureCancel: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
-        sheetDetentChange: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
-        focus: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
+        transitionStart: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        gestureCancel: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
+        sheetDetentChange: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
+        focus: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
         route: RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/native-stack").NativeStackNavigationProp<ParamListBase, string, undefined>;
+        navigation: import("..").NativeStackNavigationProp<ParamListBase, string, undefined>;
     }) => Partial<{
-        transitionStart: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        gestureCancel: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
-        sheetDetentChange: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
-        focus: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("../react-navigation/native").EventListenerCallback<NativeStackNavigationEventMap & import("../react-navigation/native").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
+        transitionStart: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        gestureCancel: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
+        sheetDetentChange: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "sheetDetentChange", unknown>;
+        focus: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("..").EventListenerCallback<NativeStackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }>) | undefined;
     screenOptions?: NativeStackNavigationOptions | ((props: {
         route: RouteProp<ParamListBase, string>;
-        navigation: import("../react-navigation/native-stack").NativeStackNavigationProp<ParamListBase, string, undefined>;
+        navigation: import("..").NativeStackNavigationProp<ParamListBase, string, undefined>;
         theme: ReactNavigation.Theme;
     }) => NativeStackNavigationOptions) | undefined;
-    screenLayout?: ((props: import("../react-navigation/native").ScreenLayoutArgs<ParamListBase, string, NativeStackNavigationOptions, import("../react-navigation/native-stack").NativeStackNavigationProp<ParamListBase, string, undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("..").ScreenLayoutArgs<ParamListBase, string, NativeStackNavigationOptions, import("..").NativeStackNavigationProp<ParamListBase, string, undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
         source?: string;
         target?: string;
-    }>>(original: import("../react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("../react-navigation/native").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
+    }>>(original: import("../react-navigation/core").Router<StackNavigationState<ParamListBase>, Action>) => Partial<import("../react-navigation/core").Router<StackNavigationState<ParamListBase>, Action>>) | undefined;
     UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & {
     id?: undefined;
-}, "children">> & React.RefAttributes<unknown>> & {
-    Screen: (props: import("../useScreens").ScreenProps<ExtendedStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
+}, "children">> & import("react").RefAttributes<unknown>> & {
+    Screen: (props: import("..").ScreenProps<ExtendedStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
     Protected: typeof Protected;
 };
 /**
@@ -155,25 +155,25 @@ export declare const stackRouterOverride: NonNullable<ComponentProps<typeof RNSt
  *
  * @hideType
  */
-declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Element) & {
-    Screen: (({ children, options, ...rest }: StackScreenProps) => React.JSX.Element) & {
+declare const Stack: ((props: ComponentProps<typeof RNStack>) => import("react/jsx-runtime").JSX.Element) & {
+    Screen: (({ children, options, ...rest }: StackScreenProps) => import("react/jsx-runtime").JSX.Element) & {
         Title: typeof import("./stack-utils").StackScreenTitle;
         BackButton: typeof import("./stack-utils").StackScreenBackButton;
     };
-    Protected: React.FunctionComponent<import("../views/Protected").ProtectedProps>;
+    Protected: import("react").FunctionComponent<import("../views/Protected").ProtectedProps>;
     Header: typeof import("./stack-utils/StackHeaderComponent").StackHeaderComponent;
     SearchBar: typeof StackSearchBar;
     Toolbar: {
-        (props: import("./stack-utils").StackToolbarProps): React.JSX.Element;
-        Button: React.FC<import("./stack-utils").StackToolbarButtonProps>;
-        Menu: React.FC<import("./stack-utils").StackToolbarMenuProps>;
-        MenuAction: React.FC<import("./stack-utils").StackToolbarMenuActionProps>;
-        SearchBarSlot: React.FC<import("./stack-utils").StackToolbarSearchBarSlotProps>;
-        Spacer: React.FC<import("./stack-utils").StackToolbarSpacerProps>;
-        View: React.FC<import("./stack-utils").StackToolbarViewProps>;
-        Label: React.FC<import("./stack-utils").StackToolbarLabelProps>;
-        Icon: React.FC<import("./stack-utils").StackToolbarIconProps>;
-        Badge: React.FC<import("./stack-utils").StackToolbarBadgeProps>;
+        (props: import("./stack-utils").StackToolbarProps): import("react/jsx-runtime").JSX.Element;
+        Button: import("react").FC<import("./stack-utils").StackToolbarButtonProps>;
+        Menu: import("react").FC<import("./stack-utils").StackToolbarMenuProps>;
+        MenuAction: import("react").FC<import("./stack-utils").StackToolbarMenuActionProps>;
+        SearchBarSlot: import("react").FC<import("./stack-utils").StackToolbarSearchBarSlotProps>;
+        Spacer: import("react").FC<import("./stack-utils").StackToolbarSpacerProps>;
+        View: import("react").FC<import("./stack-utils").StackToolbarViewProps>;
+        Label: import("react").FC<import("./stack-utils").StackToolbarLabelProps>;
+        Icon: import("react").FC<import("./stack-utils").StackToolbarIconProps>;
+        Badge: import("react").FC<import("./stack-utils").StackToolbarBadgeProps>;
     };
 };
 export default Stack;

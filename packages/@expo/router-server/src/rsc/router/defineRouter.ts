@@ -23,8 +23,14 @@ import { createElement } from 'react';
 
 import { getPathMapping } from '../path';
 import type { PathSpec } from '../path';
-import { defineEntries, rerender } from '../server';
-import type { BuildConfig, RenderEntries, GetBuildConfig, GetSsrConfig } from '../server';
+import { rerender } from '../server';
+import type {
+  BuildConfig,
+  RenderEntries,
+  GetBuildConfig,
+  GetSsrConfig,
+  defineEntries,
+} from '../server';
 
 type RoutePropsForLayout = Omit<RouteProps, 'searchParams'> & {
   children: ReactNode;

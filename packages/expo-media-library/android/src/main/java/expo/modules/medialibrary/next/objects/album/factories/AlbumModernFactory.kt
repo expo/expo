@@ -36,7 +36,7 @@ class AlbumModernFactory(
     return Album(id, assetDeleter, assetFactory, contextRef.getOrThrow())
   }
 
-  override suspend fun createFromAssets(albumName: String, assets: List<Asset>, deleteOriginalAssets: Boolean): Album =
+  override suspend fun createFromAssets(albumName: String, assets: List<Asset>, deleteOriginalAssets: Boolean?): Album =
     try {
       val mimeTypeOfFirstAsset = assets[0].getMimeType()
       val albumRelativePath = RelativePath.create(mimeTypeOfFirstAsset, albumName)
@@ -61,12 +61,12 @@ class AlbumModernFactory(
     return Album(albumId, assetDeleter, assetFactory, contextRef.getOrThrow())
   }
 
-  private suspend fun processAssetsLocation(assets: List<Asset>, relativePath: RelativePath, deleteOriginalAssets: Boolean) {
-    if (deleteOriginalAssets) {
+  private suspend fun processAssetsLocation(assets: List<Asset>, relativePath: RelativePath, deleteOriginalAssets: Boolean?) {
+    if (deleteOriginalAssets == true) {
       mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(assets.map { it.contentUri })
-      assets.map { it.move(relativePath) }
+      assets.forEach { it.move(relativePath) }
     } else {
-      assets.map { it.copy(relativePath) }
+      assets.forEach { it.copy(relativePath) }
     }
   }
 }

@@ -44,3 +44,4 @@ minimumReleaseAgeExclude:
   - '@expo/*'
   - '@react-native/*'
   - 'react-native'
+  - multitars

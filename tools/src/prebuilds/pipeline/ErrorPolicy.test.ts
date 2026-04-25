@@ -6,9 +6,10 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import type { SPMPackageSource } from '../ExternalPackage';
 import { createRequest, createContext } from './Context';
 import type { PrebuildContext, PrebuildCliOptions } from './Context';
-import { executeStep, runPrebuildPipeline } from './Executor';
+import { executeStep, runPrebuildPipeline, synthesizeSkippedResult } from './Executor';
 import type { PipelineSteps } from './Executor';
 import type { Step } from './Types';
 
@@ -423,5 +424,60 @@ describe('runPrebuildPipeline', () => {
     const result = await runPrebuildPipeline(ctx, steps);
     assert.equal(result.exitCode, 0);
     assert.deepEqual(ran, ['run']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// synthesizeSkippedResult tests
+// ---------------------------------------------------------------------------
+
+function makePkgWithProducts(name: string, productNames: string[]): SPMPackageSource {
+  return {
+    path: `/repo/packages/${name}`,
+    buildPath: `/repo/packages/precompile/.build/${name}`,
+    packageName: name,
+    packageVersion: '1.0.0',
+    getSwiftPMConfiguration: () => ({
+      products: productNames.map((n) => ({ name: n })),
+    }),
+  } as unknown as SPMPackageSource;
+}
+
+describe('synthesizeSkippedResult', () => {
+  it('produces one UnitStatus + UnitError per product × flavor, all stages skipped with skipReason', () => {
+    const pkg = makePkgWithProducts('pkg-a', ['ProdOne', 'ProdTwo']);
+    const result = synthesizeSkippedResult(pkg, ['dep-x'], ['Debug', 'Release']);
+
+    assert.equal(result.packageName, 'pkg-a');
+    assert.equal(result.stopRun, false);
+    assert.equal(result.statuses.length, 4, 'two products × two flavors = 4 units');
+    assert.equal(result.errors.length, 4);
+
+    for (const status of result.statuses) {
+      // Every stage should be 'skipped' — the whole unit was skipped, not a
+      // genuine generate failure. skipReason is what flips the summary into
+      // the failed bucket.
+      assert.equal(status.stages.generate, 'skipped');
+      assert.equal(status.stages.build, 'skipped');
+      assert.equal(status.stages.compose, 'skipped');
+      assert.equal(status.stages.verify, 'skipped');
+      assert.ok(status.skipReason, 'skipReason must be set');
+      assert.match(status.skipReason!, /dep-x/);
+    }
+
+    for (const err of result.errors) {
+      assert.equal(err.stage, 'prepare');
+      assert.match(err.error.message, /dep-x/);
+      assert.match(err.error.message, /Skipped/);
+    }
+  });
+
+  it('respects productFilter', () => {
+    const pkg = makePkgWithProducts('pkg-a', ['ProdOne', 'ProdTwo']);
+    const result = synthesizeSkippedResult(pkg, ['dep-x'], ['Release'], 'ProdTwo');
+
+    assert.equal(result.statuses.length, 1);
+    assert.equal(result.statuses[0].productName, 'ProdTwo');
+    assert.equal(result.errors.length, 1);
   });
 });

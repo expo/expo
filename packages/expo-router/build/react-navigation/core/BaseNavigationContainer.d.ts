@@ -15,5 +15,5 @@ import type { NavigationContainerProps, NavigationContainerRef } from './types';
  */
 export declare function BaseNavigationContainer({ ref, initialState, onStateChange, onReady, onUnhandledAction, navigationInChildEnabled, theme, children, }: NavigationContainerProps & {
     ref?: React.Ref<NavigationContainerRef<ParamListBase>>;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=BaseNavigationContainer.d.ts.map

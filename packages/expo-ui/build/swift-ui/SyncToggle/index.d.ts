@@ -1,5 +1,5 @@
 import { type SFSymbol } from 'sf-symbols-typescript';
-import { type ObservableState } from '../State/useNativeState';
+import { type ObservableState } from '../../State/useNativeState';
 import { type CommonViewModifierProps } from '../types';
 export type SyncToggleProps = {
     /**
@@ -25,5 +25,5 @@ export type SyncToggleProps = {
  * A toggle driven by observable native state.
  * Use `useNativeState(false)` to create the state.
  */
-export declare function SyncToggle(props: SyncToggleProps): import("react").JSX.Element;
+export declare function SyncToggle(props: SyncToggleProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

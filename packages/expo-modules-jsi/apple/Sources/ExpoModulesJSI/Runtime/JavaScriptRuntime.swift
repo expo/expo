@@ -37,11 +37,6 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    */
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
 
-  public init(provider: JavaScriptRuntimeProvider) {
-    self.pointee = provider.consume()
-    self.scheduler = expo.RuntimeScheduler(pointee)
-  }
-
   /**
    Creates a runtime from the JSI runtime.
    */
@@ -107,20 +102,27 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    Creates a JavaScript host object with given implementations for property getter, property setter, property names getter and dealloc.
    */
   public func createHostObject(
-    get: @escaping (_ propertyName: String) -> JavaScriptValue,
-    set: @escaping (_ propertyName: String, _ value: JavaScriptValue) -> Void,
-    getPropertyNames: @escaping () -> [String],
-    dealloc: @escaping () -> Void
+    get: @escaping @JavaScriptActor (_ propertyName: String) -> JavaScriptValue,
+    set: @escaping @JavaScriptActor (_ propertyName: String, _ value: JavaScriptValue) -> Void,
+    getPropertyNames: @escaping @JavaScriptActor () -> [String],
+    dealloc: @escaping @JavaScriptActor () -> Void
   ) -> JavaScriptObject {
     func getter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>) -> facebook.jsi.Value {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
-      return context.get(String(cString: propertyName)).asJSIValue()
+      let propertyName = String(cString: propertyName)
+
+      return JavaScriptActor.assumeIsolated {
+        return context.get(propertyName).asJSIValue()
+      }
     }
 
     func setter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>, valuePointer: UnsafeMutableRawPointer) {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
       let value = JavaScriptValue(context.runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
-      context.set(String(cString: propertyName), value)
+      let propertyName = String(cString: propertyName)
+      return JavaScriptActor.assumeIsolated {
+        context.set(propertyName, value)
+      }
     }
 
     func propertyNamesGetter(context: UnsafeMutableRawPointer) -> expo.HostObjectCallbacks.PropNameIds {
@@ -129,7 +131,12 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
       guard let runtime = context.runtime else {
         FatalError.runtimeLost()
       }
-      let propertyNames = context.getPropertyNames()
+      // Get property names within the actor isolation, but build the vector outside
+      // to avoid returning a non-copyable C++ type through `assumeIsolated`
+      // (its `withoutActuallyEscaping` forces a copy of the return value).
+      let propertyNames: [String] = JavaScriptActor.assumeIsolated {
+        return context.getPropertyNames()
+      }
       var vector = expo.HostObjectCallbacks.PropNameIds()
 
       vector.reserve(propertyNames.count)
@@ -142,7 +149,10 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     }
 
     func deallocate(context: UnsafeMutableRawPointer) {
-      Unmanaged<HostObjectContext>.fromOpaque(context).release()
+      let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeRetainedValue()
+      JavaScriptActor.assumeIsolated {
+        context.dealloc()
+      }
     }
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc)).toOpaque()
@@ -300,6 +310,14 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   // MARK: - Runtime execution
 
   /**
+   Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
+   Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.
+   */
+  public var supportsAsyncScheduling: Bool {
+    return scheduler.supportsAsyncScheduling()
+  }
+
+  /**
    Schedules a closure to be executed with granted synchronized access to the runtime.
    */
   public func schedule(priority: SchedulerPriority = .normal, @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> sending Void) -> Void {
@@ -375,7 +393,24 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   /**
-   Asynchronously executes a closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   Asynchronously executes a sync closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   */
+  public func execute<R: Sendable>(
+    @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R
+  ) async throws -> sending R {
+    return try await withUnsafeThrowingContinuation { continuation in
+      scheduler.scheduleTask(.ImmediatePriority) {
+        do {
+          continuation.resume(returning: try JavaScriptActor.assumeIsolated(closure))
+        } catch {
+          continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+  /**
+   Asynchronously executes an async closure on the JavaScript runtime thread, awaiting its completion without blocking.
    */
   public func execute<R: Sendable>(
     taskName: String? = "[JS] runtime.execute (async \(#function))",
@@ -498,9 +533,14 @@ private func createFunctionClosure(runtime: JavaScriptRuntime, name: String? = n
         let thisValue = JavaScriptValue(runtime, this)
         let result = try context.call(thisValue, argumentsRef.take())
         return result.asJSIValue()
+      } catch let throwable as JavaScriptThrowable {
+        // Store the error in thread-local storage so the C++ caller can
+        // retrieve it and throw a jsi::JSError after this closure returns.
+        let jsError = JavaScriptError(runtime, from: throwable)
+        expo.CppError.setCurrent(jsError.toJSError())
+        return .undefined()
       } catch let error {
-        // TODO: Implement throwing `facebook.jsi.JSError`, returns `undefined` until then
-        print("Calling '\(context.name ?? "anonymous")' function has failed: \(error)")
+        expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
         return .undefined()
       }
     }

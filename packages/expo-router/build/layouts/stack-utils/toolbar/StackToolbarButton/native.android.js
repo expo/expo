@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeToolbarButton = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
 const AnimatedItemContainer_1 = require("../../../../toolbar/AnimatedItemContainer");
 const context_1 = require("../context");
@@ -21,11 +22,7 @@ const NativeToolbarButton = (props) => {
     const tintColor = props.imageRenderingMode === 'original'
         ? undefined
         : (props.tintColor ?? toolbarColors.tintColor ?? (0, defaults_1.DEFAULT_TOOLBAR_TINT_COLOR)());
-    return (<AnimatedItemContainer_1.AnimatedItemContainer visible={!props.hidden}>
-      <jetpack_compose_1.IconButton onClick={props.onPress} enabled={!props.disabled}>
-        <jetpack_compose_1.Icon source={props.source} tint={tintColor} size={24}/>
-      </jetpack_compose_1.IconButton>
-    </AnimatedItemContainer_1.AnimatedItemContainer>);
+    return ((0, jsx_runtime_1.jsx)(AnimatedItemContainer_1.AnimatedItemContainer, { visible: !props.hidden, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.IconButton, { onClick: props.onPress, enabled: !props.disabled, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Icon, { source: props.source, tint: tintColor, size: 24 }) }) }));
 };
 exports.NativeToolbarButton = NativeToolbarButton;
 //# sourceMappingURL=native.android.js.map

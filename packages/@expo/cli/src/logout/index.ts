@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { Command } from '../../bin/cli';
+import type { Command } from '../../bin/cli';
 import { assertArgs, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 

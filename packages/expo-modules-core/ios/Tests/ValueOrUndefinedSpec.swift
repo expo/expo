@@ -91,7 +91,7 @@ final class ValueOrUndefinedSpec: ExpoSpec {
       it("converts from array to [ValueOrUndefinedSpec<Int>]") {
         let wereUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.array_of_undefined_of_int([1, undefined, 2, undefined, 3])")
-          .asArray().map { try $0!.asBool() }
+          .asArray().map { try $0.asBool() }
         
         expect(wereUndefined).to(equal([false, true, false, true, false]))
       }
@@ -99,7 +99,7 @@ final class ValueOrUndefinedSpec: ExpoSpec {
       it("converts from array to [ValueOrUndefinedSpec<Int?>]") {
         let wereUndefined = try runtime
           .eval("expo.modules.ValueOrUndefinedModule.array_of_undefined_of_optional_int([1, undefined, null, 2, undefined, null], [1, null, null, 2, null, null])")
-          .asArray().map { try $0!.asBool() }
+          .asArray().map { try $0.asBool() }
         
         expect(wereUndefined).to(equal([false, true, false, false, true, false]))
       }

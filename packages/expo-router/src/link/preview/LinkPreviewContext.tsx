@@ -1,4 +1,5 @@
-import { createContext, PropsWithChildren, use, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import { createContext, use, useState } from 'react';
 
 const LinkPreviewContext = createContext<
   | {

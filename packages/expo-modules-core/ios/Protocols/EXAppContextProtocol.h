@@ -26,11 +26,6 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
 @property(nonatomic, weak, nullable) EXModuleRegistry *legacyModuleRegistry;
 
 /**
- Underlying JSI runtime of the running app.
- */
-@property(nonatomic, strong, nullable) EXRuntime *_runtime;
-
-/**
  The application identifier used to distinguish between different RCTHost.
  */
 @property(nonatomic, readonly, nullable) NSString *appIdentifier;
@@ -46,23 +41,6 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
  Returns an array of names of the modules registered in the module registry.
  */
 - (nonnull NSArray<NSString *> *)getModuleNames;
-
-/**
- Returns a JavaScript object that represents a module with given name.
-
- @warning This method must only be called from the JavaScript thread.
- It uses assumeIsolated internally and will crash if called from other threads.
- */
-- (nullable EXJavaScriptObject *)getNativeModuleObjectUnsafe:(nonnull NSString *)moduleName;
-
-/**
- Asynchronously calls module's function with given arguments.
- */
-- (void)callFunction:(nonnull NSString *)functionName
-            onModule:(nonnull NSString *)moduleName
-            withArgs:(nonnull NSArray *)args
-             resolve:(nonnull EXPromiseResolveBlock)resolve
-              reject:(nonnull EXPromiseRejectBlock)reject;
 
 #pragma mark - Native Module Registration
 

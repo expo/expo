@@ -5,7 +5,7 @@
       "name": "ExpoScreenCapture",
       "podName": "ExpoScreenCapture",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

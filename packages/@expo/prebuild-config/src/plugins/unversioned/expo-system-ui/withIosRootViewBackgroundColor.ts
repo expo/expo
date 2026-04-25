@@ -1,5 +1,6 @@
-import { ConfigPlugin, InfoPlist, WarningAggregator, withInfoPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
+import { WarningAggregator, withInfoPlist } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 // @ts-ignore: uses flow
 import normalizeColor from '@react-native/normalize-colors';
 import semver from 'semver';

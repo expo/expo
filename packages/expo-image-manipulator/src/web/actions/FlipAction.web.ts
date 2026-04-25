@@ -1,4 +1,5 @@
-import { ActionFlip, FlipType } from '../../ImageManipulator.types';
+import type { ActionFlip } from '../../ImageManipulator.types';
+import { FlipType } from '../../ImageManipulator.types';
 import { getContext } from '../utils.web';
 
 export default (canvas: HTMLCanvasElement, flip: ActionFlip['flip']) => {

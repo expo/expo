@@ -7,6 +7,7 @@ struct ErrorView: View {
   let error: EXDevLauncherAppError
   let onReload: () -> Void
   let onGoHome: () -> Void
+  @State private var copied = false
 
   var body: some View {
     VStack(spacing: 0) {
@@ -21,6 +22,7 @@ struct ErrorView: View {
           .foregroundColor(.secondary)
           .multilineTextAlignment(.leading)
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.horizontal, 20)
       .padding(.top, 20)
 
@@ -55,6 +57,20 @@ struct ErrorView: View {
     .cornerRadius(8)
   }
 
+  private var errorText: String {
+    var text = error.message
+    if let stack = error.stack, !stack.isEmpty {
+      for frame in stack {
+        let method = frame.methodName ?? "Unknown method"
+        text += "\n\(method)"
+        if let file = frame.file {
+          text += "\n  at \(file):\(frame.lineNumber):\(frame.column)"
+        }
+      }
+    }
+    return text
+  }
+
   private var actions: some View {
     VStack(spacing: 6) {
       Button(action: onReload) {
@@ -67,14 +83,39 @@ struct ErrorView: View {
           .cornerRadius(8)
       }
 
-      Button(action: onGoHome) {
-        Text("Go to home")
-          .font(.headline)
-          .foregroundColor(.black)
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color.expoSystemGray5)
-          .cornerRadius(8)
+      HStack(spacing: 6) {
+        Button(action: onGoHome) {
+          Text("Go home")
+            .font(.headline)
+            .foregroundColor(.primary)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.expoSystemGray5)
+            .cornerRadius(8)
+        }
+
+        #if !os(tvOS)
+        Button(action: {
+          #if !os(macOS)
+          UIPasteboard.general.string = errorText
+          #else
+          NSPasteboard.general.clearContents()
+          NSPasteboard.general.setString(errorText, forType: .string)
+          #endif
+          copied = true
+          DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            copied = false
+          }
+        }) {
+          Text(copied ? "Copied!" : "Copy")
+            .font(.headline)
+            .foregroundColor(.primary)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.expoSystemGray5)
+            .cornerRadius(8)
+        }
+        #endif
       }
     }
     .padding(.horizontal, 20)

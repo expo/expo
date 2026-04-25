@@ -58,15 +58,15 @@ export declare const useBuildAction: () => (href: string) => {
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+        routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
         type: string;
         stale: false;
-    }> | import("../core").PartialState<Readonly<{
+    }> | import(".").PartialState<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+        routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
         type: string;
         stale: false;
     }>> | (Omit<Readonly<{
@@ -74,22 +74,22 @@ export declare const useBuildAction: () => (href: string) => {
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+        routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "routes"> & {
-        routes: Omit<import("../core").Route<string>, "key">[];
+        routes: Omit<import(".").Route<string>, "key">[];
     })) | undefined;
 } | {
     type: "NAVIGATE";
     payload: {
         name: string;
-        params?: import("../core").NavigatorScreenParams<Readonly<{
+        params?: import(".").NavigatorScreenParams<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+            routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
             type: string;
             stale: false;
         }>>;
@@ -156,15 +156,15 @@ export declare function useLinkBuilder(): {
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+            routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
             type: string;
             stale: false;
-        }> | import("../core").PartialState<Readonly<{
+        }> | import(".").PartialState<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+            routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
             type: string;
             stale: false;
         }>> | (Omit<Readonly<{
@@ -172,22 +172,22 @@ export declare function useLinkBuilder(): {
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+            routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "routes"> & {
-            routes: Omit<import("../core").Route<string>, "key">[];
+            routes: Omit<import(".").Route<string>, "key">[];
         })) | undefined;
     } | {
         type: "NAVIGATE";
         payload: {
             name: string;
-            params?: import("../core").NavigatorScreenParams<Readonly<{
+            params?: import(".").NavigatorScreenParams<Readonly<{
                 key: string;
                 index: number;
                 routeNames: string[];
                 history?: unknown[];
-                routes: import("../core").NavigationRoute<import("../core").ParamListBase, string>[];
+                routes: import(".").NavigationRoute<import(".").ParamListBase, string>[];
                 type: string;
                 stale: false;
             }>>;

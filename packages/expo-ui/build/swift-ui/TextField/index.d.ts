@@ -1,8 +1,9 @@
-import { Ref } from 'react';
-import { type ViewEvent } from '../../types';
-import { type CommonViewModifierProps } from '../types';
+import type { Ref } from 'react';
+import type { ObservableState } from '../../State/useNativeState';
+import type { ViewEvent } from '../../types';
+import type { CommonViewModifierProps } from '../types';
 /**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and selecting text on the `TextField` component.
  */
 export type TextFieldRef = {
     setText: (newText: string) => Promise<void>;
@@ -16,8 +17,12 @@ export type TextFieldRef = {
 };
 export type TextFieldProps = {
     ref?: Ref<TextFieldRef>;
-    /** Initial value displayed when mounted. Uncontrolled — change `key` to reset. */
-    defaultValue?: string;
+    /**
+     * An observable state that holds the current text.
+     * Create one with `useNativeState('')` or `useNativeState('initial value')`.
+     * If omitted, the field manages its own internal state.
+     */
+    text?: ObservableState<string>;
     /** If true, the text field will be focused automatically when mounted. @default false */
     autoFocus?: boolean;
     /**
@@ -26,8 +31,11 @@ export type TextFieldProps = {
     placeholder?: string;
     /**
      * A callback triggered when the text value changes.
+     *
+     * If the callback is marked with the `'worklet'` directive, it runs synchronously
+     * on the UI thread; otherwise it is delivered asynchronously as a regular JS event.
      */
-    onValueChange?: (value: string) => void;
+    onTextChange?: (text: string) => void;
     /**
      * A callback triggered when the field gains or loses focus.
      */
@@ -48,16 +56,19 @@ export type TextFieldProps = {
      */
     axis?: 'horizontal' | 'vertical';
 } & CommonViewModifierProps;
-export type NativeTextFieldProps = Omit<TextFieldProps, 'onValueChange' | 'onFocusChange' | 'onSelectionChange'> & ViewEvent<'onValueChange', {
+export type NativeTextFieldProps = Omit<TextFieldProps, 'text' | 'onTextChange' | 'onFocusChange' | 'onSelectionChange'> & ViewEvent<'onTextChange', {
     value: string;
 }> & ViewEvent<'onFocusChange', {
     value: boolean;
 }> & ViewEvent<'onSelectionChange', {
     start: number;
     end: number;
-}>;
+}> & {
+    text?: number | null;
+    onTextChangeSync?: number | null;
+};
 /**
  * Renders a SwiftUI `TextField`.
  */
-export declare function TextField(props: TextFieldProps): import("react").JSX.Element;
+export declare function TextField(props: TextFieldProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

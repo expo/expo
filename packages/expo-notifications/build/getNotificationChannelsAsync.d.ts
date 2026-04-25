@@ -1,4 +1,4 @@
-import { NotificationChannel } from './NotificationChannelManager.types';
+import type { NotificationChannel } from './NotificationChannelManager.types';
 /**
  * Fetches information about all known notification channels.
  * @return A Promise which resolves to an array of channels. On platforms that do not support notification channels,

@@ -3,7 +3,7 @@ import { getRuntimeVersionNullableAsync } from '@expo/config-plugins/build/utils
 import { vol } from 'memfs';
 
 import { InterstitialPageMiddleware } from '../InterstitialPageMiddleware';
-import { ServerRequest, ServerResponse } from '../server.types';
+import type { ServerRequest, ServerResponse } from '../server.types';
 
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),

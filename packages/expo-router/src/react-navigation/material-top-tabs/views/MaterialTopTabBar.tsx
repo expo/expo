@@ -1,4 +1,5 @@
-import { ColorValue, StyleSheet } from 'react-native';
+import type { ColorValue } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { Color } from '../../../utils/color';
 import { Text } from '../../elements';

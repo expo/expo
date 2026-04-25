@@ -10,5 +10,9 @@ if (process.platform !== 'darwin') {
 }
 
 const projectPath = path.join(process.cwd(), 'example', 'ios');
-spawn('xed', [projectPath], { stdio: 'inherit' });
-process.exit(0);
+const child = spawn('xed', [projectPath], { stdio: 'inherit' });
+
+child.once('error', (error) => {
+  console.error(`Error: Failed to open Xcode: ${error.message}`);
+  process.exit(1);
+});

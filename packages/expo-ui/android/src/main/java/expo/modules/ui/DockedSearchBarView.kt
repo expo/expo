@@ -11,10 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class DockedSearchBarProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -41,10 +42,10 @@ fun FunctionalComposableScope.DockedSearchBarContent(
         textFieldState = textFieldState,
         onSearch = {},
         placeholder = {
-          Children(ComposableScope(), filter = { isSlotWithName(it, "placeholder") })
+          Children(UIComposableScope(), filter = { isSlotWithName(it, "placeholder") })
         },
         leadingIcon = {
-          Children(ComposableScope(), filter = { isSlotWithName(it, "leadingIcon") })
+          Children(UIComposableScope(), filter = { isSlotWithName(it, "leadingIcon") })
         }
       )
     },

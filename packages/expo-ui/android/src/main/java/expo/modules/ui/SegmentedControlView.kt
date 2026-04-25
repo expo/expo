@@ -3,11 +3,11 @@ package expo.modules.ui
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.runtime.Composable
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
-import expo.modules.kotlin.views.with
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class SingleChoiceSegmentedButtonRowProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -17,10 +17,11 @@ fun FunctionalComposableScope.SingleChoiceSegmentedButtonRowContent(props: Singl
   SingleChoiceSegmentedButtonRow(
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope().with(rowScope = this@SingleChoiceSegmentedButtonRow))
+    Children(UIComposableScope(rowScope = this@SingleChoiceSegmentedButtonRow))
   }
 }
 
+@OptimizedComposeProps
 data class MultiChoiceSegmentedButtonRowProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -30,6 +31,6 @@ fun FunctionalComposableScope.MultiChoiceSegmentedButtonRowContent(props: MultiC
   MultiChoiceSegmentedButtonRow(
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope().with(rowScope = this@MultiChoiceSegmentedButtonRow))
+    Children(UIComposableScope(rowScope = this@MultiChoiceSegmentedButtonRow))
   }
 }

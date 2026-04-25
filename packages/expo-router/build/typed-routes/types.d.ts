@@ -60,7 +60,7 @@ export type HrefOutputParams<T extends ExpoRouter.__routes = ExpoRouter.__routes
 /**
  * @hidden
  */
-export type RouteInputParams<T extends Route> = Extract<Href, {
+export type RouteInputParams<T> = Extract<Href, {
     pathname: T;
 }> extends never ? HrefInputParams extends infer H ? H extends Record<'pathname' | 'params', any> ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefInputParams, {
     pathname: T;
@@ -68,18 +68,11 @@ export type RouteInputParams<T extends Route> = Extract<Href, {
 /**
  * @hidden
  */
-export type RouteOutputParams<T extends Route> = Extract<HrefOutputParams, {
-    pathname: T;
-}> extends never ? HrefOutputParams extends infer H ? H extends {
-    pathname: any;
-    params?: any;
-} ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefOutputParams, {
-    pathname: T;
-}>['params'];
-/**
- * @hidden
- */
-export type RouteParams<T extends Route> = RouteOutputParams<T>;
+export type RouteOutputParams<T> = HrefOutputParams extends infer U ? U extends {
+    pathname: string;
+    params?: infer Params;
+} ? T extends U['pathname'] ? Params : never : never : never;
+export type { RouteOutputParams as RouteParams };
 /**
  * Routes can have known inputs (e.g query params).
  * Unlike outputs, inputs can be `undefined` or `null`.
@@ -110,13 +103,7 @@ export type UnknownOutputParams = Record<string, string | string[]>;
  */
 export type SingleRoutePart<S extends string | object> = S extends object ? never : S extends `${string}/${string}` ? never : S extends `${string}${SearchOrHash}` ? never : S extends '' ? never : S extends `(${string})` ? never : S extends `[${string}]` ? never : S;
 /**
- * @deprecated Use `RouteParams` or `StrictRouteParams` instead.
- *
  * @hidden
  */
-export type SearchParams<T extends string = never> = RouteParams<T>;
-/**
- * @hidden
- */
-export type RouteSegments<HrefOrSegments extends Route | string[]> = HrefOrSegments extends string[] ? HrefOrSegments : HrefOrSegments extends `.${string}` ? never : HrefOrSegments extends `` ? never : HrefOrSegments extends `/${infer PartA}` ? RouteSegments<PartA> : HrefOrSegments extends `${infer PartA}?${string}` ? RouteSegments<PartA> : HrefOrSegments extends `${infer PartA}#${string}` ? RouteSegments<PartA> : HrefOrSegments extends `${infer PartA}/${infer PartB}` ? [PartA, ...RouteSegments<PartB>] : [HrefOrSegments];
+export type RouteSegments<HrefOrSegments> = HrefOrSegments extends string[] ? HrefOrSegments : HrefOrSegments extends `.${string}` ? never : HrefOrSegments extends `` ? never : HrefOrSegments extends `/${infer PartA}` ? RouteSegments<PartA> : HrefOrSegments extends `${infer PartA}?${string}` ? RouteSegments<PartA> : HrefOrSegments extends `${infer PartA}#${string}` ? RouteSegments<PartA> : HrefOrSegments extends `${infer PartA}/${infer PartB}` ? [PartA, ...RouteSegments<PartB>] : [HrefOrSegments];
 //# sourceMappingURL=types.d.ts.map
