@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Add explicit secure context error for `web/wa-sqlite/AccessHandlePoolVFS.js` ([#40605](https://github.com/expo/expo/pull/40605) by [@BDav24](https://github.com/BDav24))
+- Fix `SQLiteProvider` skipping re-renders when only `children` change. ([#45099](https://github.com/expo/expo/pull/45099) by [@vladlenskiy](https://github.com/vladlenskiy))
 
 ### 💡 Others
 
