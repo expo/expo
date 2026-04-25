@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { type DownloadOptions, type PathInfo, UploadOptions, UploadResult, DownloadTaskOptions, DownloadPauseState, type UploadTaskState, type DownloadTaskState } from './ExpoFileSystem.types';
+import { type DownloadOptions, type PathInfo, UploadOptions, UploadResult, type DownloadTaskRestoreOptions, DownloadTaskOptions, DownloadPauseState, type UploadTaskState, type DownloadTaskState } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -129,13 +129,17 @@ export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask 
     private _url;
     private _destination;
     private _options?;
+    private _persistenceConfig?;
+    private _id;
     private _resumeData?;
     private _subscription?;
     private _abortHandler?;
     private _inFlightOperation?;
     private _pauseRequest?;
+    private _pendingPausePersistence?;
     constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions);
     get state(): DownloadTaskState;
+    get id(): string | null;
     downloadAsync(): Promise<File | null>;
     pause(): void;
     pauseAsync(): Promise<void>;
@@ -143,7 +147,10 @@ export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask 
     cancel(): void;
     savable(): DownloadPauseState;
     static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask;
+    static restoreAsync(taskId: string, options: DownloadTaskRestoreOptions): Promise<DownloadTask | null>;
     private _runDownloadOperation;
+    private _persistPausedState;
+    private _clearPersistedState;
     private _emitFinalProgressEvent;
 }
 //# sourceMappingURL=FileSystem.d.ts.map

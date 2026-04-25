@@ -26,11 +26,14 @@ export {
   type UploadOptions,
   type UploadProgress,
   type UploadResult,
+  type DownloadTaskPersistenceBackend,
+  type DownloadTaskPersistenceConfig,
   type DownloadTaskOptions,
   type NetworkTaskSessionType,
   type DownloadPauseState,
   type UploadTaskState,
   type DownloadTaskState,
+  type DownloadTaskRestoreOptions,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';

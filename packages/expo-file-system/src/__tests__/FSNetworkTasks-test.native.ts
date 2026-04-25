@@ -213,6 +213,39 @@ describe('DownloadTask', () => {
     );
   });
 
+  it('keeps download sessionType undefined when options are provided without sessionType', async () => {
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockResolvedValue(null);
+
+    const task = new DownloadTask(url, destination, {
+      headers: { Authorization: 'Bearer token' },
+    });
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    expect(ExpoFileSystem.FileSystemDownloadTask.prototype.start).toHaveBeenCalledWith(
+      url,
+      destination,
+      expect.objectContaining({
+        headers: { Authorization: 'Bearer token' },
+        sessionType: undefined,
+      })
+    );
+
+    await task.resumeAsync();
+
+    expect(ExpoFileSystem.FileSystemDownloadTask.prototype.resume).toHaveBeenCalledWith(
+      url,
+      destination,
+      'mock-resume-data',
+      expect.objectContaining({
+        headers: { Authorization: 'Bearer token' },
+        sessionType: undefined,
+      })
+    );
+  });
+
   it('transitions to active then paused when native returns null', async () => {
     jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockResolvedValue(null);
 
@@ -461,7 +494,9 @@ describe('DownloadPauseState persistence', () => {
 
   it('savable() returns correct state with isDirectory false for File destination', async () => {
     const dest = new File(Paths.cache, 'video.mp4');
-    const task = new DownloadTask('https://example.com/video.mp4', dest);
+    const task = new DownloadTask('https://example.com/video.mp4', dest, {
+      sessionType: 'foreground',
+    });
     const downloadPromise = task.downloadAsync();
     task.pause();
     await downloadPromise;
@@ -471,6 +506,7 @@ describe('DownloadPauseState persistence', () => {
     expect(state.url).toBe('https://example.com/video.mp4');
     expect(state.fileUri).toBe(dest.uri);
     expect(state.isDirectory).toBe(false);
+    expect(state.sessionType).toBe('foreground');
     expect(state.resumeData).toBe('resume-blob');
   });
 
@@ -490,6 +526,7 @@ describe('DownloadPauseState persistence', () => {
       url: 'https://example.com/f',
       fileUri: 'file:///mock/cache/f',
       isDirectory: false,
+      sessionType: 'background',
     };
     expect(() => DownloadTask.fromSavable(state)).toThrow(
       'Cannot restore task: DownloadPauseState has no resumeData'
@@ -503,11 +540,13 @@ describe('DownloadPauseState persistence', () => {
       isDirectory: false,
       resumeData: 'saved-resume-data',
       headers: { Authorization: 'Bearer token' },
+      sessionType: 'foreground',
     };
     const task = DownloadTask.fromSavable(state);
     expect(task.state).toBe('paused');
     const savedAgain = task.savable();
     expect(savedAgain.url).toBe('https://example.com/video.mp4');
+    expect(savedAgain.sessionType).toBe('foreground');
     expect(savedAgain.resumeData).toBe('saved-resume-data');
   });
 
@@ -516,6 +555,7 @@ describe('DownloadPauseState persistence', () => {
       url: 'https://example.com/video.mp4',
       fileUri: 'file:///mock/cache/video.mp4',
       isDirectory: false,
+      sessionType: 'background',
       resumeData: 'data',
     };
     const task = DownloadTask.fromSavable(state);
@@ -528,11 +568,332 @@ describe('DownloadPauseState persistence', () => {
       url: 'https://example.com/video.mp4',
       fileUri: 'file:///mock/cache/',
       isDirectory: true,
+      sessionType: 'background',
       resumeData: 'data',
     };
     const task = DownloadTask.fromSavable(state);
     const saved = task.savable();
     expect(saved.isDirectory).toBe(true);
+  });
+});
+
+describe('DownloadTask persistence store', () => {
+  const storageKeyPrefix = 'expo-file-system:download-task:';
+  const customKeyPrefix = 'custom-prefix:';
+
+  function createStore() {
+    const data = new Map<string, string>();
+    return {
+      data,
+      getItem: jest.fn(async (key: string) => data.get(key) ?? null),
+      setItem: jest.fn(async (key: string, value: string) => {
+        data.set(key, value);
+      }),
+      removeItem: jest.fn(async (key: string) => {
+        data.delete(key);
+      }),
+    };
+  }
+
+  beforeEach(() => {
+    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockResolvedValue(null);
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'pause')
+      .mockReturnValue({ resumeData: 'resume-blob' });
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'resume')
+      .mockResolvedValue('file:///mock/cache/video.mp4');
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'cancel')
+      .mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('generates an id only when persistence is configured', () => {
+    const regularTask = new DownloadTask('https://example.com/f', new File(Paths.cache, 'f'));
+    expect(regularTask.id).toBeNull();
+
+    const store = createStore();
+    const persistedTask = new DownloadTask('https://example.com/f', new File(Paths.cache, 'f2'), {
+      persistenceConfig: { backend: store },
+    });
+
+    expect(typeof persistedTask.id).toBe('string');
+    expect(persistedTask.id).toBeTruthy();
+    expect(store.setItem).not.toHaveBeenCalled();
+  });
+
+  it('uses a custom key prefix when provided', async () => {
+    const store = createStore();
+    const task = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video.mp4'),
+      {
+        persistenceConfig: { backend: store, keyPrefix: customKeyPrefix },
+      }
+    );
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    expect(store.setItem.mock.calls[0]![0]).toBe(`${customKeyPrefix}${task.id}`);
+  });
+
+  it('uses a custom id when provided', () => {
+    const store = createStore();
+    const task = new DownloadTask('https://example.com/f', new File(Paths.cache, 'f2'), {
+      persistenceConfig: { backend: store, customId: 'download-123' },
+    });
+
+    expect(task.id).toBe('download-123');
+  });
+
+  it('uses both custom key prefix and custom id when provided', async () => {
+    const store = createStore();
+    const task = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video.mp4'),
+      {
+        persistenceConfig: {
+          backend: store,
+          keyPrefix: customKeyPrefix,
+          customId: 'download-123',
+        },
+      }
+    );
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    expect(task.id).toBe('download-123');
+    expect(store.setItem.mock.calls[0]![0]).toBe(`${customKeyPrefix}download-123`);
+  });
+
+  it('persists paused state after pause and active operation settles', async () => {
+    const store = createStore();
+    const task = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video.mp4'),
+      {
+        persistenceConfig: { backend: store },
+        headers: { Authorization: 'Bearer token' },
+        sessionType: 'foreground',
+      }
+    );
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    expect(task.state).toBe('paused');
+    expect(store.setItem).toHaveBeenCalledTimes(1);
+
+    const [storageKey, payload] = store.setItem.mock.calls[0]!;
+    expect(storageKey).toBe(`${storageKeyPrefix}${task.id}`);
+    expect(JSON.parse(payload)).toEqual({
+      version: 1,
+      pauseState: {
+        url: 'https://example.com/video.mp4',
+        fileUri: new File(Paths.cache, 'video.mp4').uri,
+        isDirectory: false,
+        headers: { Authorization: 'Bearer token' },
+        sessionType: 'foreground',
+        resumeData: 'resume-blob',
+      },
+    });
+  });
+
+  it('pauseAsync waits for store write to finish', async () => {
+    let resolveSetItem!: () => void;
+    const store = createStore();
+    store.setItem.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSetItem = resolve;
+        })
+    );
+
+    const task = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video.mp4'),
+      {
+        persistenceConfig: { backend: store },
+      }
+    );
+
+    const downloadPromise = task.downloadAsync();
+    const pausePromise = task.pauseAsync();
+    await downloadPromise;
+
+    let resolved = false;
+    pausePromise.then(() => {
+      resolved = true;
+    });
+    await Promise.resolve();
+    expect(resolved).toBe(false);
+
+    resolveSetItem();
+    await pausePromise;
+    expect(resolved).toBe(true);
+  });
+
+  it('restoreAsync returns null for missing or corrupt records', async () => {
+    const missingStore = createStore();
+    await expect(
+      DownloadTask.restoreAsync('missing-task', {
+        persistenceConfig: { backend: missingStore },
+      })
+    ).resolves.toBeNull();
+
+    const corruptStore = createStore();
+    corruptStore.data.set(`${storageKeyPrefix}corrupt-task`, '{not-json');
+
+    await expect(
+      DownloadTask.restoreAsync('corrupt-task', {
+        persistenceConfig: { backend: corruptStore },
+      })
+    ).resolves.toBeNull();
+    expect(corruptStore.removeItem).toHaveBeenCalledWith(`${storageKeyPrefix}corrupt-task`);
+  });
+
+  it('restoreAsync reads the correct key when a custom prefix is provided', async () => {
+    const store = createStore();
+    store.data.set(
+      `${customKeyPrefix}saved-task`,
+      JSON.stringify({
+        version: 1,
+        pauseState: {
+          url: 'https://example.com/video.mp4',
+          fileUri: 'file:///mock/cache/video.mp4',
+          isDirectory: false,
+          headers: { Authorization: 'Bearer token' },
+          sessionType: 'foreground',
+          resumeData: 'saved-resume-data',
+        },
+      })
+    );
+
+    const task = await DownloadTask.restoreAsync('saved-task', {
+      persistenceConfig: { backend: store, keyPrefix: customKeyPrefix },
+    });
+
+    expect(store.getItem).toHaveBeenCalledWith(`${customKeyPrefix}saved-task`);
+    expect(task?.id).toBe('saved-task');
+  });
+
+  it('restoreAsync rebuilds a paused task and preserves saved headers', async () => {
+    const store = createStore();
+    store.data.set(
+      `${storageKeyPrefix}saved-task`,
+      JSON.stringify({
+        version: 1,
+        pauseState: {
+          url: 'https://example.com/video.mp4',
+          fileUri: 'file:///mock/cache/video.mp4',
+          isDirectory: false,
+          headers: { Authorization: 'Bearer token' },
+          sessionType: 'foreground',
+          resumeData: 'saved-resume-data',
+        },
+      })
+    );
+
+    const onProgress = jest.fn();
+    const controller = new AbortController();
+
+    const task = await DownloadTask.restoreAsync('saved-task', {
+      persistenceConfig: { backend: store },
+      onProgress,
+      signal: controller.signal,
+    });
+
+    expect(task).not.toBeNull();
+    expect(task!.id).toBe('saved-task');
+    expect(task!.state).toBe('paused');
+    expect(task!.savable()).toEqual({
+      url: 'https://example.com/video.mp4',
+      fileUri: 'file:///mock/cache/video.mp4',
+      isDirectory: false,
+      headers: { Authorization: 'Bearer token' },
+      sessionType: 'foreground',
+      resumeData: 'saved-resume-data',
+    });
+  });
+
+  it('removes persisted data after successful resume, cancel, and terminal failure', async () => {
+    const store = createStore();
+    const task = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video.mp4'),
+      {
+        persistenceConfig: { backend: store },
+      }
+    );
+
+    const downloadPromise = task.downloadAsync();
+    task.pause();
+    await downloadPromise;
+
+    await task.resumeAsync();
+    expect(store.removeItem).toHaveBeenCalledWith(`${storageKeyPrefix}${task.id}`);
+
+    store.removeItem.mockClear();
+    const cancelTask = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video2.mp4'),
+      {
+        persistenceConfig: { backend: store },
+      }
+    );
+    cancelTask.downloadAsync().catch(() => {});
+    cancelTask.cancel();
+    await Promise.resolve();
+    expect(store.removeItem).toHaveBeenCalledWith(`${storageKeyPrefix}${cancelTask.id}`);
+
+    store.removeItem.mockClear();
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start')
+      .mockRejectedValueOnce(new Error('network error'));
+    const failingTask = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video3.mp4'),
+      { persistenceConfig: { backend: store } }
+    );
+    await expect(failingTask.downloadAsync()).rejects.toThrow('network error');
+    expect(store.removeItem).toHaveBeenCalledWith(`${storageKeyPrefix}${failingTask.id}`);
+  });
+
+  it('overwrites the same storage key across repeated pause and resume cycles', async () => {
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'resume')
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce('file:///mock/cache/video.mp4');
+
+    const store = createStore();
+    const task = new DownloadTask(
+      'https://example.com/video.mp4',
+      new File(Paths.cache, 'video.mp4'),
+      {
+        persistenceConfig: { backend: store },
+      }
+    );
+
+    const firstDownload = task.downloadAsync();
+    task.pause();
+    await firstDownload;
+
+    const resumedDownload = task.resumeAsync();
+    task.pause();
+    await resumedDownload;
+
+    expect(store.setItem).toHaveBeenCalledTimes(2);
+    expect(store.setItem.mock.calls[0]![0]).toBe(`${storageKeyPrefix}${task.id}`);
+    expect(store.setItem.mock.calls[1]![0]).toBe(`${storageKeyPrefix}${task.id}`);
   });
 });
 

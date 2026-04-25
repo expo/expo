@@ -10,6 +10,7 @@ import {
   FileMode,
   UploadOptions,
   UploadResult,
+  type DownloadTaskRestoreOptions,
   DownloadTaskOptions,
   DownloadPauseState,
   type UploadTaskState,
@@ -349,6 +350,36 @@ function assertNetworkTaskState<TState extends TaskState>(
   }
 }
 
+/**
+ * Download tasks default to background sessions unless the caller explicitly opts out.
+ */
+const DOWNLOAD_TASK_PERSISTENCE_VERSION = 1;
+const DOWNLOAD_TASK_PERSISTENCE_KEY_PREFIX = 'expo-file-system:download-task:';
+
+type PersistedDownloadTaskRecord = {
+  version: typeof DOWNLOAD_TASK_PERSISTENCE_VERSION;
+  pauseState: DownloadPauseState;
+};
+
+function getPersistedDownloadTaskKey(
+  taskId: string,
+  keyPrefix = DOWNLOAD_TASK_PERSISTENCE_KEY_PREFIX
+): string {
+  return `${keyPrefix}${taskId}`;
+}
+
+function isPersistedDownloadTaskRecord(value: unknown): value is PersistedDownloadTaskRecord {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+  const record = value as Partial<PersistedDownloadTaskRecord>;
+  return (
+    record.version === DOWNLOAD_TASK_PERSISTENCE_VERSION &&
+    !!record.pauseState &&
+    typeof record.pauseState === 'object'
+  );
+}
+
 function wireNetworkTaskAbortSignal(
   signal: NetworkTaskOptions<never>['signal'],
   cancel: () => void
@@ -474,27 +505,45 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
   private _url: string;
   private _destination: File | Directory;
   private _options?: DownloadTaskOptions;
+  private _persistenceConfig?: {
+    backend: NonNullable<NonNullable<DownloadTaskOptions['persistenceConfig']>['backend']>;
+    keyPrefix: string;
+  };
+  private _id: string | null;
   private _resumeData?: string;
   private _subscription?: EventSubscription;
   private _abortHandler?: () => void;
   private _inFlightOperation?: Promise<File | null>;
   private _pauseRequest?: Promise<void>;
+  private _pendingPausePersistence?: Promise<void>;
 
   constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions) {
     super();
     this._url = url;
     this._destination = destination;
     this._options = options;
+    this._persistenceConfig = options?.persistenceConfig
+      ? {
+          backend: options.persistenceConfig.backend,
+          keyPrefix: options.persistenceConfig.keyPrefix ?? DOWNLOAD_TASK_PERSISTENCE_KEY_PREFIX,
+        }
+      : undefined;
+    this._id = this._persistenceConfig ? (options?.persistenceConfig?.customId ?? uuid.v4()) : null;
   }
 
   get state(): DownloadTaskState {
     return this._state;
   }
 
+  get id(): string | null {
+    return this._id;
+  }
+
   async downloadAsync(): Promise<File | null> {
     assertNetworkTaskState(this._state, ['idle'], 'downloadAsync');
     this._state = 'active';
     this._pauseRequest = undefined;
+    this._pendingPausePersistence = undefined;
     const operation = this._runDownloadOperation(() =>
       super.start(this._url, this._destination, {
         headers: this._options?.headers,
@@ -518,6 +567,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     this.pause();
     await this._pauseRequest;
     await this._inFlightOperation;
+    await this._pendingPausePersistence;
   }
   async resumeAsync(): Promise<File | null> {
     assertNetworkTaskState(this._state, ['paused'], 'resumeAsync');
@@ -528,6 +578,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     }
     this._state = 'active';
     this._pauseRequest = undefined;
+    this._pendingPausePersistence = undefined;
     const operation = this._runDownloadOperation(() =>
       super.resume(this._url, this._destination, this._resumeData!, {
         headers: this._options?.headers,
@@ -546,6 +597,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     cleanupNetworkTask(this._options?.signal, this._subscription, this._abortHandler);
     this._subscription = undefined;
     this._abortHandler = undefined;
+    this._clearPersistedState().catch(() => {});
   }
 
   savable(): DownloadPauseState {
@@ -555,6 +607,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       fileUri: this._destination.uri,
       isDirectory: this._destination instanceof Directory,
       headers: this._options?.headers,
+      sessionType: this._options?.sessionType ?? 'background',
       resumeData: this._resumeData,
     };
   }
@@ -565,8 +618,12 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     }
     const dest = state.isDirectory ? new Directory(state.fileUri) : new File(state.fileUri);
     const mergedOptions =
-      options || state.headers
-        ? { ...options, headers: { ...state.headers, ...options?.headers } }
+      options || state.headers || state.sessionType
+        ? {
+            ...options,
+            headers: { ...state.headers, ...options?.headers },
+            sessionType: state.sessionType ?? options?.sessionType,
+          }
         : undefined;
     const task = new DownloadTask(state.url, dest, mergedOptions);
     task._resumeData = state.resumeData;
@@ -574,6 +631,38 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     return task;
   }
 
+  static async restoreAsync(
+    taskId: string,
+    options: DownloadTaskRestoreOptions
+  ): Promise<DownloadTask | null> {
+    const storageKey = getPersistedDownloadTaskKey(
+      taskId,
+      options.persistenceConfig.keyPrefix ?? DOWNLOAD_TASK_PERSISTENCE_KEY_PREFIX
+    );
+    const persisted = await Promise.resolve(options.persistenceConfig.backend.getItem(storageKey));
+
+    if (!persisted) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(persisted) as unknown;
+      if (!isPersistedDownloadTaskRecord(parsed)) {
+        throw new Error('Invalid persisted download task record');
+      }
+
+      const task = DownloadTask.fromSavable(parsed.pauseState, options);
+      task._id = taskId;
+      task._persistenceConfig = {
+        backend: options.persistenceConfig.backend,
+        keyPrefix: options.persistenceConfig.keyPrefix ?? DOWNLOAD_TASK_PERSISTENCE_KEY_PREFIX,
+      };
+      return task;
+    } catch {
+      await Promise.resolve(options.persistenceConfig.backend.removeItem(storageKey));
+      return null;
+    }
+  }
   private async _runDownloadOperation(
     operation: () => Promise<string | null>
   ): Promise<File | null> {
@@ -589,11 +678,13 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
         this._resumeData = undefined;
         const file = new File(result);
         this._emitFinalProgressEvent(file.size);
+        await this._clearPersistedState();
         return file;
       }
 
       await this._pauseRequest;
       this._state = 'paused';
+      this._pendingPausePersistence = this._persistPausedState();
       return null;
     } catch (error) {
       if (this._options?.signal?.aborted) {
@@ -601,9 +692,11 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
         throw createAbortError();
       }
       if (this.state === 'cancelled') {
+        await this._clearPersistedState();
         throw error;
       }
       this._state = 'error';
+      await this._clearPersistedState();
       throw error;
     } finally {
       cleanupNetworkTask(this._options?.signal, this._subscription, this._abortHandler);
@@ -613,6 +706,36 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     }
   }
 
+  private async _persistPausedState(): Promise<void> {
+    if (!this._persistenceConfig || !this._id) {
+      return;
+    }
+
+    const record: PersistedDownloadTaskRecord = {
+      version: DOWNLOAD_TASK_PERSISTENCE_VERSION,
+      pauseState: this.savable(),
+    };
+    await Promise.resolve(
+      this._persistenceConfig.backend.setItem(
+        getPersistedDownloadTaskKey(this._id, this._persistenceConfig.keyPrefix),
+        JSON.stringify(record)
+      )
+    );
+  }
+
+  private async _clearPersistedState(): Promise<void> {
+    if (!this._persistenceConfig || !this._id) {
+      return;
+    }
+    const pendingPausePersistence = this._pendingPausePersistence;
+    this._pendingPausePersistence = undefined;
+    await pendingPausePersistence;
+    await Promise.resolve(
+      this._persistenceConfig.backend.removeItem(
+        getPersistedDownloadTaskKey(this._id, this._persistenceConfig.keyPrefix)
+      )
+    );
+  }
   private _emitFinalProgressEvent(fileSize: number) {
     // Emit a synthetic final progress to guarantee 100% is reported.
     // Native progress events may not fire for small files, and even when they do,

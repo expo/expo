@@ -182,6 +182,80 @@ const src = new File(Paths.cache, 'file.pdf');
 src.write(await response.bytes());
 ```
 
+Or using a resumable `DownloadTask` with persisted pause state:
+
+```ts example.ts
+import Storage from 'expo-sqlite/kv-store';
+import { File, DownloadTask, Paths } from 'expo-file-system';
+
+const url = 'https://pdfobject.com/pdf/sample.pdf';
+const destination = new File(Paths.cache, 'sample.pdf');
+
+const task = File.createDownloadTask(url, destination, {
+  persistenceConfig: { backend: Storage },
+  onProgress: ({ bytesWritten, totalBytes }) => {
+    console.log(`Downloaded ${bytesWritten} / ${totalBytes}`);
+  },
+});
+
+await task.downloadAsync();
+
+// Save only the ID somewhere durable in your app state.
+const taskId = task.id;
+
+await task.pauseAsync();
+
+const restoredTask = await DownloadTask.restoreAsync(taskId!, {
+  persistenceConfig: { backend: Storage },
+});
+
+await restoredTask?.resumeAsync();
+```
+
+</Collapsible>
+
+<Collapsible summary="Using DownloadTask pause and resume">
+
+```ts example.ts
+import { DownloadTask, File, Paths } from 'expo-file-system';
+
+const persisted = new Map<string, string>();
+const storage = {
+  async getItem(key: string) {
+    return persisted.get(key) ?? null;
+  },
+  async setItem(key: string, value: string) {
+    persisted.set(key, value);
+  },
+  async removeItem(key: string) {
+    persisted.delete(key);
+  },
+};
+
+const destination = new File(Paths.document, 'video.mp4');
+
+const task = File.createDownloadTask('https://example.com/video.mp4', destination, {
+  sessionType: 'background',
+  persistenceConfig: { backend: storage },
+  onProgress: ({ bytesWritten, totalBytes }) => {
+    console.log(`Downloaded ${bytesWritten} / ${totalBytes}`);
+  },
+});
+
+await task.downloadAsync();
+await task.pauseAsync();
+
+const restored = await DownloadTask.restoreAsync(task.id!, {
+  persistenceConfig: { backend: storage },
+});
+
+if (restored) {
+  await restored.resumeAsync();
+}
+```
+
+On iOS, `sessionType: 'background'` uses a background `URLSession`, so the native transfer can continue while the app is backgrounded. Paused downloads persist only when you explicitly call `pauseAsync()`. The `resumeData` stored inside the paused state is opaque native data and should only be saved and passed back into `restoreAsync()` or `resumeAsync()`.
+
 </Collapsible>
 
 <Collapsible summary={<>Uploading files using <CODE>expo/fetch</CODE></>}>

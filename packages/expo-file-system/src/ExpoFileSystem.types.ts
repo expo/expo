@@ -829,6 +829,42 @@ export type DownloadTaskOptions = {
    * AbortSignal to cancel the download.
    */
   signal?: AbortSignal;
+  /**
+   * Optional persistence configuration used to store paused downloads across app restarts.
+   * `expo-sqlite/kv-store` can be passed as `backend`.
+   */
+  persistenceConfig?: DownloadTaskPersistenceConfig;
+};
+
+/**
+ * Minimal key-value store interface for persisting paused download state.
+ */
+export type DownloadTaskPersistenceBackend = {
+  getItem(key: string): string | null | Promise<string | null>;
+  setItem(key: string, value: string): void | Promise<void>;
+  removeItem(key: string): void | Promise<void>;
+};
+
+/**
+ * Configuration for persisted download task storage.
+ */
+export type DownloadTaskPersistenceConfig = {
+  backend: DownloadTaskPersistenceBackend;
+  keyPrefix?: string;
+  customId?: string;
+};
+
+/**
+ * Options for restoring a persisted download task by ID.
+ */
+export type DownloadTaskRestoreOptions = Omit<
+  DownloadTaskOptions,
+  'headers' | 'persistenceConfig'
+> & {
+  persistenceConfig: {
+    backend: DownloadTaskPersistenceBackend;
+    keyPrefix?: string;
+  };
 };
 
 /**
@@ -856,6 +892,10 @@ export type DownloadPauseState = {
    * Custom headers that were used for the download request.
    */
   headers?: Record<string, string>;
+  /**
+   * The iOS session mode that should be used when restoring the paused download.
+   */
+  sessionType: NetworkTaskSessionType;
   /**
    * Platform-specific opaque resume data.
    */
@@ -925,6 +965,10 @@ export declare class DownloadTask {
    * The current state of the download task.
    */
   readonly state: DownloadTaskState;
+  /**
+   * The persistence identifier for this task, or `null` when persistence is disabled.
+   */
+  readonly id: string | null;
 
   /**
    * Creates a new download task.
@@ -945,6 +989,11 @@ export declare class DownloadTask {
    * Pauses the download operation. The pending downloadAsync() promise resolves with null.
    */
   pause(): void;
+
+  /**
+   * Pauses the download operation and waits until any persisted pause state has been written.
+   */
+  pauseAsync(): Promise<void>;
 
   /**
    * Resumes a paused download operation.
@@ -972,6 +1021,15 @@ export declare class DownloadTask {
    * @returns A new download task.
    */
   static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask;
+
+  /**
+   * Restores a paused download task from a persisted task ID.
+   * @returns The restored task, or `null` when no persisted state exists for the given ID.
+   */
+  static restoreAsync(
+    taskId: string,
+    options: DownloadTaskRestoreOptions
+  ): Promise<DownloadTask | null>;
 
   /**
    * Adds a listener for download progress events.
