@@ -1,6 +1,6 @@
 "use strict";
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2026 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,16 @@ exports.escapeUnsafeCharacters = escapeUnsafeCharacters;
 exports.createInjectedCssElements = createInjectedCssElements;
 exports.createInjectedScriptElements = createInjectedScriptElements;
 exports.getHydrationFlagScript = getHydrationFlagScript;
+exports.getHydrationFlagScriptContents = getHydrationFlagScriptContents;
+exports.getHydrationFlagScriptElement = getHydrationFlagScriptElement;
+exports.createLoaderDataScript = createLoaderDataScript;
+exports.createLoaderDataScriptContents = createLoaderDataScriptContents;
+exports.createLoaderDataScriptElement = createLoaderDataScriptElement;
+exports.createInjectedCssNodes = createInjectedCssNodes;
+exports.createInjectedScriptNodes = createInjectedScriptNodes;
+exports.createFontResourceNodes = createFontResourceNodes;
 exports.serializeHelmetToHtml = serializeHelmetToHtml;
+const react_1 = require("react");
 // See: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/packages/next-urql/src/htmlescape.ts#L10
 // License: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/LICENSE
 // This utility is based on https://github.com/zertosh/htmlescape
@@ -62,7 +71,94 @@ function createInjectedScriptElements(srcs) {
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
 function getHydrationFlagScript() {
-    return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+    return `<script type="module">${getHydrationFlagScriptContents()}</script>`;
+}
+function getHydrationFlagScriptContents() {
+    return 'globalThis.__EXPO_ROUTER_HYDRATE__=true;';
+}
+function getHydrationFlagScriptElement() {
+    return (0, react_1.createElement)('script', {
+        dangerouslySetInnerHTML: {
+            __html: getHydrationFlagScriptContents(),
+        },
+        key: 'expo-router-hydrate',
+        type: 'module',
+    });
+}
+/**
+ * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
+ * with the given data, safely embedded as JSON.
+ *
+ * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
+ * @see https://v8.dev/blog/cost-of-javascript-2019#json
+ */
+function createLoaderDataScript(data) {
+    return `<script id="expo-router-data">${createLoaderDataScriptContents(data)}</script>`;
+}
+function createLoaderDataScriptContents(data) {
+    const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+    return `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`;
+}
+function createLoaderDataScriptElement(data) {
+    return (0, react_1.createElement)('script', {
+        dangerouslySetInnerHTML: {
+            __html: createLoaderDataScriptContents(data),
+        },
+        id: 'expo-router-data',
+        key: 'expo-router-data',
+    });
+}
+function createInjectedCssNodes(hrefs) {
+    return hrefs.flatMap((href, index) => [
+        (0, react_1.createElement)('link', {
+            as: 'style',
+            href,
+            key: `css-preload-${index}`,
+            rel: 'preload',
+        }),
+        (0, react_1.createElement)('link', {
+            href,
+            key: `css-stylesheet-${index}`,
+            rel: 'stylesheet',
+        }),
+    ]);
+}
+function createInjectedScriptNodes(srcs) {
+    return {
+        headNodes: srcs.map((src, index) => (0, react_1.createElement)('link', {
+            as: 'script',
+            href: src,
+            key: `script-preload-${index}`,
+            rel: 'preload',
+        })),
+        bodyNodes: srcs.map((src, index) => (0, react_1.createElement)('script', {
+            async: true,
+            key: `script-src-${index}`,
+            src,
+        })),
+    };
+}
+function createFontResourceNodes(descriptors) {
+    return descriptors.map((descriptor, index) => {
+        switch (descriptor.type) {
+            case 'style':
+                return (0, react_1.createElement)('style', {
+                    dangerouslySetInnerHTML: { __html: descriptor.css },
+                    id: descriptor.id,
+                    key: `font-style-${index}`,
+                });
+            case 'link':
+                return (0, react_1.createElement)('link', {
+                    as: descriptor.as,
+                    crossOrigin: descriptor.crossOrigin,
+                    href: descriptor.href,
+                    key: `font-link-${index}`,
+                    rel: descriptor.rel,
+                });
+            default:
+                return null;
+        }
+    });
 }
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'];
 /**

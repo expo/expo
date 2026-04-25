@@ -6,6 +6,8 @@
  */
 import type { PropsWithChildren } from 'react';
 import type { ServerDataLoaderData } from '../loaders/ServerDataLoaderContext';
+export type { ServerDocumentComponent, ServerDocumentPayload, ServerDocumentProps, } from '../server/ServerDocument';
+export { ServerDocument, useServerDocumentContext } from '../server/ServerDocument';
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */

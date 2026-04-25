@@ -11,6 +11,7 @@ const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 const server_actions_plugin_1 = require("./server-actions-plugin");
 const server_data_loaders_plugin_1 = require("./server-data-loaders-plugin");
+const server_metadata_plugin_1 = require("./server-metadata-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
 const resolveModule_1 = require("./utils/resolveModule");
 const widgets_plugin_1 = require("./widgets-plugin");
@@ -184,6 +185,7 @@ function babelPresetExpo(api, options = {}) {
     }
     if ((0, resolveModule_1.hasModule)(api, 'expo-router/package.json')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
+        extraPlugins.push(server_metadata_plugin_1.serverMetadataPlugin);
         // Process `loader()` functions for client, loader and server bundles (excluding RSC)
         // - Client bundles: Remove loader exports, they run on server only
         // - Server bundles: Keep loader exports (needed for SSG)

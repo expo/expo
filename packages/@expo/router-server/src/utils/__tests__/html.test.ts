@@ -1,9 +1,59 @@
 import {
   createInjectedCssElements,
+  createInjectedCssNodes,
   createInjectedScriptElements,
+  createInjectedScriptNodes,
+  createLoaderDataScript,
+  createLoaderDataScriptElement,
+  escapeUnsafeCharacters,
   getHydrationFlagScript,
+  getHydrationFlagScriptElement,
   serializeHelmetToHtml,
 } from '../html';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server.node';
+
+function renderNodes(node: React.ReactNode) {
+  return ReactDOMServer.renderToStaticMarkup(React.createElement(React.Fragment, null, node));
+}
+
+describe(escapeUnsafeCharacters, () => {
+  it('escapes unsafe HTML and JavaScript characters', () => {
+    const input = JSON.stringify({
+      '/': {
+        dangerous: '<script>alert("XSS")</script>',
+        nested: { value: '</script><script>alert("nested")</script>' },
+        multiple: '<<<multiple>>>',
+        mixed: 'Text with <tag> and </tag>',
+        quotes: 'He said "Hello"',
+        backslash: 'C:\\Users\\test',
+        newline: 'Line 1\nLine 2',
+        unicode: '你好世界 🌍',
+        ampersand: 'A & B',
+        separators: '\u2028\u2029',
+      },
+    });
+
+    const result = escapeUnsafeCharacters(input);
+
+    expect(result).not.toContain('<script>alert("XSS")</script>');
+    expect(result).not.toContain('</script><script>alert("nested")</script>');
+    expect(result).toContain('\\u003cscript');
+    expect(result).toContain('\\u003c/script\\u003e');
+    expect(result).toContain('\\u003c\\u003c\\u003cmultiple');
+    expect(result).toContain('\\u003ctag');
+    expect(result).toContain('\\u003c/tag\\u003e');
+    expect(result).toContain('He said \\"Hello\\"');
+    expect(result).toContain('C:\\\\Users\\\\test');
+    expect(result).toContain('\\n');
+    expect(result).toContain('你好世界');
+    expect(result).toContain('A \\u0026 B');
+    expect(result).toContain('\\u2028\\u2029');
+
+    const unescapedAngleBrackets = result.match(/[<>]/g);
+    expect(unescapedAngleBrackets).toBeNull();
+  });
+});
 
 describe(createInjectedCssElements, () => {
   it('returns empty string for empty array', () => {
@@ -50,6 +100,59 @@ describe(getHydrationFlagScript, () => {
     expect(getHydrationFlagScript()).toBe(
       '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
     );
+  });
+
+  it('creates an equivalent React element', () => {
+    expect(renderNodes(getHydrationFlagScriptElement())).toBe(
+      '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
+    );
+  });
+});
+
+describe(createLoaderDataScript, () => {
+  it('returns the expected inline script markup', () => {
+    const data = { '/': { foo: 'bar' } };
+
+    expect(createLoaderDataScript(data)).toBe(
+      '<script id="expo-router-data">' +
+        'globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/\\":{\\"foo\\":\\"bar\\"}}");' +
+        '</script>'
+    );
+  });
+
+  it('uses an escaped payload for unsafe HTML input', () => {
+    const data = { '/route': '<script>alert("xss")</script>' };
+    const result = createLoaderDataScript(data);
+
+    expect(result).toContain('<script id="expo-router-data">');
+    expect(result).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
+    expect(result).toContain('JSON.parse(');
+    expect(result).toContain(
+      '\\\\u003cscript\\\\u003ealert(\\\\\\"xss\\\\\\")\\\\u003c/script\\\\u003e'
+    );
+  });
+
+  it('creates an equivalent React element', () => {
+    expect(renderNodes(createLoaderDataScriptElement({ '/': { foo: 'bar' } }))).toBe(
+      createLoaderDataScript({ '/': { foo: 'bar' } })
+    );
+  });
+});
+
+describe(createInjectedCssNodes, () => {
+  it('creates equivalent React nodes', () => {
+    expect(renderNodes(createInjectedCssNodes(['/styles/main.css']))).toBe(
+      '<link as="style" href="/styles/main.css" rel="preload"/><link href="/styles/main.css" rel="stylesheet"/>'
+    );
+  });
+});
+
+describe(createInjectedScriptNodes, () => {
+  it('creates script preload and body script nodes for streaming', () => {
+    const nodes = createInjectedScriptNodes(['/bundle.js']);
+
+    expect(renderNodes(nodes.headNodes)).toBe('<link as="script" href="/bundle.js" rel="preload"/>');
+    expect(renderNodes(nodes.bodyNodes)).toBe('<script async="" src="/bundle.js"></script>');
   });
 });
 

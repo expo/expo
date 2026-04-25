@@ -2,6 +2,68 @@ import type { Manifest } from '../../manifest';
 import { createRequestHandler } from '../abstract';
 
 describe(createRequestHandler, () => {
+  it('returns streamed HTML responses for matched routes', async () => {
+    const manifest: Manifest = {
+      htmlRoutes: [
+        {
+          file: 'index',
+          page: '/',
+          namedRegex: /^\/$/,
+          routeKeys: {},
+        },
+      ],
+      apiRoutes: [],
+      notFoundRoutes: [],
+      redirects: [],
+      rewrites: [],
+    };
+
+    const handler = createRequestHandler({
+      getRoutesManifest: jest.fn(async () => manifest),
+      getHtml: jest.fn(async () => createHtmlStream('<html>streamed</html>')),
+      getApiRoute: jest.fn(),
+      getMiddleware: jest.fn(),
+      getLoaderData: jest.fn(),
+    });
+
+    const response = await handler(new Request('http://localhost/'));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('text/html');
+    expect(await response.text()).toBe('<html>streamed</html>');
+  });
+
+  it('returns streamed 404 HTML responses for matched not-found routes', async () => {
+    const manifest: Manifest = {
+      htmlRoutes: [],
+      apiRoutes: [],
+      notFoundRoutes: [
+        {
+          file: 'not-found',
+          page: '/404',
+          namedRegex: /^\/.*$/,
+          routeKeys: {},
+        },
+      ],
+      redirects: [],
+      rewrites: [],
+    };
+
+    const handler = createRequestHandler({
+      getRoutesManifest: jest.fn(async () => manifest),
+      getHtml: jest.fn(async () => createHtmlStream('<html>missing</html>')),
+      getApiRoute: jest.fn(),
+      getMiddleware: jest.fn(),
+      getLoaderData: jest.fn(),
+    });
+
+    const response = await handler(new Request('http://localhost/missing'));
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('Content-Type')).toBe('text/html');
+    expect(await response.text()).toBe('<html>missing</html>');
+  });
+
   it('applies custom headers from manifest', async () => {
     const manifest: Manifest = {
       htmlRoutes: [
@@ -330,3 +392,12 @@ describe(createRequestHandler, () => {
     });
   });
 });
+
+function createHtmlStream(html: string): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode(html));
+      controller.close();
+    },
+  });
+}

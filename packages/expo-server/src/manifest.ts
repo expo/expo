@@ -1,7 +1,7 @@
 /**
  * Asset manifest for client hydration bundles.
  *
- * {@link import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ * {@link import('@expo/router-server/src/static/renderStreamingContent').GetStreamingContentOptions}
  */
 export interface AssetInfo {
   css: string[];
@@ -107,6 +107,19 @@ export type Route = RouteInfo<RegExp>;
  */
 export interface GetStaticContentOptions {
   loader?: { data?: unknown; key: string };
+  request?: Request;
+  assets?: AssetInfo;
+}
+
+/**
+ * @type {import('@expo/router-server/src/static/renderStreamingContent').GetStreamingContentOptions}
+ */
+export interface GetStreamingContentOptions {
+  loader?: { data?: unknown; key: string };
+  // This is a ReactNode[] internally, but remains opaque here until we decide whether
+  // expo-server should expose React types in its public API surface.
+  // This should become a named server document type once that API is finalized.
+  metadata?: { headNodes: unknown[] } | null;
   request?: Request;
   assets?: AssetInfo;
 }

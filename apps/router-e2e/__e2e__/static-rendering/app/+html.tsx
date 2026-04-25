@@ -1,14 +1,20 @@
 // Test the custom HTML component is rendered during SSR.
 
 import { usePathname } from 'expo-router';
-import { ScrollViewStyleReset } from 'expo-router/html';
+import { ScrollViewStyleReset, type ServerDocumentProps } from 'expo-router/html';
 
-export default function Html({ children }) {
+export default function Html({
+  bodyAttributes,
+  bodyNodes,
+  children,
+  headNodes,
+  htmlAttributes,
+}: ServerDocumentProps) {
   // Test that this is defined and works during SSR.
   const pathname = usePathname();
 
   return (
-    <html lang="en">
+    <html lang="en" {...htmlAttributes}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -21,8 +27,12 @@ export default function Html({ children }) {
         {/* Test that server-only env vars are exposed as this file is a server file. */}
         <meta name="expo-e2e-private-env-var" content={process.env.EXPO_NOT_PUBLIC_TEST_VALUE} />
         <ScrollViewStyleReset />
+        {headNodes}
       </head>
-      <body>{children}</body>
+      <body {...bodyAttributes}>
+        {children}
+        {bodyNodes}
+      </body>
     </html>
   );
 }

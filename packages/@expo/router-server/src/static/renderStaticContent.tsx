@@ -12,14 +12,14 @@ import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
 import React from 'react';
-import ReactDOMServer from 'react-dom/server.node';
+import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from './getRootComponent';
-import { PreloadedDataScript } from './html';
 import { createDebug } from '../utils/debug';
 import {
   createInjectedCssElements,
   createInjectedScriptElements,
+  createLoaderDataScript,
   serializeHelmetToHtml,
 } from '../utils/html';
 
@@ -31,6 +31,7 @@ function resetReactNavigationContexts() {
 
   // React Navigation is storing providers in a global, this is fine for the first static render
   // but subsequent static renders of Stack or Tabs will cause React to throw a warning. To prevent this warning, we'll reset the globals before rendering.
+  // TODO(@hassankhan): Share this request-scoped setup with renderStreamingContent.tsx.
   const contexts = '__react_navigation__elements_contexts';
   (globalThis as any)[contexts] = new Map<string, React.Context<any>>();
 }
@@ -49,10 +50,10 @@ export type GetStaticContentOptions = {
   };
 };
 
-export async function getStaticContent(
-  location: URL,
-  options?: GetStaticContentOptions
-): Promise<string> {
+/**
+ * Creates the React element tree, resets server contexts, and computes loader data.
+ */
+function prepareRenderContext(location: URL, options?: GetStaticContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
 
@@ -79,6 +80,7 @@ export async function getStaticContent(
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
+  // TODO(@hassankhan): Share loader-data shaping with renderStreamingContent.tsx.
   const loaderKey = options?.loader ? options.loader.key + location.search : null;
 
   const loadedData = loaderKey
@@ -86,6 +88,18 @@ export async function getStaticContent(
         [loaderKey]: options?.loader?.data ?? null,
       }
     : null;
+
+  return { headContext, element, getStyleElement, loadedData };
+}
+
+export async function getStaticContent(
+  location: URL,
+  options?: GetStaticContentOptions
+): Promise<string> {
+  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
+    location,
+    options
+  );
 
   const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
@@ -102,14 +116,10 @@ export async function getStaticContent(
 
   const fonts = Font.getServerResources();
   debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-  // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
   if (loadedData) {
-    const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
-      <PreloadedDataScript data={loadedData} />
-    );
-    output = output.replace('</head>', `${loaderDataScript}</head>`);
+    output = output.replace('</head>', `${createLoaderDataScript(loadedData)}</head>`);
   }
 
   // Inject hydration assets (JS/CSS bundles). Used in SSR mode
@@ -120,8 +130,11 @@ export async function getStaticContent(
     }
 
     if (options.assets.js.length > 0) {
-      const injectedJS = createInjectedScriptElements(options.assets.js);
-      output = output.replace('</body>', `${injectedJS}\n</body>`);
+      // In non-streaming mode, use deferred scripts in the body
+      output = output.replace(
+        '</body>',
+        `${createInjectedScriptElements(options.assets.js)}\n</body>`
+      );
     }
   }
 
@@ -143,4 +156,6 @@ function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
 }
 
 // Re-export for use in server
+export { getStreamingContent, resolveMetadata } from './renderStreamingContent';
+export type { GetStreamingContentOptions } from './renderStreamingContent';
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';

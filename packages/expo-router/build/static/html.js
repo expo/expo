@@ -3,12 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.useServerDocumentContext = exports.ServerDocument = void 0;
 exports.ScrollViewStyleReset = ScrollViewStyleReset;
 exports.InnerRoot = InnerRoot;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importDefault(require("react"));
 const ServerDataLoaderContext_1 = require("../loaders/ServerDataLoaderContext");
 const native_1 = require("../react-navigation/native");
+var ServerDocument_1 = require("../server/ServerDocument");
+Object.defineProperty(exports, "ServerDocument", { enumerable: true, get: function () { return ServerDocument_1.ServerDocument; } });
+Object.defineProperty(exports, "useServerDocumentContext", { enumerable: true, get: function () { return ServerDocument_1.useServerDocumentContext; } });
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */

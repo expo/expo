@@ -1,9 +1,12 @@
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2026 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+import type { ServerFontResourceDescriptor } from 'expo-font/build/ExpoFontLoader';
+import { createElement, type ReactNode } from 'react';
 
 // See: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/packages/next-urql/src/htmlescape.ts#L10
 // License: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/LICENSE
@@ -62,7 +65,109 @@ export function createInjectedScriptElements(srcs: string[]): string {
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
 export function getHydrationFlagScript(): string {
-  return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+  return `<script type="module">${getHydrationFlagScriptContents()}</script>`;
+}
+
+export function getHydrationFlagScriptContents(): string {
+  return 'globalThis.__EXPO_ROUTER_HYDRATE__=true;';
+}
+
+export function getHydrationFlagScriptElement(): ReactNode {
+  return createElement('script', {
+    dangerouslySetInnerHTML: {
+      __html: getHydrationFlagScriptContents(),
+    },
+    key: 'expo-router-hydrate',
+    type: 'module',
+  });
+}
+
+/**
+ * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
+ * with the given data, safely embedded as JSON.
+ *
+ * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
+ * @see https://v8.dev/blog/cost-of-javascript-2019#json
+ */
+export function createLoaderDataScript(data: Record<string, unknown>): string {
+  return `<script id="expo-router-data">${createLoaderDataScriptContents(data)}</script>`;
+}
+
+export function createLoaderDataScriptContents(data: Record<string, unknown>): string {
+  const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+  return `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`;
+}
+
+export function createLoaderDataScriptElement(data: Record<string, unknown>): ReactNode {
+  return createElement('script', {
+    dangerouslySetInnerHTML: {
+      __html: createLoaderDataScriptContents(data),
+    },
+    id: 'expo-router-data',
+    key: 'expo-router-data',
+  });
+}
+
+export function createInjectedCssNodes(hrefs: string[]): ReactNode[] {
+  return hrefs.flatMap((href, index) => [
+    createElement('link', {
+      as: 'style',
+      href,
+      key: `css-preload-${index}`,
+      rel: 'preload',
+    }),
+    createElement('link', {
+      href,
+      key: `css-stylesheet-${index}`,
+      rel: 'stylesheet',
+    }),
+  ]);
+}
+
+export function createInjectedScriptNodes(srcs: string[]): {
+  headNodes: ReactNode[];
+  bodyNodes: ReactNode[];
+} {
+  return {
+    headNodes: srcs.map((src, index) =>
+      createElement('link', {
+        as: 'script',
+        href: src,
+        key: `script-preload-${index}`,
+        rel: 'preload',
+      })
+    ),
+    bodyNodes: srcs.map((src, index) =>
+      createElement('script', {
+        async: true,
+        key: `script-src-${index}`,
+        src,
+      })
+    ),
+  };
+}
+
+export function createFontResourceNodes(descriptors: ServerFontResourceDescriptor[]): ReactNode[] {
+  return descriptors.map((descriptor, index) => {
+    switch (descriptor.type) {
+      case 'style':
+        return createElement('style', {
+          dangerouslySetInnerHTML: { __html: descriptor.css },
+          id: descriptor.id,
+          key: `font-style-${index}`,
+        });
+      case 'link':
+        return createElement('link', {
+          as: descriptor.as,
+          crossOrigin: descriptor.crossOrigin,
+          href: descriptor.href,
+          key: `font-link-${index}`,
+          rel: descriptor.rel,
+        });
+      default:
+        return null;
+    }
+  });
 }
 
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;
