@@ -1,5 +1,4 @@
 'use strict';
-/* eslint-env node */
 
 // This script is just a wrapper around expotools that ensures node modules are installed
 // and TypeScript files are compiled. To make it work even when node_modules are empty,
