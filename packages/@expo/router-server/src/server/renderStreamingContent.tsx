@@ -4,7 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import '@expo/metro-runtime';
+// NOTE(@hassankhan): disable when this file is its own entrypoint
+// import '@expo/metro-runtime';
 
 import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
@@ -14,16 +15,17 @@ import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/sta
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
-import { getRootComponent } from './getRootComponent';
+import { getRootComponent } from '../static/getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
   createInjectedCssElements,
-  createInjectedScriptElements,
   createLoaderDataScript,
+  getHydrationFlagScript,
   serializeHelmetToHtml,
 } from '../utils/html';
+import { createDocumentMetadataInjectionTransform } from '../utils/streams';
 
-const debug = createDebug('expo:router:server:renderStaticContent');
+const debug = createDebug('expo:router:server:renderStreamingContent');
 
 function resetReactNavigationContexts() {
   // https://github.com/expo/router/discussions/588
@@ -35,12 +37,15 @@ function resetReactNavigationContexts() {
   (globalThis as any)[contexts] = new Map<string, React.Context<any>>();
 }
 
-export type GetStaticContentOptions = {
+export type GetStreamingContentOptions = {
   loader?: {
     data?: any;
     /** Unique key for the route. Derived from the route's contextKey */
     key: string;
   };
+  metadata?: {
+    headTags: string;
+  } | null;
   request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
   assets?: {
@@ -53,7 +58,7 @@ export type GetStaticContentOptions = {
  * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
  * tree, resets server contexts, and computes loader data.
  */
-function prepareRenderContext(location: URL, options?: GetStaticContentOptions) {
+function prepareRenderContext(location: URL, options?: GetStreamingContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
 
@@ -91,69 +96,57 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
   return { headContext, element, getStyleElement, loadedData };
 }
 
-export async function getStaticContent(
+/**
+ * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
+ * that emits the full HTML document with head injections applied.
+ *
+ * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
+ * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
+ * the client after hydration instead.
+ */
+export async function getStreamingContent(
   location: URL,
-  options?: GetStaticContentOptions
-): Promise<string> {
+  options?: GetStreamingContentOptions
+): Promise<ReadableStream<Uint8Array>> {
   const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
     location,
     options
   );
 
-  const html = ReactDOMServer.renderToString(
+  const stream = await ReactDOMServer.renderToReadableStream(
     <Head.Provider context={headContext}>
       <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-    </Head.Provider>
+    </Head.Provider>,
+    {
+      bootstrapScripts: options?.assets?.js,
+      signal: options?.request?.signal,
+    }
   );
 
-  // Eval the CSS after the HTML is rendered so that the CSS is in the same order
+  // Collect head injection content after the shell stream is ready.
   const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
-
-  let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
-
-  output = output.replace('</head>', `${css}</head>`);
-
+  const { headTags, htmlAttributes, bodyAttributes } = serializeHelmetToHtml(headContext.helmet);
   const fonts = Font.getServerResources();
   debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-  // Inject static fonts loaded with expo-font
-  output = output.replace('</head>', `${fonts.join('')}</head>`);
-  if (loadedData) {
-    output = output.replace('</head>', `${createLoaderDataScript(loadedData)}</head>`);
+
+  const injectionParts: string[] = [];
+  if (options?.metadata?.headTags) injectionParts.push(options.metadata.headTags);
+  if (headTags) injectionParts.push(headTags);
+  injectionParts.push(getHydrationFlagScript());
+  if (css) injectionParts.push(css);
+  if (fonts.length > 0) injectionParts.push(fonts.join(''));
+  if (loadedData) injectionParts.push(createLoaderDataScript(loadedData));
+  if (options?.assets?.css && options.assets.css.length > 0) {
+    injectionParts.push(createInjectedCssElements(options.assets.css));
   }
 
-  // Inject hydration assets (JS/CSS bundles). Used in SSR mode
-  if (options?.assets) {
-    if (options.assets.css.length > 0) {
-      const injectedCSS = createInjectedCssElements(options.assets.css);
-      output = output.replace('</head>', `${injectedCSS}\n</head>`);
-    }
-
-    if (options.assets.js.length > 0) {
-      // In non-streaming mode, use deferred scripts in the body
-      output = output.replace(
-        '</body>',
-        `${createInjectedScriptElements(options.assets.js)}\n</body>`
-      );
-    }
-  }
-
-  return '<!DOCTYPE html>' + output;
+  return stream.pipeThrough(
+    createDocumentMetadataInjectionTransform({
+      injectionParts,
+      htmlAttributes,
+      bodyAttributes,
+    })
+  );
 }
 
-function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
-  const { headTags, htmlAttributes, bodyAttributes } = serializeHelmetToHtml(helmet);
-
-  if (headTags) {
-    html = html.replace('<head>', `<head>${headTags}`);
-  }
-
-  // attributes
-  html = html.replace('<html ', `<html ${htmlAttributes} `);
-  html = html.replace('<body ', `<body ${bodyAttributes} `);
-
-  return html;
-}
-
-// Re-export for use in server
-export { getStreamingContent, resolveMetadata } from '../server/renderStreamingContent';
-export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';
+export { resolveMetadata } from './metadata';
