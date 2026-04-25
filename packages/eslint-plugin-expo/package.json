@@ -26,7 +26,7 @@
   "dependencies": {
     "@typescript-eslint/types": "^8.29.1",
     "@typescript-eslint/utils": "^8.29.1",
-    "eslint": "^9.24.0"
+    "eslint": "^9.39.4"
   },
   "devDependencies": {
     "@types/eslint": "^8.56.12",

@@ -3091,7 +3091,7 @@ importers:
         version: 16.5.0
     devDependencies:
       eslint:
-        specifier: ^9.18.0
+        specifier: ^9.39.4
         version: 9.39.4(jiti@1.21.7)
       eslint-plugin-prettier:
         specifier: ^5.2.1
@@ -3146,7 +3146,7 @@ importers:
         specifier: ^1.7.2
         version: 1.7.2
       eslint:
-        specifier: ^9.24.0
+        specifier: ^9.39.4
         version: 9.39.4(jiti@1.21.7)
       eslint8:
         specifier: npm:eslint@^8.57.1
@@ -3170,7 +3170,7 @@ importers:
         specifier: ^8.29.1
         version: 8.57.1(eslint@9.39.4(jiti@1.21.7))(typescript@6.0.2)
       eslint:
-        specifier: ^9.24.0
+        specifier: ^9.39.4
         version: 9.39.4(jiti@1.21.7)
     devDependencies:
       '@types/eslint':
