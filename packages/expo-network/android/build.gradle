@@ -12,4 +12,16 @@ android {
     versionCode 11
     versionName '55.0.8'
   }
+
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
+}
+
+dependencies {
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+  }
+  testImplementation 'io.mockk:mockk:1.14.9'
+  testImplementation "org.robolectric:robolectric:4.16.1"
 }
