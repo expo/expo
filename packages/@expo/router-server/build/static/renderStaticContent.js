@@ -105,17 +105,17 @@ async function getStaticContent(location, options) {
     // Inject static fonts loaded with expo-font
     output = output.replace('</head>', `${fonts.join('')}</head>`);
     if (loadedData) {
-        output = output.replace('</head>', `${(0, html_1.createLoaderDataScript)(loadedData)}</head>`);
+        output = output.replace('</head>', `${(0, html_1.createLoaderDataScriptAsString)(loadedData)}</head>`);
     }
     // Inject hydration assets (JS/CSS bundles). Used in SSR mode
     if (options?.assets) {
         if (options.assets.css.length > 0) {
-            const injectedCSS = (0, html_1.createInjectedCssElements)(options.assets.css);
+            const injectedCSS = (0, html_1.createInjectedCssAsString)(options.assets.css);
             output = output.replace('</head>', `${injectedCSS}\n</head>`);
         }
         if (options.assets.js.length > 0) {
             // In non-streaming mode, use deferred scripts in the body
-            output = output.replace('</body>', `${(0, html_1.createInjectedScriptElements)(options.assets.js)}\n</body>`);
+            output = output.replace('</body>', `${(0, html_1.createInjectedScriptsAsString)(options.assets.js)}\n</body>`);
         }
     }
     return '<!DOCTYPE html>' + output;
