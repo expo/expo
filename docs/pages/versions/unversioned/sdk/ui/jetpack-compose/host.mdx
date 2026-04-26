@@ -33,7 +33,7 @@ export default function MatchContents() {
 }
 ```
 
-> **Note:** Do not use `matchContents` on the same axis as a scrollable child (`LazyRow`, `LazyColumn`, `Carousel`, or anything using `Modifier.horizontalScroll` / `verticalScroll`). Scrollables require a finite max constraint on their scroll axis; `matchContents` propagates an unbounded one.
+> **Note:** Do not use `matchContents` on the same axis as a scrollable child (`LazyRow`, `LazyColumn`, `Carousel`, or anything using `Modifier.horizontalScroll`/`verticalScroll`). Scrollables require a finite max constraint on their scroll axis and `matchContents` propagates an unbounded one.
 
 The following example crashes:
 
@@ -53,7 +53,7 @@ export default function MatchContentsCrash() {
 }
 ```
 
-Either drop `matchContents` on the scroll axis, or give the `Host` a finite size on that axis via `style`:
+Either drop `matchContents` on the scroll axis or give the `Host` a finite size on that axis via `style`:
 
 ```tsx MatchContentsFix.tsx
 import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
