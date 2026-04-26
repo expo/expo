@@ -1,0 +1,49 @@
+{
+  "name": "observability",
+  "main": "expo-router/entry",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz && cd - && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "expo lint"
+  },
+  "dependencies": {
+    "@expo/html-elements": "^0.13.7",
+    "@expo/vector-icons": "^15.0.2",
+    "@react-navigation/bottom-tabs": "^7.15.5",
+    "@react-navigation/native": "^7.1.33",
+    "@react-navigation/native-stack": "^7.14.5",
+    "expo": "workspace:*",
+    "expo-app-metrics": "workspace:*",
+    "expo-build-properties": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-dev-client": "workspace:*",
+    "expo-eas-client": "workspace:*",
+    "expo-font": "workspace:*",
+    "expo-haptics": "workspace:*",
+    "expo-image": "workspace:*",
+    "expo-linking": "workspace:*",
+    "expo-observe": "workspace:*",
+    "expo-router": "workspace:*",
+    "expo-splash-screen": "workspace:*",
+    "expo-status-bar": "workspace:*",
+    "expo-symbols": "workspace:*",
+    "expo-system-ui": "workspace:*",
+    "expo-updates": "workspace:*",
+    "expo-web-browser": "workspace:*",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.85.2",
+    "react-native-safe-area-context": "5.6.2",
+    "react-native-screens": "4.24.0"
+  },
+  "devDependencies": {
+    "@expo/config": "workspace:*",
+    "@types/react": "~19.2.10",
+    "tsx": "^4.20.6"
+  }
+}

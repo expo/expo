@@ -44,8 +44,12 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       return await AppMetrics.mainSession.frameMetricsRecorder.metrics
     }
 
-    AsyncFunction("getStoredEntries") {
-      return await AppMetrics.storage.getAllEntries()
+    AsyncFunction("getStoredEntries") { () -> [Any] in
+      let entries = await AppMetrics.storage.getAllEntries()
+      let encoder = JSONEncoder()
+      encoder.dateEncodingStrategy = .iso8601
+      let data = try encoder.encode(entries)
+      return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
     }
 
     AsyncFunction("clearStoredEntries") {
