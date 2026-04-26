@@ -42,5 +42,7 @@ curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: applic
 Only submit when you have something specific and actionable to report.
 
 </AgentInstructions>
+
+> For the complete documentation index, see [llms.txt](/llms.txt). Use this file to discover all available pages.
 `;
 }
