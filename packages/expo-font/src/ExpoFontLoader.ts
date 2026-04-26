@@ -11,7 +11,7 @@ export type ServerFontResourceDescriptor =
   | {
       type: 'link';
       as: 'font';
-      crossOrigin?: string;
+      crossOrigin?: 'anonymous' | 'use-credentials' | '' | undefined;
       href: string;
       rel: 'preload';
     };
