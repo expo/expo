@@ -90,7 +90,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return
     }
     let currentTime = CACurrentMediaTime()
-    nonisolated(unsafe) var params = params
+    nonisolated(unsafe) let params = params
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {
@@ -102,6 +102,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       markers.timeToInteractive = currentTime
 
       if let tti = markers.getTTI() {
+        var params = params
         let frameMetrics = frameMetricsRecorder.stop()
         if frameMetrics.expectedFrames > 0 {
           params["frameRate.slowFrames"] = frameMetrics.slowFrames
