@@ -23,6 +23,7 @@ async function resolveMetadata(options) {
     }
     return {
         metadata,
+        headNodes: (0, serialize_1.serializeMetadataToReact)(metadata),
         headTags: (0, serialize_1.serializeMetadataToHtml)(metadata),
     };
 }
