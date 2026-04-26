@@ -42,6 +42,26 @@ export default function MatchContentsExample() {
 }
 ```
 
+> **Note:** Do not use `matchContents` on the same axis as a scroll container (`ScrollView`, `List`, `Form`, `LazyHStack`, `LazyVStack`). `matchContents` resolves to SwiftUI's `.fixedSize`, which sizes the scroll container to its content, leaving nothing past the viewport to scroll into, so scrolling silently stops working. Use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width on the scroll axis).
+
+```tsx ScrollViewMatchContents.tsx
+import { Host, HStack, ScrollView, Text } from '@expo/ui/swift-ui';
+
+export default function ScrollViewMatchContents() {
+  return (
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+      <ScrollView axes="horizontal">
+        <HStack spacing={12}>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <Text key={i}>Item {i}</Text>
+          ))}
+        </HStack>
+      </ScrollView>
+    </Host>
+  );
+}
+```
+
 ### Explicit sizing with style
 
 Use `style` to set explicit sizes on the `Host`, such as filling the available space with `flex: 1`.
