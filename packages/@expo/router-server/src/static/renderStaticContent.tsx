@@ -17,9 +17,9 @@ import ReactDOMServer from 'react-dom/server';
 import { getRootComponent } from './getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
-  createInjectedCssElements,
-  createInjectedScriptElements,
-  createLoaderDataScript,
+  createInjectedCssAsString,
+  createInjectedScriptsAsString,
+  createLoaderDataScriptAsString,
   serializeHelmetToHtml,
 } from '../utils/html';
 
@@ -118,13 +118,13 @@ export async function getStaticContent(
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
   if (loadedData) {
-    output = output.replace('</head>', `${createLoaderDataScript(loadedData)}</head>`);
+    output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
   }
 
   // Inject hydration assets (JS/CSS bundles). Used in SSR mode
   if (options?.assets) {
     if (options.assets.css.length > 0) {
-      const injectedCSS = createInjectedCssElements(options.assets.css);
+      const injectedCSS = createInjectedCssAsString(options.assets.css);
       output = output.replace('</head>', `${injectedCSS}\n</head>`);
     }
 
@@ -132,7 +132,7 @@ export async function getStaticContent(
       // In non-streaming mode, use deferred scripts in the body
       output = output.replace(
         '</body>',
-        `${createInjectedScriptElements(options.assets.js)}\n</body>`
+        `${createInjectedScriptsAsString(options.assets.js)}\n</body>`
       );
     }
   }

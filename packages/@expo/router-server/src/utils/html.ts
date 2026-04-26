@@ -35,7 +35,7 @@ export function escapeUnsafeCharacters(str: string): string {
  * Used by both `renderStaticContent()` and `serializeHtml()` to inject CSS bundles into the HTML
  * document's `<body>` element.
  */
-export function createInjectedCssElements(hrefs: string[]): string {
+export function createInjectedCssAsString(hrefs: string[]): string {
   return hrefs
     .flatMap((href) => [
       `<link rel="preload" href="${href}" as="style">`,
@@ -50,7 +50,7 @@ export function createInjectedCssElements(hrefs: string[]): string {
  * Used by both `renderStaticContent()` and `serializeHtml()` to inject JavaScript bundles into the
  * HTML document's `<body>` element.
  */
-export function createInjectedScriptElements(srcs: string[]): string {
+export function createInjectedScriptsAsString(srcs: string[]): string {
   return srcs.map((src) => `<script src="${src}" defer></script>`).join('\n');
 }
 
@@ -61,7 +61,7 @@ export function createInjectedScriptElements(srcs: string[]): string {
  *
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
-export function getHydrationFlagScript(): string {
+export function getHydrationFlagScriptAsString(): string {
   return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
 }
 
@@ -72,7 +72,7 @@ export function getHydrationFlagScript(): string {
  * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
  * @see https://v8.dev/blog/cost-of-javascript-2019#json
  */
-export function createLoaderDataScript(data: Record<string, unknown>): string {
+export function createLoaderDataScriptAsString(data: Record<string, unknown>): string {
   const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
   return `<script id="expo-router-data">globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});</script>`;
 }

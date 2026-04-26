@@ -18,9 +18,9 @@ import ReactDOMServer from 'react-dom/server';
 import { getRootComponent } from '../static/getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
-  createInjectedCssElements,
-  createLoaderDataScript,
-  getHydrationFlagScript,
+  createInjectedCssAsString,
+  createLoaderDataScriptAsString,
+  getHydrationFlagScriptAsString,
   serializeHelmetToHtml,
 } from '../utils/html';
 import { createDocumentMetadataInjectionTransform } from '../utils/streams';
@@ -132,12 +132,12 @@ export async function getStreamingContent(
   const injectionParts: string[] = [];
   if (options?.metadata?.headTags) injectionParts.push(options.metadata.headTags);
   if (headTags) injectionParts.push(headTags);
-  injectionParts.push(getHydrationFlagScript());
+  injectionParts.push(getHydrationFlagScriptAsString());
   if (css) injectionParts.push(css);
   if (fonts.length > 0) injectionParts.push(fonts.join(''));
-  if (loadedData) injectionParts.push(createLoaderDataScript(loadedData));
+  if (loadedData) injectionParts.push(createLoaderDataScriptAsString(loadedData));
   if (options?.assets?.css && options.assets.css.length > 0) {
-    injectionParts.push(createInjectedCssElements(options.assets.css));
+    injectionParts.push(createInjectedCssAsString(options.assets.css));
   }
 
   return stream.pipeThrough(
