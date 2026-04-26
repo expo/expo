@@ -228,4 +228,5 @@ export {
   type FontSource,
   type FontResource,
   type UnloadFontOptions,
+  type ServerFontResourceDescriptor,
 } from './Font.types';
