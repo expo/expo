@@ -17,7 +17,7 @@ export default function PullToRefreshBoxScreen() {
   const basic = useSimulatedRefresh();
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ horizontal: true }} style={{ height: '100%' }}>
       <PullToRefreshBox
         isRefreshing={basic.refreshing}
         onRefresh={basic.onRefresh}
