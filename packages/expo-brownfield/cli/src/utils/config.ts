@@ -2,6 +2,7 @@ import type { OptionValues } from 'commander';
 import path from 'node:path';
 
 import { buildPublishingTask, findBrownfieldLibrary } from './android';
+import CLIError from './error';
 import { findScheme, findWorkspace } from './ios';
 import type {
   AndroidConfig,
@@ -38,9 +39,18 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     buildProductsPath,
     `${buildConfiguration.toLowerCase()}-iphonesimulator`
   );
+  const usePrebuilds = !!options.usePrebuilds;
+  if (usePrebuilds && !options.package) {
+    CLIError.handle('ios-prebuilds-require-swift-package');
+  }
 
-  const packageName =
+  const basePackageName =
     options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
+  // SPM .binaryTarget has no per-configuration overload, so when prebuilds are enabled we
+  // produce one flavored package per build configuration (e.g. "MyAppPackage-release").
+  const packageName = usePrebuilds
+    ? `${basePackageName}-${buildConfiguration.toLowerCase()}`
+    : basePackageName;
   const output = options.package
     ? {
         packageName,
@@ -56,6 +66,7 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     device,
     simulator,
     scheme: resolveScheme(options),
+    usePrebuilds,
     workspace: resolveWorkspace(options),
   };
 };

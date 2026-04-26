@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validatePackageInstalled = exports.validatePrebuild = void 0;
+exports.validatePrecompiledModules = exports.validatePackageInstalled = exports.validatePrebuild = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const config_1 = require("expo/config");
 const node_fs_1 = __importDefault(require("node:fs"));
@@ -11,6 +11,7 @@ const node_path_1 = __importDefault(require("node:path"));
 const prompts_1 = __importDefault(require("prompts"));
 const commands_1 = require("./commands");
 const error_1 = __importDefault(require("./error"));
+const precompiled_1 = require("./precompiled");
 const spinner_1 = require("./spinner");
 const validatePrebuild = async (platform) => {
     (0, exports.validatePackageInstalled)();
@@ -55,4 +56,12 @@ const checkPrebuild = (platform) => {
     const nativeDirectory = node_path_1.default.join(process.cwd(), platform);
     return node_fs_1.default.existsSync(nativeDirectory);
 };
+const validatePrecompiledModules = () => {
+    const iosDir = node_path_1.default.join(process.cwd(), 'ios');
+    const modules = (0, precompiled_1.enumeratePrecompiledModules)(iosDir);
+    if (modules.length === 0) {
+        error_1.default.handle('ios-prebuilds-not-found');
+    }
+};
+exports.validatePrecompiledModules = validatePrecompiledModules;
 //# sourceMappingURL=prebuild.js.map

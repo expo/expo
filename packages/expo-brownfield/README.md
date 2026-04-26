@@ -50,6 +50,27 @@ Run `npx expo prebuild` after adding the plugin to your `app.json` file to gener
 
 For projects that don't use CNG please follow the manual steps at [How to add Expo to an existing native (brownfield) app](https://docs.expo.dev/brownfield/get-started/). 
 
+## Prebuilt modules on iOS (fast mode)
+
+When `usePrebuilds` is enabled the generated Podfile sets `EXPO_USE_PRECOMPILED_MODULES=1`, so `pod install` downloads each Expo module as a prebuilt `.xcframework` instead of building it from source. Pair it with the `--use-prebuilds` CLI flag on `build:ios` to bundle every precompiled module into the output Swift Package alongside the brownfield framework, React, Hermes, and `ReactNativeDependencies`.
+
+```json
+{
+  "plugins": [
+    ["expo-brownfield", { "ios": { "usePrebuilds": true } }]
+  ]
+}
+```
+
+```sh
+npx expo prebuild --platform ios
+npx expo-brownfield build:ios --release --use-prebuilds --package MyAppPackage
+```
+
+The resulting `artifacts/MyAppPackage-release/` directory is a Swift Package with a single aggregate `.library` product — add it to your host iOS app via Xcode's **Add Package Dependencies → Add Local** and Xcode will link every bundled `.xcframework` automatically.
+
+Swift Package Manager has no per-configuration overload for `.binaryTarget(path:)`, so each output package is pinned to the flavor it was built with. Run `build:ios` once per flavor (e.g. `--debug` and `--release`) and distribute the two packages side by side.
+
 ## Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

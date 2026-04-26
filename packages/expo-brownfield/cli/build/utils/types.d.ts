@@ -37,7 +37,13 @@ export interface IosConfig extends CommonConfig {
     output: 'frameworks' | PackageConfiguration;
     scheme: string;
     simulator: string;
+    usePrebuilds: boolean;
     workspace: string;
+}
+export interface ModuleXCFramework {
+    name: string;
+    podDir: string;
+    xcframeworkPath: string;
 }
 export interface TasksConfigAndroid extends CommonConfig {
     library: string;
