@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveTasksConfigAndroid = exports.resolveBuildConfigIos = exports.resolveBuildConfigAndroid = void 0;
 const node_path_1 = __importDefault(require("node:path"));
 const android_1 = require("./android");
+const error_1 = __importDefault(require("./error"));
 const ios_1 = require("./ios");
 const resolveBuildConfigAndroid = (options) => {
     const variant = resolveVariant(options);
@@ -28,7 +29,16 @@ const resolveBuildConfigIos = (options) => {
     const device = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
     const scheme = resolveScheme(options);
     const simulator = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphonesimulator`);
-    const packageName = options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
+    const usePrebuilds = !!options.usePrebuilds;
+    if (usePrebuilds && !options.package) {
+        error_1.default.handle('ios-prebuilds-require-swift-package');
+    }
+    const basePackageName = options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
+    // SPM .binaryTarget has no per-configuration overload, so when prebuilds are enabled we
+    // produce one flavored package per build configuration (e.g. "MyAppPackage-release").
+    const packageName = usePrebuilds
+        ? `${basePackageName}-${buildConfiguration.toLowerCase()}`
+        : basePackageName;
     const output = options.package
         ? {
             packageName,
@@ -43,6 +53,7 @@ const resolveBuildConfigIos = (options) => {
         device,
         simulator,
         scheme: resolveScheme(options),
+        usePrebuilds,
         workspace: resolveWorkspace(options),
     };
 };

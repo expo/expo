@@ -9,6 +9,7 @@ export const getPluginConfig = (props: PluginProps, config: ExpoConfig): PluginC
     bundleIdentifier: getBundleIdentifier(props, config, targetName),
     targetName,
     buildReactNativeFromSource: props?.buildReactNativeFromSource ?? false,
+    usePrebuilds: props?.usePrebuilds ?? false,
   };
 };
 

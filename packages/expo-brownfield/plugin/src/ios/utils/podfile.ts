@@ -37,6 +37,21 @@ export const addNewPodsTarget = (podfile: string, targetName: string): string =>
   return podFileLines.join('\n');
 };
 
+const PREBUILDS_ENV_SHIM = `ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'`;
+
+/**
+ * Prepend an `ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'` line to the Podfile so
+ * `pod install` pulls prebuilt Expo module xcframeworks instead of building from source.
+ * Read by Expo::PrecompiledModules.enabled? in expo-modules-autolinking.
+ */
+export const addPrebuildsEnvShim = (podfile: string): string => {
+  if (podfile.includes(PREBUILDS_ENV_SHIM)) {
+    console.info('Prebuilds env shim is already added. Skipping...');
+    return podfile;
+  }
+  return `${PREBUILDS_ENV_SHIM}\n${podfile}`;
+};
+
 export const addPrebuiltSettings = (podfile: string): string => {
   const prebuiltSettingsLines = getPrebuiltSettingsLines();
   let podFileLines = podfile.split('\n');
