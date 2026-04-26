@@ -55,6 +55,16 @@ export function createInjectedScriptsAsString(srcs: string[]): string {
 }
 
 /**
+ * Returns the string content of the hydration flag script, which sets the
+ * `__EXPO_ROUTER_HYDRATE__` global flag to `true`.
+ *
+ * @see {@link getHydrationFlagScriptAsString} for the full `<script>` tag wrapper.
+ */
+export function getHydrationFlagScriptContents(): string {
+  return `globalThis.__EXPO_ROUTER_HYDRATE__=true;`;
+}
+
+/**
  * Returns a module script that sets the `__EXPO_ROUTER_HYDRATE__` global flag, which tells the
  * client-side Expo Router entrypoint to hydrate the server-rendered markup instead of performing
  * a full client render.
@@ -62,7 +72,18 @@ export function createInjectedScriptsAsString(srcs: string[]): string {
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
 export function getHydrationFlagScriptAsString(): string {
-  return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+  return `<script type="module">${getHydrationFlagScriptContents()}</script>`;
+}
+
+/**
+ * Returns the string content of the loader data script, which sets
+ * `globalThis.__EXPO_ROUTER_LOADER_DATA__` to the given data using double-serialized JSON.
+ *
+ * @see {@link createLoaderDataScriptAsString} for the full `<script>` tag wrapper.
+ */
+export function getLoaderDataScriptContents(data: Record<string, unknown>): string {
+  const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+  return `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`;
 }
 
 /**
@@ -73,8 +94,7 @@ export function getHydrationFlagScriptAsString(): string {
  * @see https://v8.dev/blog/cost-of-javascript-2019#json
  */
 export function createLoaderDataScriptAsString(data: Record<string, unknown>): string {
-  const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
-  return `<script id="expo-router-data">globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});</script>`;
+  return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
 }
 
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;

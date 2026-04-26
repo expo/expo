@@ -51,6 +51,7 @@ describe(resolveMetadata, () => {
     expect(result).toEqual({
       metadata: { title: 'Post 123' },
       headTags: '<title>Post 123</title>',
+      headNodes: [<title key="metadata-title">Post 123</title>],
     });
   });
 
