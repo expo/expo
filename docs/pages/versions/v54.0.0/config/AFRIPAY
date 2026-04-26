@@ -1,0 +1,535 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(AfriPayApp());
+}
+
+class AfriPayApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'AfriPay Connect',
+      theme: ThemeData(
+        primaryColor: Colors.green,
+      ),
+      home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('AfriPay Connect'),
+        backgroundColor: Colors.green,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              'Welcome 👋',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () {},
+              child: Text('📶 Buy Data'),
+            ),
+
+            ElevatedButton(
+              onPressed: () {},
+              child: Text('💳 Make Payment'),
+            ),
+
+            ElevatedButton(
+              onPressed: () {},
+              child: Text('📄 Receipts'),
+            ),
+          ],
+        ),
+      ),
+    );class DataScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Buy Data")),
+      body: Column(
+        children: [
+          TextField(decoration: InputDecoration(labelText: "Phone Number")),
+          DropdownButton<String>(
+            items: ["1GB", "5GB", "10GB"]
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .toList(),
+            onChanged: (value) {},
+            hint: Text("Select Bundle"),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text("Buy Now"),
+          )
+        ],
+      ),
+    );
+  }
+}class PaymentScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Payment")),
+      body: Column(
+        children: [
+          TextField(decoration: InputDecoration(labelText: "Amount")),
+          DropdownButton<String>(
+            items: ["Card", "PayPal", "Orange Money"]
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .toList(),
+            onChanged: (value) {},
+            hint: Text("Select Method"),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text("Pay Now"),
+          )
+        ],
+      ),
+    );
+  }
+}onPressed: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => DataScreen()),
+  );
+}dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^2.0.0
+  firebase_auth: ^4.0.0flutter pub get
+  }import 'package:firebase_core/firebase_core.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(AfriPayApp());
+}import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class AuthScreen extends StatefulWidget {
+  @override
+  _AuthScreenState createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void signUp() async {
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+  }
+
+  void login() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Login / Signup")),
+      body: Column(
+        children: [
+          TextField(controller: emailController, decoration: InputDecoration(labelText: "Email")),
+          TextField(controller: passwordController, decoration: InputDecoration(labelText: "Password")),
+          
+          ElevatedButton(onPressed: signUp, child: Text("Sign Up")),
+          ElevatedButton(onPressed: login, child: Text("Login")),
+        ],
+      ),
+    );
+  }cloud_firestore: ^4.0.0
+}import 'package:cloud_firestore/cloud_firestore.dart';
+
+void saveTransaction(String type, double amount) {
+  FirebaseFirestore.instance.collection('transactions').add({
+    'type': type,
+    'amount': amount,
+    'date': DateTime.now(),
+  });{
+  "welcome": "Welcome",
+  "buyData": "Buy Data",
+  "makePayment": "Make Payment",
+  "receipts": "Receipts"
+}
+}lib/l10n/dependencies:
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.18.0import ko'package:flutter_localizations/flutter_localizations.dart';
+
+MaterialApp(
+  supportedLocales: [
+    Locale('en'),
+    Locale('ff'), // Pulaar
+  ],
+  localizationsDelegates: [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
+)Locale currentLocale = Locale('en');
+
+void changeLanguage() {
+  setState(() {
+    currentLocale = currentLocale.languageCode == 'en'
+        ? Locale('ff')
+        : Locale('en');
+  });ElevatedButton(
+  onPressed: changeLanguage,
+  child: Text("🌍 Change Language"),
+)
+}{
+  "welcome": "𞤀 𞤶𞤢𞤪𞤢𞤥𞤢",
+  "buyData": "𞤅𞤮𞤮𞤪 𞤁𞤢𞤼𞤢",
+  "makePayment": "𞤅𞤢𞤤𞤢 𞤄𞤢𞤥",
+  "receipts": "𞤈𞤫𞤧𞤵"flutter:
+  fonts:
+    - family: Adlam
+      fonts:
+        - asset: assets/fonts/NotoSansAdlam-Regular.ttf
+}assets/fonts/NotoSansAdlam-Regular.ttftheme: ThemeData(
+  fontFamily: 'Adlam',
+),supportedLocales: [
+  Locale('en'),
+  Locale('ff'),
+  Locale.fromSubtags(languageCode: 'ff', scriptCode: 'Adlm'),
+],Locale currentLocale = Locale('en');
+
+void changeLanguage() {
+  setState(() {
+    if (currentLocale.languageCode == 'en') {
+      currentLocale = Locale('ff');
+    } else if (currentLocale.languageCode == 'ff' && currentLocale.scriptCode != 'Adlm') {
+      currentLocale = Locale.fromSubtags(languageCode: 'ff', scriptCode: 'Adlm');
+    } else {
+      currentLocale = Locale('en');
+    }
+  });Flutter App
+   ↓
+Backend Server (Node.js)
+   ↓
+PayPal API
+   ↓
+Payment confirmation → Flutter
+}npm init -y
+npm install express axios cors dotenvconst express = require("express");
+const axios = require("axios");
+const cors = require("cors");
+require("dotenv").config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const SECRET = process.env.PAYPAL_SECRET;
+
+// Get Access Token
+async function getAccessToken() {
+  const response = await axios({
+    url: "https://api-m.sandbox.paypal.com/v1/oauth2/token",
+    method: "post",
+    auth: {
+      username: CLIENT_ID,
+      password: SECRET,
+    },
+    params: {
+      grant_type: "client_credentials",
+    },
+  });
+
+  return response.data.access_token;
+}
+
+// Create Payment
+app.post("/create-order", async (req, res) => {
+  const token = await getAccessToken();
+
+  const response = await axios.post(
+    "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+    {
+      intent: "CAPTURE",
+      purchase_units: [
+        {
+          amount: {
+            currency_code: "USD",
+            value: req.body.amount,
+          },
+        },
+      ],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  res.json(response.data);
+});
+
+// Capture Payment
+app.post("/capture-order/:id", async (req, res) => {
+  const token = await getAccessToken();
+
+  const response = await axios.post(
+    `https://api-m.sandbox.paypal.com/v2/checkout/orders/${req.params.id}/capture`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  res.json(response.data);
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+Future<String> createOrder(String amount) async {
+  final response = await http.post(
+    Uri.parse("http://your-server-ip:3000/create-order"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({"amount": amount}),
+  );
+
+  final data = jsonDecode(response.body);
+  return data["id"];
+}import 'package:flutter/material.dart';
+
+class SplashScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, "/login");
+    });
+
+    return Scaffold(
+      backgroundColor: Colors.green,
+      body: Center(
+        child: Text(
+          "AfriPay Connect",
+          style: TextStyle(
+            fontSize: 28,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }class LoginScreen extends StatelessWidget {
+  final email = TextEditingController();
+  final password = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Welcome Back", style: TextStyle(fontSize: 24)),
+            TextField(controller: email, decoration: InputDecoration(labelText: "Email")),
+            TextField(controller: password, decoration: InputDecoration(labelText: "Password")),
+
+            SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, "/home");
+              },
+              child: Text("Login"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("AfriPay Connect"),
+        backgroundColor: Colors.green,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.green.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Balance"),
+                  Text("\$0.00"),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 20),
+
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              children: [
+                menuButton("Buy Data", Icons.wifi, context, "/data"),
+                menuButton("Payment", Icons.payment, context, "/payment"),
+                menuButton("Receipts", Icons.receipt, context, "/receipt"),
+                menuButton("Profile", Icons.person, context, "/profile"),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget menuButton(String title, IconData icon, BuildContext context, String route) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, route),
+      child: Card(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: Colors.green),
+            Text(title),
+          ],
+        ),
+      ),
+    );
+  }
+}class DataScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Buy Data")),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text("Select Bundle"),
+            DropdownButton(
+              items: ["1GB", "5GB", "10GB"]
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: (value) {},
+            ),
+
+            TextField(decoration: InputDecoration(labelText: "Phone Number")),
+
+            SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, "/payment");
+              },
+              child: Text("Continue"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}class PaymentScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Payment")),
+      body: Column(
+        children: [
+          ListTile(title: Text("Pay with Card")),
+          ListTile(title: Text("")),
+          ListTile(title: Text("Orange Money")),
+
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, "/receipt");
+            },
+            child: Text("Pay Now"),
+          )
+        ],
+      ),
+    );
+  }
+}class ReceiptScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Receipt")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 80),
+            Text("Payment Successful"),
+            Text("Transaction ID: #AF12345"),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, "/home");
+              },
+              child: Text("Back Home"),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+}class ProfileScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Profile")),
+      body: Column(
+        children: [
+          CircleAvatar(radius: 40),
+          Text("User Name"),
+          Text("user@email.com"),
+
+          ListTile(title: Text("Language")),
+          ListTile(title: Text("Security")),
+          ListTile(title: Text("Logout")),
+        ],
+      ),
+    );
+  }
+}MaterialApp(
+  initialRoute: "/",
+  routes: {
+    "/": (context) => SplashScreen(),
+    "/login": (context) => LoginScreen(),
+    "/home": (context) => HomeScreen(),
+    "/data": (context) => DataScreen(),
+    "/payment": (context) => PaymentScreen(),
+    "/receipt": (context) => ReceiptScreen(),
+    "/profile": (context) => ProfileScreen(),
+  },
+);
+}home: AuthScreen(),
