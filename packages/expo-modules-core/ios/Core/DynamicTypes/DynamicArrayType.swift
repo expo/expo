@@ -56,7 +56,7 @@ internal struct DynamicArrayType: AnyDynamicType {
    */
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     guard let array = value as? [Any] else {
-      return try Conversions.anyToJavaScriptValue(value, runtime: appContext.runtime)
+      return try Conversions.anyToJavaScriptValue(value, appContext: appContext)
     }
     let runtime = try appContext.runtime
     let jsArray = runtime.createArray(length: array.count)

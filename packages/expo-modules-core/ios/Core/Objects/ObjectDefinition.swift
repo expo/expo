@@ -106,11 +106,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   @JavaScriptActor
   internal func decorateWithConstants(object: borrowing JavaScriptObject, appContext: AppContext) throws {
     for (key, value) in getLegacyConstants() {
-      if let value = value as? JavaScriptRepresentable {
-        object.setProperty(key, value: value)
-      } else {
-        object.setProperty(key, value: .null)
-      }
+      object.setProperty(key, value: try Conversions.anyToJavaScriptValue(value, appContext: appContext))
     }
 
     for constant in constants.values {
