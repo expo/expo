@@ -31,7 +31,7 @@ export default function DatePickerExample() {
   return (
     <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <DateTimePicker
-        onDateSelected={(date) => {
+        onDateSelected={date => {
           setSelectedDate(date);
         }}
         displayedComponents="date"
@@ -55,7 +55,7 @@ export default function TimePickerExample() {
   return (
     <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <DateTimePicker
-        onDateSelected={(date) => {
+        onDateSelected={date => {
           setSelectedDate(date);
         }}
         displayedComponents="hourAndMinute"
@@ -81,7 +81,7 @@ export default function InputVariantExample() {
   return (
     <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <DateTimePicker
-        onDateSelected={(date) => {
+        onDateSelected={date => {
           setSelectedDate(date);
         }}
         displayedComponents="date"

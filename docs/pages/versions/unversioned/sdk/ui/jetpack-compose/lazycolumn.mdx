@@ -28,7 +28,7 @@ export default function BasicLazyColumn() {
   return (
     <Host style={{ height: 400 }}>
       <LazyColumn>
-        {items.map((item) => (
+        {items.map(item => (
           <ListItem key={item} headline={item} />
         ))}
       </LazyColumn>
