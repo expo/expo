@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import {
   setupPlugin,
   validatePodfile,
@@ -159,5 +162,19 @@ describe('plugin for ios', () => {
     });
 
     validateBundleIdentifier(TEMP_DIR, BUNDLE_IDENTIFIER, 'testapppluginiosbrownfield');
+  });
+
+  /**
+   * Expected behavior:
+   * - When `usePrebuilds` is true the Podfile is prepended with an
+   *   `ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'` shim so subsequent
+   *   `pod install` runs honor the precompiled-modules path.
+   */
+  it('should add the EXPO_USE_PRECOMPILED_MODULES shim when usePrebuilds is true', async () => {
+    await setupPlugin(TEMP_DIR, { usePrebuilds: true });
+
+    const podfilePath = path.join(TEMP_DIR, 'ios', 'Podfile');
+    const podfileContent = fs.readFileSync(podfilePath, 'utf8');
+    expect(podfileContent).toContain("ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'");
   });
 });

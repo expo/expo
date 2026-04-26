@@ -43,6 +43,10 @@ program
     '-p, --package [package]',
     'package artifacts as a Swift Package (with an optionally specified name)'
   )
+  .option(
+    '--use-prebuilds',
+    'bundle prebuilt Expo module xcframeworks (EXPO_USE_PRECOMPILED_MODULES) into the Swift Package output (single flavor per package)'
+  )
   .action(async function (this: Command) {
     await buildIos(this);
   });

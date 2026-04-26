@@ -10,6 +10,7 @@ const node_path_1 = __importDefault(require("node:path"));
 const commands_1 = require("./commands");
 const constants_1 = require("./constants");
 const error_1 = __importDefault(require("./error"));
+const precompiled_1 = require("./precompiled");
 const spinner_1 = require("./spinner");
 const cleanUpArtifacts = async (config) => {
     if (config.dryRun) {
@@ -84,6 +85,41 @@ const copyXCFrameworks = async (config, dest) => {
         }
         else {
             console.warn(`${xcframework.name} not found in source path: ${xcframework.path}. Assuming it's built from sources`);
+        }
+    }
+    if (config.usePrebuilds) {
+        const podModules = (0, precompiled_1.enumeratePrecompiledModules)(node_path_1.default.join(process.cwd(), 'ios'));
+        const seenNames = new Set(podModules.map((m) => m.name));
+        // Append shared SPM-dep xcframeworks (e.g. SDWebImage, libavif) from the monorepo's
+        // `.spm-deps/` cache. Without these, prebuilt frameworks like ExpoImage carry @rpath
+        // load commands that fail to resolve at runtime in the consumer host app.
+        const spmDepModules = (0, precompiled_1.enumerateSpmDepsXcframeworks)(process.cwd(), config.buildConfiguration, seenNames);
+        const modules = [...podModules, ...spmDepModules];
+        if (spmDepModules.length === 0 && podModules.length > 0) {
+            console.warn("Could not locate the monorepo's .spm-deps/ cache. Any prebuilt module that links " +
+                'against shared SPM dependencies (e.g. SDWebImage for ExpoImage) may fail with ' +
+                '`Library not loaded: @rpath/...` at runtime in the host app.');
+        }
+        // Reconcile flavor once per pod — replace-xcframework.js extracts the whole tarball
+        // (main + sibling SPM-dep xcframeworks) in one shot, so re-running per-xcframework would
+        // unpack the same tarball repeatedly. SPM-dep entries (mainProduct === name, no artifacts/)
+        // skip reconciliation entirely inside ensureCorrectFlavor.
+        const reconciledPods = new Set();
+        for (const module of modules) {
+            if (!reconciledPods.has(module.podDir)) {
+                reconciledPods.add(module.podDir);
+                await (0, precompiled_1.ensureCorrectFlavor)(module, config.buildConfiguration, { verbose: config.verbose });
+            }
+            await (0, spinner_1.withSpinner)({
+                operation: async () => node_fs_1.default.promises.cp(module.xcframeworkPath, node_path_1.default.join(dest, `${module.name}.xcframework`), {
+                    force: true,
+                    recursive: true,
+                }),
+                loaderMessage: `Copying ${module.name} to the artifacts directory...`,
+                successMessage: `Copying ${module.name} to the artifacts directory succeeded`,
+                errorMessage: `Copying ${module.name} to the artifacts directory failed`,
+                verbose: config.verbose,
+            });
         }
     }
 };
@@ -189,17 +225,38 @@ const findWorkspace = (dryRun) => {
     return;
 };
 exports.findWorkspace = findWorkspace;
-// TODO(pmleczek): Add support for prebuilt RN frameworks in future PR
 const generatePackageMetadataFile = async (config, packagePath) => {
     if (config.output === 'frameworks') {
         return;
     }
     const prebuiltFrameworks = node_fs_1.default.existsSync(constants_1.XCFramework.React.path);
-    const xcframeworks = [
+    const baseFrameworks = [
         { name: config.scheme, targets: [config.scheme] },
         { name: 'hermesvm', targets: ['hermesvm'] },
         ...(prebuiltFrameworks ? [constants_1.XCFramework.React, constants_1.XCFramework.ReactDependencies] : []),
     ];
+    let precompiledModules = [];
+    if (config.usePrebuilds) {
+        const podModules = (0, precompiled_1.enumeratePrecompiledModules)(node_path_1.default.join(process.cwd(), 'ios'));
+        const seenNames = new Set([
+            ...baseFrameworks.map((f) => f.name),
+            ...podModules.map((m) => m.name),
+        ]);
+        const spmDepModules = (0, precompiled_1.enumerateSpmDepsXcframeworks)(process.cwd(), config.buildConfiguration, seenNames);
+        precompiledModules = [...podModules, ...spmDepModules].map(({ name }) => ({
+            name,
+            targets: [name],
+        }));
+    }
+    const xcframeworks = [...baseFrameworks, ...precompiledModules];
+    // With prebuilds the module graph is large; expose a single aggregate library so consumers
+    // `import <PackageName>` once and Xcode links every underlying binary target automatically.
+    // Without prebuilds keep one `.library` per framework for backwards compatibility.
+    const products = config.usePrebuilds
+        ? [
+            (0, exports.libraryProduct)(config.output.packageName, xcframeworks.map(({ name }) => name)),
+        ]
+        : xcframeworks.map(({ name, targets }) => (0, exports.libraryProduct)(name, targets));
     const contents = `// swift-tools-version:5.9
 import PackageDescription
 
@@ -207,7 +264,7 @@ let package = Package(
     name: "${config.output.packageName}",
     platforms: [${(await (0, exports.getSupportedPlatforms)(config)).join(',')}],
     products: [
-${xcframeworks.map(({ name, targets }) => (0, exports.libraryProduct)(name, targets)).join('\n')}
+${products.join('\n')}
     ],
     targets: [
 ${xcframeworks.map(({ name }) => (0, exports.binaryTarget)(name)).join('\n')}
@@ -275,6 +332,7 @@ const printIosConfig = (config) => {
     if (config.output !== 'frameworks') {
         console.log(` - Package name: ${chalk_1.default.blue(config.output.packageName)}`);
     }
+    console.log(` - Use prebuilds: ${chalk_1.default.blue(config.usePrebuilds)}`);
     console.log();
 };
 exports.printIosConfig = printIosConfig;
