@@ -8,7 +8,7 @@ const config = ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     ...config.extra,
     eas: {
-      projectId: '5310c5f2-8ab4-4d5e-8f53-a5c90aa9594a',
+      ...config.extra?.eas,
       observe: {
         enableInDebug: true,
         endpointUrl:

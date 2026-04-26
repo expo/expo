@@ -4,8 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "prebuild:android": "./scripts/prebuild-android.sh",
-    "prebuild:ios": "./scripts/prebuild-ios.sh",
+    "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz && cd - && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
