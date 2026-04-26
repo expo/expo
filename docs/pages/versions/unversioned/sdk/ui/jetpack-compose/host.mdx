@@ -33,6 +33,44 @@ export default function MatchContents() {
 }
 ```
 
+> **Note:** Do not use `matchContents` on the same axis as a scrollable child (`LazyRow`, `LazyColumn`, `Carousel`, or anything using `Modifier.horizontalScroll` / `verticalScroll`). Scrollables require a finite max constraint on their scroll axis; `matchContents` propagates an unbounded one.
+
+The following example crashes:
+
+```tsx MatchContentsCrash.tsx
+import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
+
+export default function MatchContentsCrash() {
+  return (
+    <Host matchContents>
+      <LazyRow>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Text key={i}>Item {i}</Text>
+        ))}
+      </LazyRow>
+    </Host>
+  );
+}
+```
+
+Either drop `matchContents` on the scroll axis, or give the `Host` a finite size on that axis via `style`:
+
+```tsx MatchContentsFix.tsx
+import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
+
+export default function MatchContentsFix() {
+  return (
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+      <LazyRow>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Text key={i}>Item {i}</Text>
+        ))}
+      </LazyRow>
+    </Host>
+  );
+}
+```
+
 ### With style
 
 Apply standard React Native styles to the `Host` wrapper.
