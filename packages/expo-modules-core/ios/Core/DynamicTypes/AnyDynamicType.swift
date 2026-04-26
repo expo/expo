@@ -51,7 +51,7 @@ extension AnyDynamicType {
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
-    return try Conversions.anyToJavaScriptValue(value, runtime: appContext.runtime)
+    return try Conversions.unknownToJavaScriptValue(value, appContext: appContext)
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {

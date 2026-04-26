@@ -32,6 +32,13 @@ internal struct DynamicEnumType: AnyDynamicType {
     return result
   }
 
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if let value = value as? any Enumerable {
+      return try Conversions.anyToJavaScriptValue(value.anyRawValue, appContext: appContext)
+    }
+    throw Conversions.ConversionToJSFailedException((kind: .undefined, nativeType: ValueType.self))
+  }
+
   var description: String {
     "Enum<\(innerType)>"
   }

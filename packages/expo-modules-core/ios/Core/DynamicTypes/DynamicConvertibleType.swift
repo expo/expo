@@ -21,6 +21,17 @@ internal struct DynamicConvertibleType: AnyDynamicType {
     return try innerType.convert(from: value, appContext: appContext)
   }
 
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    let result = try innerType.convertResult(value, appContext: appContext)
+    if let result = result as? JavaScriptValue {
+      return result
+    }
+    if let result = result as? AnyArgument {
+      return try type(of: result).getDynamicType().castToJS(result, appContext: appContext)
+    }
+    return try Conversions.unknownToJavaScriptValue(result, appContext: appContext)
+  }
+
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
     return try innerType.convertResult(result, appContext: appContext)
   }
