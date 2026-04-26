@@ -119,15 +119,15 @@ async function getStreamingContent(location, options) {
         injectionParts.push(options.metadata.headTags);
     if (headTags)
         injectionParts.push(headTags);
-    injectionParts.push((0, html_1.getHydrationFlagScript)());
+    injectionParts.push((0, html_1.getHydrationFlagScriptAsString)());
     if (css)
         injectionParts.push(css);
     if (fonts.length > 0)
         injectionParts.push(fonts.join(''));
     if (loadedData)
-        injectionParts.push((0, html_1.createLoaderDataScript)(loadedData));
+        injectionParts.push((0, html_1.createLoaderDataScriptAsString)(loadedData));
     if (options?.assets?.css && options.assets.css.length > 0) {
-        injectionParts.push((0, html_1.createInjectedCssElements)(options.assets.css));
+        injectionParts.push((0, html_1.createInjectedCssAsString)(options.assets.css));
     }
     return stream.pipeThrough((0, streams_1.createDocumentMetadataInjectionTransform)({
         injectionParts,
